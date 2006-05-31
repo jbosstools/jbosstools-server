@@ -87,7 +87,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			resourceBundle = ResourceBundle.getBundle("org.jboss.ide.eclipse.as.ui.ServerUiPluginResources");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
-			x.printStackTrace();
 		}
 	}
 
