@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   
+   <extension
+         point="org.eclipse.wst.server.ui.serverImages">
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.32"
+            id="org.jboss.ide.eclipse.as.ui.jboss32Image"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.40"
+            id="org.jboss.ide.eclipse.as.ui.jboss40Image"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.ui.wizardFragments">
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss32WizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.32"
+            id="org.jboss.ide.eclipse.as.ui.jboss32WizardFragment"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss40WizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.40"
+            id="org.jboss.ide.eclipse.as.ui.jboss40WizardFragment"/>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.jboss.ide.eclipse.as.ui.config.JBossLaunchConfigurationTabGroup"
+            id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
+            type="org.jboss.ide.eclipse.as.core.jbossLaunch"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup />
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.wst.server.ui"
+            class="org.jboss.ide.eclipse.as.ui.views.JBossServerLogView"
+            icon="icons/jboss.gif"
+            id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
+            name="JBoss Server Event Log"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="org.jboss.ide.eclipse.as.ui.views.SampleView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.ui.serverImages">
+      <image
+            icon="icons/AppClientModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.earImage"
+            typeIds="jboss.ear"/>
+      <image
+            icon="icons/WebModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.webImage"
+            typeIds="jboss.web"/>
+      <image
+            icon="icons/EJBModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.ejbImage"
+            typeIds="jboss.ejb"/> 
+   </extension>
+
+
+
+   <!--
+   <extension
+         point="org.eclipse.wst.server.ui.editorPageSections">
+      <section
+            class="org.jboss.ide.eclipse.as.ui.config.JBossServerEditorSection"
+            id="org.jboss.ide.eclipse.as.ui.serverEditorSection"
+            insertionId="org.eclipse.wst.server.editor.overview.right"
+            order="10"
+            typeIds="org.jboss.ide.eclipse.as.*"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.ui.editorPages">
+      <page
+            class="org.jboss.ide.eclipse.as.ui.editor.JBossPortsEditorPage"
+            id="org.jboss.ide.eclipse.as.ui.portsPage"
+            insertionIds="org.eclipse.wst.server.editor.overview.right"
+            name="JBoss Ports"
+            order="10"
+            typeIds="org.jboss.ide.eclipse.as.*"/>
+   </extension>
+   -->
+
+</plugin>

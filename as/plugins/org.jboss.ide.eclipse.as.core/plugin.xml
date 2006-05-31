@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension-point 
+   		id="jbossModuleFactory" name="org.jboss.ide.eclipse.as.core.jbossModuleFactory" 
+   		schema="schema/jbossModuleFactory.exsd"/>
+   		
+   		
+   		
+   <extension
+         point="org.eclipse.wst.server.core.serverTypes">
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            description="%jboss.version.32.description"
+            hasConfiguration="true"
+            id="org.jboss.ide.eclipse.as.32"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.jbossLaunch"
+            launchModes="run,debug"
+            name="%jboss.version.32.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
+            startBeforePublish="true"
+            startTimeout="120000"
+            stopTimeout="120000" 
+            supportsRemoteHosts="true"/>
+              
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            description="%jboss.version.40.description"
+            hasConfiguration="true"
+            id="org.jboss.ide.eclipse.as.40"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.jbossLaunch"
+            launchModes="run,debug"
+            name="%jboss.version.40.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
+            startBeforePublish="true"
+            startTimeout="120000"
+            stopTimeout="120000"
+            supportsRemoteHosts="false"/>
+   </extension>
+
+   <extension
+         point="org.eclipse.wst.server.core.runtimeTypes">
+      <runtimeType
+            vendor="%providerName"
+            class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
+            description="%jboss.version.32.description"
+            name="%jboss.version.32.name"
+            id="org.jboss.ide.eclipse.as.runtime.32"
+            version="%jboss.version.32.version">
+         <moduleType
+               types="jboss.aop"
+               versions="2.2222"/>
+         <moduleType
+               types="jboss.ejb"
+               versions="3.2"/>
+         <moduleType
+               types="jboss.web"
+               versions="3.2"/>
+         <moduleType
+               types="jboss.ear"
+               versions="3.2"/>
+      </runtimeType>
+       <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
+             description="%jboss.version.40.description"
+             name="%jboss.version.40.name"
+             id="org.jboss.ide.eclipse.as.runtime.40"
+             version="%jboss.version.40.version">
+          <moduleType
+                types="jboss.aop"
+                versions="2.2222"/>
+          <moduleType
+                types="jboss.ejb"
+                versions="3.2"/>
+          <moduleType
+                types="jboss.web"
+                versions="3.2"/>
+          <moduleType
+                types="jboss.ear"
+                versions="3.2"/>
+      </runtimeType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate"
+            public="true"
+            category="JBoss"
+            name="JBoss Application Server"
+            modes="run,debug"
+            id="org.jboss.ide.eclipse.as.core.jbossLaunch"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.as.core.module.artifact.JBossModuleArtifactAdapter"
+            id="org.jboss.ide.eclipse.as.core.artifactAdapter"
+            priority="20">
+         <enablement>
+            <instanceof value="org.eclipse.core.resources.IResource"/>
+         </enablement>
+      </moduleArtifactAdapter>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.factory.AopModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.factory.aopFactory"
+            order="2"
+            projects="false"/>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.factory.EjbModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.factory.ejbFactory"
+            order="2"
+            projects="false"/>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.factory.WarModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.factory.warFactory"
+            order="2"
+            projects="false"/>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.factory.EarModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.factory.earFactory"
+            order="2"
+            projects="false"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleTypes">
+
+      <moduleType id="jboss.aop"  name="JBoss AOP Module"/>
+      <moduleType
+            id="jboss.ejb"
+            name="JBoss-compliant EJB archive"/>
+      <moduleType
+            id="jboss.web"
+            name="JBoss-compliant Web archive"/>
+      <moduleType
+            id="jboss.ear"
+            name="JBoss-compliant EAR archive"/>
+
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.launchableAdapters">
+      <launchableAdapter
+            class="org.jboss.ide.eclipse.as.core.launch.adapters.JBossLaunchAdapter"
+            id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.clients">
+      <client
+            class="org.jboss.ide.eclipse.as.core.client.PublishClient"
+            description="Publish this archive to a JBoss server instance. No verification will take place."
+            id="org.jboss.ide.eclipse.as.core.publishClient"
+            launchable="org.jboss.ide.eclipse.as.core.launch.client.ICopyAsLaunch"
+            name="Publish Client"
+            priority="20"/> 
+      <client 
+            class="org.jboss.ide.eclipse.as.core.client.VerifyPublishClient"
+            description="Verify that your archive was successfully deployed to, and loaded by, the server."
+            id="org.jboss.ide.eclipse.as.core.verifyClient"
+            launchable="org.jboss.ide.eclipse.as.core.launch.IJBossDeploymentVerifier"
+            name="Deploy and Verify"
+            priority="20"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
+      <factory
+            id="org.jboss.ide.eclipse.as.core.factory.aopFactory"
+            priority="5"/>
+      <factory id="org.jboss.ide.eclipse.as.core.factory.ejbFactory"/>
+      <factory id="org.jboss.ide.eclipse.as.core.factory.warFactory"/>
+      <factory id="org.jboss.ide.eclipse.as.core.factory.earFactory"/>
+   </extension>
+   
+</plugin>
