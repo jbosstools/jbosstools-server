@@ -96,7 +96,7 @@ public class JBossServerUISharedImages {
 	
 	private JBossServerUISharedImages ()
 	{
-		//instance = this;
+		instance = this;
 		images = new Hashtable();
 		descriptors = new Hashtable();
 		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
