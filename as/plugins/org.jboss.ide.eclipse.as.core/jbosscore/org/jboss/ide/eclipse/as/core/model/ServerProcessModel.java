@@ -546,7 +546,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	public void serverAdded(IServer server) {
 		if( JBossServerCore.getServer(server) != null ) {
 			// init
-			getModel(server.getId());
+			getModel(server.getId(), true);
 		}
 	}
 
