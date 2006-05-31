@@ -93,7 +93,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		ServerCore.addServerLifecycleListener(this);
 		JBossServer[] servers = JBossServerCore.getAllJBossServers();
 		for( int i = 0; i < servers.length; i++ ) {
-			getModel(servers[i].getServer().getId());
+			getModel(servers[i].getServer().getId(), true);
 		}
 	}
 	
@@ -104,15 +104,14 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	 * @return
 	 */
 	public ServerProcessModelEntity getModel(String key) {
-		return getModel(key, true);
+		return getModel(key, false);
 	}
 	
 	
-	public ServerProcessModelEntity getModel(String key, boolean create) {
+	private ServerProcessModelEntity getModel(String key, boolean create) {
 		Object o = map.get(key);
 		if( o == null ) {
 			if( !create ) return null;
-
 			o = new ServerProcessModelEntity(key);
 			map.put(key, (ServerProcessModelEntity)o);
 			processModelChanged((ServerProcessModelEntity)o);

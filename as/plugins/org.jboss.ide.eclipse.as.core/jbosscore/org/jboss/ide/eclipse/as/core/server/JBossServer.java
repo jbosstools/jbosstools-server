@@ -130,7 +130,7 @@ public class JBossServer extends ServerDelegate {
 	}
 
 	public ServerProcessModelEntity getProcessModel() {
-		return ServerProcessModel.getDefault().getModel(getServer().getId(), true);
+		return ServerProcessModel.getDefault().getModel(getServer().getId());
 	}
 	
 	public ServerDescriptorModel getDescriptorModel() {

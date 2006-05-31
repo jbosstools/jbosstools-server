@@ -1,7 +1,7 @@
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
@@ -25,11 +25,13 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	private int current = 0;
 	
 	private boolean expectedState;
+	private boolean startProcessesTerminated = false;
 	private ProcessData[] processDatas = new ProcessData[0];
 	
 	private JBossServerBehavior behavior;
 	
 	private ProcessLogEvent eventLog;
+	private ServerProcessModelEntity ent;
 	
 	
 	public ServerStateChecker(JBossServerBehavior behavior, boolean expectedState) {
@@ -44,8 +46,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		String args = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor " + 
 						"get \"jboss.system:type=Server\" Started";
 		
-		ServerProcessModelEntity ent = 
-			ServerProcessModel.getDefault().getModel(jbServer.getServer().getId());
+		ent =  ServerProcessModel.getDefault().getModel(jbServer.getServer().getId());
 
 		
 		// To be sent to the log 
@@ -75,14 +76,25 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		boolean success = (expectedState && twiddleResults == UP) || (!expectedState && twiddleResults == DOWN);
 		String text = "Server " + (success ? "is now " : "failed to ") 
 		+ (expectedState ? "started " : "shut down");
-		
 		eventLog.addChild(text, state, ProcessLogEvent.ADD_END);
+
+		
+		if( expectedState == DOWN && success ) {
+			// wait until the processes are actually terminated too.
+			while( !startProcessesTerminated && current < max ) {
+				try {
+					current += delay;
+					Thread.sleep(delay);
+				} catch(InterruptedException ie) {
+				}
+			}
+		}
+
 		eventLog.setComplete();
 		ent.getEventLog().branchChanged();
 		
 		behavior.setServerState(expectedState, twiddleResults);
 		ent.removeSPListener(this);
-		
 		
 	}
 
@@ -148,6 +160,19 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 					processDatas[i].startListening();
 				}
 				this.processDatas = processDatas; 
+			}
+		} else if( event.getProcessType().equals(ServerProcessModel.TERMINATED_PROCESSES)) {
+			ProcessData[] datas = ent.getProcessDatas(ServerProcessModel.START_PROCESSES);
+			if( datas.length == 0 ) {
+				this.startProcessesTerminated = true;
+			} else {
+				IProcess[] p = new IProcess[datas.length];
+				for( int i = 0; i < datas.length; i++ ) {
+					p[i]=datas[i].getProcess();
+				}
+				if( ServerProcessModel.allProcessesTerminated(p)) {
+					this.startProcessesTerminated = true;
+				}
 			}
 		}
 	}

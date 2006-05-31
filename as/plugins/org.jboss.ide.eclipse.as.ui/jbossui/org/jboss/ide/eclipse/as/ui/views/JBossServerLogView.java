@@ -102,6 +102,7 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 			if( obj instanceof ServerProcessModelEntity) {
 				String id = ((ServerProcessModelEntity)obj).getServerID(); 
 				IServer server = ServerCore.findServer(id);
+				if( server == null ) return "DELETED";
 				Image image = ImageResource.getImage(server.getServerType().getId());
 				return server == null ? "Server: " + id : server.getName();
 			}
@@ -111,6 +112,7 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 			if( obj instanceof ServerProcessModelEntity) {
 				String id = ((ServerProcessModelEntity)obj).getServerID(); 
 				IServer server = ServerCore.findServer(id);
+				if( server == null ) return null;
 				Image image = ImageResource.getImage(server.getServerType().getId());
 				return image;
 			}
