@@ -51,7 +51,7 @@
             vendor="%providerName"
             class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
             description="%jboss.version.32.description"
-            name="%jboss.version.32.name"
+            name="runtime32name"
             id="org.jboss.ide.eclipse.as.runtime.32"
             version="%jboss.version.32.version">
          <moduleType
@@ -71,7 +71,7 @@
              vendor="%providerName"
              class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
              description="%jboss.version.40.description"
-             name="%jboss.version.40.name"
+             name="runtime40Name"
              id="org.jboss.ide.eclipse.as.runtime.40"
              version="%jboss.version.40.version">
           <moduleType
