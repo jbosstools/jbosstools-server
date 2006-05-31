@@ -7,9 +7,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
+import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
-import org.eclipse.jdt.internal.debug.ui.JDIDebugUIPlugin;
-import org.eclipse.jdt.internal.debug.ui.launcher.LauncherMessages;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
@@ -17,7 +16,6 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.core.util.RuntimeConfigUtil;
 
 
@@ -42,8 +40,8 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 		tabs[i++].setLaunchConfigurationDialog(dialog);
 //		tabs[i] = new JavaClasspathTab();
 //		tabs[i++].setLaunchConfigurationDialog(dialog);
-//		tabs[i] = new SourceLookupTab();
-//		tabs[i++].setLaunchConfigurationDialog(dialog);
+		tabs[i] = new SourceLookupTab();
+		tabs[i++].setLaunchConfigurationDialog(dialog);
 //		tabs[i] = new EnvironmentTab();
 //		tabs[i++].setLaunchConfigurationDialog(dialog);
 //		tabs[i] = new JavaJRETab();

@@ -91,12 +91,13 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate"
-            public="true"
             category="JBoss"
-            name="JBoss Application Server"
+            delegate="org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate"
+            id="org.jboss.ide.eclipse.as.core.jbossLaunch"
             modes="run,debug"
-            id="org.jboss.ide.eclipse.as.core.jbossLaunch"/>
+            name="JBoss Application Server"
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
    </extension>
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
