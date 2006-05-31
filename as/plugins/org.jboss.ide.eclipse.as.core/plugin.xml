@@ -173,9 +173,7 @@
    </extension>
    <extension
          point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
-      <factory
-            id="org.jboss.ide.eclipse.as.core.factory.aopFactory"
-            priority="5"/>
+      <factory id="org.jboss.ide.eclipse.as.core.factory.aopFactory"/>
       <factory id="org.jboss.ide.eclipse.as.core.factory.ejbFactory"/>
       <factory id="org.jboss.ide.eclipse.as.core.factory.warFactory"/>
       <factory id="org.jboss.ide.eclipse.as.core.factory.earFactory"/>
