@@ -10,7 +10,9 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -22,6 +24,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
@@ -39,13 +42,13 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEventRoot;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 
 
 public class JBossServerLogView extends ViewPart implements IServerLogListener {
 	private TreeViewer viewer;
-	private Action clearAllLogsAction, removeFromLog;
+	private Action clearAllLogsAction, removeFromLogAction, twiddleAction;
 	private Action doubleClickAction;
 
 	class ViewContentProvider implements IStructuredContentProvider, 
@@ -208,14 +211,28 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 	 * @param manager
 	 */
 	private void fillContextMenu(IMenuManager manager) {
+		manager.add(clearAllLogsAction);
+		manager.add(new Separator());
+
 		ISelection sel = viewer.getSelection();
 		if( sel instanceof IStructuredSelection ) {
 			IStructuredSelection sel2 = (IStructuredSelection)sel;
 			if( sel2.size() > 0 ) {
-				manager.add(removeFromLog);
+				manager.add(removeFromLogAction);
+			}
+			if( sel2.size() == 1 ) {
+				Object o = sel2.getFirstElement();
+				if( o instanceof ServerProcessModelEntity ) {
+					String sid = ((ServerProcessModelEntity)o).getServerID();
+					IServer server = ServerCore.findServer(sid);
+					if( server != null) {
+						twiddleAction.setEnabled(server.getServerState() == IServer.STATE_STARTED);
+						manager.add(twiddleAction);
+					}
+						
+				}
 			}
 		}
-		manager.add(clearAllLogsAction);
 		manager.add(new Separator());
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -242,7 +259,7 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 			getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		
 		
-		removeFromLog = new Action() {
+		removeFromLogAction = new Action() {
 			public void run() {
 				boolean changed = false;
 				ISelection selection = viewer.getSelection();
@@ -264,21 +281,33 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 				}
 			}
 		};
-		removeFromLog.setText("Remove From Log");
-		removeFromLog.setText("Remove From Log");
-		removeFromLog.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
+		removeFromLogAction.setText("Remove From Log");
+		removeFromLogAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().
 				getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
 		
+		
+		twiddleAction  = new Action() {
+			public void run() {
+				Dialog dialog = new TwiddleDialog(viewer.getTree().getShell(), 
+						((IStructuredSelection)viewer.getSelection()));
+				dialog.open();
+			}
+		};
+		twiddleAction.setText("Twiddle");
+		twiddleAction.setImageDescriptor(new ViewerImageDescriptor(
+				JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE)
+		));
+				
 		doubleClickAction = new Action() {
 			public void run() {
-				ISelection selection = viewer.getSelection();
-				Object obj = ((IStructuredSelection)selection).getFirstElement();
-				if( obj instanceof ProcessLogEvent) {
-					ProcessLogEvent e = (ProcessLogEvent)obj;
-					showMessage("Object is " + e.getText() + " with type " + e.getEventType());
-				} else {
-					showMessage("Double-click detected on "+obj.toString());
-				}
+//				ISelection selection = viewer.getSelection();
+//				Object obj = ((IStructuredSelection)selection).getFirstElement();
+//				if( obj instanceof ProcessLogEvent) {
+//					ProcessLogEvent e = (ProcessLogEvent)obj;
+//					showMessage("Object is " + e.getText() + " with type " + e.getEventType());
+//				} else {
+//					showMessage("Double-click detected on "+obj.toString());
+//				}
 			}
 		};
 	}
@@ -309,16 +338,33 @@ public class JBossServerLogView extends ViewPart implements IServerLogListener {
 		getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
 			public void run() {
-				Object[] expanded = viewer.getExpandedElements();
-				ISelection selected = viewer.getSelection();
-				//viewer.setInput(ServerProcessModel.getDefault());
-				viewer.refresh();
-				viewer.setExpandedElements(expanded);
-				viewer.setSelection(selected);
+				try {
+					Object[] expanded = viewer.getExpandedElements();
+					ISelection selected = viewer.getSelection();
+					//viewer.setInput(ServerProcessModel.getDefault());
+					viewer.refresh();
+					viewer.setExpandedElements(expanded);
+					viewer.setSelection(selected);
+				} catch( Exception e) {
+					// do nothing
+				}
 			} 
 			
 			
 		} );
 
 	}
+	
+	public static class ViewerImageDescriptor extends ImageDescriptor {
+
+		private Image i;
+		public ViewerImageDescriptor(Image i) {
+			this.i = i;
+		}
+		public ImageData getImageData() {
+			return i.getImageData();
+		}
+		
+	}
+
 }
