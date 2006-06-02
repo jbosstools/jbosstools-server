@@ -143,7 +143,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 				return true;
 			} 
 			
-			public Integer getResult() {
+			public Object getResult() {
 				if( !found ) 
 					return new Integer(STATE_EXCEPTION);
 				return new Integer(ret);
