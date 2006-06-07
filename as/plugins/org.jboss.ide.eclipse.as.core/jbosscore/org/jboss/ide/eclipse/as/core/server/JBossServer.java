@@ -28,6 +28,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerPort;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -75,6 +76,11 @@ public class JBossServer extends ServerDelegate {
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		debug("saveConfiguration");
 		rtConfig.save();
+		
+		// Re-publish in case the configuration change has not been published yet.
+		PublishServerJob publishJob = new PublishServerJob(getServer(), IServer.PUBLISH_INCREMENTAL, false);
+		publishJob.schedule();
+
 	}
 
 	public void configurationChanged() {
@@ -131,18 +137,13 @@ public class JBossServer extends ServerDelegate {
 	
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
+		
+		// Do nothing for now, just display to know I've been called. 
+		
 		if( add == null ) add = new IModule[0];
 		if( remove == null ) add = new IModule[0];
 		
 		debug("****** modifyModules, " + add.length + " added, " + remove.length + " removed.");
-		Object o = getServer().loadAdapter(JBossServerBehavior.class, monitor);
-		if( o != null ) {
-			JBossServerBehavior behavior = (JBossServerBehavior)o;
-			behavior.publishStart(monitor);
-			behavior.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.REMOVED, remove, monitor);
-			behavior.publishModule(IServer.PUBLISH_INCREMENTAL, ServerBehaviourDelegate.ADDED, add, monitor);
-			behavior.publishFinish(monitor);
-		}
 	}
 	
 	public ServerPort[] getServerPorts() {
