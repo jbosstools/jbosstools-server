@@ -49,7 +49,7 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 	public PackagedPublisher(JBossServer server, JBossServerBehavior behavior) {
 		this.server = server;
 		this.behavior = behavior;
-		this.log = new ServerProcessLog.ProcessLogEvent("Parent", -2);
+		this.log = new ServerProcessLog.ProcessLogEvent("Parent", ProcessLogEvent.UNKNOWN);
 		publishState = IServer.PUBLISH_STATE_UNKNOWN;
 	}
 

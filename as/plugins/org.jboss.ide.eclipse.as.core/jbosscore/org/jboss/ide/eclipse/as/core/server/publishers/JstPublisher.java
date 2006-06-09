@@ -22,18 +22,32 @@
 package org.jboss.ide.eclipse.as.core.server.publishers;
 
 import java.net.URL;
+import java.util.Properties;
 
-import org.eclipse.ant.core.AntRunner;
+import org.eclipse.ant.internal.ui.IAntUIConstants;
+import org.eclipse.ant.internal.ui.launchConfigurations.IAntLaunchConfigurationConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
+import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.core.PublishUtil;
 import org.eclipse.jst.server.generic.core.internal.publishers.AbstractModuleAssembler;
+import org.eclipse.ui.externaltools.internal.model.IExternalToolConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
@@ -41,6 +55,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessLog;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
@@ -55,9 +70,11 @@ public class JstPublisher implements IJbossServerPublisher {
 	
 	private int state;
 	private JBossServer server;
+	private ProcessLogEvent log;
 	public JstPublisher(JBossServer server) {
 		this.server = server;
 		state = IServer.PUBLISH_STATE_UNKNOWN;
+		this.log = new ServerProcessLog.ProcessLogEvent("Parent", ProcessLogEvent.UNKNOWN);
 	}
 
     public void publishModule(int kind, int deltaKind, IModule[] module,
@@ -65,8 +82,11 @@ public class JstPublisher implements IJbossServerPublisher {
     	ASDebug.p("Publishing with kind,deltakind = "  + kind + "," + deltaKind, this);
     	checkClosed(module);
         if(ServerBehaviourDelegate.REMOVED == deltaKind){
-            removeFromServer(module,monitor);
-        } else {
+        	JBossAntPublisher publisher = new JBossAntPublisher();
+            publisher.initialize(module,server);
+            publisher.unpublish(monitor);
+        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind ){
+        	// if there's no change, do nothing. Otherwise, on change or add, re-publish
         	JBossAntPublisher publisher = new JBossAntPublisher();
             publisher.initialize(module,server);
             publisher.publish(monitor);
@@ -82,12 +102,8 @@ public class JstPublisher implements IJbossServerPublisher {
     	}
     }
 
-    private void removeFromServer(IModule[] module, IProgressMonitor monitor) throws CoreException {
-    }
-
 	public ProcessLogEvent[] getLogEvents() {
-		// TODO Auto-generated method stub
-		return new ProcessLogEvent[0];
+		return log.getChildren();
 	}
 
 	public int getPublishState() {
@@ -95,7 +111,7 @@ public class JstPublisher implements IJbossServerPublisher {
 	}
 
 	
-	public static class JBossAntPublisher extends AbstractModuleAssembler {
+	public class JBossAntPublisher extends AbstractModuleAssembler {
 		
 		public static final int WAR = 1;
 		public static final int EAR = 2;
@@ -122,7 +138,7 @@ public class JstPublisher implements IJbossServerPublisher {
 			}
 	    }
 	    
-		private static boolean isModuleType(IModule module, String moduleTypeId){	
+		private boolean isModuleType(IModule module, String moduleTypeId){	
 			if(module.getModuleType()!=null && moduleTypeId.equals(module.getModuleType().getId()))
 				return true;
 			return false;
@@ -130,33 +146,80 @@ public class JstPublisher implements IJbossServerPublisher {
 
 		
 		public IStatus[] publish(IProgressMonitor monitor) throws CoreException {
+			log.addChild("Build and Publish JST module: " + module[0].getName(), ProcessLogEvent.SERVER_PUBLISH);
 			assemble(monitor);
         	String file = computeBuildFile();
 			runAnt(file, BUILD_AND_PUBLISH, monitor);
+			state = IServer.PUBLISH_STATE_NONE;
 			return null;
 		}
 		
-		
+		public IStatus[] unpublish(IProgressMonitor monitor) throws CoreException {
+			log.addChild("Undeploy JST module: " + module[0].getName(), ProcessLogEvent.SERVER_UNPUBLISH);
+        	String file = computeBuildFile();
+        	runAnt(file, UNDEPLOY, monitor);
+			return null;
+		}
+		               
+		               
 		private void runAnt(String file, int action, IProgressMonitor monitor)throws CoreException {
-			AntRunner runner = new AntRunner();
-			runner.setBuildFileLocation(file);
-			runner.setExecutionTargets(getTargets(module[0], BUILD_AND_PUBLISH));
-			runner.setArguments(getArguments(module[0]));
-			runner.run();
-		}
-		
-		private String getArguments(IModule module) {
-			String args = "";
-			args += " -Dproject.working.dir=" + getProjectWorkingLocation().toString();
-			args += " -Dmodule.name=" + module.getName();
-			args += " -Dmodule.dir=" + getModuleWorkingDir().toString();
-			args += " -Dserver.publish.dir=" + jbServer.getRuntimeConfiguration().getDeployDirectory();
-
 			
-			return args;
+			String targets = getTargets(module[0], action);
+			
+			Properties props = new Properties();
+			props.put("project.working.dir", getProjectWorkingLocation().toString());
+			props.put("module.name", module[0].getName());
+			props.put("module.dir", getModuleWorkingDir().toString());
+			props.put("server.publish.dir", jbServer.getRuntimeConfiguration().getDeployDirectory());
+
+//			String args = getArguments(module[0]);			
+//			AntRunner runner = new AntRunner();
+//			runner.setBuildFileLocation(file);
+//			runner.setExecutionTargets(targets);
+//			runner.setArguments(args);
+//			runner.run();
+			
+			
+			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+			ILaunchConfigurationType type = launchManager.getLaunchConfigurationType(
+					IAntLaunchConfigurationConstants.ID_ANT_LAUNCH_CONFIGURATION_TYPE);
+			
+			if(type==null){
+				IStatus s = new Status(IStatus.ERROR,JBossServerCorePlugin.PLUGIN_ID,0,
+						"Ant Launcher Missing",null);
+				throw new CoreException(s);
+			}
+			
+			ILaunchConfigurationWorkingCopy wc= type.newInstance(null,"module publisher"); 
+			wc.setContainer(null);
+			wc.setAttribute(IExternalToolConstants.ATTR_LOCATION, file);
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,"org.eclipse.ant.ui.AntClasspathProvider"); 
+			wc.setAttribute(IAntLaunchConfigurationConstants.ATTR_ANT_TARGETS,targets);
+			wc.setAttribute(IAntLaunchConfigurationConstants.ATTR_ANT_PROPERTIES,props);
+			wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,false);
+			wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE,true);
+			wc.setAttribute(IDebugUIConstants.ATTR_PRIVATE,true);
+			
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_SOURCE_PATH_PROVIDER, "org.eclipse.ant.ui.AntClasspathProvider"); 
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "org.eclipse.ant.internal.ui.antsupport.InternalAntRunner"); 
+			//wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
+			wc.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID, IAntUIConstants.REMOTE_ANT_PROCESS_FACTORY_ID);
+			
+			ILaunchConfiguration launchConfig = wc.doSave();
+	        ILaunch launch = launchConfig.launch("run",monitor);
+//			IProcess[] p = launch.getProcesses();
+//			IStreamListener listener = new IStreamListener() {
+//				public void streamAppended(String text, IStreamMonitor monitor) {
+//				}
+//			};
+//			//p[0].getStreamsProxy().getOutputStreamMonitor().addListener(listener);
+//			//p[0].getStreamsProxy().getErrorStreamMonitor().addListener(listener);
+//			
+			
 		}
 		
-		private static String[] getTargets(IModule module, int action ) {
+		
+		private String getTargets(IModule module, int action ) {
 			String moduleType = module.getModuleType().getId();
 			String targetType = "";
 			String target = "";
@@ -174,7 +237,7 @@ public class JstPublisher implements IJbossServerPublisher {
 				target = "undeploy." + targetType;
 			}
 			
-			return new String[] { target };
+			return target;
 		}
 		
 		public String computeBuildFile() {
@@ -212,8 +275,8 @@ public class JstPublisher implements IJbossServerPublisher {
 		}
 		
 		protected void assembleEar(IProgressMonitor monitor) throws CoreException {
-			IPath parent =copyModule(fModule,monitor);
-			IEnterpriseApplication earModule = (IEnterpriseApplication)fModule.loadAdapter(IEnterpriseApplication.class, monitor);
+			IPath parent =copyModule(module[0],monitor);
+			IEnterpriseApplication earModule = (IEnterpriseApplication)module[0].loadAdapter(IEnterpriseApplication.class, monitor);
 			IModule[] childModules = earModule.getModules();
 			for (int i = 0; i < childModules.length; i++) {
 				IModule module = childModules[i];

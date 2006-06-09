@@ -22,10 +22,8 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
