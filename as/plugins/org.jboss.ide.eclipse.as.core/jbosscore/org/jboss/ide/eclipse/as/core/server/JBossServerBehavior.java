@@ -50,6 +50,9 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
+import org.jboss.ide.eclipse.as.core.server.publishers.IJbossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.server.publishers.PackagedPublisher;
 import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
@@ -348,7 +351,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 * but I first check my ModuleModel to see if I have any pressing / overriding
 	 * designations. 
 	 */
-	protected IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
+	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
 		// if my model has any reference to them, use that.
 		ModuleModel model = ModuleModel.getDefault();
 		IModuleResourceDelta[] deltas = model.getDeltaModel().getRecentDeltas(module, getServer());
@@ -360,151 +363,41 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	
 	
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-			if( module.length == 0 ) return;
+		if( module.length == 0 ) return;
+			
+		IJbossServerPublisher publisher;
 		
-		ASDebug.p("(kind, deltakind)=(" + kind + "," + deltaKind + ") : " + module, this);
-		// delta = [no_change, added, changed, removed] = [0,1,2,3]
-		// kind = [incremental, full, auto, clean] = [1,2,3,4]
-		
-		if( deltaKind == ServerBehaviourDelegate.NO_CHANGE ) {
-			return;
-		}
-		
-		if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
-			unPublishModule(module, monitor);
-			return;
-		}
-		
-		if( deltaKind == ServerBehaviourDelegate.ADDED ) {
-			publishModule(module, monitor);
-			return;
-		}
-		
-		/*
-		 * This part will require oversight later. There is no guarentee this 
-		 * will remain working if full deltas are implemented. Right now
-		 * it basically just says to either republish the entire module or not. 
+		/**
+		 * If our modules are already packaged as ejb jars, wars, aop files, 
+		 * then go ahead and publish
 		 */
-		
-		if( deltaKind == ServerBehaviourDelegate.CHANGED) {
-			boolean republishRequired = false;
-			IModuleResourceDelta[] deltas = getPublishedResourceDelta(module);
-			
-			if( deltas.length == 0 ) {
-				// If it's changed but we don't know the changes...
-				republishRequired = true;
-			} else {
-				for( int i = 0; i < deltas.length; i++ ) {
-					int k = deltas[i].getKind();
-					if( k == IModuleResourceDelta.ADDED || k == IModuleResourceDelta.CHANGED) {
-						// if anything's been added or changed, republish.
-						republishRequired = true;
-					}
-				}
-			}
-			
-			// Now if we're not republishing, we're deleting.
-			if( republishRequired ) {
-				publishModule(module, monitor);
-			} else {
-				// The resource associated with this module has been deleted.
-				// What to do???  For now ignore it. Only if the module
-				// is removed from the server do you specifically delete it.
-				
-				//unPublishModule(module, monitor);
-			}
-			
+		if( ModuleModel.arePackagedModules(module)) {
+			publisher = new PackagedPublisher(getJBossServer(), this);
+		} else {
+			publisher = new JstPublisher(getJBossServer());
 		}
-
-		//ASDebug.p("publish done", this);
+		
+		
+		publisher.publishModule(kind, deltaKind, module, monitor);
+		setModulePublishState(module, publisher.getPublishState());
+		log.addChildren(publisher.getLogEvents());
 	}
+	
+	
+
+	
 	
 	/**
-	 * The module has been unambiguously removed from the server model.
-	 * Proceed to remove it from the actual server directory.
+	 * Logging information for log listeners
 	 */
-	protected void unPublishModule(IModule[] module, IProgressMonitor monitor) {
-		ASDebug.p("UnPublishing " + module.length + " modules", this);
-		Object o;
-		JBossModuleDelegate delegate;
-		
-		for( int i = 0; i < module.length; i++ ) {
-			// delete this module
-			String deployDirectory = getJBossServer().getRuntimeConfiguration().getDeployDirectory();
-			o = module[i].getAdapter(JBossModuleDelegate.class);
-			if( o == null ) {
-				o = module[i].loadAdapter(JBossModuleDelegate.class, null);
-				if( o == null ) 
-					continue;
-			}
-			
-			delegate = (JBossModuleDelegate)o;
-			String dest = new Path(deployDirectory).append(delegate.getResourceName()).toOSString();
-			ASDebug.p("Deleting fine from server: " + dest, this);
-			try {
-				Path destName = new Path(dest);
-				String config = getJBossServer().getRuntimeConfiguration().getJbossConfiguration();
-				
-				log.addChild("Removing " + destName.lastSegment() + " from the " + 
-						config + "/deploy directory", ProcessLogEvent.SERVER_UNPUBLISH );
-				
-
-				File destFile = new File(dest);
-				destFile.delete();
-			
-				// tell the model you're aware of the change
-				setModulePublishState(module, IServer.PUBLISH_STATE_NONE);
-				ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], getServer().getId());
-			} catch( Exception e ) {
-				ASDebug.p("ERROR in unpublish", this);
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	
-	protected void publishModule(IModule[] module, IProgressMonitor monitor) {
-		
-		JBossModuleDelegate delegate = null;
-		Object o = null;
-		String deployDirectory = getJBossServer().getRuntimeConfiguration().getDeployDirectory();
-		
-		// Ignore anything that's not a jbossmodule
-		for( int i = 0; i < module.length; i++ ) {
-			o = module[i].getAdapter(JBossModuleDelegate.class);
-			if( o == null ) {
-				o = module[i].loadAdapter(JBossModuleDelegate.class, null);
-				if( o == null ) 
-					continue;
-			}
-			
-			delegate = (JBossModuleDelegate)o;
-			String src = delegate.getResourcePath();
-			String dest = new Path(deployDirectory).append(delegate.getResourceName()).toOSString();
-			
-			Path srcName = new Path(src);
-			String config = getJBossServer().getRuntimeConfiguration().getJbossConfiguration();
-			
-			log.addChild("Copying " + srcName.lastSegment() + " to the " + 
-					config + "/deploy directory", ProcessLogEvent.SERVER_PUBLISH );
-			
-			
-			FileUtil.copyFile(src, dest);
-			
-			// tell everyone we need no more changes right now
-			setModulePublishState(module, IServer.PUBLISH_STATE_NONE);
-			ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], getServer().getId());
-
-			ASDebug.p("publishing module: " + module[i].getId(), this);
-		}
-	}
-	
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		ServerProcessModelEntity e = ServerProcessModel.getDefault().getModel(getServer().getId());
 		log = e.getEventLog().newMajorEvent("Publish Event", ProcessLogEvent.SERVER_PUBLISH);
 	}
 
+	/**
+	 * Logging information for log listeners
+	 */
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		if( log.getChildren().length > 0 ) {
 			log.getRoot().branchChanged();
