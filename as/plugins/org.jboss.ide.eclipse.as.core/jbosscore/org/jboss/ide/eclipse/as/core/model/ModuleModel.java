@@ -123,6 +123,21 @@ public class ModuleModel implements IResourceChangeListener{
 		init();
 	}
 	
+	public static boolean isPackagedModule(IModule module) {
+		if( "jboss.web".equals(module.getModuleType().getId())) return true;
+		if( "jboss.ear".equals(module.getModuleType().getId())) return true;
+		if( "jboss.ejb".equals(module.getModuleType().getId())) return true;
+		if( "jboss.aop".equals(module.getModuleType().getId())) return true;
+		return false;
+	}
+	
+	public static boolean arePackagedModules(IModule[] modules) {
+		for( int i = 0; i < modules.length; i++ ) {
+			if( !isPackagedModule(modules[i])) 
+				return false;
+		}
+		return true;
+	}
 
 	private void loadAcceptableFactories() {
 		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
@@ -136,10 +151,7 @@ public class ModuleModel implements IResourceChangeListener{
 				}
 			}
 		}
-		
-		
 	}
-	
 	
 	private String[] loadJBossFactoryIDs() {
 		
