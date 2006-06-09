@@ -19,47 +19,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.client.verifiers;
+package org.jboss.ide.eclipse.as.core.client;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
-
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 /**
- * A deployable object
+ * This client will only copy to the deploy directory,
+ * which is actually a side effect of the run-on-server action.
+ * 
+ * Therefore, this client does absolutely nothing.
+ * 
+ * It only shows up on the list for files that are deployable via 
+ * copying into a deploy directory. 
+ * 
  * @author rstryker
  *
  */
-public class AopDeploymentVerifier implements IJbossDeploymentVerifier{
+public class DoNothingClient extends ClientDelegate {
 
-	private JBossModuleDelegate delegate;
-	public AopDeploymentVerifier(JBossModuleDelegate delegate) {
-		this.delegate = delegate;
-	}
-	
-	
-	public boolean supportsDeploy(IServer server, String launchMode) {
-		if( JBossServerCore.getServer(server) == null ) {
-			return false;
-		}
-		return true;
+	public DoNothingClient() {
+		super();
 	}
 
-	public boolean supportsVerify(IServer server, String launchMode) {
-		if( JBossServerCore.getServer(server) == null ) {
-			return false;
-		}
-		return true;
+	public boolean supports(IServer server, Object launchable, String launchMode) {
+		if( JBossServerCore.getServer(server) != null )
+			return true;
+		return false;
 	}
 
-	public IStatus verifyDeployed(JBossServer server, String launchMode, ILaunch launch) {
-		// TODO Auto-generated method stub
-
-		return null;
+	public IStatus launch(IServer server, Object launchable, String launchMode,
+			ILaunch launch) {
+		
+		// Do nothing
+		
+		ASDebug.p("Published content!", this);
+		return new Status(IStatus.OK, ServerPlugin.PLUGIN_ID, 0, "A-OK", null);
 	}
-	
+
 }

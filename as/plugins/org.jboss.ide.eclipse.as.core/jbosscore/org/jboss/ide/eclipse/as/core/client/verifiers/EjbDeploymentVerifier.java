@@ -22,19 +22,15 @@
 package org.jboss.ide.eclipse.as.core.client.verifiers;
 
 import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.client.ICopyAsLaunch;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.module.factory.EjbModuleFactory.EjbModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
-public class EjbDeploymentVerifier extends AbstractDeploymentVerifier implements ICopyAsLaunch  {
+public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 	
 	public EjbDeploymentVerifier(JBossModuleDelegate delegate) {
 		super(delegate);

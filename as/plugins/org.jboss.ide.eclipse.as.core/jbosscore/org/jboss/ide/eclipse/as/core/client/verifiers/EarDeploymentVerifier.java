@@ -22,14 +22,11 @@
 package org.jboss.ide.eclipse.as.core.client.verifiers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.client.ICopyAsLaunch;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
@@ -39,7 +36,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModel
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
-public class EarDeploymentVerifier extends AbstractDeploymentVerifier implements ICopyAsLaunch {
+public class EarDeploymentVerifier extends AbstractDeploymentVerifier {
 
 	private String argsStart;
 	private ArrayList newProcesses;

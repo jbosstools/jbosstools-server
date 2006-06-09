@@ -27,7 +27,6 @@ import java.util.Iterator;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.client.ICopyAsLaunch;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
@@ -37,7 +36,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModel
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
-public class WarDeploymentVerifier  extends AbstractDeploymentVerifier implements ICopyAsLaunch  {
+public class WarDeploymentVerifier  extends AbstractDeploymentVerifier {
 
 	private String argsStart;
 	private ArrayList newProcesses;
