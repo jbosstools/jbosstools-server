@@ -41,9 +41,7 @@ import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 
 /**
- * This class should have no state whatseoever. Merely factory methods.
  * @author rstryker
- *
  */
 public class AopModuleFactory extends JBossModuleFactory {
 	
@@ -63,31 +61,14 @@ public class AopModuleFactory extends JBossModuleFactory {
 	protected IModule acceptAddition(IResource resource) {
 		if( !supports(resource))
 			return null;
-		
 		return null;
-		
-			
 	}
 
 	public void initialize() {
 	}
 
 	public boolean supports(IResource resource) {
-		if( resource.getFileExtension() == null ) return false;
-		//if( !"jar".equals(resource.getFileExtension())) return false;
-		
-		if( !resource.exists()) return false;
-
-		try {
-			File f = resource.getLocation().toFile();
-			JarFile jf = new JarFile(f);
-			
-			JarEntry entry = jf.getJarEntry(AOP_DESCRIPTOR);
-			if( entry == null ) return false;
-		} catch( IOException ioe ) {
-			return false;
-		}
-		return true;
+		return false;
 	}
 
 	
