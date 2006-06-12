@@ -30,6 +30,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.module.artifact,
  org.jboss.ide.eclipse.as.core.module.factory,
  org.jboss.ide.eclipse.as.core.server,
+ org.jboss.ide.eclipse.as.core.server.publishers,
  org.jboss.ide.eclipse.as.core.server.runtime,
  org.jboss.ide.eclipse.as.core.util
 Bundle-ClassPath: dom4j-1.6.1.jar,
