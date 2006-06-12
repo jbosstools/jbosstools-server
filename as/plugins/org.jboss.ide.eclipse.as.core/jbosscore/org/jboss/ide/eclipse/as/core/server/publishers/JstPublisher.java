@@ -38,17 +38,16 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.IStreamListener;
-import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.core.PublishUtil;
+import org.eclipse.jst.server.core.internal.JavaServerPlugin;
 import org.eclipse.jst.server.generic.core.internal.publishers.AbstractModuleAssembler;
 import org.eclipse.ui.externaltools.internal.model.IExternalToolConstants;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
@@ -250,42 +249,70 @@ public class JstPublisher implements IJbossServerPublisher {
 			return null;
 		}
 		
-		public void assemble(IProgressMonitor monitor) throws CoreException {
-			switch( assembleType ) {
-			case WAR:
-				assembleWar(monitor);
-				break;
-			case EAR:
-				assembleEar(monitor);
-				break;
-			case OTHER:
-				assembleOther(monitor);
-				break;
+		 
+		private String getDUName(IModule module) {
+			IModuleType moduleType = module.getModuleType();
+
+			if (moduleType == null)
+				return module.getName() + ".jar";
+
+			if ("jst.web".equals(moduleType.getId())) {
+
+				IWebModule webmodule = (IWebModule) module.loadAdapter(
+						IWebModule.class, null);
+				return webmodule.getURI(module);
 			}
+
+			if ("jst.ear".equals(moduleType.getId()))
+				return module.getName() + ".ear";
+
+			if ("jst.connector".equals(moduleType.getId()))
+				return module.getName() + ".rar";
+
+			return module.getName() + ".jar";
 		}
 		
-		protected void assembleWar(IProgressMonitor monitor) throws CoreException {
+		public IPath assemble(IProgressMonitor monitor) throws CoreException {
+			switch( assembleType ) {
+			case WAR:
+				return assembleWar(monitor);
+			case EAR:
+				return assembleEar(monitor);
+			case OTHER:
+				return assembleOther(monitor);
+			}
+			return null;
+		}
+		
+		protected IPath assembleWar(IProgressMonitor monitor) throws CoreException {
 			IPath parent =copyModule(module[0],monitor);
 			IWebModule webModule = (IWebModule)module[0].loadAdapter(IWebModule.class, monitor);
 			IModule[] childModules = webModule.getModules();
+			IPath webPath = parent.append("WEB-INF").append("lib");
+			
 			for (int i = 0; i < childModules.length; i++) {
 				IModule module = childModules[i];
-				packModule(module, parent.append("WEB-INF").append("lib"));
+				packModule(module, getDUName(module), webPath);
 			}
+			
+			return webPath;
 		}
 		
-		protected void assembleEar(IProgressMonitor monitor) throws CoreException {
+		protected IPath assembleEar(IProgressMonitor monitor) throws CoreException {
 			IPath parent =copyModule(module[0],monitor);
 			IEnterpriseApplication earModule = (IEnterpriseApplication)module[0].loadAdapter(IEnterpriseApplication.class, monitor);
 			IModule[] childModules = earModule.getModules();
+			
 			for (int i = 0; i < childModules.length; i++) {
 				IModule module = childModules[i];
-				packModule(module, parent);
+				packModule(module, getDUName(module), parent);
 			}
+			return parent;
 		}
 		
-		protected void assembleOther(IProgressMonitor monitor) throws CoreException {
-			copyModule(module[0],monitor);		
+		protected IPath assembleOther(IProgressMonitor monitor) throws CoreException {
+			copyModule(module[0],monitor);
+			return null;
 		}
 	    
 		
