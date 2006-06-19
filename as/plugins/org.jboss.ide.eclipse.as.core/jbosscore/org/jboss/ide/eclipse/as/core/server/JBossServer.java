@@ -76,11 +76,9 @@ public class JBossServer extends ServerDelegate {
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		debug("saveConfiguration");
 		rtConfig.save();
-		
 		// Re-publish in case the configuration change has not been published yet.
 		PublishServerJob publishJob = new PublishServerJob(getServer(), IServer.PUBLISH_INCREMENTAL, false);
 		publishJob.schedule();
-
 	}
 
 	public void configurationChanged() {
@@ -139,11 +137,6 @@ public class JBossServer extends ServerDelegate {
 			IProgressMonitor monitor) throws CoreException {
 		
 		// Do nothing for now, just display to know I've been called. 
-		
-		if( add == null ) add = new IModule[0];
-		if( remove == null ) add = new IModule[0];
-		
-		debug("****** modifyModules, " + add.length + " added, " + remove.length + " removed.");
 	}
 	
 	public ServerPort[] getServerPorts() {

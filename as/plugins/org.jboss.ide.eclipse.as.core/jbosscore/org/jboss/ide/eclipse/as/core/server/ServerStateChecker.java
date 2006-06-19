@@ -23,6 +23,7 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
@@ -119,52 +120,38 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		
 	}
 
-	
+	/**
+	 * Executes the twiddle launch and returns the state of the server
+	 * @param ent
+	 * @param jbServer
+	 * @param args
+	 * @return
+	 */
 	private int getTwiddleResults( ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
 		TwiddleLauncher launcher = new TwiddleLauncher(max-current, delay);
-		ProcessLogEvent launchEvent = launcher.getTwiddleResults(ent, jbServer, args);
+		TwiddleLogEvent launchEvent = launcher.getTwiddleResults(ent, jbServer, args);
 		current += launcher.getDuration();
 		
-		final Boolean found = new Boolean(false);
-		
-		IProcessLogVisitor visitor = new IProcessLogVisitor() {
-			private int ret = -1;
-			private boolean found = false;
-			public boolean visit(ProcessLogEvent event) {
-				if( found ) return false;
-				
-				if( event.getText().startsWith("Started=true")) {
-					found = true;
-					ret = STATE_TRUE;
-				} else if( event.getText().startsWith("Started=false")) {
-					found = true;
-					ret = STATE_FALSE;
-				}
-				return true;
-			} 
-			
-			public Object getResult() {
-				if( !found ) 
-					return new Integer(STATE_EXCEPTION);
-				return new Integer(ret);
-			}
-			
-		};
-		launchEvent.accept( visitor );
-		int retval = ((Integer)visitor.getResult()).intValue(); 
-		
-		// Modify the type from a twiddle execution to one of state
-		if( retval == STATE_EXCEPTION) {
-			launchEvent.setEventType(ProcessLogEvent.SERVER_DOWN);
-		} else if( retval == STATE_TRUE ) {
+		int retval;
+		if( launchEvent.getOut().startsWith("Started=true")) {
 			launchEvent.setEventType(ProcessLogEvent.SERVER_UP);
-		} else if( retval == STATE_FALSE ) {
-			if( expectedState == true ) 
+			launchEvent.setText("Twiddle Launch: Server is up.");
+			retval = STATE_TRUE;
+		} else if(launchEvent.getOut().startsWith("Started=false")) {
+			retval = STATE_FALSE;
+			if( expectedState == true ) {
 				launchEvent.setEventType(ProcessLogEvent.SERVER_STARTING);
-			else 
+				launchEvent.setText("Twiddle Launch: Server still starting.");
+			} else { 
 				launchEvent.setEventType(ProcessLogEvent.SERVER_STOPPING);
+				launchEvent.setText("Twiddle Launch: Server still stopping.");
+			}
+		} else {
+			launchEvent.setEventType(ProcessLogEvent.SERVER_DOWN);
+			retval = STATE_EXCEPTION;
+			launchEvent.setText("Twiddle Launch: Server is down.");
 		}
-		
+
 		eventLog.addChild(launchEvent);
 		if( eventLog.getRoot() != null ) 
 			eventLog.getRoot().branchChanged();

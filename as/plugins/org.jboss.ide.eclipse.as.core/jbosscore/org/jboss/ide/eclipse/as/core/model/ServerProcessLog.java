@@ -187,6 +187,10 @@ public class ServerProcessLog {
 		public void setComplete() {
 			this.complete = true;
 		}
+		
+		public void setText(String text) {
+			this.text = text;
+		}
 
 	}
 	

@@ -28,6 +28,7 @@ import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
@@ -81,41 +82,17 @@ public class WarDeploymentVerifier  extends AbstractDeploymentVerifier {
 		
 		
 		TwiddleLauncher launcher = new TwiddleLauncher(8000, 100);
-		ProcessLogEvent event = launcher.getTwiddleResults(jbServer, serviceNameQuery);
+		TwiddleLogEvent event = launcher.getTwiddleResults(jbServer, serviceNameQuery);
 		
-
-		
-		IProcessLogVisitor visitor = new IProcessLogVisitor() {
-			private ArrayList list = new ArrayList();
-			public Object getResult() {
-				return list;
+		if( !event.isException()) {
+			String out = event.getOut();
+			String[] asArray = out.split("\r\n|\r|\n");
+			for( int i = 0; i < asArray.length; i++ ) {
+				ProcessLogEvent event2 = launcher.getTwiddleResults(jbServer, argsStart + "get \"" + asArray[i] + "\"");
+				logEvent.addChild(event2);
+				logEvent.getRoot().branchChanged();
 			}
-
-			public boolean visit(ProcessLogEvent event) {
-				System.out.println("hey!");
-				ASDebug.p("Visiting " + event.getText() + " with kind " + event.getEventType() + " as compared to " + ProcessLogEvent.STDOUT, this);
-				if( event.getEventType() == ProcessLogEvent.STDOUT) {
-					list.add(event);
-				}
-				return true;
-			} 
-			
-		};
-		event.accept(visitor);
-		logEvent.addChild(event);
-		logEvent.getRoot().branchChanged();
-		
-		Iterator i = ((ArrayList)visitor.getResult()).iterator();
-		while(i.hasNext()) {
-			String serviceArgs = ((ProcessLogEvent)i.next()).getText();
-			ProcessLogEvent event2 = launcher.getTwiddleResults(jbServer, argsStart + "get \"" + serviceArgs + "\"");
-			logEvent.addChild(event2);
-			logEvent.getRoot().branchChanged();
 		}
-		
-		
-		
-		
 	}
 	
 	

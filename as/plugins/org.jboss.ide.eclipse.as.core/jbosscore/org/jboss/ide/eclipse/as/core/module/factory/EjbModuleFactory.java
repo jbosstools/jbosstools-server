@@ -143,7 +143,6 @@ public class EjbModuleFactory extends JBossModuleFactory {
 		public String[] getBeanJNDINames() {
 			// First get all ejb names from the ejb descriptor.
 			ArrayList jndiNames = new ArrayList();
-			
 			String[] ejbNames = getXpathValues(EJB_DESCRIPTOR, "/ejb-jar/enterprise-beans/*/ejb-name");
 			StringPair[] pairs = getEjbJndiPairs();
 			for( int i = 0; i < ejbNames.length; i++ ) {

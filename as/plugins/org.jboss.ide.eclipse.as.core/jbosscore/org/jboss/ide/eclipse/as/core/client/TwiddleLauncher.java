@@ -150,13 +150,13 @@ public class TwiddleLauncher implements IServerProcessListener {
 		current = 0;
 	}
 	
-	public ProcessLogEvent getTwiddleResults(JBossServer jbServer, String args) {
+	public TwiddleLogEvent getTwiddleResults(JBossServer jbServer, String args) {
 		String id = jbServer.getServer().getId();
 		ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(id);
 		return getTwiddleResults(ent, jbServer, args);
 	}
 	
-	public ProcessLogEvent getTwiddleResults(ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
+	public TwiddleLogEvent getTwiddleResults(ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
 		this.processDatas = null;
 		ent.clear(ServerProcessModel.TWIDDLE_PROCESSES);
 		
@@ -192,7 +192,7 @@ public class TwiddleLauncher implements IServerProcessListener {
 			}
 		}
 		
-		ProcessLogEvent event = createTwiddleEvents(args, allTerminated);
+		TwiddleLogEvent event = createTwiddleEvents(args, allTerminated);
 		
 		
 		ent.removeSPListener(this);
@@ -201,56 +201,29 @@ public class TwiddleLauncher implements IServerProcessListener {
 	}
 	
 	
-	private ProcessLogEvent createTwiddleEvents(String args, boolean allTerminated) {
+	private TwiddleLogEvent createTwiddleEvents(String args, boolean allTerminated) {
 		// If there's only one process, we dont need to do all the rest
 		if( processDatas.length == 1 ) {
-			ProcessLogEvent e = new ProcessLogEvent("Twiddle Launch: " + args, ProcessLogEvent.TWIDDLE);
-			if( !processDatas[0].getOut().equals("")) {
-				String out = processDatas[0].getOut();
-				String[] outArray = out.split("\r\n|\r|\n");
-				for( int i = 0; i < outArray.length; i++ ) {
-					e.addChild(outArray[i], ProcessLogEvent.STDOUT);
-				}
-			}
-			if( !processDatas[0].getErr().equals("")) {
-				String err = processDatas[0].getErr();
-				String[] errArray = err.split("\r\n|\r|\n");
-				for( int i = 0; i < errArray.length; i++ ) {
-					e.addChild(errArray[i], ProcessLogEvent.STDOUT);
-				}
-			}
+			TwiddleLogEvent e = new TwiddleLogEvent("Twiddle Launch: " + args, 
+					ProcessLogEvent.TWIDDLE, processDatas[0]);
+//			ProcessLogEvent e = new ProcessLogEvent("Twiddle Launch: " + args, ProcessLogEvent.TWIDDLE);
+//			if( !processDatas[0].getOut().equals("")) {
+//				String out = processDatas[0].getOut();
+//				String[] outArray = out.split("\r\n|\r|\n");
+//				for( int i = 0; i < outArray.length; i++ ) {
+//					e.addChild(outArray[i], ProcessLogEvent.STDOUT);
+//				}
+//			}
+//			if( !processDatas[0].getErr().equals("")) {
+//				String err = processDatas[0].getErr();
+//				String[] errArray = err.split("\r\n|\r|\n");
+//				for( int i = 0; i < errArray.length; i++ ) {
+//					e.addChild(errArray[i], ProcessLogEvent.STDOUT);
+//				}
+//			}
 			return e;
 		}
-		return new ProcessLogEvent("Error in TwiddleLauncher (unexpected response)", ProcessLogEvent.ERROR);
-		/**
-		 * This should never happen with twiddles. I'm
-		 * really tempted to remove it.
-		 */
-		// We have multiple processes so we require more.
-//		ProcessLogEvent[] events = new ProcessLogEvent[processDatas.length];
-//		for( int i = 0; i < processDatas.length; i++ ) {
-//			events[i] = new ProcessLogEvent("Spawned Process " + i, ProcessLogEvent.PROCESS);
-//			
-//			if( !processDatas[i].getOut().equals("")) {
-//				events[i].addChild(processDatas[i].getOut(), ProcessLogEvent.STDOUT);
-//			}
-//			if( !processDatas[i].getErr().equals("")) {
-//				events[i].addChild(processDatas[i].getOut(), ProcessLogEvent.STDERR);
-//			}
-//		}
-//
-//		if( !allTerminated ) { 
-//			ProcessLogEvent[] events2 = new ProcessLogEvent[events.length+1];
-//			System.arraycopy(events, 0, events2, 0, events.length);
-//			events2[events.length] = new ProcessLogEvent("Timeout during twiddle launches. " 
-//					+ "Maximum time alloted exceeded.", ProcessLogEvent.ERROR);
-//			events = events2;
-//		}
-//		
-//		// Now wrap it in one event with the args
-//		ProcessLogEvent launchEvent = new ProcessLogEvent("Twiddle Launch: " + args, ProcessLogEvent.TWIDDLE);
-//		launchEvent.addChildren(events);
-//		return launchEvent;
+		return new TwiddleLogEvent("Error in TwiddleLauncher (unexpected response)", ProcessLogEvent.ERROR, null);
 	}
 	
 	public int getDuration() {
@@ -273,4 +246,28 @@ public class TwiddleLauncher implements IServerProcessListener {
 		}
 	}
 	
+	
+	public static class TwiddleLogEvent extends ProcessLogEvent {
+		
+		private String out;
+		private String err; 
+
+		public TwiddleLogEvent(String text, int eventType, ProcessData data) {
+			super(text, eventType);
+			if( data != null ) {
+				this.out = data.getOut();
+				this.err = data.getErr();
+			}
+		}
+		
+		public String getOut() {
+			return out;
+		}
+		public String getErr() {
+			return err;
+		}
+		public boolean isException() {
+			return false;
+		}
+	}
 }

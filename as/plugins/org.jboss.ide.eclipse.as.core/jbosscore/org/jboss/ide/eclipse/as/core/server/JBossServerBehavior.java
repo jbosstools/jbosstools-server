@@ -21,7 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import java.io.File;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -35,21 +34,17 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jst.server.tomcat.core.internal.FileUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.publishers.IJbossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.server.publishers.PackagedPublisher;
@@ -364,7 +359,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		if( module.length == 0 ) return;
-			
+					
 		IJbossServerPublisher publisher;
 		
 		/**

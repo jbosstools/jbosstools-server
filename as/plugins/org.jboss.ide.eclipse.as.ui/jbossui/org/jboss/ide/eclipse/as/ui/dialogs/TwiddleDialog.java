@@ -50,6 +50,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
@@ -115,13 +116,8 @@ public class TwiddleDialog extends Dialog {
 			public void run() {
 				try {
 					TwiddleLauncher launcher = new TwiddleLauncher(3000, 100);
-					final ProcessLogEvent launchEvent = launcher.getTwiddleResults(spme, jbs, args);
-					ProcessLogEvent[] kids = launchEvent.getChildren();
-					String text = "";
-					for( int i = 0; i < kids.length; i++ ) {
-						text += kids[i].getText() + "\n";
-					}
-					final String s2 = text;
+					final TwiddleLogEvent launchEvent = launcher.getTwiddleResults(spme, jbs, args);
+					final String s2 = launchEvent.getOut();
 					dis.asyncExec(new Runnable() {
 						public void run() {
 							// reset the default button, focus on the query, and 
