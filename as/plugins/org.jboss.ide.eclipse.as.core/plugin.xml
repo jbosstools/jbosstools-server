@@ -22,7 +22,7 @@
             name="%jboss.version.32.name"
             runtime="true"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
-            startBeforePublish="true"
+            startBeforePublish="false"
             startTimeout="120000"
             stopTimeout="120000" 
             supportsRemoteHosts="true"/>
@@ -39,7 +39,7 @@
             name="%jboss.version.40.name"
             runtime="true"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
-            startBeforePublish="true"
+            startBeforePublish="false"
             startTimeout="120000"
             stopTimeout="120000"
             supportsRemoteHosts="false"/>
@@ -177,10 +177,10 @@
          point="org.eclipse.wst.server.core.clients">
       <client
             class="org.jboss.ide.eclipse.as.core.client.DoNothingClient"
-            description="Perform no verification at all.doNothingClientnt"
+            description="Perform no verification at all. "
             id="org.jboss.ide.eclipse.as.core.client.DoNothingClient"
             launchable="org.jboss.ide.eclipse.as.core.launch.client.NullLaunchable"
-            name="NoAction Client"
+            name="Take No Action"
             priority="20"/> 
       <client 
             class="org.jboss.ide.eclipse.as.core.client.VerifyPublishClient"
