@@ -152,7 +152,7 @@ public abstract class JBossModuleDelegate extends ModuleDelegate {
 
 			String url = "jar:" + this.resourceURL.toString() + "!/" + entryName;
 			URL url2 = new URL(url);
-			SAXReader reader = new SAXReader();
+			SAXReader reader = new SAXReader(false);
 			InputStream is = url2.openStream();
 			Document document = reader.read(is);
 			entryToDocument.put(entryName, document);
