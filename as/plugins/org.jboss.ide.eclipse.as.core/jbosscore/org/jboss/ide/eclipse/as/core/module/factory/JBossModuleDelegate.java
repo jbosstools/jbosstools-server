@@ -55,10 +55,7 @@ import org.eclipse.wst.server.core.model.ModuleDelegate;
  */
 public abstract class JBossModuleDelegate extends ModuleDelegate {
 
-	private static Integer DNE = new Integer(-1); 
-	private static final String TOUCHED_NAME = "Last Touched";
-	private static final String TOUCHED_PATH = "tmp/LAST/TOUCHED/DOES/NOT/EXIST";
-	
+	private static Integer DNE = new Integer(-1); 	
 
 	private JBossModuleFactory factory;
 	private int touched = 0;
