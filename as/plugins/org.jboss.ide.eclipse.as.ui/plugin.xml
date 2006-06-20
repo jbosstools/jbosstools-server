@@ -39,10 +39,10 @@
          point="org.eclipse.ui.views">
       <view
             category="org.eclipse.wst.server.ui"
-            class="org.jboss.ide.eclipse.as.ui.views.JBossServerLogView"
+            class="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
             icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-            name="JBoss Server Event Log"/>
+            name="JBoss Server View"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
