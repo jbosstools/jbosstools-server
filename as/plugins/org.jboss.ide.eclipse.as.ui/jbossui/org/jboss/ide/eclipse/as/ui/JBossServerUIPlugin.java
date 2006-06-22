@@ -24,10 +24,18 @@ package org.jboss.ide.eclipse.as.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.ui.views.JBossServerViewExtension;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -38,7 +46,10 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	private static JBossServerUIPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
-	
+
+	// UI plugin id
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui";
+
 	/**
 	 * The constructor.
 	 */
@@ -97,4 +108,59 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	public void earlyStartup() {
 		JBossServerCore.getDefault();
 	}
+	
+	
+	
+	
+	public static class ServerViewProvider {
+		public static String ID_LABEL = "id";
+		public static String NAME_LABEL = "name";
+		public static String DESCRIPTION_LABEL = "description";
+		public static String PROVIDER_LABEL = "providerClass";
+		
+		private IConfigurationElement element;
+		private JBossServerViewExtension extension;
+		public ServerViewProvider(IConfigurationElement element) {
+			this.element = element;
+		}
+		
+		public String getId() {
+			return element.getAttribute(ID_LABEL);
+		}
+		
+		public String getName() {
+			return element.getAttribute(NAME_LABEL);
+		}
+		
+		public String getDescription() {
+			return element.getAttribute(DESCRIPTION_LABEL);
+		}
+		
+		public JBossServerViewExtension getDelegate() {
+			try {
+				if( extension == null ) {
+					extension = (JBossServerViewExtension)element.createExecutableExtension(PROVIDER_LABEL);
+					extension.setViewProvider(this);
+				}
+			} catch( CoreException ce ) {
+				ce.printStackTrace();
+			}
+			return extension;
+		}
+	}
+
+	
+	private ServerViewProvider[] serverViewExtensions;
+	public ServerViewProvider[] getEnabledViewProviders() {
+		if( serverViewExtensions == null ) {
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IConfigurationElement[] elements = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerViewExtension");
+			serverViewExtensions = new ServerViewProvider[elements.length];
+			for( int i = 0; i < elements.length; i++ ) {
+				serverViewExtensions[i] = new ServerViewProvider(elements[i]);
+			}
+		}
+		return serverViewExtensions;
+	}
+	
 }

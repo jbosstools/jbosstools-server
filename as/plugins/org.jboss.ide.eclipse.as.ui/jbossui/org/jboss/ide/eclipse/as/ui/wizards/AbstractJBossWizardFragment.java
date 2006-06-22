@@ -57,7 +57,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.ServerType;
@@ -67,6 +66,7 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
 /**
@@ -126,8 +126,8 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		
 		// make modifications to parent
-		handle.setTitle(JBossServerUIPlugin.getResourceString("%createWizardTitle"));
-		handle.setDescription(JBossServerUIPlugin.getResourceString("%createWizardDescription"));
+		handle.setTitle(Messages.createWizardTitle);
+		handle.setDescription(Messages.createWizardDescription);
 		handle.setImageDescriptor (getImageDescriptor());
 		return main;
 	}
@@ -147,7 +147,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		// create internal widgets
 		nameLabel = new Label(nameComposite, SWT.None);
-		nameLabel.setText(getResourceString("%wizardFragmentNameLabel"));
+		nameLabel.setText(Messages.wizardFragmentNameLabel);
 		
 		nameText = new Text(nameComposite, SWT.BORDER);
 		nameText.addModifyListener(new ModifyListener() {
@@ -185,12 +185,12 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		// Create Internal Widgets
 		homeDirLabel = new Label(homeDirComposite, SWT.NONE);
-		homeDirLabel.setText(getResourceString("%wizardFragmentHomeDirLabel"));
+		homeDirLabel.setText(Messages.wizardFragmentHomeDirLabel);
 		
 		homeDirText = new Text(homeDirComposite, SWT.BORDER);
 		
 		homeDirButton = new Button(homeDirComposite, SWT.NONE);
-		homeDirButton.setText("Browse...");
+		homeDirButton.setText(Messages.browse);
 
 		
 		// Add listeners
@@ -246,14 +246,14 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		// Create Internal Widgets
 		installedJRELabel = new Label(jreComposite, SWT.NONE);
-		installedJRELabel.setText(getResourceString("%wizardFragmentJRELabel"));
+		installedJRELabel.setText(Messages.wizardFragmentJRELabel);
 		
 		jreCombo = new Combo(jreComposite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		jreCombo.setItems(jreNames);
 		jreCombo.select(defaultVMIndex);
 		
 		jreButton = new Button(jreComposite, SWT.NONE);
-		jreButton.setText(getResourceString("%installedJREs"));
+		jreButton.setText(Messages.installedJREs);
 		
 		// Add action listeners
 		jreButton.addSelectionListener(new SelectionAdapter() {
@@ -311,7 +311,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		
 		configLabel = new Label(configComposite, SWT.NONE);
-		configLabel.setText(getResourceString("%wizardFragmentConfigLabel"));
+		configLabel.setText(Messages.wizardFragmentConfigLabel);
 
 		configurations = new JBossConfigurationTableViewer(configComposite, 
 				SWT.BORDER | SWT.SINGLE);
@@ -385,21 +385,21 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	
 	private String getErrorString(int severity) {
 		if( getJbossServerFolder(nameText.getText()).exists() ) {
-			return getResourceString("%serverNameInUse");
+			return Messages.serverNameInUse;
 		}
 		
 		if ( homeDirText.getText() != "" && !new File(homeDirText.getText()).exists()) {
-			return getResourceString("%invalidDirectory");
+			return Messages.invalidDirectory;
 		}
 		
 		if( severity == SEVERITY_MAJOR ) return null;
 		
 		// now give minor warnings
 		if( nameText.getText().equals("")) 
-			return getResourceString("%nameTextBlank");
+			return Messages.nameTextBlank;
 
 		if( homeDirText.getText().equals("")) 
-			return getResourceString("%homeDirBlank");
+			return Messages.homeDirBlank;
 
 
 		return null;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
    
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
@@ -68,6 +69,14 @@
             icon="icons/EJBModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.ejbImage"
             typeIds="jboss.ejb"/> 
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
+      <ViewProvider
+            description="Allow modules to be included in the tree."
+            id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
+            name="Modules"
+            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.ModuleViewProvider"/>
    </extension>
 
 

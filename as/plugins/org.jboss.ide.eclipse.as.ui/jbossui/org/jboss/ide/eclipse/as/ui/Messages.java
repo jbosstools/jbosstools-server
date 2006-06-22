@@ -21,41 +21,33 @@
  */
 package org.jboss.ide.eclipse.as.ui;
 
+import org.eclipse.osgi.util.NLS;
+
 public class Messages {
-	public static final String ServerStateStarting 	= "%ServerStateStarting";
-	public static final String ServerStateStarted 	= "%ServerStateStarted";
-	public static final String ServerStateStopping 	= "%ServerStateStopping";
-	public static final String ServerStateStopped 	= "%ServerStateStopped";
-	public static final String ServerStateUnknown 	= "%ServerStateUnknown";
-	
-	
-	public static final String EventLogCategory = "%EventLog";
-	public static final String ModulesCategory = "%ModulesCategory";
-	
-	public static final String viewServer 	= "%ViewServer";
-	public static final String viewStatus 	= "%ViewStatus";
-	public static final String viewSync 	= "%ViewSync";
+	public static String EventLogCategory;
+	public static String ModulesCategory;
+	public static String createWizardTitle;
+	public static String createWizardDescription;
+	public static String wizardFragmentNameLabel;
+	public static String wizardFragmentHomeDirLabel;
+	public static String wizardFragmentJRELabel;
+	public static String installedJREs;
+	public static String wizardFragmentConfigLabel;
+	public static String serverNameInUse;
+	public static String invalidDirectory;
+	public static String nameTextBlank;
+	public static String homeDirBlank;
+	public static String browse;
 
-	public static final String viewSyncOkay = "%viewSyncOkay";
-	public static final String viewSyncRestart= "%viewSyncRestart";
-	public static final String viewSyncPublish = "%viewSyncPublish";
-	public static final String viewSyncRestartPublish = "%viewSyncRestartPublish";
-	public static final String viewSyncPublishing = "%viewSyncPublishing";
+	public static String RemoveModuleAction;
 	
 	
+	/* Module extension properties */
+	public static String ModulePropertyType;
+	public static String ModulePropertyProject;
+	public static String ModulePropertyModuleFactory;
 	
-	
-	/*
-	  To be added:
-	  	pluginName=JBoss WTP Server Tools UI Plugin
-
-
-
-		createWizardTitle=Create a new JBoss Server
-		createWizardDescription=Add a JBoss Server and have great fun
-		wizardFragmentNameLabel=Name (unique identifier)
-		wizardFragmentHomeDirLabel=Home Directory
-		wizardFragmentJRELabel=JRE
-		wizardFragmentConfigLabel=Configuration
-	 */
+	static {
+		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages", Messages.class);
+	}
 }
