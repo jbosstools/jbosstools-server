@@ -99,7 +99,7 @@ public class JBossServerView extends ServersView {
 	
 	public void createPartControl(Composite parent) {
 				
-		form = new SashForm(parent, SWT.HORIZONTAL);
+		form = new SashForm(parent, SWT.VERTICAL);
 		form.setLayout(new FillLayout());
 		
 		addServerViewer(form);
