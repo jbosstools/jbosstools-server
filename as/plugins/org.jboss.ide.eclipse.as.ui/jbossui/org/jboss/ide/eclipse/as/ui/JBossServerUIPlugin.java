@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.ui.views.JBossServerViewExtension;
+import org.jboss.ide.eclipse.as.ui.viewproviders.JBossServerViewExtension;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -146,6 +146,10 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 				ce.printStackTrace();
 			}
 			return extension;
+		}
+		
+		public String getDelegateName() {
+			return element.getAttribute(PROVIDER_LABEL);
 		}
 	}
 

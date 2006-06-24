@@ -141,6 +141,7 @@ public class JBossServer extends ServerDelegate {
 	
 	public ServerPort[] getServerPorts() {
 		debug("****** getServerPorts");
+		//return new ServerPort[] { new ServerPort("portid1", "portname1", 1099, "TCPIP") };
 		return null;
 	}
 

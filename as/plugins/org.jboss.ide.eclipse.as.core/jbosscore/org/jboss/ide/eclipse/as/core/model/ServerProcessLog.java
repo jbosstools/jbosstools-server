@@ -179,7 +179,11 @@ public class ServerProcessLog {
 		public Object getProperty(Object key) {
 			return properties.get(key);
 		}
-
+		
+		public HashMap getProperties() {
+			return properties;
+		}
+		
 		public boolean isComplete() {
 			return complete;
 		}

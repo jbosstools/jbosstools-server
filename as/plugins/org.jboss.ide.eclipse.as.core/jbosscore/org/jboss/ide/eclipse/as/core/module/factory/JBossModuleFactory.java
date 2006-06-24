@@ -161,7 +161,7 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 		if( delegate != null ) {
 			((JBossModuleDelegate)delegate).clearDocuments();
 		}
-		ModuleModel.getDefault().markModuleChanged(module, IResourceDelta.CHANGED);		
+		ModuleModel.getDefault().markModuleChanged(module, IResourceDelta.CHANGED);
 	}
 	
 	

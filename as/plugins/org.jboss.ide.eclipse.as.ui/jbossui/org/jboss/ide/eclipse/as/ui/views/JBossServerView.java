@@ -21,10 +21,13 @@
  */
 package org.jboss.ide.eclipse.as.ui.views;
 
+import java.util.Properties;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -37,6 +40,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -47,18 +51,26 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
+import org.eclipse.wst.server.ui.internal.view.servers.ServerTableViewer;
 import org.eclipse.wst.server.ui.internal.view.servers.ServersView;
+import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.viewproviders.ISimplePropertiesHolder;
+import org.jboss.ide.eclipse.as.ui.viewproviders.JBossServerViewExtension;
+import org.jboss.ide.eclipse.as.ui.viewproviders.SimplePropertiesContentProvider;
 
 
 public class JBossServerView extends ServersView {
 
 	private static final String TAG_SASHFORM_HEIGHT = "sashformHeight"; 
 	private static final String TAG_SASHFORM_PROPERTIES = "sashformProperties"; 
-	
-	
+	private static final String PROPERTIES_COLUMNS = "propertiesColumns"; 
+		
 	protected int[] sashRows; // For the sashform sashRows
 	protected int[] sashCols; // for the properties sashform
+	protected int[] propertyCols; // For the property columns
 	
 	protected SashForm form;
 	protected SashForm propertiesForm;
@@ -66,9 +78,13 @@ public class JBossServerView extends ServersView {
 	protected JBossServerTableViewer jbViewer;
 	protected Tree jbTreeTable;
 	protected TreeViewer propertiesViewer;
+	protected Text propertiesText;
 	
 	
-	protected Action deleteModuleAction, republishModuleAction;
+	protected SimplePropertiesContentProvider topLevelPropertiesProvider;
+	
+	
+	protected Action hidePropertiesAction, hideTextAction, hidePropertiesAndTextAction;
 	
 	public static JBossServerView instance;
 	public static JBossServerView getDefault() {
@@ -83,7 +99,7 @@ public class JBossServerView extends ServersView {
 	
 	public void createPartControl(Composite parent) {
 				
-		form = new SashForm(parent, SWT.VERTICAL);
+		form = new SashForm(parent, SWT.HORIZONTAL);
 		form.setLayout(new FillLayout());
 		
 		addServerViewer(form);
@@ -91,9 +107,9 @@ public class JBossServerView extends ServersView {
 		addPropertyViewer(form);
 		form.setWeights(sashRows);
 		propertiesForm.setWeights(sashCols);
-		
+		createActions();
 		addListeners();
-		
+		topLevelPropertiesProvider = new SimplePropertiesContentProvider(new TopLevelProperties());
 		doMenuStuff(parent);
 	}
 
@@ -124,50 +140,112 @@ public class JBossServerView extends ServersView {
 		tTable.setFont(c1.getFont());
 
 		TreeColumn column = new TreeColumn(tTable, SWT.SINGLE);
-		column.setText("Property");
-		column.setWidth(50);
+		column.setText(Messages.property);
+		column.setWidth(propertyCols[0]);
 		
 		TreeColumn column2 = new TreeColumn(tTable, SWT.SINGLE);
-		column2.setText("Value");
-		column2.setWidth(50);
+		column2.setText(Messages.value);
+		column2.setWidth(propertyCols[1]);
 
 		propertiesViewer = new TreeViewer(tTable);
 		
 		Composite c2 = new Composite(propertiesForm, SWT.NONE);
 		c2.setLayout(new FillLayout());
-		Text t2 = new Text(c2, SWT.BORDER);
-		t2.setText("Box 2");
+		propertiesText = new Text(c2, SWT.BORDER);
 	}
 	
+	public void createActions() {
+		hidePropertiesAction = new Action() {
+			public void run() {
+				sashCols = propertiesForm.getWeights();
+				if( sashCols[1] == 0 ) { 
+					hidePropertiesAndText();
+				} else {
+					sashCols[1] = 100;
+					sashCols[0] = 0;
+					propertiesForm.setWeights(sashCols);
+				}
+			}
+		};
+		hidePropertiesAction.setText(Messages.HidePropertiesAction);
+		
+		hideTextAction = new Action() {
+			public void run() {
+				sashCols = propertiesForm.getWeights();
+				if( sashCols[0] == 0 ) { 
+					hidePropertiesAndText();
+				} else {
+					sashCols[0] = 100;
+					sashCols[1] = 0;
+					propertiesForm.setWeights(sashCols);
+				}
+			}
+		};
+		hideTextAction.setText(Messages.HideTextAction);
+		
+		hidePropertiesAndTextAction = new Action() {
+			public void run() {
+				hidePropertiesAndText();
+			}
+		};
+		hidePropertiesAndTextAction.setText(Messages.HideLowerFrameAction);
+	}
 	
+	public void hidePropertiesAndText() {
+		sashRows = form.getWeights();
+		sashRows[2] = 0;
+		form.setWeights(sashRows);
+	}
+	
+	public void refreshJBTree(ServerViewProvider provider) {
+		ASDebug.p("Refreshing the tree", this);
+		final ServerViewProvider provider2 = provider;
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				try {
+					JBossServerView.this.jbViewer.refresh(provider2);
+					ISelection sel = JBossServerView.this.jbViewer.getSelection();
+					JBossServerView.this.jbViewer.setSelection(sel);
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		});
+
+	}
 	
 	public void addListeners() {
 		
 		jbViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
+				
+				// If the properties aren't showing, dont bother
+				if( form.getWeights()[2] == 0 ) 
+					return;
+				
 				ISelection sel = event.getSelection();
 				if( sel instanceof IStructuredSelection ) {
-					Object o = ((IStructuredSelection)sel).getFirstElement();
-					if( o != null ) {
-						ServerViewProvider provider = jbViewer.getParentViewProvider(o);
+					Object selected = ((IStructuredSelection)sel).getFirstElement();
+					if( selected != null ) {
+						ServerViewProvider provider = jbViewer.getParentViewProvider(selected);
 						if( provider != null ) {
-							int propertiesType = provider.getDelegate().selectedObjectViewType(o);
-							if( propertiesType == JBossServerViewExtension.PROPERTIES ||  
-									propertiesType == JBossServerViewExtension.PROPERTIES_AND_TEXT ) {
-								propertiesViewer.setContentProvider(provider.getDelegate().getPropertiesContentProvider());
-								propertiesViewer.setLabelProvider(provider.getDelegate().getPropertiesLabelProvider());
-								propertiesViewer.setInput(o);
-								propertiesViewer.refresh();
-							}
+							// We have a provider (extension) and a selected object. 
+							// Maintain the properties / text boxes.
+							updatePropertiesTextViewers(provider, selected);
+						} else if( selected instanceof JBossServer || selected instanceof ServerViewProvider ){
+							updatePropertiesTopLevel(selected);
 						} else {
-							propertiesViewer.setInput(null);
+							clearPropertiesTextViewers();
 						}
+					} else {
+						clearPropertiesTextViewers();
 					}
-					
+					propertiesForm.setWeights(sashCols);
 				}
 			} 
 			
 		});
+		
 		
 		/*
 		 * Handles the selection of the server viewer which is embedded in my sashform
@@ -184,14 +262,65 @@ public class JBossServerView extends ServersView {
 
 				if( selection == null ) return;
 				
-				if( jbViewer.getInput() != server )  {
+				//if( jbViewer.getInput() != server )  {
 					jbViewer.setInput(server);
-				}
+				//}
 			} 
 			
 		});
+	}
+	
+	public void clearPropertiesTextViewers() {
+		try {
+			propertiesViewer.setInput(null);
+		} catch( Exception e) {}
+		
+		propertiesText.setText("");	
+		sashCols[0] = 100;
+		sashCols[1] = 0;
+	}
 
+	public void updatePropertiesTextViewers(ServerViewProvider provider, Object selected) {
+		// Surround the entire method
+		try {
+			
+			int propertiesType = provider.getDelegate().selectedObjectViewType(selected);
+			if( propertiesType == JBossServerViewExtension.PROPERTIES ||  
+					propertiesType == JBossServerViewExtension.PROPERTIES_AND_TEXT ) {
+							
+				propertiesViewer.setContentProvider(provider.getDelegate().getPropertiesContentProvider());
+				propertiesViewer.setLabelProvider(provider.getDelegate().getPropertiesLabelProvider());
+				propertiesViewer.setInput(selected);
+				propertiesViewer.refresh();
+				
+				// set weights
+				if( propertiesType == JBossServerViewExtension.PROPERTIES) {
+					sashCols[0] = 100;
+					sashCols[1] = 0;
+				} else {
+					sashCols[0] = 50;
+					sashCols[1] = 50;
+				}
+			} else {
+				propertiesText.setText(provider.getDelegate().getPropertiesText(selected));
+				sashCols[0] = 0;
+				sashCols[1] = 100;
+			}
+			
+		} catch( Exception e ) {
+			clearPropertiesTextViewers();
+		}
 
+	}
+
+	public void updatePropertiesTopLevel(Object selected) {
+		propertiesViewer.setContentProvider(topLevelPropertiesProvider);
+		propertiesViewer.setLabelProvider(topLevelPropertiesProvider);
+		propertiesViewer.setInput(selected);
+		propertiesViewer.refresh();
+		sashCols[0] = 100;
+		sashCols[1] = 0;
+		
 	}
 	protected void doMenuStuff(Composite parent) {
 		MenuManager menuManager = new MenuManager("#PopupMenu"); 
@@ -199,17 +328,50 @@ public class JBossServerView extends ServersView {
 		final Shell shell = jbTreeTable.getShell();
 		menuManager.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager mgr) {
+				ISelection sel = jbViewer.getSelection();
+				if( sel instanceof IStructuredSelection ) {
+					Object selected = ((IStructuredSelection)sel).getFirstElement();
+					if( selected != null ) {
+						ServerViewProvider provider = jbViewer.getParentViewProvider(selected);
+						if( provider != null ) 
+							provider.getDelegate().fillContextMenu(shell, mgr, selected);
+					}
+				}
+				mgr.add(new Separator());
 				jbViewer.fillJBContextMenu(shell, mgr);
 			}
 		});
 		Menu menu = menuManager.createContextMenu(parent);
 		jbTreeTable.setMenu(menu);
-
+		
+		
+		
+		MenuManager menuManager2 = new MenuManager("#PopupMenu"); 
+		menuManager2.setRemoveAllWhenShown(true);
+		final Shell shell2 = propertiesForm.getShell();
+		menuManager2.addMenuListener(new IMenuListener() {
+			public void menuAboutToShow(IMenuManager mgr) {
+				fillPropertiesContextMenu(shell2, mgr);
+			}
+		});
+		Menu menu2 = menuManager2.createContextMenu(parent);
+		propertiesViewer.getTree().setMenu(menu2);
+		propertiesText.setMenu(menu2);
 	}
 	
-	
+	public void fillPropertiesContextMenu(Shell shell, IMenuManager mgr) {
+		sashCols = propertiesForm.getWeights();
+		if( sashCols[0] != 0 ) 
+			mgr.add(hidePropertiesAction);
+		if( sashCols[1] != 0 ) 
+			mgr.add(hideTextAction);
+		
+		// If only one of the two are present, do not show the 'hide both' action
+		if( !(sashCols[0] != 0 && sashCols[1] == 0 || sashCols[1] != 0 && sashCols[0] == 0 )) 
+			mgr.add(hidePropertiesAndTextAction);
+	}
 	/**
-	 * Save some state
+	 * Save / Load some state  (width / height of boxes)
 	 */
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
@@ -230,6 +392,16 @@ public class JBossServerView extends ServersView {
 		sashCols[0] = 100;
 		sashCols[1] = 0;
 		
+		
+		propertyCols = new int[2];
+		for (int i = 0; i < propertyCols.length; i++) {
+			propertyCols[i] = 100;
+			if (memento != null) {
+				Integer in = memento.getInteger(PROPERTIES_COLUMNS + i);
+				if (in != null && in.intValue() > 5)
+					propertyCols[i] = in.intValue();
+			}
+		}
 	}
 
 	public void saveState(IMemento memento) {
@@ -243,9 +415,66 @@ public class JBossServerView extends ServersView {
 		for( int i = 0; i < weights.length; i++ ) {
 			if (weights[i] != 0)
 				memento.putInteger(TAG_SASHFORM_PROPERTIES + i, weights[i]);
-
+		}
+		
+		Tree propTree = propertiesViewer.getTree();
+		TreeColumn[] columns = propTree.getColumns();
+		for( int i = 0; i < columns.length; i++ ) {
+			memento.putInteger(PROPERTIES_COLUMNS + i, columns[i].getWidth());
 		}
 		
 	}
+
+	
+	
+	/**
+	 * Properties for the top level elements 
+	 *    (a server or a category / extension point 
+	 * @author rstryker
+	 *
+	 */
+	class TopLevelProperties implements ISimplePropertiesHolder {
+		public Properties getProperties(Object selected) {
+			Properties ret = new Properties();
+			if( selected instanceof ServerViewProvider ) {
+				ServerViewProvider provider = (ServerViewProvider)selected;
+				ret.setProperty(Messages.ExtensionID, provider.getId());
+				ret.setProperty(Messages.ExtensionName, provider.getName());
+				ret.setProperty(Messages.ExtensionDescription, provider.getDescription());
+				ret.setProperty(Messages.ExtensionProviderClass, provider.getDelegateName());
+			}
+			
+			if( selected instanceof JBossServer) {
+				JBossServer server = (JBossServer)selected;
+				String home = server.getRuntimeConfiguration().getServerHome();
+				
+				ret.setProperty(Messages.ServerRuntimeVersion, server.getJBossRuntime().getVersionDelegate().getId());
+				ret.setProperty(Messages.ServerHome, home);
+				ret.setProperty(Messages.ServerConfigurationName, server.getRuntimeConfiguration().getJbossConfiguration());
+				ret.setProperty(Messages.ServerDeployDir, 
+						server.getRuntimeConfiguration().getDeployDirectory().replace(home, "(home)"));
+			}
+			return ret;
+		}
+
+
+		public String[] getPropertyKeys(Object selected) {
+			if( selected instanceof ServerViewProvider) {
+				return new String[] { 
+						Messages.ExtensionName, Messages.ExtensionDescription, 
+						Messages.ExtensionID, Messages.ExtensionProviderClass
+				};
+				
+			}
+			if( selected instanceof JBossServer ) {
+				return new String[] {
+						Messages.ServerRuntimeVersion, Messages.ServerHome, 
+						Messages.ServerConfigurationName, Messages.ServerDeployDir,
+				};
+			}
+			return new String[] {};
+		}
+	}
+
 
 }

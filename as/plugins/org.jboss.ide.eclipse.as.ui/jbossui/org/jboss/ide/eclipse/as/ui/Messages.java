@@ -39,13 +39,41 @@ public class Messages {
 	public static String homeDirBlank;
 	public static String browse;
 
-	public static String RemoveModuleAction;
-	
+	public static String ServerDialogHeading;
 	
 	/* Module extension properties */
 	public static String ModulePropertyType;
 	public static String ModulePropertyProject;
 	public static String ModulePropertyModuleFactory;
+	
+	/* Properties of view extenders (categories) */
+	public static String ExtensionID;
+	public static String ExtensionName;
+	public static String ExtensionDescription;
+	public static String ExtensionProviderClass;
+	
+	
+	/* Properties of JBoss Servers in the view Properties */
+	public static String ServerRuntimeVersion;
+	public static String ServerHome;
+	public static String ServerConfigurationName;
+	public static String ServerDeployDir;
+	
+	public static String property;
+	public static String value;
+	
+	
+	public static String DeleteModuleText;
+	public static String PublishModuleText;
+	public static String DeleteModuleDescription;
+	public static String PublishModuleDescription;
+	
+	public static String DeleteModuleConfirm;
+	
+	
+	public static String HidePropertiesAction;
+	public static String HideTextAction;
+	public static String HideLowerFrameAction;
 	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages", Messages.class);

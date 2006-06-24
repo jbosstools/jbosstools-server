@@ -81,6 +81,7 @@ public class JBossRuntimeConfiguration {
 	
 	public String getAttribute(String key, String defaultVal) {
 		if( properties == null ) load();
+		if( properties == null ) return null;
 		String ret = properties.getProperty(key);
 		if( ret == null ) return defaultVal;
 		return ret;
@@ -88,7 +89,6 @@ public class JBossRuntimeConfiguration {
 	
 	private void setAttribute(String key, String val ) {
 		if( properties == null ) load();
-		ASDebug.p("", this);
 		if( getAttribute(key, null) != null && !getAttribute(key, null).equals(val)) {
 			properties.put(key, val);
 			dirty = true;

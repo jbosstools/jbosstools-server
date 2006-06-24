@@ -35,15 +35,13 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 
-public class JBossServerTableViewer extends TreeViewer implements IServerLogListener {
+public class JBossServerTableViewer extends TreeViewer {
 	
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
 		
 		setContentProvider(new ContentProviderDelegator());
 		setLabelProvider(new LabelProviderDelegator());
-		ServerProcessModel.getDefault().addLogListener(this);
-
 	}
 
 			
@@ -53,10 +51,10 @@ public class JBossServerTableViewer extends TreeViewer implements IServerLogList
 			if( obj instanceof JBossServer) {
 				JBossServer server = (JBossServer)obj;
 				String ret = server.getServer().getName(); 
-				ret += "  (";
-				String home = server.getRuntimeConfiguration().getServerHome(); 
-				ret += (home.length() > 30 ? home.substring(0,30) + "..." : home);
-				ret += ", " + server.getRuntimeConfiguration().getJbossConfiguration() + ")";
+//				ret += "  (";
+//				String home = server.getRuntimeConfiguration().getServerHome(); 
+//				ret += (home.length() > 30 ? home.substring(0,30) + "..." : home);
+//				ret += ", " + server.getRuntimeConfiguration().getJbossConfiguration() + ")";
 				return ret;
 			}
 			if( obj instanceof ServerViewProvider) {
@@ -67,7 +65,7 @@ public class JBossServerTableViewer extends TreeViewer implements IServerLogList
 				return getParentViewProvider(obj).getDelegate().getLabelProvider().getText(obj);
 			} catch( Exception e) {
 			}
-			return "not parsable: " + obj.toString();
+			return obj.toString();
 		}
 		public Image getImage(Object obj) {
 			if( obj instanceof JBossServer ) {
@@ -150,164 +148,6 @@ public class JBossServerTableViewer extends TreeViewer implements IServerLogList
 	
 
 	
-	
-	protected class EventLogLabelProvider extends LabelProvider {
-		public String getText(Object obj) {
-			if( obj instanceof ProcessLogEvent ) {
-				ProcessLogEvent event = ((ProcessLogEvent)obj);
-				SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.S");
-				return event.getText() + "   " + format.format(new Date(event.getDate()));
-			}
-			return obj.toString();
-		}
-		public Image getImage(Object obj) {
-			ProcessLogEvent event = (ProcessLogEvent)obj;
-			IServer server = event.getRoot().getServer();
-			IServerType serverType = server.getServerType();
-
-			if( obj instanceof ProcessLogEvent ) {
-				if( event.getEventType() == ProcessLogEvent.SERVER_STARTING) {
-					return getStateImage(serverType, IServer.STATE_STARTING, server.getMode());
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_STOPPING) {
-					return getStateImage(serverType, IServer.STATE_STOPPING, server.getMode());
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_UP) {
-					return getStateImage(serverType, IServer.STATE_STARTED, server.getMode());					
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_DOWN) {
-					return getStateImage(serverType, IServer.STATE_STOPPED, server.getMode());					
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_CONSOLE) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.CONSOLE_IMAGE);
-				}
-				if( event.getEventType() == ProcessLogEvent.TWIDDLE) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE);
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_PUBLISH) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_UNPUBLISH) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
-				}
-			}
-			return null;
-		}
-		
-		protected Image getStateImage(IServerType serverType, int state, String mode) {
-			return UIDecoratorManager.getUIDecorator(serverType).getStateImage(state, mode, 0);
-		}
-
-	}
-	
-	protected class JBSLabelProvider extends LabelProvider {
-		private EventLogLabelProvider logDelegate;
-		private ServerTableLabelProvider moduleDelegate;
-		
-		public JBSLabelProvider() {
-			logDelegate = new EventLogLabelProvider();
-			moduleDelegate = new ServerTableLabelProvider();
-		}
-		
-		public String getText(Object obj) {
-			if( obj instanceof ProcessLogEvent) {
-				return logDelegate.getText(obj);
-			}
-			if( obj instanceof IModule ) {
-				return ServerUICore.getLabelProvider().getText(obj);
-			}
-			if( obj instanceof JBossServer) {
-				JBossServer server = (JBossServer)obj;
-				String ret = server.getServer().getName(); 
-				ret += "  (";
-				String home = server.getRuntimeConfiguration().getServerHome(); 
-				ret += (home.length() > 30 ? home.substring(0,30) + "..." : home);
-				ret += ", " + server.getRuntimeConfiguration().getJbossConfiguration() + ")";
-				return ret;
-			}
-			return obj.toString();
-		}
-		public Image getImage(Object obj) {
-			if( obj instanceof ProcessLogEvent) {
-				return logDelegate.getImage(obj);
-			}
-			if( obj instanceof IModule ) {
-				return ServerUICore.getLabelProvider().getImage(obj);
-			}
-			if( obj instanceof JBossServer) {
-				return ServerUICore.getLabelProvider().getImage(((JBossServer)obj).getServer());
-			}
-			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-		}
-
-	}
-	
-	protected class JBSContentProvider implements IStructuredContentProvider, ITreeContentProvider {
-		
-		protected String[] topLevelCategories;
-		public JBSContentProvider() {
-			initializeCategories();
-		}
-		protected void initializeCategories() {
-			ArrayList list = new ArrayList();
-			
-			list.add(Messages.ModulesCategory);
-			list.add(Messages.EventLogCategory);
-			
-			
-			topLevelCategories = new String[list.size()];
-			//list.toArray(topLevelCategories);
-		}
-
-
-		public Object[] getElements(Object inputElement) {
-			return new Object[] { JBossServerCore.getServer((IServer)inputElement) };
-		}
-
-		public void dispose() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public Object[] getChildren(Object parentElement) {
-			if( parentElement instanceof JBossServer ) {
-				return topLevelCategories;
-			}
-			if( parentElement.equals(Messages.ModulesCategory)) {
-				IServer server = (IServer)getInput();
-				return server.getModules();
-			}
-			if( parentElement.equals(Messages.EventLogCategory)) {
-				IServer server = (IServer)getInput();
-				ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(server.getId());
-				return ent.getEventLog().getChildren();
-			}
-			if( parentElement instanceof ProcessLogEvent ) {
-				return ((ProcessLogEvent)parentElement).getChildren();
-			}
-			
-			return new Object[0];
-		}
-
-		public Object getParent(Object element) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public boolean hasChildren(Object element) {
-			return getChildren(element).length > 0 ? true : false;
-		}
-		
-	}
-	
-	
-	
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
 		Action action1 = new Action() {
 			public void run() {
@@ -321,31 +161,9 @@ public class JBossServerTableViewer extends TreeViewer implements IServerLogList
 			}
 			
 		};
-		action1.setText("refresh");
+		action1.setText("refresh viewer");
 		
 		menu.add(action1);
-	}
-
-	public void logChanged(ServerProcessModelEntity ent) {
-		final ServerProcessModelEntity e2 = ent;
-		
-		IServer input = getInput() instanceof IServer ? (IServer)getInput() : null;
-		if( input != null && input.getId().equals(ent.getServerID())) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					try {
-						Object[] expanded = getExpandedElements();
-						ISelection selected = getSelection();
-						//viewer.setInput(ServerProcessModel.getDefault());
-						refresh();
-						setExpandedElements(expanded);
-						setSelection(selected);
-					} catch( Exception e) {
-						// do nothing
-					}
-				} 
-			} );
-		}
 	}
 
 }

@@ -1,7 +1,11 @@
 package org.jboss.ide.eclipse.as.ui.viewproviders;
 
+import java.util.Properties;
+
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -10,32 +14,79 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerLifecycleListener;
+import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
-import org.jboss.ide.eclipse.as.ui.views.JBossServerViewExtension;
 
-public class ModuleViewProvider extends JBossServerViewExtension {
+public class ModuleViewProvider extends JBossServerViewExtension 
+		implements ISimplePropertiesHolder {
 
 	private ModuleContentProvider contentProvider;
 	private ModuleLabelProvider labelProvider;
 	
-	private ModulePropertiesContentProvider propContentProvider;
-	private ModulePropertiesLabelProvider propLabelProvider;
+	private Action deleteModuleAction, publishModuleAction;
 	
-	private Object propertiesInput;
+	private ModuleServer selection;
+	
+	private SimplePropertiesContentProvider propertiesProvider;
+	
+	private IServerLifecycleListener serverResourceListener;
+	private IServerListener serverListener;
+	
 	
 	public ModuleViewProvider() {
 		contentProvider = new ModuleContentProvider();
 		labelProvider = new ModuleLabelProvider();
+		propertiesProvider = new SimplePropertiesContentProvider(this);
+		createActions();
+		addListeners();
 	}
 
-	public void fillJBContextMenu(Shell shell, IMenuManager menu) {
-		// TODO Auto-generated method stub
-
+	private void createActions() {
+		deleteModuleAction = new Action() {
+			public void run() {
+				if (MessageDialog.openConfirm(new Shell(), Messages.ServerDialogHeading, Messages.DeleteModuleConfirm)) {
+					try {
+						IServerWorkingCopy wc = selection.server.createWorkingCopy();
+						wc.modifyModules(null, selection.module , null);
+						wc.save(true, null);
+					} catch (Exception e) {
+						// ignore
+					}
+				}
+			}
+		};
+		deleteModuleAction.setText(Messages.DeleteModuleText);
+		deleteModuleAction.setDescription(Messages.DeleteModuleDescription);
+		
+		publishModuleAction = new Action() {
+			public void run() {
+				for( int i = 0; i < selection.module.length; i++ ) 
+					ModuleModel.getDefault().markModuleChanged(selection.module[i], IResourceDelta.CHANGED);
+				PublishServerJob job = new PublishServerJob(selection.server);
+				job.schedule();
+			}
+		};
+		publishModuleAction.setText(Messages.PublishModuleText);
+		publishModuleAction.setDescription(Messages.PublishModuleDescription);
+	}
+	
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+		if( selection instanceof ModuleServer) {
+			this.selection = (ModuleServer)selection;
+			menu.add(deleteModuleAction);
+			menu.add(publishModuleAction);
+		}
 	}
 
 	public ITreeContentProvider getContentProvider() {
@@ -109,9 +160,7 @@ public class ModuleViewProvider extends JBossServerViewExtension {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
 			input = (IServer)newInput;
-			ASDebug.p("New input is: " + newInput, this);
 		}
 		
 	}
@@ -157,70 +206,69 @@ public class ModuleViewProvider extends JBossServerViewExtension {
 		return JBossServerViewExtension.PROPERTIES;
 	}
 
-	public ITableLabelProvider getPropertiesLabelProvider() {
-		if( propLabelProvider == null )
-			propLabelProvider = new ModulePropertiesLabelProvider();
-		return propLabelProvider;
-	}
-	
-	public ITreeContentProvider getPropertiesContentProvider() {
-		if( propContentProvider == null ) 
-			propContentProvider = new ModulePropertiesContentProvider();
-		
-		return propContentProvider;
-	}
 
 	public String getPropertiesText(Object o) {
 		return null;
 	}
 	
-	public class ModulePropertiesContentProvider implements ITreeContentProvider {
-
-		public Object[] getElements(Object inputElement) {
-			return new Object[] {
-					Messages.ModulePropertyType, Messages.ModulePropertyProject	};
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			propertiesInput = newInput;
-		}
-
-		public Object[] getChildren(Object parentElement) {
-			return new Object[0];
-		}
-
-		public Object getParent(Object element) {
-			return null;
-		}
-
-		public boolean hasChildren(Object element) {
-			return false;
-		}
-		
+	
+	public String[] getPropertyKeys(Object selected) {
+		return new String[] { Messages.ModulePropertyType, Messages.ModulePropertyProject };
 	}
 	
-	public class ModulePropertiesLabelProvider extends LabelProvider implements ITableLabelProvider {
-
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
+	public Properties getProperties(Object selected) {
+		Properties props = new Properties();
+		if( selected != null && selected instanceof ModuleServer) {
+			IModule mod = ((ModuleServer)selected).module[0];
+			props.setProperty(Messages.ModulePropertyType, mod.getModuleType().getId());
+			props.setProperty(Messages.ModulePropertyProject, mod.getProject().getName());
 		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			if( columnIndex == 0 ) return element.toString();
-			if( columnIndex == 1 ) {
-				if( element.equals(Messages.ModulePropertyType)) {
-					return ((ModuleServer)propertiesInput).module[0].getModuleType().getId();
-				}
-				if( element.equals(Messages.ModulePropertyProject)) {
-					return ((ModuleServer)propertiesInput).module[0].getProject().getName();
-				}
-			}
-			
-			return null;
-		}
+		return props;
 	}
 
+	public ITreeContentProvider getPropertiesContentProvider() {
+		return propertiesProvider;
+	}
+
+	public ITableLabelProvider getPropertiesLabelProvider() {
+		return propertiesProvider;
+	}
+
+	private void addListeners() {
+		serverResourceListener = new IServerLifecycleListener() {
+			public void serverAdded(IServer server) {
+				if( JBossServerCore.getServer(server) != null ) 
+					server.addServerListener(serverListener);
+			}
+			public void serverChanged(IServer server) {
+			}
+			public void serverRemoved(IServer server) {
+				if( JBossServerCore.getServer(server) != null ) 
+					server.removeServerListener(serverListener);
+			}
+		};
+		ServerCore.addServerLifecycleListener(serverResourceListener);
+		
+		serverListener = new IServerListener() { 
+			public void serverChanged(ServerEvent event) {
+				int eventKind = event.getKind();
+				if ((eventKind & ServerEvent.MODULE_CHANGE) != 0) {
+					// module change event
+					if ((eventKind & ServerEvent.STATE_CHANGE) != 0 || (eventKind & ServerEvent.PUBLISH_STATE_CHANGE) != 0) {
+						refreshViewer();
+					} 
+				}
+			}
+		};
+		// add listeners to servers
+		JBossServer[] servers = JBossServerCore.getAllJBossServers();
+		if (servers != null) {
+			int size = servers.length;
+			for (int i = 0; i < size; i++) {
+				servers[i].getServer().addServerListener(serverListener);
+			}
+		}
+
+		
+	}
 }

@@ -77,6 +77,11 @@
             id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
             name="Modules"
             providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.ModuleViewProvider"/>
+      <ViewProvider
+            description="Keep a log of server-related events in the view."
+            id="org.jboss.ide.eclipse.as.ui.EventLogProvider"
+            name="Event Log"
+            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.EventLogViewProvider"/>
    </extension>
 
 
