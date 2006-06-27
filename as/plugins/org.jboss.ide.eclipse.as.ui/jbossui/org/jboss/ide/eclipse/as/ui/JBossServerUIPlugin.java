@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IStartup;
@@ -113,11 +114,13 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	
 	
 	public static class ServerViewProvider {
-		public static String ID_LABEL = "id";
-		public static String NAME_LABEL = "name";
-		public static String DESCRIPTION_LABEL = "description";
-		public static String PROVIDER_LABEL = "providerClass";
-		public static String ICON_LABEL = "icon";
+		public static final String EXTENSION_ENABLED = "EXTENSION_ENABLED_";
+		
+		public static final String ID_LABEL = "id";
+		public static final String NAME_LABEL = "name";
+		public static final String DESCRIPTION_LABEL = "description";
+		public static final String PROVIDER_LABEL = "providerClass";
+		public static final String ICON_LABEL = "icon";
 		
 		
 		private IConfigurationElement element;
@@ -131,6 +134,12 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		public ServerViewProvider(IConfigurationElement element) {
 			this.element = element;
 			this.enabled = false;
+			
+			// Am I enabled?
+			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+			String key = EXTENSION_ENABLED + getId();
+			enabled = prefs.contains(key) ? prefs.getBoolean(key) : false;
+
 			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 			try {
 				iconDescriptor = 
@@ -196,6 +205,10 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			getDelegate().dispose();
 			if( icon != null ) 
 				icon.dispose();
+			
+//			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+//			String key = EXTENSION_ENABLED + getId();
+//			prefs.setValue(key, enabled);
 		}
 	}
 
@@ -211,7 +224,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 				list.add(serverViewExtensions[i]);
 			}
 		}
-		ServerViewProvider[] providers = new ServerViewProvider[serverViewExtensions.length];
+		ServerViewProvider[] providers = new ServerViewProvider[list.size()];
 		list.toArray(providers);
 		return providers;
 	}

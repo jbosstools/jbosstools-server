@@ -46,6 +46,9 @@ public class Messages {
 	public static String ModulePropertyProject;
 	public static String ModulePropertyModuleFactory;
 	
+	public static String RefreshViewerAction;
+	public static String DisableCategoryAction;
+	
 	/* Properties of view extenders (categories) */
 	public static String ExtensionID;
 	public static String ExtensionName;

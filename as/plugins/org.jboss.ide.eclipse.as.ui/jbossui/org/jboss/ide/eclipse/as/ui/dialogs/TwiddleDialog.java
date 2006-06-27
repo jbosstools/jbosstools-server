@@ -71,13 +71,10 @@ public class TwiddleDialog extends Dialog {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		Object o = selection.getFirstElement();
-		if( o instanceof ServerProcessModelEntity ) {
-			entity = (ServerProcessModelEntity)o;
-			String sid = ((ServerProcessModelEntity)o).getServerID();
-			IServer iserver = ServerCore.findServer(sid);
-			if( iserver != null ) {
-				server = JBossServerCore.getServer(iserver);
-			}
+		if( o instanceof JBossServer ) {
+			server = (JBossServer)o;
+			entity = server.getProcessModel();
+			String sid = server.getServer().getId();
 		}
 
 	}

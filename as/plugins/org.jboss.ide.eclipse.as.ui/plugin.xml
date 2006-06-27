@@ -84,6 +84,11 @@
             id="org.jboss.ide.eclipse.as.ui.EventLogProvider"
             name="Event Log"
             providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.EventLogViewProvider"/>
+      <ViewProvider
+            description="Lists inactive categories and allows you to turn them back on."
+            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
+            name="Inactive Categories"
+            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.InactiveExtensionViewProvider"/>
    </extension>
 
 

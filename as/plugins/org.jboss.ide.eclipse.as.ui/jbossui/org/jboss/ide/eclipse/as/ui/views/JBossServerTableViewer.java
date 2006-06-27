@@ -1,3 +1,25 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2006, JBoss Inc., and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package org.jboss.ide.eclipse.as.ui.views;
 
 import java.util.ArrayList;
@@ -28,8 +50,10 @@ import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesPropertySheetPage;
@@ -37,6 +61,8 @@ import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimpleProp
 public class JBossServerTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
+	
+	protected Action disableCategoryAction, refreshViewerAction, twiddleAction;
 
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
@@ -44,8 +70,54 @@ public class JBossServerTableViewer extends TreeViewer {
 		setLabelProvider(new LabelProviderDelegator());
 		//topLevelPropertiesPage = PropertySheetFactory.createSimplePropertiesSheet(new TopLevelProperties());
 		propertySheet = new TableViewerPropertySheet();
+		createActions();
 	}
 
+	protected void createActions() {
+		refreshViewerAction = new Action() {
+			public void run() {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						refresh();
+					} 
+				});
+			}
+			
+		};
+		refreshViewerAction.setText(Messages.RefreshViewerAction);
+		
+		disableCategoryAction = new Action() {
+			public void run() {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						Object selected = getSelectedElement();
+						if( selected instanceof ServerViewProvider) {
+							((ServerViewProvider)selected).setEnabled(false);
+							refresh();
+						}
+					} 
+				} );
+			}
+		};
+		disableCategoryAction.setText(Messages.DisableCategoryAction);
+		
+		
+		twiddleAction = new Action() {
+			public void run() {
+				final IStructuredSelection selected = ((IStructuredSelection)getSelection());
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						TwiddleDialog dialog = new TwiddleDialog(getTree().getShell(), selected);
+						dialog.open();
+					} 
+				} );
+
+			}
+		};
+		twiddleAction.setText("Twiddle Server");
+		twiddleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.TWIDDLE_IMAGE));
+	}
+	
 	public static class ContentWrapper {
 		private Object o;
 		private ServerViewProvider provider;
@@ -164,7 +236,9 @@ public class JBossServerTableViewer extends TreeViewer {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().getEnabledViewProviders();
 			for( int i = 0; i < providers.length; i++ ) {
-				providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);
+				try {
+					providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);
+				} catch( Exception e) {}
 			}
 		}
 		
@@ -204,24 +278,20 @@ public class JBossServerTableViewer extends TreeViewer {
 	}
 	
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
-		Action action1 = new Action() {
-			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-
-					public void run() {
-						refresh();
-					} 
-					
-				});
-			}
-			
-		};
-		action1.setText("refresh viewer");
 		
-		menu.add(action1);
+		Object selected = getSelectedElement();
+		if( selected instanceof JBossServer) {
+			menu.add(twiddleAction);
+		}
+		
+		
+		if( selected instanceof ServerViewProvider ) 
+			menu.add(disableCategoryAction);
+		menu.add(refreshViewerAction);
 	}
 
 	
+
 	public IPropertySheetPage getPropertySheet() {
 			return propertySheet;
 	}
