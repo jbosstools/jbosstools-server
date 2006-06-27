@@ -65,11 +65,14 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="icon" type="string">
+         <attribute name="icon" type="string" use="optional">
             <annotation>
                <documentation>
-                  
+                  a bundle-relative path to the icon image
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="resource"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="providerClass" type="string">

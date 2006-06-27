@@ -27,9 +27,10 @@ import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesContentProvider;
 
-public class ModuleViewProvider extends JBossServerViewExtension 
-		implements ISimplePropertiesHolder {
+public class ModuleViewProvider extends SimplePropertiesViewExtension {
 
 	private ModuleContentProvider contentProvider;
 	private ModuleLabelProvider labelProvider;
@@ -38,8 +39,6 @@ public class ModuleViewProvider extends JBossServerViewExtension
 	
 	private ModuleServer selection;
 	
-	private SimplePropertiesContentProvider propertiesProvider;
-	
 	private IServerLifecycleListener serverResourceListener;
 	private IServerListener serverListener;
 	
@@ -47,7 +46,6 @@ public class ModuleViewProvider extends JBossServerViewExtension
 	public ModuleViewProvider() {
 		contentProvider = new ModuleContentProvider();
 		labelProvider = new ModuleLabelProvider();
-		propertiesProvider = new SimplePropertiesContentProvider(this);
 		createActions();
 		addListeners();
 	}
@@ -198,20 +196,6 @@ public class ModuleViewProvider extends JBossServerViewExtension
 	}
 
 
-
-
-	
-	
-	public int selectedObjectViewType(Object o) {
-		return JBossServerViewExtension.PROPERTIES;
-	}
-
-
-	public String getPropertiesText(Object o) {
-		return null;
-	}
-	
-	
 	public String[] getPropertyKeys(Object selected) {
 		return new String[] { Messages.ModulePropertyType, Messages.ModulePropertyProject };
 	}
@@ -224,14 +208,6 @@ public class ModuleViewProvider extends JBossServerViewExtension
 			props.setProperty(Messages.ModulePropertyProject, mod.getProject().getName());
 		}
 		return props;
-	}
-
-	public ITreeContentProvider getPropertiesContentProvider() {
-		return propertiesProvider;
-	}
-
-	public ITableLabelProvider getPropertiesLabelProvider() {
-		return propertiesProvider;
 	}
 
 	private void addListeners() {

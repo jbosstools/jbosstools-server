@@ -123,6 +123,8 @@ public class ServerProcessLog {
 		}
 		
 		public ProcessLogEventRoot getRoot() {
+			if( this instanceof ProcessLogEventRoot ) return (ProcessLogEventRoot)this;
+			
 			if( getParent() == null ) {
 				// disconnected
 				return null;
@@ -213,8 +215,7 @@ public class ServerProcessLog {
 		 * who might care.
 		 */
 		public void branchChanged() {
-			ServerProcessModel.getDefault().processModelChanged(
-					ServerProcessModel.getDefault().getModel(server.getId()));
+			ServerProcessModel.getDefault().processModelChanged(this);
 		}
 		
 		public ServerProcessModelEntity getProcessModel() {

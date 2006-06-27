@@ -86,6 +86,19 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		return ret;
 	}
 	
+	public static IServer[] getIServerJBossServers() {
+		ArrayList servers = new ArrayList();
+		IServer[] iservers = ServerCore.getServers();
+		for( int i = 0; i < iservers.length; i++ ) {
+			if( getServer(iservers[i]) != null ) {
+				servers.add(iservers[i]);
+			}
+		}
+		IServer[] ret = new IServer[servers.size()];
+		servers.toArray(ret);
+		return ret;
+	}
+	
 	public JBossServerCore() {
 		ServerCore.addRuntimeLifecycleListener(this);
 		ServerCore.addServerLifecycleListener(this);

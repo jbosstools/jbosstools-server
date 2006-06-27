@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui;
 
+import java.util.ArrayList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -28,14 +29,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.ui.viewproviders.JBossServerViewExtension;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -117,11 +117,23 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		public static String NAME_LABEL = "name";
 		public static String DESCRIPTION_LABEL = "description";
 		public static String PROVIDER_LABEL = "providerClass";
+		public static String ICON_LABEL = "icon";
+		
 		
 		private IConfigurationElement element;
 		private JBossServerViewExtension extension;
+		
+		private ImageDescriptor iconDescriptor;
+		private Image icon;
+		
+		private boolean enabled;
+		
 		public ServerViewProvider(IConfigurationElement element) {
 			this.element = element;
+			this.enabled = false;
+			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
+			iconDescriptor = 
+				ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
 		}
 		
 		public String getId() {
@@ -134,6 +146,17 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		
 		public String getDescription() {
 			return element.getAttribute(DESCRIPTION_LABEL);
+		}
+		
+		public String getIconLocation() {
+			return element.getAttribute(ICON_LABEL);
+		}
+		
+		public Image getImage() {
+			if( icon == null ) {
+				icon = iconDescriptor.createImage();
+			}
+			return icon;
 		}
 		
 		public JBossServerViewExtension getDelegate() {
@@ -151,20 +174,59 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		public String getDelegateName() {
 			return element.getAttribute(PROVIDER_LABEL);
 		}
+		
+		public boolean isEnabled() {
+			return enabled;
+		}
+		
+		public void setEnabled(boolean enable) {
+			if( enable && !enabled ) {
+				enabled = true;
+				getDelegate().enable();
+			} else if( !enable && enabled ) {
+				enabled = false;
+				getDelegate().disable();
+			}
+		}
+		
+		public void dispose() {
+			getDelegate().dispose();
+			if( icon != null ) 
+				icon.dispose();
+		}
 	}
 
 	
 	private ServerViewProvider[] serverViewExtensions;
 	public ServerViewProvider[] getEnabledViewProviders() {
 		if( serverViewExtensions == null ) {
-			IExtensionRegistry registry = Platform.getExtensionRegistry();
-			IConfigurationElement[] elements = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerViewExtension");
-			serverViewExtensions = new ServerViewProvider[elements.length];
-			for( int i = 0; i < elements.length; i++ ) {
-				serverViewExtensions[i] = new ServerViewProvider(elements[i]);
+			loadAllServerViewProviders();
+		}
+		ArrayList list = new ArrayList();
+		for( int i = 0; i < serverViewExtensions.length; i++ ) {
+			if( serverViewExtensions[i].isEnabled()) {
+				list.add(serverViewExtensions[i]);
 			}
 		}
+		ServerViewProvider[] providers = new ServerViewProvider[serverViewExtensions.length];
+		list.toArray(providers);
+		return providers;
+	}
+	
+	public ServerViewProvider[] getAllServerViewProviders() {
 		return serverViewExtensions;
+	}
+	private void loadAllServerViewProviders() {
+
+		// Create the extensions from the registry
+		
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] elements = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerViewExtension");
+		serverViewExtensions = new ServerViewProvider[elements.length];
+		for( int i = 0; i < elements.length; i++ ) {
+			serverViewExtensions[i] = new ServerViewProvider(elements[i]);
+			serverViewExtensions[i].setEnabled(true);
+		}
 	}
 	
 }

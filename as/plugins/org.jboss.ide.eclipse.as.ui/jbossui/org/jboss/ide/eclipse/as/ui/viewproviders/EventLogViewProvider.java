@@ -11,17 +11,21 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEventRoot;
+import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 
-public class EventLogViewProvider extends JBossServerViewExtension {
+public class EventLogViewProvider extends JBossServerViewExtension implements IServerLogListener {
 
 	protected EventLogLabelProvider categoryLabelProvider;
 	protected EventLogContentProvider categoryContentProvider;
@@ -29,6 +33,15 @@ public class EventLogViewProvider extends JBossServerViewExtension {
 	public EventLogViewProvider() {
 		categoryLabelProvider = new EventLogLabelProvider();
 		categoryContentProvider = new EventLogContentProvider();
+	}
+	
+	
+	public void enable() {
+		ServerProcessModel.getDefault().addLogListener(this);
+	}
+	
+	public void disable() {
+		ServerProcessModel.getDefault().removeLogListener(this);
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
@@ -132,21 +145,16 @@ public class EventLogViewProvider extends JBossServerViewExtension {
 		}
 	}
 
-	
-	public ITreeContentProvider getPropertiesContentProvider() {
+
+	public void logChanged(ProcessLogEvent event) {
+		IServer s = JBossServerView.getDefault().getSelectedServer();
+		if( event.getRoot().getServer().equals(s))
+			refreshViewer();
+	}
+
+
+	public IPropertySheetPage getPropertySheetPage() {
 		return null;
-	}
-
-	public ITableLabelProvider getPropertiesLabelProvider() {
-		return null;
-	}
-
-	public String getPropertiesText(Object o) {
-		return "";
-	}
-
-	public int selectedObjectViewType(Object o) {
-		return JBossServerViewExtension.PROPERTIES;
 	}
 
 }

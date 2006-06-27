@@ -135,7 +135,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 			if( !create ) return null;
 			o = new ServerProcessModelEntity(key);
 			map.put(key, (ServerProcessModelEntity)o);
-			processModelChanged((ServerProcessModelEntity)o);
+			processModelChanged(((ServerProcessModelEntity)o).getEventLog());
 		}
 		return ((ServerProcessModelEntity)o);
 	}
@@ -160,10 +160,10 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		logListeners.remove(listener);
 	}
 
-	public void processModelChanged(ServerProcessModelEntity ent) {
+	public void processModelChanged(ProcessLogEvent event) {
 		Iterator i = logListeners.iterator();
 		while(i.hasNext()) {
-			((IServerLogListener)i.next()).logChanged(ent);
+			((IServerLogListener)i.next()).logChanged(event);
 		}
 	}
 	/**
@@ -580,7 +580,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		if( JBossServerCore.getServer(server) != null ) {
 			ServerProcessModelEntity ent = getModel(server.getId());
 			map.remove(server.getId());
-			processModelChanged(ent);
+			processModelChanged(ent.getEventLog());
 		}
 	}
 	

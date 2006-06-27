@@ -21,8 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 
 public interface IServerLogListener {
-	public void logChanged(ServerProcessModelEntity ent);
+	public void logChanged(ProcessLogEvent event);
 }

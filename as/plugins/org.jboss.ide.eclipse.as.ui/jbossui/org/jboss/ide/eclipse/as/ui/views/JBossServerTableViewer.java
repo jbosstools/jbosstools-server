@@ -1,69 +1,95 @@
 package org.jboss.ide.eclipse.as.ui.views;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Properties;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.server.core.IModule;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.PageBook;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
-import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
-import org.eclipse.wst.server.ui.internal.view.servers.ServerTableLabelProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesPropertySheetPage;
 
 public class JBossServerTableViewer extends TreeViewer {
-	
+
+	protected TableViewerPropertySheet propertySheet;
+
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
-		
 		setContentProvider(new ContentProviderDelegator());
 		setLabelProvider(new LabelProviderDelegator());
+		//topLevelPropertiesPage = PropertySheetFactory.createSimplePropertiesSheet(new TopLevelProperties());
+		propertySheet = new TableViewerPropertySheet();
 	}
 
-			
+	public static class ContentWrapper {
+		private Object o;
+		private ServerViewProvider provider;
+		
+		public ContentWrapper(Object o, ServerViewProvider provider) {
+			this.o = o;
+			this.provider = provider;
+		}
+
+		public Object getElement() {
+			return o;
+		}
+
+		public ServerViewProvider getProvider() {
+			return provider;
+		}
+		
+		public boolean equals(Object other) {
+			if( other == null ) return false;
+			if( other instanceof ContentWrapper ) {
+				return ((ContentWrapper)other).getElement().equals(o); 
+			}
+			return false;
+		}
+		
+		public int hashCode() {
+			return o.hashCode();
+		}
+	}
 	
 	protected class LabelProviderDelegator extends LabelProvider {
 		public String getText(Object obj) {
 			if( obj instanceof JBossServer) {
 				JBossServer server = (JBossServer)obj;
 				String ret = server.getServer().getName(); 
-//				ret += "  (";
-//				String home = server.getRuntimeConfiguration().getServerHome(); 
-//				ret += (home.length() > 30 ? home.substring(0,30) + "..." : home);
-//				ret += ", " + server.getRuntimeConfiguration().getJbossConfiguration() + ")";
 				return ret;
 			}
 			if( obj instanceof ServerViewProvider) {
 				return ((ServerViewProvider)obj).getName();
 			}
 			
-			try {
-				return getParentViewProvider(obj).getDelegate().getLabelProvider().getText(obj);
-			} catch( Exception e) {
+			if( obj instanceof ContentWrapper ) {
+				ContentWrapper wrapper = (ContentWrapper)obj;
+				return wrapper.getProvider().getDelegate().getLabelProvider().getText(wrapper.getElement());
 			}
 			return obj.toString();
 		}
@@ -71,10 +97,15 @@ public class JBossServerTableViewer extends TreeViewer {
 			if( obj instanceof JBossServer ) {
 				return ServerUICore.getLabelProvider().getImage(((JBossServer)obj).getServer());				
 			}
-			try {
-				return getParentViewProvider(obj).getDelegate().getLabelProvider().getImage(obj);
-			} catch( Exception e) {
+			if( obj instanceof ServerViewProvider ) {
+				return ((ServerViewProvider)obj).getImage();
 			}
+			
+			if( obj instanceof ContentWrapper ) {
+				Object object2 = ((ContentWrapper)obj).getElement();
+				return ((ContentWrapper)obj).getProvider().getDelegate().getLabelProvider().getImage(object2);
+			}
+			
 			return null;
 		}
 	}
@@ -83,6 +114,14 @@ public class JBossServerTableViewer extends TreeViewer {
 		public ContentProviderDelegator() {
 		}
 
+		public ContentWrapper[] wrap( Object[] elements, ServerViewProvider provider ) {
+			ContentWrapper[] wrappers = new ContentWrapper[elements.length];
+			for( int i = 0; i < wrappers.length; i++ ) {
+				wrappers[i] = new ContentWrapper(elements[i], provider);
+			}
+			return wrappers;
+		}
+		
 		public Object[] getElements(Object inputElement) {
 			return new Object[] { JBossServerCore.getServer((IServer)inputElement) };
 		}
@@ -92,16 +131,23 @@ public class JBossServerTableViewer extends TreeViewer {
 				return JBossServerUIPlugin.getDefault().getEnabledViewProviders();
 			}
 			if( parentElement instanceof ServerViewProvider) {
-				return ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
+				Object[] ret = ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
+				return wrap(ret, ((ServerViewProvider)parentElement));
 			}
 			
-			Object[] o = null;
-			try {
-				o = getParentViewProvider(parentElement).getDelegate().getContentProvider().getChildren(parentElement);
-			} catch( Exception e) {
+			if( parentElement instanceof ContentWrapper ) {
+				ContentWrapper parentWrapper = (ContentWrapper)parentElement;
+				Object[] o = null;
+				try {
+					o = parentWrapper.getProvider().getDelegate().getContentProvider().getChildren(parentWrapper.getElement());
+				} catch( Exception e) {
+				}
+				if( o == null ) 
+					return new Object[0];
+				return wrap(o, parentWrapper.getProvider());
 			}
 			
-			return o == null ? new Object[0] : o;
+			return new Object[0];
 		}
 
 		public Object getParent(Object element) {
@@ -124,29 +170,38 @@ public class JBossServerTableViewer extends TreeViewer {
 		
 	}
 
+	public Object getRawElement(Object o) {
+		if( o instanceof ContentWrapper )
+			return ((ContentWrapper)o).getElement();
+		return o;
+	}
+	
 	public ServerViewProvider getParentViewProvider(Object o) {
-		ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().getEnabledViewProviders();
-		for( int i = 0; i < providers.length; i++ ) {
-			if( containsObject(providers[i], o)) {
-				return providers[i];
-			}
-		}
+		if( o instanceof ContentWrapper ) 
+			return ((ContentWrapper)o).getProvider();
 		return null;
 	}
 	
-	public boolean containsObject(ServerViewProvider provider, Object obj) {
-		Object parent = provider.getDelegate().getContentProvider().getParent(obj);
-		while( parent != null && !(parent instanceof ServerViewProvider)) {
-			parent = provider.getDelegate().getContentProvider().getParent(parent);
+	public Object getSelectedElement() {
+		ISelection sel = getSelection();
+		if( sel instanceof IStructuredSelection ) {
+			return ((IStructuredSelection)sel).getFirstElement();
 		}
-		
-		if( parent instanceof ServerViewProvider ) 
-			return true;
-		
-		return false;
+		return null;
 	}
-	
 
+	protected void fillSelectedContextMenu(Shell shell, IMenuManager mgr) {
+		ISelection sel = getSelection();
+		if( sel instanceof IStructuredSelection ) {
+			Object selected = ((IStructuredSelection)sel).getFirstElement();
+			if( selected != null ) {
+				ServerViewProvider provider = getParentViewProvider(selected);
+				if( provider != null ) 
+					provider.getDelegate().fillContextMenu(shell, mgr, getRawElement(selected));
+			}
+		}
+
+	}
 	
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
 		Action action1 = new Action() {
@@ -166,4 +221,133 @@ public class JBossServerTableViewer extends TreeViewer {
 		menu.add(action1);
 	}
 
+	
+	public IPropertySheetPage getPropertySheet() {
+			return propertySheet;
+	}
+	
+	public class TableViewerPropertySheet implements IPropertySheetPage {
+
+		private PageBook book;
+		private ArrayList addedControls = new ArrayList();
+		private SimplePropertiesPropertySheetPage topLevelPropertiesPage;
+		
+		public void createControl(Composite parent) {
+			topLevelPropertiesPage = PropertySheetFactory.createSimplePropertiesSheet(new TopLevelProperties());
+			book = new PageBook(parent, SWT.NONE);
+			topLevelPropertiesPage.createControl(book);
+			book.showPage(topLevelPropertiesPage.getControl());
+		}
+
+		public void dispose() {
+		}
+
+		public Control getControl() {
+			return book;
+		}
+		
+		public void setActionBars(IActionBars actionBars) {
+		}
+
+		public void setFocus() {
+		}
+
+		public void selectionChanged(IWorkbenchPart part, ISelection sel) {
+			Object selected = getSelectedObject(sel);
+			if( selected != null ) {
+				
+				IPropertySheetPage page = null;
+				if( selected instanceof ContentWrapper ) {
+					page = getDelegatePage((ContentWrapper)selected);
+				}
+				
+				if( page == null ) {
+					page = topLevelPropertiesPage;
+				}
+				page.selectionChanged(part, sel);
+				book.showPage(page.getControl());
+			}
+		}
+		private IPropertySheetPage getDelegatePage(ContentWrapper wrapper) {
+			ServerViewProvider provider = wrapper.getProvider();
+			IPropertySheetPage returnSheet = null;
+			returnSheet = provider.getDelegate().getPropertySheetPage();
+			if( !addedControls.contains(provider)) {
+				returnSheet.createControl(book);
+				addedControls.add(provider);
+			}
+			return returnSheet;
+		}
+		
+		public Object getSelectedObject(ISelection sel) {
+			if( sel instanceof IStructuredSelection ) {
+				IStructuredSelection selection = (IStructuredSelection)sel;
+				Object selected = selection.getFirstElement();
+				return selected;
+			}
+			return null;
+		}
+		
+	}
+	/**
+	 * Properties for the top level elements 
+	 *    (a server or a category / extension point 
+	 * @author rstryker
+	 *
+	 */
+	class TopLevelProperties implements ISimplePropertiesHolder {
+		public Properties getProperties(Object selected) {
+			Properties ret = new Properties();
+			if( selected instanceof ServerViewProvider ) {
+				ServerViewProvider provider = (ServerViewProvider)selected;
+				ret.setProperty(Messages.ExtensionID, provider.getId());
+				ret.setProperty(Messages.ExtensionName, provider.getName());
+				ret.setProperty(Messages.ExtensionDescription, provider.getDescription());
+				ret.setProperty(Messages.ExtensionProviderClass, provider.getDelegateName());
+			}
+			
+			if( selected instanceof JBossServer) {
+				JBossServer server = (JBossServer)selected;
+				String home = server.getRuntimeConfiguration().getServerHome();
+				
+				ret.setProperty(Messages.ServerRuntimeVersion, server.getJBossRuntime().getVersionDelegate().getId());
+				ret.setProperty(Messages.ServerHome, home);
+				ret.setProperty(Messages.ServerConfigurationName, server.getRuntimeConfiguration().getJbossConfiguration());
+				ret.setProperty(Messages.ServerDeployDir, 
+						server.getRuntimeConfiguration().getDeployDirectory().replace(home, "(home)"));
+			}
+			return ret;
+		}
+
+
+		public String[] getPropertyKeys(Object selected) {
+			if( selected instanceof ServerViewProvider) {
+				return new String[] { 
+						Messages.ExtensionName, Messages.ExtensionDescription, 
+						Messages.ExtensionID, Messages.ExtensionProviderClass
+				};
+				
+			}
+			if( selected instanceof JBossServer ) {
+				return new String[] {
+						Messages.ServerRuntimeVersion, Messages.ServerHome, 
+						Messages.ServerConfigurationName, Messages.ServerDeployDir,
+				};
+			}
+			return new String[] {};
+		}
+	}
+
+	public void dispose() {
+		ASDebug.p("Disposing", this);
+		
+		// The Loner
+		propertySheet.dispose();
+		
+		ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
+		for( int i = 0; i < providers.length; i++ ) {
+			providers[i].dispose();
+		}
+	}
+	
 }
