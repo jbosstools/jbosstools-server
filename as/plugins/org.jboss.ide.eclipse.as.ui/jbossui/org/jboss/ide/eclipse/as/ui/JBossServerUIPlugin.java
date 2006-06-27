@@ -132,8 +132,12 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			this.element = element;
 			this.enabled = false;
 			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
-			iconDescriptor = 
-				ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
+			try {
+				iconDescriptor = 
+					ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
 		}
 		
 		public String getId() {
@@ -153,7 +157,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 		
 		public Image getImage() {
-			if( icon == null ) {
+			if( icon == null && iconDescriptor != null ) {
 				icon = iconDescriptor.createImage();
 			}
 			return icon;

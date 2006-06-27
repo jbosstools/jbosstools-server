@@ -272,7 +272,7 @@ public class JBossServerTableViewer extends TreeViewer {
 			ServerViewProvider provider = wrapper.getProvider();
 			IPropertySheetPage returnSheet = null;
 			returnSheet = provider.getDelegate().getPropertySheetPage();
-			if( !addedControls.contains(provider)) {
+			if( !addedControls.contains(provider) && returnSheet != null) {
 				returnSheet.createControl(book);
 				addedControls.add(provider);
 			}
