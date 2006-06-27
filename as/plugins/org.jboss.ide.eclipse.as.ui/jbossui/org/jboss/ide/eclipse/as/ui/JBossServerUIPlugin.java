@@ -136,7 +136,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 				iconDescriptor = 
 					ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
 			} catch( Exception e ) {
-				e.printStackTrace();
 			}
 		}
 		
