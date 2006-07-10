@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.viewproviders.JBossServerViewExtension;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -139,6 +140,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
 			String key = EXTENSION_ENABLED + getId();
 			enabled = prefs.contains(key) ? prefs.getBoolean(key) : false;
+			ASDebug.p("id " + key + " is " + prefs.getBoolean(key), this);
 
 			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 			try {
@@ -206,9 +208,13 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			if( icon != null ) 
 				icon.dispose();
 			
-//			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-//			String key = EXTENSION_ENABLED + getId();
-//			prefs.setValue(key, enabled);
+			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+			String key = EXTENSION_ENABLED + getId();
+			prefs.setValue(key, enabled);
+			
+			enabled = prefs.contains(key) ? prefs.getBoolean(key) : false;
+			ASDebug.p("id " + key + " is " + prefs.getBoolean(key), this);
+
 		}
 	}
 
@@ -241,7 +247,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		serverViewExtensions = new ServerViewProvider[elements.length];
 		for( int i = 0; i < elements.length; i++ ) {
 			serverViewExtensions[i] = new ServerViewProvider(elements[i]);
-			serverViewExtensions[i].setEnabled(true);
+			//serverViewExtensions[i].setEnabled(true);
 		}
 	}
 	
