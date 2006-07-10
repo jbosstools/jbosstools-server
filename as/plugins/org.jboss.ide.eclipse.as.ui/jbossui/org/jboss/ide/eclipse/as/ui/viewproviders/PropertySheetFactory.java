@@ -58,15 +58,11 @@ public class PropertySheetFactory {
 	 * It has a tree-table and a text box and the two can be moved around.
 	 * @return
 	 */
-	public static JBossServersViewPropertySheetPage createJBossServersPropertySheetPage() {
-		return new JBossServersViewPropertySheetPage();
+	public static PropertiesTextSashPropertiesPage createPropertiesTextSashPropertiesPage() {
+		return new PropertiesTextSashPropertiesPage();
 	}
 	
-	public static class JBossServersViewPropertySheetPage implements IPropertySheetPage {
-		private static final String TAG_SASHFORM_PROPERTIES = "sashformProperties"; 
-		private static final String PROPERTIES_COLUMNS = "propertiesColumns"; 
-
-		
+	public static class PropertiesTextSashPropertiesPage implements IPropertySheetPage {
 		
 		protected TreeViewer propertiesViewer;
 		protected SashForm propertiesForm;
@@ -114,7 +110,7 @@ public class PropertySheetFactory {
 			
 			Composite c2 = new Composite(propertiesForm, SWT.NONE);
 			c2.setLayout(new FillLayout());
-			propertiesText = new Text(c2, SWT.BORDER);
+			propertiesText = new Text(c2, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
 			
 			propertiesForm.setWeights(sashCols);
 		}
@@ -131,24 +127,58 @@ public class PropertySheetFactory {
 		}
 
 		public void setActionBars(IActionBars actionBars) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public void setFocus() {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			try {
-				ASDebug.p("Selection changed: " + selection, this);
-				ASDebug.p("   - first element: " + ((IStructuredSelection)selection).getFirstElement(), this);
+				propertiesViewer.setInput(((IStructuredSelection)selection).getFirstElement());
 			} catch( Exception e ) {
-				ASDebug.p("Exception e: " + e.getMessage(), this);
 			}
 		}
 		
+		
+		public void showTextOnly() {
+			sashCols[0] = 0;
+			sashCols[1] = 100;
+			propertiesForm.setWeights(sashCols);
+		}
+
+		public void showPropertiesOnly() {
+			sashCols[0] = 100;
+			sashCols[1] = 0;
+			propertiesForm.setWeights(sashCols);
+		}
+		
+		public void setSashWeights(int properties, int text) {
+			sashCols[0] = properties;
+			sashCols[1] = text;
+			propertiesForm.setWeights(sashCols);
+		}
+		
+		public void setSashWeights(int[] weights) {
+			sashCols = weights;
+			propertiesForm.setWeights(weights);
+		}
+		
+		public void setContentProvider(ITreeContentProvider provider) {
+			propertiesViewer.setContentProvider(provider);
+		}
+		
+		public void setLabelProvider(ITableLabelProvider provider) {
+			propertiesViewer.setLabelProvider(provider);
+		}
+		
+
+		public Text getText() {
+			return propertiesText;
+		}
+
+		public TreeViewer getViewer() {
+			return propertiesViewer;
+		}
 	}
 
 	

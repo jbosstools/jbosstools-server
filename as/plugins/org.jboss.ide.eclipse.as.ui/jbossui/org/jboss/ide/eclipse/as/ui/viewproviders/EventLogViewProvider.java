@@ -24,33 +24,49 @@ package org.jboss.ide.eclipse.as.ui.viewproviders;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ExceptionLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEventRoot;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ConsoleLogEvent;
 import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.PublishLogEvent;
+import org.jboss.ide.eclipse.as.core.server.ServerStateChecker.StateCheckerLogEvent;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.PropertiesTextSashPropertiesPage;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
+import org.jboss.ide.eclipse.as.ui.views.JBossServerTableViewer.ContentWrapper;
 
 public class EventLogViewProvider extends JBossServerViewExtension implements IServerLogListener {
 
 	protected EventLogLabelProvider categoryLabelProvider;
 	protected EventLogContentProvider categoryContentProvider;
+	protected PropertiesTextSashPropertiesPage propertiesSheet;
 	
 	public EventLogViewProvider() {
 		categoryLabelProvider = new EventLogLabelProvider();
@@ -67,6 +83,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+		ASDebug.p("Inside fill context menu, selection is " + selection, this);
 	}
 
 	public ITreeContentProvider getContentProvider() {
@@ -79,10 +96,55 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 
 	protected class EventLogLabelProvider extends LabelProvider {
 		public String getText(Object obj) {
+			
+			if( obj instanceof StateCheckerLogEvent) {
+				StateCheckerLogEvent event = (StateCheckerLogEvent)obj;
+
+				if( event.getEventType() == StateCheckerLogEvent.BEFORE) {
+					boolean expected = event.getExpectedState();
+					return (expected == true ? "Starting Server" : "Stopping Server");
+				}
+				
+				if( event.getEventType() == StateCheckerLogEvent.AFTER ) {
+					boolean current = (event.getCurrentState() == StateCheckerLogEvent.SERVER_UP);
+					return current ? "Server is up." : "Server is down.";
+				}
+				
+				if( event.getEventType() == StateCheckerLogEvent.DURING) {
+					String ret = "Twiddle Launch: Server is ";
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STARTING ) ret += "still starting";
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STOPPING ) ret += "still stopping";
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_UP ) ret += "up";
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN ) ret += "down";
+					return ret;
+				}
+			}
+			
+			if( obj instanceof ConsoleLogEvent) {
+				return "Console Output";
+			}
+			
+			if( obj instanceof PublishLogEvent ) {
+				PublishLogEvent publishEvent = ((PublishLogEvent)obj);
+				if( publishEvent.getEventType() == PublishLogEvent.ROOT) {
+					return "Publish Event";
+				}
+				if( publishEvent.getEventType() == PublishLogEvent.PUBLISH) {
+					return "Publishing module to server: " + publishEvent.getModuleName();
+				}
+				if( publishEvent.getEventType() == PublishLogEvent.UNPUBLISH) {
+					return "Removing module from server: " + publishEvent.getModuleName();
+				}
+				return "Unknown Publish Event";
+			}
+			if( obj instanceof ExceptionLogEvent ) {
+				ExceptionLogEvent event = ((ExceptionLogEvent)obj);
+				return event.getException().getLocalizedMessage();
+			}
 			if( obj instanceof ProcessLogEvent ) {
 				ProcessLogEvent event = ((ProcessLogEvent)obj);
 				SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.S");
-				return event.getText() + "   " + format.format(new Date(event.getDate()));
+				return event.toString() + "   " + format.format(new Date(event.getDate()));
 			}
 			return obj.toString();
 		}
@@ -91,32 +153,51 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 			IServer server = event.getRoot().getServer();
 			IServerType serverType = server.getServerType();
 
-			if( obj instanceof ProcessLogEvent ) {
-				if( event.getEventType() == ProcessLogEvent.SERVER_STARTING) {
+			if( obj instanceof StateCheckerLogEvent  ) {
+				StateCheckerLogEvent scle = (StateCheckerLogEvent)obj;
+				if( scle.getEventType() == StateCheckerLogEvent.BEFORE) {
+					boolean expected = scle.getExpectedState();
+					if( expected ) return getStateImage(serverType, IServer.STATE_STARTED, server.getMode());
+					return getStateImage(serverType, IServer.STATE_STOPPED, server.getMode());
+				}
+
+				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_STARTING) {
 					return getStateImage(serverType, IServer.STATE_STARTING, server.getMode());
 				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_STOPPING) {
+				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_STOPPING) {
 					return getStateImage(serverType, IServer.STATE_STOPPING, server.getMode());
 				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_UP) {
+				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_UP) {
 					return getStateImage(serverType, IServer.STATE_STARTED, server.getMode());					
 				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_DOWN) {
+				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN) {
 					return getStateImage(serverType, IServer.STATE_STOPPED, server.getMode());					
 				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_CONSOLE) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.CONSOLE_IMAGE);
-				}
-				if( event.getEventType() == ProcessLogEvent.TWIDDLE) {
-					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE);
-				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_PUBLISH) {
+			}
+			if( obj instanceof ConsoleLogEvent ) {
+				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.CONSOLE_IMAGE);
+			}
+			if( obj instanceof PublishLogEvent) {
+				if( event.getEventType() == PublishLogEvent.ROOT) {
 					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
 				}
-				if( event.getEventType() == ProcessLogEvent.SERVER_UNPUBLISH) {
+				if( event.getEventType() == PublishLogEvent.PUBLISH) {
+					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+				}
+				if( event.getEventType() == PublishLogEvent.UNPUBLISH) {
 					return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
 				}
 			}
+			if( obj instanceof ExceptionLogEvent ) {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+			}
+			if( obj instanceof TwiddleLogEvent ) {
+				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE);
+			}
+			
+
+
+			
 			return null;
 		}
 		
@@ -176,7 +257,175 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 
 
 	public IPropertySheetPage getPropertySheetPage() {
-		return null;
+		if( propertiesSheet == null ) {
+			createPropertiesSheet();
+		}
+		return propertiesSheet;
+	}
+	
+	protected void createPropertiesSheet() {
+		try {
+			propertiesSheet = new EventLogPropertiesSheetPage();
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+	
+	protected class EventLogPropertiesProvider extends LabelProvider 
+		implements ITableLabelProvider, ITreeContentProvider {
+	
+		public static final int SHOW_TEXT = 1;
+		public static final int SHOW_TREE = 2;
+		
+		public final static String STATECHECKER_PROPERTIES = "_STATECHECKER_PROPERTIES_";
+		
+		
+		protected Object newInput;
+		
+		public int getContentType(Object selected) {
+			if( selected instanceof ConsoleLogEvent ) return SHOW_TEXT;
+			if( selected instanceof TwiddleLogEvent ) return SHOW_TREE;
+			if( selected instanceof StateCheckerLogEvent ) return SHOW_TREE;
+			return SHOW_TREE ;
+		}
+		
+		public String getTextContent(Object selected) {
+			if( selected instanceof ConsoleLogEvent ) return ((ConsoleLogEvent)selected).toString();
+			if( selected instanceof StateCheckerLogEvent) return ((StateCheckerLogEvent)selected).getTwiddleLogEvent().getOut();
+			return "";
+		}
+				
+		public Object[] getChildren(Object parentElement) {
+			// top level elements for the input
+			if( newInput instanceof StateCheckerLogEvent ) 
+				return getChildren_((StateCheckerLogEvent)newInput, parentElement);
+			
+			if( newInput instanceof PublishLogEvent ) {
+				if( newInput == parentElement ) {
+					Set s = ((PublishLogEvent)parentElement).getProperties().keySet();
+					return (Object[]) s.toArray(new Object[s.size()]);
+				}
+					
+					
+				PublishLogEvent pubEvent = (PublishLogEvent)newInput;
+			}
+			
+			return new Object[0];
+		}
+
+		protected Object[] getChildren_(StateCheckerLogEvent input, Object parent) {
+			if( input == parent ) return input.getAvailableProperties();
+			
+			return new Object[] { };
+		}
+		
+		protected String getColumnText_(StateCheckerLogEvent input, Object element, int columnIndex) {
+			try {
+				if( columnIndex == 0 ) return element.toString();
+				if( columnIndex == 1 ) return input.getProperty(element).toString();
+			} catch( Exception e) {}
+			return "";
+		}
+		
+		
+		public String getColumnText(Object element, int columnIndex) {
+			if( newInput instanceof StateCheckerLogEvent) return getColumnText_((StateCheckerLogEvent)newInput, element, columnIndex);
+			
+			if( newInput instanceof PublishLogEvent ) {
+				
+				try {
+					if( columnIndex == 0 ) return element.toString();
+					if( columnIndex == 1 ) return ((ProcessLogEvent)newInput).getProperty(element).toString();
+				} catch( Exception e) {}
+				return "";
+			}
+			
+			return element.toString();
+		}
+
+		
+		
+		public Object getParent(Object element) {
+			return null;
+		}
+
+		public boolean hasChildren(Object element) {
+			return getChildren(element).length > 0 ? true : false;
+		}
+
+		public Object[] getElements(Object inputElement) {
+			return getChildren(inputElement);
+		}
+
+		public void dispose() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			this.newInput = newInput;
+		}
+		
+
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+
+
+		
+	}
+	
+	public class Pair {
+		public Object fFirst = null;
+		public Object fSecond = null;
+		public Pair(Object first, Object second) {
+			fFirst = first;
+			fSecond = second;
+		}
+	}
+	
+	protected class EventLogPropertiesSheetPage extends PropertiesTextSashPropertiesPage {
+
+		
+		public void createControl(Composite parent) {
+			super.createControl(parent);
+			EventLogPropertiesProvider p = new EventLogPropertiesProvider();
+			setContentProvider(p);
+			setLabelProvider(p);
+		}
+
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			if( selection instanceof IStructuredSelection ) {
+				Object selectedElement = ((IStructuredSelection)selection).getFirstElement();
+				if( selectedElement instanceof ContentWrapper) {
+					selectedElement = ((ContentWrapper)selectedElement).getElement();
+				}
+				
+				int type = getContentProvider().getContentType(selectedElement);
+				
+				// weight
+				if( type == (EventLogPropertiesProvider.SHOW_TEXT | 
+						EventLogPropertiesProvider.SHOW_TREE )) {
+
+					setSashWeights(new int[] {50, 50});
+					getText().setText(getContentProvider().getTextContent(selectedElement));
+					this.propertiesViewer.setInput(selectedElement);
+					
+				} else if( type == EventLogPropertiesProvider.SHOW_TEXT) {
+					showTextOnly();
+					getText().setText(getContentProvider().getTextContent(selectedElement));
+					
+				} else if( type == EventLogPropertiesProvider.SHOW_TREE ) {
+					showPropertiesOnly();
+					this.propertiesViewer.setInput(selectedElement);
+				}
+				
+			}
+		}
+		
+		public EventLogPropertiesProvider getContentProvider() {
+			return ((EventLogPropertiesProvider)propertiesViewer.getContentProvider());
+		}
 	}
 
 }

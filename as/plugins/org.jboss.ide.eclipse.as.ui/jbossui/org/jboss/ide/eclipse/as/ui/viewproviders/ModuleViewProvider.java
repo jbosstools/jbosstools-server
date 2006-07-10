@@ -196,9 +196,9 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				JBossServer server = (JBossServer)obj;
 				String ret = server.getServer().getName(); 
 				ret += "  (";
-				String home = server.getRuntimeConfiguration().getServerHome(); 
+				String home = server.getAttributeHelper().getServerHome(); 
 				ret += (home.length() > 30 ? home.substring(0,30) + "..." : home);
-				ret += ", " + server.getRuntimeConfiguration().getJbossConfiguration() + ")";
+				ret += ", " + server.getAttributeHelper().getJbossConfiguration() + ")";
 				return ret;
 			}
 			return null;

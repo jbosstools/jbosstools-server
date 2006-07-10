@@ -23,15 +23,19 @@ package org.jboss.ide.eclipse.as.ui.viewproviders;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 
 
 public class InactiveExtensionViewProvider extends JBossServerViewExtension {
@@ -102,8 +106,29 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		// TODO Auto-generated method stub
-		
+		final Object selected = selection;
+		if( selection instanceof ServerViewProvider && selection != this.provider) {
+			Action act = new Action() {
+				public void run() {
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							if( selected instanceof ServerViewProvider) {
+								((ServerViewProvider)selected).setEnabled(true);
+								((ServerViewProvider)selected).getDelegate().getContentProvider().
+									inputChanged(JBossServerView.getDefault().getJbViewer(), null, JBossServerView.getDefault().getSelectedServer());
+								
+								try {
+									JBossServerView.getDefault().refreshJBTree(null);
+								} catch(Exception e) {
+								}
+							}
+						} 
+					} );
+				}
+			};
+			act.setText("Re-Enable Category");
+			menu.add(act);
+		}
 	}
 
 	public ITreeContentProvider getContentProvider() {
