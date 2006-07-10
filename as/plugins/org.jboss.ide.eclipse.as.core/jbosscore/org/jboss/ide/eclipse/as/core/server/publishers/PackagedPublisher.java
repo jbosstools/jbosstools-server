@@ -25,6 +25,7 @@ import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.tomcat.core.internal.FileUtil;
 import org.eclipse.wst.server.core.IModule;
@@ -33,10 +34,12 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog;
+import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ExceptionLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.PublishLogEvent;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class PackagedPublisher implements IJbossServerPublisher  {
@@ -46,10 +49,15 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 	private JBossServerBehavior behavior;
 	private int publishState;
 	
+	public static final String TARGET_FILENAME = "_TARGET_FILENAME_";
+	public static final String SOURCE_FILENAME = "_SOURCE_FILENAME_";
+	public static final String DEST_FILENAME = "_DEST_FILENAME_";
+	
+	
 	public PackagedPublisher(JBossServer server, JBossServerBehavior behavior) {
 		this.server = server;
 		this.behavior = behavior;
-		this.log = new ServerProcessLog.ProcessLogEvent("Parent", ProcessLogEvent.UNKNOWN);
+		this.log = new ServerProcessLog.ProcessLogEvent(ProcessLogEvent.UNKNOWN);
 		publishState = IServer.PUBLISH_STATE_UNKNOWN;
 	}
 
@@ -121,9 +129,13 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 		Object o;
 		JBossModuleDelegate delegate;
 		
+		PublishLogEvent event = new PublishLogEvent(PublishLogEvent.UNPUBLISH);
+		log.addChild(event);
+
+		
 		for( int i = 0; i < module.length; i++ ) {
 			// delete this module
-			String deployDirectory = server.getRuntimeConfiguration().getDeployDirectory();
+			String deployDirectory = server.getAttributeHelper().getDeployDirectory();
 			o = module[i].getAdapter(JBossModuleDelegate.class);
 			if( o == null ) {
 				o = module[i].loadAdapter(JBossModuleDelegate.class, null);
@@ -136,20 +148,19 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 			ASDebug.p("Deleting fine from server: " + dest, this);
 			try {
 				Path destName = new Path(dest);
-				String config = server.getRuntimeConfiguration().getJbossConfiguration();
+				String config = server.getAttributeHelper().getJbossConfiguration();
 				
-				log.addChild("Removing " + destName.lastSegment() + " from the " + 
-						config + "/deploy directory", ProcessLogEvent.SERVER_UNPUBLISH );
-				
-
 				File destFile = new File(dest);
+				
+				event.setProperty(PublishLogEvent.MODULE_NAME, destName.lastSegment());
+				event.setProperty(TARGET_FILENAME, destFile.getAbsolutePath());
+				
 				destFile.delete();
 			
 				// tell the model you're aware of the change
-				ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], server.getServer().getId());
+				//ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], server.getServer().getId());
 			} catch( Exception e ) {
-				ASDebug.p("ERROR in unpublish", this);
-				e.printStackTrace();
+				event.addChild(new ExceptionLogEvent(e));
 			}
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
@@ -160,7 +171,10 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 		
 		JBossModuleDelegate delegate = null;
 		Object o = null;
-		String deployDirectory = server.getRuntimeConfiguration().getDeployDirectory();
+		String deployDirectory = server.getAttributeHelper().getDeployDirectory();
+
+		PublishLogEvent event = new PublishLogEvent(PublishLogEvent.PUBLISH);
+		log.addChild(event);
 		
 		// Ignore anything that's not a jbossmodule
 		for( int i = 0; i < module.length; i++ ) {
@@ -176,18 +190,19 @@ public class PackagedPublisher implements IJbossServerPublisher  {
 			String dest = new Path(deployDirectory).append(delegate.getResourceName()).toOSString();
 			
 			Path srcName = new Path(src);
-			String config = server.getRuntimeConfiguration().getJbossConfiguration();
+			String config = server.getAttributeHelper().getJbossConfiguration();
 			
-			log.addChild("Copying " + srcName.lastSegment() + " to the " + 
-					config + "/deploy directory", ProcessLogEvent.SERVER_PUBLISH );
+			event.setProperty(PublishLogEvent.MODULE_NAME, srcName.lastSegment());
+			event.setProperty(SOURCE_FILENAME, srcName);
+			event.setProperty(DEST_FILENAME, dest);
 			
 			
-			FileUtil.copyFile(src, dest);
+			IStatus status = FileUtil.copyFile(src, dest);
+			if( status.getSeverity() == IStatus.ERROR ) 
+				event.addChild(new ExceptionLogEvent(status.getException()));
 			
 			// tell everyone we need no more changes right now
 			ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], server.getServer().getId());
-
-			ASDebug.p("publishing module: " + module[i].getId(), this);
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
 	}

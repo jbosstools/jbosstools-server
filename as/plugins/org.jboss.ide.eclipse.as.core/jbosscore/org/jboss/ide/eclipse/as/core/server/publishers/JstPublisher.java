@@ -43,7 +43,6 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.core.PublishUtil;
-import org.eclipse.jst.server.core.internal.JavaServerPlugin;
 import org.eclipse.jst.server.generic.core.internal.publishers.AbstractModuleAssembler;
 import org.eclipse.ui.externaltools.internal.model.IExternalToolConstants;
 import org.eclipse.wst.server.core.IModule;
@@ -54,9 +53,11 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.PublishLogEvent;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.osgi.framework.Bundle;
 
@@ -67,17 +68,26 @@ public class JstPublisher implements IJbossServerPublisher {
 	public static final int BUILD_AND_PUBLISH = 3;
 	public static final int UNDEPLOY = 4;
 	
+	public static final String BUILD_PROPERTIES = "_BUILD_PROPERTIES_";
+	public static final String BUILD_FILE = "_BUILD_FILE_";
+	public static final String ANT_TARGETS = "_ANT_TARGETS_";
+	public static final String MODULE_TYPE = "_MODULE_TYPE_";
+	
 	private int state;
 	private JBossServer server;
 	private ProcessLogEvent log;
+	private PublishLogEvent event;
+	
 	public JstPublisher(JBossServer server) {
 		this.server = server;
 		state = IServer.PUBLISH_STATE_UNKNOWN;
-		this.log = new ServerProcessLog.ProcessLogEvent("Parent", ProcessLogEvent.UNKNOWN);
+		this.log = new ServerProcessLog.ProcessLogEvent(ProcessLogEvent.UNKNOWN);
 	}
 
     public void publishModule(int kind, int deltaKind, IModule[] module,
             IProgressMonitor monitor) throws CoreException {
+		// delta = [no_change, added, changed, removed] = [0,1,2,3]
+		// kind = [incremental, full, auto, clean] = [1,2,3,4]
     	ASDebug.p("Publishing with kind,deltakind = "  + kind + "," + deltaKind, this);
     	checkClosed(module);
         if(ServerBehaviourDelegate.REMOVED == deltaKind){
@@ -89,6 +99,7 @@ public class JstPublisher implements IJbossServerPublisher {
         	JBossAntPublisher publisher = new JBossAntPublisher();
             publisher.initialize(module,server);
             publisher.publish(monitor);
+			ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[0], server.getServer().getId());
         }
     }
 
@@ -134,6 +145,10 @@ public class JstPublisher implements IJbossServerPublisher {
 					assembleType = OTHER;
 				}
 				
+				event = new PublishLogEvent(PublishLogEvent.PUBLISH);
+				event.setProperty(PublishLogEvent.MODULE_NAME, module[0].getName());
+				log.addChild(event);
+				event.setProperty(MODULE_TYPE, module[0].getModuleType().getId());
 			}
 	    }
 	    
@@ -145,16 +160,19 @@ public class JstPublisher implements IJbossServerPublisher {
 
 		
 		public IStatus[] publish(IProgressMonitor monitor) throws CoreException {
-			log.addChild("Build and Publish JST module: " + module[0].getName(), ProcessLogEvent.SERVER_PUBLISH);
 			assemble(monitor);
         	String file = computeBuildFile();
 			runAnt(file, BUILD_AND_PUBLISH, monitor);
 			state = IServer.PUBLISH_STATE_NONE;
+			
+			
 			return null;
 		}
 		
 		public IStatus[] unpublish(IProgressMonitor monitor) throws CoreException {
-			log.addChild("Undeploy JST module: " + module[0].getName(), ProcessLogEvent.SERVER_UNPUBLISH);
+			event = new PublishLogEvent(PublishLogEvent.UNPUBLISH);
+			event.setProperty(PublishLogEvent.MODULE_NAME, module[0].getName());
+			log.addChild(event);
         	String file = computeBuildFile();
         	runAnt(file, UNDEPLOY, monitor);
 			return null;
@@ -169,14 +187,12 @@ public class JstPublisher implements IJbossServerPublisher {
 			props.put("project.working.dir", getProjectWorkingLocation().toString());
 			props.put("module.name", module[0].getName());
 			props.put("module.dir", getModuleWorkingDir().toString());
-			props.put("server.publish.dir", jbServer.getRuntimeConfiguration().getDeployDirectory());
+			props.put("server.publish.dir", jbServer.getAttributeHelper().getDeployDirectory());
 
-//			String args = getArguments(module[0]);			
-//			AntRunner runner = new AntRunner();
-//			runner.setBuildFileLocation(file);
-//			runner.setExecutionTargets(targets);
-//			runner.setArguments(args);
-//			runner.run();
+			
+			// Log
+			event.setProperty(ANT_TARGETS, targets);
+			event.setProperty(BUILD_PROPERTIES, props);
 			
 			
 			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
@@ -243,6 +259,7 @@ public class JstPublisher implements IJbossServerPublisher {
 			Bundle pluginBundle = JBossServerCorePlugin.getDefault().getBundle();
 			try {
 				URL url = FileLocator.resolve(pluginBundle.getEntry("/META-INF/jboss.publish.xml"));
+				event.setProperty(BUILD_FILE, url.toString());
 				return url.getFile();
 			} catch( Exception e ) {
 			}
