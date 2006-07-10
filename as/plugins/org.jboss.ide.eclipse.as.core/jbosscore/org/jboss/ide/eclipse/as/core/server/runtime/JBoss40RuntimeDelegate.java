@@ -21,7 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.server.runtime;
 
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import java.util.ArrayList;
 
 public class JBoss40RuntimeDelegate extends AbstractServerRuntimeDelegate {
 	public static final String VERSION_ID = "org.jboss.ide.eclipse.as.runtime.40";
@@ -32,6 +32,23 @@ public class JBoss40RuntimeDelegate extends AbstractServerRuntimeDelegate {
 	
 	public String getId() {
 		return "4.0";
+	}
+
+	public String[] getMinimalRequiredPaths() {
+		ArrayList list = new ArrayList();
+		list.add("conf");
+		list.add("conf\\jboss-service.xml");
+		list.add("conf\\jndi.properties");
+		list.add("deploy");
+		list.add("lib");
+		list.add("lib\\jboss-management.jar");
+		list.add("lib\\jboss-minimal.jar");
+		list.add("lib\\jnpserver.jar");
+		list.add("lib\\log4j.jar");
+		list.add("log");
+		String[] ret = new String[list.size()];
+		list.toArray(ret);
+		return ret;
 	}
 
 }

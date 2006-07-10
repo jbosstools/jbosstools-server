@@ -35,4 +35,9 @@ public class JBoss32RuntimeDelegate extends AbstractServerRuntimeDelegate {
 		return "3.2";
 	}
 
+
+	public String[] getMinimalRequiredPaths() {
+		return new String[0];
+	}
+
 }

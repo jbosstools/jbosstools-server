@@ -71,6 +71,7 @@ public abstract class AbstractServerRuntimeDelegate {
 	}
 
 	public abstract String getId();
+	public abstract String[] getMinimalRequiredPaths();
 	
 	public String getStartArgs(JBossServer server) {
 		return "--configuration=" + server.getAttributeHelper().getJbossConfiguration() + 

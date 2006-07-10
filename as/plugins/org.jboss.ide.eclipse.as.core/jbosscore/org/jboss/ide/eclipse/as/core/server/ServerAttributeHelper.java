@@ -15,6 +15,8 @@ public class ServerAttributeHelper {
 	public static final String PROP_CONFIG_PATH = "PROP_START_ARGS";
 	public static final String PROP_CLASSPATH = "PROP_CLASSPATH";
 	
+	public static final String PROP_MINIMAL_CONFIG = "MINIMAL_CONFIG";
+	
 	public static final String JBOSS_SERVER_HOME = "JBOSS_SERVER_HOME";
 	public static final String JBOSS_CONFIG = "JBOSS_CONFIG";
 	
@@ -77,6 +79,14 @@ public class ServerAttributeHelper {
 
 	public String getVMArgs() {
 		return server.getAttribute(PROP_VM_ARGS, getVersionDelegate().getVMArgs(jbServer));
+	}
+	
+	public String[] getMinimalConfig() {
+		String minimal;
+		if( (minimal=server.getAttribute(PROP_MINIMAL_CONFIG, (String)null)) == null ) {
+			return getVersionDelegate().getMinimalRequiredPaths();
+		}
+		return minimal.split("\n");
 	}
 	
 	public String getStartMainType() {
