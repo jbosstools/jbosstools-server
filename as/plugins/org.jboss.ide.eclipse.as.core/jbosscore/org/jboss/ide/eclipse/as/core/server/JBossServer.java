@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.server;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -31,6 +32,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
@@ -113,7 +115,7 @@ public class JBossServer extends ServerDelegate {
 	 */
 	public IStatus canModifyModules(IModule[] add, IModule[] remove) {
 		debug("canModifyModules");
-		return null;
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
@@ -124,7 +126,7 @@ public class JBossServer extends ServerDelegate {
 	// As of now none of my modules are implementing the parent / child nonesense
 	public IModule[] getRootModules(IModule module) throws CoreException {
 		//debug("***** getRootModules");
-		return new IModule[] {  };
+		return new IModule[] { module };
 	}
 
 	
