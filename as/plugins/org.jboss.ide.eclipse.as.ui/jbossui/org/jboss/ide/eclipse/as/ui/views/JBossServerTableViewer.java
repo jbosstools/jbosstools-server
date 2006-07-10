@@ -25,6 +25,8 @@ package org.jboss.ide.eclipse.as.ui.views;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -33,6 +35,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -44,10 +47,17 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -57,18 +67,18 @@ import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesPropertySheetPage;
+import org.jboss.ide.eclipse.as.ui.wizards.ServerCloneWizard;
 
 public class JBossServerTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
 	
-	protected Action disableCategoryAction, refreshViewerAction, twiddleAction;
+	protected Action disableCategoryAction, refreshViewerAction, twiddleAction, cloneServerAction;
 
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
 		setContentProvider(new ContentProviderDelegator());
 		setLabelProvider(new LabelProviderDelegator());
-		//topLevelPropertiesPage = PropertySheetFactory.createSimplePropertiesSheet(new TopLevelProperties());
 		propertySheet = new TableViewerPropertySheet();
 		createActions();
 	}
@@ -116,6 +126,70 @@ public class JBossServerTableViewer extends TreeViewer {
 		};
 		twiddleAction.setText("Twiddle Server");
 		twiddleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.TWIDDLE_IMAGE));
+		
+		
+		cloneServerAction = new Action() {
+			public void run() {
+				Object selected = getSelectedElement();
+				if( selected != null && selected instanceof JBossServer ) {
+					JBossServer server = (JBossServer)selected;
+
+
+					
+					// Show a wizard
+					ServerCloneWizard wizard = new ServerCloneWizard(server);
+					WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+				    dlg.open();
+					
+					
+					
+					// clone the directories
+					
+					// clone the wst server
+					//wstServerClone(server, newName);
+				}
+			}
+			
+			public void directoriesClone() {
+				
+			}
+			
+			public void wstServerClone(JBossServer server, String newName) {
+				
+				IServerType serverType = server.getServer().getServerType();
+				IRuntimeType runtimeType = server.getServer().getRuntime().getRuntimeType();
+				JBossServerRuntime oldJBRuntime = (JBossServerRuntime)server.getServer().getRuntime().loadAdapter(JBossServerRuntime.class, null);
+				try {
+					IServerWorkingCopy newServerWC = serverType.createServer(null, null, null, null);
+					IRuntimeWorkingCopy newRuntimeWC = runtimeType.createRuntime("", null);
+					IRuntime runtime = newRuntimeWC.save(true, null);
+					JBossServerRuntime newJBRuntime = (JBossServerRuntime)newRuntimeWC.loadAdapter(JBossServerRuntime.class, null);
+					newJBRuntime.setVMInstall(oldJBRuntime.getVM());
+
+					
+					newServerWC.setRuntime(runtime);
+					
+					IFolder configFolder = ServerType.getServerProject().getFolder(newName);
+					if( !configFolder.exists() ) {
+						configFolder.create(true, true, null);
+					}
+					
+					newServerWC.setServerConfiguration(configFolder);
+					newServerWC.setName(newName);
+					
+					JBossServer newServer = (JBossServer)newServerWC.loadAdapter(JBossServer.class, null);
+
+					
+//					newServer.getAttributeHelper().setServerHome(server.getAttributeHelper().getServerHome());
+//					// then set the new config
+//					newServer.getAttributeHelper().setJbossConfiguration("default");
+					
+					newServerWC.save(true, null);
+				} catch( CoreException ce) {}
+			}
+		};
+		cloneServerAction.setText("Clone Server");
+		
 	}
 	
 	public static class ContentWrapper {
@@ -199,26 +273,30 @@ public class JBossServerTableViewer extends TreeViewer {
 		}
 
 		public Object[] getChildren(Object parentElement) {
-			if( parentElement instanceof JBossServer) {
-				return JBossServerUIPlugin.getDefault().getEnabledViewProviders();
-			}
-			if( parentElement instanceof ServerViewProvider) {
-				Object[] ret = ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
-				return wrap(ret, ((ServerViewProvider)parentElement));
-			}
-			
-			if( parentElement instanceof ContentWrapper ) {
-				ContentWrapper parentWrapper = (ContentWrapper)parentElement;
-				Object[] o = null;
-				try {
-					o = parentWrapper.getProvider().getDelegate().getContentProvider().getChildren(parentWrapper.getElement());
-				} catch( Exception e) {
+			try {
+				if( parentElement == null ) return new Object[0];
+				
+				
+				if( parentElement instanceof JBossServer) {
+					return JBossServerUIPlugin.getDefault().getEnabledViewProviders();
 				}
-				if( o == null ) 
-					return new Object[0];
-				return wrap(o, parentWrapper.getProvider());
-			}
-			
+				if( parentElement instanceof ServerViewProvider) {
+					Object[] ret = ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
+					return wrap(ret, ((ServerViewProvider)parentElement));
+				}
+				
+				if( parentElement instanceof ContentWrapper ) {
+					ContentWrapper parentWrapper = (ContentWrapper)parentElement;
+					Object[] o = null;
+					try {
+						o = parentWrapper.getProvider().getDelegate().getContentProvider().getChildren(parentWrapper.getElement());
+					} catch( Exception e) {
+					}
+					if( o == null ) 
+						return new Object[0];
+					return wrap(o, parentWrapper.getProvider());
+				}
+			} catch( Exception e ) { e.printStackTrace(); }
 			return new Object[0];
 		}
 
@@ -282,6 +360,7 @@ public class JBossServerTableViewer extends TreeViewer {
 		Object selected = getSelectedElement();
 		if( selected instanceof JBossServer) {
 			menu.add(twiddleAction);
+			//menu.add(cloneServerAction);
 		}
 		
 		
@@ -378,13 +457,13 @@ public class JBossServerTableViewer extends TreeViewer {
 			
 			if( selected instanceof JBossServer) {
 				JBossServer server = (JBossServer)selected;
-				String home = server.getRuntimeConfiguration().getServerHome();
+				String home = server.getAttributeHelper().getServerHome();
 				
 				ret.setProperty(Messages.ServerRuntimeVersion, server.getJBossRuntime().getVersionDelegate().getId());
 				ret.setProperty(Messages.ServerHome, home);
-				ret.setProperty(Messages.ServerConfigurationName, server.getRuntimeConfiguration().getJbossConfiguration());
+				ret.setProperty(Messages.ServerConfigurationName, server.getAttributeHelper().getJbossConfiguration());
 				ret.setProperty(Messages.ServerDeployDir, 
-						server.getRuntimeConfiguration().getDeployDirectory().replace(home, "(home)"));
+						server.getAttributeHelper().getDeployDirectory().replace(home, "(home)"));
 			}
 			return ret;
 		}
