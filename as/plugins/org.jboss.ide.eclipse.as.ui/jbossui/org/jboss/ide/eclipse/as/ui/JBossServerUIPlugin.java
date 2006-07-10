@@ -139,8 +139,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			// Am I enabled?
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
 			String key = EXTENSION_ENABLED + getId();
-			enabled = prefs.contains(key) ? prefs.getBoolean(key) : false;
-			ASDebug.p("id " + key + " is " + prefs.getBoolean(key), this);
 
 			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 			try {
@@ -148,6 +146,9 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 					ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
 			} catch( Exception e ) {
 			}
+			
+			setEnabled( prefs.contains(key) ? prefs.getBoolean(key) : false );
+			
 		}
 		
 		public String getId() {
