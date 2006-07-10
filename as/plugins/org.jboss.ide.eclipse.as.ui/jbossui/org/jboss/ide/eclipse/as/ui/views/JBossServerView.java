@@ -50,7 +50,6 @@ import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.eclipse.wst.server.ui.internal.view.servers.ServersView;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
-import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.JBossServersViewPropertySheetPage;
 
 
 public class JBossServerView extends ServersView {
@@ -64,8 +63,6 @@ public class JBossServerView extends ServersView {
 	protected JBossServerTableViewer jbViewer;
 	protected Tree jbTreeTable;
 	
-	
-	protected JBossServersViewPropertySheetPage propertyPage;
 	
 	
 	public static JBossServerView instance;
@@ -152,6 +149,9 @@ public class JBossServerView extends ServersView {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
+					// If it's null, refresh the whole thing
+					if( provider2 == null ) { JBossServerView.this.jbViewer.refresh(); return; }
+
 					Object[] selected = JBossServerView.this.jbViewer.getExpandedElements();
 					JBossServerView.this.jbViewer.refresh(provider2);
 					JBossServerView.this.jbViewer.setExpandedElements(selected);
@@ -160,7 +160,6 @@ public class JBossServerView extends ServersView {
 				}
 			}
 		});
-
 	}
 	
 	public void addListeners() {
@@ -242,6 +241,11 @@ public class JBossServerView extends ServersView {
     	super.dispose();
     	jbViewer.dispose();
     }
+
+
+	public JBossServerTableViewer getJbViewer() {
+		return jbViewer;
+	}
 
 
 }
