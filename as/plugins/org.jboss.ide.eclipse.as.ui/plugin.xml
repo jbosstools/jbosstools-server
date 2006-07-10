@@ -58,6 +58,10 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
+            icon="icons/J2EEModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.archiveImage"
+            typeIds="jboss.archive"/>
+      <image
             icon="icons/AppClientModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.earImage"
             typeIds="jboss.ear"/>
