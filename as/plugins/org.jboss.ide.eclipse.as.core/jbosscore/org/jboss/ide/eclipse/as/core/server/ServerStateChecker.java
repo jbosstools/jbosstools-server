@@ -103,6 +103,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 				// and return true or generate an exception
 			}
 			//System.out.println("Results at time " + current + ": " + twiddleResults);
+			ent.getEventLog().branchChanged();
 		}
 
 		if( canceled ) {
