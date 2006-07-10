@@ -63,9 +63,8 @@ import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
@@ -509,7 +508,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 			folder.create(true,true, new NullProgressMonitor());
 		}
 		serverWC.setServerConfiguration(folder);
-		serverWC.setName("JbossServer " + name);
+		serverWC.setName(name);
 
 
 		server = (JBossServer) serverWC.getAdapter(JBossServer.class);
@@ -517,18 +516,13 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 			server = (JBossServer) serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		}
 
+		ServerAttributeHelper helper = new ServerAttributeHelper(server, serverWC);
+		helper.setServerHome(homeDir);
+		helper.setJbossConfiguration(config);
 		
-		
-			/* TODO: FIX */
-			JBossRuntimeConfiguration rtConfig = server.getRuntimeConfiguration();
 		try {
-			rtConfig.setHost(serverWC.getHost());
-			rtConfig.setServerHome(homeDir);
-			rtConfig.setJbossConfiguration(config);
 			serverWC.save(false, new NullProgressMonitor());
 			server.setRuntime(runtime);
-	
-			
 			runtime.setVMInstall(selectedVM);
 		} catch( Exception e ) {
 			System.out.println("DYING HERE");
@@ -547,13 +541,11 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		return true;
 	}
 
-	private String getResourceString(String key) {
-		return JBossServerUIPlugin.getResourceString(key);
-	}
+
 	
 	private IFolder getJbossServerFolder(String serverName) {
 		try {
-			return ServerType.getServerProject().getFolder("JbossServer " + serverName);
+			return ServerType.getServerProject().getFolder(serverName);
 		} catch( CoreException e) {
 			return null;
 		}

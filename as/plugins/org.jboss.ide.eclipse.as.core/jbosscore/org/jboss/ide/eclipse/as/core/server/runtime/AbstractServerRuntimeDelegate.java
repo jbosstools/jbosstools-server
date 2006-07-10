@@ -73,8 +73,8 @@ public abstract class AbstractServerRuntimeDelegate {
 	public abstract String getId();
 	
 	public String getStartArgs(JBossServer server) {
-		return "--configuration=" + server.getRuntimeConfiguration().getJbossConfiguration() + 
-				" --host=" + server.getRuntimeConfiguration().getHost();
+		return "--configuration=" + server.getAttributeHelper().getJbossConfiguration() + 
+				" --host=" + server.getServer().getHost();
 	}
 	public String getStopArgs(JBossServer server) {
 		return defaultShutdownArgs;
@@ -87,25 +87,25 @@ public abstract class AbstractServerRuntimeDelegate {
 	
 	
 	
-	public String getStartMainType(JBossServer server) {
+	public String getStartMainType() {
 		return startMainType;
 	}
-	public String getStopMainType(JBossServer server) {
+	public String getStopMainType() {
 		return stopMainType;
 	}
-	public String getTwiddleMainType(JBossServer server) {
+	public String getTwiddleMainType() {
 		return twiddleMainType;
 	}
 
 	
 	public String getStartJar(JBossServer server) {
-		return server.getRuntimeConfiguration().getServerHome() + File.separator + runJar;
+		return server.getAttributeHelper().getServerHome() + File.separator + runJar;
 	}
 	public String getShutdownJar(JBossServer server) {
-		return server.getRuntimeConfiguration().getServerHome() + File.separator + shutdownJar;
+		return server.getAttributeHelper().getServerHome() + File.separator + shutdownJar;
 	}
 	public String getTwiddleJar(JBossServer server) {
-		return server.getRuntimeConfiguration().getServerHome() + File.separator + twiddleJar;		
+		return server.getAttributeHelper().getServerHome() + File.separator + twiddleJar;		
 	}
 	
 	public List getRuntimeClasspath(JBossServer server) {
@@ -127,7 +127,7 @@ public abstract class AbstractServerRuntimeDelegate {
 	 */
 	
 	public List getRuntimeClasspath(JBossServer server, int action) {
-		String serverHome = server.getRuntimeConfiguration().getServerHome();
+		String serverHome = server.getAttributeHelper().getServerHome();
 		ArrayList classpath = new ArrayList();
 		
 		if( action == IJBossServerRuntimeDelegate.ACTION_START) {
@@ -136,12 +136,12 @@ public abstract class AbstractServerRuntimeDelegate {
 			classpath.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(getShutdownJar(server))));
 		} else if( action == IJBossServerRuntimeDelegate.ACTION_TWIDDLE ) {
 			
-			// Twiddle requires more classes and I'm too lazy to actually figure out which ones it needs.
+			// Twiddle requires more classes and I'm too lazy to actually figure OUT which ones it needs.
 			classpath.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(getTwiddleJar(server))));
 			addDirectory (serverHome, classpath, "lib");
 			addDirectory (serverHome, classpath, "lib" + File.separator + "endorsed");
 			addDirectory (serverHome, classpath, "client");
-			addDirectory (server.getRuntimeConfiguration().getConfigurationPath(), classpath, "lib"); 
+			addDirectory (server.getAttributeHelper().getConfigurationPath(), classpath, "lib"); 
 		}
 				
 		ArrayList runtimeClassPaths = convertClasspath(classpath, runtime.getVM());

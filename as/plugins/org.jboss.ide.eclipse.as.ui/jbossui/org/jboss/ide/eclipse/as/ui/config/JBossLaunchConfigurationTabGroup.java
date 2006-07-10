@@ -35,7 +35,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.RuntimeConfigUtil;
 
@@ -47,7 +47,6 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 	private JBossServer jbServer;
 	private JBossServerBehavior jbServerBehavior;
 	private JBossServerRuntime jbRuntime;
-	private JBossRuntimeConfiguration jbRtConfig;
 	
 	private ILaunchConfiguration launchConfiguration;
 	private ILaunchConfigurationWorkingCopy launchWC;
@@ -147,9 +146,16 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 			}
 			jbServerBehavior = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
 			jbRuntime = jbServer.getJBossRuntime();
-			jbRtConfig = jbServer.getRuntimeConfiguration();
-	
-			jbRtConfig.updateConfiguration(configuration);		
+			
+			
+			String progArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
+			String vmArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+			
+			ServerAttributeHelper helper = jbServer.getAttributeHelper();
+			helper.setProgramArgs(progArgs);
+			helper.setVMArgs(vmArgs);
+			helper.save();
+			
 		} catch( CoreException ce ) {
 			
 		}
