@@ -23,6 +23,7 @@ package org.jboss.ide.eclipse.as.core.model;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,7 +34,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 /**
  * This class is intended to represent the actual mbeans, 
@@ -91,15 +93,18 @@ public class DescriptorModel {
 	 */
 	public class ServerDescriptorModel {
 		private String serverId;
+		private long lastChecked;
+		private String configPath;
 		
 		public ServerDescriptorModel(String id) {
 			this.serverId = id;
+			ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
+			configPath = helper.getConfigurationPath();
+			
 		}
 		
 		public int getJNDIPort() {
 			try {
-				JBossRuntimeConfiguration rc = getJBossServer().getRuntimeConfiguration();
-				String configPath = rc.getConfigurationPath();
 				String jbossServicePath = configPath + File.separator + "conf" + 
 						File.separator + "jboss-service.xml";
 				URL jbossServiceURL = new File(jbossServicePath).toURL();
@@ -121,6 +126,27 @@ public class DescriptorModel {
 			return JBossServerCore.getServer(ServerCore.findServer(serverId));
 		}
 		
+		private File[] getAllDescriptors() {
+			ArrayList list = new ArrayList();
+			File config = new File(configPath);
+			getAllDescriptorsRecurse(config, list);
+			File[] ret = new File[list.size()];
+			list.toArray(ret);
+			return ret;
+		}
+		
+		private void getAllDescriptorsRecurse(File parent, ArrayList collector) {
+			if( parent.isDirectory() ) {
+				File[] children = parent.listFiles();
+				for( int i = 0; i < children.length; i++ ) {
+					if( children[i].isDirectory()) {
+						getAllDescriptorsRecurse(children[i], collector);
+					} else if( children[i].getAbsolutePath().endsWith(".xml")) {
+						collector.add(children[i]);
+					}
+				}
+			}
+		}
 	}
 	
 	

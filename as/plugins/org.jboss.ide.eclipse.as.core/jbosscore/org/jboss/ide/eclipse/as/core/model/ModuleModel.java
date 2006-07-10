@@ -124,10 +124,13 @@ public class ModuleModel implements IResourceChangeListener{
 	}
 	
 	public static boolean isPackagedModule(IModule module) {
+		if( "jboss.archive".equals(module.getModuleType().getId())) return true;
+		/*
 		if( "jboss.web".equals(module.getModuleType().getId())) return true;
 		if( "jboss.ear".equals(module.getModuleType().getId())) return true;
 		if( "jboss.ejb".equals(module.getModuleType().getId())) return true;
 		if( "jboss.aop".equals(module.getModuleType().getId())) return true;
+		*/
 		return false;
 	}
 	
@@ -449,7 +452,7 @@ public class ModuleModel implements IResourceChangeListener{
 		
 		/**
 		 * Date is the last time this module was changed.
-		 * Servers can use this to figure out if it needs to be
+		 * Servers can use this to figure OUT if it needs to be
 		 * published again or not. 
 		 */
 		private long date;
