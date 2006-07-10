@@ -52,7 +52,6 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 	private ModuleModel moduleModel;
 	private ServerProcessModel processModel;
 	private String[] jbossFactories;
-	private ArrayList consoleListeners;
 	
 	public static JBossServerCore getDefault() {
 		if( instance == null ) {
@@ -105,7 +104,6 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		
 		moduleModel = ModuleModel.getDefault();
 		processModel = ServerProcessModel.getDefault();
-		consoleListeners = new ArrayList();
 	}
 
 	
