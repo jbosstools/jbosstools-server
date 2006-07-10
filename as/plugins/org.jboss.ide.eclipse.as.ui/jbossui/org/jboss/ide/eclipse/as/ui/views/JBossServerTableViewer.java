@@ -137,9 +137,9 @@ public class JBossServerTableViewer extends TreeViewer {
 
 					
 					// Show a wizard
-					ServerCloneWizard wizard = new ServerCloneWizard(server);
-					WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
-				    dlg.open();
+					//ServerCloneWizard wizard = new ServerCloneWizard(server);
+					//WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+				    //dlg.open();
 					
 					
 					
