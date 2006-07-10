@@ -94,7 +94,6 @@ public abstract class AbstractDeploymentVerifier implements IJbossDeploymentVeri
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 0, "Success", null);
 	}
 
-
 	
 	
 	protected abstract void initialize();
@@ -106,12 +105,12 @@ public abstract class AbstractDeploymentVerifier implements IJbossDeploymentVeri
 		model.addSPListener(this);
 		DebugPlugin.getDefault().addDebugEventListener(this);
 		
-		logEvent = new ProcessLogEvent("Verifying deployment of " 
-				+ delegate.getResourceName(), ProcessLogEvent.SERVER_VERIFY);
-
-		String id = jbServer.getServer().getId();
-		ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(id);
-		ent.getEventLog().addChild(logEvent, ProcessLogEvent.ADD_BEGINNING);
+//		logEvent = new ProcessLogEvent("Verifying deployment of " 
+//				+ delegate.getResourceName(), ProcessLogEvent.SERVER_VERIFY);
+//
+//		String id = jbServer.getServer().getId();
+//		ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(id);
+//		ent.getEventLog().addChild(logEvent, ProcessLogEvent.ADD_BEGINNING);
 
 	}
 	
@@ -165,7 +164,7 @@ public abstract class AbstractDeploymentVerifier implements IJbossDeploymentVeri
 	
 	/**
 	 * Tell the server process model to start listening right away to 
-	 * these procecsses as they start. Their standard out and error
+	 * these procecsses as they start. Their standard OUT and error
 	 * will then be available for us to analyze or document.
 	 */
 	public void ServerProcessEventFired(ServerProcessEvent event) {

@@ -58,7 +58,7 @@ public class WarDeploymentVerifier  extends AbstractDeploymentVerifier {
 
 	protected void initialize() {
 		int jndiPort = jbServer.getDescriptorModel().getJNDIPort();
-		String host = jbServer.getRuntimeConfiguration().getHost();
+		String host = jbServer.getServer().getHost();
 		argsStart = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor ";
 	}
 

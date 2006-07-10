@@ -24,10 +24,7 @@ package org.jboss.ide.eclipse.as.core.client.verifiers;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleDelegate;
-import org.jboss.ide.eclipse.as.core.module.factory.EjbModuleFactory.EjbModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
@@ -44,6 +41,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 	}
 
 	public String[] createTwiddleArgs(JBossServer server, JBossModuleDelegate delegate1) {
+		/*
 		if( !(delegate1 instanceof EjbModuleDelegate) ) {
 			return new String[] { };
 		} 
@@ -51,7 +49,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 		EjbModuleDelegate delegate = (EjbModuleDelegate)delegate1;
 		
 		int jndiPort = server.getDescriptorModel().getJNDIPort();
-		String host = server.getRuntimeConfiguration().getHost();
+		String host = server.getServer().getHost();
 
 		String filename = delegate.getResourceName();
 		
@@ -67,6 +65,8 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 
 		//String final2 = argsFront + service + " StateString Name";
 		return allArgs;
+		*/
+		return new String[0];
 	}
 
 	private String createModuleArgs(String front, String filename) {
@@ -74,6 +74,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 			"StateString Name";
 	}
 	
+	/*
 	private String[] createBeanArgs(String front, EjbModuleDelegate delegate) {
 		String[] names = delegate.getBeanJNDINames();
 		String[] args = new String[names.length];
@@ -83,6 +84,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 		}
 		return args;
 	}
+	*/
 	
 	protected String formatConsoleOutput() {
 		return "";
@@ -101,6 +103,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 	}
 
 	protected void runVerifier() {
+		/*
 		String[] twiddleArgs = createTwiddleArgs(jbServer, (EjbModuleDelegate)delegate);
 		for( int i = 0; i < twiddleArgs.length; i++ ) {
 			ProcessLogEvent event = 
@@ -108,6 +111,7 @@ public class EjbDeploymentVerifier extends AbstractDeploymentVerifier {
 			logEvent.addChild(event);
 			logEvent.getRoot().branchChanged();
 		}
+		*/
 	}
 
 	protected void threadTerminated(DebugEvent[] events) {

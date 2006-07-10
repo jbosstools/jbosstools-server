@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -78,7 +79,6 @@ public class TwiddleLauncher implements IServerProcessListener {
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < twiddleArgs.length; i++ ) {
 			try {
-				System.out.println("[Twiddle Args] " + twiddleArgs[i]);
 				wc = createTwiddleLaunch(jbServer, twiddleArgs[i], seed);
 				ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), false, false);
 				list.addAll(Arrays.asList(launch.getProcesses()));
@@ -123,7 +123,7 @@ public class TwiddleLauncher implements IServerProcessListener {
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getTwiddleMainType(jbServer));
+		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getTwiddleMainType());
 		workingCopy.setAttribute(Server.ATTR_SERVER_ID, jbServer.getServer().getId());
 		workingCopy.setAttribute(JBossServerBehavior.ATTR_ACTION, JBossServerBehavior.ACTION_TWIDDLE);
 		
@@ -132,7 +132,7 @@ public class TwiddleLauncher implements IServerProcessListener {
 		
         workingCopy.setAttribute(
                 IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-                jbServer.getRuntimeConfiguration().getServerHome() + Path.SEPARATOR + "bin");
+                jbServer.getAttributeHelper().getServerHome() + Path.SEPARATOR + "bin");
 
 		
 		
@@ -204,26 +204,10 @@ public class TwiddleLauncher implements IServerProcessListener {
 	private TwiddleLogEvent createTwiddleEvents(String args, boolean allTerminated) {
 		// If there's only one process, we dont need to do all the rest
 		if( processDatas.length == 1 ) {
-			TwiddleLogEvent e = new TwiddleLogEvent("Twiddle Launch: " + args, 
-					ProcessLogEvent.TWIDDLE, processDatas[0]);
-//			ProcessLogEvent e = new ProcessLogEvent("Twiddle Launch: " + args, ProcessLogEvent.TWIDDLE);
-//			if( !processDatas[0].getOut().equals("")) {
-//				String out = processDatas[0].getOut();
-//				String[] outArray = out.split("\r\n|\r|\n");
-//				for( int i = 0; i < outArray.length; i++ ) {
-//					e.addChild(outArray[i], ProcessLogEvent.STDOUT);
-//				}
-//			}
-//			if( !processDatas[0].getErr().equals("")) {
-//				String err = processDatas[0].getErr();
-//				String[] errArray = err.split("\r\n|\r|\n");
-//				for( int i = 0; i < errArray.length; i++ ) {
-//					e.addChild(errArray[i], ProcessLogEvent.STDOUT);
-//				}
-//			}
+			TwiddleLogEvent e = new TwiddleLogEvent(args, processDatas[0], current);
 			return e;
 		}
-		return new TwiddleLogEvent("Error in TwiddleLauncher (unexpected response)", ProcessLogEvent.ERROR, null);
+		return new TwiddleLogEvent(TwiddleLogEvent.ERROR, args, null, current);
 	}
 	
 	public int getDuration() {
@@ -249,25 +233,60 @@ public class TwiddleLauncher implements IServerProcessListener {
 	
 	public static class TwiddleLogEvent extends ProcessLogEvent {
 		
-		private String out;
-		private String err; 
+		public static final String OUT = "_OUT_";
+		public static final String ERR = "_ERR_"; 
+		public static final String ARGS = "_ARGS_"; 
+		public static final String TIME = "_TIME_";
+		
+		public static final int TWIDDLE = 0;
+		public static final int ERROR = 1;
+		
+		
 
-		public TwiddleLogEvent(String text, int eventType, ProcessData data) {
-			super(text, eventType);
+		public TwiddleLogEvent(String args1, ProcessData data, int time) {
+			this(TWIDDLE, args1, data, time);
+		}
+		
+		public TwiddleLogEvent(int type, String args1, ProcessData data, int time) {
+			super(type);
+			setProperty(ARGS, args1);
+			setProperty(TIME, time);
 			if( data != null ) {
-				this.out = data.getOut();
-				this.err = data.getErr();
+				setProperty(OUT, data.getOut());
+				setProperty(ERR, data.getErr());
 			}
 		}
 		
 		public String getOut() {
-			return out;
+			return (String)getProperty(OUT);
 		}
 		public String getErr() {
-			return err;
+			return  (String)getProperty(ERR);
+		}
+		public String getArgs() {
+			return (String)getProperty(ARGS);
+		}
+		public int getTime() {
+			return ((Integer)getProperty(TIME)).intValue();
 		}
 		public boolean isException() {
 			return false;
+		}
+		public Object[] getAvailableProperties() {
+			return new Object[] { ARGS, TIME};
+		}
+		public Properties outputAsProperties() {
+			Properties p = new Properties();
+			String[] perLine = getOut().split("\r\n|\r|\n");
+			for( int i = 0; i < perLine.length; i++ ) {
+				if( perLine[i].contains("=")) {
+					try {
+						int index = perLine[i].indexOf("=");
+						p.put(perLine[i].substring(0, index), perLine[i].substring(index+1));
+					} catch( Exception e ) {}
+				}
+			}
+			return p;
 		}
 	}
 }
