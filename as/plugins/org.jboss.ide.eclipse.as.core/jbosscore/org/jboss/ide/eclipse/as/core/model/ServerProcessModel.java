@@ -397,6 +397,14 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	
 	}
 	
+	public static class ConsoleLogEvent extends ProcessLogEvent {
+		public ConsoleLogEvent() {
+			super(ProcessLogEvent.SERVER_CONSOLE);
+		}
+		public String toString() {
+			return getProperty(new Integer(ServerProcessLog.ProcessLogEvent.SERVER_CONSOLE)).toString();
+		}
+	}
 	
 	private class ServerConsoleLogger implements IServerProcessListener, IStreamListener {
 		private IStreamMonitor out, err;
@@ -414,14 +422,13 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		
 		public void ServerProcessEventFired(ServerProcessEvent event) {
 			try {
-			if( event.getProcessType().equals(START_PROCESSES) && event.getProcessDatas().length == 1 ) {
-				IStreamsProxy proxy = event.getProcessDatas()[0].getProcess().getStreamsProxy();
-				out = proxy.getOutputStreamMonitor();
-				err = proxy.getErrorStreamMonitor();
-				out.addListener(this);
-				err.addListener(this);
-				
-			}
+				if( event.getProcessType().equals(START_PROCESSES) && event.getProcessDatas().length == 1 ) {
+					IStreamsProxy proxy = event.getProcessDatas()[0].getProcess().getStreamsProxy();
+					out = proxy.getOutputStreamMonitor();
+					err = proxy.getErrorStreamMonitor();
+					out.addListener(this);
+					err.addListener(this);
+				}
 			} catch( Exception e ) {
 				ASDebug.p("Error", this);
 				e.printStackTrace();
@@ -432,11 +439,12 @@ public class ServerProcessModel implements IServerLifecycleListener {
 			ProcessLogEvent major = getEventLog().getLatestMajorEvent(true);
 			ProcessLogEvent[] children = major.getChildren();
 			for( int i = 0; i < children.length; i++ ) {
-				if( children[i].getEventType() == ProcessLogEvent.SERVER_CONSOLE ) {
+				if( children[i] instanceof ConsoleLogEvent && 
+						children[i].getEventType() == ProcessLogEvent.SERVER_CONSOLE ) {
 					return children[i];
 				}
 			}
-			ProcessLogEvent newConsole = new ProcessLogEvent("Console Output", ProcessLogEvent.SERVER_CONSOLE);
+			ProcessLogEvent newConsole = new ConsoleLogEvent();
 			major.addChild(newConsole, ProcessLogEvent.ADD_BEGINNING);
 			return newConsole;
 		}
@@ -459,20 +467,24 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		}
 		
 		protected void outAppended(String text, IStreamMonitor monitor) {
-			String[] textSplit = text.split("\r\n|\r|\n");
-			for( int i = 0; i < textSplit.length; i++ )
-				getLatestConsole().addChild(textSplit[i], ProcessLogEvent.STDOUT);
+			append(text);
 		}
 		protected void errAppended(String text, IStreamMonitor monitor) {
-			String[] textSplit = text.split("\r\n|\r|\n");
-			for( int i = 0; i < textSplit.length; i++ )
-				getLatestConsole().addChild(textSplit[i], ProcessLogEvent.STDERR);
+			append(text);
+		}
+		
+		protected void append(String text) {
+			Object o = getLatestConsole().getProperty(new Integer(ServerProcessLog.ProcessLogEvent.SERVER_CONSOLE));
+			String x;
+			if( o == null ) x = ""; else x = (String)o;
+			x = x + text;
+			getLatestConsole().setProperty(new Integer(ServerProcessLog.ProcessLogEvent.SERVER_CONSOLE), x);
 		}
 	}
 	
 	
 	/**
-	 * A class that can monitor a process's standard out and
+	 * A class that can monitor a process's standard OUT and
 	 * standard error, as well as keep track of the process's 
 	 * arguments that it was launched with. 
 	 * 

@@ -34,29 +34,9 @@ import org.jboss.ide.eclipse.as.core.util.ASDebug;
 public class ServerProcessLog {
 	
 	public static class ProcessLogEvent {
-		public static final int SERVER_ROOT = -1;
-
-		public static final int SERVER_CONSOLE = 0;
+		public static final int SERVER_ROOT = 0;
+		public static final int SERVER_CONSOLE = 1;
 		
-		public static final int SERVER_STARTING = 1;
-		public static final int SERVER_STOPPING = 3;
-		public static final int SERVER_UP = 9;
-		public static final int SERVER_DOWN = 10;
-
-		public static final int SERVER_PUBLISH = 2;
-		public static final int SERVER_UNPUBLISH = 14;
-		public static final int SERVER_VERIFY = 15;
-		
-		public static final int TWIDDLE = 4;
-		public static final int STDOUT = 5;
-		public static final int STDERR = 6;
-		public static final int PROCESS = 7;
-		public static final int ERROR = 8;
-		
-		public static final int WAR = 11;
-		public static final int EJB_JAR = 12;
-		public static final int EAR = 13;
-
 		public static final int UNKNOWN = 16;
 		
 		
@@ -64,19 +44,15 @@ public class ServerProcessLog {
 		public static final int ADD_END = 1;
 		
 		
-		
-		
 		private HashMap properties = new HashMap();
 		private ArrayList children = new ArrayList();
 		private ProcessLogEvent parent;
 
-		private String text;
 		private int eventType;
 		private long date;
 		private boolean complete = false;
 		
-		public ProcessLogEvent(String text, int eventType) {
-			this.text = text;
+		public ProcessLogEvent(int eventType) {
 			this.eventType = eventType;
 			this.date = new Date().getTime();
 		}
@@ -101,12 +77,12 @@ public class ServerProcessLog {
 		}
 		
 		
-		public ProcessLogEvent addChild(String text, int eventType) {
-			return addChild(text, eventType, ADD_END);
+		public ProcessLogEvent addChild(int eventType) {
+			return addChild(eventType, ADD_END);
 		}
 		
-		public ProcessLogEvent addChild(String text, int eventType, int location) {
-			ProcessLogEvent e = new ProcessLogEvent(text, eventType);
+		public ProcessLogEvent addChild(int eventType, int location) {
+			ProcessLogEvent e = new ProcessLogEvent(eventType);
 			addChild(e, location);
 			return e;
 		}
@@ -162,10 +138,6 @@ public class ServerProcessLog {
 			this.eventType = eventType;
 		}
 
-		public String getText() {
-			return text;
-		}
-
 		public ProcessLogEvent getParent() {
 			return parent;
 		}
@@ -194,10 +166,20 @@ public class ServerProcessLog {
 			this.complete = true;
 		}
 		
-		public void setText(String text) {
-			this.text = text;
-		}
+	}
+	
+	public static class ExceptionLogEvent extends ProcessLogEvent {
 
+		private Throwable e;
+		public ExceptionLogEvent(Throwable e) {
+			super(-1);
+			this.e = e;
+		}
+		
+		public Throwable getException() {
+			return e;
+		}
+		
 	}
 	
 	public static class ProcessLogEventRoot extends ProcessLogEvent {
@@ -206,7 +188,7 @@ public class ServerProcessLog {
 //		private ProcessLogEvent consoleLog;
 		
 		public ProcessLogEventRoot(String serverID) {
-			super(serverID, SERVER_ROOT);
+			super(SERVER_ROOT);
 			this.server = ServerCore.findServer(serverID);
 			this.serverID = serverID;
 		}
@@ -226,11 +208,16 @@ public class ServerProcessLog {
 			return server;
 		}
 		
-		public ProcessLogEvent newMajorEvent(String text, int type) {
-			ProcessLogEvent newEvent = new ProcessLogEvent(text, type);
+		public ProcessLogEvent newMajorEvent(int type) {
+			ProcessLogEvent newEvent = new ProcessLogEvent(type);
 			addChild(newEvent, ADD_BEGINNING);
 			return newEvent;
 		}
+		
+		public void newMajorEvent(ProcessLogEvent event) {
+			addChild(event, ADD_BEGINNING);
+		}
+		
 		
 		/**
 		 * Get the latest major event.
@@ -242,7 +229,7 @@ public class ServerProcessLog {
 				if( !getChildren()[0].isComplete()) 
 					return getChildren()[0];
 			
-			return addChild("Unknown Event", ProcessLogEvent.UNKNOWN, ProcessLogEvent.ADD_BEGINNING);
+			return addChild(ProcessLogEvent.UNKNOWN, ProcessLogEvent.ADD_BEGINNING);
 		}
 		
 	}
