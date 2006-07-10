@@ -21,14 +21,16 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.ant.internal.ui.preferences.AddPropertyDialog;
 import org.eclipse.debug.core.model.IProcess;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.IProcessLogVisitor;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerStateChecker extends Thread implements IServerProcessListener {
 
@@ -42,7 +44,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	
 	
 	
-	private static int max = 120000;
+	private static int max;
 	private static int delay = 1000;
 	private int current = 0;
 	
@@ -51,36 +53,45 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	private ProcessData[] processDatas = new ProcessData[0];
 	
 	private JBossServerBehavior behavior;
+	private JBossServer jbServer;
 	
 	private ProcessLogEvent eventLog;
 	private ServerProcessModelEntity ent;
+	private boolean canceled = false;
 	
 	
 	public ServerStateChecker(JBossServerBehavior behavior, boolean expectedState) {
 		this.behavior = behavior;
 		this.expectedState = expectedState;
+		jbServer = (JBossServer)behavior.getServer().loadAdapter(JBossServer.class, null);
+		
+		// load our timeouts
+		if( expectedState ) { 
+			max = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStartTimeout(jbServer);
+		} else {
+			max = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStopTimeout(jbServer);
+		}
+	}
+	
+	public void cancel() {
+		canceled = true;
 	}
 	
 	public void run() {
-		JBossServer jbServer = (JBossServer)behavior.getServer().loadAdapter(JBossServer.class, null);
 		int jndiPort = jbServer.getDescriptorModel().getJNDIPort();
-		String host = jbServer.getRuntimeConfiguration().getHost();
+		String host = jbServer.getServer().getHost();
 		String args = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor " + 
 						"get \"jboss.system:type=Server\" Started";
 		
 		ent =  ServerProcessModel.getDefault().getModel(jbServer.getServer().getId());
-
-		
-		// To be sent to the log 
-		int logEventType = expectedState ? ProcessLogEvent.SERVER_STARTING : ProcessLogEvent.SERVER_STOPPING;
-		String action = (expectedState ? "Starting Server" : "Stopping Server");
-
-		eventLog = ent.getEventLog().newMajorEvent(action, logEventType);
+		eventLog = new StateCheckerLogEvent(expectedState);
+		ent.getEventLog().newMajorEvent(eventLog);
 		
 		ent.addSPListener(this);
 		
 		boolean twiddleResults = !expectedState;
-		while( current < max && twiddleResults != expectedState ) {
+		while( current < max && twiddleResults != expectedState && !canceled) {
+			
 			int res = getTwiddleResults(ent, jbServer, args);
 			if( res == STATE_TRUE ) {
 				twiddleResults = UP;
@@ -94,13 +105,15 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 			//System.out.println("Results at time " + current + ": " + twiddleResults);
 		}
 
-		int state = twiddleResults == UP ? ProcessLogEvent.SERVER_UP : ProcessLogEvent.SERVER_DOWN;
-		boolean success = (expectedState && twiddleResults == UP) || (!expectedState && twiddleResults == DOWN);
-		String text = "Server " + (success ? "is now " : "failed to ") 
-		+ (expectedState ? "started " : "shut down");
-		eventLog.addChild(text, state, ProcessLogEvent.ADD_END);
-
+		if( canceled ) {
+			dieCanceled();
+			return;
+		}
 		
+		boolean success = (expectedState && twiddleResults == UP) || (!expectedState && twiddleResults == DOWN);
+		StateCheckerLogEvent finalEvent = new StateCheckerLogEvent(twiddleResults, expectedState);
+		finalEvent.setTime(current);
+		eventLog.addChild(finalEvent, ProcessLogEvent.ADD_END);
 		if( expectedState == DOWN && success ) {
 			// wait until the processes are actually terminated too.
 			while( !startProcessesTerminated && current < max ) {
@@ -114,10 +127,96 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 
 		eventLog.setComplete();
 		ent.getEventLog().branchChanged();
-		
 		behavior.setServerState(expectedState, twiddleResults);
+		//behavior.setServerState(true, false);
 		ent.removeSPListener(this);
 		
+	}
+	
+	private void dieCanceled() {
+		eventLog.setComplete();
+		ent.getEventLog().branchChanged();
+		ent.removeSPListener(this);
+	}
+	
+	public static class StateCheckerLogEvent extends ProcessLogEvent {
+		public static final String EXPECTED_STATE = "_EXPECTED_STATE_";
+		public static final String CURRENT_STATE = "_CURRENT_STATE_";
+		public static final String SUCCESS = "_SUCCESS_";
+		public static final String TWIDDLE_DATA = "_TWIDDLE_DATA_";
+		public static final String EVENT_TYPE = "_EVENT_TYPE_";
+		public static final String TIME = "_TIME_";
+		
+		public static final int SERVER_STARTING = 2;
+		public static final int SERVER_STOPPING = 3;
+		public static final int SERVER_UP = 4;
+		public static final int SERVER_DOWN = 5;
+
+		public static final int BEFORE = 6;
+		public static final int DURING = 7;
+		public static final int AFTER = 8;
+		
+		public StateCheckerLogEvent(boolean currentState, boolean expectedState) {
+			super(AFTER);
+			setProperty(SUCCESS, new Boolean(currentState == expectedState));
+			setProperty(EXPECTED_STATE, new Boolean(expectedState));
+			if( currentState ) 
+				setProperty(CURRENT_STATE, new Integer(SERVER_UP));
+			else 
+				setProperty(CURRENT_STATE, new Integer(SERVER_DOWN));
+		}
+		
+		public StateCheckerLogEvent(boolean expectedState) {
+			super(BEFORE);
+			setProperty(EXPECTED_STATE, new Boolean(expectedState));
+		}
+		
+		public StateCheckerLogEvent(TwiddleLogEvent e, int type) {
+			super(DURING);
+			//setProperty(TWIDDLE_DATA, e);
+			setProperty(TwiddleLogEvent.ARGS, e.getArgs());
+			setProperty(TwiddleLogEvent.OUT, e.getOut());
+			setProperty(CURRENT_STATE, new Integer(type));
+		}
+		
+		public String[] getAvailableProperties() {
+			if( getEventType() == BEFORE ) return new String[] {EXPECTED_STATE};
+			if( getEventType() == DURING ) return new String[] {CURRENT_STATE, TIME, TwiddleLogEvent.ARGS, TwiddleLogEvent.OUT};
+			if( getEventType() == AFTER ) return new String[] {EXPECTED_STATE, CURRENT_STATE, SUCCESS, TIME};
+			return new String[] {};
+		}
+		
+		public int getCurrentState() {
+			try {
+				return ((Integer)getProperty(CURRENT_STATE)).intValue();
+			} catch( Exception e ) {}
+			return -1;
+		}
+
+		public boolean getExpectedState() {
+			try {
+				return ((Boolean)getProperty(EXPECTED_STATE)).booleanValue();
+			} catch( Exception e ) {}
+			return false;
+		}
+		
+		public boolean isSuccess() {
+			if( getCurrentState() == SERVER_UP && getExpectedState()) return true;
+			if( getCurrentState() == SERVER_DOWN && !getExpectedState()) return true;
+			return false;
+		}
+		
+		public TwiddleLogEvent getTwiddleLogEvent() {
+			try {
+				return (TwiddleLogEvent)getProperty(TWIDDLE_DATA);
+			} catch( Exception e ) {}
+			return null;
+		}
+
+		public void setTime(int time) {
+			setProperty(TIME, new Integer(time));
+		}
+
 	}
 
 	/**
@@ -128,35 +227,36 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	 * @return
 	 */
 	private int getTwiddleResults( ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
+
+		// Log stuff
 		TwiddleLauncher launcher = new TwiddleLauncher(max-current, delay);
 		TwiddleLogEvent launchEvent = launcher.getTwiddleResults(ent, jbServer, args);
-		current += launcher.getDuration();
+		StateCheckerLogEvent newEvent;
 		
 		int retval;
 		if( launchEvent.getOut().startsWith("Started=true")) {
-			launchEvent.setEventType(ProcessLogEvent.SERVER_UP);
-			launchEvent.setText("Twiddle Launch: Server is up.");
+			newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_UP);
 			retval = STATE_TRUE;
 		} else if(launchEvent.getOut().startsWith("Started=false")) {
 			retval = STATE_FALSE;
 			if( expectedState == true ) {
-				launchEvent.setEventType(ProcessLogEvent.SERVER_STARTING);
-				launchEvent.setText("Twiddle Launch: Server still starting.");
+				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STARTING);
 			} else { 
-				launchEvent.setEventType(ProcessLogEvent.SERVER_STOPPING);
-				launchEvent.setText("Twiddle Launch: Server still stopping.");
+				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STOPPING);
 			}
 		} else {
-			launchEvent.setEventType(ProcessLogEvent.SERVER_DOWN);
+			newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_DOWN);
 			retval = STATE_EXCEPTION;
-			launchEvent.setText("Twiddle Launch: Server is down.");
 		}
 
-		eventLog.addChild(launchEvent);
+		current += launcher.getDuration();
+
+		newEvent.setTime(current);
+		
+		eventLog.addChild(newEvent);
 		if( eventLog.getRoot() != null ) 
 			eventLog.getRoot().branchChanged();
 		return  retval;
-		
 	}
 	
 	public void ServerProcessEventFired(ServerProcessEvent event) {

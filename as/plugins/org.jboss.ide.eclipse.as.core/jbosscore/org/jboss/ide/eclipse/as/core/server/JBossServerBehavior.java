@@ -40,6 +40,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
@@ -50,7 +51,6 @@ import org.jboss.ide.eclipse.as.core.server.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.server.publishers.PackagedPublisher;
 import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
@@ -62,6 +62,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	
 	private JBossServer jbServer = null;
 	private ProcessLogEvent log = null;
+	private ServerStateChecker checker = null;
 	
 	
 
@@ -136,18 +137,21 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			String args = runtimeDelegate.getStopArgs(jbServer);
 			wc.setAttribute(ATTR_ACTION, ACTION_STOPPING);
 
+			ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
+
+			
 			// Set our attributes from our runtime configuration
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, cp);
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
-					getJBossServer().getRuntimeConfiguration().getServerHome());
+					helper.getServerHome());
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, 
-					getJBossServer().getRuntimeConfiguration().getVMArgs());
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getStopMainType(jbServer));
+					helper.getVMArgs());
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getStopMainType());
 			
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 			
-			int maxWait = 30000;
+			int maxWait = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStopTimeout(jbServer);
 			int soFar = 0;
 			
 			// waiting for our stop process to be created
@@ -175,7 +179,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			
 
 			if( soFar >= maxWait ) {
-				// we timed out... even our stop thread didn't finish yet
+				// we timed OUT... even our stop thread didn't finish yet
 				// time to manually terminate EVERYTHING
 				forceStop();
 				return;
@@ -236,22 +240,23 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
 		JBossServerRuntime runtime = getJBossServer().getJBossRuntime();
 		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
-		JBossRuntimeConfiguration configuration = getJBossServer().getRuntimeConfiguration();
+		
+		ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
 		
 		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
 		if( action.equals(ACTION_STARTING)) {
 			try {
 				List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
-						getJBossServer().getRuntimeConfiguration().getServerHome());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, configuration.getStartArgs());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, configuration.getVMArgs());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, configuration.getStartMainType());
+						helper.getServerHome());
+				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, helper.getStartArgs());
+				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, helper.getVMArgs());
+				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, helper.getStartMainType());
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
 				
 		        workingCopy.setAttribute(
 		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-		                configuration.getServerHome() + Path.SEPARATOR + "bin");
+		                helper.getServerHome() + Path.SEPARATOR + "bin");
 
 				
 				
@@ -271,9 +276,11 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	public void serverStarting() {
 		setServerStarting();
-		
-		ServerStateChecker t = new ServerStateChecker(this, ServerStateChecker.UP);
-		t.start();
+		if( checker != null ) {
+			checker.cancel();
+		}
+		checker = new ServerStateChecker(this, ServerStateChecker.UP);
+		checker.start();
 	}
 	
 	/**
@@ -283,9 +290,12 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	public void serverStopping() {
 		setServerStopping();
+		if( checker != null ) {
+			checker.cancel();
+		}
 
-		ServerStateChecker t = new ServerStateChecker(this, ServerStateChecker.DOWN);
-		t.start();
+		checker = new ServerStateChecker(this, ServerStateChecker.DOWN);
+		checker.start();
 	}
 	
 	
@@ -314,11 +324,11 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	public void setServerState(boolean waitingFor, boolean serverUp) {
 		if( !serverUp ) {
-			/* Fail safe... if the server times out but it IS starting 
+			/* Fail safe... if the server times OUT but it IS starting 
 			 * but not quick enough, clear / destroy all generated processes.
 			 * 
 			 * Otherwise, there are start processes but the gui has 'stop' greyed
-			 * out and unavailable for selection. 
+			 * OUT and unavailable for selection. 
 			 * 
 			 * Included inside if statement so it doesn't prematurely
 			 * shut down the server while it's in the process of shutting down.
@@ -348,6 +358,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
 		// if my model has any reference to them, use that.
+		ASDebug.p("Test", this);
 		ModuleModel model = ModuleModel.getDefault();
 		IModuleResourceDelta[] deltas = model.getDeltaModel().getRecentDeltas(module, getServer());
 		if( deltas.length != 0 )
@@ -361,7 +372,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		if( module.length == 0 ) return;
 					
 		IJbossServerPublisher publisher;
-		
+		ASDebug.p("Module type is " + module[0].getModuleType().getId(), this);
 		/**
 		 * If our modules are already packaged as ejb jars, wars, aop files, 
 		 * then go ahead and publish
@@ -379,7 +390,25 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	
-
+	public static class PublishLogEvent extends ProcessLogEvent {
+		public static final int ROOT = 0;
+		public static final int PUBLISH = 1;
+		public static final int UNPUBLISH = 2;
+		
+		public static final String MODULE_NAME = "_MODULE_NAME_";
+		
+		public PublishLogEvent(int type) {
+			super(type);
+		}
+		
+		public String getModuleName() {
+			try {
+				return (String)getProperty(MODULE_NAME);
+			} catch( Exception e ) {}
+			return null;
+		}
+		
+	}
 	
 	
 	/**
@@ -387,7 +416,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		ServerProcessModelEntity e = ServerProcessModel.getDefault().getModel(getServer().getId());
-		log = e.getEventLog().newMajorEvent("Publish Event", ProcessLogEvent.SERVER_PUBLISH);
+		log = new PublishLogEvent(PublishLogEvent.ROOT);
+		e.getEventLog().newMajorEvent(log);
 	}
 
 	/**

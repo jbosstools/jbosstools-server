@@ -27,16 +27,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
-import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeConfiguration;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
@@ -44,11 +42,9 @@ public class JBossServer extends ServerDelegate {
 
 	
 	private JBossServerRuntime runtime;
-	private JBossRuntimeConfiguration rtConfig;
 	
 	
 	public JBossServer() {
-		rtConfig = new JBossRuntimeConfiguration(this);
 	}
 
 	
@@ -75,7 +71,7 @@ public class JBossServer extends ServerDelegate {
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		debug("saveConfiguration");
-		rtConfig.save();
+		//rtConfig.save();
 		// Re-publish in case the configuration change has not been published yet.
 		PublishServerJob publishJob = new PublishServerJob(getServer(), IServer.PUBLISH_INCREMENTAL, false);
 		publishJob.schedule();
@@ -83,7 +79,7 @@ public class JBossServer extends ServerDelegate {
 
 	public void configurationChanged() {
 		debug("configurationChanged");
-		rtConfig.save();		
+		//rtConfig.save();
 	}
 
 
@@ -101,16 +97,15 @@ public class JBossServer extends ServerDelegate {
 		return runtime;
 		
 	}
+
 	
-	
-	public JBossRuntimeConfiguration getRuntimeConfiguration() {
-		return rtConfig;
+	public ServerAttributeHelper getAttributeHelper() {
+		IServerWorkingCopy copy = getServerWorkingCopy();
+		if( copy == null ) {
+			copy = getServer().createWorkingCopy();
+		}
+		return new ServerAttributeHelper(this, copy);
 	}
-
-	
-
-	
-	
 	
 	
 	/*
