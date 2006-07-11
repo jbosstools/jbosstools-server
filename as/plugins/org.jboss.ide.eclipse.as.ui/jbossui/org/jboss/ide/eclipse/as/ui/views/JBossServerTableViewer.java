@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -67,7 +66,6 @@ import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesPropertySheetPage;
-import org.jboss.ide.eclipse.as.ui.wizards.ServerCloneWizard;
 
 public class JBossServerTableViewer extends TreeViewer {
 
