@@ -250,7 +250,7 @@ public class TwiddleLauncher implements IServerProcessListener {
 		public TwiddleLogEvent(int type, String args1, ProcessData data, int time) {
 			super(type);
 			setProperty(ARGS, args1);
-			setProperty(TIME, time);
+			setProperty(TIME, new Integer(time));
 			if( data != null ) {
 				setProperty(OUT, data.getOut());
 				setProperty(ERR, data.getErr());
