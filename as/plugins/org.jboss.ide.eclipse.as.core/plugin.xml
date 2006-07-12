@@ -25,7 +25,7 @@
             startBeforePublish="false"
             startTimeout="450000"
             stopTimeout="450000" 
-            supportsRemoteHosts="true"/>
+            supportsRemoteHosts="false"/>
               
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
