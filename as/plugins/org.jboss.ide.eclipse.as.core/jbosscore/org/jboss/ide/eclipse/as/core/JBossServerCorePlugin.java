@@ -72,7 +72,7 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		serverCore = new JBossServerCore();
+		serverCore = JBossServerCore.getDefault();
 	}
 
 	/**
