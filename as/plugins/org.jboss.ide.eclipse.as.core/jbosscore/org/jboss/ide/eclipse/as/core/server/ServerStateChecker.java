@@ -21,8 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.ant.internal.ui.preferences.AddPropertyDialog;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
@@ -30,7 +30,6 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerStateChecker extends Thread implements IServerProcessListener {
 
@@ -91,6 +90,13 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		
 		boolean twiddleResults = !expectedState;
 		while( current < max && twiddleResults != expectedState && !canceled) {
+			// short circuit
+			if( jbServer.getServer().getServerState() == IServer.STATE_STOPPED || 
+					jbServer.getServer().getServerState() == IServer.STATE_STARTED) { canceled = true; }
+
+			if( ServerProcessModel.allProcessesTerminated(ent.getProcesses(ServerProcessModel.START_PROCESSES))) {
+				canceled = true;
+			}
 			
 			int res = getTwiddleResults(ent, jbServer, args);
 			if( res == STATE_TRUE ) {
@@ -135,6 +141,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	}
 	
 	private void dieCanceled() {
+		eventLog.addChild(new StateCheckerLogEvent(StateCheckerLogEvent.SERVER_STATE_CHANGE_CANCELED));
 		eventLog.setComplete();
 		ent.getEventLog().branchChanged();
 		ent.removeSPListener(this);
@@ -148,6 +155,8 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		public static final String EVENT_TYPE = "_EVENT_TYPE_";
 		public static final String TIME = "_TIME_";
 		
+		
+		public static final int SERVER_STATE_CHANGE_CANCELED = 1;
 		public static final int SERVER_STARTING = 2;
 		public static final int SERVER_STOPPING = 3;
 		public static final int SERVER_UP = 4;
@@ -180,10 +189,16 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 			setProperty(CURRENT_STATE, new Integer(type));
 		}
 		
+		public StateCheckerLogEvent(int type) {
+			super(type);
+			setProperty(CURRENT_STATE, new Integer(type));
+		}
+		
 		public String[] getAvailableProperties() {
 			if( getEventType() == BEFORE ) return new String[] {EXPECTED_STATE};
 			if( getEventType() == DURING ) return new String[] {CURRENT_STATE, TIME, TwiddleLogEvent.ARGS, TwiddleLogEvent.OUT};
 			if( getEventType() == AFTER ) return new String[] {EXPECTED_STATE, CURRENT_STATE, SUCCESS, TIME};
+			if( getEventType() == SERVER_STATE_CHANGE_CANCELED ) return new String[] {};
 			return new String[] {};
 		}
 		
