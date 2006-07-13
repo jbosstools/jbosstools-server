@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerStateChecker extends Thread implements IServerProcessListener {
 
@@ -74,6 +75,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	
 	public void cancel() {
 		canceled = true;
+		ASDebug.p("canceled called", this);
 	}
 	
 	public void run() {
@@ -92,10 +94,18 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		while( current < max && twiddleResults != expectedState && !canceled) {
 			// short circuit
 			if( jbServer.getServer().getServerState() == IServer.STATE_STOPPED || 
-					jbServer.getServer().getServerState() == IServer.STATE_STARTED) { canceled = true; }
+					jbServer.getServer().getServerState() == IServer.STATE_STARTED) { 
+				ASDebug.p("server state is " + jbServer.getServer().getServerState(), this);
+				canceled = true; 
+			}
 
 			if( ServerProcessModel.allProcessesTerminated(ent.getProcesses(ServerProcessModel.START_PROCESSES))) {
-				canceled = true;
+				// this thread may have started early, before the other thread was launched. 
+				// Give it 15 seconds
+				if( current > 15000 ) {
+					ASDebug.p("canceled - processes terminated", this);
+					canceled = true;
+				}
 			}
 			
 			int res = getTwiddleResults(ent, jbServer, args);
