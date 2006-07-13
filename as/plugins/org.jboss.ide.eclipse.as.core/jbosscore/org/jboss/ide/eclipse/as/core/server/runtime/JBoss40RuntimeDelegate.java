@@ -39,10 +39,12 @@ public class JBoss40RuntimeDelegate extends AbstractServerRuntimeDelegate {
 		list.add("conf");
 		list.add("conf\\jboss-service.xml");
 		list.add("conf\\jndi.properties");
+		list.add("conf\\log4j.xml");
 		list.add("deploy");
 		list.add("lib");
 		list.add("lib\\jboss-management.jar");
 		list.add("lib\\jboss-minimal.jar");
+		list.add("lib\\jboss.jar");
 		list.add("lib\\jnpserver.jar");
 		list.add("lib\\log4j.jar");
 		list.add("log");
