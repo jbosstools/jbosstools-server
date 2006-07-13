@@ -118,6 +118,10 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN ) ret += "down";
 					return ret;
 				}
+				if( event.getEventType() == StateCheckerLogEvent.SERVER_STATE_CHANGE_CANCELED) {
+					String ret = "Server action canceled.";
+					return ret;
+				}
 			}
 			
 			if( obj instanceof ConsoleLogEvent) {
@@ -173,6 +177,10 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN) {
 					return getStateImage(serverType, IServer.STATE_STOPPED, server.getMode());					
 				}
+				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_STATE_CHANGE_CANCELED) {
+					return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);					
+				}
+				
 			}
 			if( obj instanceof ConsoleLogEvent ) {
 				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.CONSOLE_IMAGE);
