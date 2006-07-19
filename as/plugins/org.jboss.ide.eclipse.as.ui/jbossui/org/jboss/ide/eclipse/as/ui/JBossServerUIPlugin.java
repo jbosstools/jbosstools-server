@@ -147,7 +147,8 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			} catch( Exception e ) {
 			}
 			
-			setEnabled( prefs.contains(key) ? prefs.getBoolean(key) : false );
+			// If its a new user, all categories must default to showing
+			setEnabled( prefs.contains(key) ? prefs.getBoolean(key) : true );
 			
 		}
 		
@@ -212,19 +213,13 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
 			String key = EXTENSION_ENABLED + getId();
 			prefs.setValue(key, enabled);
-			
-			enabled = prefs.contains(key) ? prefs.getBoolean(key) : false;
-			ASDebug.p("id " + key + " is " + prefs.getBoolean(key), this);
-
 		}
 	}
 
 	
 	private ServerViewProvider[] serverViewExtensions;
 	public ServerViewProvider[] getEnabledViewProviders() {
-		if( serverViewExtensions == null ) {
-			loadAllServerViewProviders();
-		}
+		getAllServerViewProviders();
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < serverViewExtensions.length; i++ ) {
 			if( serverViewExtensions[i].isEnabled()) {
@@ -237,6 +232,9 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 	
 	public ServerViewProvider[] getAllServerViewProviders() {
+		if( serverViewExtensions == null ) {
+			loadAllServerViewProviders();
+		}
 		return serverViewExtensions;
 	}
 	private void loadAllServerViewProviders() {
