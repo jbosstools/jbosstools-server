@@ -144,17 +144,21 @@ public class JBossServerView extends ServersView {
 		return (IServer)jbViewer.getInput();
 	}
 	
-	public void refreshJBTree(ServerViewProvider provider) {
-		final ServerViewProvider provider2 = provider;
+	public void refreshJBTree(Object obj) {
+		final Object obj2 = obj;
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				try {
 					// If it's null, refresh the whole thing
-					if( provider2 == null ) { JBossServerView.this.jbViewer.refresh(); return; }
-
-					Object[] selected = JBossServerView.this.jbViewer.getExpandedElements();
-					JBossServerView.this.jbViewer.refresh(provider2);
-					JBossServerView.this.jbViewer.setExpandedElements(selected);
+					if( obj2 == null ) { 
+						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
+						JBossServerView.this.jbViewer.refresh();
+						JBossServerView.this.jbViewer.setExpandedElements(expanded);
+					} else {
+						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
+						JBossServerView.this.jbViewer.refresh(obj2);
+						JBossServerView.this.jbViewer.setExpandedElements(expanded);
+					}
 				} catch (Exception e) {
 					// ignore
 				}

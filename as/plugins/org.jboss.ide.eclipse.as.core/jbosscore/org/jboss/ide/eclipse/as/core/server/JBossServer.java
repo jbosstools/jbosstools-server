@@ -29,6 +29,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -73,15 +74,10 @@ public class JBossServer extends ServerDelegate {
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		debug("saveConfiguration");
-		//rtConfig.save();
-		// Re-publish in case the configuration change has not been published yet.
-		PublishServerJob publishJob = new PublishServerJob(getServer(), IServer.PUBLISH_INCREMENTAL, false);
-		publishJob.schedule();
 	}
 
 	public void configurationChanged() {
 		debug("configurationChanged");
-		//rtConfig.save();
 	}
 
 
@@ -102,6 +98,8 @@ public class JBossServer extends ServerDelegate {
 
 	
 	public ServerAttributeHelper getAttributeHelper() {
+//		IServer server = ServerCore.findServer(getServer().getId());
+//		IServerWorkingCopy copy = server.createWorkingCopy();
 		IServerWorkingCopy copy = getServerWorkingCopy();
 		if( copy == null ) {
 			copy = getServer().createWorkingCopy();
@@ -150,5 +148,4 @@ public class JBossServer extends ServerDelegate {
 		return DescriptorModel.getDefault().getServerModel(getServer());
 	}
 
-	
 }

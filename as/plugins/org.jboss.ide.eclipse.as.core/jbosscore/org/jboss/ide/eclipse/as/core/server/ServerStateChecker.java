@@ -67,9 +67,9 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		
 		// load our timeouts
 		if( expectedState ) { 
-			max = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStartTimeout(jbServer);
+			max = jbServer.getAttributeHelper().getStartTimeout();
 		} else {
-			max = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStopTimeout(jbServer);
+			max = jbServer.getAttributeHelper().getStopTimeout();
 		}
 	}
 	

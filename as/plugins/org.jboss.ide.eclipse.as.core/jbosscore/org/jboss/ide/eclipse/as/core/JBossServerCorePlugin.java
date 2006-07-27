@@ -108,7 +108,4 @@ public class JBossServerCorePlugin extends Plugin  {
 		return resourceBundle;
 	}
 	
-	public JBossServerCorePreferences getPreferenceHelper() {
-		return JBossServerCorePreferences.getDefault();
-	}
 }

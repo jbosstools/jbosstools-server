@@ -90,9 +90,29 @@
             providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.EventLogViewProvider"/>
       <ViewProvider
             description="Lists inactive categories and allows you to turn them back on."
+            icon="icons/inactiveCat.gif"
             id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
             name="Inactive Categories"
             providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.InactiveExtensionViewProvider"/>
+      <ViewProvider
+            description="descriptor xpaths"
+            icon="icons/xml.gif"
+            id="org.jboss.ide.eclipse.as.ui.ViewProvider1"
+            name="Descriptor XPaths"
+            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.wst.server.ui.preferencePage"
+            class="org.jboss.ide.eclipse.as.ui.preferencepages.JBossServersPreferencePage"
+            id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
+            name="JBoss Servers"/>
+      <page
+            category="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
+            class="org.jboss.ide.eclipse.as.ui.preferencepages.ViewPreferencePage"
+            id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
+            name="View"/>
    </extension>
 
 

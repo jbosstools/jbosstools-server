@@ -28,7 +28,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePreferences;
 import org.jboss.ide.eclipse.as.core.client.verifiers.IJbossDeploymentVerifier;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
@@ -41,12 +40,7 @@ public class VerifyPublishClient extends ClientDelegate {
 
 	public boolean supports(IServer server, Object launchable, String launchMode) {
 		if( JBossServerCore.getServer(server) == null ) return false;
-		if( JBossServerCorePreferences.getDefault().
-				getModuleClientAction(null) != JBossServerCorePreferences.VERIFY_CLIENT_ACTION ) {
-			return false;
-		}
-		
-		return true;
+		return false;
 	}
 
 	public IStatus launch(IServer server, Object launchable, 

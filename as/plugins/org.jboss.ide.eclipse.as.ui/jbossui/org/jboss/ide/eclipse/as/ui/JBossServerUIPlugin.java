@@ -22,6 +22,8 @@
 package org.jboss.ide.eclipse.as.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -116,6 +118,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	
 	public static class ServerViewProvider {
 		public static final String EXTENSION_ENABLED = "EXTENSION_ENABLED_";
+		public static final String EXTENSION_WEIGHT = "EXTENSION_WEIGHT_";
 		
 		public static final String ID_LABEL = "id";
 		public static final String NAME_LABEL = "name";
@@ -131,15 +134,21 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		private Image icon;
 		
 		private boolean enabled;
+		private int weight;
 		
 		public ServerViewProvider(IConfigurationElement element) {
 			this.element = element;
-			this.enabled = false;
 			
 			// Am I enabled?
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-			String key = EXTENSION_ENABLED + getId();
 
+			
+			String enabledKey = EXTENSION_ENABLED + getId();
+			setEnabled( prefs.contains(enabledKey) ? prefs.getBoolean(enabledKey) : true );
+
+			String weightKey = EXTENSION_WEIGHT + getId();
+			setWeight( prefs.contains(weightKey) ? prefs.getInt(weightKey) : 0 );
+			
 			Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 			try {
 				iconDescriptor = 
@@ -147,8 +156,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			} catch( Exception e ) {
 			}
 			
-			// If its a new user, all categories must default to showing
-			setEnabled( prefs.contains(key) ? prefs.getBoolean(key) : true );
 			
 		}
 		
@@ -205,14 +212,26 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			}
 		}
 		
+		
+		public int getWeight() {
+			return weight;
+		}
+		
+		public void setWeight(int weight) {
+			this.weight = weight;
+		}
+		
 		public void dispose() {
 			getDelegate().dispose();
 			if( icon != null ) 
 				icon.dispose();
 			
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-			String key = EXTENSION_ENABLED + getId();
-			prefs.setValue(key, enabled);
+
+			prefs.setValue(EXTENSION_ENABLED + getId(), enabled);
+			prefs.setValue(EXTENSION_WEIGHT + getId(), weight);
+			
+			
 		}
 	}
 
@@ -228,6 +247,16 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 		ServerViewProvider[] providers = new ServerViewProvider[list.size()];
 		list.toArray(providers);
+		
+		Arrays.sort(providers, new Comparator() {
+			public int compare(Object arg0, Object arg1) {
+				if( arg0 instanceof ServerViewProvider && arg1 instanceof ServerViewProvider) {
+					return ((ServerViewProvider)arg0).getWeight() - ((ServerViewProvider)arg1).getWeight();
+				}
+				return 0;
+			}
+		});
+
 		return providers;
 	}
 	
@@ -235,6 +264,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		if( serverViewExtensions == null ) {
 			loadAllServerViewProviders();
 		}
+		Arrays.sort(serverViewExtensions, new Comparator() {
+			public int compare(Object arg0, Object arg1) {
+				if( arg0 instanceof ServerViewProvider && arg1 instanceof ServerViewProvider) {
+					return ((ServerViewProvider)arg0).getWeight() - ((ServerViewProvider)arg1).getWeight();
+				}
+				return 0;
+			}
+		});
 		return serverViewExtensions;
 	}
 	private void loadAllServerViewProviders() {

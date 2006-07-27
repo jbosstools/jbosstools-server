@@ -22,19 +22,29 @@
 
 package org.jboss.ide.eclipse.as.ui.views;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -56,8 +66,10 @@ import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -66,6 +78,7 @@ import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.SimplePropertiesPropertySheetPage;
+import org.jboss.ide.eclipse.as.ui.wizards.ServerCloneWizard;
 
 public class JBossServerTableViewer extends TreeViewer {
 
@@ -130,29 +143,91 @@ public class JBossServerTableViewer extends TreeViewer {
 			public void run() {
 				Object selected = getSelectedElement();
 				if( selected != null && selected instanceof JBossServer ) {
-					JBossServer server = (JBossServer)selected;
-
-
+					final JBossServer server = (JBossServer)selected;
 					
 					// Show a wizard
-					//ServerCloneWizard wizard = new ServerCloneWizard(server);
-					//WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
-				    //dlg.open();
+					final ServerCloneWizard wizard = new ServerCloneWizard(server);
+					WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+				    int ret = dlg.open();
+				    if( ret == Window.OK ) {
+				    	
+				    	
+				    	IRunnableWithProgress op = new IRunnableWithProgress() {
+
+							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+								int filesWork = wizard.getSelectedFiles().length; 
+						    	int totalWork = filesWork + 1 + 50;
+						    	monitor.beginTask("Cloning Server", totalWork);
+
+						    	// clone the directories
+						    	directoriesClone(wizard, server, new SubProgressMonitor(monitor, filesWork+1));
+								
+								// clone the wst server
+								wstServerClone(server, wizard.getName(), wizard.getConfig(), 
+										new SubProgressMonitor(monitor, 50));
+								
+								monitor.done();
+							}
+				    		
+				    	};
+				    	try {
+				    	new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, op);
+				    	} catch( Exception e) {
+				    		e.printStackTrace();
+				    	}
+				    }
 					
 					
-					
-					// clone the directories
-					
-					// clone the wst server
-					//wstServerClone(server, newName);
 				}
 			}
 			
-			public void directoriesClone() {
+			public void directoriesClone(ServerCloneWizard wizard, JBossServer server, IProgressMonitor monitor) {
+				SubProgressMonitor subMonitor;
+				String relativeLoc;
+				File newFile;
 				
+				File[] files = wizard.getSelectedFiles();
+		    	String oldConfigPath = server.getAttributeHelper().getConfigurationPath();
+		    	String newConfigPath = server.getAttributeHelper().getServerHome() 
+		    		+ Path.SEPARATOR + "server" + Path.SEPARATOR + wizard.getConfig();
+		    	
+		    	monitor.beginTask("Copying configuration", files.length + 1);
+		    	
+		    	
+		    	subMonitor = new SubProgressMonitor(monitor, 1);
+		    	subMonitor.beginTask("Creating configuration directory: " + newConfigPath, 1);
+		    	new File(newConfigPath).mkdir();
+		    	subMonitor.worked(1);
+				subMonitor.done();
+
+				
+				for( int i = 0; i < files.length; i++ ) {
+					relativeLoc = files[i].getAbsolutePath().substring(oldConfigPath.length());
+					newFile = new File(newConfigPath + relativeLoc);
+					ASDebug.p("Copying " + files[i] + " to " + newFile, this);
+					if( files[i].isDirectory() ) {
+				    	subMonitor = new SubProgressMonitor(monitor, 1);
+				    	subMonitor.beginTask("Creating directory: " + newFile.getAbsolutePath(), 1);
+
+				    	boolean res = newFile.mkdir();
+
+				    	subMonitor.worked(1);
+						subMonitor.done();
+					} else {
+				    	subMonitor = new SubProgressMonitor(monitor, 1);
+				    	subMonitor.beginTask("Copying file: " + newFile.getAbsolutePath(), 1);
+
+						FileUtil.copyFile(files[i], newFile);
+
+				    	subMonitor.worked(1);
+						subMonitor.done();
+					}
+				}
+				
+				monitor.done();
 			}
 			
-			public void wstServerClone(JBossServer server, String newName) {
+			public void wstServerClone(JBossServer server, String newName, String config, IProgressMonitor monitor) {
 				
 				IServerType serverType = server.getServer().getServerType();
 				IRuntimeType runtimeType = server.getServer().getRuntime().getRuntimeType();
@@ -175,15 +250,20 @@ public class JBossServerTableViewer extends TreeViewer {
 					newServerWC.setServerConfiguration(configFolder);
 					newServerWC.setName(newName);
 					
-					JBossServer newServer = (JBossServer)newServerWC.loadAdapter(JBossServer.class, null);
+					ServerAttributeHelper helper = new ServerAttributeHelper(server, newServerWC);
 
+					helper.setServerHome(server.getAttributeHelper().getServerHome());
+					helper.setJbossConfiguration(config);
 					
-//					newServer.getAttributeHelper().setServerHome(server.getAttributeHelper().getServerHome());
-//					// then set the new config
-//					newServer.getAttributeHelper().setJbossConfiguration("default");
-					
+//					server.setRuntime(runtime);
+//					runtime.setVMInstall(selectedVM);
+
 					newServerWC.save(true, null);
 				} catch( CoreException ce) {}
+				
+				monitor.beginTask("Cloning Server Elements", 50);
+				monitor.worked(50);
+				monitor.done();
 			}
 		};
 		cloneServerAction.setText("Clone Server");
@@ -335,7 +415,11 @@ public class JBossServerTableViewer extends TreeViewer {
 	public Object getSelectedElement() {
 		ISelection sel = getSelection();
 		if( sel instanceof IStructuredSelection ) {
-			return ((IStructuredSelection)sel).getFirstElement();
+			Object o = ((IStructuredSelection)sel).getFirstElement(); 
+			if( o != null && o instanceof ContentWrapper ) {
+				o = ((ContentWrapper)o).getElement();
+			}
+			return o;
 		}
 		return null;
 	}
@@ -345,7 +429,12 @@ public class JBossServerTableViewer extends TreeViewer {
 		if( sel instanceof IStructuredSelection ) {
 			Object selected = ((IStructuredSelection)sel).getFirstElement();
 			if( selected != null ) {
-				ServerViewProvider provider = getParentViewProvider(selected);
+				ServerViewProvider provider;
+				if( selected instanceof ServerViewProvider ) {
+					provider = (ServerViewProvider)selected;
+				} else {
+					provider = getParentViewProvider(selected);
+				}
 				if( provider != null ) 
 					provider.getDelegate().fillContextMenu(shell, mgr, getRawElement(selected));
 			}
@@ -358,12 +447,15 @@ public class JBossServerTableViewer extends TreeViewer {
 		Object selected = getSelectedElement();
 		if( selected instanceof JBossServer) {
 			menu.add(twiddleAction);
-			//menu.add(cloneServerAction);
+			menu.add(cloneServerAction);
+			menu.add(new Separator());
 		}
 		
 		
-		if( selected instanceof ServerViewProvider ) 
+		if( selected instanceof ServerViewProvider ) {
 			menu.add(disableCategoryAction);
+			menu.add(new Separator());
+		}
 		menu.add(refreshViewerAction);
 	}
 

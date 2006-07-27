@@ -25,10 +25,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePreferences;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 /**
@@ -51,11 +50,6 @@ public class DoNothingClient extends ClientDelegate {
 
 	public boolean supports(IServer server, Object launchable, String launchMode) {
 		if( JBossServerCore.getServer(server) == null ) return false;
-		if( JBossServerCorePreferences.getDefault().
-				getModuleClientAction(null) != JBossServerCorePreferences.NO_CLIENT_ACTION ) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -64,7 +58,7 @@ public class DoNothingClient extends ClientDelegate {
 		
 		// Do nothing
 		ASDebug.p("Here, I do nothing", this);
-		return new Status(IStatus.OK, ServerPlugin.PLUGIN_ID, 0, "A-OK", null);
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 0, "A-OK", null);
 	}
 
 }

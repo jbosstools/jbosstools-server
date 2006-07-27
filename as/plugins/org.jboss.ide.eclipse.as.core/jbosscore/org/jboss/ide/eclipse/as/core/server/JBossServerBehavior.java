@@ -60,6 +60,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	public static final String ACTION_STARTING = "__ACTION_STARTING__";
 	public static final String ACTION_TWIDDLE = "__ACTION_TWIDDLE__";
 	
+	public static final String LAUNCH_CONFIG_DEFAULT_CLASSPATH = "__JBOSS_SERVER_BEHAVIOR_LAUNCH_CONFIG_DEFAULT_CLASSPATH__";
+	
 	private JBossServer jbServer = null;
 	private ProcessLogEvent log = null;
 	private ServerStateChecker checker = null;
@@ -151,7 +153,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 			
-			int maxWait = JBossServerCorePlugin.getDefault().getPreferenceHelper().getStopTimeout(jbServer);
+			int maxWait = helper.getStopTimeout();
 			int soFar = 0;
 			
 			// waiting for our stop process to be created
@@ -246,21 +248,20 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
 		if( action.equals(ACTION_STARTING)) {
 			try {
-				List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
-						helper.getServerHome());
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, helper.getStartArgs());
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, helper.getVMArgs());
 				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, helper.getStartMainType());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-				
 		        workingCopy.setAttribute(
 		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 		                helper.getServerHome() + Path.SEPARATOR + "bin");
 
 				
-				
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
+		        boolean defaultCPVal = workingCopy.getAttribute(JBossServerBehavior.LAUNCH_CONFIG_DEFAULT_CLASSPATH, true);
+		        if( defaultCPVal ) {
+					List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
+					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
+		        }
 			} catch( Exception e ) {
 				e.printStackTrace();
 			}

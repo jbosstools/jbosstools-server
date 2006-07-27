@@ -153,6 +153,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 			return obj.toString();
 		}
 		public Image getImage(Object obj) {
+			try {
 			ProcessLogEvent event = (ProcessLogEvent)obj;
 			IServer server = event.getRoot().getServer();
 			IServerType serverType = server.getServerType();
@@ -202,7 +203,12 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 			if( obj instanceof TwiddleLogEvent ) {
 				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE);
 			}
-			
+			} catch( Exception e ) {
+				e.printStackTrace();
+				ProcessLogEvent event = (ProcessLogEvent)obj;
+				event.getRoot();
+
+			}
 
 
 			

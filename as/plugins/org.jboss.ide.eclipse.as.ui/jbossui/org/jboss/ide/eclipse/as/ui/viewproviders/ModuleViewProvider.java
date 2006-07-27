@@ -80,6 +80,10 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 						IServerWorkingCopy wc = selection.server.createWorkingCopy();
 						wc.modifyModules(null, selection.module , null);
 						wc.save(true, null);
+						// Re-publish in case the configuration change has not been published yet.
+						PublishServerJob publishJob = new PublishServerJob(selection.server, IServer.PUBLISH_INCREMENTAL, false);
+						publishJob.schedule();
+
 					} catch (Exception e) {
 						// ignore
 					}
@@ -145,7 +149,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 
 			
 			
-			if( parentElement instanceof ServerViewProvider ) {
+			if( parentElement instanceof ServerViewProvider && input != null ) {
 				IModule[] modules = input.getModules(); 
 				int size = modules.length;
 				ModuleServer[] ms = new ModuleServer[size];

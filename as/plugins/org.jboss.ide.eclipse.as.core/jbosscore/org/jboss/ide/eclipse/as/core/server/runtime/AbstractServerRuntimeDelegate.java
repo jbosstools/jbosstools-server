@@ -32,6 +32,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 
@@ -200,7 +203,6 @@ public abstract class AbstractServerRuntimeDelegate {
 	} // end method
 
 
+}
 	
 
-
-}

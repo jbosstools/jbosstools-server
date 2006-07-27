@@ -145,10 +145,6 @@ public class JstPublisher implements IJbossServerPublisher {
 					assembleType = OTHER;
 				}
 				
-				event = new PublishLogEvent(PublishLogEvent.PUBLISH);
-				event.setProperty(PublishLogEvent.MODULE_NAME, module[0].getName());
-				log.addChild(event);
-				event.setProperty(MODULE_TYPE, module[0].getModuleType().getId());
 			}
 	    }
 	    
@@ -160,6 +156,13 @@ public class JstPublisher implements IJbossServerPublisher {
 
 		
 		public IStatus[] publish(IProgressMonitor monitor) throws CoreException {
+
+			event = new PublishLogEvent(PublishLogEvent.PUBLISH);
+			event.setProperty(PublishLogEvent.MODULE_NAME, module[0].getName());
+			log.addChild(event);
+			event.setProperty(MODULE_TYPE, module[0].getModuleType().getId());
+
+			
 			assemble(monitor);
         	String file = computeBuildFile();
 			runAnt(file, BUILD_AND_PUBLISH, monitor);

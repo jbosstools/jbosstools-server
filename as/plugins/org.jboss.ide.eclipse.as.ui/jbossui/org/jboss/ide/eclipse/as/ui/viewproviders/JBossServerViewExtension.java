@@ -25,16 +25,15 @@ package org.jboss.ide.eclipse.as.ui.viewproviders;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 
 public abstract class JBossServerViewExtension {
 	protected ServerViewProvider provider;
-	public static final int PROPERTIES = 1;
-	public static final int TEXT = 2;
-	public static final int PROPERTIES_AND_TEXT = 3;
 	
 	/**
 	 * Which extension point is mine.
@@ -65,13 +64,24 @@ public abstract class JBossServerViewExtension {
 	}
 	
 	
-	public abstract void fillContextMenu(Shell shell, IMenuManager menu, Object selection);
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+	}
 
 	
-	public abstract ITreeContentProvider getContentProvider();
-	public abstract LabelProvider getLabelProvider();
+	public ITreeContentProvider getContentProvider() {
+		return null;
+	}
+	public  LabelProvider getLabelProvider() {
+		return null;
+	}
 	
-	public abstract IPropertySheetPage getPropertySheetPage();
+	public IPropertySheetPage getPropertySheetPage() {
+		return null;
+	}
+	
+	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent, int style) {
+		return null;
+	}
 	
 	protected void refreshViewer() {
 		if( isEnabled() ) {

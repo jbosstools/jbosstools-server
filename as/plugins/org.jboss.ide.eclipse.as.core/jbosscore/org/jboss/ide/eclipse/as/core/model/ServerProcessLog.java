@@ -33,7 +33,7 @@ import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerProcessLog {
 	
-	public static class ProcessLogEvent {
+	public static class ProcessLogEvent extends SimpleTreeItem {
 		public static final int SERVER_ROOT = 0;
 		public static final int SERVER_CONSOLE = 1;
 		
@@ -44,8 +44,6 @@ public class ServerProcessLog {
 		public static final int ADD_END = 1;
 		
 		
-		private HashMap properties = new HashMap();
-		private ArrayList children = new ArrayList();
 		private ProcessLogEvent parent;
 
 		private int eventType;
@@ -53,6 +51,7 @@ public class ServerProcessLog {
 		private boolean complete = false;
 		
 		public ProcessLogEvent(int eventType) {
+			super(null, null);
 			this.eventType = eventType;
 			this.date = new Date().getTime();
 		}
@@ -72,15 +71,6 @@ public class ServerProcessLog {
 			event.setParent(this);
 		}
 		
-		public void addChild(ProcessLogEvent event) {
-			addChild(event, ADD_END);
-		}
-		
-		
-		public ProcessLogEvent addChild(int eventType) {
-			return addChild(eventType, ADD_END);
-		}
-		
 		public ProcessLogEvent addChild(int eventType, int location) {
 			ProcessLogEvent e = new ProcessLogEvent(eventType);
 			addChild(e, location);
@@ -88,10 +78,6 @@ public class ServerProcessLog {
 		}
 
 
-		public void setParent(ProcessLogEvent parent) {
-			this.parent = parent;
-		}
-		
 		public void addChildren(ProcessLogEvent[] kids) {
 			for( int i = 0; i < kids.length; i++ ) {
 				addChild(kids[i]);
@@ -108,16 +94,12 @@ public class ServerProcessLog {
 			if( getParent() instanceof ProcessLogEventRoot ) 
 				return (ProcessLogEventRoot)getParent();
 			
-			return getParent().getRoot();
+			if( getParent() instanceof ProcessLogEvent ) {
+				return ((ProcessLogEvent)getParent()).getRoot();
+			}
+			return null;
 		}
 		
-		public void deleteChildren() {
-			children.clear();
-		}
-		
-		public void deleteChild(ProcessLogEvent o) {
-			children.remove(o);
-		}
 		
 		public void accept(IProcessLogVisitor visitor) {
 			boolean ret = visitor.visit(this);
@@ -137,27 +119,11 @@ public class ServerProcessLog {
 		public void setEventType(int eventType) {
 			this.eventType = eventType;
 		}
-
-		public ProcessLogEvent getParent() {
-			return parent;
-		}
 		
 		public long getDate() {
 			return this.date;
 		}
-		
-		public void setProperty( Object key, Object val ) {
-			properties.put(key, val); 
-		}
-		
-		public Object getProperty(Object key) {
-			return properties.get(key);
-		}
-		
-		public HashMap getProperties() {
-			return properties;
-		}
-		
+				
 		public boolean isComplete() {
 			return complete;
 		}
@@ -192,6 +158,7 @@ public class ServerProcessLog {
 			this.server = ServerCore.findServer(serverID);
 			this.serverID = serverID;
 		}
+		
 		/**
 		 * One of my children has changed and I should alert someone 
 		 * who might care.
