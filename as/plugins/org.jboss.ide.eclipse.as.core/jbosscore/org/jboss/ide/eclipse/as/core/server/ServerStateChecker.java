@@ -75,7 +75,6 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	
 	public void cancel() {
 		canceled = true;
-		ASDebug.p("canceled called", this);
 	}
 	
 	public void run() {

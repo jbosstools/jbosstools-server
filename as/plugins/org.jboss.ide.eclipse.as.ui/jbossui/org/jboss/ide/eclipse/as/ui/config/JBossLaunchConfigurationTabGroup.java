@@ -169,27 +169,6 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 	
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		super.performApply(configuration);
-		try {
-			server = ServerUtil.getServer(configuration);
-			jbServer = (JBossServer)server.getAdapter(JBossServer.class);
-			if (jbServer == null) {
-				jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-			}
-			jbServerBehavior = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
-			jbRuntime = jbServer.getJBossRuntime();
-			
-			
-			String progArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
-			String vmArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
-			
-			ServerAttributeHelper helper = jbServer.getAttributeHelper();
-			helper.setProgramArgs(progArgs);
-			helper.setVMArgs(vmArgs);
-			helper.save();
-			
-		} catch( CoreException ce ) {
-			
-		}
 	}
 
 	

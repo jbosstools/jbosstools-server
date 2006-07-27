@@ -147,8 +147,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
 					helper.getServerHome());
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, 
-					helper.getVMArgs());
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtimeDelegate.getVMArgs(jbServer));
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getStopMainType());
 			
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
@@ -248,9 +247,18 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
 		if( action.equals(ACTION_STARTING)) {
 			try {
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, helper.getStartArgs());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, helper.getVMArgs());
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, helper.getStartMainType());
+				
+				String pgArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null); 
+				if( pgArgs == null ) {
+					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, runtime.getVersionDelegate().getStartArgs(jbServer));
+				}
+				String vmArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
+				if( vmArgs == null ) {
+					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtime.getVersionDelegate().getVMArgs(jbServer));
+				}
+				
+				
+				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtime.getVersionDelegate().getStartMainType());
 		        workingCopy.setAttribute(
 		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 		                helper.getServerHome() + Path.SEPARATOR + "bin");

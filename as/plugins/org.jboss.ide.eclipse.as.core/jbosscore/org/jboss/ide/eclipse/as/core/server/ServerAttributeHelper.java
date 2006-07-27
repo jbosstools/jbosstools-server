@@ -16,18 +16,9 @@ import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerAttributeHelper {
 	
-	public static final String PROP_START_ARGS = "PROP_START_ARGS";
-	public static final String PROP_STOP_ARGS = "PROP_STOP_ARGS";
-	public static final String PROP_PROG_ARGS = "PROP_PROG_ARGS";
-	public static final String PROP_VM_ARGS = "PROP_VM_ARGS";
-	public static final String PROP_CONFIG_PATH = "PROP_START_ARGS";
-	public static final String PROP_CLASSPATH = "PROP_CLASSPATH";
-	
 	public static final String PROP_MINIMAL_CONFIG = "MINIMAL_CONFIG";
-	
 	public static final String JBOSS_SERVER_HOME = "JBOSS_SERVER_HOME";
 	public static final String JBOSS_CONFIG = "JBOSS_CONFIG";
-	
 	public static final String JBOSS_CONFIG_DEFAULT = "default";
 
 	
@@ -59,16 +50,7 @@ public class ServerAttributeHelper {
 	
 	public void setJbossConfiguration( String config ) {
 		server.setAttribute(ServerAttributeHelper.JBOSS_CONFIG, config);
-	}
-	
-	public void setProgramArgs(String args) {
-		server.setAttribute(PROP_START_ARGS, args);
-	}
-	
-	public void setVMArgs(String args) {
-		server.setAttribute(PROP_VM_ARGS, args);
-	}
-	
+	}	
 	
 	public void save() {
 		try {
@@ -83,18 +65,6 @@ public class ServerAttributeHelper {
 	 * they are not set as attributes here.
 	 */
 	
-	public String getStartArgs() {
-		return server.getAttribute(PROP_START_ARGS, getVersionDelegate().getStartArgs(jbServer));
-	}
-
-	public String getStopArgs() {
-		return server.getAttribute(PROP_STOP_ARGS, getVersionDelegate().getStopArgs(jbServer));
-	}
-
-	public String getVMArgs() {
-		return server.getAttribute(PROP_VM_ARGS, getVersionDelegate().getVMArgs(jbServer));
-	}
-	
 	public String[] getMinimalConfig() {
 		String minimal;
 		if( (minimal=server.getAttribute(PROP_MINIMAL_CONFIG, (String)null)) == null ) {
@@ -102,11 +72,7 @@ public class ServerAttributeHelper {
 		}
 		return minimal.split("\n");
 	}
-	
-	public String getStartMainType() {
-		return getVersionDelegate().getStartMainType();
-	}
-	
+
 	
 	public String getConfigurationPath() {
 		return getServerHome() + File.separator + "server" + File.separator + getJbossConfiguration();
