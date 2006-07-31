@@ -1,7 +1,13 @@
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -16,12 +22,15 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.jboss.ide.eclipse.as.core.model.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider.XPathPropertyLabelProvider;
 
 public class XPathDialogs {
 
@@ -122,14 +131,15 @@ public class XPathDialogs {
 		private SimpleTreeItem tree;
 		private String category;
 		private JBossServer server;
-		
 		private String name, xpath, attribute;
-		
 		private String originalName = null;
-		
 		private XPathPreferenceTreeItem original = null;
-		
 		int previewId = 48879;
+		
+		private Tree previewTree;
+		private TreeColumn column, column2, column3;
+		private TreeViewer previewTreeViewer;
+		private Composite main;
 		
 		public XPathDialog(Shell parentShell, SimpleTreeItem tree, String categoryName, JBossServer server) {
 			super(parentShell);
@@ -148,30 +158,32 @@ public class XPathDialogs {
 
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
+			setShellStyle(getShellStyle() | SWT.RESIZE);
 			shell.setText("New XPath");
+			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 400);
 		}
 		
 		protected void createButtonsForButtonBar(Composite parent) {
 			// create OK and Cancel buttons by default
 			super.createButtonsForButtonBar(parent);
 			previewButton = createButton(parent, previewId, "Preview", true);
-			getButton(IDialogConstants.OK_ID).setEnabled(false);
+			if( name == null ) getButton(IDialogConstants.OK_ID).setEnabled(false);
 
 			addListeners();
 		}
 
 		
 		protected Control createDialogArea(Composite parent) {
-			Composite c = (Composite)super.createDialogArea(parent);
-			c.setLayout(new FormLayout());
-			layoutWidgets(c);
+			main = (Composite)super.createDialogArea(parent);
+			main.setLayout(new FormLayout());
+			layoutWidgets(main);
 			
 			if( name != null ) nameText.setText(name);
 			if( attribute != null ) attributeText.setText(attribute);
 			if( xpath != null ) xpathText.setText(xpath);
 			
 			
-			return c;
+			return main;
 		} 
 		
 		protected void addListeners() {
@@ -237,7 +249,12 @@ public class XPathDialogs {
 			}
 		}
 		protected void previewPressed() {
-			XPathTreeItem[] item = server.getDescriptorModel().getXPath(xpathText.getText());
+			XPathTreeItem[] item = server.getDescriptorModel().getXPath(xpathText.getText(), attributeText.getText());
+			ArrayList list = new ArrayList();
+			list.addAll(Arrays.asList(item));
+			previewTreeViewer.setInput(list);
+			main.layout();
+			ASDebug.p("found items: " + item.length, this);
 		}
 		protected void layoutWidgets(Composite c) {
 			// create widgets
@@ -249,6 +266,25 @@ public class XPathDialogs {
 			nameText= new Text(c, SWT.BORDER);
 			xpathText = new Text(c, SWT.BORDER);
 			attributeText = new Text(c, SWT.BORDER);
+
+			// Now do the tree and viewer
+			previewTree = new Tree(c, SWT.BORDER);
+			previewTree.setHeaderVisible(true);
+			previewTree.setLinesVisible(true);
+			column = new TreeColumn(previewTree, SWT.NONE);
+			column2 = new TreeColumn(previewTree, SWT.NONE);
+			column3 = new TreeColumn(previewTree, SWT.NONE);
+			
+			column.setText("Location");
+			column2.setText("Attribute Value");
+			column3.setText("Raw XML");
+
+			column.setWidth(100);
+			column2.setWidth(100);
+			column3.setWidth(100);
+
+			previewTreeViewer = new TreeViewer(previewTree);
+
 			
 			// set some text
 			nameLabel.setText("Name: ");
@@ -305,7 +341,65 @@ public class XPathDialogs {
 			attributeTextData.left = new FormAttachment(0, pixel);
 			attributeTextData.right = new FormAttachment(100,-5);
 			attributeTextData.top = new FormAttachment(xpathText,4);
+			
 			attributeText.setLayoutData(attributeTextData);
+			
+			
+			// Tree layout data
+			FormData previewTreeData = new FormData();
+			previewTreeData.left = new FormAttachment(0,5);
+			previewTreeData.right = new FormAttachment(100,-5);
+			previewTreeData.top = new FormAttachment(attributeText,5);
+			previewTreeData.bottom = new FormAttachment(100,-5);
+			previewTree.setLayoutData(previewTreeData);
+			
+			previewTreeViewer.setContentProvider(new ITreeContentProvider() {
+				public Object[] getChildren(Object parentElement) {
+					// we're a leaf
+					if( parentElement instanceof XPathTreeItem2 ) 
+						return new Object[0];
+					
+					// we're a file node (blah.xml) 
+					if( parentElement instanceof XPathTreeItem ) {
+						if( ((XPathTreeItem)parentElement).getChildren2().length > 1 ) 
+							return ((XPathTreeItem)parentElement).getChildren2();
+						return new Object[0];
+					}
+					
+					// we're the named element (JNDI)
+					if( parentElement instanceof XPathPreferenceTreeItem ) {
+						SimpleTreeItem[] kids = ((XPathPreferenceTreeItem)parentElement).getChildren2();
+						return kids;
+					}
+
+					return new Object[0];
+				}
+
+				public Object getParent(Object element) {
+					return null;
+				}
+
+				public boolean hasChildren(Object element) {
+					return getChildren(element).length > 0 ? true : false;
+				}
+
+				public Object[] getElements(Object inputElement) {
+					if( inputElement instanceof ArrayList ) {
+						ASDebug.p("we have an array list", this);
+						return ((ArrayList)inputElement).toArray();
+					}
+					return new Object[0];
+				}
+
+				public void dispose() {
+				}
+
+				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				} 
+				
+			});
+			
+			previewTreeViewer.setLabelProvider(new XPathPropertyLabelProvider());
 		}
 
 		public String getAttribute() {
