@@ -216,9 +216,13 @@ public class DescriptorModel {
 		 * @return A list of DefaultElements
 		 */
 		public List getXPathFromFile(String path, String xpath) {
-			Document d = getDocument(path);
-			if( d == null ) return new ArrayList();
-			return d.selectNodes(xpath);
+			try {
+				Document d = getDocument(path);
+				if( d == null ) return new ArrayList();
+				return d.selectNodes(xpath);
+			} catch( Exception e ) {
+				return new ArrayList();
+			}
 		}
 		
 		/**
@@ -254,7 +258,7 @@ public class DescriptorModel {
 				if( !filter || !isIgnoredDirectory(new File(p))) {
 					tmp = getXPathFromFile(p, xpath);
 					if( tmp.size() > 0 ) { 
-						if( attributeName == null ) {
+						if( attributeName == null || attributeName.equals("")) {
 							newItem = new XPathTreeItem(null, new File(p), tmp); 
 						} else {
 							newItem = new XPathTreeItem(null, new File(p), tmp, attributeName);

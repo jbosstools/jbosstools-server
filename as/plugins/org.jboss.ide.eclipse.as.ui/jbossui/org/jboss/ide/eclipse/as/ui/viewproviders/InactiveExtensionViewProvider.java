@@ -1,4 +1,3 @@
-package org.jboss.ide.eclipse.as.ui.viewproviders;
 /*
  * JBoss, Home of Professional Open Source
  * Copyright 2006, JBoss Inc., and individual contributors as indicated
@@ -20,6 +19,7 @@ package org.jboss.ide.eclipse.as.ui.viewproviders;
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.jboss.ide.eclipse.as.ui.viewproviders;
 
 import java.util.ArrayList;
 

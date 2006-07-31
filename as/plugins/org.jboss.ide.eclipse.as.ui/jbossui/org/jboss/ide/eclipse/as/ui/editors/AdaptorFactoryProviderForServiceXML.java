@@ -19,15 +19,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.preferencepages;
+package org.jboss.ide.eclipse.as.ui.editors;
 
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.sse.core.internal.ltk.modelhandler.IDocumentTypeHandler;
+import org.eclipse.wst.xml.ui.internal.registry.AdapterFactoryProviderForXML;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
-public abstract class ViewProviderPreferenceComposite extends Composite {
-	public ViewProviderPreferenceComposite(Composite parent, int style) {
-		super(parent, style);
+public class AdaptorFactoryProviderForServiceXML extends
+		AdapterFactoryProviderForXML {
+	
+	public boolean isFor(IDocumentTypeHandler contentTypeDescription) {
+		return (contentTypeDescription instanceof ServicexmlModelHandler);
 	}
-	public abstract boolean isValid();
-	public abstract boolean performOk();
-	public abstract boolean performCancel();
+
 }

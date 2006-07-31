@@ -114,6 +114,49 @@
             id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
             name="View"/>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="servicexml"
+            name="JBoss Service XML"
+            priority="normal">
+         <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="server"/>
+         </describer>
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.editorConfiguration">
+      <sourceViewerConfiguration
+            class="org.jboss.ide.eclipse.as.ui.editors.ServiceXMLEditorConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.servicexml"/>
+      <contentOutlineConfiguration
+            class="org.jboss.ide.eclipse.as.ui.editors.ServiceXMLOutlineConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.servicexml"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.core.modelHandler">
+      <modelHandler
+            associatedContentTypeId="org.jboss.ide.eclipse.as.ui.servicexml"
+            class="org.jboss.ide.eclipse.as.ui.editors.ServicexmlModelHandler"
+            default="false"
+            id="org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"/>
+   </extension>
+   <extension point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
+		<adapterFactoryDescription
+				class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
+   </extension>
+
+<!--
+   <extension
+         point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
+         <adapterFactoryDescription
+			class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
+   </extension> -->
 
 
 
