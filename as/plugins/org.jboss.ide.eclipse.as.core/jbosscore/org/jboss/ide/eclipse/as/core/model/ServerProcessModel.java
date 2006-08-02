@@ -314,18 +314,24 @@ public class ServerProcessModel implements IServerLifecycleListener {
 		
 		public void fireEvents(String eventType, String processType, ProcessData[] processes, ILaunchConfiguration config) {
 			ServerProcessEvent event = new ServerProcessEvent(eventType, processType, processes, config);
-			Iterator i = processListeners.iterator();
-			while(i.hasNext() ) {
-				((IServerProcessListener)i.next()).ServerProcessEventFired(event);
+			synchronized (processListeners) {			
+				Iterator i = processListeners.iterator();
+				while(i.hasNext() ) {
+					((IServerProcessListener)i.next()).ServerProcessEventFired(event);
+				}
 			}
 		}
 		
 		public void addSPListener(IServerProcessListener listener) {
-			processListeners.add(listener);
+			synchronized (processListeners) {
+				processListeners.add(listener);
+			}
 		}
 		
 		public void removeSPListener(IServerProcessListener listener) {
-			processListeners.remove(listener);
+			synchronized (processListeners) {
+				processListeners.remove(listener);
+			}
 		}
 		
 
