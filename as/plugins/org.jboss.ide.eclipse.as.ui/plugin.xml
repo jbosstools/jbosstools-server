@@ -150,6 +150,19 @@
 		<adapterFactoryDescription
 				class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            name="MBean Components"
+            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
+      <wizard
+            category="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            class="org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard"
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            name="MBean Stubs"
+            project="false"/>
+   </extension>
 
 <!--
    <extension
