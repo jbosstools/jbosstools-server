@@ -259,11 +259,22 @@ public class DescriptorModel {
 					tmp = getXPathFromFile(p, xpath);
 					if( tmp.size() > 0 ) { 
 						if( attributeName == null || attributeName.equals("")) {
-							newItem = new XPathTreeItem(null, new File(p), tmp); 
+							newItem = new XPathTreeItem(null, new File(p), tmp);
+							list.add(newItem);
 						} else {
-							newItem = new XPathTreeItem(null, new File(p), tmp, attributeName);
+							// Remove any that match the path but not the attribute
+							Iterator j = tmp.iterator();
+							while( j.hasNext()) {
+								DefaultElement el = (DefaultElement)j.next();
+								if( el.attribute(attributeName) == null ) {
+									j.remove();
+								}
+							}
+							if( tmp.size() > 0 ) {
+								newItem = new XPathTreeItem(null, new File(p), tmp, attributeName);
+								list.add(newItem);
+							}
 						}
-						list.add(newItem);
 					}
 				}
 			}
@@ -360,6 +371,7 @@ public class DescriptorModel {
 			}
 			
 			public String getText() {
+				try {
 				if( getData() instanceof DefaultElement ) {
 					if( !hasAttribute()) {
 						return ((DefaultElement)getData()).getText();
@@ -367,6 +379,9 @@ public class DescriptorModel {
 						Attribute att = ((DefaultElement)getData()).attribute(attribute);
 						return att.getValue();
 					}
+				}
+				} catch( NullPointerException npe ) {
+					npe.printStackTrace();
 				}
 				return "";
 			}
