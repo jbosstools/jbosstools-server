@@ -154,6 +154,36 @@ public class ServerAttributeHelper {
 		SimpleXPathPreferenceTreeItem ports = new SimpleXPathPreferenceTreeItem(model, "Ports");
 		XPathPreferenceTreeItem jndi = new XPathPreferenceTreeItem(ports, 
 				"JNDI", "/server/mbean[@name='jboss:service=Naming']/attribute[@name='Port']");
+		XPathPreferenceTreeItem jndiRMI = new XPathPreferenceTreeItem(ports, 
+				"JNDI RMI", "/server/mbean[@name='jboss:service=Naming']/attribute[@name='RmiPort']");
+		
+		XPathPreferenceTreeItem haJndiStub = new XPathPreferenceTreeItem(ports, 
+				"HA JNDI Stub", "//server/mbean[@name='jboss:service=HAJNDI']/attribute[@name='Port']");
+
+		XPathPreferenceTreeItem haJndiRMI = new XPathPreferenceTreeItem(ports, 
+				"HA JNDI RMI", "//server/mbean[@name='jboss:service=HAJNDI']/attribute[@name='RmiPort']");
+
+		XPathPreferenceTreeItem jrmpa = new XPathPreferenceTreeItem(ports, 
+				"JRMPA RMI Object", "//server/mbean[@name='jboss:service=invoker,type=jrmpha']/attribute[@name='RMIObjectPort']");
+
+		XPathPreferenceTreeItem clusterUDPMcast = new XPathPreferenceTreeItem(ports, 
+				"Cluster UDP MCast", "//server/mbean[@name='jboss:service=${jboss.partition.name:DefaultPartition}']/attribute[@name='PartitionConfig']/Config/UDP", "mcast_port");
+		
+		XPathPreferenceTreeItem webservices = new XPathPreferenceTreeItem(ports, 
+				"Web Services", "//server/mbean[@name='jboss:service=WebService']/attribute[@name='Port']");
+		
+//		XPathPreferenceTreeItem hypersonic = new XPathPreferenceTreeItem(ports, 
+//				"HyperSonic", "//server/mbean[@name='jboss:service=Hypersonic']/attribute[@name='Port']");
+		
+		XPathPreferenceTreeItem jrmpInvoker = new XPathPreferenceTreeItem(ports, 
+				"JRMP Invoker", "//server/mbean[@name='jboss:service=invoker,type=jrmp']/attribute[@name='RMIObjectPort']");
+		
+		XPathPreferenceTreeItem pooledInvoker = new XPathPreferenceTreeItem(ports, 
+				"Pooled Invoker", "//server/mbean[@name='jboss:service=invoker,type=pooled']/attribute[@name='ServerBindPort']");
+		
+		
+
+		
 		return model;
 	}
 	
