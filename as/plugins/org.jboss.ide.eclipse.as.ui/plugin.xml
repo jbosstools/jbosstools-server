@@ -104,7 +104,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.wst.server.ui.preferencePage"
+            category="org.jboss.ide.eclipse.ui.MainPreferencePage"
             class="org.jboss.ide.eclipse.as.ui.preferencepages.JBossServersPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
             name="JBoss Servers"/>
@@ -153,11 +153,11 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             name="MBean Components"
             parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
       <wizard
-            category="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard"
             id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
             name="MBean Stubs"
