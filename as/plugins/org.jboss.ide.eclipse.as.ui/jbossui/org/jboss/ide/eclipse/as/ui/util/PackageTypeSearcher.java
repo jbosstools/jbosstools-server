@@ -160,35 +160,30 @@ public class PackageTypeSearcher {
 	   
 	   public ArrayList getTypeMatches()  {
 		  IPackageFragment packageElement = getPackage();
-	      if (packageElement != null && remainder != null)
-	      {
-	         try
-	         {
+	      if (packageElement != null && remainder != null) {
+	         try  {
 	            IClassFile[] classFiles = packageElement.getClassFiles();
 	            ICompilationUnit[] compUnits = packageElement.getCompilationUnits();
 	            ArrayList returnList = new ArrayList();
 
-	            for (int i = 0; i < classFiles.length; i++)
-	            {
+	            for (int i = 0; i < classFiles.length; i++) {
 	               String typeName = classFiles[i].getType().getElementName();
 	               if (typeName.equals(""))
 	                  continue;
-	               if (typeName.toLowerCase().startsWith(remainder.toLowerCase()) && filter.accept(classFiles[i].getType()))
+	               if (typeName.toLowerCase().startsWith(remainder.toLowerCase()) && (filter == null || filter.accept(classFiles[i].getType())))
 	                  returnList.add(classFiles[i].getType());
 	            }
 
-	            for (int i = 0; i < compUnits.length; i++)
-	            {
+	            for (int i = 0; i < compUnits.length; i++) {
 	               IType type = compUnits[i].findPrimaryType();
 	               String typeName = type.getElementName();
-	               if (typeName.toLowerCase().startsWith(remainder.toLowerCase()) && filter.accept(type)) 
+	               if (typeName.toLowerCase().startsWith(remainder.toLowerCase()) && (filter == null || filter.accept(type))) 
 	                  returnList.add(type);
 	            }
 
 	            return returnList;
 	         }
-	         catch (JavaModelException jme)
-	         {
+	         catch (JavaModelException jme)  {
 	         }
 	      }
 
