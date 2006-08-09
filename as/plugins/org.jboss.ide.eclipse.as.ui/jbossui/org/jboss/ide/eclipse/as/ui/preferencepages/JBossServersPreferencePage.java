@@ -21,23 +21,13 @@
  */
 package org.jboss.ide.eclipse.as.ui.preferencepages;
 
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.dom4j.Node;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -46,55 +36,33 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.SimpleTreeItem;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
-import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 
 
 public class JBossServersPreferencePage extends PreferencePage implements
@@ -142,10 +110,10 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	private TableViewer serverTableViewer;
 	private Spinner stopSpinner, startSpinner;
 	
+	private Button abortOnTimeout, ignoreOnTimeout;
+	
 	private HashMap workingCoppies;	
 	
-	private Action newXPathCategoryAction, newXPathAction, deleteXPathCategoryAction, 
-					deleteXPathAction, editXPathAction;
 		
 	// where the page fold is
 	int pageColumn = 55;
@@ -262,10 +230,36 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		stopSpinner.setIncrement(1000);
 		startSpinner.setIncrement(1000);
 		
+		Label uponTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
+		abortOnTimeout = new Button(timeoutGroup, SWT.RADIO);
+		ignoreOnTimeout = new Button(timeoutGroup, SWT.RADIO);
+		
+		FormData utl = new FormData();
+		utl.left = new FormAttachment(0,5);
+		utl.right = new FormAttachment(100, -5);
+		utl.top = new FormAttachment(stopSpinner,5);
+		uponTimeoutLabel.setLayoutData(utl);
+
+		FormData b1D = new FormData();
+		b1D.left = new FormAttachment(0,15);
+		b1D.right = new FormAttachment(100, -5);
+		b1D.top = new FormAttachment(uponTimeoutLabel,5);
+		abortOnTimeout.setLayoutData(b1D);
+		
+		FormData b2D = new FormData();
+		b2D.left = new FormAttachment(0,15);
+		b2D.right = new FormAttachment(100, -5);
+		b2D.top = new FormAttachment(abortOnTimeout,5);
+		ignoreOnTimeout.setLayoutData(b2D);
+		
+		uponTimeoutLabel.setText("Upon Timeout: ");
+		abortOnTimeout.setText("Abort Server Start");
+		ignoreOnTimeout.setText("Set Server State to \"Started\"");
+
 		
 	}
 	
-		private void addListeners() {
+	private void addListeners() {
 		serverTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection)serverTableViewer.getSelection();
@@ -284,36 +278,22 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			} 
 		});
 		
+		abortOnTimeout.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_ABORT);
+			} 
+		});
+		ignoreOnTimeout.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_IGNORE);
+			} 
+		});
 				
 	}
-	
-	private void createActions() { }
-		/*
-		 * newXPathCategoryAction, newXPathAction, deleteXPathCategoryAction, 
-					deleteXPathAction, editXPathCategoryAction, editXPathAction;
-		 
-}
-	
-	private void addViewerMenus() {
-		MenuManager menuManager = new MenuManager("#PopupMenu"); 
-		menuManager.setRemoveAllWhenShown(true);
-		final Shell shell = xpathTree.getShell();
-		menuManager.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager mgr) {
-				xpathTreeMenuAboutToShow(shell, mgr);
-			}
-		});
-		Menu menu = menuManager.createContextMenu(xpathTree);
-		xpathTree.setMenu(menu);
-	}
-	
-	private void xpathTreeMenuAboutToShow(Shell shell, IMenuManager menu) {
-		menu.add(newXPathCategoryAction);
-		menu.add(deleteXPathCategoryAction);
-		menu.add(newXPathAction);
-		menu.add(editXPathAction);
-	}
-	*/
 	
 	private void serverSelected(JBossServer server) {
 		currentServer = server;
@@ -325,7 +305,14 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		startSpinner.setSelection(wcHelper.getStartTimeout());
 		stopSpinner.setSelection(wcHelper.getStopTimeout());
 		
-
+		boolean currentVal = wcHelper.getTimeoutBehavior();
+		if( currentVal == ServerAttributeHelper.TIMEOUT_ABORT) {
+			abortOnTimeout.setSelection(true);
+			ignoreOnTimeout.setSelection(false);
+		} else {
+			abortOnTimeout.setSelection(false);
+			ignoreOnTimeout.setSelection(true);
+		}
 	}
 	
 	
@@ -388,9 +375,6 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	}
 	
     public boolean performCancel() {
-    	super.performCancel();
-    	// get rid of dirty working coppies (no action needed)
-    	
-        return true;
+    	return super.performCancel();
     }
 }

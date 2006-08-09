@@ -26,6 +26,13 @@ public class ServerAttributeHelper {
 	public static final String XPATH_CATEGORY2_PREFIX = "_XPATH_CATEGORY2_PREFIX_";
 	public static final String XPATH_PROPERTY_PREFIX = "_XPATH_PROPERTY_PREFIX_";
 	
+	public static final String START_TIMEOUT = "_START_TIMEOUT_";
+	public static final String STOP_TIMEOUT = "_STOP_TIMEOUT_";
+
+	
+	public static final String TIMEOUT_BEHAVIOR = "_TIMEOUT_BEHAVIOR_";
+	public static final boolean TIMEOUT_ABORT = true;
+	public static final boolean TIMEOUT_IGNORE = false;
 	
 	
 	private ServerWorkingCopy server;
@@ -89,9 +96,6 @@ public class ServerAttributeHelper {
 
 	
 	
-	public static final String START_TIMEOUT = "_START_TIMEOUT_";
-	public static final String STOP_TIMEOUT = "_STOP_TIMEOUT_";
-	
 	public int getStartTimeout() {
 		int prop = server.getAttribute(START_TIMEOUT, -1);
 		int max = ((ServerType)server.getServerType()).getStartTimeout();
@@ -112,6 +116,14 @@ public class ServerAttributeHelper {
 	}
 	public void setStopTimeout(int time) {
 		server.setAttribute(STOP_TIMEOUT, time);
+	}
+	
+	
+	public void setTimeoutBehavior(boolean bool) {
+		server.setAttribute(TIMEOUT_BEHAVIOR, bool);
+	}
+	public boolean getTimeoutBehavior() {
+		return server.getAttribute(TIMEOUT_BEHAVIOR, TIMEOUT_ABORT);
 	}
 	
 	

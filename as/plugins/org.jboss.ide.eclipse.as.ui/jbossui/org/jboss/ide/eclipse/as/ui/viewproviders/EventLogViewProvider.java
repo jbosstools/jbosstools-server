@@ -122,6 +122,10 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 					String ret = "Server action canceled.";
 					return ret;
 				}
+				if( event.getEventType() == StateCheckerLogEvent.SERVER_STATE_CHANGE_TIMEOUT) {
+					String ret = "Server Timeout Reached.";
+					return ret;
+				}
 			}
 			
 			if( obj instanceof ConsoleLogEvent) {
@@ -148,7 +152,13 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 			if( obj instanceof ProcessLogEvent ) {
 				ProcessLogEvent event = ((ProcessLogEvent)obj);
 				SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.S");
-				return event.toString() + "   " + format.format(new Date(event.getDate()));
+				String eventToString;
+				if( event.getEventType() == ProcessLogEvent.UNKNOWN ) {
+					eventToString = "Unknown Event";
+				} else {
+					eventToString = event.toString();
+				}
+				return eventToString + "   " + format.format(new Date(event.getDate()));
 			}
 			return obj.toString();
 		}
@@ -181,7 +191,9 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 				if( scle.getCurrentState() == StateCheckerLogEvent.SERVER_STATE_CHANGE_CANCELED) {
 					return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);					
 				}
-				
+				if( event.getEventType() == StateCheckerLogEvent.SERVER_STATE_CHANGE_TIMEOUT) {
+					return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);					
+				}
 			}
 			if( obj instanceof ConsoleLogEvent ) {
 				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.CONSOLE_IMAGE);
@@ -203,13 +215,18 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 			if( obj instanceof TwiddleLogEvent ) {
 				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE);
 			}
+
+			if( event.getEventType() == ProcessLogEvent.UNKNOWN ) {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+			}
+
+			
 			} catch( Exception e ) {
 				e.printStackTrace();
 				ProcessLogEvent event = (ProcessLogEvent)obj;
 				event.getRoot();
 
 			}
-
 
 			
 			return null;

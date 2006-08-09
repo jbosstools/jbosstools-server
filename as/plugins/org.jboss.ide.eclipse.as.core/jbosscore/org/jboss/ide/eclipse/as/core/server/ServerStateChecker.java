@@ -121,12 +121,22 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 			ent.getEventLog().branchChanged();
 		}
 
+		// If we canceled, die in that fashion
 		if( canceled ) {
 			dieCanceled();
 			return;
 		}
 		
 		boolean success = (expectedState && twiddleResults == UP) || (!expectedState && twiddleResults == DOWN);
+		
+		// If we timed out while trying to start the server, and we failed to start, die that way.
+		if( current >= max && !success && expectedState) {
+			dieTimeoutFailure();
+			return;
+		}
+		
+		
+		
 		StateCheckerLogEvent finalEvent = new StateCheckerLogEvent(twiddleResults, expectedState);
 		finalEvent.setTime(current);
 		eventLog.addChild(finalEvent, ProcessLogEvent.ADD_END);
@@ -156,6 +166,21 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		ent.removeSPListener(this);
 	}
 	
+	private void dieTimeoutFailure() {
+		ASDebug.p("Timeout on startup", this);
+		boolean abortOrIgnore = jbServer.getAttributeHelper().getTimeoutBehavior();
+		if( abortOrIgnore == ServerAttributeHelper.TIMEOUT_ABORT ) {
+			behavior.setServerState(true, false);;
+		} else {
+			behavior.setServerState(true, true);;
+		}
+		
+		eventLog.addChild(new StateCheckerLogEvent(StateCheckerLogEvent.SERVER_STATE_CHANGE_TIMEOUT));
+		eventLog.setComplete();
+		ent.getEventLog().branchChanged();
+		ent.removeSPListener(this);
+	}
+	
 	public static class StateCheckerLogEvent extends ProcessLogEvent {
 		public static final String EXPECTED_STATE = "_EXPECTED_STATE_";
 		public static final String CURRENT_STATE = "_CURRENT_STATE_";
@@ -164,7 +189,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		public static final String EVENT_TYPE = "_EVENT_TYPE_";
 		public static final String TIME = "_TIME_";
 		
-		
+		public static final int SERVER_STATE_CHANGE_TIMEOUT = 0;
 		public static final int SERVER_STATE_CHANGE_CANCELED = 1;
 		public static final int SERVER_STARTING = 2;
 		public static final int SERVER_STOPPING = 3;
@@ -208,6 +233,8 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 			if( getEventType() == DURING ) return new String[] {CURRENT_STATE, TIME, TwiddleLogEvent.ARGS, TwiddleLogEvent.OUT};
 			if( getEventType() == AFTER ) return new String[] {EXPECTED_STATE, CURRENT_STATE, SUCCESS, TIME};
 			if( getEventType() == SERVER_STATE_CHANGE_CANCELED ) return new String[] {};
+			if( getEventType() == SERVER_STATE_CHANGE_TIMEOUT ) return new String[] {};
+			
 			return new String[] {};
 		}
 		
