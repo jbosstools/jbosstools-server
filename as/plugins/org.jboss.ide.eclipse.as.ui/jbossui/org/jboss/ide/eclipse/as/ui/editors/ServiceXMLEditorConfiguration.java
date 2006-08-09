@@ -30,6 +30,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -461,7 +462,6 @@ public class ServiceXMLEditorConfiguration extends
 			String match = contentAssistRequest.getMatchString();
 			List list = (List)attributes.get(elementName);
 			Iterator i = list.iterator();
-			ASDebug.p("element name is " + elementName, this);
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
 				if( att.name.startsWith(match)) {
@@ -480,7 +480,7 @@ public class ServiceXMLEditorConfiguration extends
 			String text = contentAssistRequest.getText();
 			int beginPos = contentAssistRequest.getReplacementBeginPosition();
 
-			// find the attribute we're inside of, because the contentAssistRequester only returns the elemtn (BOO!)
+			// find the attribute we're inside of, because the contentAssistRequester only returns the element (BOO!)
 			NamedNodeMap map = contentAssistRequest.getNode().getAttributes();
 			
 			boolean found = false;
@@ -499,6 +499,9 @@ public class ServiceXMLEditorConfiguration extends
 			if( found ) {
 				if( elementName.equals("mbean") && attribute.getName().equals("code")) {
 					handleCodeClassNameCompletion(contentAssistRequest);
+				}
+				if( elementName.equals("attribute") && attribute.getName().equals("name")) {
+					handleAttributeNamesCompletion(contentAssistRequest);
 				}
 			}
 		}
@@ -537,6 +540,106 @@ public class ServiceXMLEditorConfiguration extends
 
 		}
 		
+		protected void handleAttributeNamesCompletion(ContentAssistRequest contentAssistRequest) {
+			String match = contentAssistRequest.getMatchString();
+			String attributeCurrentValue;
+			if( match.startsWith("\"")) attributeCurrentValue = match.substring(1);
+			else attributeCurrentValue = match;
+
+			
+			Node node = contentAssistRequest.getNode();
+			Node mbeanNode = node.getParentNode();
+			NamedNodeMap mbeanAttributes = mbeanNode.getAttributes();
+			Node att = mbeanAttributes.getNamedItem("code");
+			final String codeClass = att.getNodeValue();
+			IType type = findType(codeClass);
+			if( type != null ) {
+				IMethod[] methods = getAllMethods(type);
+				String[] attributeNames = findAttributesFromMethods(methods, attributeCurrentValue);
+				
+				int beginReplacement = contentAssistRequest.getReplacementBeginPosition()+1;
+				// Now turn them into proposals
+				for( int i = 0; i < attributeNames.length; i++ ) {
+					CompletionProposal cp = new CompletionProposal(attributeNames[i], beginReplacement, 
+							attributeCurrentValue.length(), beginReplacement + attributeNames[i].length());
+					contentAssistRequest.addProposal(cp);
+				}
+			}
+				
+		}
+		
+		protected IType findType(final String codeClass ) {
+			if( codeClass == null ) return null;
+			ResultFilter filter = new ResultFilter() {
+				public boolean accept(Object found) {
+					if( found instanceof IType ) {
+						IType type = (IType)found;
+						if( type.getFullyQualifiedName().equals(codeClass)) {
+							return true;
+						}
+						return false;
+					}
+					return true;
+				}
+			};
+			PackageTypeSearcher searcher = new PackageTypeSearcher(codeClass, filter);
+			ArrayList foundTypes = searcher.getTypeMatches();
+			if( foundTypes.size() == 1 ) {
+				return (IType)foundTypes.get(0);
+			}
+			return null;
+		}
+		/**
+		 * Gets all methods that this type, or its super-types, have.
+		 * @param type
+		 * @return
+		 */
+		protected IMethod[] getAllMethods(IType type) {
+			ArrayList methods = new ArrayList();
+			try {
+				methods.addAll(Arrays.asList(type.getMethods()));
+				String parentTypeName = type.getSuperclassName();
+				IType parentType = findType(parentTypeName);
+				if( parentType != null ) {
+					methods.addAll(Arrays.asList(getAllMethods(parentType)));
+				}
+			} catch( JavaModelException jme ) {
+				jme.printStackTrace();
+			}
+			return (IMethod[]) methods.toArray(new IMethod[methods.size()]);
+		}
+		
+		private String[] findAttributesFromMethods(IMethod[] methods, String attributeCurrentValue) {
+			ArrayList attributeNames = new ArrayList();
+			String getterPrefix = "get" + attributeCurrentValue;
+			
+			
+			for( int i = 0; i < methods.length; i++ ) {
+				if( methods[i].getElementName().startsWith(getterPrefix)) {
+					String atName = methods[i].getElementName().substring(3);
+					String setterName = "set" + atName;
+					for( int j = 0; j < methods.length; j++ ) {
+						if( methods[j].getElementName().equals(setterName)) {
+							// there's a getter and a setter... 
+							try {
+								if( methods[j].getParameterNames().length == 1 ) {
+									// one parameter... 
+									String[] paramTypes = methods[j].getParameterTypes();
+									String getterReturnType = methods[i].getReturnType();
+									if( getterReturnType.equals(paramTypes[0])) {
+										attributeNames.add(atName);
+									}
+								}
+							} catch( JavaModelException jme ) {
+								
+							}
+						}
+					}
+				}
+			}
+			
+			return (String[]) attributeNames.toArray(new String[attributeNames.size()]);
+		}
 	}
 	
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
