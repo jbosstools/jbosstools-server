@@ -123,7 +123,7 @@ public class ServerAttributeHelper {
 		server.setAttribute(TIMEOUT_BEHAVIOR, bool);
 	}
 	public boolean getTimeoutBehavior() {
-		return server.getAttribute(TIMEOUT_BEHAVIOR, TIMEOUT_ABORT);
+		return server.getAttribute(TIMEOUT_BEHAVIOR, TIMEOUT_IGNORE);
 	}
 	
 	
