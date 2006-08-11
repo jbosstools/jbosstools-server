@@ -51,6 +51,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -77,9 +79,11 @@ import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
+import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerTableViewer.ContentWrapper;
 
@@ -90,6 +94,10 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	
 	private static final String XPATH_PROPERTY = "_XPATH_PROPERTY_";
 	private static final String XPATH_PROPERTY_LOADED = "_XPATH_PROPERTY_LOADED_";
+	private static String PREFERENCE_KEY = "_DESCRIPTOR_PREFERENCE_PAGE_DETAILS_SHOWN";
+	private static boolean COMPLEX = true;
+	private static boolean SIMPLE = false;
+	
 
 
 	private Action newXPathCategoryAction, deleteXPathCategoryAction, newXPathAction, editXPathAction, deleteXPathAction;
@@ -106,6 +114,11 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		getPropertySheetPage(); // prime it
 		createActions();
 		addListeners();
+	}
+	
+	
+	public boolean showSimple() {
+		return JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY) == SIMPLE;
 	}
 	
 	public SimpleXPathPreferenceTreeItem getRoot() {
@@ -324,6 +337,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		private TreeViewer xpathTreeViewer;
 		private TreeColumn column, column2, column3;
 		private Tree xpathTree;
+		private XPathPropertyLabelProvider labelProvider;
 
 		private Group xPathGroup;
 		
@@ -332,6 +346,10 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			addViewerMenus();
 		}
 
+		public XPathPropertyLabelProvider getLabelProvider() {
+			return labelProvider;
+		}
+		
 		private void addViewerMenus() {
 			MenuManager menuManager = new MenuManager("#PopupMenu"); 
 			menuManager.setRemoveAllWhenShown(true);
@@ -467,6 +485,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			
 			private boolean canEditLocationColumn(TreeItem item) {
 				if( item == null || item != lastItem[0] ) return false;
+				if( showSimple() ) return false;
 
 				// if we're "JNDI" (aka an XPath item) then yes. All others no.
 				if( item.getData() instanceof XPathPreferenceTreeItem ) return true;
@@ -476,6 +495,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			private boolean canEditAttributeColumn(TreeItem item) {
 				// if we're the "JNDI" line then we're editing the xpath's attribute name (code, name, etc)
 				if( item.getData() instanceof XPathPreferenceTreeItem ) {
+					if( showSimple() ) return false;
 					return true;
 				}
 
@@ -486,6 +506,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			}
 
 			private boolean canEditValueColumn(TreeItem item) {
+				if( showSimple() ) return false;
+
 				// if we're the "JNDI" line 
 				if( item.getData() instanceof XPathPreferenceTreeItem ) {
 					return true;
@@ -643,10 +665,12 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			
 			xpathTreeViewer = new TreeViewer(xpathTree);
 			xpathTreeViewer.setContentProvider(new XPathPropertyContentProvider());
-			xpathTreeViewer.setLabelProvider(new XPathPropertyLabelProvider());
+			labelProvider = new XPathPropertyLabelProvider();
+			labelProvider.setSimple(showSimple());
+			setViewContentAmount(showSimple());
+			xpathTreeViewer.setLabelProvider(labelProvider);
 			
 			final XPathTreeSelectionListener selListener = new XPathTreeSelectionListener();
-//			xpathTree.addListener (SWT.Selection, selListener);
 			xpathTree.addListener (SWT.MouseDoubleClick, selListener);
 			
 			// alerts the top listener as to the mouse position, to know which column is serverViewerSelection
@@ -827,8 +851,71 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 
 	}
+	
+	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent) {
+		return new DescriptorPreferencePage(parent);
+	}
+
+	public class DescriptorPreferencePage extends ViewProviderPreferenceComposite {
+
+		private Button simple, complex;
+		
+		public DescriptorPreferencePage(Composite parent) {
+			super(parent, SWT.NONE);
+			setLayout(new RowLayout(SWT.VERTICAL));
+			
+			simple = new Button(this, SWT.RADIO);
+			complex = new Button(this, SWT.RADIO);
+			
+			simple.setText("Show only xpath value in properties view.");
+			complex.setText("Show all details in properties view.");
+			
+			boolean prefVal = JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY);
+			simple.setSelection(prefVal == SIMPLE);
+			complex.setSelection(prefVal == COMPLEX);
+			
+		}
+		public boolean isValid() {
+			return true;
+		}
+		public boolean performCancel() {
+			return true;
+		}
+		public boolean performOk() {
+			boolean simp = simple.getSelection() == true ? SIMPLE : COMPLEX;
+			JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(PREFERENCE_KEY, simp);
+			JBossServerUIPlugin.getDefault().savePluginPreferences();
+			setViewContentAmount(simp == SIMPLE);
+			return true;
+		}
+		public void dispose() {
+			super.dispose();
+		}
+	}
+	
+	public void setViewContentAmount(boolean simple) {
+		if( propertyPage != null ) {
+			if( simple ) {
+				propertyPage.getLabelProvider().setSimple(true);
+				propertyPage.column3.setText("");
+				propertyPage.column2.setText("Attribute Value");
+				propertyPage.xpathTreeViewer.refresh();
+			} else {
+				propertyPage.getLabelProvider().setSimple(false);
+				propertyPage.column3.setText("XPath / XML");
+				propertyPage.column2.setText("Attribute Key / Value");
+				propertyPage.xpathTreeViewer.refresh();
+			}
+		}
+	}
+	
 	public static class XPathPropertyLabelProvider extends LabelProvider implements ITableLabelProvider {
 
+		private boolean simple = false;
+		public void setSimple(boolean val) {
+			simple = val;
+		}
+		
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
@@ -849,13 +936,13 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				XPathTreeItem2 element2 = (XPathTreeItem2)element;
 				if( columnIndex == 0 ) return "Match " + element2.getIndex();
 				if( columnIndex == 1 ) return element2.getText();
-				if( columnIndex == 2 ) return element2.elementAsXML();
+				if( columnIndex == 2 && !simple) return element2.elementAsXML();
 			}
 			
 			if( element instanceof XPathPreferenceTreeItem) {
 				if( columnIndex == 0 ) return ((XPathPreferenceTreeItem)element).getName().toString();
-				if( columnIndex == 1 ) return ((XPathPreferenceTreeItem)element).getAttributeName();
-				if( columnIndex == 2 ) return ((XPathPreferenceTreeItem)element).getXPath();
+				if( columnIndex == 1 && !simple) return ((XPathPreferenceTreeItem)element).getAttributeName();
+				if( columnIndex == 2 && !simple) return ((XPathPreferenceTreeItem)element).getXPath();
 			}
 			if( element instanceof SimpleXPathPreferenceTreeItem ) {
 				if( columnIndex == 0 ) 

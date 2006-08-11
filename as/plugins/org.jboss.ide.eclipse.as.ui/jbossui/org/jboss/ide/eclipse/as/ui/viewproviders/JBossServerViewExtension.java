@@ -79,7 +79,7 @@ public abstract class JBossServerViewExtension {
 		return null;
 	}
 	
-	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent, int style) {
+	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent) {
 		return null;
 	}
 	

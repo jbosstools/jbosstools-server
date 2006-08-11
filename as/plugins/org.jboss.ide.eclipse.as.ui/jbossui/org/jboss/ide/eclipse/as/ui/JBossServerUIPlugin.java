@@ -230,8 +230,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 
 			prefs.setValue(EXTENSION_ENABLED + getId(), enabled);
 			prefs.setValue(EXTENSION_WEIGHT + getId(), weight);
-			
-			
+			JBossServerUIPlugin.getDefault().savePluginPreferences();
 		}
 	}
 
