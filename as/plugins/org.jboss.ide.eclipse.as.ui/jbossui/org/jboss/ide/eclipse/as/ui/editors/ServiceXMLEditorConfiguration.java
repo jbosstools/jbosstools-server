@@ -51,6 +51,7 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
@@ -61,6 +62,8 @@ import org.eclipse.wst.xml.ui.StructuredTextViewerConfigurationXML;
 import org.eclipse.wst.xml.ui.internal.contentassist.ContentAssistRequest;
 import org.eclipse.wst.xml.ui.internal.contentassist.NoRegionContentAssistProcessor;
 import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentAssistProcessor;
+import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
+import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.util.BaseXMLHyperlinkUtil;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher;
@@ -392,6 +395,9 @@ public class ServiceXMLEditorConfiguration extends
 
 			if( !confirmsOccuranceRequirements(thisNode, parentNode, occ)) return;
 
+			
+			Image propImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_TAG_GENERIC);
+			
 			/*
 			 * Our tag suggestions should be:
 			 *     <element></element>
@@ -406,16 +412,16 @@ public class ServiceXMLEditorConfiguration extends
 			int cursorLoc = emptyCompletionText.length();
 			emptyCompletionText += "</" + occ.name + ">";
 			String descriptionText = "";
-			if( isTagOpened ) {
-				descriptionText = "<" + emptyCompletionText;
-			} else {
+
+			if( !isTagOpened ) {
 				emptyCompletionText = "<" + emptyCompletionText;
-				descriptionText = emptyCompletionText;
 				cursorLoc++;
 			}
+			descriptionText = occ.name;
+			
 			
 			contentAssistRequest.addProposal(new CompletionProposal(emptyCompletionText,  beginPosition, 
-					nName.length(), cursorLoc, null, descriptionText, null, null));
+					nName.length(), cursorLoc, propImage, descriptionText, null, null));
 			
 			
 			if( attributes.containsKey(occ.name) ) {
@@ -434,18 +440,17 @@ public class ServiceXMLEditorConfiguration extends
 				}
 				
 				String requiredCompletionText = occ.name + attributes + "></" + occ.name + ">";
-				if( isTagOpened ) {
-					descriptionText = "<" + requiredCompletionText;
-				} else {
+
+				if( !isTagOpened ) {
 					requiredCompletionText = "<" + requiredCompletionText;
-					descriptionText = requiredCompletionText;
 					cursorLoc++;
 				}
+				descriptionText = occ.name + "  (with attributes)";
 
 				if( !attributes.equals("")) {
 					contentAssistRequest.addProposal(new CompletionProposal(requiredCompletionText,  
 							beginPosition, nName.length(), cursorLoc != -1 ? cursorLoc : requiredCompletionText.length(), 
-							null, descriptionText, null, null));
+							propImage, descriptionText, null, null));
 				}
 			}
 		}
@@ -458,16 +463,25 @@ public class ServiceXMLEditorConfiguration extends
 		protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest) {
 			super.addAttributeNameProposals(contentAssistRequest);
 			
+			Image attImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_ATTRIBUTE);
+
+			ArrayList activeAttributes = new ArrayList();
+			NamedNodeMap nnl = contentAssistRequest.getNode().getAttributes();
+			for( int i = 0; i < nnl.getLength(); i++ ) {
+				activeAttributes.add(nnl.item(i).getNodeName());
+			}
+			
+			
 			String elementName = contentAssistRequest.getNode().getNodeName();
 			String match = contentAssistRequest.getMatchString();
 			List list = (List)attributes.get(elementName);
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
-				if( att.name.startsWith(match)) {
+				if( att.name.startsWith(match) && !activeAttributes.contains(att.name)) {
 					String txt = att.name + "=\"" + att.defaultValue + "\"";
 					contentAssistRequest.addProposal(new CompletionProposal(txt,  contentAssistRequest.getReplacementBeginPosition(), 
-							match.length(), txt.length()-1, null, txt, null, null));
+							match.length(), txt.length()-1, attImage, att.name, null, null));
 				}
 			}
 			
