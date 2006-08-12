@@ -351,7 +351,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 
 		private class MBeanPage2DialogFieldAdapter implements IDialogFieldListener {
 			public void dialogFieldChanged(DialogField field) {
-				ASDebug.p("field changed: " + field, this);
+				//ASDebug.p("field changed: " + field, this);
 			}
 		}
 
