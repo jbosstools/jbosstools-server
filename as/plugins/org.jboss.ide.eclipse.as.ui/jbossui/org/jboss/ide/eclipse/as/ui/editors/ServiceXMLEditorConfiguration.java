@@ -67,6 +67,7 @@ import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.util.BaseXMLHyperlinkUtil;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher;
+import org.jboss.ide.eclipse.as.ui.util.ServiceXMLEditorUtil;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher.ResultFilter;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
@@ -565,11 +566,11 @@ public class ServiceXMLEditorConfiguration extends
 			Node mbeanNode = node.getParentNode();
 			NamedNodeMap mbeanAttributes = mbeanNode.getAttributes();
 			Node att = mbeanAttributes.getNamedItem("code");
-			final String codeClass = att.getNodeValue();
-			IType type = findType(codeClass);
+			String codeClass = att.getNodeValue();
+			IType type = ServiceXMLEditorUtil.findType(codeClass);
 			if( type != null ) {
-				IMethod[] methods = getAllMethods(type);
-				String[] attributeNames = findAttributesFromMethods(methods, attributeCurrentValue);
+				IMethod[] methods = ServiceXMLEditorUtil.getAllMethods(type);
+				String[] attributeNames = ServiceXMLEditorUtil.findAttributesFromMethods(methods, attributeCurrentValue);
 				
 				int beginReplacement = contentAssistRequest.getReplacementBeginPosition()+1;
 				// Now turn them into proposals
@@ -582,78 +583,12 @@ public class ServiceXMLEditorConfiguration extends
 				
 		}
 		
-		protected IType findType(final String codeClass ) {
-			if( codeClass == null ) return null;
-			ResultFilter filter = new ResultFilter() {
-				public boolean accept(Object found) {
-					if( found instanceof IType ) {
-						IType type = (IType)found;
-						if( type.getFullyQualifiedName().equals(codeClass)) {
-							return true;
-						}
-						return false;
-					}
-					return true;
-				}
-			};
-			PackageTypeSearcher searcher = new PackageTypeSearcher(codeClass, filter);
-			ArrayList foundTypes = searcher.getTypeMatches();
-			if( foundTypes.size() == 1 ) {
-				return (IType)foundTypes.get(0);
-			}
-			return null;
-		}
 		/**
 		 * Gets all methods that this type, or its super-types, have.
 		 * @param type
 		 * @return
 		 */
-		protected IMethod[] getAllMethods(IType type) {
-			ArrayList methods = new ArrayList();
-			try {
-				methods.addAll(Arrays.asList(type.getMethods()));
-				String parentTypeName = type.getSuperclassName();
-				IType parentType = findType(parentTypeName);
-				if( parentType != null ) {
-					methods.addAll(Arrays.asList(getAllMethods(parentType)));
-				}
-			} catch( JavaModelException jme ) {
-				jme.printStackTrace();
-			}
-			return (IMethod[]) methods.toArray(new IMethod[methods.size()]);
-		}
-		
-		private String[] findAttributesFromMethods(IMethod[] methods, String attributeCurrentValue) {
-			ArrayList attributeNames = new ArrayList();
-			String getterPrefix = "get" + attributeCurrentValue;
-			
-			
-			for( int i = 0; i < methods.length; i++ ) {
-				if( methods[i].getElementName().startsWith(getterPrefix)) {
-					String atName = methods[i].getElementName().substring(3);
-					String setterName = "set" + atName;
-					for( int j = 0; j < methods.length; j++ ) {
-						if( methods[j].getElementName().equals(setterName)) {
-							// there's a getter and a setter... 
-							try {
-								if( methods[j].getParameterNames().length == 1 ) {
-									// one parameter... 
-									String[] paramTypes = methods[j].getParameterTypes();
-									String getterReturnType = methods[i].getReturnType();
-									if( getterReturnType.equals(paramTypes[0])) {
-										attributeNames.add(atName);
-									}
-								}
-							} catch( JavaModelException jme ) {
-								
-							}
-						}
-					}
-				}
-			}
-			
-			return (String[]) attributeNames.toArray(new String[attributeNames.size()]);
-		}
+
 	}
 	
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
@@ -689,7 +624,7 @@ public class ServiceXMLEditorConfiguration extends
 			Node currentNode = getCurrentNode(document, region.getOffset() );
 			Attr attr = getCurrentAttrNode(currentNode, region.getOffset());
 			
-			if( currentNode.getNodeName().equals("mbean") && attr.getName().equals("code")) {
+			if( currentNode.getNodeName().equals("mbean") && attr != null && attr.getName().equals("code")) {
 
 				IJavaSearchScope scope = SearchEngine.createWorkspaceScope();
 				SearchPattern codePattern = SearchPattern.createPattern(attr.getValue(), 
