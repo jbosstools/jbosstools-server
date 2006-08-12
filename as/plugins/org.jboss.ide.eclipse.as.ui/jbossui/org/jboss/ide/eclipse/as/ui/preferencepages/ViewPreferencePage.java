@@ -64,7 +64,9 @@ public class ViewPreferencePage extends PreferencePage implements
 	private HashMap providerToGroup;
 	private ArrayList preferenceComposites;
 	private PageBook book;
+	private Composite mainComposite;
 	ServerViewProvider[] providers;
+	
 	
 	public ViewPreferencePage() {
 		providerToGroup = new HashMap();
@@ -117,16 +119,26 @@ public class ViewPreferencePage extends PreferencePage implements
     }
 
 
+    public void dispose() {
+    	super.dispose();
+		ViewProviderPreferenceComposite comp;
+		for( int i = 0; i < preferenceComposites.size(); i++ ) {
+			comp = (ViewProviderPreferenceComposite)preferenceComposites.get(i);
+			comp.dispose();
+		}
+    }
+    
+    
 	protected Control createContents(Composite p) {
 		providerToGroup = new HashMap();
-		Composite c = new Composite(p, SWT.NONE);
-		c.setLayout(new FormLayout());
+		mainComposite = new Composite(p, SWT.NONE); 
+		mainComposite.setLayout(new FormLayout());
 		
-	    addEnablementComposite(c);
-	    addExtensionPreferencePages(c);
+	    addEnablementComposite(mainComposite);
+	    addExtensionPreferencePages(mainComposite);
 	    addListeners();
 		
-		return c;
+		return mainComposite;
 	}
 	
 	protected void addListeners() {
@@ -264,7 +276,7 @@ public class ViewPreferencePage extends PreferencePage implements
 			g.setText(providers[i].getName() + " Preferences");
 			g.setLayout(new FillLayout());
 			ViewProviderPreferenceComposite c = 
-				providers[i].getDelegate().createPreferenceComposite(g, SWT.NONE);
+				providers[i].getDelegate().createPreferenceComposite(g);
 			if( c != null ) preferenceComposites.add(c);
 			providerToGroup.put(providers[i], g);
 		}
