@@ -117,7 +117,9 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		stopServer.setImage(getStateImage(IServer.STATE_STOPPED, ILaunchManager.RUN_MODE));
 		fillMenuCurrentPos++;
 		
-		if( DEFAULT_JBOSS_SERVER_UNSET.equals(getCurrentDefaultServer())) {
+		// if default server is unset OR if it doesnt exist anymore (deleted)
+		if( DEFAULT_JBOSS_SERVER_UNSET.equals(getCurrentDefaultServer()) || 
+				ServerCore.findServer(getCurrentDefaultServer()) == null) {
 			startInRunMode.setEnabled(false);
 			startInDebugMode.setEnabled(false);
 			stopServer.setEnabled(false);
