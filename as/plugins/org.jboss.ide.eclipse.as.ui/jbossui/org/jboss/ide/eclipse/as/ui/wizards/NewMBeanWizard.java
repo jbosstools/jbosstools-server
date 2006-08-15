@@ -85,15 +85,13 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 
 				IPath newPath = new Path(fullPath.segment(0));
 
-				// BLOCKING on eclipse bug 153135
+				// TODO: BLOCKING on eclipse bug 153135
 //				IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
 //				newFilePage.setContainerFullPath(newPath);
 				
 				IFile newFile = newFilePage.createNewFile();
 				createStubServiceDescriptor(newFile);
-				ASDebug.p("create it", this);
 			} else {
-				ASDebug.p("DO NOT CREATE", this);
 			}
 		} catch( Throwable jme) {
 			jme.printStackTrace();
@@ -122,7 +120,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		newFilePage.defaultFileExtension = "."+ext; //$NON-NLS-1$
 		newFilePage.filterExtensions = new String[] {"*.xml"};
 		addPage(newFilePage);
-		
+		// 
 	}
 	
 	private class MBeanInterfacePage extends NewTypeWizardPage {
@@ -158,6 +156,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 					fTypeNameStatus = typeNameChanged(getTypeName());
 					fMBeanNameStatus = typeNameChanged(fMBeanNameDialogField.getText());
 				}
+				
 				handleFieldChanged(fieldName);
 				
 			}
@@ -232,6 +231,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 			// status of all used components
 			IStatus[] status= new IStatus[] {
 				fContainerStatus,
+				fPackageStatus, 
 				fTypeNameStatus,
 				fMBeanNameStatus,
 				fSuperClassStatus,
