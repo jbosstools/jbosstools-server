@@ -27,6 +27,8 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
@@ -50,9 +52,9 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.provisional.ManagedUIDecorator;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard;
 
 public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate {
 
@@ -60,8 +62,11 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 	private static final String DEFAULT_JBOSS_SERVER_UNSET = "_DEFAULT_JBOSS_SERVER_UNSET_";
 	
     private IWorkbench workbench;
+    private ISelection selection;
     private Menu fMenu;
 
+    private int fillMenuCurrentPos = 0;
+    
     /** Return a menu which launches the various wizards */
     public Menu getMenu(Control parent) {
 		setMenu(new Menu(parent));
@@ -91,17 +96,26 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     }
     
 	protected void fillMenu(Menu menu) {
+		fillMenuCurrentPos = 0;
+		fillMenuServerItems(menu);
+		fillMenuNewTypes(menu);
+	}
+	
+	protected void fillMenuServerItems(Menu menu) {
 		MenuItem startInRunMode = new MenuItem(menu, SWT.NONE);
 		startInRunMode.setText("Start Server");
 		startInRunMode.setImage(getStateImage(IServer.STATE_STARTED, ILaunchManager.RUN_MODE));
+		fillMenuCurrentPos++;
 		
 		MenuItem startInDebugMode = new MenuItem(menu, SWT.NONE);
 		startInDebugMode.setText("Start Server (Debug Mode)");
 		startInDebugMode.setImage(getStateImage(IServer.STATE_STARTED, ILaunchManager.DEBUG_MODE));
+		fillMenuCurrentPos++;
 		
 		MenuItem stopServer = new MenuItem(menu, SWT.NONE);
 		stopServer.setText("Stop Server");
 		stopServer.setImage(getStateImage(IServer.STATE_STOPPED, ILaunchManager.RUN_MODE));
+		fillMenuCurrentPos++;
 		
 		if( DEFAULT_JBOSS_SERVER_UNSET.equals(getCurrentDefaultServer())) {
 			startInRunMode.setEnabled(false);
@@ -121,11 +135,13 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		}
 		
 		
-		new Separator().fill(menu, 3);
+		new Separator().fill(menu, fillMenuCurrentPos);
+		fillMenuCurrentPos++;
 		MenuItem selectDefaultServer = new MenuItem(menu, SWT.CASCADE);
 		selectDefaultServer.setText("Set Default Server");
 		Menu subMenu = new Menu(menu);
 		selectDefaultServer.setMenu(subMenu);
+		fillMenuCurrentPos++;
 		
 		
 		
@@ -161,10 +177,7 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 			});
 			
 		}
-		
-		
-		
-		
+
 		// Add listeners for the three start / debug / stop options
 		startInRunMode.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -213,6 +226,38 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		
 	}
 
+	
+	protected void fillMenuNewTypes(Menu menu) {
+		new Separator().fill(menu, fillMenuCurrentPos);
+		fillMenuCurrentPos++;
+		
+		MenuItem newMenuItem = new MenuItem(menu, SWT.CASCADE);
+		newMenuItem.setText("New");
+		Menu subMenu = new Menu(menu);
+		newMenuItem.setMenu(subMenu);
+		fillMenuCurrentPos++;
+		
+		MenuItem mbeanStubsMenuItem = new MenuItem(subMenu, SWT.NONE);
+		mbeanStubsMenuItem.setText("New MBean Stubs");
+		// TODO: get an image
+		
+		mbeanStubsMenuItem.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				NewMBeanWizard newMBeanWizard = new NewMBeanWizard();
+				if( selection instanceof IStructuredSelection )
+					newMBeanWizard.init(workbench, (IStructuredSelection)selection);
+				else 
+					newMBeanWizard.init(workbench, null);
+					
+				WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), newMBeanWizard);
+			    int ret = dlg.open();
+
+			} 
+		});
+	}
+	
     public void init(IWorkbenchWindow window) {
         workbench = window.getWorkbench();
     }
@@ -221,6 +266,7 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
+    	this.selection = selection;
     }
 
 	public void dispose() {
