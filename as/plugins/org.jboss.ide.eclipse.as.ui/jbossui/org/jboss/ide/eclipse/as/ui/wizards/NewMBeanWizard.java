@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.List;
 
@@ -41,18 +42,20 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringDialogField;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.wst.sse.core.internal.encoding.CommonEncodingPreferenceNames;
 import org.eclipse.wst.xml.core.internal.XMLCorePlugin;
 import org.eclipse.wst.xml.ui.internal.wizards.NewModelWizard;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 
@@ -74,28 +77,52 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 	
 	public boolean performFinish() {
 		if( !canFinish() ) return false;
-		try {
-			interfacePage.createType(new NullProgressMonitor());
-			mbeanPage.createType(new NullProgressMonitor());
-			
-			if( mbeanPage.shouldCreateDescriptor()) {
-				newFilePage.setFileName(mbeanPage.getCreatedType().getElementName() + "-service.xml");
-				
-				IPath fullPath = newFilePage.getContainerFullPath();
+		
+		
+		IRunnableWithProgress op = new IRunnableWithProgress() {
+			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+				try {
+					
+					monitor.beginTask("Creating Files", 100);
+					SubProgressMonitor interfaceMonitor = new SubProgressMonitor(monitor, 40);
+					SubProgressMonitor mbeanMonitor = new SubProgressMonitor(monitor, 40);
+					SubProgressMonitor xmlMonitor = new SubProgressMonitor(monitor, 20);
+					
+					
+					interfacePage.createType(interfaceMonitor);
+					mbeanPage.createType(mbeanMonitor);
+					
+					xmlMonitor.beginTask("XMLDescriptor", 1);
+					if( mbeanPage.shouldCreateDescriptor()) {
+						newFilePage.setFileName(mbeanPage.getCreatedType().getElementName() + "-service.xml");
+						
+						IPath fullPath = newFilePage.getContainerFullPath();
 
-				IPath newPath = new Path(fullPath.segment(0));
-
-				// TODO: BLOCKING on eclipse bug 153135
-//				IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
-//				newFilePage.setContainerFullPath(newPath);
+						IPath newPath = new Path(fullPath.segment(0));
+						
+						// TODO: BLOCKING on eclipse bug 153135
+//						IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
+//						newFilePage.setContainerFullPath(newPath);
+						
+						IFile newFile = newFilePage.createNewFile();
+						createStubServiceDescriptor(newFile);
+					} else {
+					}
+					xmlMonitor.worked(1);
+					xmlMonitor.done();
+				} catch( Throwable jme) {
+					jme.printStackTrace();
+				}
 				
-				IFile newFile = newFilePage.createNewFile();
-				createStubServiceDescriptor(newFile);
-			} else {
+				monitor.done();
 			}
-		} catch( Throwable jme) {
-			jme.printStackTrace();
+		};
+		try {
+			new ProgressMonitorDialog(new Shell()).run(false, true, op);
+		} catch( Exception e) {
+			e.printStackTrace();
 		}
+
 		
 		return true;
 	}
