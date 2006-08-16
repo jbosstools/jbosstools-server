@@ -26,6 +26,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -47,8 +48,10 @@ import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.StartServerJob;
+import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
 import org.eclipse.wst.server.ui.internal.provisional.ManagedUIDecorator;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
@@ -64,6 +67,8 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     private IWorkbench workbench;
     private ISelection selection;
     private Menu fMenu;
+    
+    private Image serverImage;
 
     private int fillMenuCurrentPos = 0;
     
@@ -139,45 +144,49 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		
 		new Separator().fill(menu, fillMenuCurrentPos);
 		fillMenuCurrentPos++;
-		MenuItem selectDefaultServer = new MenuItem(menu, SWT.CASCADE);
-		selectDefaultServer.setText("Set Default Server");
-		Menu subMenu = new Menu(menu);
-		selectDefaultServer.setMenu(subMenu);
-		fillMenuCurrentPos++;
-		
-		
-		
+
 		
 		JBossServer[] servers = JBossServerCore.getAllJBossServers();
-		for( int i = 0; i < servers.length; i++ ) {
-			MenuItem server= new MenuItem(subMenu, SWT.CHECK);
-			server.setText(servers[i].getServer().getName());
-			server.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.IMG_JBOSS));
-			
-			if( servers[i].getServer().getId().equals(getCurrentDefaultServer())) {
-				server.setSelection(true);
-			} else {
-				server.setSelection(false);
-			}
-			
-			final IServer myServer = servers[i].getServer();
-
-			// upon selection, update the default
-			server.addSelectionListener(new SelectionListener() {
-
-				public void widgetDefaultSelected(SelectionEvent e) {
-				}
-
-				public void widgetSelected(SelectionEvent e) {
-					if( myServer.getId().equals(getCurrentDefaultServer())) {
-						JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(DEFAULT_JBOSS_SERVER, DEFAULT_JBOSS_SERVER_UNSET);
-					} else {
-						JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(DEFAULT_JBOSS_SERVER, myServer.getId());
-					}
-				} 
+		if( servers.length == 0 ) {
+			MenuItem selectDefaultServer = new MenuItem(menu, SWT.NONE);
+			selectDefaultServer.setText("Set Default Server");
+			selectDefaultServer.setEnabled(false);
+			fillMenuCurrentPos++;
+		} else { 
+			MenuItem selectDefaultServer = new MenuItem(menu, SWT.CASCADE);
+			selectDefaultServer.setText("Set Default Server");
+			Menu subMenu = new Menu(menu);
+			selectDefaultServer.setMenu(subMenu);
+			fillMenuCurrentPos++;
+			for( int i = 0; i < servers.length; i++ ) {
+				MenuItem server= new MenuItem(subMenu, SWT.CHECK);
+				server.setText(servers[i].getServer().getName());
+				server.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.IMG_JBOSS));
 				
-			});
-			
+				if( servers[i].getServer().getId().equals(getCurrentDefaultServer())) {
+					server.setSelection(true);
+				} else {
+					server.setSelection(false);
+				}
+				
+				final IServer myServer = servers[i].getServer();
+
+				// upon selection, update the default
+				server.addSelectionListener(new SelectionListener() {
+
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+
+					public void widgetSelected(SelectionEvent e) {
+						if( myServer.getId().equals(getCurrentDefaultServer())) {
+							JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(DEFAULT_JBOSS_SERVER, DEFAULT_JBOSS_SERVER_UNSET);
+						} else {
+							JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(DEFAULT_JBOSS_SERVER, myServer.getId());
+						}
+					} 
+					
+				});
+			}
 		}
 
 		// Add listeners for the three start / debug / stop options
@@ -258,6 +267,20 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 
 			} 
 		});
+		
+		
+		MenuItem newServerItem = new MenuItem(subMenu, SWT.NONE);
+		newServerItem.setText("New Server");
+		newServerItem.setImage(getServerImage());
+		
+		newServerItem.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				IAction newServerAction = new NewServerWizardAction();
+				newServerAction.run();
+			} 
+		});
 	}
 	
     public void init(IWorkbenchWindow window) {
@@ -273,9 +296,16 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 
 	public void dispose() {
 		fMenu.dispose();
+		if( serverImage != null ) serverImage.dispose();
 	}
 	
-	
+	protected Image getServerImage() {
+		if( serverImage == null ) {
+			ImageDescriptor id = ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_NEW_SERVER);
+			serverImage = id.createImage();
+		}
+		return serverImage;
+	}
 	protected Image getStateImage(int state, String mode) {
 		return new ManagedUIDecorator().getStateImage(state, mode, 0);
 	}
