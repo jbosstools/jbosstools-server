@@ -21,16 +21,17 @@
  */
 package org.jboss.ide.eclipse.as.core.module.factory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
@@ -48,7 +49,11 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	
 	public abstract void initialize();
 	public abstract Object getLaunchable(JBossModuleDelegate delegate);
-	public abstract boolean supports(IResource resource);
+	public abstract boolean supports(String path);
+	
+	public boolean supports( IResource resource ) {
+		return supports(getPath(resource));
+	}
 	
 	/**
 	 * Get a delegate for this module. 
@@ -77,23 +82,71 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * Store them when they're found. 
 	 */
 	protected void cacheModules() {
+		
 		ASDebug.p("Caching factory ", this);
 		this.pathToModule = new HashMap();
 		this.moduleToDelegate = new HashMap();
-		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for( int i = 0; i < projects.length; i++ ) {
-			try {
-				projects[i].accept(new IResourceVisitor() {
-					public boolean visit(IResource resource) throws CoreException {
-						acceptAddition(resource);
-						return true;
-					} 
-				});
-			} catch( CoreException ce ) {
-			}
+		
+		String[] paths = getServerModulePaths();
+		for( int i = 0; i < paths.length; i++ ) {
+			acceptAddition(paths[i]);
 		}
+		
+//		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+//		for( int i = 0; i < projects.length; i++ ) {
+//			try {
+//				projects[i].accept(new IResourceVisitor() {
+//					public boolean visit(IResource resource) throws CoreException {
+//						acceptAddition(resource);
+//						return true;
+//					} 
+//				});
+//			} catch( CoreException ce ) {
+//			}
+//		}
 	}
 	
+	private String[] getServerModulePaths() {
+		// Stolen from Server.class, not public
+		final String MODULE_LIST = "modules";
+
+		ArrayList paths = new ArrayList();
+		IServer[] server = ServerCore.getServers();
+		for( int i = 0; i < server.length; i++ ) {
+			if( server[i].getClass().equals(Server.class)) {
+				// Get the module ID list:
+				Object[] o = ((Server)server[i]).getAttribute(MODULE_LIST, (List) null).toArray();
+				// Get the module ID list:
+				for( int j = 0; j < o.length; j++ ) {
+					ASDebug.p("(server,module) = (" + server[i].getName() + "," + o[j], this);					
+					String moduleId = (String) o[j];
+					String name = "<unknown>";
+					int index = moduleId.indexOf("::");
+					if (index > 0) {
+						name = moduleId.substring(0, index);
+						moduleId = moduleId.substring(index+2);
+					}
+					
+					String moduleTypeId = null;
+					String moduleTypeVersion = null;
+					index = moduleId.indexOf("::");
+					if (index > 0) {
+						int index2 = moduleId.indexOf("::", index+1);
+						moduleTypeId = moduleId.substring(index+2, index2);
+						moduleTypeVersion = moduleId.substring(index2+2);
+						moduleId = moduleId.substring(0, index);
+					}
+					
+					if( moduleId.startsWith(getFactoryId() + ":")) {
+						String path = moduleId.substring((getFactoryId()+":").length());
+						paths.add(path);
+					}
+					
+				}
+			}
+		}
+		return (String[]) paths.toArray(new String[paths.size()]);
+	}
 	
 	/**
 	 * Return an associated module for this resource, 
@@ -101,18 +154,22 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * @param resource
 	 * @return
 	 */
-	public IModule getModule(IResource resource) {
+	public IModule getModule(String path) {
 		//ASDebug.p("getModule: " + resource.getFullPath() + ", my ID is " + getId(), this);
 		if(pathToModule == null) {
 			cacheModules();
 		}
 		
 		// return the module if it already exists
-		String path = getPath(resource);
+		//String path = getPath(resource);
 		if( pathToModule.get(path) != null ) {
 			return (IModule)pathToModule.get(path);
 		}
 		return null;
+	}
+	
+	public IModule getModule(IResource resource) {
+		return getModule(getPath(resource));
 	}
 	
 	/**
@@ -123,7 +180,7 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 		return getId();
 	}
 	
-	protected abstract IModule acceptAddition(IResource resource);
+	protected abstract IModule acceptAddition(String path);
 	
 	/**
 	 * Handle a deleted resource.
@@ -132,8 +189,8 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * the module will still be on the server. 
 	 * @param resource
 	 */
-	protected void acceptDeletion(IResource resource) {
-		IModule module = getModule(resource);
+	protected void acceptDeletion(String resourcePath) {
+		IModule module = getModule(resourcePath);
 		if( module == null ) return;
 		
 		Object delegate = moduleToDelegate.get(module);
@@ -141,7 +198,7 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 			((JBossModuleDelegate)delegate).clearDocuments();
 		}
 		moduleToDelegate.remove(module);
-		pathToModule.remove(getPath(resource));
+		pathToModule.remove(resourcePath);
 		ModuleModel.getDefault().markModuleChanged(module, IResourceDelta.REMOVED);
 	}
 
@@ -153,8 +210,8 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * 
 	 * @param resource
 	 */
-	protected void acceptChange(IResource resource) {
-		IModule module = getModule(resource);
+	protected void acceptChange(String resourcePath) {
+		IModule module = getModule(resourcePath);
 		if( module == null ) return;
 		
 		Object delegate = moduleToDelegate.get(module);
@@ -177,15 +234,15 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	public void resourceEvent(IResource resource, int kind) {
 		switch( kind ) {
 			case IResourceDelta.REMOVED:
-				if( contains(resource)) 
-					acceptDeletion(resource);
+				if( contains(getPath(resource))) 
+					acceptDeletion(getPath(resource));
 				break;
 			case IResourceDelta.ADDED:
-				acceptAddition(resource);
+				acceptAddition(getPath(resource));
 				break;
 			case IResourceDelta.CHANGED:
-				if( contains(resource)) 
-					acceptChange(resource);
+				if( contains(getPath(resource))) 
+					acceptChange(getPath(resource));
 				break;
 			default:
 				break;
@@ -198,12 +255,12 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * @param resource
 	 * @return
 	 */
-	protected boolean contains(IResource resource) {
+	protected boolean contains(String resourcePath) {
 		if(pathToModule == null) {
 			cacheModules();
 		}
 
-		Object o = pathToModule.get(getPath(resource));
+		Object o = pathToModule.get(resourcePath);
 		return o == null ? false : true;
 	}
 	

@@ -4,17 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.client.verifiers.ArchiveVerifier;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ArchiveModuleFactory extends JBossModuleFactory {
 	
@@ -29,19 +27,20 @@ public class ArchiveModuleFactory extends JBossModuleFactory {
 	public void initialize() {
 	}
 
-	protected IModule acceptAddition(IResource resource) {
-		if( !supports(resource)) 
+	protected IModule acceptAddition(String path) {
+		if( !supports(path)) 
 			return null;
 
 		// otherwise create the module
-		String path = getPath(resource);
-		IModule module = createModule(path, resource.getName(), 
-				GENERIC_JAR, VERSION, resource.getProject());
+		//String path = getPath(resource);
+		String name = new Path(path).lastSegment();
+		IModule module = createModule(path, name, 
+				GENERIC_JAR, VERSION, null);
 		
 		
 		ArchiveModuleDelegate delegate = new ArchiveModuleDelegate();
 		delegate.initialize(module);
-		delegate.setResource(resource);
+		delegate.setResourcePath(path);
 		delegate.setFactory(this);
 		
 		// and insert it
@@ -59,9 +58,10 @@ public class ArchiveModuleFactory extends JBossModuleFactory {
 		return new ArchiveVerifier(delegate);
 	}
 
-	public boolean supports(IResource resource) {
+	public boolean supports(String path) {
 		try {
-			File f = resource.getLocation().toFile();
+			//File f = resource.getLocation().toFile();
+			File f = new File(path);
 			JarFile jf = new JarFile(f);
 			return true;
 		} catch( IOException e ) {
@@ -88,5 +88,6 @@ public class ArchiveModuleFactory extends JBossModuleFactory {
 		}
 		
 	}
+
 
 }

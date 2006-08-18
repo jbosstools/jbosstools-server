@@ -112,15 +112,10 @@ public abstract class JBossModuleDelegate extends ModuleDelegate {
 		return segments[segments.length - 1];
 	}
 	
-	public void setResource(IResource resource) {
+	public void setResourcePath(String path) {
 		try {
-			if( factory == null ) {
-				this.resourcePath = resource.getLocation().toOSString();
-			} else {
-				this.resourcePath = factory.getPath(resource);
-			}
-			this.resourceURL = resource.getLocation().toFile().toURL();
-			//ASDebug.p("added resource URL is " + resourceURL, this);
+			this.resourcePath = path;
+			this.resourceURL = new File(path).toURL();
 		} catch( Exception e ) {
 		}
 	}
