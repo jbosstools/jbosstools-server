@@ -78,8 +78,9 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	}
 	
 	/**
-	 * Go through the entire workspace looking for valid modules. 
-	 * Store them when they're found. 
+	 * Get a list of minimal modules to have on hand, 
+	 * specifically those that are already deployed to a server
+	 * and are expected. 
 	 */
 	protected void cacheModules() {
 		
@@ -164,6 +165,12 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 		//String path = getPath(resource);
 		if( pathToModule.get(path) != null ) {
 			return (IModule)pathToModule.get(path);
+		}
+		if( supports(path)) {
+			acceptAddition(path);
+			if( pathToModule.get(path) != null ) {
+				return (IModule)pathToModule.get(path);
+			}
 		}
 		return null;
 	}
