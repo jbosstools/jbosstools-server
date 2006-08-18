@@ -295,8 +295,8 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     }
 
 	public void dispose() {
-		fMenu.dispose();
-		if( serverImage != null ) serverImage.dispose();
+		if( fMenu != null && !fMenu.isDisposed()) fMenu.dispose();
+		if( serverImage != null && !serverImage.isDisposed()) serverImage.dispose();
 	}
 	
 	protected Image getServerImage() {
