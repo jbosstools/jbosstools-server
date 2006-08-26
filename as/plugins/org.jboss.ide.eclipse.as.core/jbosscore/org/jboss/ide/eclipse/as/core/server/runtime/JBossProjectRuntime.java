@@ -19,20 +19,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.wizards;
+package org.jboss.ide.eclipse.as.core.server.runtime;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.server.core.model.RuntimeDelegate;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
-/**
- * @author Marshall
- */
-public class JBoss32WizardFragment extends AbstractJBossWizardFragment
-{
+public class JBossProjectRuntime extends RuntimeDelegate {
 
-	protected ImageDescriptor getImageDescriptor()
-	{
-		return JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO);
+	public static final String SERVER_ID = "_SERVER_ID_";
+	
+	public JBossProjectRuntime() {
+		// TODO Auto-generated constructor stub
+		ASDebug.p("I am created!!!", this);
+	}
+
+	public String getServerId() {
+		return getAttribute(SERVER_ID, (String)null);
+	}
+
+	public IStatus validate() {
+		IStatus status = super.validate();
+		ASDebug.p("validating, status is " + status, this);
+		return status;
 	}
 
 }

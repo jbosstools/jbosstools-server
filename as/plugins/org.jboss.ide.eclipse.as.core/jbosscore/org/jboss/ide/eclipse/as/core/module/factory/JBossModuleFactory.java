@@ -116,7 +116,11 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 		for( int i = 0; i < server.length; i++ ) {
 			if( server[i].getClass().equals(Server.class)) {
 				// Get the module ID list:
-				Object[] o = ((Server)server[i]).getAttribute(MODULE_LIST, (List) null).toArray();
+				List l = ((Server)server[i]).getAttribute(MODULE_LIST, (List) null);
+
+				if( l == null ) return new String[0];
+				
+				Object[] o = l.toArray();
 				// Get the module ID list:
 				for( int j = 0; j < o.length; j++ ) {
 					ASDebug.p("(server,module) = (" + server[i].getName() + "," + o[j], this);					

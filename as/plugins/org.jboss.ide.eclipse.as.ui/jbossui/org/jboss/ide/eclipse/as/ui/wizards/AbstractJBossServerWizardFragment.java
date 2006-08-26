@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -35,13 +36,11 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
@@ -51,6 +50,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -65,14 +65,11 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
-/**
- * @author Marshall
- */
-public abstract class AbstractJBossWizardFragment extends WizardFragment {
-	
+public class AbstractJBossServerWizardFragment extends WizardFragment {
 	//private final static int UNKNOWN_CHANGED = 0;
 	private final static int NAME_CHANGED = 1;
 	private final static int HOME_CHANGED = 2;
@@ -88,6 +85,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	private Combo jreCombo;
 	private Button homeDirButton, jreButton;
 	private Composite nameComposite, homeDirComposite, jreComposite, configComposite;
+	private Group g;
 	private String name, homeDir, jre, config;
 
 	// jre fields
@@ -110,6 +108,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle)
 	{
+		ASDebug.p("in createComposite", this);
 		this.handle = handle;
 		
 		Composite main = new Composite(parent, SWT.NONE);
@@ -118,8 +117,18 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		
 		updateJREs();
 		createNameComposite(main);
-		createHomeComposite(main);
-		createJREComposite(main);
+		
+		g = new Group(main, SWT.NONE);
+		g.setText("Runtime Information");
+		g.setLayout(new FormLayout());
+		FormData groupData = new FormData();
+		groupData.left = new FormAttachment(0,5);
+		groupData.right = new FormAttachment(100, -5);
+		groupData.top = new FormAttachment(nameComposite, 5);
+		g.setLayoutData(groupData);
+		
+		createHomeComposite(g);
+		createJREComposite(g);
 		createConfigurationComposite(main);
 
 		
@@ -127,7 +136,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		// make modifications to parent
 		handle.setTitle(Messages.createWizardTitle);
 		handle.setDescription(Messages.createWizardDescription);
-		handle.setImageDescriptor (getImageDescriptor());
+		//handle.setImageDescriptor (getImageDescriptor());
 		return main;
 	}
 
@@ -176,7 +185,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(nameComposite, 10);
+		cData.top = new FormAttachment(0, 5);
 		homeDirComposite.setLayoutData(cData);
 
 		homeDirComposite.setLayout(new FormLayout());
@@ -187,9 +196,11 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		homeDirLabel.setText(Messages.wizardFragmentHomeDirLabel);
 		
 		homeDirText = new Text(homeDirComposite, SWT.BORDER);
+		homeDirText.setEditable(false);
 		
-		homeDirButton = new Button(homeDirComposite, SWT.NONE);
-		homeDirButton.setText(Messages.browse);
+		
+//		homeDirButton = new Button(homeDirComposite, SWT.NONE);
+//		homeDirButton.setText(Messages.browse);
 
 		
 		// Add listeners
@@ -199,34 +210,34 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 			}
 		});
 		
-		homeDirButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				browseHomeDirClicked();
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				browseHomeDirClicked();
-			} 
-			
-		});
+//		homeDirButton.addSelectionListener(new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				browseHomeDirClicked();
+//			}
+//
+//			public void widgetSelected(SelectionEvent e) {
+//				browseHomeDirClicked();
+//			} 
+//			
+//		});
 		
 		// Set Layout Data
 		FormData labelData = new FormData();
 		FormData textData = new FormData();
-		FormData buttonData = new FormData();
+		//FormData buttonData = new FormData();
 		
 		labelData.left = new FormAttachment(0,0);
 		homeDirLabel.setLayoutData(labelData);
 		
 		
 		textData.left = new FormAttachment(0, 5);
-		textData.right = new FormAttachment(homeDirButton, -5);
+		textData.right = new FormAttachment(100, -5);
 		textData.top = new FormAttachment(homeDirLabel, 5);
 		homeDirText.setLayoutData(textData);
 		
-		buttonData.top = new FormAttachment(homeDirLabel, 5);
-		buttonData.right = new FormAttachment(100, 0);
-		homeDirButton.setLayoutData(buttonData);
+//		buttonData.top = new FormAttachment(homeDirLabel, 5);
+//		buttonData.right = new FormAttachment(100, 0);
+//		homeDirButton.setLayoutData(buttonData);
 
 
 	}
@@ -250,51 +261,52 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		jreCombo = new Combo(jreComposite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		jreCombo.setItems(jreNames);
 		jreCombo.select(defaultVMIndex);
+		jreCombo.setEnabled(false);
 		
-		jreButton = new Button(jreComposite, SWT.NONE);
-		jreButton.setText(Messages.installedJREs);
+//		jreButton = new Button(jreComposite, SWT.NONE);
+//		jreButton.setText(Messages.installedJREs);
 		
 		// Add action listeners
-		jreButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				String currentVM = jreCombo.getText();
-				if (showPreferencePage()) {
-					updateJREs();
-					jreCombo.setItems(jreNames);
-					jreCombo.setText(currentVM);
-					if (jreCombo.getSelectionIndex() == -1)
-						jreCombo.select(defaultVMIndex);
-				}
-			}
-		});
-
-		jreCombo.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
-			} 
-		} );
+//		jreButton.addSelectionListener(new SelectionAdapter() {
+//			public void widgetSelected(SelectionEvent e) {
+//				String currentVM = jreCombo.getText();
+//				if (showPreferencePage()) {
+//					updateJREs();
+//					jreCombo.setItems(jreNames);
+//					jreCombo.setText(currentVM);
+//					if (jreCombo.getSelectionIndex() == -1)
+//						jreCombo.select(defaultVMIndex);
+//				}
+//			}
+//		});
+//
+//		jreCombo.addSelectionListener(new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//				updatePage(CONFIG_CHANGED);
+//			}
+//
+//			public void widgetSelected(SelectionEvent e) {
+//				updatePage(CONFIG_CHANGED);
+//			} 
+//		} );
 		
 		// Set Layout Data
 		FormData labelData = new FormData();
 		FormData comboData = new FormData();
-		FormData buttonData = new FormData();
 		
-		labelData.left = new FormAttachment(0,0);
+		labelData.left = new FormAttachment(0,5);
+		labelData.top = new FormAttachment(0, 7);
 		installedJRELabel.setLayoutData(labelData);
 		
 		
-		comboData.left = new FormAttachment(0, 5);
-		comboData.right = new FormAttachment(jreButton, -5);
-		comboData.top = new FormAttachment(installedJRELabel, 5);
+		comboData.left = new FormAttachment(installedJRELabel, 5);
+		comboData.right = new FormAttachment(60, -5);
+		comboData.top = new FormAttachment(homeDirComposite, 5);
 		jreCombo.setLayoutData(comboData);
 		
-		buttonData.top = new FormAttachment(installedJRELabel, 5);
-		buttonData.right = new FormAttachment(100, 0);
-		jreButton.setLayoutData(buttonData);
+//		buttonData.top = new FormAttachment(installedJRELabel, 5);
+//		buttonData.right = new FormAttachment(100, 0);
+//		jreButton.setLayoutData(buttonData);
 
 	}
 	private void createConfigurationComposite(Composite main) {
@@ -303,7 +315,7 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(jreComposite, 10);
+		cData.top = new FormAttachment(g, 10);
 		configComposite.setLayoutData(cData);
 
 		configComposite.setLayout(new FormLayout());
@@ -380,24 +392,25 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		}
 
 		handle.setMessage(error, IMessageProvider.ERROR);
+		
 	}
 	
 	private String getErrorString(int severity) {
-		if( getJbossServerFolder(nameText.getText()).exists() ) {
+		if( getJbossServerFolder(nameText.getText()) != null && getJbossServerFolder(nameText.getText()).exists() ) {
 			return Messages.serverNameInUse;
 		}
 		
-		if ( homeDirText.getText() != "" && !new File(homeDirText.getText()).exists()) {
+		if ( !new File(homeDirText.getText()).exists()) {
 			return Messages.invalidDirectory;
 		}
 		
 		if( severity == SEVERITY_MAJOR ) return null;
 		
 		// now give minor warnings
-		if( nameText.getText().equals("")) 
+		if( nameText.getText().trim().equals("")) 
 			return Messages.nameTextBlank;
 
-		if( homeDirText.getText().equals("")) 
+		if( homeDirText.getText().trim().equals("")) 
 			return Messages.homeDirBlank;
 
 
@@ -406,19 +419,19 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	}
 
 	
-	private void browseHomeDirClicked() {
-		File file = new File(homeDirText.getText());
-		if (! file.exists()) {
-			file = null;
-		}
-		
-		File directory = getDirectory(file, homeDirComposite.getShell());
-		if (directory == null) {
-			return;
-		}
-		
-		homeDirText.setText(directory.getAbsolutePath());
-	}
+//	private void browseHomeDirClicked() {
+//		File file = new File(homeDirText.getText());
+//		if (! file.exists()) {
+//			file = null;
+//		}
+//		
+//		File directory = getDirectory(file, homeDirComposite.getShell());
+//		if (directory == null) {
+//			return;
+//		}
+//		
+//		homeDirText.setText(directory.getAbsolutePath());
+//	}
 	
 	protected File getDirectory(File startingDirectory, Shell shell) {
 		DirectoryDialog fileDialog = new DirectoryDialog(shell, SWT.OPEN);
@@ -485,13 +498,15 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	
 	// WST API methods
 	public void enter() {
-		
 		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy runtimeWC = r.createWorkingCopy();
 		runtime = (JBossServerRuntime) runtimeWC.loadAdapter(JBossServerRuntime.class, null);
 		
-		
-
+		try {
+			homeDirText.setText(r.getLocation().toOSString());
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
 	}
 
 	public void exit() {
@@ -517,25 +532,25 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 		}
 
 		ServerAttributeHelper helper = new ServerAttributeHelper(server, serverWC);
-		helper.setServerHome(homeDir);
+		//helper.setServerHome(homeDir);
 		helper.setJbossConfiguration(config);
 		
 		try {
-			serverWC.save(false, new NullProgressMonitor());
 			server.setRuntime(runtime);
-			runtime.setVMInstall(selectedVM);
+			//runtime.setVMInstall(selectedVM);
 		} catch( Exception e ) {
-			System.out.println("DYING HERE");
+//			System.out.println("DYING HERE");
 			e.printStackTrace();
 		}
 		
 	}
 
 	public boolean isComplete() {
-		return getErrorString(SEVERITY_ALL) == null ? true : false;
+		String s = getErrorString(SEVERITY_ALL);
+		return s == null ? true : false;
 	}
 
-	protected abstract ImageDescriptor getImageDescriptor();
+	//protected abstract ImageDescriptor getImageDescriptor();
 
 	public boolean hasComposite() {
 		return true;
@@ -546,8 +561,9 @@ public abstract class AbstractJBossWizardFragment extends WizardFragment {
 	private IFolder getJbossServerFolder(String serverName) {
 		try {
 			return ServerType.getServerProject().getFolder(serverName);
-		} catch( CoreException e) {
+		} catch( Exception e) {
 			return null;
 		}
 	}
+
 }

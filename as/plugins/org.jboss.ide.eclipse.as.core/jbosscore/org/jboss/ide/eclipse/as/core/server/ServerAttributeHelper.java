@@ -45,7 +45,8 @@ public class ServerAttributeHelper {
 
 	
 	public String getServerHome() {
-		return server.getAttribute(JBOSS_SERVER_HOME, (String)null);
+		return server.getRuntime().getLocation().toOSString();
+		//return server.getAttribute(JBOSS_SERVER_HOME, (String)null);
 	}
 	public String getJbossConfiguration() {
 		return server.getAttribute(JBOSS_CONFIG, JBOSS_CONFIG_DEFAULT);

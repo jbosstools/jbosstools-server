@@ -27,12 +27,12 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 /**
  * @author Marshall
  */
-public class JBoss40WizardFragment extends AbstractJBossWizardFragment
+public class JBoss32RuntimeWizardFragment extends AbstractJBossRuntimeWizardFragment
 {
 
 	protected ImageDescriptor getImageDescriptor()
 	{
-		return JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO);
+		return JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO);
 	}
 
 }

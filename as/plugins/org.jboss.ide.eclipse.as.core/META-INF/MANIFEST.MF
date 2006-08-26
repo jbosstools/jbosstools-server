@@ -19,7 +19,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jst.j2ee.core,
  org.eclipse.ant.ui,
  org.eclipse.ant.core,
- org.eclipse.ui.externaltools
+ org.eclipse.ui.externaltools,
+ org.eclipse.wst.common.project.facet.core,
+ org.eclipse.jst.common.project.facet.core
 Eclipse-LazyStart: true
 Export-Package: org.dom4j,
  org.dom4j.bean,

@@ -100,8 +100,8 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 
 			if( ServerProcessModel.allProcessesTerminated(ent.getProcesses(ServerProcessModel.START_PROCESSES))) {
 				// this thread may have started early, before the other thread was launched. 
-				// Give it 15 seconds
-				if( current > 15000 ) {
+				// Give it 5 seconds
+				if( current > 5000 ) {
 					ASDebug.p("canceled - processes terminated", this);
 					canceled = true;
 				}
@@ -164,6 +164,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 		eventLog.setComplete();
 		ent.getEventLog().branchChanged();
 		ent.removeSPListener(this);
+		behavior.setServerState(expectedState, !expectedState);
 	}
 	
 	private void dieTimeoutFailure() {

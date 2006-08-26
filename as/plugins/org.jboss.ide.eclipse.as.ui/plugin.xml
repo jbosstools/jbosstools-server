@@ -13,17 +13,42 @@
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.40"
             id="org.jboss.ide.eclipse.as.ui.jboss40Image"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32"
+            id="org.jboss.ide.eclipse.as.ui.jboss32Image"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.runtime.40"
+            id="org.jboss.ide.eclipse.as.ui.jboss40Image"/>
+      <image
+            icon="icons/jboss.gif"
+            id="org.jboss.ide.eclipse.as.ui.jbossProjectRuntimeImage"
+            typeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"/>
+
    </extension>
    <extension
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss32WizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32"
-            id="org.jboss.ide.eclipse.as.ui.jboss32WizardFragment"/>
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss32RuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32"
+        	id="org.jboss.ide.eclipse.as.ui.jboss32RuntimeWizardFragmentragment"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss40WizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.40"
-            id="org.jboss.ide.eclipse.as.ui.jboss40WizardFragment"/>
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss40RuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.40"
+  			id="org.jboss.ide.eclipse.as.ui.jboss40RuntimeWizardFragmentWizardFragment"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.ProjectRuntimeWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.dynwebprojectWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss32ServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.32"/>
+       <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss40ServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.40"/>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
@@ -217,4 +242,5 @@
                tooltip="Start Server Shortcut"/>
       </actionSet>
    </extension>
+   
 </plugin>

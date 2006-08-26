@@ -347,7 +347,9 @@ public class JBossServerTableViewer extends TreeViewer {
 		}
 		
 		public Object[] getElements(Object inputElement) {
-			return new Object[] { JBossServerCore.getServer((IServer)inputElement) };
+			Object ret = JBossServerCore.getServer((IServer)inputElement);
+			if( ret == null ) return new Object[0];
+			return new Object[] { ret };
 		}
 
 		public Object[] getChildren(Object parentElement) {
@@ -394,7 +396,9 @@ public class JBossServerTableViewer extends TreeViewer {
 			for( int i = 0; i < providers.length; i++ ) {
 				try {
 					providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);
-				} catch( Exception e) {}
+				} catch( Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		

@@ -294,7 +294,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			server = (IServer)newInput;
-			jbServer = JBossServerCore.getServer(server);
+			jbServer = server == null ? null : JBossServerCore.getServer(server);
 			root = null;
 		}
 
