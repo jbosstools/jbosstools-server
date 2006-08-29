@@ -23,6 +23,9 @@ package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import java.net.URL;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -45,15 +48,14 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.Hyperlink;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.client.TwiddleLauncher.TwiddleLogEvent;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
+import org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 
 public class TwiddleDialog extends Dialog {
@@ -74,7 +76,6 @@ public class TwiddleDialog extends Dialog {
 		if( o instanceof JBossServer ) {
 			server = (JBossServer)o;
 			entity = server.getProcessModel();
-			String sid = server.getServer().getId();
 		}
 
 	}
@@ -210,6 +211,15 @@ public class TwiddleDialog extends Dialog {
 		
 		
 		
+		// set the default text
+		try {
+			ILaunchConfiguration config = JBossLaunchConfigurationDelegate.setupLaunchConfiguration(server, JBossServerBehavior.ACTION_TWIDDLE);
+			String args = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
+			query.setText(args);
+			query.setFocus();
+			query.setSelection(args.length());
+		} catch( CoreException ce ) {
+		}
 		return c;
 	}
 

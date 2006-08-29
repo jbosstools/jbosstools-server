@@ -450,6 +450,9 @@ public class JBossServerTableViewer extends TreeViewer {
 		
 		Object selected = getSelectedElement();
 		if( selected instanceof JBossServer) {
+			boolean started =((JBossServer)selected).getServer().getServerState() == IServer.STATE_STARTED; 
+			twiddleAction.setEnabled(started);
+			
 			menu.add(twiddleAction);
 			menu.add(cloneServerAction);
 			menu.add(new Separator());
