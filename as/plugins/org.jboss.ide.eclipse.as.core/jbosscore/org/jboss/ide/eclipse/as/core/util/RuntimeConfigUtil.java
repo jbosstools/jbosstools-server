@@ -86,7 +86,7 @@ public class RuntimeConfigUtil {
 				return "";
 			}
 		}
-		return "";
+		return null;
 	}
 	
 	public static Map getSystemProperties(String s) {
@@ -110,6 +110,7 @@ public class RuntimeConfigUtil {
 	}
 
 	public static String[] parse(String s) {
+		try {
 		ArrayList l = new ArrayList();
 		int length = s.length();
 		
@@ -158,6 +159,9 @@ public class RuntimeConfigUtil {
 			retVal[i] = (String)lArr[i];
 		}
 		return retVal;
+		} catch( Exception e ) {
+			return new String[] { };
+		}
 	}
 
 	
