@@ -124,6 +124,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			if( serverId == null ) return;
 			
 			IServer server = ServerCore.findServer(serverId);
+			if( server == null ) return;
 			JBossServer jbServer = server.loadAdapter(JBossServer.class, null) == null ? null : (JBossServer)server.getAdapter(JBossServer.class);
 			if( jbServer == null ) return;
 			

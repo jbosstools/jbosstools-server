@@ -78,10 +78,7 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	}
 	
 	public void run() {
-		int jndiPort = jbServer.getDescriptorModel().getJNDIPort();
-		String host = jbServer.getServer().getHost();
-		String args = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor " + 
-						"get \"jboss.system:type=Server\" Started";
+		String args = "get \"jboss.system:type=Server\" Started";
 		
 		ent =  ServerProcessModel.getDefault().getModel(jbServer.getServer().getId());
 		eventLog = new StateCheckerLogEvent(expectedState);

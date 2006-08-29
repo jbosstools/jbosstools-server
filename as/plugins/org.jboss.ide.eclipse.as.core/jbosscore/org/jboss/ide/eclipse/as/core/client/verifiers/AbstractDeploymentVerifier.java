@@ -158,7 +158,7 @@ public abstract class AbstractDeploymentVerifier implements IJbossDeploymentVeri
 	 */
 	protected void launchTwiddleThreads(String[] twiddleArgs) {
 		String seed = getClass().getName() + delegate.getFactory().getFactoryId();
-		TwiddleLauncher.launchTwiddles(twiddleArgs, jbServer, seed);
+		//TwiddleLauncher.launchTwiddles(twiddleArgs, jbServer, seed);
 	}
 
 	

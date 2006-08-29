@@ -132,24 +132,9 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 
 		try {
 			// Set up our launch configuration for a STOP call (to shutdown.jar)
-			ILaunchConfiguration launchConfig = ((Server)getServer()).getLaunchConfiguration(true, null);
-			ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
-			
-			List cp = getJBossServer().getJBossRuntime().getVersionDelegate().getRuntimeClasspath(jbServer, IJBossServerRuntimeDelegate.ACTION_SHUTDOWN);
-			String args = runtimeDelegate.getStopArgs(jbServer);
-			wc.setAttribute(ATTR_ACTION, ACTION_STOPPING);
-
+			ILaunchConfiguration wc = JBossLaunchConfigurationDelegate.setupLaunchConfiguration(jbServer, ACTION_STOPPING);
 			ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
 
-			
-			// Set our attributes from our runtime configuration
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, cp);
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
-					helper.getServerHome());
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtimeDelegate.getVMArgs(jbServer));
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getStopMainType());
-			
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 			
 			int maxWait = helper.getStopTimeout();
@@ -191,15 +176,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 					if( stopProcesses[0].getExitValue() != 0 ) {
 						// Our stop process ended with exceptions. That means the server is still running.
 						// We need to shut it down.  
-
-						String text = "\n\n" + 
-								"The server shutdown script failed. The server has been terminated manually.\n" + 
-								"The most common cause of this is that a minimal configuration does not respond to the shutdown script\n" +
-								"The shutdown script's exception trace can be seen above \n\n";
-//						JBossServerCore.getDefault().sendToConsole(text);
 						forceStop();
 						return;
-						
 					}
 				}
 
@@ -239,43 +217,45 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		JBossServerRuntime runtime = getJBossServer().getJBossRuntime();
-		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
+		JBossLaunchConfigurationDelegate.setupLaunchConfiguration(workingCopy, getJBossServer(), ACTION_STARTING);
 		
-		ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
-		
-		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
-		if( action.equals(ACTION_STARTING)) {
-			try {
-				
-				String pgArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null); 
-				if( pgArgs == null ) {
-					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, runtime.getVersionDelegate().getStartArgs(jbServer));
-				}
-				String vmArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
-				if( vmArgs == null ) {
-					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtime.getVersionDelegate().getVMArgs(jbServer));
-				}
-				
-				
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtime.getVersionDelegate().getStartMainType());
-		        workingCopy.setAttribute(
-		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-		                helper.getServerHome() + Path.SEPARATOR + "bin");
-
-				
-		        boolean defaultCPVal = workingCopy.getAttribute(JBossServerBehavior.LAUNCH_CONFIG_DEFAULT_CLASSPATH, true);
-		        if( defaultCPVal ) {
-					List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
-					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
-		        }
-			} catch( Exception e ) {
-				e.printStackTrace();
-			}
-		} else {
-			// do nothing
-		}
+//		JBossServerRuntime runtime = getJBossServer().getJBossRuntime();
+//		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
+//		
+//		ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
+//		
+//		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
+//		if( action.equals(ACTION_STARTING)) {
+//			try {
+//				
+//				String pgArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null); 
+//				if( pgArgs == null ) {
+//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, runtime.getVersionDelegate().getStartArgs(jbServer));
+//				}
+//				String vmArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
+//				if( vmArgs == null ) {
+//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtime.getVersionDelegate().getVMArgs(jbServer));
+//				}
+//				
+//				
+//				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtime.getVersionDelegate().getStartMainType());
+//		        workingCopy.setAttribute(
+//		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
+//		                helper.getServerHome() + Path.SEPARATOR + "bin");
+//
+//				
+//		        boolean defaultCPVal = workingCopy.getAttribute(JBossServerBehavior.LAUNCH_CONFIG_DEFAULT_CLASSPATH, true);
+//		        if( defaultCPVal ) {
+//					List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
+//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
+//		        }
+//			} catch( Exception e ) {
+//				e.printStackTrace();
+//			}
+//		} else {
+//			// do nothing
+//		}
 	}
 	
 	/**

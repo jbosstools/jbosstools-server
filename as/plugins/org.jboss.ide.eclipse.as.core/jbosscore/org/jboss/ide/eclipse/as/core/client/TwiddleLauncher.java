@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.server.IServerProcessListener;
+import org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.ServerProcessEvent;
@@ -74,12 +75,12 @@ public class TwiddleLauncher implements IServerProcessListener {
 	 * @param seed
 	 * @return
 	 */
-	public static IProcess[] launchTwiddles(String[] twiddleArgs, JBossServer jbServer, String seed ) {
+	public static IProcess[] launchTwiddles(String[] twiddleArgs, JBossServer jbServer, boolean addPrefix) {
 		ILaunchConfigurationWorkingCopy wc;
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < twiddleArgs.length; i++ ) {
 			try {
-				wc = createTwiddleLaunch(jbServer, twiddleArgs[i], seed);
+				wc = createTwiddleLaunch(jbServer, twiddleArgs[i], addPrefix);
 				ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), false, false);
 				list.addAll(Arrays.asList(launch.getProcesses()));
 			} catch( CoreException ce ) {
@@ -103,41 +104,21 @@ public class TwiddleLauncher implements IServerProcessListener {
 	 * @throws CoreException
 	 */
 	public static ILaunchConfigurationWorkingCopy createTwiddleLaunch(JBossServer jbServer, 
-			String args, String seed) throws CoreException {
+			String args, boolean addPrefix) throws CoreException {
 		
 		JBossServerRuntime runtime = jbServer.getJBossRuntime();
-		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
 
-		ILaunchManager lm = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType type =
-			lm.getLaunchConfigurationType("org.jboss.ide.eclipse.as.core.jbossLaunch");
-
-		ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null,
-				DebugPlugin.getDefault().getLaunchManager()
-				.generateUniqueLaunchConfigurationNameFrom(seed));
-
-		List classpath = runtimeDelegate.getRuntimeClasspath(jbServer, IJBossServerRuntimeDelegate.ACTION_TWIDDLE);
-//		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
-//				jbServer.getRuntimeConfiguration().getServerHome());
+		ILaunchConfigurationWorkingCopy workingCopy =
+			JBossLaunchConfigurationDelegate.setupLaunchConfiguration(jbServer, JBossServerBehavior.ACTION_TWIDDLE);
+		
+		// If we have to use the prefix from the launch config, throw it in front. 
+		if( addPrefix ) {
+			String a2 = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS + JBossLaunchConfigurationDelegate.PRGM_ARGS_TWIDDLE_SUFFIX, "");
+			args = a2 + " " + args;
+		}
+		
 		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtimeDelegate.getTwiddleMainType());
-		workingCopy.setAttribute(Server.ATTR_SERVER_ID, jbServer.getServer().getId());
-		workingCopy.setAttribute(JBossServerBehavior.ATTR_ACTION, JBossServerBehavior.ACTION_TWIDDLE);
-		
-		//workingCopy.setAttribute("org.eclipse.debug.ui.ATTR_CONSOLE_OUTPUT_ON", "false");
-		//workingCopy.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, false);
-		
-        workingCopy.setAttribute(
-                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-                jbServer.getAttributeHelper().getServerHome() + Path.SEPARATOR + "bin");
-
-		
-		
 		return workingCopy;
-
 	}
 
 	
@@ -157,12 +138,16 @@ public class TwiddleLauncher implements IServerProcessListener {
 	}
 	
 	public TwiddleLogEvent getTwiddleResults(ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
+		return getTwiddleResults(ent, jbServer, args, true);
+	}
+
+	public TwiddleLogEvent getTwiddleResults(ServerProcessModelEntity ent, JBossServer jbServer, String args, boolean addPrefix ) {
 		this.processDatas = null;
 		ent.clear(ServerProcessModel.TWIDDLE_PROCESSES);
 		
 		ent.addSPListener(this);
 
-		TwiddleLauncher.launchTwiddles(new String[] { args }, jbServer, ServerStateChecker.class.getName() + args);
+		TwiddleLauncher.launchTwiddles(new String[] { args }, jbServer, addPrefix);
 		while( (this.processDatas == null && current < max)) {
 			current +=delay;
 			try {

@@ -113,7 +113,7 @@ public class TwiddleDialog extends Dialog {
 			public void run() {
 				try {
 					TwiddleLauncher launcher = new TwiddleLauncher(3000, 100);
-					final TwiddleLogEvent launchEvent = launcher.getTwiddleResults(spme, jbs, args);
+					final TwiddleLogEvent launchEvent = launcher.getTwiddleResults(spme, jbs, args, false);
 					final String s2 = launchEvent.getOut();
 					dis.asyncExec(new Runnable() {
 						public void run() {
