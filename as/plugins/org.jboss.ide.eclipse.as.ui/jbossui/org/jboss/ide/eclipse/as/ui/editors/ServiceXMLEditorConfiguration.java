@@ -343,7 +343,7 @@ public class ServiceXMLEditorConfiguration extends
 			
 			text += "\n\t\n</server>";
 			contentAssistRequest.addProposal(new CompletionProposal(text,  beginPosition, 
-					0, cursorPos+2, null, text.replace("\n", "").replace("\t", ""), null, null));
+					0, cursorPos+2, null, text.replaceAll("\n", "").replaceAll("\t", ""), null, null));
 		}
 		
 		/**

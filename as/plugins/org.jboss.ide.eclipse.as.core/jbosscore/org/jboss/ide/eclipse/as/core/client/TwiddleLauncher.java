@@ -264,7 +264,7 @@ public class TwiddleLauncher implements IServerProcessListener {
 			Properties p = new Properties();
 			String[] perLine = getOut().split("\r\n|\r|\n");
 			for( int i = 0; i < perLine.length; i++ ) {
-				if( perLine[i].contains("=")) {
+				if( perLine[i].indexOf("=") != -1) {
 					try {
 						int index = perLine[i].indexOf("=");
 						p.put(perLine[i].substring(0, index), perLine[i].substring(index+1));

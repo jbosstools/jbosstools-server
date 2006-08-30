@@ -27,9 +27,9 @@ public class ASDebug {
 	public static void p(String output, Object caller) {
 		if( on ) {
 			if( caller instanceof Class ) {
-				System.out.println("[" + ((Class)caller).getSimpleName() + "] " + output);
+				System.out.println("[" + ((Class)caller).getName() + "] " + output);
 			} else {
-				System.out.println("[" + caller.getClass().getSimpleName() + "] " + output);
+				System.out.println("[" + caller.getClass().getName() + "] " + output);
 			}
 		}
 	}

@@ -560,7 +560,7 @@ public class JBossServerTableViewer extends TreeViewer {
 				ret.setProperty(Messages.ServerHome, home);
 				ret.setProperty(Messages.ServerConfigurationName, server.getAttributeHelper().getJbossConfiguration());
 				ret.setProperty(Messages.ServerDeployDir, 
-						server.getAttributeHelper().getDeployDirectory().replace(home, "(home)"));
+						server.getAttributeHelper().getDeployDirectory().replaceAll(home, "(home)"));
 			}
 			return ret;
 		}
