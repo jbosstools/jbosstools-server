@@ -651,25 +651,30 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 			return isHostAndConfigValid();
 		}
 
+		// Host requirement has been removed
 		private boolean isHostAndConfigValid() {
 			String progArgs = fPrgmArgumentsText.getText();
 			String workingConfig = RuntimeConfigUtil.getCommandArgument(progArgs, "-c", "--configuration");
-			String workingHost = RuntimeConfigUtil.getCommandArgument(progArgs, "-b", "--host");
+			//String workingHost = RuntimeConfigUtil.getCommandArgument(progArgs, "-b", "--host");
 
 			String oldConfig = RuntimeConfigUtil.getCommandArgument(originalProgramArgs, "-c", "--configuration");
-			String oldHost = RuntimeConfigUtil.getCommandArgument(originalProgramArgs, "-b", "--host");
+			//String oldHost = RuntimeConfigUtil.getCommandArgument(originalProgramArgs, "-b", "--host");
 			
-			if( oldConfig == null || oldHost == null ) return true;
+			if( oldConfig != null && !workingConfig.equals(oldConfig)) return false;
+			return true;
 			
-			boolean valid = true;
-			if( !workingHost.equals(oldHost)) {
-				valid = false;
-			}
-			if( !workingConfig.equals(oldConfig)) {
-				valid = false;
-			}
-
-			return valid;
+//			if( oldConfig == null || oldHost == null ) return true;
+//			
+//			boolean valid = true;
+//			
+//			if( !workingHost.equals(oldHost)) {
+//				valid = false;
+//			}
+//			if( !workingConfig.equals(oldConfig)) {
+//				valid = false;
+//			}
+//
+//			return valid;
 		}
 		public boolean isValid(ILaunchConfiguration config) {
 			boolean sup = super.isValid(config);
@@ -679,7 +684,7 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 				
 				boolean valid = isHostAndConfigValid();
 				if( !valid ) {
-					setErrorMessage("You may not change the configuration directory or the host in this fashion.");
+					setErrorMessage("You may not change the configuration.");
 					//getLaunchConfigurationDialog().updateButtons();
 					return false;
 				}
