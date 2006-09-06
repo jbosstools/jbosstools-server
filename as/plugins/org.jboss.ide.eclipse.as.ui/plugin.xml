@@ -4,7 +4,7 @@
    <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
    
    <extension
-         point="org.eclipse.wst.server.ui.serverImages">
+         point="org.eclipse.wst.server.ui.serverImages"> 
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.32"
@@ -37,10 +37,6 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss40RuntimeWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.runtime.40"
   			id="org.jboss.ide.eclipse.as.ui.jboss40RuntimeWizardFragmentWizardFragment"/>
-      <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.ProjectRuntimeWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.dynwebprojectWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss32ServerWizardFragment"
@@ -241,6 +237,16 @@
                toolbarPath="Normal/additions"
                tooltip="Start Server Shortcut"/>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
+            id="org.jboss.ide.eclipse.as.ui.ASPerspective"
+            name="JBoss AS"/>
+   </extension>
+   <extension
+         point="org.eclipse.jst.ws.consumption.ui.wsClientImpl">
    </extension>
    
 </plugin>
