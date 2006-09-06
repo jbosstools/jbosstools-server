@@ -555,12 +555,11 @@ public class JBossServerTableViewer extends TreeViewer {
 			if( selected instanceof JBossServer) {
 				JBossServer server = (JBossServer)selected;
 				String home = server.getAttributeHelper().getServerHome();
-				
+				String deployDir = server.getAttributeHelper().getDeployDirectory();
 				ret.setProperty(Messages.ServerRuntimeVersion, server.getJBossRuntime().getVersionDelegate().getId());
 				ret.setProperty(Messages.ServerHome, home);
 				ret.setProperty(Messages.ServerConfigurationName, server.getAttributeHelper().getJbossConfiguration());
-				ret.setProperty(Messages.ServerDeployDir, 
-						server.getAttributeHelper().getDeployDirectory().replaceAll(home, "(home)"));
+				ret.setProperty(Messages.ServerDeployDir, "(home)" + deployDir.substring(home.length()));
 			}
 			return ret;
 		}
