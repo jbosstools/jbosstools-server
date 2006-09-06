@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.ClasspathContainerInitializer;
 import org.eclipse.jdt.core.IClasspathContainer;
@@ -37,12 +36,8 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossProjectRuntime;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer {
@@ -115,30 +110,19 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			if( runtimeId == null ) return;
 			
 			IRuntime runtime = ServerCore.findRuntime(runtimeId);
-			Object projectRuntime = runtime.loadAdapter(JBossProjectRuntime.class, null);
+			if( runtime == null ) return;
+			
+			Object serverRuntime = runtime.loadAdapter(JBossServerRuntime.class, null);
 
-			if( projectRuntime == null ) return;
-			JBossProjectRuntime  projRun = (JBossProjectRuntime)projectRuntime;
-			String serverId = projRun.getServerId();
+			if( serverRuntime == null ) return;
+			JBossServerRuntime  jbRuntime = (JBossServerRuntime)serverRuntime;
+
+			String serverHome = runtime.getLocation().toOSString();
+			String configName = jbRuntime.getConfigName();
 			
-			if( serverId == null ) return;
+			String jbossVersion = jbRuntime.getVersionDelegate().getId();
 			
-			IServer server = ServerCore.findServer(serverId);
-			if( server == null ) return;
-			JBossServer jbServer = server.loadAdapter(JBossServer.class, null) == null ? null : (JBossServer)server.getAdapter(JBossServer.class);
-			if( jbServer == null ) return;
-			
-			
-			String serverHome = server.getRuntime().getLocation().toOSString();
-			String configName = jbServer.getAttributeHelper().getJbossConfiguration();
-			
-			ASDebug.p("runtime,config,version", this);
-			JBossServerRuntime jbsRuntime = server.getRuntime().loadAdapter(JBossServerRuntime.class,new NullProgressMonitor()) == null ? null : (JBossServerRuntime)server.getRuntime().getAdapter(JBossServerRuntime.class);
-			
-			if( jbsRuntime == null ) return;
-			String jbossVersion = jbsRuntime.getVersionDelegate().getId();
-			
-			entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, serverHome, configName, jbossVersion, jbsRuntime);
+			entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, serverHome, configName, jbossVersion, jbRuntime);
 		}
 
 		protected IClasspathEntry[] loadClasspathEntries2(String runtimeId, String facetId, 

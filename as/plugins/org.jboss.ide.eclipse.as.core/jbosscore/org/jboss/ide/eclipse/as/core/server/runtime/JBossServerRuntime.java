@@ -46,9 +46,10 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
  */
 public class JBossServerRuntime extends RuntimeDelegate {
 
-	public  static String PROPERTY_VM_ID = "PROPERTY_VM_ID";
-	public  static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID";
+	public static String PROPERTY_VM_ID = "PROPERTY_VM_ID";
+	public static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID";
 	
+	public static String PROPERTY_CONFIGURATION_NAME = "PROPERTY_CONFIG_NAME_";
 	
 	
 	private static Hashtable versionDelegates;
@@ -71,7 +72,20 @@ public class JBossServerRuntime extends RuntimeDelegate {
 	}
 	
 	
+	public void setConfigName(String config) {
+		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();
+		if( copy instanceof RuntimeWorkingCopy ) {
+			((RuntimeWorkingCopy)copy).setAttribute(PROPERTY_CONFIGURATION_NAME, config);
+			try {
+				copy.save(true, new NullProgressMonitor());
+			} catch( CoreException ce ) {
+			}
+		}
+	}
 	
+	public String getConfigName() {
+		return getAttribute(PROPERTY_CONFIGURATION_NAME, (String)"");
+	}
 	
 	public void setVMInstall(IVMInstall selectedVM) {
 		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();

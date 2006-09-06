@@ -88,23 +88,6 @@
                 types="jboss.archive"
                 versions="1.0"/>
       </runtimeType>
-       <runtimeType
-             class="org.jboss.ide.eclipse.as.core.server.runtime.JBossProjectRuntime"
-             description="Adds jars to your project&apos;s runtime"
-             id="org.jboss.ide.eclipse.as.runtime.dynwebproject"
-             name="JBoss Project Runtime"
-             vendor="%providerName"
-             version="%jboss.version.40.version">
-          <moduleType
-                types="jst.web"
-                versions="2.2, 2.3, 2.4"/>
-          <moduleType
-                types="jst.ejb"
-                versions="1.0, 1.1, 2.0, 2.1"/>
-          <moduleType
-                types="jst.ear"
-                versions="1.2, 1.3, 1.4"/>
-        </runtimeType>
    </extension>
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
@@ -208,7 +191,11 @@
          point="org.eclipse.jst.server.core.runtimeFacetMappings">
       <runtimeFacetMapping
             runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
-            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.dynwebproject"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
+            version="1.0"/>
+      <runtimeFacetMapping
+            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
             version="1.0"/>
    </extension>
    <extension
@@ -249,8 +236,8 @@
    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
-        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"
-        class="org.jboss.ide.eclipse.as.core.server.runtime.JBossRuntimeClasspathProvider"/>
+        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40"
+        class="org.jboss.ide.eclipse.as.core.server.runtime.ProjectRuntimeClasspathProvider"/>
    </extension>
    
 </plugin>

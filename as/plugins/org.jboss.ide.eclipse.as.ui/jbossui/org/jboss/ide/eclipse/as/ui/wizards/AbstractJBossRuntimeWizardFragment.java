@@ -63,7 +63,9 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
 /**
  * @author Stryker
@@ -79,17 +81,19 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	private final static int SEVERITY_MAJOR = 2;
 	
 	private IWizardHandle handle;
-	private Label nameLabel, homeDirLabel, installedJRELabel; 
+	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel; 
 	private Text nameText, homeDirText;
 	private Combo jreCombo;
 	private Button homeDirButton, jreButton;
-	private Composite nameComposite, homeDirComposite, jreComposite;
-	private String name, homeDir;
+	private Composite nameComposite, homeDirComposite, jreComposite, configComposite;
+	private String name, homeDir, config;
 
 	// jre fields
 	protected ArrayList installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
+
+	private JBossConfigurationTableViewer configurations;
 
 	private IVMInstall selectedVM;	
 
@@ -104,6 +108,10 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		createNameComposite(main);
 		createHomeComposite(main);
 		createJREComposite(main);
+		createConfigurationComposite(main);
+		
+		initTaskModel();
+		
 		
 		// make modifications to parent
 		handle.setTitle(Messages.createWizardTitle);
@@ -250,11 +258,11 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 		jreCombo.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
+				updatePage(JRE_CHANGED);
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
+				updatePage(JRE_CHANGED);
 			} 
 		} );
 		
@@ -277,6 +285,21 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		jreButton.setLayoutData(buttonData);
 
 	}
+	
+	private void initTaskModel() {
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntimeWorkingCopy wc;
+		if( !(r instanceof IRuntimeWorkingCopy )) {
+			wc = r.createWorkingCopy();
+		} else { wc = (IRuntimeWorkingCopy)r; }
+		
+		if( wc instanceof RuntimeWorkingCopy ) {
+			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy)wc;
+			rwc.setAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations.getSelectedConfiguration());
+			rwc.setAttribute(JBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
+			rwc.setAttribute(JBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM.getVMInstallType().getId());
+		}
+	}
 
 	private void updatePage(int changed) {
 		switch( changed ) {
@@ -284,6 +307,18 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 				updateErrorMessage(SEVERITY_MAJOR);
 				break;
 			case HOME_CHANGED:
+			if (! new File(homeDirText.getText()).exists()) {
+				configurations.getControl().setEnabled(false);
+			} else {
+				// No errors, clear the message and update the available configurations
+				configurations.setJBossHome(homeDirText.getText());
+				configurations.setDefaultConfiguration("default");
+
+				// update config variable
+				int index = configurations.getTable().getSelectionIndex();
+				config = configurations.getTable().getItem(index).getText();
+			}
+
 				updateErrorMessage(SEVERITY_MAJOR);
 				break;
 			case JRE_CHANGED:
@@ -425,12 +460,57 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
 		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM.getVMInstallType().getId());
+		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations.getSelectedConfiguration());
 
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 //		JBossServerRuntime runtime = (JBossServerRuntime)runtimeWC.loadAdapter(JBossServerRuntime.class, new NullProgressMonitor());
 //		runtime.setVMInstall(selectedVM);
 
 	}
+	
+	private void createConfigurationComposite(Composite main) {
+		configComposite = new Composite(main, SWT.NONE);
+		
+		FormData cData = new FormData();
+		cData.left = new FormAttachment(0,5);
+		cData.right = new FormAttachment(100,-5);
+		cData.top = new FormAttachment(jreComposite, 10);
+		configComposite.setLayoutData(cData);
+
+		configComposite.setLayout(new FormLayout());
+		
+		
+		configLabel = new Label(configComposite, SWT.NONE);
+		configLabel.setText(Messages.wizardFragmentConfigLabel);
+
+		configurations = new JBossConfigurationTableViewer(configComposite, 
+				SWT.BORDER | SWT.SINGLE);
+		
+		FormData labelData = new FormData();
+		labelData.left = new FormAttachment(0,5);
+		configLabel.setLayoutData(labelData);
+		
+		FormData viewerData = new FormData();
+		viewerData.left = new FormAttachment(0, 5);
+		viewerData.right = new FormAttachment(100, -5);
+		viewerData.top = new FormAttachment(configLabel, 5);
+		configurations.getTable().setLayoutData(viewerData);
+		
+		configurations.getTable().addSelectionListener(new SelectionListener() {
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				updatePage(CONFIG_CHANGED);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				ASDebug.p("selected is " + configurations.getSelectedConfiguration(), this);
+				updatePage(CONFIG_CHANGED);
+			} 
+			
+		} );
+
+	}
+
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		
@@ -438,11 +518,12 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		IRuntimeWorkingCopy runtimeWC = r.createWorkingCopy();
 		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
+		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
+		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM.getVMInstallType().getId());
+		((RuntimeWorkingCopy)runtimeWC).setAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations.getSelectedConfiguration());
+
 		IRuntime saved = runtimeWC.save(false, new NullProgressMonitor());
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
-		JBossServerRuntime runtime = (JBossServerRuntime)saved.loadAdapter(JBossServerRuntime.class, new NullProgressMonitor());
-		runtime.setVMInstall(selectedVM);
-		
 	}
 
 	public boolean isComplete() {

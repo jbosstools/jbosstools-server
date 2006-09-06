@@ -49,7 +49,8 @@ public class ServerAttributeHelper {
 		//return server.getAttribute(JBOSS_SERVER_HOME, (String)null);
 	}
 	public String getJbossConfiguration() {
-		return server.getAttribute(JBOSS_CONFIG, JBOSS_CONFIG_DEFAULT);
+		return jbServer.getJBossRuntime().getConfigName();
+		//return server.getAttribute(JBOSS_CONFIG, JBOSS_CONFIG_DEFAULT);
 	}
 	
 	public void setServerHome( String home ) {
@@ -57,7 +58,7 @@ public class ServerAttributeHelper {
 	}
 	
 	public void setJbossConfiguration( String config ) {
-		server.setAttribute(ServerAttributeHelper.JBOSS_CONFIG, config);
+		jbServer.getJBossRuntime().setConfigName(config);
 	}	
 	
 	public void save() {
