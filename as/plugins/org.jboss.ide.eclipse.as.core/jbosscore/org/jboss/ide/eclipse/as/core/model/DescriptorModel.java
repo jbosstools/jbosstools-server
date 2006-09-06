@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Node;
@@ -47,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.xml.sax.XMLReader;
 
 /**
  * This class is intended to represent the actual mbeans, 
@@ -197,8 +201,13 @@ public class DescriptorModel {
 				File file = new File(path);
 				long lastModified = file.lastModified();
 				URL url = new File(path).toURL();
+
+				SAXParserFactory spf = SAXParserFactory.newInstance();
+				SAXParser sp = spf.newSAXParser();
+				sp.getXMLReader().setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+				
 				SAXReader reader = new SAXReader(false);
-				reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+				reader.setXMLReader(sp.getXMLReader());
 				Document document = reader.read(url);
 				
 				// add to maps
@@ -206,6 +215,7 @@ public class DescriptorModel {
 				pathToLastRead.put(path, new Long(lastModified));
 			} catch( Exception e ) {
 				ASDebug.p("file " + path + ", Exception: " + e.getMessage(), this);
+				e.printStackTrace();
 			}
 		}
 		
