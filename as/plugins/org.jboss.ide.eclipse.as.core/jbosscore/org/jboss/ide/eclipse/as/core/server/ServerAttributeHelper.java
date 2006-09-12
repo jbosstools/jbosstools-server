@@ -54,7 +54,8 @@ public class ServerAttributeHelper {
 	}
 	
 	public void setServerHome( String home ) {
-		server.setAttribute(ServerAttributeHelper.JBOSS_SERVER_HOME, home);
+		jbServer.getJBossRuntime().setLocation(home);
+		//server.setAttribute(ServerAttributeHelper.JBOSS_SERVER_HOME, home);
 	}
 	
 	public void setJbossConfiguration( String config ) {

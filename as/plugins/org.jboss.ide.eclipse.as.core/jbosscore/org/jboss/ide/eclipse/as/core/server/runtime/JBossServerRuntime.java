@@ -23,17 +23,16 @@ package org.jboss.ide.eclipse.as.core.server.runtime;
 
 import java.lang.reflect.Constructor;
 import java.util.Hashtable;
-import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 
 /**
@@ -96,6 +95,17 @@ public class JBossServerRuntime extends RuntimeDelegate {
 				copy.save(true, new NullProgressMonitor());
 			} catch( CoreException ce ) {
 				
+			}
+		}
+	}
+	
+	public void setLocation(String loc) {
+		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();
+		if( copy instanceof RuntimeWorkingCopy ) {
+			((RuntimeWorkingCopy)copy).setLocation(new Path(loc));
+			try {
+				copy.save(true, new NullProgressMonitor());
+			} catch( CoreException ce ) {
 			}
 		}
 	}
