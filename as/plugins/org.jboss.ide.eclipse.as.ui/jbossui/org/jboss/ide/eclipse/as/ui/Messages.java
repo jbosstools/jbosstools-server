@@ -27,6 +27,7 @@ public class Messages {
 	public static String EventLogCategory;
 	public static String ModulesCategory;
 	public static String createWizardTitle;
+	public static String createRuntimeWizardTitle;
 	public static String createWizardDescription;
 	public static String wizardFragmentNameLabel;
 	public static String wizardFragmentHomeDirLabel;
@@ -34,6 +35,7 @@ public class Messages {
 	public static String installedJREs;
 	public static String wizardFragmentConfigLabel;
 	public static String serverNameInUse;
+	public static String runtimeNameInUse;
 	public static String invalidDirectory;
 	public static String nameTextBlank;
 	public static String homeDirBlank;

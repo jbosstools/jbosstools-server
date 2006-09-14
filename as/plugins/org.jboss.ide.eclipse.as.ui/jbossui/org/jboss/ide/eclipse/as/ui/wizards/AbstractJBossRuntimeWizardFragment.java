@@ -51,7 +51,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -63,7 +65,6 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
@@ -97,6 +98,9 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 	private IVMInstall selectedVM;	
 
+	private boolean pristine;
+	private String originalName;
+	
 	public Composite createComposite(Composite parent, IWizardHandle handle)
 	{
 		this.handle = handle;
@@ -110,16 +114,79 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		createJREComposite(main);
 		createConfigurationComposite(main);
 		
-		initTaskModel();
+		// If it's an already filled runtime (ie not new) fill our widgets
+		pristine = isPristineRuntime();
+		if( !pristine ) {
+			fillWidgets();
+		}
+		//initTaskModel();
 		
 		
 		// make modifications to parent
-		handle.setTitle(Messages.createWizardTitle);
-		handle.setDescription(Messages.createWizardDescription);
-		handle.setImageDescriptor (getImageDescriptor());
+		handle.setTitle(Messages.createRuntimeWizardTitle);
+		handle.setImageDescriptor(getImageDescriptor());
 		return main;
 	}
 
+	private void fillWidgets() {
+		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
+		if( rwc != null ) {
+			originalName = rwc.getName();
+
+			nameText.setText(rwc.getName());
+			homeDirText.setText(rwc.getLocation().toOSString());
+			String configSelected = rwc.getAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, "");
+			configurations.setDefaultConfiguration(configSelected);
+			
+			configurations.getTable().setVisible(false);
+			configLabel.setText(Messages.wizardFragmentConfigLabel + ":  " + configSelected);
+			homeDirText.setEditable(false);
+			homeDirButton.setEnabled(false);
+			
+			try {
+				Object o = rwc.loadAdapter(JBossServerRuntime.class, new NullProgressMonitor());
+				if( o != null ) {
+					JBossServerRuntime jbsr = (JBossServerRuntime)o;
+					IVMInstall install = jbsr.getVM();
+					String vmName = install.getName();
+					String[] jres = jreCombo.getItems();
+					for( int i = 0; i < jres.length; i++ ) {
+						if( vmName.equals(jres[i]))
+							jreCombo.select(i);
+					}
+				}
+			} catch( Exception e ) {
+				
+			}
+			
+		}
+	}
+	
+	private RuntimeWorkingCopy getRuntimeWorkingCopy() {
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		IRuntimeWorkingCopy wc;
+		if( !(r instanceof IRuntimeWorkingCopy )) {
+			wc = r.createWorkingCopy();
+		} else { wc = (IRuntimeWorkingCopy)r; }
+		
+		if( wc instanceof RuntimeWorkingCopy ) {
+			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy)wc;
+			return rwc;
+		}
+		return null;
+	}
+	private boolean isPristineRuntime() {
+		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
+		if( rwc != null ) {
+			if( rwc.getAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, (String)null) == null ) {
+				return true;
+			}
+			return false;
+		}
+		// uncertain... its not internal... what is it? :: flails ::
+		return true;
+	}
+	
 	private void createNameComposite(Composite main) {
 		// Create our name composite
 		nameComposite = new Composite(main, SWT.NONE);
@@ -286,20 +353,6 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 	}
 	
-	private void initTaskModel() {
-		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy wc;
-		if( !(r instanceof IRuntimeWorkingCopy )) {
-			wc = r.createWorkingCopy();
-		} else { wc = (IRuntimeWorkingCopy)r; }
-		
-		if( wc instanceof RuntimeWorkingCopy ) {
-			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy)wc;
-			rwc.setAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations.getSelectedConfiguration());
-			rwc.setAttribute(JBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
-			rwc.setAttribute(JBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM.getVMInstallType().getId());
-		}
-	}
 
 	private void updatePage(int changed) {
 		switch( changed ) {
@@ -342,7 +395,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	
 	private String getErrorString(int severity) {
 		if( getRuntime(nameText.getText()) != null ) {
-			return Messages.serverNameInUse;
+			return Messages.runtimeNameInUse;
 		}
 		
 		if ( homeDirText.getText() != "" && !new File(homeDirText.getText()).exists()) {
@@ -503,7 +556,6 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				ASDebug.p("selected is " + configurations.getSelectedConfiguration(), this);
 				updatePage(CONFIG_CHANGED);
 			} 
 			
@@ -540,6 +592,8 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 	
 	private IRuntime getRuntime(String runtimeName) {
+		if( runtimeName.equals(originalName)) return null; // name is same as original. No clash.
+		
 		IRuntime[] runtimes = ServerCore.getRuntimes();
 		for( int i = 0; i < runtimes.length; i++ ) {
 			if( runtimes[i].getName().equals(runtimeName)) return runtimes[i];
