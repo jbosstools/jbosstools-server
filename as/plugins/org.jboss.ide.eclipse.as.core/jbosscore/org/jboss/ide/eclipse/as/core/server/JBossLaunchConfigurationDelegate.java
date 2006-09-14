@@ -294,6 +294,7 @@ public class JBossLaunchConfigurationDelegate extends
 	private JBossServer getJBossServer(ILaunchConfiguration configuration) throws CoreException {
 		// Get access to some important structures
 		IServer server = ServerUtil.getServer(configuration);
+		if( server == null ) return null;
 		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
 			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
