@@ -71,7 +71,7 @@ public class RuntimeConfigUtil {
 
 			// -c config
 			if( argArray[i].equals(primaryPrefix)) {
-				if( i+1 <= argArray.length) {
+				if( i+1 < argArray.length) {
 					return argArray[i+1];
 				} else {
 					return "";
