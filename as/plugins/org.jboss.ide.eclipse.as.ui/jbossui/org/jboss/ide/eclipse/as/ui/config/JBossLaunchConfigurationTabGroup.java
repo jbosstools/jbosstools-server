@@ -19,6 +19,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+/*******************************************************************************
+ * Portions of this file (specifically the JBossWorkingDirectoryBlock class) are  
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.jboss.ide.eclipse.as.ui.config;
 
 import java.io.File;
@@ -655,26 +666,11 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 		private boolean isHostAndConfigValid() {
 			String progArgs = fPrgmArgumentsText.getText();
 			String workingConfig = RuntimeConfigUtil.getCommandArgument(progArgs, "-c", "--configuration");
-			//String workingHost = RuntimeConfigUtil.getCommandArgument(progArgs, "-b", "--host");
 
 			String oldConfig = RuntimeConfigUtil.getCommandArgument(originalProgramArgs, "-c", "--configuration");
-			//String oldHost = RuntimeConfigUtil.getCommandArgument(originalProgramArgs, "-b", "--host");
 			
 			if( oldConfig != null && !workingConfig.equals(oldConfig)) return false;
 			return true;
-			
-//			if( oldConfig == null || oldHost == null ) return true;
-//			
-//			boolean valid = true;
-//			
-//			if( !workingHost.equals(oldHost)) {
-//				valid = false;
-//			}
-//			if( !workingConfig.equals(oldConfig)) {
-//				valid = false;
-//			}
-//
-//			return valid;
 		}
 		public boolean isValid(ILaunchConfiguration config) {
 			boolean sup = super.isValid(config);
