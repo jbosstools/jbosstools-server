@@ -278,35 +278,40 @@ public class ServerStateChecker extends Thread implements IServerProcessListener
 	 */
 	private int getTwiddleResults( ServerProcessModelEntity ent, JBossServer jbServer, String args ) {
 
-		// Log stuff
-		TwiddleLauncher launcher = new TwiddleLauncher(max-current, delay);
-		TwiddleLogEvent launchEvent = launcher.getTwiddleResults(ent, jbServer, args);
-		StateCheckerLogEvent newEvent;
-		
-		int retval;
-		if( launchEvent.getOut().startsWith("Started=true")) {
-			newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_UP);
-			retval = STATE_TRUE;
-		} else if(launchEvent.getOut().startsWith("Started=false")) {
-			retval = STATE_FALSE;
-			if( expectedState == true ) {
-				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STARTING);
-			} else { 
-				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STOPPING);
+		try {
+			// Log stuff
+			TwiddleLauncher launcher = new TwiddleLauncher(max-current, delay);
+			TwiddleLogEvent launchEvent = launcher.getTwiddleResults(ent, jbServer, args);
+			StateCheckerLogEvent newEvent;
+			
+			int retval;
+			if( launchEvent.getOut().startsWith("Started=true")) {
+				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_UP);
+				retval = STATE_TRUE;
+			} else if(launchEvent.getOut().startsWith("Started=false")) {
+				retval = STATE_FALSE;
+				if( expectedState == true ) {
+					newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STARTING);
+				} else { 
+					newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_STOPPING);
+				}
+			} else {
+				newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_DOWN);
+				retval = STATE_EXCEPTION;
 			}
-		} else {
-			newEvent = new StateCheckerLogEvent(launchEvent, StateCheckerLogEvent.SERVER_DOWN);
-			retval = STATE_EXCEPTION;
+	
+			current += launcher.getDuration();
+	
+			newEvent.setTime(current);
+			
+			eventLog.addChild(newEvent);
+			if( eventLog.getRoot() != null ) 
+				eventLog.getRoot().branchChanged();
+			return  retval;
+		} catch( Throwable t ) {
+			t.printStackTrace();
 		}
-
-		current += launcher.getDuration();
-
-		newEvent.setTime(current);
-		
-		eventLog.addChild(newEvent);
-		if( eventLog.getRoot() != null ) 
-			eventLog.getRoot().branchChanged();
-		return  retval;
+		return STATE_EXCEPTION;
 	}
 	
 	public void ServerProcessEventFired(ServerProcessEvent event) {
