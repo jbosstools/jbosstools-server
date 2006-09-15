@@ -69,6 +69,66 @@ public class JBossLaunchConfigurationDelegate extends
 		setupLaunchConfiguration(config, server, action);
 		return config;
 	}
+		
+	
+	/**
+	 * Will be in charge of setting defaults for a launch configuration that might 
+	 * not have been filled with all values. 
+	 * 
+	 * @param workingCopy
+	 * @param server
+	 * @throws CoreException
+	 */
+	public static void setDefaults( ILaunchConfigurationWorkingCopy workingCopy,
+										JBossServer server) throws CoreException {
+
+		JBossServerRuntime runtime = server.getJBossRuntime();
+		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
+		String argsKey = IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS;
+		String vmArgsKey = IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS;
+		
+		// START items
+		String pgArgs = workingCopy.getAttribute(argsKey + PRGM_ARGS_START_SUFFIX, (String)null); 
+		if( pgArgs == null ) {
+			pgArgs =  runtime.getVersionDelegate().getStartArgs(server);
+			workingCopy.setAttribute(argsKey + PRGM_ARGS_START_SUFFIX, pgArgs);
+		}
+
+		String vmArgs = workingCopy.getAttribute(vmArgsKey + PRGM_ARGS_START_SUFFIX, (String)null);
+		if( vmArgs == null ) {
+			vmArgs = runtime.getVersionDelegate().getVMArgs(server);
+			workingCopy.setAttribute(vmArgsKey + PRGM_ARGS_START_SUFFIX, vmArgs);
+		}
+
+		String stopArgs = workingCopy.getAttribute(argsKey + PRGM_ARGS_STOP_SUFFIX, (String)null); 
+		if( stopArgs == null ) {
+			stopArgs =  runtime.getVersionDelegate().getStopArgs(server);
+			workingCopy.setAttribute(argsKey + PRGM_ARGS_STOP_SUFFIX, stopArgs);
+		}
+
+		String stopVMArgs = workingCopy.getAttribute(vmArgsKey + PRGM_ARGS_STOP_SUFFIX, (String)null);
+		if( stopVMArgs == null ) {
+			stopVMArgs = runtime.getVersionDelegate().getVMArgs(server);
+			workingCopy.setAttribute(vmArgsKey + PRGM_ARGS_STOP_SUFFIX, stopVMArgs);
+		}
+		
+		
+		String twiddleVMArgs = workingCopy.getAttribute(vmArgsKey + PRGM_ARGS_TWIDDLE_SUFFIX, (String)null);
+		if( twiddleVMArgs == null ) {
+			twiddleVMArgs = "";
+			workingCopy.setAttribute(vmArgsKey + PRGM_ARGS_TWIDDLE_SUFFIX, twiddleVMArgs);
+		}
+		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs);
+		
+		String twiddleArgs = workingCopy.getAttribute(argsKey + PRGM_ARGS_TWIDDLE_SUFFIX, (String)null);
+		if( twiddleArgs == null ) {
+	 		int jndiPort = server.getDescriptorModel().getJNDIPort();
+			String host = server.getServer().getHost();
+			twiddleArgs = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor ";
+			workingCopy.setAttribute(argsKey + PRGM_ARGS_TWIDDLE_SUFFIX, twiddleArgs);
+		}
+	}
+	
 	
 	public static void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, JBossServer server, String action) throws CoreException {
@@ -81,26 +141,22 @@ public class JBossLaunchConfigurationDelegate extends
 		String argsKey = IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS;
 		String vmArgsKey = IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS;
 		workingCopy.setAttribute(JBossServerBehavior.ATTR_ACTION, action);	
+		
+		// ensure defaults are set, at the very least
+		setDefaults(workingCopy, server);
 
 		if( JBossServerBehavior.ACTION_STARTING.equals(action)) {
 			String suffix = PRGM_ARGS_START_SUFFIX;
 			try {
 				String pgArgs = workingCopy.getAttribute(argsKey + suffix, (String)null); 
-				if( pgArgs == null ) {
-					pgArgs =  runtime.getVersionDelegate().getStartArgs(server);
-					workingCopy.setAttribute(argsKey + suffix, pgArgs);
-				}
 				workingCopy.setAttribute(argsKey,pgArgs);
 				
 
 				String vmArgs = workingCopy.getAttribute(vmArgsKey + suffix, (String)null);
-				if( vmArgs == null ) {
-					vmArgs = runtime.getVersionDelegate().getVMArgs(server);
-					workingCopy.setAttribute(vmArgsKey + suffix, vmArgs);
-				}
 				workingCopy.setAttribute(vmArgsKey, vmArgs);
 				
-				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtime.getVersionDelegate().getStartMainType());
+				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, 
+							runtime.getVersionDelegate().getStartMainType());
 		        workingCopy.setAttribute(
 		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 		                helper.getServerHome() + Path.SEPARATOR + "bin");
@@ -121,20 +177,10 @@ public class JBossLaunchConfigurationDelegate extends
 			String suffix = PRGM_ARGS_STOP_SUFFIX;
 			
 			String args = workingCopy.getAttribute(argsKey + suffix, (String)null);
-			if( args == null ) {
-				args = runtimeDelegate.getStopArgs(server);
-				workingCopy.setAttribute(argsKey + suffix, args);
-			}
 			workingCopy.setAttribute(argsKey,args);
 			
-			
 			String vmArgs = workingCopy.getAttribute(vmArgsKey + suffix, (String)null);
-			if( vmArgs == null ) {
-				vmArgs = runtimeDelegate.getVMArgs(server);
-				workingCopy.setAttribute(vmArgsKey + suffix, vmArgs);
-			}
 			workingCopy.setAttribute(vmArgsKey,vmArgs);
-			
 			
 			List cp = server.getJBossRuntime().getVersionDelegate().getRuntimeClasspath(server, IJBossServerRuntimeDelegate.ACTION_SHUTDOWN);
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, cp);
@@ -147,23 +193,11 @@ public class JBossLaunchConfigurationDelegate extends
 			String suffix = PRGM_ARGS_TWIDDLE_SUFFIX;
 
 			String vmArgs = workingCopy.getAttribute(vmArgsKey + suffix, (String)null);
-			if( vmArgs == null ) {
-				vmArgs = "";
-				workingCopy.setAttribute(vmArgsKey + suffix, (String)null);
-			}
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs);
 			
 			String args = workingCopy.getAttribute(argsKey + suffix, (String)null);
-			if( args == null ) {
-		 		int jndiPort = server.getDescriptorModel().getJNDIPort();
-				String host = server.getServer().getHost();
-				args = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor ";
-				workingCopy.setAttribute(argsKey + suffix, args);
-			}
 			workingCopy.setAttribute(argsKey, args);
-			
 
-			
 			
 			List classpath = runtimeDelegate.getRuntimeClasspath(server, IJBossServerRuntimeDelegate.ACTION_TWIDDLE);
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
@@ -233,7 +267,7 @@ public class JBossLaunchConfigurationDelegate extends
 	
 	
 	
-	private IProcess[] processes;
+	//private IProcess[] processes;
 	
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
@@ -250,6 +284,7 @@ public class JBossLaunchConfigurationDelegate extends
 		} else if( action.equals(JBossServerBehavior.ACTION_STOPPING)) {
 			launchServerStop(configuration, mode, launch,  monitor);
 		} else if( action.equals(JBossServerBehavior.ACTION_TWIDDLE)) {
+			IProcess[] processes;
 			processes = launchConfiguration(configuration, launch, monitor, mode);
 			ServerProcessModelEntity model = getJBossServer(configuration).getProcessModel();
 			model.add(processes, ServerProcessModel.TWIDDLE_PROCESSES, configuration);
@@ -260,11 +295,11 @@ public class JBossLaunchConfigurationDelegate extends
 	
 	
 	private void launchServerStop(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		IProcess[] processes;
 		JBossServerBehavior jbossServerBehavior = getServerBehavior(configuration);
 		jbossServerBehavior.serverStopping();
 		processes = launchConfiguration(configuration, launch, monitor, mode);
 		// Add a process listener
-		addDebugEventListener();
 		ServerProcessModelEntity model = getJBossServer(configuration).getProcessModel();
 		model.add(processes, ServerProcessModel.STOP_PROCESSES, configuration);
 	}
@@ -272,11 +307,11 @@ public class JBossLaunchConfigurationDelegate extends
 
 
 	private void launchServerStart(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		IProcess[] processes;
 		JBossServerBehavior jbossServerBehavior = getServerBehavior(configuration);
 		jbossServerBehavior.serverStarting();
 		processes = launchConfiguration(configuration, launch, monitor, mode);
 		// Add a process listener
-		addDebugEventListener();
 		ServerProcessModelEntity model = getJBossServer(configuration).getProcessModel();
 		//model.clearAll();
 		model.add(processes, ServerProcessModel.START_PROCESSES, configuration);
@@ -347,27 +382,5 @@ public class JBossLaunchConfigurationDelegate extends
 		
 		return launch.getProcesses();
 	}
-	
-	
-	public void addDebugEventListener() {
-		IDebugEventSetListener processListener = new IDebugEventSetListener() {
-			public void handleDebugEvents(DebugEvent[] events) {
-				IProcess process = processes[0];
-				if (events != null) {
-					int size = events.length;
-					for (int i = 0; i < size; i++) {
-						System.out.println("Debug event " + i + " is " + events[i].getKind());
-						if (process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
-							DebugPlugin.getDefault().removeDebugEventListener(this);
-							System.out.println("Debug Event: Stopping");
-							processes = null;
-							//notifyServerStopped();
-						}
-					}
-				}
-			}
-		};
 
-	}
-	
 }

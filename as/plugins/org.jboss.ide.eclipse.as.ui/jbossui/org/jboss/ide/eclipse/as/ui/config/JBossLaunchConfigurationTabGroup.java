@@ -135,13 +135,14 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 			server = ServerUtil.getServer(configuration);
 			jbServer = server.loadAdapter(JBossServer.class, null) == null ? null : ((JBossServer)server.loadAdapter(JBossServer.class, null));
 			jbRuntime = jbServer.getJBossRuntime();
+			ILaunchConfigurationWorkingCopy wc = configuration.getWorkingCopy();
+			JBossLaunchConfigurationDelegate.setDefaults(wc, jbServer);
+			ILaunchConfigurationTab[] tabs = getTabs();
+			for (int i = 0; i < tabs.length; i++) {
+				tabs[i].initializeFrom(wc);
+			}		
 		} catch(Exception e) {
 		}
-
-		ILaunchConfigurationTab[] tabs = getTabs();
-		for (int i = 0; i < tabs.length; i++) {
-			tabs[i].initializeFrom(configuration);
-		}		
 	}
 
 	
@@ -201,14 +202,6 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 		public void initializeFrom(ILaunchConfiguration configuration) {
 			try {
 				String prgmArgs = configuration.getAttribute(programArgsKey, (String)null);
-				if( prgmArgs == null && jbServer != null && jbRuntime != null ) {
-					if( type == STOP ) prgmArgs = jbRuntime.getVersionDelegate().getStopArgs(jbServer);
-					else if( type == TWIDDLE ) {
-				 		int jndiPort = jbServer.getDescriptorModel().getJNDIPort();
-						String host = jbServer.getServer().getHost();
-						prgmArgs = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor "; 
-					}
-				}
 				fPrgmArgumentsText.setText(prgmArgs);
 				fVMArgumentsBlock.initializeFrom(configuration);
 				fWorkingDirectoryBlock.initializeFrom(configuration);
@@ -644,7 +637,6 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 
 	}
 	
-	
 	private class JavaArgumentsTab2 extends JBossJavaArgumentsTab {
 		public JavaArgumentsTab2() {
 			super(START);
@@ -692,8 +684,6 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 			return true;
 		}
 	}
-	
-	
 	
 	public class JavaClasspathTab2 extends JavaClasspathTab {
 		public void performApply(ILaunchConfigurationWorkingCopy configuration) {
@@ -747,6 +737,5 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 		
 
 	}
-
 
 }
