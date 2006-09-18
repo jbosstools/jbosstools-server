@@ -55,6 +55,7 @@ import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegat
 import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.core.util.RuntimeConfigUtil;
 
 public class JBossLaunchConfigurationDelegate extends
 	AbstractJavaLaunchConfigurationDelegate {
@@ -64,6 +65,29 @@ public class JBossLaunchConfigurationDelegate extends
 	public static final String PRGM_ARGS_STOP_SUFFIX = "_SERVER_STOP_";
 	public static final String PRGM_ARGS_TWIDDLE_SUFFIX = "_SERVER_TWIDDLE_"; 
 
+	
+	public static void setHost(ILaunchConfiguration config, String newHost, int jndiPort) throws CoreException {
+		ILaunchConfigurationWorkingCopy wc = config.getWorkingCopy();
+		String argsKey = IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS;
+		String startArgsKey = argsKey + PRGM_ARGS_START_SUFFIX;
+		String stopArgsKey = argsKey + PRGM_ARGS_STOP_SUFFIX;
+		String twiddleArgsKey = argsKey + PRGM_ARGS_TWIDDLE_SUFFIX;
+		
+		String startArgs = wc.getAttribute(startArgsKey, "");
+		String stopArgs = wc.getAttribute(stopArgsKey, "");
+		String twiddleArgs = wc.getAttribute(twiddleArgsKey, "");
+		
+		String jndiHost = newHost + ":" + jndiPort;
+		
+		String newStartArgs = RuntimeConfigUtil.setCommandArguments(startArgs, "-b", "--host", newHost);
+		String newStopArgs = RuntimeConfigUtil.setCommandArguments(stopArgs, "-s", "--server", jndiHost);
+		String newTwidArgs = RuntimeConfigUtil.setCommandArguments(twiddleArgs, "-s", "--server", jndiHost);
+		
+		ASDebug.p("start:  " + startArgs + " -> " + newStartArgs, JBossLaunchConfigurationDelegate.class);
+		ASDebug.p("stop:  " + stopArgs + " -> " + newStopArgs, JBossLaunchConfigurationDelegate.class);
+		ASDebug.p("twiddle:  " + twiddleArgs + " -> " + newTwidArgs, JBossLaunchConfigurationDelegate.class);
+	}
+	
 	public static ILaunchConfigurationWorkingCopy setupLaunchConfiguration(JBossServer server, String action) throws CoreException {
 		ILaunchConfigurationWorkingCopy config = createLaunchConfiguration(server);
 		setupLaunchConfiguration(config, server, action);

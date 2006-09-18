@@ -135,8 +135,8 @@ public class ServerAttributeHelper {
 	}
 	
 	public SimpleXPathPreferenceTreeItem getXPathPreferenceTree() {
-		List categories = server.getAttribute(XPATH_CATEGORIES, new ArrayList());
-		if( categories.size() == 0 ) {
+		List categories = server.getAttribute(XPATH_CATEGORIES, (List)null);
+		if( categories == null ) {
 			return getDefaultXPathPreferenceTree();
 		}
 		SimpleXPathPreferenceTreeItem model = new SimpleXPathPreferenceTreeItem(null, XPATH_CATEGORIES);

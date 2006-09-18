@@ -25,26 +25,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class will find command line parameters. For example:
+ * 
+ *    getCommandArgument("-b localhost --configuration=minimal", "-b", "--host") 
+ *  will return "localhost".
+ *  
+ *    getCommandArgument("-b localhost --configuration=minimal", "-c", "--configuration") 
+ *  will return "minimal".
+ *  
+ *  
+ *  It's very simple and probably won't work in all cases. 
+ *  It is not extensively tested. 
+ * @param args
+ * @param primaryPrefix
+ * @param secondaryPrefix
+ * @return
+ */
 public class RuntimeConfigUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
-	/**
-	 * This class will find command line parameters. For example:
-	 * 
-	 *    getCommandArgument("-b localhost --configuration=minimal", "-b", "--host") 
-	 *  will return "localhost".
-	 *  
-	 *    getCommandArgument("-b localhost --configuration=minimal", "-c", "--configuration") 
-	 *  will return "minimal".
-	 *  
-	 *  
-	 *  It's very simple and probably won't work in all cases. 
-	 *  It is not extensively tested. 
-	 * @param args
-	 * @param primaryPrefix
-	 * @param secondaryPrefix
-	 * @return
-	 */
+
 	public static String getCommandArgument(String args, 
 			String primaryPrefix, String secondaryPrefix) {
 	
@@ -87,6 +88,36 @@ public class RuntimeConfigUtil {
 			}
 		}
 		return null;
+	}
+	
+	public static String setCommandArguments(String haystack, String primaryPrefix, 
+										String secondaryPrefix, String newValue) {
+		
+		String[] asArray = parse(haystack);
+		String retval = "";
+		boolean found = false;
+		
+		for( int i = 0; i < asArray.length; i++ ) {
+			if( primaryPrefix.startsWith("-D") && asArray[i].startsWith(primaryPrefix + "=")) {
+				retval += primaryPrefix + "=" + newValue + " ";
+				found = true;
+			} else if( asArray[i].equals(primaryPrefix)) {
+				retval += primaryPrefix + " " + newValue + " ";
+				found = true;
+				i++; // we're consuming two tokens, or should be
+			} else if( asArray[i].startsWith(secondaryPrefix + '=')) {
+				retval += secondaryPrefix + "=" + newValue + " ";
+				found = true;
+			} else {
+				retval += asArray[i] + " ";
+			}
+		}
+		
+		if( !found ) {
+			retval += primaryPrefix + " " + newValue + " ";
+		}
+		
+		return retval;
 	}
 	
 	public static Map getSystemProperties(String s) {

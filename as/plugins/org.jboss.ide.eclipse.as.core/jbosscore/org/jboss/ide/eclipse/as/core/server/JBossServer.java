@@ -24,14 +24,15 @@ package org.jboss.ide.eclipse.as.core.server;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerPort;
-import org.eclipse.wst.server.core.internal.PublishServerJob;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
@@ -74,6 +75,13 @@ public class JBossServer extends ServerDelegate {
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		debug("saveConfiguration");
+		// Saving a change in server properties (via server editor)
+		String newHost = getServer().getHost();
+		
+		ILaunchConfiguration launchConfig = 
+			((Server)getServer()).getLaunchConfiguration(true, new NullProgressMonitor());
+
+		JBossLaunchConfigurationDelegate.setHost(launchConfig, newHost, getDescriptorModel().getJNDIPort());
 	}
 
 	public void configurationChanged() {
