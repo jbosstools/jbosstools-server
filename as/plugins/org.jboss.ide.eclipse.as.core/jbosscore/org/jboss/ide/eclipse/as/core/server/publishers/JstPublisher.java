@@ -21,11 +21,14 @@
  */
 package org.jboss.ide.eclipse.as.core.server.publishers;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
 import org.eclipse.ant.internal.ui.IAntUIConstants;
 import org.eclipse.ant.internal.ui.launchConfigurations.IAntLaunchConfigurationConstants;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -43,13 +46,16 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.core.PublishUtil;
-import org.eclipse.jst.server.generic.core.internal.publishers.AbstractModuleAssembler;
+import org.eclipse.jst.server.generic.core.internal.CorePlugin;
+import org.eclipse.jst.server.generic.core.internal.publishers.ModulePackager;
 import org.eclipse.ui.externaltools.internal.model.IExternalToolConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.model.IModuleFolder;
+import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -121,7 +127,7 @@ public class JstPublisher implements IJbossServerPublisher {
 	}
 
 	
-	public class JBossAntPublisher extends AbstractModuleAssembler {
+	public class JBossAntPublisher {
 		
 		public static final int WAR = 1;
 		public static final int EAR = 2;
@@ -329,6 +335,56 @@ public class JstPublisher implements IJbossServerPublisher {
 			}
 			return parent;
 		}
+		
+		protected void packModule(IModule module, String deploymentUnitName, IPath destination)throws CoreException {
+			
+			
+			String dest = destination.append(deploymentUnitName).toString();
+			ModulePackager packager = null;
+			try {
+				packager = new ModulePackager(dest, false);
+				ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
+				IModuleResource[] resources = pm.members();
+				for (int i = 0; i < resources.length; i++) {
+					doPackModule(resources[i], packager);
+				}
+			} catch (IOException e) {
+				IStatus status = new Status(IStatus.ERROR, CorePlugin.PLUGIN_ID, 0,
+						"unable to assemble module", e); //$NON-NLS-1$
+				throw new CoreException(status);
+			}
+			finally{
+				try{
+					packager.finished();
+				}
+				catch(IOException e){
+					//unhandled
+				}
+			}
+		}
+
+		private void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
+				if (resource instanceof IModuleFolder) {
+					IModuleFolder mFolder = (IModuleFolder)resource;
+					IModuleResource[] resources = mFolder.members();
+
+					packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
+
+					for (int i = 0; resources!= null && i < resources.length; i++) {
+						doPackModule(resources[i], packager);
+					}
+				} else {
+					String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
+					IFile file = (IFile) resource.getAdapter(IFile.class);
+					if (file != null)
+						packager.write(file, destination);
+					else {
+						File file2 = (File) resource.getAdapter(File.class);
+						packager.write(file2, destination);
+					}
+				}
+		}
+
 		
 		protected IPath assembleOther(IProgressMonitor monitor) throws CoreException {
 			copyModule(module[0],monitor);
