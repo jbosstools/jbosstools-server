@@ -60,8 +60,10 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
@@ -92,6 +94,26 @@ public class JBossServerTableViewer extends TreeViewer {
 		setLabelProvider(new LabelProviderDelegator());
 		propertySheet = new TableViewerPropertySheet();
 		createActions();
+		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
+
+			public void serverAdded(IServer server) {
+			}
+
+			public void serverChanged(IServer server) {
+			}
+
+			public void serverRemoved(IServer server) {
+				final IServer server2 = server;
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						Object o = getInput();
+						if( server2.equals(o)) {
+							setInput(null);
+						}
+					}
+				});
+			} 
+		});
 	}
 
 	protected void createActions() {
