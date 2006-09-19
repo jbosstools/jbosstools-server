@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.model.SimpleTreeItem;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
@@ -21,6 +23,8 @@ public class ServerAttributeHelper {
 	public static final String JBOSS_CONFIG = "JBOSS_CONFIG";
 	public static final String JBOSS_CONFIG_DEFAULT = "default";
 
+	public static final String PORT_CATEGORY_PREF_KEY = "_PORT_CATEGORY_NAME_";
+	public static final String PORT_NUMBERS_LIST = "_PORT_NUMBERS_LIST_";
 	
 	public static final String XPATH_CATEGORIES = "_XPATH_CATEGORIES_";
 	public static final String XPATH_CATEGORY2_PREFIX = "_XPATH_CATEGORY2_PREFIX_";
@@ -134,6 +138,67 @@ public class ServerAttributeHelper {
 		return this.server;
 	}
 	
+	public String getDefaultPortCategoryName() {
+		return server.getAttribute(PORT_CATEGORY_PREF_KEY, "");
+	}
+	public void setDefaultPortCategoryName(String s) {
+		server.setAttribute(PORT_CATEGORY_PREF_KEY, s);
+	}
+	
+	public void setServerPorts(SimpleXPathPreferenceTreeItem root) {
+		String portCategory = getDefaultPortCategoryName();
+		SimpleTreeItem[] categories = root.getChildren2();
+		SimpleTreeItem portCategoryObject = null;
+		for( int i = 0; i < categories.length && portCategoryObject == null; i++ ) {
+			if( categories[i].getData().equals(portCategory)) 
+				portCategoryObject = categories[i];
+		}
+		
+		ArrayList list = new ArrayList();
+		
+		if( portCategoryObject != null ) {
+			SimpleTreeItem[] xpaths = portCategoryObject.getChildren2();
+			for( int i = 0; i < xpaths.length; i++ ) {
+				XPathPreferenceTreeItem xpItem = (XPathPreferenceTreeItem)xpaths[i];
+				String name = xpItem.getName();
+				SimpleTreeItem[] xpItemChildren = xpItem.getChildren2();
+				for( int j = 0; j < xpItemChildren.length; j++ ) {
+					SimpleTreeItem[] leafs = xpItemChildren[j].getChildren2();
+					for( int k = 0; k < leafs.length; k++ ) {
+						Object o = leafs[k];
+						if( o instanceof XPathTreeItem2 ) {
+							try {
+								String port = ((XPathTreeItem2)o).getText();
+								int port2 = Integer.parseInt(port);
+								list.add(name + ":" + port2);
+							} catch( Exception e ) {}
+						}
+					}
+				}
+			}
+		}
+		
+		server.setAttribute(PORT_NUMBERS_LIST, list);
+		save();
+	}
+	
+	public ServerPort[] getServerPorts() {
+		ArrayList serverPorts = new ArrayList();
+		List portList = server.getAttribute(PORT_NUMBERS_LIST, new ArrayList());
+		Iterator i = portList.iterator();
+		while(i.hasNext()) {
+			String s = (String)i.next();
+			int loc = s.lastIndexOf(':');
+			String name = s.substring(0, loc);
+			String port = s.substring(loc+1);
+			int port2 = Integer.parseInt(port);
+			serverPorts.add(new ServerPort(s, name, port2, null));
+		}
+		
+		ServerPort[] sps = (ServerPort[]) serverPorts.toArray(new ServerPort[portList.size()]);
+		return sps;
+	}
+	
 	public SimpleXPathPreferenceTreeItem getXPathPreferenceTree() {
 		List categories = server.getAttribute(XPATH_CATEGORIES, (List)null);
 		if( categories == null ) {
@@ -166,7 +231,11 @@ public class ServerAttributeHelper {
 	
 	private SimpleXPathPreferenceTreeItem getDefaultXPathPreferenceTree() {
 		SimpleXPathPreferenceTreeItem model = new SimpleXPathPreferenceTreeItem(null, XPATH_CATEGORIES);
+		
 		SimpleXPathPreferenceTreeItem ports = new SimpleXPathPreferenceTreeItem(model, "Ports");
+		
+		
+		
 		XPathPreferenceTreeItem jndi = new XPathPreferenceTreeItem(ports, 
 				"JNDI", "/server/mbean[@name='jboss:service=Naming']/attribute[@name='Port']");
 		XPathPreferenceTreeItem jndiRMI = new XPathPreferenceTreeItem(ports, 
@@ -276,6 +345,29 @@ public class ServerAttributeHelper {
 		}
 		public void setAttributeName(String attName) {
 			this.attributeName = attName;
+		}
+		
+		// actually a forced refresh
+		public void ensureLoaded(JBossServer jbServer) {
+			String XPATH_PROPERTY_LOADED = "_XPATH_PROPERTY_LOADED_";
+
+			String xpath = getXPath();
+			String attribute = getAttributeName();
+			XPathTreeItem[] items = new XPathTreeItem[0];
+			if( attribute == null || attribute.equals("")) {
+				items = jbServer.getDescriptorModel().getXPath(xpath);
+			} else {
+				items = jbServer.getDescriptorModel().getXPath(xpath, attribute);
+			}
+			
+			if( getProperty(XPATH_PROPERTY_LOADED) != null ) {
+				//deleteChildren();
+				return;
+			}
+			for( int i = 0; i < items.length; i++ ) {
+				addChild(items[i]);
+			}
+			setProperty(XPATH_PROPERTY_LOADED, new Boolean(true));
 		}
 		
 	}

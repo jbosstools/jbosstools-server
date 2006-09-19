@@ -37,8 +37,11 @@ import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.model.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
@@ -65,16 +68,12 @@ public class JBossServer extends ServerDelegate {
 	 */
 
 	public void setDefaults(IProgressMonitor monitor) {
-		debug("setDefaults");
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {
-		debug("import Runtime Configuration");
-		//getJBossRuntime();
 	}
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
-		debug("saveConfiguration");
 		// Saving a change in server properties (via server editor)
 		String newHost = getServer().getHost();
 		
@@ -85,7 +84,6 @@ public class JBossServer extends ServerDelegate {
 	}
 
 	public void configurationChanged() {
-		debug("configurationChanged");
 	}
 
 
@@ -120,7 +118,6 @@ public class JBossServer extends ServerDelegate {
 	 * Abstracts to implement
 	 */
 	public IStatus canModifyModules(IModule[] add, IModule[] remove) {
-		debug("canModifyModules");
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
 	}
 
@@ -143,9 +140,7 @@ public class JBossServer extends ServerDelegate {
 	}
 	
 	public ServerPort[] getServerPorts() {
-		debug("****** getServerPorts");
-		//return new ServerPort[] { new ServerPort("portid1", "portname1", 1099, "TCPIP") };
-		return null;
+		return getAttributeHelper().getServerPorts();
 	}
 
 	public ServerProcessModelEntity getProcessModel() {
