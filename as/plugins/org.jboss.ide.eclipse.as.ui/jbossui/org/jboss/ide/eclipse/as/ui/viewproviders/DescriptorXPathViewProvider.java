@@ -23,6 +23,9 @@ package org.jboss.ide.eclipse.as.ui.viewproviders;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -43,6 +46,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -53,11 +58,13 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
@@ -93,8 +100,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	private DescriptorXPathPropertySheetPage propertyPage;
 	
 	private static final String XPATH_PROPERTY = "_XPATH_PROPERTY_";
-	private static final String XPATH_PROPERTY_LOADED = "_XPATH_PROPERTY_LOADED_";
+	
 	private static String PREFERENCE_KEY = "_DESCRIPTOR_PREFERENCE_PAGE_DETAILS_SHOWN";
+	
 	private static boolean COMPLEX = true;
 	private static boolean SIMPLE = false;
 	
@@ -347,6 +355,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 
 		public XPathPropertyLabelProvider getLabelProvider() {
+			if( labelProvider == null ) {
+				labelProvider = new XPathPropertyLabelProvider();
+			}
 			return labelProvider;
 		}
 		
@@ -371,6 +382,30 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			}
 		}
 
+		public void setSimple(boolean simple) {
+			boolean showSimple = showSimple();
+
+			if( showSimple != simple ) {
+				JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(PREFERENCE_KEY, simple == SIMPLE);
+				JBossServerUIPlugin.getDefault().savePluginPreferences();
+
+				// if the properties page isn't opened, it'll throw nulls
+				try {
+					if( simple ) {
+						getLabelProvider().setSimple(true);
+						column3.setText("");
+						column2.setText("Attribute Value");
+						xpathTreeViewer.refresh();
+					} else {
+						getLabelProvider().setSimple(false);
+						column3.setText("XPath / XML");
+						column2.setText("Attribute Key / Value");
+						xpathTreeViewer.refresh();
+					}
+				} catch ( Exception e ) {
+				}
+			}
+		}
 		
 		public void dispose() {
 		}
@@ -402,6 +437,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 							public void run() {
 								xpathTreeViewer.setInput(input);
 								xpathTreeViewer.expandToLevel(2);
+								jbServer.getAttributeHelper().setServerPorts(root);
 							}
 						});
 					}
@@ -432,16 +468,6 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 						if( columnIndex == 1 && ((XPathTreeItem)element).getChildren2().length == 1 ) {
 							element = ((XPathTreeItem)element).getChildren2()[0];
 						}
-					}
-				}
-				
-				if( element instanceof XPathTreeItem2) {
-					XPathTreeItem2 element2 = (XPathTreeItem2)element;
-					if( columnIndex == 0 ) 
-						return "Match " + element2.getIndex();
-					if( columnIndex == 1 ) {
-						String x = element2.getText();
-						return x;
 					}
 				}
 				
@@ -665,9 +691,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			
 			xpathTreeViewer = new TreeViewer(xpathTree);
 			xpathTreeViewer.setContentProvider(new XPathPropertyContentProvider());
-			labelProvider = new XPathPropertyLabelProvider();
+			labelProvider = getLabelProvider();
 			labelProvider.setSimple(showSimple());
-			setViewContentAmount(showSimple());
+			setSimple(showSimple());
 			xpathTreeViewer.setLabelProvider(labelProvider);
 			
 			final XPathTreeSelectionListener selListener = new XPathTreeSelectionListener();
@@ -801,7 +827,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				return kids;
 			}
 
-			
+			// re-creates it from scratch... hrmm
 			if( parentElement instanceof ServerViewProvider ) 
 				return jbServer.getAttributeHelper().getXPathPreferenceTree().getChildren2();
 			return new Object[0];
@@ -823,23 +849,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		public void ensureLoaded(SimpleXPathPreferenceTreeItem item) {
 			if( item instanceof XPathPreferenceTreeItem ) {
-				
-				String xpath = ((XPathPreferenceTreeItem)item).getXPath();
-				String attribute = ((XPathPreferenceTreeItem)item).getAttributeName();
-				XPathTreeItem[] items = new XPathTreeItem[0];
-				if( attribute == null || attribute.equals("")) {
-					items = jbServer.getDescriptorModel().getXPath(xpath);
-				} else {
-					items = jbServer.getDescriptorModel().getXPath(xpath, attribute);
-				}
-				
-				if( item.getProperty(XPATH_PROPERTY_LOADED) != null ) {
-					item.deleteChildren();
-				}
-				for( int i = 0; i < items.length; i++ ) {
-					item.addChild(items[i]);
-				}
-				item.setProperty(XPATH_PROPERTY_LOADED, new Boolean(true));
+				((XPathPreferenceTreeItem)item).ensureLoaded(jbServer);
 			}
 		}
 
@@ -859,13 +869,145 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	public class DescriptorPreferencePage extends ViewProviderPreferenceComposite {
 
 		private Button simple, complex;
+		private Combo portsCategoryCombo;
+		private Combo serversCombo;
+		
+		private JBossServer[] servers;
+		
+		private HashMap serverToCategoryList;
+		private HashMap serverToDefaultPortCat;
+		private HashMap serverToAttributeHelper;
 		
 		public DescriptorPreferencePage(Composite parent) {
 			super(parent, SWT.NONE);
-			setLayout(new RowLayout(SWT.VERTICAL));
+			setLayout(new FormLayout());
 			
-			simple = new Button(this, SWT.RADIO);
-			complex = new Button(this, SWT.RADIO);
+			serverToCategoryList = new HashMap();
+			serverToDefaultPortCat = new HashMap();
+			serverToAttributeHelper = new HashMap();
+			
+			
+			Composite viewDetailsComp = new Composite(this, SWT.NONE);
+			fillViewDetails(viewDetailsComp);
+			
+			Composite defaultPortComp = new Composite(this, SWT.BORDER);
+			FormData portData = new FormData();
+			portData.left = new FormAttachment(0,5);
+			portData.top = new FormAttachment(viewDetailsComp,5);
+			portData.right = new FormAttachment(50,-5);
+			defaultPortComp.setLayoutData(portData);
+			fillPortPreferences(defaultPortComp);
+		}
+		
+		private ServerAttributeHelper getAttributeHelper(JBossServer server) {
+			Object helper = serverToAttributeHelper.get(server);
+			if( helper == null ) {
+				helper = server.getAttributeHelper();
+				serverToAttributeHelper.put(server, helper);
+			}
+			return (ServerAttributeHelper)helper;
+		}
+		
+		protected void fillPortPreferences(Composite portComp) {
+			portComp.setLayout(new RowLayout(SWT.VERTICAL));
+			
+			servers = JBossServerCore.getAllJBossServers();
+			String[] serverNames = new String[servers.length];
+			for( int i = 0; i < servers.length; i++ )
+				serverNames[i] = servers[i].getServer().getName();
+			
+			portComp.setLayout(new RowLayout(SWT.VERTICAL));
+			
+			Label nameLabel = new Label(portComp, SWT.NONE);
+			nameLabel.setText("Server Name: ");
+			
+			serversCombo = new Combo(portComp, SWT.READ_ONLY);
+			serversCombo.setItems(serverNames);
+
+			Label categoryLabel = new Label(portComp, SWT.NONE);
+			categoryLabel.setText("Port Category: ");
+			
+			portsCategoryCombo = new Combo(portComp, SWT.READ_ONLY);
+			
+			
+			serversCombo.addSelectionListener(new SelectionListener() {
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					serverComboChanged();
+				} 
+			});
+			
+			portsCategoryCombo.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					JBossServer server = getSelectedServer();
+					if( server != null ) {
+						int index = portsCategoryCombo.getSelectionIndex();
+						String selectedCategory = portsCategoryCombo.getItem(index);
+						serverToDefaultPortCat.put(server, selectedCategory);
+					}
+				} 
+				
+			} );
+		}
+		private void serverComboChanged() {
+			JBossServer s = getSelectedServer();
+			if( s != null ) {
+				Object o = serverToCategoryList.get(s);
+				ArrayList list;
+				if( o == null ) {
+					ServerAttributeHelper helper = getAttributeHelper(s);
+					SimpleXPathPreferenceTreeItem tree = helper.getXPathPreferenceTree();
+					SimpleTreeItem[] children = tree.getChildren2();
+					String[] categoryNames = new String[children.length];
+					for( int i = 0; i < children.length; i++ ) {
+						categoryNames[i] = (String)children[i].getData();
+					}
+					list = new ArrayList();
+					list.addAll(Arrays.asList(categoryNames));
+					String portDir = helper.getDefaultPortCategoryName();
+					serverToDefaultPortCat.put(s, portDir);
+					serverToCategoryList.put(s, list);
+				} else {
+					list = (ArrayList)o;
+				}
+				portsCategoryCombo.setItems((String[]) list
+						.toArray(new String[list.size()]));
+				
+				String portDir = (String)serverToDefaultPortCat.get(s);
+				if( portDir != null ) {
+					int index2 = portsCategoryCombo.indexOf(portDir);
+					portsCategoryCombo.select(index2);
+				}
+			}
+		}
+		private JBossServer getSelectedServer() {
+			int index = serversCombo.getSelectionIndex();
+			String selected = serversCombo.getItem(index);
+			if( selected == null ) return null;
+			
+			for( int i = 0; i < servers.length; i++ ) {
+				if( servers[i].getServer().getName().equals(selected)) {
+					return servers[i];
+				}
+			}
+			return null;
+		}
+		
+		protected void fillViewDetails(Composite c) {
+			FormData vdcData = new FormData();
+			vdcData.left = new FormAttachment(0,5);
+			vdcData.top = new FormAttachment(0,5);
+			c.setLayoutData(vdcData);
+
+			c.setLayout(new RowLayout(SWT.VERTICAL));
+
+			simple = new Button(c, SWT.RADIO);
+			complex = new Button(c, SWT.RADIO);
 			
 			simple.setText("Show only xpath value in properties view.");
 			complex.setText("Show all details in properties view.");
@@ -873,8 +1015,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			boolean prefVal = JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY);
 			simple.setSelection(prefVal == SIMPLE);
 			complex.setSelection(prefVal == COMPLEX);
-			
 		}
+		
 		public boolean isValid() {
 			return true;
 		}
@@ -883,29 +1025,24 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		public boolean performOk() {
 			boolean simp = simple.getSelection() == true ? SIMPLE : COMPLEX;
-			JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(PREFERENCE_KEY, simp);
-			JBossServerUIPlugin.getDefault().savePluginPreferences();
-			setViewContentAmount(simp == SIMPLE);
+			propertyPage.setSimple(simp == SIMPLE);
+			
+			// now save default port categories
+			ServerAttributeHelper helper;
+			for( int i = 0; i < servers.length; i++ ) {
+				helper = (ServerAttributeHelper)serverToAttributeHelper.get(servers[i]);
+				String category = (String)serverToDefaultPortCat.get(servers[i]);
+				if( category != null ) {
+					helper.setDefaultPortCategoryName(category);
+					helper.save();
+				}
+			}
+			
+			
 			return true;
 		}
 		public void dispose() {
 			super.dispose();
-		}
-	}
-	
-	public void setViewContentAmount(boolean simple) {
-		if( propertyPage != null ) {
-			if( simple ) {
-				propertyPage.getLabelProvider().setSimple(true);
-				propertyPage.column3.setText("");
-				propertyPage.column2.setText("Attribute Value");
-				propertyPage.xpathTreeViewer.refresh();
-			} else {
-				propertyPage.getLabelProvider().setSimple(false);
-				propertyPage.column3.setText("XPath / XML");
-				propertyPage.column2.setText("Attribute Key / Value");
-				propertyPage.xpathTreeViewer.refresh();
-			}
 		}
 	}
 	
