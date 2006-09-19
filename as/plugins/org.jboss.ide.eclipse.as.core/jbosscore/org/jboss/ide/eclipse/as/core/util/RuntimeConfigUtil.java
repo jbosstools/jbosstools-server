@@ -90,7 +90,7 @@ public class RuntimeConfigUtil {
 		return null;
 	}
 	
-	public static String setCommandArguments(String haystack, String primaryPrefix, 
+	public static String createCommandArguments(String haystack, String primaryPrefix, 
 										String secondaryPrefix, String newValue) {
 		
 		String[] asArray = parse(haystack);
