@@ -79,13 +79,14 @@ public class JBossLaunchConfigurationDelegate extends
 		
 		String jndiHost = newHost + ":" + jndiPort;
 		
-		String newStartArgs = RuntimeConfigUtil.setCommandArguments(startArgs, "-b", "--host", newHost);
-		String newStopArgs = RuntimeConfigUtil.setCommandArguments(stopArgs, "-s", "--server", jndiHost);
-		String newTwidArgs = RuntimeConfigUtil.setCommandArguments(twiddleArgs, "-s", "--server", jndiHost);
+		String newStartArgs = RuntimeConfigUtil.createCommandArguments(startArgs, "-b", "--host", newHost);
+		String newStopArgs = RuntimeConfigUtil.createCommandArguments(stopArgs, "-s", "--server", jndiHost);
+		String newTwidArgs = RuntimeConfigUtil.createCommandArguments(twiddleArgs, "-s", "--server", jndiHost);
 		
-		ASDebug.p("start:  " + startArgs + " -> " + newStartArgs, JBossLaunchConfigurationDelegate.class);
-		ASDebug.p("stop:  " + stopArgs + " -> " + newStopArgs, JBossLaunchConfigurationDelegate.class);
-		ASDebug.p("twiddle:  " + twiddleArgs + " -> " + newTwidArgs, JBossLaunchConfigurationDelegate.class);
+		wc.setAttribute(startArgsKey, newStartArgs);
+		wc.setAttribute(stopArgsKey, newStopArgs);
+		wc.setAttribute(twiddleArgsKey, newTwidArgs);
+		wc.doSave();
 	}
 	
 	public static ILaunchConfigurationWorkingCopy setupLaunchConfiguration(JBossServer server, String action) throws CoreException {
@@ -304,6 +305,9 @@ public class JBossLaunchConfigurationDelegate extends
 		String vmArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
 				
 		if( action.equals(JBossServerBehavior.ACTION_STARTING)) {
+			Server s = (Server)getJBossServer(configuration).getServer();
+			if( s != null )
+				((Server)getJBossServer(configuration).getServer()).setMode(mode);
 			launchServerStart(configuration, mode, launch,  monitor);
 		} else if( action.equals(JBossServerBehavior.ACTION_STOPPING)) {
 			launchServerStop(configuration, mode, launch,  monitor);
