@@ -102,7 +102,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 						
 						// TODO: BLOCKING on eclipse bug 153135
 //						IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
-//						newFilePage.setContainerFullPath(newPath);
+						newFilePage.setContainerFullPath(newPath);
 						
 						IFile newFile = newFilePage.createNewFile();
 						createStubServiceDescriptor(newFile);
@@ -141,7 +141,6 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		
 		
 		newFilePage = new NewFilePage(sel);
-		newFilePage.defaultName = "blah";
 		Preferences preference = XMLCorePlugin.getDefault().getPluginPreferences();
 		String ext = "xml";
 		newFilePage.defaultFileExtension = "."+ext; //$NON-NLS-1$

@@ -51,6 +51,7 @@ import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider.XPathPropertyLabelProvider;
 
 public class XPathDialogs {
@@ -74,7 +75,7 @@ public class XPathDialogs {
 		
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("New Category");
+			shell.setText(Messages.XPathNewCategory);
 		}
 		
 		protected Control createDialogArea(Composite parent) {
@@ -82,7 +83,7 @@ public class XPathDialogs {
 			c.setLayout(new FormLayout());
 			
 			errorLabel = new Label(c, SWT.NONE);
-			errorLabel.setText("Category Name In Use.");
+			errorLabel.setText(Messages.XPathNewCategoryNameInUse);
 			FormData errorData = new FormData();
 			errorData.left = new FormAttachment(0,5);
 			errorData.top = new FormAttachment(0,5);
@@ -90,7 +91,7 @@ public class XPathDialogs {
 			errorLabel.setVisible(false);
 			
 			Label l = new Label(c, SWT.NONE);
-			l.setText("Category Name:  ");
+			l.setText(Messages.XPathCategoryName);
 			FormData labelData = new FormData();
 			labelData.left = new FormAttachment(0,5);
 			labelData.top = new FormAttachment(errorLabel,5);
@@ -180,7 +181,7 @@ public class XPathDialogs {
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
 			setShellStyle(getShellStyle() | SWT.RESIZE);
-			shell.setText("New XPath");
+			shell.setText(Messages.XPathNewXpath);
 			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 400);
 		}
 		
@@ -236,7 +237,7 @@ public class XPathDialogs {
 		protected void verifyName() {
 			
 			if( nameText.getText().equals("")) {
-				errorLabel.setText("Name must be set.");
+				errorLabel.setText(Messages.XPathNameEmpty);
 				errorLabel.setVisible(true);
 				getButton(IDialogConstants.OK_ID).setEnabled(false);
 				return;
@@ -260,7 +261,7 @@ public class XPathDialogs {
 				}
 				if( found ) {
 					// error, name in use
-					errorLabel.setText("Name in use.");
+					errorLabel.setText(Messages.XPathNameInUse);
 					errorLabel.setVisible(true);
 					getButton(IDialogConstants.OK_ID).setEnabled(false);
 				} else {
@@ -275,7 +276,6 @@ public class XPathDialogs {
 			list.addAll(Arrays.asList(item));
 			previewTreeViewer.setInput(list);
 			main.layout();
-			ASDebug.p("found items: " + item.length, this);
 		}
 		protected void layoutWidgets(Composite c) {
 			// create widgets
@@ -296,9 +296,9 @@ public class XPathDialogs {
 			column2 = new TreeColumn(previewTree, SWT.NONE);
 			column3 = new TreeColumn(previewTree, SWT.NONE);
 			
-			column.setText("Location");
-			column2.setText("Attribute Value");
-			column3.setText("Raw XML");
+			column.setText(Messages.XPathColumnLocation);
+			column2.setText(Messages.XPathColumnAttributeVals);
+			column3.setText(Messages.XPathColumnRawXML);
 
 			column.setWidth(100);
 			column2.setWidth(100);
@@ -308,9 +308,9 @@ public class XPathDialogs {
 
 			
 			// set some text
-			nameLabel.setText("Name: ");
-			xpathLabel.setText("XPath Pattern: ");
-			attributeLabel.setText("Attribute Name: ");
+			nameLabel.setText(Messages.XPathName);
+			xpathLabel.setText(Messages.XPathPattern);
+			attributeLabel.setText(Messages.XPathAttribute);
 
 			c.layout();
 			int pixel = Math.max(Math.max(nameLabel.getSize().x, xpathLabel.getSize().x), attributeLabel.getSize().x);
@@ -406,7 +406,6 @@ public class XPathDialogs {
 
 				public Object[] getElements(Object inputElement) {
 					if( inputElement instanceof ArrayList ) {
-						ASDebug.p("we have an array list", this);
 						return ((ArrayList)inputElement).toArray();
 					}
 					return new Object[0];

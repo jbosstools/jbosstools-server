@@ -49,7 +49,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.StartServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
-import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
 import org.eclipse.wst.server.ui.internal.provisional.ManagedUIDecorator;
@@ -57,6 +56,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard;
 
 public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate {
@@ -108,17 +108,17 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 	
 	protected void fillMenuServerItems(Menu menu) {
 		MenuItem startInRunMode = new MenuItem(menu, SWT.NONE);
-		startInRunMode.setText("Start Server");
+		startInRunMode.setText(Messages.ActionDelegateStartServer);
 		startInRunMode.setImage(getStateImage(IServer.STATE_STARTED, ILaunchManager.RUN_MODE));
 		fillMenuCurrentPos++;
 		
 		MenuItem startInDebugMode = new MenuItem(menu, SWT.NONE);
-		startInDebugMode.setText("Start Server (Debug Mode)");
+		startInDebugMode.setText(Messages.ActionDelegateDebugServer);
 		startInDebugMode.setImage(getStateImage(IServer.STATE_STARTED, ILaunchManager.DEBUG_MODE));
 		fillMenuCurrentPos++;
 		
 		MenuItem stopServer = new MenuItem(menu, SWT.NONE);
-		stopServer.setText("Stop Server");
+		stopServer.setText(Messages.ActionDelegateStopServer);
 		stopServer.setImage(getStateImage(IServer.STATE_STOPPED, ILaunchManager.RUN_MODE));
 		fillMenuCurrentPos++;
 		
@@ -223,8 +223,8 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 					
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							MessageDialog dialog = new MessageDialog(shell, Messages.defaultDialogTitle, null,
-									NLS.bind(Messages.dialogStoppingServer, s.getName()), MessageDialog.INFORMATION, new String[0], 0);
+							MessageDialog dialog = new MessageDialog(shell, org.eclipse.wst.server.ui.internal.Messages.defaultDialogTitle, null,
+									NLS.bind(org.eclipse.wst.server.ui.internal.Messages.dialogStoppingServer, s.getName()), MessageDialog.INFORMATION, new String[0], 0);
 							dialog.setBlockOnOpen(false);
 							dialog.open();
 							s.stop(false);
@@ -243,13 +243,13 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		fillMenuCurrentPos++;
 		
 		MenuItem newMenuItem = new MenuItem(menu, SWT.CASCADE);
-		newMenuItem.setText("New");
+		newMenuItem.setText(Messages.ActionDelegateNew);
 		Menu subMenu = new Menu(menu);
 		newMenuItem.setMenu(subMenu);
 		fillMenuCurrentPos++;
 		
 		MenuItem mbeanStubsMenuItem = new MenuItem(subMenu, SWT.NONE);
-		mbeanStubsMenuItem.setText("New MBean Stubs");
+		mbeanStubsMenuItem.setText(Messages.ActionDelegateNewMBeanStubs);
 		// TODO: get an image
 		
 		mbeanStubsMenuItem.addSelectionListener(new SelectionListener() {
@@ -270,7 +270,7 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		
 		
 		MenuItem newServerItem = new MenuItem(subMenu, SWT.NONE);
-		newServerItem.setText("New Server");
+		newServerItem.setText(Messages.ActionDelegateNewServer);
 		newServerItem.setImage(getServerImage());
 		
 		newServerItem.addSelectionListener(new SelectionListener() {

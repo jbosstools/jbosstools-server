@@ -23,7 +23,6 @@ package org.jboss.ide.eclipse.as.ui.editors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMethod;
@@ -34,6 +33,7 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.sse.ui.internal.StructuredTextViewer;
 import org.eclipse.wst.sse.ui.internal.contentassist.ContentAssistUtils;
 import org.eclipse.wst.sse.ui.internal.correction.IQuickAssistProcessor;
@@ -45,7 +45,10 @@ import org.eclipse.wst.xml.ui.internal.correction.CorrectionAssistantProviderXML
 import org.eclipse.wst.xml.ui.internal.correction.CorrectionProcessorXML;
 import org.eclipse.wst.xml.ui.internal.correction.QuickAssistProcessorXML;
 import org.eclipse.wst.xml.ui.internal.correction.QuickFixProcessorXML;
+import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
+import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.util.ServiceXMLEditorUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -55,7 +58,6 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 
 	public ServiceXMLCorrectionAssistantProvider() {
 		super();
-		ASDebug.p("999 constructor", this);
 	}
 
 	public IContentAssistant getCorrectionAssistant(ISourceViewer sourceViewer) {
@@ -204,9 +206,10 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 			int endOffset = lastChild.getEndOffset();
 			
 			
-			
+			Image elImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_ELEMENT);
+
 			proposals.add( new CompletionProposal(buf.toString(), endOffset, 0, 0,
-								null, "Add missing attribute tags", null, null) );
+					elImage, Messages.ServiceXMLAddAttributeTags, null, null) );
 		}
 
 	}

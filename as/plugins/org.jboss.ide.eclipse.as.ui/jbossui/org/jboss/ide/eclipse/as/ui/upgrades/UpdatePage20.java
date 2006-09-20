@@ -3,7 +3,6 @@ package org.jboss.ide.eclipse.as.ui.upgrades;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,6 +29,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.util.ASLaunchConfigurationConverter;
 import org.jboss.ide.eclipse.as.core.util.ASLaunchConfigurationConverter.TempLaunchConfiguration;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.firstrun.wizard.pages.AbstractFirstRunPage;
 
 public class UpdatePage20 extends AbstractFirstRunPage {
@@ -44,8 +44,8 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 	private ConfigDataComposite configDataComposite;
 	
 	public UpdatePage20() {
-		super("", "Convert JBoss AS Launch Configurations", null);
-		setDescription("This is where I explain why we need to convert launch configs to servers");
+		super("", Messages.UpgradeWizardTitle, null);
+		setDescription(Messages.UpgradeWizardDescription);
 		rows = new ArrayList();
 	}
 
@@ -105,7 +105,7 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 			dld.left = new FormAttachment(0,5);
 			dld.top = new FormAttachment(0,5);
 			detailLabel.setLayoutData(dld);
-			detailLabel.setText("Details: ");
+			detailLabel.setText(Messages.UpgradeWizardDetails);
 			
 			Composite detailComposite = new Composite(this, SWT.NONE);
 			detailComposite.setLayout(new GridLayout(2, false));
@@ -116,22 +116,22 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 			
 			
 			
-			new Label(detailComposite, SWT.NONE).setText("Launch Configuration Name: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchConfigName);
 			launchConfigName = new Label(detailComposite, SWT.NONE);
 			
-			new Label(detailComposite, SWT.NONE).setText("Home Directory: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchHomeDir);
 			homeDir = new Label(detailComposite, SWT.NONE);
 			
-			new Label(detailComposite, SWT.NONE).setText("JBoss Configuration: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchJBossConfig);
 			jbConfig = new Label(detailComposite, SWT.NONE);
 			
-			new Label(detailComposite, SWT.NONE).setText("Start Arguments: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchStartArgs);
 			startArgs = new Label(detailComposite, SWT.NONE);
 			
-			new Label(detailComposite, SWT.NONE).setText("Shutdown Arguments: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchShutdownArgs);
 			stopArgs = new Label(detailComposite, SWT.NONE);
 			
-			new Label(detailComposite, SWT.NONE).setText("JRE: ");
+			new Label(detailComposite, SWT.NONE).setText(Messages.UpgradeWizardLaunchJRE);
 			jre = new Label(detailComposite, SWT.NONE);
 		}
 		
@@ -166,13 +166,13 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 
 		// add headings
 		Label convertLabel = new Label(main, SWT.NONE);
-		convertLabel.setText("Convert?");
+		convertLabel.setText(Messages.UpgradeWizardLaunchConvert);
 		Label configName = new Label(main, SWT.NONE);
-		configName.setText("Configuration Name");
+		configName.setText(Messages.UpgradeWizardLaunchConfigName2);
 		Label runtimeLabel = new Label(main, SWT.NONE);
-		runtimeLabel.setText("Runtime Name");
+		runtimeLabel.setText(Messages.UpgradeWizardLaunchRuntimeName);
 		Label serverLabel = new Label(main, SWT.NONE);
-		serverLabel.setText("Server Name");
+		serverLabel.setText(Messages.UpgradeWizardLaunchServerName);
 		
 		for( int i = 0; i < configs.length; i++ ) {
 			// should add the 4 widgets itself
@@ -205,14 +205,14 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 	}
 
 	public void performFinishWithProgress(IProgressMonitor monitor) {
-		monitor.beginTask("Converting Launch Configurations", rows.size() * 100);
-		monitor.setTaskName("Converting Launch Configurations");
+		monitor.beginTask(Messages.UpgradeWizardLaunchMonitorMainTask, rows.size() * 100);
+		monitor.setTaskName(Messages.UpgradeWizardLaunchMonitorMainTask);
 		Iterator i = rows.iterator();
 		while(i.hasNext()) {
 			ConfigurationRow r = (ConfigurationRow)i.next();
 			if( r.getSelected() ) {
 				// now convert
-				monitor.subTask("Converting " + r.getLaunchConfig().getName());
+				monitor.subTask(Messages.UpgradeWizardLaunchMonitorConverting + r.getLaunchConfig().getName());
 				try {
 					converter.convertConfiguration(r.getLaunchConfig(), 
 							r.getRuntimeName(), r.getServerName());
@@ -276,9 +276,9 @@ public class UpdatePage20 extends AbstractFirstRunPage {
     		String[] sc = (String[]) serverCollisions.toArray(new String[serverCollisions.size()]);
     		String[] rtc = (String[]) runtimeCollisions.toArray(new String[runtimeCollisions.size()]);
     		if( rtc.length > 0 ) 
-    			errorMessage += "The following runtime names are already in use: " + implode(rtc, ", ") + "\n";
+    			errorMessage += Messages.UpgradeWizardLaunchRuntimeNamesInUse + implode(rtc, ", ") + "\n";
     		if( sc.length > 0 ) 
-    			errorMessage += "The following server names are already in use: " + implode(sc, ", ");
+    			errorMessage += Messages.UpgradeWizardLaunchServerNamesInUse + implode(sc, ", ");
     	}
     	setErrorMessage(errorMessage);
     }

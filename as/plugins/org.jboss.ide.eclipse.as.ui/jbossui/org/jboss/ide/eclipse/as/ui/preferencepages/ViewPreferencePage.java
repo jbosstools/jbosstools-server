@@ -49,8 +49,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.part.PageBook;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 
@@ -176,13 +176,13 @@ public class ViewPreferencePage extends PreferencePage implements
 		        table.setHeaderVisible(true);
 		        table.setLinesVisible(false);
 		        TableColumn column0 = new TableColumn(table, SWT.NONE);
-		        column0.setText("Name");
+		        column0.setText(Messages.ViewPreferencePageName);
 		        TableColumn column1 = new TableColumn(table, SWT.NONE);
-		        column1.setText("Enabled");
+		        column1.setText(Messages.ViewPreferencePageEnabled);
 		        TableColumn column2 = new TableColumn(table, SWT.NONE);
-		        column2.setText("Weight");
+		        column2.setText(Messages.ViewPreferencePageWeight);
 		        TableColumn column3 = new TableColumn(table, SWT.NONE);
-		        column3.setText("Description");
+		        column3.setText(Messages.ViewPreferencePageDescription);
 		        
 		        providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
 		        int minWidth = 0;
@@ -307,7 +307,7 @@ public class ViewPreferencePage extends PreferencePage implements
 			
 			setLayout(new FormLayout());
 			Button enabled = new Button(this, SWT.CHECK);
-			enabled.setText("Enabled");
+			enabled.setText(Messages.ViewPreferencePageEnabled);
 			enabled.setSelection(provider.isEnabled());
 			
 			
@@ -316,13 +316,7 @@ public class ViewPreferencePage extends PreferencePage implements
 		
 	}
 	
-	
-	
 	public void init(IWorkbench workbench) {
 	}
-	
-	
-	
-	
 
 }

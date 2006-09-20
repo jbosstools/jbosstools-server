@@ -78,20 +78,17 @@ public class ServiceXMLEditorConfiguration extends
 
 	public ServiceXMLEditorConfiguration() {
 		super();
-		ASDebug.p("constructor", this);
 	}
 
 	protected IContentAssistProcessor[] getContentAssistProcessors(ISourceViewer sourceViewer, String partitionType) {
 		IContentAssistProcessor[] processors = null;
 		
 		if ((partitionType == IStructuredPartitionTypes.DEFAULT_PARTITION) || (partitionType == IXMLPartitions.XML_DEFAULT)) {
-			ASDebug.p("I'm here", this);
 			processors = new IContentAssistProcessor[] { new ServiceXMLContentAssistProcessor() };
 			//processors = new IContentAssistProcessor[]{new CFGXMLContentAssistProcessor()};
 		}
 		else if (partitionType == IStructuredPartitionTypes.UNKNOWN_PARTITION) {
 			processors = new IContentAssistProcessor[]{new NoRegionContentAssistProcessor()};
-			ASDebug.p("in the else", this);
 		}
 		
 		return processors;

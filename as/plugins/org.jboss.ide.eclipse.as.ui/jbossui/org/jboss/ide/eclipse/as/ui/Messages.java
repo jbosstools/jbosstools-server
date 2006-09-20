@@ -76,6 +76,82 @@ public class Messages {
 	public static String DeleteModuleConfirm;
 	
 	
+	/* Action Delegate */
+
+	public static String ActionDelegateStartServer;
+	public static String ActionDelegateStopServer;
+	public static String ActionDelegateDebugServer;
+	public static String ActionDelegateNew;
+	public static String ActionDelegateNewMBeanStubs;
+	public static String ActionDelegateNewServer;
+	
+	/* Launch Group */
+	public static String LaunchGroupStartArgs;
+	public static String LaunchGroupStopArgs;
+	public static String LaunchGroupTwiddleArgs;
+	public static String LaunchGroupConfigChanged;
+	
+	/* Twiddle Dialog */
+	public static String TwiddleDialog;
+	public static String TwiddleDialogExecute;
+	public static String TwiddleDialogDone;
+	public static String TwiddleDialogArguments;
+	public static String TwiddleDialogTutorial;
+	
+	
+	/* XPath Dialog */
+	public static String XPathNewCategory;
+	public static String XPathNewCategoryNameInUse;
+	public static String XPathCategoryName;
+	public static String XPathNewXpath;
+	public static String XPathNameEmpty;
+	public static String XPathNameInUse;
+	public static String XPathColumnLocation;
+	public static String XPathColumnAttributeVals;
+	public static String XPathColumnRawXML;
+
+	public static String XPathName;
+	public static String XPathPattern;
+	public static String XPathAttribute;
+	
+	/* XML service editor */
+	public static String ServiceXMLAddAttributeTags;
+	
+	/* Preference Page */
+	public static String PreferencePageServerTimeouts;
+	public static String PreferencePageStartTimeouts;
+	public static String PreferencePageStopTimeouts;
+	public static String PreferencePageUponTimeout;
+	public static String PreferencePageUponTimeoutAbort;
+	public static String PreferencePageUponTimeoutIgnore;
+	
+	
+	/* View Preference Page */
+	public static String ViewPreferencePageName;
+	public static String ViewPreferencePageEnabled;
+	public static String ViewPreferencePageWeight;
+	public static String ViewPreferencePageDescription;
+	
+	/* Upgrade Wizard to 2.0.0 */
+	public static String UpgradeWizardTitle;
+	public static String UpgradeWizardDescription;
+	public static String UpgradeWizardDetails;
+	public static String UpgradeWizardLaunchConfigName;
+	public static String UpgradeWizardLaunchHomeDir;
+	public static String UpgradeWizardLaunchJBossConfig;
+	public static String UpgradeWizardLaunchStartArgs;
+	public static String UpgradeWizardLaunchShutdownArgs;
+	public static String UpgradeWizardLaunchJRE;
+	public static String UpgradeWizardLaunchConvert;
+	public static String UpgradeWizardLaunchConfigName2;
+	public static String UpgradeWizardLaunchRuntimeName;
+	public static String UpgradeWizardLaunchServerName;
+	public static String UpgradeWizardLaunchMonitorMainTask;
+	public static String UpgradeWizardLaunchMonitorConverting;
+	public static String UpgradeWizardLaunchRuntimeNamesInUse;
+	public static String UpgradeWizardLaunchServerNamesInUse;
+	
+	
 	public static String HidePropertiesAction;
 	public static String HideTextAction;
 	public static String HideLowerFrameAction;

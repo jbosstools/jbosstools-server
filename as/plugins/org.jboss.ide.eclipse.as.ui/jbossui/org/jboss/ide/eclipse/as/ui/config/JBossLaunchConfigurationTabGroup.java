@@ -89,6 +89,7 @@ import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.core.util.RuntimeConfigUtil;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 
 
@@ -187,9 +188,9 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 
 		public String getName() {
 			switch (type) {
-			case START: return "Start Args";
-			case STOP: return "Stop Args";
-			case TWIDDLE: return "Twiddle Args";
+			case START: return Messages.LaunchGroupStartArgs;
+			case STOP: return Messages.LaunchGroupTwiddleArgs;
+			case TWIDDLE: return Messages.LaunchGroupStopArgs;
 			default:
 				return super.getName();
 			}
@@ -672,7 +673,7 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 				
 				boolean valid = isHostAndConfigValid();
 				if( !valid ) {
-					setErrorMessage("You may not change the configuration.");
+					setErrorMessage(Messages.LaunchGroupConfigChanged);
 					//getLaunchConfigurationDialog().updateButtons();
 					return false;
 				}

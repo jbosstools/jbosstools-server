@@ -27,7 +27,6 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -63,6 +62,7 @@ import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 
 public class JBossServersPreferencePage extends PreferencePage implements
@@ -175,7 +175,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 
 	protected void createTimeoutGroup(Composite main) {
 		timeoutGroup = new Group(main, SWT.NONE);
-		timeoutGroup.setText("Server Timeouts");
+		timeoutGroup.setText(Messages.PreferencePageServerTimeouts);
 		FormData groupData = new FormData();
 		groupData.right = new FormAttachment(100, -5);
 		groupData.left = new FormAttachment(pageColumn+2, 0);
@@ -197,14 +197,14 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		startTD.left = new FormAttachment(0,5);
 		startTD.top = new FormAttachment(0,5);
 		startTimeoutLabel.setLayoutData(startTD);
-		startTimeoutLabel.setText("Start Timeout");
+		startTimeoutLabel.setText(Messages.PreferencePageStartTimeouts);
 		
 		
 		FormData stopTD = new FormData();
 		stopTD.left = new FormAttachment(0,5);
 		stopTD.top = new FormAttachment(startSpinner,4);
 		stopTimeoutLabel.setLayoutData(stopTD);
-		stopTimeoutLabel.setText("Stop Timeout");
+		stopTimeoutLabel.setText(Messages.PreferencePageStopTimeouts);
 		
 		timeoutGroup.layout();
 		int startWidth = startTimeoutLabel.getSize().x;
@@ -252,9 +252,9 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		b2D.top = new FormAttachment(abortOnTimeout,5);
 		ignoreOnTimeout.setLayoutData(b2D);
 		
-		uponTimeoutLabel.setText("Upon Timeout: ");
-		abortOnTimeout.setText("Abort Server Start");
-		ignoreOnTimeout.setText("Set Server State to \"Started\"");
+		uponTimeoutLabel.setText(Messages.PreferencePageUponTimeout);
+		abortOnTimeout.setText(Messages.PreferencePageUponTimeoutAbort);
+		ignoreOnTimeout.setText(Messages.PreferencePageUponTimeoutIgnore);
 
 		
 	}

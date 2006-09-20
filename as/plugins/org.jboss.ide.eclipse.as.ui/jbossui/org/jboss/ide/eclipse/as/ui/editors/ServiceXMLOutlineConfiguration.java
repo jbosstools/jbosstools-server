@@ -200,7 +200,6 @@ public class ServiceXMLOutlineConfiguration extends
 	}
 	
 	public IMenuListener getMenuListener(TreeViewer viewer) {
-		ASDebug.p("Here I am: getMenuListener", this);
 		if (fContextMenuFiller == null) {
 			fContextMenuFiller = new ActionManagerMenuListener(viewer);
 		}

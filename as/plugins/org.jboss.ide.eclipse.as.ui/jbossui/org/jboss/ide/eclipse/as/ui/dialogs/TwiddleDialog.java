@@ -55,8 +55,8 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModel
 import org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class TwiddleDialog extends Dialog {
 
@@ -81,7 +81,7 @@ public class TwiddleDialog extends Dialog {
 	}
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Twiddle Dialog");
+		newShell.setText(Messages.TwiddleDialog);
 		newShell.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE));
 	}
 	   
@@ -91,8 +91,8 @@ public class TwiddleDialog extends Dialog {
 	
 	protected void createButtonsForButtonBar(Composite parent) {
 		// create OK and Cancel buttons by default
-		createButton(parent, EXECUTE_ID, "Execute Twiddle", true);
-		createButton(parent, IDialogConstants.OK_ID, "Done",
+		createButton(parent, EXECUTE_ID, Messages.TwiddleDialogExecute, true);
+		createButton(parent, IDialogConstants.OK_ID, Messages.TwiddleDialogDone,
 				false);
 	}
 	
@@ -149,7 +149,7 @@ public class TwiddleDialog extends Dialog {
 		main.setLayout(new FormLayout());
 
 		queryLabel = new Label(main, SWT.NONE);
-		queryLabel.setText("Twiddle arguments: ");
+		queryLabel.setText(Messages.TwiddleDialogArguments);
 		FormData queryLabelData = new FormData();
 		queryLabelData.left = new FormAttachment(0,5);
 		queryLabelData.top = new FormAttachment(0,5);
@@ -157,7 +157,7 @@ public class TwiddleDialog extends Dialog {
 
 		
 		twiddleTutorialLink = new Hyperlink(main, SWT.NONE);
-		twiddleTutorialLink.setText("Twiddle Tutorial");
+		twiddleTutorialLink.setText(Messages.TwiddleDialogTutorial);
 		twiddleTutorialLink.setForeground(new Color(null, 0, 0, 255));
 		twiddleTutorialLink.setUnderlined(true);
 		FormData twiddleTutorialData = new FormData();
