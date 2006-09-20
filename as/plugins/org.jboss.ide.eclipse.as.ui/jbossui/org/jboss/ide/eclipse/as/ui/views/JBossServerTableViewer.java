@@ -503,6 +503,7 @@ public class JBossServerTableViewer extends TreeViewer {
 		public void createControl(Composite parent) {
 			topLevelPropertiesPage = PropertySheetFactory.createSimplePropertiesSheet(new TopLevelProperties());
 			book = new PageBook(parent, SWT.NONE);
+			addedControls.clear();
 			topLevelPropertiesPage.createControl(book);
 			book.showPage(topLevelPropertiesPage.getControl());
 		}

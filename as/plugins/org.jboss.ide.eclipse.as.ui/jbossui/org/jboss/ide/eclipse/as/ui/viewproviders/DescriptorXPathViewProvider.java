@@ -46,6 +46,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -649,6 +651,12 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		protected void createXPathGroup(Composite main) {
 			xPathGroup = new Group(main, SWT.NONE);
 			
+			xPathGroup.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent e) {
+					input = null;
+				} 
+			} );
+			
 			int groupWidth = 500;
 			
 			xPathGroup.setText("Descriptor Values");
@@ -673,9 +681,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			column2.setText("Attribute Key / Value");
 			column3.setText("XPath / XML");
 
-			column.setWidth(groupWidth * 4 / 20);
+			column.setWidth(groupWidth * 7 / 20);
 			column2.setWidth(groupWidth * 6 / 20);
-			column3.setWidth(groupWidth * 9 / 20);
+			column3.setWidth(groupWidth * 7 / 20);
 			
 
 			FormData treeData = new FormData();
