@@ -27,6 +27,7 @@ public class Messages {
 	public static String EventLogCategory;
 	public static String ModulesCategory;
 	public static String createWizardTitle;
+	public static String runtimeInformation;
 	public static String createRuntimeWizardTitle;
 	public static String createWizardDescription;
 	public static String wizardFragmentNameLabel;
@@ -50,6 +51,8 @@ public class Messages {
 	
 	public static String RefreshViewerAction;
 	public static String DisableCategoryAction;
+	public static String TwiddleServerAction;
+	public static String CloneServerAction;
 	
 	/* Properties of view extenders (categories) */
 	public static String ExtensionID;
@@ -150,6 +153,69 @@ public class Messages {
 	public static String UpgradeWizardLaunchMonitorConverting;
 	public static String UpgradeWizardLaunchRuntimeNamesInUse;
 	public static String UpgradeWizardLaunchServerNamesInUse;
+	
+	
+	/* Server Clone Wizard */
+	public static String CloneWizardRequiredCheckedLabel;
+	public static String CloneWizardNewServerName;
+	public static String CloneWizardNewConfigName;
+	public static String CloneWizardTitle;
+	public static String CloneWizardDescription;
+	public static String CloneWizardServerNameInUse;
+	public static String CloneWizardConfigNameInUse;
+	public static String CloneWizardWindowTitle;
+	
+	
+	/* MBean Wizard */
+
+	public static String NewMBeanInterface;
+	public static String NewMBeanInterfaceDesc;
+	public static String NewMBeanName;
+	public static String NewMBeanInterfaceName;
+	public static String NewMBeanClass;
+	public static String MBeanClassDescription;
+	public static String MBeanServiceXML;
+	
+	
+	/* Event Log provider */
+	public static String EventLogStartingServer;
+	public static String EventLogStoppingServer;
+	public static String EventLogServerUp;
+	public static String EventLogServerDown;
+	public static String EventLogTwiddleLaunchServerStatePrefix; 
+	public static String EventLogStillStopping;
+	public static String EventLogStillStarting;
+	public static String EventLogUp;
+	public static String EventLogDown;
+	public static String EventLogServerActionCanceled;
+	public static String EventLogTimeoutReached;
+	public static String EventLogConsoleOutput;
+	public static String EventLogPublishEvent;
+	public static String EventLogPublishingToServer; 
+	public static String EventLogPublishRemoveFromServer; 
+	public static String EventLogPublishUnknownEvent;
+	public static String EventLogUnknownEvent;
+	
+	/* Inactive Categories */
+	public static String InactiveCategoriesReEnable;
+	
+	
+	public static String DescriptorXPathRemoveCategory;
+	public static String DescriptorXPathRemoveCategoryDesc;
+	public static String DescriptorXPathNewXPath;
+	public static String DescriptorXPathEditXPath;
+	public static String DescriptorXPathDeleteXPath;
+	public static String DescriptorXPathAttributeValue;
+	public static String DescriptorXPathXPathXML;
+	public static String DescriptorXPathAttributeKeyValue;
+	public static String DescriptorXPathDescriptorValues;
+	public static String DescriptorXPathNameLocation;
+	public static String DescriptorXPathServerName; 
+	public static String DescriptorXPathPortCategory; 
+	public static String DescriptorXPathSimple;
+	public static String DescriptorXPathComplex;
+	public static String DescriptorXPathMatch;
+	
 	
 	
 	public static String HidePropertiesAction;

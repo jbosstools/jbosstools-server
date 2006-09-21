@@ -32,8 +32,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 
@@ -126,7 +126,7 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 					} );
 				}
 			};
-			act.setText("Re-Enable Category");
+			act.setText(Messages.InactiveCategoriesReEnable);
 			menu.add(act);
 		}
 	}

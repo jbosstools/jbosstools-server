@@ -55,8 +55,8 @@ import org.jboss.ide.eclipse.as.core.server.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.PublishLogEvent;
 import org.jboss.ide.eclipse.as.core.server.ServerStateChecker.StateCheckerLogEvent;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.viewproviders.PropertySheetFactory.PropertiesTextSashPropertiesPage;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
@@ -83,7 +83,6 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		ASDebug.p("Inside fill context menu, selection is " + selection, this);
 	}
 
 	public ITreeContentProvider getContentProvider() {
@@ -102,48 +101,48 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 
 				if( event.getEventType() == StateCheckerLogEvent.BEFORE) {
 					boolean expected = event.getExpectedState();
-					return (expected == true ? "Starting Server" : "Stopping Server");
+					return (expected == true ? Messages.EventLogStartingServer : Messages.EventLogStoppingServer);
 				}
 				
 				if( event.getEventType() == StateCheckerLogEvent.AFTER ) {
 					boolean current = (event.getCurrentState() == StateCheckerLogEvent.SERVER_UP);
-					return current ? "Server is up." : "Server is down.";
+					return current ? Messages.EventLogServerUp : Messages.EventLogServerDown;
 				}
 				
 				if( event.getEventType() == StateCheckerLogEvent.DURING) {
-					String ret = "Twiddle Launch: Server is ";
-					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STARTING ) ret += "still starting";
-					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STOPPING ) ret += "still stopping";
-					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_UP ) ret += "up";
-					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN ) ret += "down";
+					String ret = Messages.EventLogTwiddleLaunchServerStatePrefix;
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STARTING ) ret += Messages.EventLogStillStarting;
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_STOPPING ) ret += Messages.EventLogStillStopping;
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_UP ) ret += Messages.EventLogUp;
+					if( event.getCurrentState() == StateCheckerLogEvent.SERVER_DOWN ) ret += Messages.EventLogDown;
 					return ret;
 				}
 				if( event.getEventType() == StateCheckerLogEvent.SERVER_STATE_CHANGE_CANCELED) {
-					String ret = "Server action canceled.";
+					String ret = Messages.EventLogServerActionCanceled;
 					return ret;
 				}
 				if( event.getEventType() == StateCheckerLogEvent.SERVER_STATE_CHANGE_TIMEOUT) {
-					String ret = "Server Timeout Reached.";
+					String ret = Messages.EventLogTimeoutReached;
 					return ret;
 				}
 			}
 			
 			if( obj instanceof ConsoleLogEvent) {
-				return "Console Output";
+				return Messages.EventLogConsoleOutput;
 			}
 			
 			if( obj instanceof PublishLogEvent ) {
 				PublishLogEvent publishEvent = ((PublishLogEvent)obj);
 				if( publishEvent.getEventType() == PublishLogEvent.ROOT) {
-					return "Publish Event";
+					return Messages.EventLogPublishEvent;
 				}
 				if( publishEvent.getEventType() == PublishLogEvent.PUBLISH) {
-					return "Publishing module to server: " + publishEvent.getModuleName();
+					return Messages.EventLogPublishingToServer + publishEvent.getModuleName();
 				}
 				if( publishEvent.getEventType() == PublishLogEvent.UNPUBLISH) {
-					return "Removing module from server: " + publishEvent.getModuleName();
+					return Messages.EventLogPublishRemoveFromServer + publishEvent.getModuleName();
 				}
-				return "Unknown Publish Event";
+				return Messages.EventLogPublishUnknownEvent;
 			}
 			if( obj instanceof ExceptionLogEvent ) {
 				ExceptionLogEvent event = ((ExceptionLogEvent)obj);
@@ -154,7 +153,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 				SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.S");
 				String eventToString;
 				if( event.getEventType() == ProcessLogEvent.UNKNOWN ) {
-					eventToString = "Unknown Event";
+					eventToString = Messages.EventLogUnknownEvent;
 				} else {
 					eventToString = event.toString();
 				}

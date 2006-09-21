@@ -89,6 +89,7 @@ import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPre
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
@@ -164,9 +165,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				if( selected instanceof SimpleXPathPreferenceTreeItem && ((SimpleXPathPreferenceTreeItem)selected).getParent().equals(getRoot())) {
 					int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
 					MessageBox messageBox = new MessageBox (Display.getCurrent().getActiveShell(), style);
-					messageBox.setText ("Remove Category?");
-					messageBox.setMessage ("Are you sure you want to delete this category and\nall of its elements?"
-							+ " All sub-nodes will be lost.");
+					messageBox.setText (Messages.DescriptorXPathRemoveCategory + "?");
+					messageBox.setMessage (Messages.DescriptorXPathRemoveCategoryDesc);
 					if( messageBox.open () == SWT.YES ) {
 						getRoot().deleteChild(((SimpleXPathPreferenceTreeItem)selected));
 						ServerAttributeHelper helper = jbServer.getAttributeHelper();
@@ -178,7 +178,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				}
 			}
 		};
-		deleteXPathCategoryAction.setText("Remove Category");
+		deleteXPathCategoryAction.setText(Messages.DescriptorXPathRemoveCategoryDesc);
 		
 		
 		newXPathAction = new Action() {
@@ -206,7 +206,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					}
 				}
 		};
-		newXPathAction.setText("New XPath");
+		newXPathAction.setText(Messages.DescriptorXPathNewXPath);
 
 		editXPathAction = new Action() {
 			public void run() {
@@ -233,7 +233,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					}
 				}
 		};
-		editXPathAction.setText("Edit XPath");
+		editXPathAction.setText(Messages.DescriptorXPathEditXPath);
 
 		deleteXPathAction = new Action() {
 			public void run() {
@@ -248,7 +248,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				}
 			}
 		};
-		deleteXPathAction.setText("Delete XPath");
+		deleteXPathAction.setText(Messages.DescriptorXPathDeleteXPath);
 	}
 	
 	public void addListeners() {
@@ -267,8 +267,6 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			menu.add(this.deleteXPathCategoryAction);
 			menu.add(new Separator());
 		}
-		
-		ASDebug.p("serverViewerSelection is " + selection, this);
 	}
 	
 	public Object getServerViewSelection() {
@@ -396,12 +394,12 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					if( simple ) {
 						getLabelProvider().setSimple(true);
 						column3.setText("");
-						column2.setText("Attribute Value");
+						column2.setText(Messages.DescriptorXPathAttributeValue);
 						xpathTreeViewer.refresh();
 					} else {
 						getLabelProvider().setSimple(false);
-						column3.setText("XPath / XML");
-						column2.setText("Attribute Key / Value");
+						column3.setText(Messages.DescriptorXPathXPathXML);
+						column2.setText(Messages.DescriptorXPathAttributeKeyValue);
 						xpathTreeViewer.refresh();
 					}
 				} catch ( Exception e ) {
@@ -430,7 +428,6 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				if( input == ((ContentWrapper)element).getElement() ) return;
 				
 				input = ((ContentWrapper)element).getElement();
-				ASDebug.p("Selection changed to " + input, this);
 				IRunnableWithProgress op = new IRunnableWithProgress() {
 					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 						final IProgressMonitor monitor2 = monitor;
@@ -659,7 +656,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			
 			int groupWidth = 500;
 			
-			xPathGroup.setText("Descriptor Values");
+			xPathGroup.setText(Messages.DescriptorXPathDescriptorValues);
 			FormData groupData = new FormData();
 			groupData.right = new FormAttachment(100, -5);
 			groupData.left = new FormAttachment(0, 5);
@@ -677,9 +674,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			column2 = new TreeColumn(xpathTree, SWT.NONE);
 			column3 = new TreeColumn(xpathTree, SWT.NONE);
 			
-			column.setText("Name / Location");
-			column2.setText("Attribute Key / Value");
-			column3.setText("XPath / XML");
+			column.setText(Messages.DescriptorXPathNameLocation);
+			column2.setText(Messages.DescriptorXPathAttributeKeyValue);
+			column3.setText(Messages.DescriptorXPathXPathXML);
 
 			column.setWidth(groupWidth * 7 / 20);
 			column2.setWidth(groupWidth * 6 / 20);
@@ -927,13 +924,13 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			portComp.setLayout(new RowLayout(SWT.VERTICAL));
 			
 			Label nameLabel = new Label(portComp, SWT.NONE);
-			nameLabel.setText("Server Name: ");
+			nameLabel.setText(Messages.DescriptorXPathServerName);
 			
 			serversCombo = new Combo(portComp, SWT.READ_ONLY);
 			serversCombo.setItems(serverNames);
 
 			Label categoryLabel = new Label(portComp, SWT.NONE);
-			categoryLabel.setText("Port Category: ");
+			categoryLabel.setText(Messages.DescriptorXPathPortCategory);
 			
 			portsCategoryCombo = new Combo(portComp, SWT.READ_ONLY);
 			
@@ -1017,8 +1014,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			simple = new Button(c, SWT.RADIO);
 			complex = new Button(c, SWT.RADIO);
 			
-			simple.setText("Show only xpath value in properties view.");
-			complex.setText("Show all details in properties view.");
+			simple.setText(Messages.DescriptorXPathSimple);
+			complex.setText(Messages.DescriptorXPathComplex);
 			
 			boolean prefVal = JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY);
 			simple.setSelection(prefVal == SIMPLE);
@@ -1079,7 +1076,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			
 			if( element instanceof XPathTreeItem2) {
 				XPathTreeItem2 element2 = (XPathTreeItem2)element;
-				if( columnIndex == 0 ) return "Match " + element2.getIndex();
+				if( columnIndex == 0 ) return Messages.DescriptorXPathMatch + element2.getIndex();
 				if( columnIndex == 1 ) return element2.getText();
 				if( columnIndex == 2 && !simple) return element2.elementAsXML();
 			}
