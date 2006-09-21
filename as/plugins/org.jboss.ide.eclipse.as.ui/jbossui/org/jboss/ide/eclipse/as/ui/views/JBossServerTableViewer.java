@@ -27,10 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -56,22 +53,14 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
-import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
-import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerCloneUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -177,18 +166,24 @@ public class JBossServerTableViewer extends TreeViewer {
 				    	IRunnableWithProgress op = new IRunnableWithProgress() {
 
 							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-								int filesWork = wizard.getSelectedFiles().length; 
-						    	int totalWork = filesWork + 1 + 50;
-						    	monitor.beginTask("Cloning Server", totalWork);
+								try {
+									int filesWork = wizard.getSelectedFiles().length; 
+							    	int totalWork = filesWork + 1 + 50;
+							    	monitor.beginTask("Cloning Server", totalWork);
+	
+							    	// clone the directories
+							    	File[] files = wizard.getSelectedFiles();
+							    	String config = wizard.getConfig();
+							    	ServerCloneUtil.directoriesClone(files, config, server, new SubProgressMonitor(monitor, filesWork+1));
 
-						    	// clone the directories
-						    	directoriesClone(wizard, server, new SubProgressMonitor(monitor, filesWork+1));
-								
-								// clone the wst server
-								wstServerClone(server, wizard.getName(), wizard.getConfig(), 
-										new SubProgressMonitor(monitor, 50));
-								
-								monitor.done();
+							    	// clone the wst server
+							    	ServerCloneUtil.wstServerClone(server, wizard.getName(), wizard.getConfig(), 
+											new SubProgressMonitor(monitor, 50));
+									
+									monitor.done();
+								} catch( Exception e ) {
+									e.printStackTrace();
+								}
 							}
 				    		
 				    	};
@@ -198,98 +193,10 @@ public class JBossServerTableViewer extends TreeViewer {
 				    		e.printStackTrace();
 				    	}
 				    }
-					
-					
 				}
-			}
-			
-			public void directoriesClone(ServerCloneWizard wizard, JBossServer server, IProgressMonitor monitor) {
-				SubProgressMonitor subMonitor;
-				String relativeLoc;
-				File newFile;
-				
-				File[] files = wizard.getSelectedFiles();
-		    	String oldConfigPath = server.getAttributeHelper().getConfigurationPath();
-		    	String newConfigPath = server.getAttributeHelper().getServerHome() 
-		    		+ Path.SEPARATOR + "server" + Path.SEPARATOR + wizard.getConfig();
-		    	
-		    	monitor.beginTask("Copying configuration", files.length + 1);
-		    	
-		    	
-		    	subMonitor = new SubProgressMonitor(monitor, 1);
-		    	subMonitor.beginTask("Creating configuration directory: " + newConfigPath, 1);
-		    	new File(newConfigPath).mkdir();
-		    	subMonitor.worked(1);
-				subMonitor.done();
-
-				
-				for( int i = 0; i < files.length; i++ ) {
-					relativeLoc = files[i].getAbsolutePath().substring(oldConfigPath.length());
-					newFile = new File(newConfigPath + relativeLoc);
-					ASDebug.p("Copying " + files[i] + " to " + newFile, this);
-					if( files[i].isDirectory() ) {
-				    	subMonitor = new SubProgressMonitor(monitor, 1);
-				    	subMonitor.beginTask("Creating directory: " + newFile.getAbsolutePath(), 1);
-
-				    	boolean res = newFile.mkdir();
-
-				    	subMonitor.worked(1);
-						subMonitor.done();
-					} else {
-				    	subMonitor = new SubProgressMonitor(monitor, 1);
-				    	subMonitor.beginTask("Copying file: " + newFile.getAbsolutePath(), 1);
-
-						FileUtil.copyFile(files[i], newFile);
-
-				    	subMonitor.worked(1);
-						subMonitor.done();
-					}
-				}
-				
-				monitor.done();
-			}
-			
-			public void wstServerClone(JBossServer server, String newName, String config, IProgressMonitor monitor) {
-				
-				IServerType serverType = server.getServer().getServerType();
-				IRuntimeType runtimeType = server.getServer().getRuntime().getRuntimeType();
-				JBossServerRuntime oldJBRuntime = (JBossServerRuntime)server.getServer().getRuntime().loadAdapter(JBossServerRuntime.class, null);
-				try {
-					IServerWorkingCopy newServerWC = serverType.createServer(null, null, null, null);
-					IRuntimeWorkingCopy newRuntimeWC = runtimeType.createRuntime("", null);
-					IRuntime runtime = newRuntimeWC.save(true, null);
-					JBossServerRuntime newJBRuntime = (JBossServerRuntime)newRuntimeWC.loadAdapter(JBossServerRuntime.class, null);
-					newJBRuntime.setVMInstall(oldJBRuntime.getVM());
-
-					
-					newServerWC.setRuntime(runtime);
-					
-					IFolder configFolder = ServerType.getServerProject().getFolder(newName);
-					if( !configFolder.exists() ) {
-						configFolder.create(true, true, null);
-					}
-					
-					newServerWC.setServerConfiguration(configFolder);
-					newServerWC.setName(newName);
-					
-					ServerAttributeHelper helper = new ServerAttributeHelper(server, newServerWC);
-
-					helper.setServerHome(server.getAttributeHelper().getServerHome());
-					helper.setJbossConfiguration(config);
-					
-//					server.setRuntime(runtime);
-//					runtime.setVMInstall(selectedVM);
-
-					newServerWC.save(true, null);
-				} catch( CoreException ce) {}
-				
-				monitor.beginTask("Cloning Server Elements", 50);
-				monitor.worked(50);
-				monitor.done();
 			}
 		};
 		cloneServerAction.setText("Clone Server");
-		
 	}
 	
 	public static class ContentWrapper {
