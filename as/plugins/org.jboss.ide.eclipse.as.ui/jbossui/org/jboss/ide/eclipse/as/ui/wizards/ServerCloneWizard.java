@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class ServerCloneWizard extends Wizard {
 
@@ -52,7 +53,7 @@ public class ServerCloneWizard extends Wizard {
 		
     public void setContainer(IWizardContainer wizardContainer) {
     	super.setContainer(wizardContainer);
-    	setWindowTitle("Clone Server" + server.getServer().getName());
+    	setWindowTitle(Messages.CloneWizardWindowTitle + server.getServer().getName());
     }
 
 
@@ -83,12 +84,12 @@ public class ServerCloneWizard extends Wizard {
 		private Label requiredCheckedLabel;
 		
 		protected Page1() {
-			super("Files");
+			super("");
 		}
 
 		public boolean isPageComplete() {
 			if( !isServerNameValid(serverNameText.getText()) && serverNameText.getText().length() != 0) {
-				setErrorMessage("Server Name \"" + serverNameText.getText() + "\" already in use.");
+				setErrorMessage( Messages.CloneWizardServerNameInUse + serverNameText.getText());
 				return false;
 			} 
 			if( serverNameText.getText().length() == 0 ) {
@@ -98,7 +99,7 @@ public class ServerCloneWizard extends Wizard {
 			}
 			
 			if( !isConfigNameValid(configNameText.getText()) && configNameText.getText().length() != 0) {
-				setErrorMessage("Configuration \"" + configNameText.getText() + "\" already exists");
+				setErrorMessage( Messages.CloneWizardConfigNameInUse + configNameText.getText());
 				return false;
 			}
 			if( configNameText.getText().length() == 0 ) {
@@ -119,8 +120,8 @@ public class ServerCloneWizard extends Wizard {
 			addCheckBoxViewer(c);
 			addBottomLabels(c);
 			
-			setTitle("Create a new Server Configuration");
-			setDescription("Create a new server configuration directory containing the selected files. \nA new server object will be added to the list of JBoss Servers.");
+			setTitle(Messages.CloneWizardTitle);
+			setDescription(Messages.CloneWizardDescription);
 			setControl(c);
 		}
 		
@@ -134,8 +135,8 @@ public class ServerCloneWizard extends Wizard {
 			configNameText = new Text(c, SWT.BORDER);
 			
 			// set the texts
-			serverNameLabel.setText("New Server Name: ");
-			configNameLabel.setText("New Configuration Name: ");
+			serverNameLabel.setText(Messages.CloneWizardNewServerName);
+			configNameLabel.setText(Messages.CloneWizardNewConfigName);
 			
 			
 			// lay them OUT
@@ -260,7 +261,7 @@ public class ServerCloneWizard extends Wizard {
 		
 		protected void addBottomLabels(Composite c) {
 			requiredCheckedLabel = new Label(c, SWT.NONE);
-			requiredCheckedLabel.setText("Files required for a successful minimal configuration cannot be unchecked.");
+			requiredCheckedLabel.setText(Messages.CloneWizardRequiredCheckedLabel);
 			FormData data = new FormData();
 			data.left = new FormAttachment(0,5);
 			data.top = new FormAttachment(fileTreeViewer.getTree(), 5);

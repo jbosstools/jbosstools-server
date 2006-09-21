@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -157,19 +156,19 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		
 		
 		public MBeanInterfacePage() {
-			super(false, "New MBean Interface");
+			super(false, org.jboss.ide.eclipse.as.ui.Messages.NewMBeanInterface);
 			
-			setTitle("New MBean Interface"); 
-			setDescription("Create the interface for the MBean"); 
+			setTitle(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanInterface); 
+			setDescription(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanInterfaceDesc); 
 
 			
 			fMBeanNameDialogField= new StringDialogField();
 			fMBeanNameDialogField.setDialogFieldListener(new MBeanPage1DialogFieldAdapter());
-			fMBeanNameDialogField.setLabelText("MBean Name"); 
+			fMBeanNameDialogField.setLabelText(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanName); 
 
 			fMBeanInterfaceNameDialogField= new StringDialogField();
 			fMBeanInterfaceNameDialogField.setDialogFieldListener(new MBeanPage1DialogFieldAdapter());
-			fMBeanInterfaceNameDialogField.setLabelText("Interface Name"); 
+			fMBeanInterfaceNameDialogField.setLabelText(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanInterfaceName); 
 		}
 
 		private class MBeanPage1DialogFieldAdapter implements IDialogFieldListener {
@@ -360,19 +359,19 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		private StringDialogField fMBeanNameDialogField;
 		private SelectionButtonDialogField fDescriptorDialogField;
 		public MBeanPage() {
-			super(true, "MBean Class");
+			super(true, org.jboss.ide.eclipse.as.ui.Messages.NewMBeanClass);
 			
-			setTitle("New MBean Class"); 
-			setDescription("Create the concrete MBean Class"); 
+			setTitle(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanClass); 
+			setDescription(org.jboss.ide.eclipse.as.ui.Messages.MBeanClassDescription); 
 
 			MBeanPage2DialogFieldAdapter adapter = new MBeanPage2DialogFieldAdapter();
 			fMBeanNameDialogField= new StringDialogField();
 			fMBeanNameDialogField.setDialogFieldListener(adapter);
-			fMBeanNameDialogField.setLabelText("MBean Name"); 
+			fMBeanNameDialogField.setLabelText(org.jboss.ide.eclipse.as.ui.Messages.NewMBeanName); 
 			
 			fDescriptorDialogField = new SelectionButtonDialogField(SWT.CHECK);
 			fDescriptorDialogField.setDialogFieldListener(adapter);
-			fDescriptorDialogField.setLabelText("Create -service.xml file?");
+			fDescriptorDialogField.setLabelText(org.jboss.ide.eclipse.as.ui.Messages.MBeanServiceXML);
 		}
 
 		private class MBeanPage2DialogFieldAdapter implements IDialogFieldListener {

@@ -108,7 +108,6 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle)
 	{
-		ASDebug.p("in createComposite", this);
 		this.handle = handle;
 		
 		Composite main = new Composite(parent, SWT.NONE);
@@ -119,7 +118,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		createNameComposite(main);
 		
 		g = new Group(main, SWT.NONE);
-		g.setText("Runtime Information");
+		g.setText(Messages.runtimeInformation);
 		g.setLayout(new FormLayout());
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
@@ -155,7 +154,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		
 		// create internal widgets
 		nameLabel = new Label(nameComposite, SWT.None);
-		nameLabel.setText("Server " + Messages.wizardFragmentNameLabel);
+		nameLabel.setText(Messages.wizardFragmentNameLabel);
 		
 		nameText = new Text(nameComposite, SWT.BORDER);
 		nameText.addModifyListener(new ModifyListener() {
@@ -283,46 +282,6 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		textData.right = new FormAttachment(100, -5);
 		textData.top = new FormAttachment(configLabel, 5);
 		configText.setLayoutData(textData);
-
-//		configComposite = new Composite(main, SWT.NONE);
-//		
-//		FormData cData = new FormData();
-//		cData.left = new FormAttachment(0,5);
-//		cData.right = new FormAttachment(100,-5);
-//		cData.top = new FormAttachment(g, 10);
-//		configComposite.setLayoutData(cData);
-//
-//		configComposite.setLayout(new FormLayout());
-//		
-//		
-//		configLabel = new Label(configComposite, SWT.NONE);
-//		configLabel.setText(Messages.wizardFragmentConfigLabel);
-//
-//		configurations = new JBossConfigurationTableViewer(configComposite, 
-//				SWT.BORDER | SWT.SINGLE);
-//		
-//		FormData labelData = new FormData();
-//		labelData.left = new FormAttachment(0,5);
-//		configLabel.setLayoutData(labelData);
-//		
-//		FormData viewerData = new FormData();
-//		viewerData.left = new FormAttachment(0, 5);
-//		viewerData.right = new FormAttachment(100, -5);
-//		viewerData.top = new FormAttachment(configLabel, 5);
-//		configurations.getTable().setLayoutData(viewerData);
-//		
-//		configurations.getTable().addSelectionListener(new SelectionListener() {
-//
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//				updatePage(CONFIG_CHANGED);
-//			}
-//
-//			public void widgetSelected(SelectionEvent e) {
-//				updatePage(CONFIG_CHANGED);
-//			} 
-//			
-//		} );
-//
 	}
 
 	private void updatePage(int changed) {

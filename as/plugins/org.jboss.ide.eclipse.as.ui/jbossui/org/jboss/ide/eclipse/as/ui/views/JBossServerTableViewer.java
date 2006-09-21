@@ -146,7 +146,7 @@ public class JBossServerTableViewer extends TreeViewer {
 
 			}
 		};
-		twiddleAction.setText("Twiddle Server");
+		twiddleAction.setText(Messages.TwiddleServerAction);
 		twiddleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.TWIDDLE_IMAGE));
 		
 		
@@ -196,7 +196,7 @@ public class JBossServerTableViewer extends TreeViewer {
 				}
 			}
 		};
-		cloneServerAction.setText("Clone Server");
+		cloneServerAction.setText(Messages.CloneServerAction);
 	}
 	
 	public static class ContentWrapper {
@@ -514,8 +514,6 @@ public class JBossServerTableViewer extends TreeViewer {
 	}
 
 	public void dispose() {
-		ASDebug.p("Disposing", this);
-		
 		// The Loner
 		propertySheet.dispose();
 		
