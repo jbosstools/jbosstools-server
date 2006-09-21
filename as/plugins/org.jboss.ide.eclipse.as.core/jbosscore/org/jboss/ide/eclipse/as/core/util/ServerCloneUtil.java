@@ -139,8 +139,8 @@ public class ServerCloneUtil {
 					Object val = baseMap.get(key);
 					finalMap.put(key, val);
 				}
-				finalMap.put("server-id", finalServer.getId());
 				finalConfigWC.setAttributes(finalMap);
+				finalConfigWC.setAttribute("server-id", finalServer.getId());
 				finalConfigWC.doSave();
 			}
 		} catch( CoreException ce) {}
