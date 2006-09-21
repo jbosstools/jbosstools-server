@@ -75,12 +75,17 @@ public class JBossServer extends ServerDelegate {
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		// Saving a change in server properties (via server editor)
-		String newHost = getServer().getHost();
-		
-		ILaunchConfiguration launchConfig = 
-			((Server)getServer()).getLaunchConfiguration(true, new NullProgressMonitor());
-
-		JBossLaunchConfigurationDelegate.setHost(launchConfig, newHost, getDescriptorModel().getJNDIPort());
+		try {
+			String newHost = getServer().getHost();
+			
+			ILaunchConfiguration launchConfig = 
+				((Server)getServer()).getLaunchConfiguration(false, new NullProgressMonitor());
+	
+			if( launchConfig != null ) 
+				JBossLaunchConfigurationDelegate.setHost(launchConfig, newHost, getDescriptorModel().getJNDIPort());
+		} catch( Exception e ) {
+			
+		}
 	}
 
 	public void configurationChanged() {
