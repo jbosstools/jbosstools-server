@@ -183,7 +183,7 @@ public class JBossServerView extends ServersView {
 
 				if( selection == null ) return;
 				
-				if( server != jbViewer.getInput())
+				//if( server != jbViewer.getInput())
 					jbViewer.setInput(server);
 			} 
 			

@@ -51,6 +51,7 @@ public class Messages {
 	
 	public static String RefreshViewerAction;
 	public static String DisableCategoryAction;
+	public static String EditLaunchConfigurationAction;
 	public static String TwiddleServerAction;
 	public static String CloneServerAction;
 	

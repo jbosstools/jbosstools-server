@@ -27,8 +27,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -56,7 +59,9 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.ServerUICore;
+import org.eclipse.wst.server.ui.internal.Trace;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
@@ -75,7 +80,8 @@ public class JBossServerTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
 	
-	protected Action disableCategoryAction, refreshViewerAction, twiddleAction, cloneServerAction;
+	protected Action disableCategoryAction, refreshViewerAction, 
+					editLaunchConfigAction, twiddleAction, cloneServerAction;
 
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
@@ -133,6 +139,29 @@ public class JBossServerTableViewer extends TreeViewer {
 		};
 		disableCategoryAction.setText(Messages.DisableCategoryAction);
 		
+		editLaunchConfigAction = new Action() {
+			public void run() {
+				Display.getDefault().asyncExec(new Runnable() { 
+					public void run() {
+						try {
+							final Object selected = getSelectedElement();
+							IServer s;
+							if( selected instanceof JBossServer ) {
+								s = ((JBossServer)selected).getServer();
+								ILaunchConfiguration launchConfig = ((Server) s).getLaunchConfiguration(true, null);
+								// TODO: use correct launch group
+								DebugUITools.openLaunchConfigurationPropertiesDialog(new Shell(), launchConfig, "org.eclipse.debug.ui.launchGroup.run");
+							}
+						} catch (CoreException ce) {
+							Trace.trace(Trace.SEVERE, "Could not create launch configuration", ce);
+						}
+
+					}
+				});
+			}
+		};
+		editLaunchConfigAction.setText(Messages.EditLaunchConfigurationAction);
+		editLaunchConfigAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.IMG_JBOSS_CONFIGURATION));
 		
 		twiddleAction = new Action() {
 			public void run() {
@@ -381,7 +410,7 @@ public class JBossServerTableViewer extends TreeViewer {
 		if( selected instanceof JBossServer) {
 			boolean started =((JBossServer)selected).getServer().getServerState() == IServer.STATE_STARTED; 
 			twiddleAction.setEnabled(started);
-			
+			menu.add(editLaunchConfigAction);
 			menu.add(twiddleAction);
 			menu.add(cloneServerAction);
 			menu.add(new Separator());

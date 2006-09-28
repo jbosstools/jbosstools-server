@@ -70,7 +70,7 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
          <view
-               id="org.jboss.ide.eclipse.as.ui.views.SampleView"
+               id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
                ratio="0.5"
                relationship="right"
                relative="org.eclipse.ui.views.TaskList"/>
@@ -235,18 +235,16 @@
                label="JBoss AS Menu"
                style="pulldown"
                toolbarPath="Normal/additions"
-               tooltip="Start Server Shortcut"/>
+               tooltip="Start Server"/>
       </actionSet>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
+            icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.ASPerspective"
             name="JBoss AS"/>
-   </extension>
-   <extension
-         point="org.eclipse.jst.ws.consumption.ui.wsClientImpl">
    </extension>
    <extension
          point="org.jboss.ide.eclipse.firstrun.FirstRunWizardPage">

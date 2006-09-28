@@ -288,6 +288,15 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     }
 
     public void run(IAction action) {
+    	// start the server
+		String defaultServerID = getCurrentDefaultServer();
+		if( !DEFAULT_JBOSS_SERVER_UNSET.equals(defaultServerID)) {
+			IServer s = ServerCore.findServer(getCurrentDefaultServer());
+			if( s.getServerState() == IServer.STATE_STOPPED ) {
+				StartServerJob startJob = new StartServerJob(s, ILaunchManager.DEBUG_MODE);
+				startJob.schedule();
+			}
+		}
     }
 
     public void selectionChanged(IAction action, ISelection selection) {

@@ -178,7 +178,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				}
 			}
 		};
-		deleteXPathCategoryAction.setText(Messages.DescriptorXPathRemoveCategoryDesc);
+		deleteXPathCategoryAction.setText(Messages.DescriptorXPathRemoveCategory);
 		
 		
 		newXPathAction = new Action() {
