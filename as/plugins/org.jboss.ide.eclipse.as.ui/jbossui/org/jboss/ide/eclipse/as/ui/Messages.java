@@ -138,6 +138,7 @@ public class Messages {
 	/* Upgrade Wizard to 2.0.0 */
 	public static String UpgradeWizardTitle;
 	public static String UpgradeWizardDescription;
+	public static String UpgradeWizardNoConvertableConfigs;
 	public static String UpgradeWizardDetails;
 	public static String UpgradeWizardLaunchConfigName;
 	public static String UpgradeWizardLaunchHomeDir;

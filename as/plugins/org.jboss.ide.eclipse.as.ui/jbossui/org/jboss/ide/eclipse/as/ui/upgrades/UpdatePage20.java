@@ -41,11 +41,13 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 	private boolean pageComplete;
 	private String errorMessage;
 	
+	private Label descLabel;
+	
 	private ConfigDataComposite configDataComposite;
+	
 	
 	public UpdatePage20() {
 		super("", Messages.UpgradeWizardTitle, null);
-		setDescription(Messages.UpgradeWizardDescription);
 		rows = new ArrayList();
 	}
 
@@ -63,13 +65,42 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 		
 		main2.setLayout(new FormLayout());
 		
+		descLabel = new Label(main2, SWT.NONE);
+		FormData descLabelData = new FormData();
+		descLabelData.left = new FormAttachment(0,5);
+		descLabelData.right = new FormAttachment(100,-5);
+		descLabelData.top = new FormAttachment(0,5);
+		descLabel.setLayoutData(descLabelData);
 		
+		descLabel.setText(Messages.UpgradeWizardDescription);
 		
+		if( configs.length != 0 ) {
+			createFullControl(main2);
+		} else {
+			createEmptyControl(main2);
+		}
+		setControl(main);
+	}
+	
+	protected void createEmptyControl(Composite main2) {
+		Label noConfigsLabel = new Label(main2, SWT.NONE);
+		FormData noConfigsData = new FormData();
+		noConfigsData.left = new FormAttachment(0,5);
+		noConfigsData.right = new FormAttachment(100,-5);
+		noConfigsData.top = new FormAttachment(descLabel,8);
+		noConfigsLabel.setLayoutData(noConfigsData);
+		
+		noConfigsLabel.setText(Messages.UpgradeWizardNoConvertableConfigs);
+		
+		pageComplete = true;
+	}
+	
+	protected void createFullControl(Composite main2) {
 		ScrolledComposite sc = new ScrolledComposite(main2, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		FormData scData = new FormData();
 		scData.left = new FormAttachment(0,5);
 		scData.right = new FormAttachment(100,-5);
-		scData.top = new FormAttachment(0,5);
+		scData.top = new FormAttachment(descLabel,5);
 		scData.bottom = new FormAttachment(50,-2);
 		sc.setLayoutData(scData);
 		
@@ -83,9 +114,6 @@ public class UpdatePage20 extends AbstractFirstRunPage {
 		cdcData.top = new FormAttachment(sc,5);
 		cdcData.bottom = new FormAttachment(100,-5);
 		configDataComposite.setLayoutData(cdcData);
-		
-		
-		setControl(main);
 		checkPageComplete();
 	}
 	
