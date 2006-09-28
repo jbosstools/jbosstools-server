@@ -184,7 +184,6 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		/*
