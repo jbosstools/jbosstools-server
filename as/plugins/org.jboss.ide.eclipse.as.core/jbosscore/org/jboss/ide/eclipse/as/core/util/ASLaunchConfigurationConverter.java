@@ -168,10 +168,17 @@ public class ASLaunchConfigurationConverter {
 			String shutdownArgs   = configuration.getAttribute("org.rocklet.launcher.userShutdownProgramArgs", (String)null);
 			String shutdownVMArgs = configuration.getAttribute("org.rocklet.launcher.userShutdownVMArgs", (String)null);
 			
+			String sourceMementoKey="org.eclipse.debug.core.source_locator_memento";
+			String sourceLocatorKey="org.eclipse.debug.core.source_locator_id";
+			String sourceMemento=configuration.getAttribute(sourceMementoKey, (String)null);
+			String sourceLocator=configuration.getAttribute(sourceLocatorKey, "org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector");
+
 			lcwc.setAttribute(startArgsKey, startArgs);
 			lcwc.setAttribute(startVMArgsKey, startVMArgs);
 			lcwc.setAttribute(stopArgsKey, shutdownArgs);
 			lcwc.setAttribute(stopVMArgsKey, shutdownVMArgs);
+			lcwc.setAttribute(sourceMementoKey, sourceMemento);
+			lcwc.setAttribute(sourceLocatorKey, sourceLocator);
 			
 			lcwc.doSave();
 			
