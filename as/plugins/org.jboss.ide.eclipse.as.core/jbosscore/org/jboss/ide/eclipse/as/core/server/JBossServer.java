@@ -162,9 +162,4 @@ public class JBossServer extends ServerDelegate {
 		JBossServer o2Server = (JBossServer)o2;
 		return o2Server.getServer().getId().equals(getServer().getId());
 	}
-	public int hashCode() {
-		ASDebug.p("jbserver hashcode: " + super.hashCode(), this);
-		return super.hashCode();
-	}
-
 }
