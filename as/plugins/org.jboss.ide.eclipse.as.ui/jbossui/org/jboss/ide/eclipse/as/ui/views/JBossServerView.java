@@ -21,6 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.ui.views;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -49,7 +53,6 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.eclipse.wst.server.ui.internal.view.servers.ServersView;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
 
 
 public class JBossServerView extends ServersView {
@@ -183,8 +186,21 @@ public class JBossServerView extends ServersView {
 
 				if( selection == null ) return;
 				
-				//if( server != jbViewer.getInput())
+				if( server != jbViewer.getInput()) {
 					jbViewer.setInput(server);
+					jbViewer.expandToLevel(2);
+				} else {
+					// This is entirely too cludgy but it works
+					Object[] expanded = jbViewer.getExpandedElements();
+					TreeItem[] items = jbViewer.getTree().getItems();
+					jbViewer.setInput(server);
+					jbViewer.expandToLevel(2);
+					Object[] alsoExpanded = jbViewer.getExpandedElements();
+					ArrayList tmp = new ArrayList();
+					tmp.addAll(Arrays.asList(expanded));
+					tmp.addAll(Arrays.asList(alsoExpanded));
+					jbViewer.setExpandedElements(tmp.toArray());
+				}
 			} 
 			
 		});

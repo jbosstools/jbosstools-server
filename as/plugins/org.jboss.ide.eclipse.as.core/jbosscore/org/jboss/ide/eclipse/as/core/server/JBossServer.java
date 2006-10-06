@@ -155,5 +155,16 @@ public class JBossServer extends ServerDelegate {
 	public ServerDescriptorModel getDescriptorModel() {
 		return DescriptorModel.getDefault().getServerModel(getServer());
 	}
+	
+	public boolean equals(Object o2) {
+		if( !(o2 instanceof JBossServer)) 
+			return false;
+		JBossServer o2Server = (JBossServer)o2;
+		return o2Server.getServer().getId().equals(getServer().getId());
+	}
+	public int hashCode() {
+		ASDebug.p("jbserver hashcode: " + super.hashCode(), this);
+		return super.hashCode();
+	}
 
 }
