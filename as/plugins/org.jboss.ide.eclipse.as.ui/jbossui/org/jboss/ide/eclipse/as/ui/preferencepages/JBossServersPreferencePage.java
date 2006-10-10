@@ -282,14 +282,16 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 			public void widgetSelected(SelectionEvent e) {
-				getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_ABORT);
+				if( getSelectedWC() != null ) 
+					getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_ABORT);
 			} 
 		});
 		ignoreOnTimeout.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 			public void widgetSelected(SelectionEvent e) {
-				getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_IGNORE);
+				if( getSelectedWC() != null ) 
+					getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_IGNORE);
 			} 
 		});
 				
