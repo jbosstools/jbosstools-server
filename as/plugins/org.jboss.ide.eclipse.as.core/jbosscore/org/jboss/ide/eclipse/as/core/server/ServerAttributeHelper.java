@@ -17,7 +17,7 @@ import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegat
 import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 public class ServerAttributeHelper {
-	
+	public static final String PORTS_DEFAULT_CATEGORY = "Ports";
 	public static final String PROP_MINIMAL_CONFIG = "MINIMAL_CONFIG";
 	public static final String JBOSS_SERVER_HOME = "JBOSS_SERVER_HOME";
 	public static final String JBOSS_CONFIG = "JBOSS_CONFIG";
@@ -139,7 +139,7 @@ public class ServerAttributeHelper {
 	}
 	
 	public String getDefaultPortCategoryName() {
-		return server.getAttribute(PORT_CATEGORY_PREF_KEY, "");
+		return server.getAttribute(PORT_CATEGORY_PREF_KEY, PORTS_DEFAULT_CATEGORY);
 	}
 	public void setDefaultPortCategoryName(String s) {
 		server.setAttribute(PORT_CATEGORY_PREF_KEY, s);
@@ -232,7 +232,7 @@ public class ServerAttributeHelper {
 	private SimpleXPathPreferenceTreeItem getDefaultXPathPreferenceTree() {
 		SimpleXPathPreferenceTreeItem model = new SimpleXPathPreferenceTreeItem(null, XPATH_CATEGORIES);
 		
-		SimpleXPathPreferenceTreeItem ports = new SimpleXPathPreferenceTreeItem(model, "Ports");
+		SimpleXPathPreferenceTreeItem ports = new SimpleXPathPreferenceTreeItem(model, PORTS_DEFAULT_CATEGORY);
 		
 		
 		
