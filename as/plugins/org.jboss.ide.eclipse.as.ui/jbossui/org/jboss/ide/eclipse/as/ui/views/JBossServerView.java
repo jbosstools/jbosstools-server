@@ -28,6 +28,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -43,7 +44,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -191,8 +191,8 @@ public class JBossServerView extends ServersView {
 					jbViewer.expandToLevel(2);
 				} else {
 					// This is entirely too cludgy but it works
+					ISelection sel = jbViewer.getSelection();
 					Object[] expanded = jbViewer.getExpandedElements();
-					TreeItem[] items = jbViewer.getTree().getItems();
 					jbViewer.setInput(server);
 					jbViewer.expandToLevel(2);
 					Object[] alsoExpanded = jbViewer.getExpandedElements();
@@ -200,6 +200,7 @@ public class JBossServerView extends ServersView {
 					tmp.addAll(Arrays.asList(expanded));
 					tmp.addAll(Arrays.asList(alsoExpanded));
 					jbViewer.setExpandedElements(tmp.toArray());
+					jbViewer.setSelection(sel);
 				}
 			} 
 			

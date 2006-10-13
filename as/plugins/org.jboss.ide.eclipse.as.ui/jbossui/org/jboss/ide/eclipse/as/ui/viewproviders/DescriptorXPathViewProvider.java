@@ -87,7 +87,6 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
@@ -98,18 +97,15 @@ import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.JBossServerTableViewer.ContentWrapper;
 
 public class DescriptorXPathViewProvider extends JBossServerViewExtension {
+
+	private static final String XPATH_PROPERTY = "_XPATH_PROPERTY_";
+	private static final String PREFERENCE_KEY = "_DESCRIPTOR_PREFERENCE_PAGE_DETAILS_SHOWN";
+	private static final boolean COMPLEX = true;
+	private static final boolean SIMPLE = false;
+
 	private XPathTreeContentProvider contentProvider;
 	private XPathTreeLabelProvider labelProvider;
 	private DescriptorXPathPropertySheetPage propertyPage;
-	
-	private static final String XPATH_PROPERTY = "_XPATH_PROPERTY_";
-	
-	private static String PREFERENCE_KEY = "_DESCRIPTOR_PREFERENCE_PAGE_DETAILS_SHOWN";
-	
-	private static boolean COMPLEX = true;
-	private static boolean SIMPLE = false;
-	
-
 
 	private Action newXPathCategoryAction, deleteXPathCategoryAction, newXPathAction, editXPathAction, deleteXPathAction;
 
@@ -117,171 +113,34 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	private JBossServer jbServer;
 	private SimpleXPathPreferenceTreeItem root;
 	
-
+	private Object activeCategory;
+	private Object selectedPropertyObject;
 	
+
 	public DescriptorXPathViewProvider() {
 		contentProvider = new XPathTreeContentProvider();
 		labelProvider = new XPathTreeLabelProvider();
-		getPropertySheetPage(); // prime it
 		createActions();
 		addListeners();
 	}
-	
-	
-	public boolean showSimple() {
-		return JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY) == SIMPLE;
-	}
-	
-	public SimpleXPathPreferenceTreeItem getRoot() {
-		if( root == null ) {
-			root = jbServer.getAttributeHelper().getXPathPreferenceTree();
-		}
-		return root;
-	}
-	
 
-	
-	public void createActions() {
-		newXPathCategoryAction = new Action() {
-			public void run() {
-				SimpleTreeItem item = getRoot();
-				XPathCategoryDialog d = 
-					new XPathCategoryDialog(Display.getCurrent().getActiveShell(), item);
-				if( d.open() == Window.OK ) {
-					String newCategory = d.getText();
-					SimpleXPathPreferenceTreeItem child = new SimpleXPathPreferenceTreeItem(item, newCategory);
-					ServerAttributeHelper helper = jbServer.getAttributeHelper();
-					helper.saveXPathPreferenceTree(getRoot());
-					helper.save();
-					refreshViewer();
-				}
-			}
-		};
-		newXPathCategoryAction.setText("New Category");	
-		
-		deleteXPathCategoryAction= new Action() {
-			public void run() {
-				Object selected = getServerViewSelection();
-				if( selected instanceof SimpleXPathPreferenceTreeItem && ((SimpleXPathPreferenceTreeItem)selected).getParent().equals(getRoot())) {
-					int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
-					MessageBox messageBox = new MessageBox (Display.getCurrent().getActiveShell(), style);
-					messageBox.setText (Messages.DescriptorXPathRemoveCategory + "?");
-					messageBox.setMessage (Messages.DescriptorXPathRemoveCategoryDesc);
-					if( messageBox.open () == SWT.YES ) {
-						getRoot().deleteChild(((SimpleXPathPreferenceTreeItem)selected));
-						ServerAttributeHelper helper = jbServer.getAttributeHelper();
-						helper.saveXPathPreferenceTree(getRoot());
-						helper.save();
-						
-						refreshViewer();
-					}
-				}
-			}
-		};
-		deleteXPathCategoryAction.setText(Messages.DescriptorXPathRemoveCategory);
-		
-		
-		newXPathAction = new Action() {
-			public void run() {
-				SimpleTreeItem tree = getRoot();
-					Object o = getServerViewSelection();
-					if( o != null && o instanceof SimpleXPathPreferenceTreeItem) {
-						String category = (String)  ((SimpleXPathPreferenceTreeItem)o).getData();
-						XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, category, jbServer);
-						if( d.open() == Window.OK ) {
-							SimpleTreeItem[] categories = tree.getChildren2();
-							SimpleTreeItem categoryItem = null;
-							for( int i = 0; i < categories.length; i++ ) {
-								if( categories[i].getData().equals(category)) 
-									categoryItem = categories[i];
-							}
-							if( categoryItem != null ) {
-								XPathPreferenceTreeItem dsfa = new XPathPreferenceTreeItem(categoryItem, d.getName(), d.getXpath(), d.getAttribute());
-								ServerAttributeHelper helper = jbServer.getAttributeHelper();
-								helper.saveXPathPreferenceTree(getRoot());
-								helper.save();
-								refreshViewer();
-							}
-						}
-					}
-				}
-		};
-		newXPathAction.setText(Messages.DescriptorXPathNewXPath);
-
-		editXPathAction = new Action() {
-			public void run() {
-				SimpleTreeItem tree = getRoot();
-				Object o = getXPathViewSelection();
-					if( o != null && o instanceof XPathPreferenceTreeItem) {
-						XPathPreferenceTreeItem original = (XPathPreferenceTreeItem)o;
-						String category = (String)  original.getParent().getData();
-						
-						XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, 
-														category, jbServer, original.getName());
-						d.setAttribute(original.getAttributeName());
-						d.setXpath(original.getXPath());
-						
-						if( d.open() == Window.OK ) {
-							original.setAttributeName(d.getAttribute());
-							original.setXPath(d.getXpath());
-							original.setName(d.getName());
-							ServerAttributeHelper helper = jbServer.getAttributeHelper();
-							helper.saveXPathPreferenceTree(getRoot());
-							helper.save();
-							refreshViewer();
-						}
-					}
-				}
-		};
-		editXPathAction.setText(Messages.DescriptorXPathEditXPath);
-
-		deleteXPathAction = new Action() {
-			public void run() {
-				SimpleTreeItem tree = getRoot();
-				Object o = getXPathViewSelection();
-				if( o instanceof XPathPreferenceTreeItem ) {
-					((XPathPreferenceTreeItem)o).getParent().deleteChild((XPathPreferenceTreeItem)o);
-					ServerAttributeHelper helper = jbServer.getAttributeHelper();
-					helper.saveXPathPreferenceTree(getRoot());
-					helper.save();
-					refreshViewer();
-				}
-			}
-		};
-		deleteXPathAction.setText(Messages.DescriptorXPathDeleteXPath);
+	protected void addListeners() {
 	}
 	
-	public void addListeners() {
-		
-	}
-	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		if( getServerViewSelection() instanceof ServerViewProvider ) {
-			menu.add(this.newXPathCategoryAction);
-			menu.add(new Separator());
-			return;
-		}
-		
-		if( getServerViewSelection() instanceof SimpleXPathPreferenceTreeItem ) {
-			menu.add(this.newXPathAction);
-			menu.add(this.deleteXPathCategoryAction);
-			menu.add(new Separator());
+	protected void setActiveCategory(Object o) {
+		if( o != null && o != activeCategory) {
+			activeCategory = o;
 		}
 	}
-	
-	public Object getServerViewSelection() {
-		return JBossServerView.getDefault().getJbViewer().getSelectedElement();
+	protected Object getActiveCategory() {
+		return activeCategory;
 	}
-	public Object getXPathViewSelection() {
-		if( propertyPage != null && propertyPage.xpathTree != null ) {
-			TreeItem[] items = propertyPage.xpathTree.getSelection();
-			if( items.length == 1 ) {
-				return items[0].getData();
-			}
-		}
-		return null;
+	protected void setPropertySelection(Object o) {
+		selectedPropertyObject = o;
 	}
-
+	protected Object getPropertySelection() {
+		return selectedPropertyObject;
+	}
 	protected class XPathTreeContentProvider implements ITreeContentProvider {
 		
 		public Object[] getChildren(Object parentElement) {
@@ -301,11 +160,12 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		public void dispose() {
 		}
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			server = (IServer)newInput;
-			jbServer = server == null ? null : JBossServerCore.getServer(server);
-			root = null;
+			if( oldInput != newInput ) {
+				server = (IServer)newInput;
+				jbServer = server == null ? null : JBossServerCore.getServer(server);
+				root = null;
+			}
 		}
-
 	}
 	protected class XPathTreeLabelProvider extends LabelProvider {
 		public Image getImage(Object element) {
@@ -327,550 +187,157 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	public LabelProvider getLabelProvider() {
 		return labelProvider;
 	}
-
 	
-	public IPropertySheetPage getPropertySheetPage() {
-		if( propertyPage == null ) {
-			propertyPage = new DescriptorXPathPropertySheetPage();
+	public boolean showSimple() {
+		return JBossServerUIPlugin.getDefault().getPreferenceStore().getBoolean(PREFERENCE_KEY) == SIMPLE;
+	}
+
+	public SimpleXPathPreferenceTreeItem getRoot() {
+		if( root == null ) {
+			root = jbServer.getAttributeHelper().getXPathPreferenceTree();
 		}
-		return propertyPage;
+		return root;
+	}
+
+	public void setRoot(SimpleXPathPreferenceTreeItem root) {
+		this.root = root;
 	}
 	
 	
 	
-	public class DescriptorXPathPropertySheetPage implements IPropertySheetPage {
-		private Object input;
-		
-		
-		private TreeViewer xpathTreeViewer;
-		private TreeColumn column, column2, column3;
-		private Tree xpathTree;
-		private XPathPropertyLabelProvider labelProvider;
-
-		private Group xPathGroup;
-		
-		public void createControl(Composite parent) {
-			createXPathGroup(parent);
-			addViewerMenus();
-		}
-
-		public XPathPropertyLabelProvider getLabelProvider() {
-			if( labelProvider == null ) {
-				labelProvider = new XPathPropertyLabelProvider();
-			}
-			return labelProvider;
-		}
-		
-		private void addViewerMenus() {
-			MenuManager menuManager = new MenuManager("#PopupMenu"); 
-			menuManager.setRemoveAllWhenShown(true);
-			final Shell shell = xpathTree.getShell();
-			menuManager.addMenuListener(new IMenuListener() {
-				public void menuAboutToShow(IMenuManager mgr) {
-					xpathTreeMenuAboutToShow(shell, mgr);
-				}
-			});
-			Menu menu = menuManager.createContextMenu(xpathTree);
-			xpathTree.setMenu(menu);
-		}
-		
-		private void xpathTreeMenuAboutToShow(Shell shell, IMenuManager menu) {
-			menu.add(newXPathAction);
-			if( getXPathViewSelection() != null && getXPathViewSelection() instanceof XPathPreferenceTreeItem) {
-				menu.add(editXPathAction);
-				menu.add(deleteXPathAction);
-			}
-		}
-
-		public void setSimple(boolean simple) {
-			boolean showSimple = showSimple();
-
-			if( showSimple != simple ) {
-				JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(PREFERENCE_KEY, simple == SIMPLE);
-				JBossServerUIPlugin.getDefault().savePluginPreferences();
-
-				// if the properties page isn't opened, it'll throw nulls
-				try {
-					if( simple ) {
-						getLabelProvider().setSimple(true);
-						column3.setText("");
-						column2.setText(Messages.DescriptorXPathAttributeValue);
-						xpathTreeViewer.refresh();
-					} else {
-						getLabelProvider().setSimple(false);
-						column3.setText(Messages.DescriptorXPathXPathXML);
-						column2.setText(Messages.DescriptorXPathAttributeKeyValue);
-						xpathTreeViewer.refresh();
-					}
-				} catch ( Exception e ) {
-				}
-			}
-		}
-		
-		public void dispose() {
-		}
-
-		public Control getControl() {
-			return xPathGroup;
-		}
-
-		public void setActionBars(IActionBars actionBars) {
-		}
-
-		public void setFocus() {
-		}
-
-		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			//input = null;
-			Object element = ((IStructuredSelection)selection).getFirstElement();
-			if( element instanceof ContentWrapper ) {
-
-				if( input == ((ContentWrapper)element).getElement() ) return;
-				
-				input = ((ContentWrapper)element).getElement();
-				IRunnableWithProgress op = new IRunnableWithProgress() {
-					public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-						final IProgressMonitor monitor2 = monitor;
-						jbServer.getDescriptorModel().refreshDescriptors(monitor2);
-						Display.getDefault().asyncExec(new Runnable() { 
-							public void run() {
-								xpathTreeViewer.setInput(input);
-								xpathTreeViewer.expandToLevel(2);
-								jbServer.getAttributeHelper().setServerPorts(root);
-							}
-						});
-					}
-				};
-				try {
-				new ProgressMonitorDialog(new Shell()).run(false, true, op);
-					//JBossServerCore.getServer(contentProvider.server).getDescriptorModel().refreshDescriptors(new NullProgressMonitor());
-
-				} catch( Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		
-
-		protected class XPathTreeLabelProvider implements ITableLabelProvider {
-			public Image getColumnImage(Object element, int columnIndex) {
-				return null;
-			}
-			public String getColumnText(Object element, int columnIndex) {
-				if( element instanceof XPathTreeItem ) {
-					Object data = ((XPathTreeItem)element).getData();
-					if( data instanceof File) {
-						if( columnIndex == 0 ) {
-							return ((File)data).getName();
-						}
-						if( columnIndex == 1 && ((XPathTreeItem)element).getChildren2().length == 1 ) {
-							element = ((XPathTreeItem)element).getChildren2()[0];
-						}
-					}
-				}
-				
-				if( element instanceof XPathPreferenceTreeItem) {
-					if( columnIndex == 0 ) return ((XPathPreferenceTreeItem)element).getName().toString();
-					if( columnIndex == 1 ) {
-						Object o = ((XPathPreferenceTreeItem)element).getProperty(XPATH_PROPERTY);
-						return o == null ? "" : o.toString();
-					}
-				}
-				if( element instanceof SimpleXPathPreferenceTreeItem ) {
-					if( columnIndex == 0 ) 
-						return ((SimpleXPathPreferenceTreeItem)element).getData().toString();
-				}
-				return "";
-			}
-			public void addListener(ILabelProviderListener listener) {
-			}
-			public void dispose() {
-			}
-			public boolean isLabelProperty(Object element, String property) {
-				return false;
-			}
-			public void removeListener(ILabelProviderListener listener) {
-			} 
-		}
-		protected class XPathTreeSelectionListener implements Listener {
-			
-			private final Color black;
-			private final TreeItem[] lastItem;
-			private final TreeEditor editor;
-			private int mouseX;
-			
-			public XPathTreeSelectionListener() {
-				black = Display.getCurrent().getSystemColor (SWT.COLOR_BLACK);
-				lastItem = new TreeItem [1];
-				editor = new TreeEditor (xpathTree);
-				mouseX = 0;
-			}
-			
-			
-			private boolean canEditLocationColumn(TreeItem item) {
-				if( item == null || item != lastItem[0] ) return false;
-				if( showSimple() ) return false;
-
-				// if we're "JNDI" (aka an XPath item) then yes. All others no.
-				if( item.getData() instanceof XPathPreferenceTreeItem ) return true;
-				return false;
-			}
-			
-			private boolean canEditAttributeColumn(TreeItem item) {
-				// if we're the "JNDI" line then we're editing the xpath's attribute name (code, name, etc)
-				if( item.getData() instanceof XPathPreferenceTreeItem ) {
-					if( showSimple() ) return false;
-					return true;
-				}
-
-				// if we're a file entry under "JNDI", and have multiple matches, no editing on this line
-				if( item.getData() instanceof XPathTreeItem && ((XPathTreeItem)item.getData()).getChildren2().length > 1 ) return false;
-
-				return true;
-			}
-
-			private boolean canEditValueColumn(TreeItem item) {
-				if( showSimple() ) return false;
-
-				// if we're the "JNDI" line 
-				if( item.getData() instanceof XPathPreferenceTreeItem ) {
-					return true;
-				}
-				return false;
-			}
-
-			private int getColumnToEdit(TreeItem item) {
-				boolean locColumn = canEditLocationColumn(item);
-				boolean attributeColumn = canEditAttributeColumn(item);
-				boolean valueColumn = canEditValueColumn(item);
-				int total = 0;
-				if( locColumn ) total++;
-				if(attributeColumn) total++;
-				if(valueColumn) total++;
-				
-				if( total == 0 ) return -1;
-				if( total == 1 ) {
-					if( locColumn ) return 0;
-					if(attributeColumn) return 1;
-					if( valueColumn) return 2;
-				}
-				
-				// we CAN edit more than one. Where's the mouse?
-				if( mouseX < column.getWidth() && locColumn ) return 0;
-				if( mouseX < (column.getWidth() + column2.getWidth()) && valueColumn ) return 1;
-				return 2;
-			}
-			
-			
-			public void handleEvent (Event event) {
-//				final TreeItem item = (TreeItem) event.item;
-				TreeItem[] selectedItems = xpathTree.getSelection();
-				if( selectedItems.length != 1 ) return;
-				
-				final TreeItem item = selectedItems[0];
-				
-				final int column = getColumnToEdit(item);
-
-				if( column == -1 ) {
-					lastItem[0] = item;
-					return;
-				}
-				
-				boolean isCarbon = SWT.getPlatform ().equals ("carbon");
-				final Composite composite = new Composite (xpathTree, SWT.NONE);
-				if (!isCarbon) composite.setBackground (black);
-				final Text text = new Text (composite, SWT.NONE);
-				final int inset = isCarbon ? 0 : 1;
-				composite.addListener (SWT.Resize, new Listener () {
-					public void handleEvent (Event e) {
-						Rectangle rect = composite.getClientArea ();
-						text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
-					}
-				});
-				Listener textListener = new Listener () {
-					public void handleEvent (final Event e) {
-						switch (e.type) {
-							case SWT.FocusOut:
-								treeviewerEditorTextChanged(item, text, column);
-								composite.dispose ();
-								break;
-							case SWT.Verify:
-								String newText = text.getText();
-								String leftText = newText.substring (0, e.start);
-								String rightText = newText.substring (e.end, newText.length ());
-								GC gc = new GC (text);
-								Point size = gc.textExtent (leftText + e.text + rightText);
-								gc.dispose ();
-								size = text.computeSize (size.x, SWT.DEFAULT);
-								editor.horizontalAlignment = SWT.LEFT;
-								Rectangle itemRect = item.getBounds (), rect = xpathTree.getClientArea ();
-								editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
-								int left = itemRect.x, right = rect.x + rect.width;
-								editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
-								editor.minimumHeight = size.y + inset * 2;
-								editor.setColumn(column);
-								editor.layout ();
-								break;
-							case SWT.Traverse:
-								switch (e.detail) {
-									case SWT.TRAVERSE_RETURN:
-										treeviewerEditorTextChanged(item, text, column);
-										//FALL THROUGH
-									case SWT.TRAVERSE_ESCAPE:
-										composite.dispose ();
-										e.doit = false;
-								}
-								break;
-						}
-					}
-				};
-				text.addListener (SWT.FocusOut, textListener);
-				text.addListener (SWT.Traverse, textListener);
-				text.addListener (SWT.Verify, textListener);
-				editor.setEditor (composite, item);
-				text.setText (item.getText(column));
-				text.selectAll ();
-				text.setFocus ();
-
-				lastItem [0] = item;
-			}
-
-			public int getMouseX() {
-				return mouseX;
-			}
-
-			public void setMouseX(int mouseX) {
-				this.mouseX = mouseX;
-			}
-		}
-
-		protected void createXPathGroup(Composite main) {
-			xPathGroup = new Group(main, SWT.NONE);
-			
-			xPathGroup.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent e) {
-					input = null;
-				} 
-			} );
-			
-			int groupWidth = 500;
-			
-			xPathGroup.setText(Messages.DescriptorXPathDescriptorValues);
-			FormData groupData = new FormData();
-			groupData.right = new FormAttachment(100, -5);
-			groupData.left = new FormAttachment(0, 5);
-			groupData.top = new FormAttachment(0,5);
-			groupData.bottom = new FormAttachment(100, -5);
-			xPathGroup.setLayoutData(groupData);
-			
-			xPathGroup.setLayout(new FormLayout());
-			
-			
-			final Tree xpathTree = new Tree(xPathGroup, SWT.BORDER | SWT.FULL_SELECTION);
-			this.xpathTree = xpathTree;
-
-			column = new TreeColumn(xpathTree, SWT.NONE);
-			column2 = new TreeColumn(xpathTree, SWT.NONE);
-			column3 = new TreeColumn(xpathTree, SWT.NONE);
-			
-			column.setText(Messages.DescriptorXPathNameLocation);
-			column2.setText(Messages.DescriptorXPathAttributeKeyValue);
-			column3.setText(Messages.DescriptorXPathXPathXML);
-
-			column.setWidth(groupWidth * 7 / 20);
-			column2.setWidth(groupWidth * 6 / 20);
-			column3.setWidth(groupWidth * 7 / 20);
-			
-
-			FormData treeData = new FormData();
-			treeData.left = new FormAttachment(0,5);
-			treeData.right = new FormAttachment(100, -5);
-			treeData.top = new FormAttachment(0,5);
-			treeData.bottom = new FormAttachment(100, -5);
-			xpathTree.setLayoutData(treeData);
-			
-			xpathTree.setHeaderVisible(true);
-			xpathTree.setLinesVisible(true);
-			
-			
-			xpathTreeViewer = new TreeViewer(xpathTree);
-			xpathTreeViewer.setContentProvider(new XPathPropertyContentProvider());
-			labelProvider = getLabelProvider();
-			labelProvider.setSimple(showSimple());
-			setSimple(showSimple());
-			xpathTreeViewer.setLabelProvider(labelProvider);
-			
-			final XPathTreeSelectionListener selListener = new XPathTreeSelectionListener();
-			xpathTree.addListener (SWT.MouseDoubleClick, selListener);
-			
-			// alerts the top listener as to the mouse position, to know which column is serverViewerSelection
-			xpathTree.addListener(SWT.MouseMove, new Listener() {
-				public void handleEvent(Event event) {
-					selListener.setMouseX(event.x);
-				} 
-			});
-		}
-		
-		private void treeviewerEditorTextChanged(TreeItem item, Text text, int column) {
-			if( column == 0 ) { 
-				xpathTextKeyChanged(item, text);
-			} else if( column == 1 ) {
-				xpathTextValueChanged(item, text);
-			} else if( column == 2 ) {
-				// TODO add to own method
-				if( item.getData() instanceof XPathPreferenceTreeItem ) {
-					String xp = ((XPathPreferenceTreeItem)item.getData()).getXPath();
-					if( !xp.equals(text.getText())) {
-						((XPathPreferenceTreeItem)item.getData()).setXPath(text.getText());
-						xpathTreeViewer.refresh();
-					}
-				}
-
-			}
-		}
-		
-		private void xpathTextValueChanged(TreeItem item, Text text) {
-			if( text.isDisposed() || item.isDisposed()) return;
-			
-			// xpath changed entirely
-			if( item.getData() instanceof XPathPreferenceTreeItem ) {
-				String att = ((XPathPreferenceTreeItem)item.getData()).getAttributeName();
-				if( att != null && !att.equals(text.getText())) {
-					((XPathPreferenceTreeItem)item.getData()).setAttributeName(text.getText());
-					xpathTreeViewer.refresh();
-				}
-				return;
-			}
-
-			
-			// we're changing the value in the actual descriptor.
-			XPathTreeItem2 itemToChange = getChangedNode(item.getData());
-			if( itemToChange != null && itemToChange instanceof XPathTreeItem2 ) {
-				
-				// if its unchanged do nothing
-				if( ((XPathTreeItem2)itemToChange).getText().equals(text.getText())) {
-					return;
-				}
-				
-				// set the text and add the document to the list of dirty ones
-				((XPathTreeItem2)itemToChange).setText(text.getText());
-				if( itemToChange.getDocument() != null ) {
-					itemToChange.saveDescriptor();
-				}
-				xpathTreeViewer.refresh(item.getData());
-			} 
-		}
-		
-		private void xpathTextKeyChanged(TreeItem item, Text text) {
-			// "JNDI" 
-			if( text.isDisposed() || item.isDisposed()) return;
-			
-			if( item.getData() instanceof XPathPreferenceTreeItem ) {
-				
-				SimpleXPathPreferenceTreeItem parentItem = (SimpleXPathPreferenceTreeItem)((SimpleXPathPreferenceTreeItem)item.getData()).getParent();
-				SimpleTreeItem[] kids = parentItem.getChildren2();
-				
-				boolean valid = true;
-				String textString = text.getText();
-				for( int i = 0; i < kids.length; i++ ) {
-					if( textString.equals(((XPathPreferenceTreeItem)kids[i]).getName())) 
-						valid = false;
-				}
-
-				if( valid ) {
-					((XPathPreferenceTreeItem)item.getData()).setName(text.getText());
-					ServerAttributeHelper helper = jbServer.getAttributeHelper(); 
-					helper.saveXPathPreferenceTree(parentItem.getParent());
+	public void createActions() {
+		newXPathCategoryAction = new Action() {
+			public void run() {
+				SimpleTreeItem item = getRoot();
+				XPathCategoryDialog d = 
+					new XPathCategoryDialog(Display.getCurrent().getActiveShell(), item);
+				if( d.open() == Window.OK ) {
+					String newCategory = d.getText();
+					SimpleXPathPreferenceTreeItem child = new SimpleXPathPreferenceTreeItem(item, newCategory);
+					ServerAttributeHelper helper = jbServer.getAttributeHelper();
+					helper.saveXPathPreferenceTree(getRoot());
 					helper.save();
-					xpathTreeViewer.refresh();
+					refreshViewer();
 				}
-				return;
 			}
+		};
+		newXPathCategoryAction.setText("New Category");	
+		
+		deleteXPathCategoryAction= new Action() {
+			public void run() {
+				Object selected = getActiveCategory();
+				if( selected instanceof SimpleXPathPreferenceTreeItem && ((SimpleXPathPreferenceTreeItem)selected).getParent().equals(getRoot())) {
+					int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
+					MessageBox messageBox = new MessageBox (Display.getCurrent().getActiveShell(), style);
+					messageBox.setText (Messages.DescriptorXPathRemoveCategory + "?");
+					messageBox.setMessage (Messages.DescriptorXPathRemoveCategoryDesc);
+					if( messageBox.open () == SWT.YES ) {
+						getRoot().deleteChild(((SimpleXPathPreferenceTreeItem)selected));
+						ServerAttributeHelper helper = jbServer.getAttributeHelper();
+						helper.saveXPathPreferenceTree(getRoot());
+						helper.save();
+						setActiveCategory(null);
+						refreshViewer();
+					}
+				}
+			}
+		};
+		deleteXPathCategoryAction.setText(Messages.DescriptorXPathRemoveCategory);
+		
+		
+		newXPathAction = new Action() {
+			public void run() {
+				SimpleTreeItem tree = getRoot();
+				Object o = getActiveCategory();
+				if( o != null && o instanceof SimpleXPathPreferenceTreeItem) {
+					String category = (String)  ((SimpleXPathPreferenceTreeItem)o).getData();
+					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, category, jbServer);
+					if( d.open() == Window.OK ) {
+						SimpleTreeItem[] categories = tree.getChildren2();
+						SimpleTreeItem categoryItem = null;
+						for( int i = 0; i < categories.length; i++ ) {
+							if( categories[i].getData().equals(category)) 
+								categoryItem = categories[i];
+						}
+						if( categoryItem != null ) {
+							XPathPreferenceTreeItem dsfa = new XPathPreferenceTreeItem(categoryItem, d.getName(), d.getXpath(), d.getAttribute());
+							ServerAttributeHelper helper = jbServer.getAttributeHelper();
+							helper.saveXPathPreferenceTree(getRoot());
+							helper.save();
+							refreshViewer();
+						}
+					}
+				}
+			}
+		};
+		newXPathAction.setText(Messages.DescriptorXPathNewXPath);
+
+		editXPathAction = new Action() {
+			public void run() {
+				SimpleTreeItem tree = getRoot();
+				Object o = getPropertySelection();
+				if( o != null && o instanceof XPathPreferenceTreeItem) {
+					XPathPreferenceTreeItem original = (XPathPreferenceTreeItem)o;
+					String category = (String)  original.getParent().getData();
+					
+					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, 
+													category, jbServer, original.getName());
+					d.setAttribute(original.getAttributeName());
+					d.setXpath(original.getXPath());
+					
+					if( d.open() == Window.OK ) {
+						original.setAttributeName(d.getAttribute());
+						original.setXPath(d.getXpath());
+						original.setName(d.getName());
+						ServerAttributeHelper helper = jbServer.getAttributeHelper();
+						helper.saveXPathPreferenceTree(getRoot());
+						helper.save();
+						refreshViewer();
+					}
+				}
+			}
+		};
+		editXPathAction.setText(Messages.DescriptorXPathEditXPath);
+
+		deleteXPathAction = new Action() {
+			public void run() {
+				Object o = getPropertySelection();
+				if( o instanceof XPathPreferenceTreeItem ) {
+					((XPathPreferenceTreeItem)o).getParent().deleteChild((XPathPreferenceTreeItem)o);
+					ServerAttributeHelper helper = jbServer.getAttributeHelper();
+					helper.saveXPathPreferenceTree(getRoot());
+					helper.save();
+					refreshViewer();
+				}
+			}
+		};
+		deleteXPathAction.setText(Messages.DescriptorXPathDeleteXPath);
+	}
+
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+		if( selection instanceof ServerViewProvider ) {
+			menu.add(this.newXPathCategoryAction);
+			menu.add(new Separator());
+			return;
 		}
 		
-		private XPathTreeItem2 getChangedNode(Object data) {
-			// if we are the node to change, change me
-			if( data instanceof XPathTreeItem2 ) {
-				return (XPathTreeItem2)data;
-			}
-			
-			// if we're a node which represents a file, but only have one matched node, thats the node.
-			if( data instanceof XPathTreeItem && ((XPathTreeItem)data).getChildren2().length == 1 ) {
-				return (XPathTreeItem2) (((XPathTreeItem)data).getChildren2()[0]);
-			}
-			
-			// if we're a top level tree item (JNDI), with one file child and one mbean grandchild, the grandchild is the node
-			if( data instanceof XPathPreferenceTreeItem && ((XPathPreferenceTreeItem)data).getChildren2().length == 1 ) {
-				XPathTreeItem item = ((XPathTreeItem) ((XPathPreferenceTreeItem)data).getChildren2()[0]);
-				if( item.getChildren2().length == 1 ) 
-					return (XPathTreeItem2)item.getChildren2()[0];
-			}
-			return null;
+		if( selection instanceof SimpleXPathPreferenceTreeItem ) {
+			menu.add(this.newXPathAction);
+			menu.add(this.deleteXPathCategoryAction);
+			menu.add(new Separator());
 		}
 	}
 	
-	protected class XPathPropertyContentProvider implements ITreeContentProvider {
+	public void setSimple(boolean simple) {
 		
-		private SimpleXPathPreferenceTreeItem category;
-		
-		public Object[] getChildren(Object parentElement) {
-			// we're a leaf
-			if( parentElement instanceof XPathTreeItem2 ) 
-				return new Object[0];
-			
-			// we're a file node (blah.xml) 
-			if( parentElement instanceof XPathTreeItem ) {
-				if( ((XPathTreeItem)parentElement).getChildren2().length > 1 ) 
-					return ((XPathTreeItem)parentElement).getChildren2();
-				return new Object[0];
-			}
-			
-			// we're the named element (JNDI)
-			if( parentElement instanceof XPathPreferenceTreeItem ) {
-				SimpleTreeItem[] kids = ((XPathPreferenceTreeItem)parentElement).getChildren2();
-				return kids;
-			}
-
-			// re-creates it from scratch... hrmm
-			if( parentElement instanceof ServerViewProvider ) 
-				return jbServer.getAttributeHelper().getXPathPreferenceTree().getChildren2();
-			return new Object[0];
-		}
-		public Object getParent(Object element) {
-			return null;
-		}
-		public boolean hasChildren(Object element) {
-			return getChildren(element).length > 0 ? true : false;
-		}
-		public Object[] getElements(Object inputElement) {
-			if( inputElement instanceof SimpleXPathPreferenceTreeItem ) {
-				SimpleTreeItem[] items =  ((SimpleXPathPreferenceTreeItem)inputElement).getChildren2();
-				for( int i = 0; i < items.length; i++ )
-					ensureLoaded((SimpleXPathPreferenceTreeItem)items[i]);
-				return items;
-			}
-			return new Object[0];
-		}
-		public void ensureLoaded(SimpleXPathPreferenceTreeItem item) {
-			if( item instanceof XPathPreferenceTreeItem ) {
-				((XPathPreferenceTreeItem)item).ensureLoaded(jbServer);
-			}
-		}
-
-		
-		public void dispose() {
-		}
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			category = (SimpleXPathPreferenceTreeItem) newInput;
-		}
-
 	}
 	
+	// Preference Page
+
 	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent) {
 		return new DescriptorPreferencePage(parent);
 	}
-
+	
 	public class DescriptorPreferencePage extends ViewProviderPreferenceComposite {
 
 		private Button simple, complex;
@@ -1030,7 +497,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		public boolean performOk() {
 			boolean simp = simple.getSelection() == true ? SIMPLE : COMPLEX;
-			propertyPage.setSimple(simp == SIMPLE);
+			setSimple(simp == SIMPLE);
 			
 			// now save default port categories
 			ServerAttributeHelper helper;
@@ -1042,15 +509,501 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					helper.save();
 				}
 			}
-			
-			
 			return true;
 		}
 		public void dispose() {
 			super.dispose();
 		}
 	}
+
+
+
 	
+	// Property Sheet Page
+	public IPropertySheetPage getPropertySheetPage() {
+		if( propertyPage == null ) {
+			propertyPage = new DescriptorXPathPropertySheetPage();
+		}
+		return propertyPage;
+	}
+	
+	public class DescriptorXPathPropertySheetPage implements IPropertySheetPage {
+		private TreeViewer xpathTreeViewer;
+		private TreeColumn column, column2, column3;
+		private Tree xpathTree;
+		private XPathPropertyLabelProvider labelProvider;
+
+		private Group xPathGroup;
+		
+		public void createControl(Composite parent) {
+			createXPathGroup(parent);
+			addViewerMenus();
+		}
+
+		public XPathPropertyLabelProvider getLabelProvider() {
+			if( labelProvider == null ) {
+				labelProvider = new XPathPropertyLabelProvider();
+			}
+			return labelProvider;
+		}
+		
+		private void addViewerMenus() {
+			MenuManager menuManager = new MenuManager("#PopupMenu"); 
+			menuManager.setRemoveAllWhenShown(true);
+			final Shell shell = xpathTree.getShell();
+			menuManager.addMenuListener(new IMenuListener() {
+				public void menuAboutToShow(IMenuManager mgr) {
+					xpathTreeMenuAboutToShow(shell, mgr);
+				}
+			});
+			Menu menu = menuManager.createContextMenu(xpathTree);
+			xpathTree.setMenu(menu);
+		}
+		
+		private void xpathTreeMenuAboutToShow(Shell shell, IMenuManager menu) {
+			menu.add(newXPathAction);
+			if( getPropertySelection() != null && getPropertySelection() instanceof XPathPreferenceTreeItem) {
+				menu.add(editXPathAction);
+				menu.add(deleteXPathAction);
+			}
+		}
+
+		public void setSimple(boolean simple) {
+			boolean showSimple = showSimple();
+
+			if( showSimple != simple ) {
+				JBossServerUIPlugin.getDefault().getPreferenceStore().setValue(PREFERENCE_KEY, simple == SIMPLE);
+				JBossServerUIPlugin.getDefault().savePluginPreferences();
+
+				// if the properties page isn't opened, it'll throw nulls
+				try {
+					if( simple ) {
+						getLabelProvider().setSimple(true);
+						column3.setText("");
+						column2.setText(Messages.DescriptorXPathAttributeValue);
+						xpathTreeViewer.refresh();
+					} else {
+						getLabelProvider().setSimple(false);
+						column3.setText(Messages.DescriptorXPathXPathXML);
+						column2.setText(Messages.DescriptorXPathAttributeKeyValue);
+						xpathTreeViewer.refresh();
+					}
+				} catch ( Exception e ) {
+				}
+			}
+		}
+		
+		public void dispose() {
+		}
+
+		public Control getControl() {
+			return xPathGroup;
+		}
+
+		public void setActionBars(IActionBars actionBars) {
+		}
+
+		public void setFocus() {
+		}
+
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			//input = null;
+			Object element = ((IStructuredSelection)selection).getFirstElement();
+			if( element instanceof ContentWrapper ) {
+				element = ((ContentWrapper)element).getElement();
+			}
+			if( element != null && element != getActiveCategory()) {
+				setActiveCategory(element);
+				forceDescriptorRefresh(element);
+			}
+		}
+		
+		protected void forceDescriptorRefresh(final Object element) {
+			IRunnableWithProgress op = new IRunnableWithProgress() {
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					final IProgressMonitor monitor2 = monitor;
+					jbServer.getDescriptorModel().refreshDescriptors(monitor2);
+					Display.getDefault().asyncExec(new Runnable() { 
+						public void run() {
+							xpathTreeViewer.setInput(element);
+							xpathTreeViewer.expandToLevel(2);
+							//jbServer.getAttributeHelper().setServerPorts(root);
+						}
+					});
+				}
+			};
+			try {
+				new ProgressMonitorDialog(new Shell()).run(false, true, op);
+			} catch( Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		protected class XPathTreeLabelProvider implements ITableLabelProvider {
+			public Image getColumnImage(Object element, int columnIndex) {
+				return null;
+			}
+			public String getColumnText(Object element, int columnIndex) {
+				if( element instanceof XPathTreeItem ) {
+					Object data = ((XPathTreeItem)element).getData();
+					if( data instanceof File) {
+						if( columnIndex == 0 ) {
+							return ((File)data).getName();
+						}
+						if( columnIndex == 1 && ((XPathTreeItem)element).getChildren2().length == 1 ) {
+							element = ((XPathTreeItem)element).getChildren2()[0];
+						}
+					}
+				}
+				
+				if( element instanceof XPathPreferenceTreeItem) {
+					if( columnIndex == 0 ) return ((XPathPreferenceTreeItem)element).getName().toString();
+					if( columnIndex == 1 ) {
+						Object o = ((XPathPreferenceTreeItem)element).getProperty(XPATH_PROPERTY);
+						return o == null ? "" : o.toString();
+					}
+				}
+				if( element instanceof SimpleXPathPreferenceTreeItem ) {
+					if( columnIndex == 0 ) 
+						return ((SimpleXPathPreferenceTreeItem)element).getData().toString();
+				}
+				return "";
+			}
+			public void addListener(ILabelProviderListener listener) {
+			}
+			public void dispose() {
+			}
+			public boolean isLabelProperty(Object element, String property) {
+				return false;
+			}
+			public void removeListener(ILabelProviderListener listener) {
+			} 
+		}
+		protected class XPathTreeSelectionListener implements Listener {
+			
+			private final Color black;
+			private final TreeItem[] lastItem;
+			private final TreeEditor editor;
+			private int mouseX;
+			
+			public XPathTreeSelectionListener() {
+				black = Display.getCurrent().getSystemColor (SWT.COLOR_BLACK);
+				lastItem = new TreeItem [1];
+				editor = new TreeEditor (xpathTree);
+				mouseX = 0;
+			}
+			
+			
+			private boolean canEditLocationColumn(TreeItem item) {
+				if( item == null || item != lastItem[0] ) return false;
+				if( showSimple() ) return false;
+
+				// if we're "JNDI" (aka an XPath item) then yes. All others no.
+				if( item.getData() instanceof XPathPreferenceTreeItem ) return true;
+				return false;
+			}
+			
+			private boolean canEditAttributeColumn(TreeItem item) {
+				// if we're the "JNDI" line then we're editing the xpath's attribute name (code, name, etc)
+				if( item.getData() instanceof XPathPreferenceTreeItem ) {
+					if( showSimple() ) return false;
+					return true;
+				}
+
+				// if we're a file entry under "JNDI", and have multiple matches, no editing on this line
+				if( item.getData() instanceof XPathTreeItem && ((XPathTreeItem)item.getData()).getChildren2().length > 1 ) return false;
+
+				return true;
+			}
+
+			private boolean canEditValueColumn(TreeItem item) {
+				if( showSimple() ) return false;
+
+				// if we're the "JNDI" line 
+				if( item.getData() instanceof XPathPreferenceTreeItem ) {
+					return true;
+				}
+				return false;
+			}
+
+			private int getColumnToEdit(TreeItem item) {
+				boolean locColumn = canEditLocationColumn(item);
+				boolean attributeColumn = canEditAttributeColumn(item);
+				boolean valueColumn = canEditValueColumn(item);
+				int total = 0;
+				if( locColumn ) total++;
+				if(attributeColumn) total++;
+				if(valueColumn) total++;
+				
+				if( total == 0 ) return -1;
+				if( total == 1 ) {
+					if( locColumn ) return 0;
+					if(attributeColumn) return 1;
+					if( valueColumn) return 2;
+				}
+				
+				// we CAN edit more than one. Where's the mouse?
+				if( mouseX < column.getWidth() && locColumn ) return 0;
+				if( mouseX < (column.getWidth() + column2.getWidth()) && valueColumn ) return 1;
+				return 2;
+			}
+			
+			
+			public void handleEvent (Event event) {
+				TreeItem[] selectedItems = xpathTree.getSelection();
+				if( selectedItems.length != 1 ) return;
+				
+				final TreeItem item = selectedItems[0];
+				
+				final int column = getColumnToEdit(item);
+
+				if( column == -1 ) {
+					lastItem[0] = item;
+					return;
+				}
+				
+				boolean isCarbon = SWT.getPlatform ().equals ("carbon");
+				final Composite composite = new Composite (xpathTree, SWT.NONE);
+				if (!isCarbon) composite.setBackground (black);
+				final Text text = new Text (composite, SWT.NONE);
+				final int inset = isCarbon ? 0 : 1;
+				composite.addListener (SWT.Resize, new Listener () {
+					public void handleEvent (Event e) {
+						Rectangle rect = composite.getClientArea ();
+						text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
+					}
+				});
+				Listener textListener = new Listener () {
+					public void handleEvent (final Event e) {
+						switch (e.type) {
+							case SWT.FocusOut:
+								treeviewerEditorTextChanged(item, text, column);
+								composite.dispose ();
+								break;
+							case SWT.Verify:
+								String newText = text.getText();
+								String leftText = newText.substring (0, e.start);
+								String rightText = newText.substring (e.end, newText.length ());
+								GC gc = new GC (text);
+								Point size = gc.textExtent (leftText + e.text + rightText);
+								gc.dispose ();
+								size = text.computeSize (size.x, SWT.DEFAULT);
+								editor.horizontalAlignment = SWT.LEFT;
+								Rectangle itemRect = item.getBounds (), rect = xpathTree.getClientArea ();
+								editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
+								int left = itemRect.x, right = rect.x + rect.width;
+								editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
+								editor.minimumHeight = size.y + inset * 2;
+								editor.setColumn(column);
+								editor.layout ();
+								break;
+							case SWT.Traverse:
+								switch (e.detail) {
+									case SWT.TRAVERSE_RETURN:
+										treeviewerEditorTextChanged(item, text, column);
+										//FALL THROUGH
+									case SWT.TRAVERSE_ESCAPE:
+										composite.dispose ();
+										e.doit = false;
+								}
+								break;
+						}
+					}
+				};
+				text.addListener (SWT.FocusOut, textListener);
+				text.addListener (SWT.Traverse, textListener);
+				text.addListener (SWT.Verify, textListener);
+				editor.setEditor (composite, item);
+				text.setText (item.getText(column));
+				text.selectAll ();
+				text.setFocus ();
+
+				lastItem [0] = item;
+			}
+
+			public int getMouseX() {
+				return mouseX;
+			}
+
+			public void setMouseX(int mouseX) {
+				this.mouseX = mouseX;
+			}
+		}
+
+		protected void createXPathGroup(Composite main) {
+			xPathGroup = new Group(main, SWT.NONE);
+			
+			xPathGroup.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent e) {
+				} 
+			} );
+			
+			int groupWidth = 500;
+			
+			xPathGroup.setText(Messages.DescriptorXPathDescriptorValues);
+			FormData groupData = new FormData();
+			groupData.right = new FormAttachment(100, -5);
+			groupData.left = new FormAttachment(0, 5);
+			groupData.top = new FormAttachment(0,5);
+			groupData.bottom = new FormAttachment(100, -5);
+			xPathGroup.setLayoutData(groupData);
+			
+			xPathGroup.setLayout(new FormLayout());
+			
+			
+			final Tree xpathTree = new Tree(xPathGroup, SWT.BORDER | SWT.FULL_SELECTION);
+			this.xpathTree = xpathTree;
+
+			column = new TreeColumn(xpathTree, SWT.NONE);
+			column2 = new TreeColumn(xpathTree, SWT.NONE);
+			column3 = new TreeColumn(xpathTree, SWT.NONE);
+			
+			column.setText(Messages.DescriptorXPathNameLocation);
+			column2.setText(Messages.DescriptorXPathAttributeKeyValue);
+			column3.setText(Messages.DescriptorXPathXPathXML);
+
+			column.setWidth(groupWidth * 7 / 20);
+			column2.setWidth(groupWidth * 6 / 20);
+			column3.setWidth(groupWidth * 7 / 20);
+			
+
+			FormData treeData = new FormData();
+			treeData.left = new FormAttachment(0,5);
+			treeData.right = new FormAttachment(100, -5);
+			treeData.top = new FormAttachment(0,5);
+			treeData.bottom = new FormAttachment(100, -5);
+			xpathTree.setLayoutData(treeData);
+			
+			xpathTree.setHeaderVisible(true);
+			xpathTree.setLinesVisible(true);
+			
+			
+			xpathTreeViewer = new TreeViewer(xpathTree);
+			xpathTreeViewer.setContentProvider(new XPathPropertyContentProvider());
+			labelProvider = getLabelProvider();
+			labelProvider.setSimple(showSimple());
+			setSimple(showSimple());
+			xpathTreeViewer.setLabelProvider(labelProvider);
+			
+			final XPathTreeSelectionListener selListener = new XPathTreeSelectionListener();
+			xpathTree.addListener (SWT.MouseDoubleClick, selListener);
+			xpathTree.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( xpathTree.getSelection().length == 1 ) {
+						Object sel = xpathTree.getSelection()[0].getData();
+						setPropertySelection(sel);
+					}
+				} 
+			});
+			
+			// alerts the top listener as to the mouse position, to know which column is serverViewerSelection
+			xpathTree.addListener(SWT.MouseMove, new Listener() {
+				public void handleEvent(Event event) {
+					selListener.setMouseX(event.x);
+				} 
+			});
+		}
+		
+		private void treeviewerEditorTextChanged(TreeItem item, Text text, int column) {
+			if( column == 0 ) { 
+				xpathTextKeyChanged(item, text);
+			} else if( column == 1 ) {
+				xpathTextValueChanged(item, text);
+			} else if( column == 2 ) {
+				// TODO add to own method
+				if( item.getData() instanceof XPathPreferenceTreeItem ) {
+					String xp = ((XPathPreferenceTreeItem)item.getData()).getXPath();
+					if( !xp.equals(text.getText())) {
+						((XPathPreferenceTreeItem)item.getData()).setXPath(text.getText());
+						xpathTreeViewer.refresh();
+					}
+				}
+
+			}
+		}
+		
+		private void xpathTextValueChanged(TreeItem item, Text text) {
+			if( text.isDisposed() || item.isDisposed()) return;
+			
+			// xpath changed entirely
+			if( item.getData() instanceof XPathPreferenceTreeItem ) {
+				String att = ((XPathPreferenceTreeItem)item.getData()).getAttributeName();
+				if( att != null && !att.equals(text.getText())) {
+					((XPathPreferenceTreeItem)item.getData()).setAttributeName(text.getText());
+					xpathTreeViewer.refresh();
+				}
+				return;
+			}
+
+			
+			// we're changing the value in the actual descriptor.
+			XPathTreeItem2 itemToChange = getChangedNode(item.getData());
+			if( itemToChange != null && itemToChange instanceof XPathTreeItem2 ) {
+				
+				// if its unchanged do nothing
+				if( ((XPathTreeItem2)itemToChange).getText().equals(text.getText())) {
+					return;
+				}
+				
+				// set the text and add the document to the list of dirty ones
+				((XPathTreeItem2)itemToChange).setText(text.getText());
+				if( itemToChange.getDocument() != null ) {
+					itemToChange.saveDescriptor();
+				}
+				xpathTreeViewer.refresh(item.getData());
+			} 
+		}
+		
+		private void xpathTextKeyChanged(TreeItem item, Text text) {
+			// "JNDI" 
+			if( text.isDisposed() || item.isDisposed()) return;
+			
+			if( item.getData() instanceof XPathPreferenceTreeItem ) {
+				
+				SimpleXPathPreferenceTreeItem parentItem = (SimpleXPathPreferenceTreeItem)((SimpleXPathPreferenceTreeItem)item.getData()).getParent();
+				SimpleTreeItem[] kids = parentItem.getChildren2();
+				
+				boolean valid = true;
+				String textString = text.getText();
+				for( int i = 0; i < kids.length; i++ ) {
+					if( textString.equals(((XPathPreferenceTreeItem)kids[i]).getName())) 
+						valid = false;
+				}
+
+				if( valid ) {
+					((XPathPreferenceTreeItem)item.getData()).setName(text.getText());
+					ServerAttributeHelper helper = jbServer.getAttributeHelper(); 
+					helper.saveXPathPreferenceTree(parentItem.getParent());
+					helper.save();
+					xpathTreeViewer.refresh();
+				}
+				return;
+			}
+		}
+		
+		private XPathTreeItem2 getChangedNode(Object data) {
+			// if we are the node to change, change me
+			if( data instanceof XPathTreeItem2 ) {
+				return (XPathTreeItem2)data;
+			}
+			
+			// if we're a node which represents a file, but only have one matched node, thats the node.
+			if( data instanceof XPathTreeItem && ((XPathTreeItem)data).getChildren2().length == 1 ) {
+				return (XPathTreeItem2) (((XPathTreeItem)data).getChildren2()[0]);
+			}
+			
+			// if we're a top level tree item (JNDI), with one file child and one mbean grandchild, the grandchild is the node
+			if( data instanceof XPathPreferenceTreeItem && ((XPathPreferenceTreeItem)data).getChildren2().length == 1 ) {
+				XPathTreeItem item = ((XPathTreeItem) ((XPathPreferenceTreeItem)data).getChildren2()[0]);
+				if( item.getChildren2().length == 1 ) 
+					return (XPathTreeItem2)item.getChildren2()[0];
+			}
+			return null;
+		}
+	}
+
 	public static class XPathPropertyLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		private boolean simple = false;
@@ -1094,6 +1047,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 	}
 
+	
 	protected void refreshViewer() {
 		if( isEnabled() ) {
 			try {
@@ -1106,4 +1060,54 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 	}
 
+	
+	protected class XPathPropertyContentProvider implements ITreeContentProvider {
+		public Object[] getChildren(Object parentElement) {
+			// we're a leaf
+			if( parentElement instanceof XPathTreeItem2 ) 
+				return new Object[0];
+			
+			// we're a file node (blah.xml) 
+			if( parentElement instanceof XPathTreeItem ) {
+				if( ((XPathTreeItem)parentElement).getChildren2().length > 1 ) 
+					return ((XPathTreeItem)parentElement).getChildren2();
+				return new Object[0];
+			}
+			
+			// we're the named element (JNDI)
+			if( parentElement instanceof XPathPreferenceTreeItem ) {
+				SimpleTreeItem[] kids = ((XPathPreferenceTreeItem)parentElement).getChildren2();
+				return kids;
+			}
+
+			// re-creates it from scratch... hrmm
+			if( parentElement instanceof ServerViewProvider ) 
+				return jbServer.getAttributeHelper().getXPathPreferenceTree().getChildren2();
+			return new Object[0];
+		}
+		public Object getParent(Object element) {
+			return null;
+		}
+		public boolean hasChildren(Object element) {
+			return getChildren(element).length > 0 ? true : false;
+		}
+		public Object[] getElements(Object inputElement) {
+			if( inputElement instanceof SimpleXPathPreferenceTreeItem ) {
+				SimpleTreeItem[] items =  ((SimpleXPathPreferenceTreeItem)inputElement).getChildren2();
+				for( int i = 0; i < items.length; i++ )
+					ensureLoaded((SimpleXPathPreferenceTreeItem)items[i]);
+				return items;
+			}
+			return new Object[0];
+		}
+		public void ensureLoaded(SimpleXPathPreferenceTreeItem item) {
+			if( item instanceof XPathPreferenceTreeItem ) {
+				((XPathPreferenceTreeItem)item).ensureLoaded(jbServer);
+			}
+		}
+		public void dispose() {
+		}
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+	}
 }
