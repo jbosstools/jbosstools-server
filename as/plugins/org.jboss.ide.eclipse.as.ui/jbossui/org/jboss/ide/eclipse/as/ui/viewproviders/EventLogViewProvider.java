@@ -280,9 +280,12 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IS
 
 
 	public void logChanged(ProcessLogEvent event) {
-		IServer s = JBossServerView.getDefault().getSelectedServer();
-		if( event.getRoot().getServer().equals(s))
-			refreshViewer();
+		try {
+			IServer s = JBossServerView.getDefault().getSelectedServer();
+			if( event.getRoot().getServer().equals(s))
+				refreshViewer();
+		} catch( Exception e ) {
+		}
 	}
 
 
