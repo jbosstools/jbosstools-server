@@ -53,7 +53,7 @@
             description="%jboss.version.32.description"
             name="JBoss 3.2 Server Adapter Runtime"
             id="org.jboss.ide.eclipse.as.runtime.32"
-            version="%jboss.version.32.version">
+            version="3.2">
           <moduleType
                 types="jst.web"
                 versions="2.2, 2.3, 2.4"/>
@@ -74,7 +74,7 @@
              description="%jboss.version.40.description"
              name="JBoss 4.0 Server Adapter Runtime"
              id="org.jboss.ide.eclipse.as.runtime.40"
-             version="%jboss.version.40.version">
+             version="4.0">
           <moduleType
                 types="jst.web"
                 versions="2.2, 2.3, 2.4"/>
@@ -87,6 +87,9 @@
           <moduleType
                 types="jboss.archive"
                 versions="1.0"/>
+          <moduleType
+                types="jboss.ejb30"
+                versions="1.0"/>                
       </runtimeType>
    </extension>
    <extension
@@ -114,56 +117,25 @@
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
          
-         <!--
-      <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.factory.AopModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.factory.aopFactory"
-            order="2"
-            projects="false"/>
-      <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.factory.EjbModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.factory.ejbFactory"
-            order="2"
-            projects="false"/>
-      <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.factory.WarModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.factory.warFactory"
-            order="2"
-            projects="false"/>
-      <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.factory.EarModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.factory.earFactory"
-            order="2"
-            projects="false"/>
-            
-            -->
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.factory.ArchiveModuleFactory"
             id="org.jboss.ide.eclipse.as.core.ArchiveDeployer"
             order="2"
-            projects="false"/>
+            projects="true">
+            <moduleType
+         		versions="1.0"
+         		types="jboss.ejb30">
+            </moduleType>
+       </moduleFactory>
    </extension>
-   <extension
-         point="org.eclipse.wst.server.core.moduleTypes">
 
-      <moduleType id="jboss.aop"  name="Pre-Packaged AOP Module"/>
-      <moduleType
-            id="jboss.ejb"
-            name="Pre-Packaged EJB archive"/>
-      <moduleType
-            id="jboss.web"
-            name="Pre-Packaged Web archive"/>
-      <moduleType
-            id="jboss.ear"
-            name="Pre-Packaged EAR archive"/>
-
-   </extension>
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
             class="org.jboss.ide.eclipse.as.core.launch.adapters.JBossLaunchAdapter"
             id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
    </extension>
+
    <extension
          point="org.eclipse.wst.server.core.clients">
       <client
@@ -181,33 +153,42 @@
    </extension>
    <extension
          point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
-<!--      <factory id="org.jboss.ide.eclipse.as.core.factory.aopFactory"/>
-      <factory id="org.jboss.ide.eclipse.as.core.factory.ejbFactory"/>
-      <factory id="org.jboss.ide.eclipse.as.core.factory.warFactory"/>
-      <factory id="org.jboss.ide.eclipse.as.core.factory.earFactory"/> -->
       <factory id="org.jboss.ide.eclipse.as.core.ArchiveDeployer"/>
    </extension>
+   
    <extension
          point="org.eclipse.jst.server.core.runtimeFacetMappings">
       <runtimeFacetMapping
-            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
-            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
-            version="1.0"/>
-      <runtimeFacetMapping
-            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
-            version="1.0"/>
+            version="3.2"/>
+      <runtimeFacetMapping
+            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
+            version="4.0"/>
    </extension>
+
+
+
+
    <extension
          point="org.eclipse.wst.common.project.facet.core.runtimes">
-      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"/>
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"/>
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"/>
       <runtime-component-version
-            type="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
-            version="1.0"/>
+            type="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+            version="3.2"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            version="4.0"/>
+
+
+
+
       <supported>
         <runtime-component
-         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"
-         version="1.0"/>
+         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+         version="3.2"/>
        <facet
          id="jst.web"
          version="2.2,2.3,2.4"/>
@@ -225,9 +206,41 @@
              id="jst.appclient"
              version="1.2,1.3,1.4"/>
      </supported>
+
+
+      <supported>
+        <runtime-component
+         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+         version="4.0"/>
+       <facet
+         id="jst.web"
+         version="2.2,2.3,2.4"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet
+         id="jst.utility"
+         version="1.0"/>
+       <facet
+             id="jst.ejb"
+             version="2.0,2.1"/>
+       <facet
+             id="jst.ear"
+             version="1.2,1.3,1.4"/>
+       <facet
+             id="jst.appclient"
+             version="1.2,1.3,1.4"/>
+     </supported>
+
+
+
+
+
      <adapter>
       <runtime-component
-         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component"/>
+            id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+            version="3.2"/>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            version="4.0"/>
       <factory
          class="org.jboss.ide.eclipse.as.core.server.runtime.ProjectRuntimeClasspathProvider$Factory"/>
       <type
@@ -235,6 +248,12 @@
     </adapter>
      
    </extension>
+   
+   
+   
+   
+   
+   
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">
       <classpathContainerInitializer
@@ -249,4 +268,13 @@
         class="org.jboss.ide.eclipse.as.core.server.runtime.ProjectRuntimeClasspathProvider"/>
    </extension>
    
+   <!--
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimeBridges">
+      <bridge
+            class="org.jboss.ide.eclipse.as.core.runtime.JBossRuntimeBridge"
+            id="org.jboss.ide.eclipse.as.core.runtime.bridge"/>
+   </extension>
+   -->
+
 </plugin>

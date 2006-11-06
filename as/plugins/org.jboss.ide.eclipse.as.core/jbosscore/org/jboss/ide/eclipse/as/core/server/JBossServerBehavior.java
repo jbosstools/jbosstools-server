@@ -48,6 +48,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.server.publishers.IJbossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.server.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.server.publishers.PackagedPublisher;
 import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
@@ -201,60 +202,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 
 	
 	
-	/*
-	 * Note:  creating a launch in the following manner:
-	 * 	        ((Server)getServer()).getLaunchConfiguration(true, null);
-	 *        will send execution below into setupLaunchConfiguration. 
-	 *        
-	 *        Creating it as shown here will not:
-	 *           
-	 *      ILaunchConfigurationType type =  DebugPlugin.getDefault().getLaunchManager().
-	 * 		        getLaunchConfigurationType("org.jboss.ide.eclipse.as.core.jbossLaunch");
-	 * 		ILaunchConfigurationWorkingCopy workingCopy = type.newInstance(null, name);
-	 * 
-	 */
-	
-	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
 		JBossLaunchConfigurationDelegate.setupLaunchConfiguration(workingCopy, getJBossServer(), ACTION_STARTING);
-		
-//		JBossServerRuntime runtime = getJBossServer().getJBossRuntime();
-//		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
-//		
-//		ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
-//		
-//		String action = workingCopy.getAttribute(ATTR_ACTION, ACTION_STARTING);
-//		if( action.equals(ACTION_STARTING)) {
-//			try {
-//				
-//				String pgArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null); 
-//				if( pgArgs == null ) {
-//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, runtime.getVersionDelegate().getStartArgs(jbServer));
-//				}
-//				String vmArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String)null);
-//				if( vmArgs == null ) {
-//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtime.getVersionDelegate().getVMArgs(jbServer));
-//				}
-//				
-//				
-//				workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, runtime.getVersionDelegate().getStartMainType());
-//		        workingCopy.setAttribute(
-//		                IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-//		                helper.getServerHome() + Path.SEPARATOR + "bin");
-//
-//				
-//		        boolean defaultCPVal = workingCopy.getAttribute(JBossServerBehavior.LAUNCH_CONFIG_DEFAULT_CLASSPATH, true);
-//		        if( defaultCPVal ) {
-//					List classpath = runtimeDelegate.getRuntimeClasspath(getJBossServer(), IJBossServerRuntimeDelegate.ACTION_START);
-//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-//					workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
-//		        }
-//			} catch( Exception e ) {
-//				e.printStackTrace();
-//			}
-//		} else {
-//			// do nothing
-//		}
 	}
 	
 	/**
@@ -346,7 +295,6 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	 */
 	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
 		// if my model has any reference to them, use that.
-		ASDebug.p("Test", this);
 		ModuleModel model = ModuleModel.getDefault();
 		IModuleResourceDelta[] deltas = model.getDeltaModel().getRecentDeltas(module, getServer());
 		if( deltas.length != 0 )
@@ -365,10 +313,15 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		 * If our modules are already packaged as ejb jars, wars, aop files, 
 		 * then go ahead and publish
 		 */
-		if( ModuleModel.arePackagedModules(module)) {
+		if( hasPackagingConfiguration(module) ) {
+			// will be changed
+			publisher = new NullPublisher();
+		} else if( ModuleModel.arePackagedModules(module)) {
 			publisher = new PackagedPublisher(getJBossServer(), this);
-		} else {
+		} else if( areJstModules(module)){
 			publisher = new JstPublisher(getJBossServer());
+		} else {
+			publisher = new NullPublisher();
 		}
 		
 		
@@ -377,6 +330,21 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		log.addChildren(publisher.getLogEvents());
 	}
 	
+	/* Temporary and will need to be fixed */
+	protected boolean areJstModules(IModule[] module) {
+		String type;
+		for( int i = 0; i < module.length; i++ ) {
+			type = module[i].getModuleType().getId();
+			if( type.equals("jst.ejb") || type.equals("jst.client") || type.equals("jst.web") || type.equals("jst.ear")) 
+				continue;
+			return false;
+		}
+		return true;
+	}
+	/* Temporary and will need to be fixed */
+	protected boolean hasPackagingConfiguration(IModule[] module) {
+		return false;
+	}
 	
 	public static class PublishLogEvent extends ProcessLogEvent {
 		public static final int ROOT = 0;

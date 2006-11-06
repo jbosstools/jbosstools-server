@@ -27,10 +27,6 @@ public interface IJBossServerRuntimeDelegate {
 	public static final int ACTION_START = 1;
 	public static final int ACTION_SHUTDOWN = 2;
 	public static final int ACTION_TWIDDLE = 3;
-	public static final int ACTION_OTHER = 4;
-	
-
-
 	
 	public String getId();
 	public String getStartArgs();
