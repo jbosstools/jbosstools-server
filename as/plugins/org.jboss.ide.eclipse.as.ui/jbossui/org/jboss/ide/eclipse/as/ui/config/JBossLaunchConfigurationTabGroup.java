@@ -189,8 +189,8 @@ public class JBossLaunchConfigurationTabGroup extends AbstractLaunchConfiguratio
 		public String getName() {
 			switch (type) {
 			case START: return Messages.LaunchGroupStartArgs;
-			case STOP: return Messages.LaunchGroupTwiddleArgs;
-			case TWIDDLE: return Messages.LaunchGroupStopArgs;
+			case STOP: return Messages.LaunchGroupStopArgs;
+			case TWIDDLE: return Messages.LaunchGroupTwiddleArgs;
 			default:
 				return super.getName();
 			}
