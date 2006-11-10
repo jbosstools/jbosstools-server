@@ -1,10 +1,10 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
+* This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.ide.eclipse.as.core.runtime.internal;
 
 import java.util.ArrayList;
 
@@ -37,7 +37,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
+
 
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer {
@@ -112,22 +113,23 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IRuntime runtime = ServerCore.findRuntime(runtimeId);
 			if( runtime == null ) return;
 			
-			Object serverRuntime = runtime.loadAdapter(JBossServerRuntime.class, null);
+			Object serverRuntime = runtime.loadAdapter(AbstractJBossServerRuntime.class, null);
 
 			if( serverRuntime == null ) return;
-			JBossServerRuntime  jbRuntime = (JBossServerRuntime)serverRuntime;
+			AbstractJBossServerRuntime  jbRuntime = (AbstractJBossServerRuntime)serverRuntime;
 
 			String serverHome = runtime.getLocation().toOSString();
-			String configName = jbRuntime.getConfigName();
+			String configName = jbRuntime.getJBossConfiguration();
 			
-			String jbossVersion = jbRuntime.getVersionDelegate().getId();
+			String jbossVersion = jbRuntime.getId();
 			
-			entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, serverHome, configName, jbossVersion, jbRuntime);
+			entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, 
+					serverHome, configName, jbossVersion, jbRuntime);
 		}
 
 		protected IClasspathEntry[] loadClasspathEntries2(String runtimeId, String facetId, 
 				String facetVersion, String serverHome, String configName, String jbVersion, 
-				JBossServerRuntime jbsRuntime) {
+				AbstractJBossServerRuntime jbsRuntime) {
 			if( facetId.equals(JST_JAVA_FACET.getId())) {
 				return loadJREClasspathEntries(jbsRuntime);
 			} else if( jbVersion.equals("4.0"))
@@ -137,7 +139,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			return loadClasspathEntriesDefault(runtimeId, facetId, facetVersion, serverHome, configName);
 		}
 		
-		protected IClasspathEntry[] loadJREClasspathEntries(JBossServerRuntime jbsRuntime) {
+		protected IClasspathEntry[] loadJREClasspathEntries(AbstractJBossServerRuntime jbsRuntime) {
 			IVMInstall vmInstall = jbsRuntime.getVM();
 			if (vmInstall != null) {
 				String name = vmInstall.getName();

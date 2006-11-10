@@ -21,35 +21,31 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+import java.io.File;
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.SimpleTreeItem;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
+import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
+import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
-public class JBossServer extends ServerDelegate {
+public class JBossServer extends ServerDelegate implements IServerStartupParameters {
 
-	
-	private JBossServerRuntime runtime;
-	
 	
 	public JBossServer() {
 	}
@@ -59,14 +55,7 @@ public class JBossServer extends ServerDelegate {
 		
 	}
 	
-	public void debug( String s ) {
-		ASDebug.p(s, this);
-	}
 	
-	/*
-	 * OVERRIDES
-	 */
-
 	public void setDefaults(IProgressMonitor monitor) {
 	}
 	
@@ -74,49 +63,16 @@ public class JBossServer extends ServerDelegate {
 	}
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
-		// Saving a change in server properties (via server editor)
-		try {
-			String newHost = getServer().getHost();
-			
-			ILaunchConfiguration launchConfig = 
-				((Server)getServer()).getLaunchConfiguration(false, new NullProgressMonitor());
-	
-			if( launchConfig != null ) 
-				JBossLaunchConfigurationDelegate.setHost(launchConfig, newHost, getDescriptorModel().getJNDIPort());
-		} catch( Exception e ) {
-			
-		}
 	}
 
 	public void configurationChanged() {
 	}
 
 
-	/*
-	 * Other
-	 */
-	public void setRuntime(JBossServerRuntime run) {
-		runtime = run;
-	}
-	
-	public JBossServerRuntime getJBossRuntime() {
-		if( runtime == null ) {
-			runtime = (JBossServerRuntime) getServer().getRuntime().loadAdapter(JBossServerRuntime.class, null);
-		}
-		return runtime;
-		
+	public IJBossServerLaunchDefaults getLaunchDefaults() {
+		return new ServerLaunchDefaults(getServer());
 	}
 
-	
-	public ServerAttributeHelper getAttributeHelper() {
-//		IServer server = ServerCore.findServer(getServer().getId());
-//		IServerWorkingCopy copy = server.createWorkingCopy();
-		IServerWorkingCopy copy = getServerWorkingCopy();
-		if( copy == null ) {
-			copy = getServer().createWorkingCopy();
-		}
-		return new ServerAttributeHelper(this, copy);
-	}
 	
 	
 	/*
@@ -127,33 +83,17 @@ public class JBossServer extends ServerDelegate {
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
-		//debug("*****  getChildModules");
 		return null;
 	}
 
 	// As of now none of my modules are implementing the parent / child nonesense
 	public IModule[] getRootModules(IModule module) throws CoreException {
-		//debug("***** getRootModules");
 		return new IModule[] { module };
 	}
 
 	
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
-		
-		// Do nothing for now, just display to know I've been called. 
-	}
-	
-	public ServerPort[] getServerPorts() {
-		return getAttributeHelper().getServerPorts();
-	}
-
-	public ServerProcessModelEntity getProcessModel() {
-		return ServerProcessModel.getDefault().getModel(getServer().getId());
-	}
-	
-	public ServerDescriptorModel getDescriptorModel() {
-		return DescriptorModel.getDefault().getServerModel(getServer());
 	}
 	
 	public boolean equals(Object o2) {
@@ -162,4 +102,68 @@ public class JBossServer extends ServerDelegate {
 		JBossServer o2Server = (JBossServer)o2;
 		return o2Server.getServer().getId().equals(getServer().getId());
 	}
+	
+	
+
+	public ServerAttributeHelper getAttributeHelper() {
+		IServerWorkingCopy copy = getServerWorkingCopy();
+		if( copy == null ) {
+			copy = getServer().createWorkingCopy();
+		}
+		return new ServerAttributeHelper(getServer(), copy);
+	}
+
+	
+	
+	
+	// TODO: PUT SOMEWHERE ELSE
+	public String getDeployDirectory() {
+		String deployDir = getLaunchConfigDeployDir();
+		if( deployDir == null )  
+			return getRuntimeDeployDirectory();
+
+		File f = new File(deployDir);
+		if( !f.exists() || !f.canRead() || !f.isDirectory())
+			return getRuntimeDeployDirectory();
+
+		return deployDir;
+	}
+	
+	protected String getLaunchConfigDeployDir() {
+		try {
+			Server s = (Server)getServer();
+			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
+			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
+					+ JBossServerLaunchConfiguration.PRGM_ARGS_START_SUFFIX, (String)null);
+			Map map = ArgsUtil.getSystemProperties(startArgs);
+			
+			if( map.get(JBOSS_SERVER_HOME_DIR) != null ) 
+				return (String)map.get(JBOSS_SERVER_HOME_DIR) + Path.SEPARATOR + DEPLOY;
+
+			if( map.get(JBOSS_SERVER_BASE_DIR) != null ) {
+				String name = map.get(JBOSS_SERVER_NAME) != null ? 
+						(String)map.get(JBOSS_SERVER_NAME) : DEFAULT_SERVER_NAME;
+				return (String)map.get(JBOSS_SERVER_BASE_DIR) + Path.SEPARATOR + name + Path.SEPARATOR + DEPLOY;
+			}
+			
+			if( map.get(JBOSS_HOME_DIR) != null ) {
+				return (String)map.get(JBOSS_HOME_DIR) + Path.SEPARATOR + SERVER 
+					+ Path.SEPARATOR + DEFAULT_SERVER_NAME + Path.SEPARATOR + DEPLOY;
+			}
+
+			return null;
+		} catch( CoreException ce ) {
+			return null;
+		}
+	}
+	
+	// The deploy directory of the configuration in the runtime
+	protected String getRuntimeDeployDirectory() {
+		IJBossServerRuntime runtime = (IJBossServerRuntime)
+		getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+
+		return getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + "server" + 
+		Path.SEPARATOR + runtime.getJBossConfiguration() + Path.SEPARATOR + "deploy";
+	}
+	
 }

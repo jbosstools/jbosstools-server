@@ -19,36 +19,14 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.server.core.IModule;
 
-public class ServerProcessEvent {
-	
-	private String eventType;
-	private String processType;
-	private ProcessData[] processes;
-	private ILaunchConfiguration config;
-	
-	public ServerProcessEvent(String eventType, String processType, ProcessData[] processes, ILaunchConfiguration config) {
-		this.eventType = eventType;
-		this.processType = processType;
-		this.processes = processes;
-		this.config = config;
-	}
-	
-	public String getEventType() {
-		return eventType;
-	}
-	public String getProcessType() {
-		return processType;
-	}
-	public ProcessData[] getProcessDatas() {
-		return processes;
-	}
-
-	public ILaunchConfiguration getConfig() {
-		return config;
-	}
+public interface IJBossServerPublisher {
+	public void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) 
+								throws CoreException;
+	public int getPublishState();
 }

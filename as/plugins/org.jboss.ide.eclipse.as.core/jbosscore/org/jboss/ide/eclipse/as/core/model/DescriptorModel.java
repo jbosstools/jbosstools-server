@@ -41,34 +41,13 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.tree.DefaultElement;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.Server;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
-import org.xml.sax.XMLReader;
-
-/**
- * This class is intended to represent the actual mbeans, 
- * configuration descriptors, jars, etc enabled, disabled, or 
- * available in a server's on-disk configuration.
- * 
- * By configuration, here, I mean the directory under jboss' 
- * install directory which contains deployed jars and -service.xml files,
- * mbeans, etc. 
- * 
- * This is not yet implemented. All code here is forward-looking.
- * 
- * @author rstryker
- *
- */
+import org.eclipse.core.runtime.Path;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class DescriptorModel {
-	
 	/* Static Portion */
 	private static DescriptorModel model = null;
 	
@@ -86,47 +65,39 @@ public class DescriptorModel {
 	public DescriptorModel() {
 		map = new HashMap();
 	}
-	
-	public ServerDescriptorModel getServerModel(IServer server) {
-		String key = server.getId();
+
+	public ServerDescriptorModel getServerModel(IPath home, IPath configName) {
+		String key = home.toOSString() + "::" + configName.toOSString();
 		Object o = map.get(key);
 		if( o == null ) {
-			o = createEntity(server);
+			o = createEntity(home, configName);
 		}
 		return (ServerDescriptorModel)o;
 	}
 	
-	private ServerDescriptorModel createEntity(IServer server) {
-		if( server.getServerType().getId().startsWith("org.jboss.ide.eclipse.as.")) {
-			String id = server.getId();
-			ServerDescriptorModel val = new ServerDescriptorModel(id);
-			map.put(id, val);
-			return val;
-		}
-		return null;
+	private ServerDescriptorModel createEntity(IPath home, IPath configName) {
+		ServerDescriptorModel val = new ServerDescriptorModel(home.toOSString(), configName.toOSString());
+		map.put(home.toOSString() + configName.toOSString(), val);
+		return val;
 	}
-	
-	
-	public class ServerDescriptorModel {
-		private String serverId;
+
+	public static class ServerDescriptorModel {
+		private String home, config, key;
 		private String configPath;
 		
 		private HashMap pathToDocument;
 		private HashMap pathToLastRead;
 		
-		public ServerDescriptorModel(String id) {
-			this.serverId = id;
-			ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
-			configPath = helper.getConfigurationPath();
+		public ServerDescriptorModel(String home, String config) {
+			this.key = home + "::" + config;
+			this.home = home;
+			this.config = config;
+			configPath = + Path.SEPARATOR + "server" + Path.SEPARATOR + config;
+			
 			pathToDocument = new HashMap();
 			pathToLastRead = new HashMap();
 		}
-		
-		public JBossServer getJBossServer() {
-			return JBossServerCore.getServer(ServerCore.findServer(serverId));
-		}
-		
-		
+
 		/**
 		 * Discover all descriptors in the configuration
 		 * @return
@@ -172,9 +143,7 @@ public class DescriptorModel {
 		}
 
 		public String[] getIgnoredDirectories() {
-			List list = ((Server)getJBossServer().getAttributeHelper().getServer()).getAttribute(IGNORED_DESCRIPTOR_FOLDERS, new ArrayList());
-			String[] ignoredDirs = (String[]) list.toArray(new String[list.size()]);
-			return ignoredDirs;
+			return new String[0];
 		}
 		
 		private Document getDocument(String path) {
@@ -214,7 +183,6 @@ public class DescriptorModel {
 				pathToDocument.put(path, document);
 				pathToLastRead.put(path, new Long(lastModified));
 			} catch( Exception e ) {
-				ASDebug.p("file " + path + ", Exception: " + e.getMessage(), this);
 				e.printStackTrace();
 			}
 		}
@@ -477,5 +445,6 @@ public class DescriptorModel {
 			}
 			return 1099;
 		}
+
 	}
 }

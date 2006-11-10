@@ -22,11 +22,8 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IResource;
@@ -38,42 +35,23 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.module.factory.JBossModuleFactory;
+import org.jboss.ide.eclipse.as.core.module.JBossModuleFactory;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
-
-/**
- * This class is the model behind the sole artifact adaptor.
- *  
- * This class / model is responsible for the following:
- * 	- A sorted list of our factories (from extension points)
- *  - Querying those factories as to whether they contain some module
- *  - Listening in for resource changes and alerting the factories
- *         that they need to adjust accordingly.
- *  - Ultimately keeping track of resource changes that may be 
- *         important to consider during the publish operation. 
- *         
- *         
- * @author rstryker
- *
- */
 public class ModuleModel implements IResourceChangeListener{
 	
 	private static ModuleModel singleton;
 	private ArrayList factories;
-	private ModuleDeltaModel deltaModel;
 	
 	public static ModuleModel getDefault() {
 		if( singleton == null ) {
@@ -99,7 +77,6 @@ public class ModuleModel implements IResourceChangeListener{
 				int p0 = ((ModuleFactory)arg0).getOrder();
 				int p1 = ((ModuleFactory)arg1).getOrder();
 				
-				//ASDebug.p("arg0 has value " + p0 + " and arg1 has value " + p1, this);
 				int retval = 0;
 				if( p0 == p1 ) {
 					retval = 0;
@@ -108,8 +85,6 @@ public class ModuleModel implements IResourceChangeListener{
 				} else if( p0 < p1 ) {
 					retval = 1;
 				}
-				
-				
 				return retval;
 			}
 		};
@@ -117,31 +92,10 @@ public class ModuleModel implements IResourceChangeListener{
 		loadAcceptableFactories();
 		Collections.sort(factories, factoryComparator);
 		
-		deltaModel = new ModuleDeltaModel();
-		
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE );
 		init();
 	}
 	
-	public static boolean isPackagedModule(IModule module) {
-		if( "jboss.archive".equals(module.getModuleType().getId())) return true;
-		/*
-		if( "jboss.web".equals(module.getModuleType().getId())) return true;
-		if( "jboss.ear".equals(module.getModuleType().getId())) return true;
-		if( "jboss.ejb".equals(module.getModuleType().getId())) return true;
-		if( "jboss.aop".equals(module.getModuleType().getId())) return true;
-		*/
-		return false;
-	}
-	
-	public static boolean arePackagedModules(IModule[] modules) {
-		for( int i = 0; i < modules.length; i++ ) {
-			if( !isPackagedModule(modules[i])) 
-				return false;
-		}
-		return true;
-	}
-
 	private void loadAcceptableFactories() {
 		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
 		String[] jbossIds = loadJBossFactoryIDs();
@@ -149,7 +103,6 @@ public class ModuleModel implements IResourceChangeListener{
 		for( int i = 0; i < factories.length; i++ ) {
 			for( int j = 0; j < jbossIds.length; j++ ) {
 				if( jbossIds[j].equals(factories[i].getId()) ) {
-					ASDebug.p("Adding factory: " + factories[i].getId(), this);
 					this.factories.add(factories[i]);
 				}
 			}
@@ -157,18 +110,15 @@ public class ModuleModel implements IResourceChangeListener{
 	}
 	
 	private String[] loadJBossFactoryIDs() {
-		
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "jbossModuleFactory");
 
-		
 		int size = cf.length;
 		ArrayList list = new ArrayList();
 		for (int i = 0; i < size; i++) {
 			list.add(cf[i].getAttribute("id"));
 			try {
 			} catch (Throwable t) {
-				ASDebug.p("Exception", this);
 			}
 		}
 		String[] jbossFactories = new String[list.size()];
@@ -325,159 +275,19 @@ public class ModuleModel implements IResourceChangeListener{
 
 	
 	
-	public void markModuleChanged(IModule module, int resourceDelta) {
-		if( resourceDelta == IResourceDelta.ADDED) {
-			getDeltaModel().setModuleState(module, IModuleResourceDelta.ADDED);
-		} else if( resourceDelta == IResourceDelta.REMOVED ) {
-			getDeltaModel().setModuleState(module, IModuleResourceDelta.REMOVED);
-		} else if( resourceDelta == IResourceDelta.CHANGED ) {
-			getDeltaModel().setModuleState(module, IModuleResourceDelta.CHANGED);
-		}
-	}
-
-	public ModuleDeltaModel getDeltaModel() {
-		return deltaModel;
-	}
-	
-	public class ModuleDeltaModel  {
-		/**
-		 * Maps a module id to it's most recent delta, which includes date
-		 */
-		private HashMap moduleToDelta;
-		
-		/**
-		 * Maps a server+module id to the last delta that 
-		 * was marked as received by the server.
-		 */
-		private HashMap servermodToLastDelta;
-		
-		public ModuleDeltaModel() {
-			moduleToDelta = new HashMap();
-			servermodToLastDelta = new HashMap();
-		}
-		
-		/**
-		 * The resource associated with this module has been either
-		 * changed, added, or removed. This regards the underlying
-		 * jar, war, ear (etc) file, and a resourceChangeEvent that
-		 * has affected it. 
-		 * 
-		 * @param module
-		 * @param resourceDeltaKind
-		 */
-		public void setModuleState(IModule module, int resourceDeltaKind) {
-			moduleToDelta.put(module.getId(), new ModuleDelta(resourceDeltaKind));
-		}
-		
-		
-		/**
-		 * Set the current delta as the last one seen by this server.
-		 * @param module
-		 * @param serverID
-		 */
-		public void setDeltaSeen(IModule module, String serverID) {
-			String key = serverID + "::" + module.getId();
-			IModuleResourceDelta[] delta = getDelta(module);
-			if( delta != null ) {
-				servermodToLastDelta.put(key, delta);
-			}
-		}
-		
-		
-		/**
-		 * Get the newest delta for the given module, or null if none available
-		 * @param module
-		 * @return
-		 */
-		public IModuleResourceDelta[] getDelta(IModule module) {
-			Object o = moduleToDelta.get(module.getId());
-			if( o == null ) {
-				return new IModuleResourceDelta[0];
-			}
-			
-			return new IModuleResourceDelta[] {(IModuleResourceDelta)o};			
-		}
-		
-		/**
-		 * Get the newest deltas for each of the modules provided
-		 * @param modules
-		 * @return
-		 */
-		public IModuleResourceDelta[] getDeltas(IModule[] modules) {
-			ArrayList list = new ArrayList();
-			IModuleResourceDelta[] delta;
-			for( int i = 0; i < modules.length; i++ ) {
-				delta = getDelta(modules[i]);
-				if( delta != null ) 
-					list.addAll(Arrays.asList(delta));
-			}
-			ModuleDelta[] deltas = new ModuleDelta[list.size()];
-			list.toArray(deltas);
-			return deltas;
-		}
-		
-		public IModuleResourceDelta[] getRecentDeltas(IModule[] modules, IServer server) {
-			String id = server.getId();
-			ArrayList deltaList = new ArrayList();
-			deltaList.addAll(Arrays.asList(getDeltas(modules)));
-			
-			
-			// We have a list of all of the deltas for the module list.
-			// now eliminate any that aren't new.
-			String key;
-			Object o;
-			IModuleResourceDelta[] ds;
-			for( int i = 0; i < modules.length; i++ ) {
-				key = id + "::" + modules[i].getId();
-				o = servermodToLastDelta.get(key);
-				if( o != null ) {
-					ds = (IModuleResourceDelta[])o;
-					deltaList.removeAll(Arrays.asList(ds));
-					ASDebug.p("Removing a delta that's already been seen.", this);
+	public void markModuleChanged(IModule module) {
+		IServer[] servers = ServerCore.getServers();
+		Server s;
+		for( int i = 0; i < servers.length; i++ ) {
+			if( servers[i] instanceof Server ) {
+				s = (Server)servers[i];
+				int stateOnServer = s.getModulePublishState(new IModule[] {module});
+				if( stateOnServer != 0 ) {
+					s.setModulePublishState(new IModule[] { module }, IServer.PUBLISH_STATE_UNKNOWN);
 				}
 			}
-			
-			IModuleResourceDelta[] deltas = new IModuleResourceDelta[deltaList.size()];
-			deltaList.toArray(deltas);
-			return deltas;
 		}
-		
 	}
+
 	
-	public class ModuleDelta implements IModuleResourceDelta {
-		/**
-		 * Kind is a value from IModuleResourceDelta
-		 */
-		private int kind;
-		
-		/**
-		 * Date is the last time this module was changed.
-		 * Servers can use this to figure OUT if it needs to be
-		 * published again or not. 
-		 */
-		private long date;
-		public ModuleDelta(int kind) {
-			this.kind = kind;
-			this.date = new Date().getTime();
-		}
-
-		public IModuleResourceDelta[] getAffectedChildren() {
-			return new IModuleResourceDelta[0];
-		}
-
-		public int getKind() {
-			return kind;
-		}
-
-		public IPath getModuleRelativePath() {
-			return null;
-		}
-
-		public IModuleResource getModuleResource() {
-			return null;
-		}
-		
-	}
-	
-
 }

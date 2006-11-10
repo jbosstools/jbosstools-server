@@ -28,7 +28,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 /**
  * This client will only copy to the deploy directory,
@@ -55,9 +54,6 @@ public class DoNothingClient extends ClientDelegate {
 
 	public IStatus launch(IServer server, Object launchable, String launchMode,
 			ILaunch launch) {
-		
-		// Do nothing
-		ASDebug.p("Here, I do nothing", this);
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 0, "A-OK", null);
 	}
 

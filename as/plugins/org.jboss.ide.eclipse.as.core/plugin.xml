@@ -5,8 +5,8 @@
    <extension-point 
    		id="jbossModuleFactory" name="org.jboss.ide.eclipse.as.core.jbossModuleFactory" 
    		schema="schema/jbossModuleFactory.exsd"/>
-   		
-   		
+   <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
+   <extension-point id="pollerTimeoutListener" name="org.jboss.ide.eclipse.as.core.pollerTimeoutListener" schema="schema/pollerTimeoutListener.exsd"/>
    		
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
@@ -17,7 +17,7 @@
             hasConfiguration="true"
             id="org.jboss.ide.eclipse.as.32"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.jbossLaunch"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
             launchModes="run,debug"
             name="%jboss.version.32.name"
             runtime="true"
@@ -34,7 +34,7 @@
             hasConfiguration="true"
             id="org.jboss.ide.eclipse.as.40"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.jbossLaunch"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
             launchModes="run,debug"
             name="%jboss.version.40.name"
             runtime="true"
@@ -49,7 +49,7 @@
          point="org.eclipse.wst.server.core.runtimeTypes">
       <runtimeType
             vendor="%providerName"
-            class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
+            class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss32ServerRuntime"
             description="%jboss.version.32.description"
             name="JBoss 3.2 Server Adapter Runtime"
             id="org.jboss.ide.eclipse.as.runtime.32"
@@ -70,7 +70,7 @@
       </runtimeType>
        <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss40ServerRuntime"
              description="%jboss.version.40.description"
              name="JBoss 4.0 Server Adapter Runtime"
              id="org.jboss.ide.eclipse.as.runtime.40"
@@ -92,21 +92,51 @@
                 versions="1.0"/>                
       </runtimeType>
    </extension>
-   <extension
+
+
+	<!-- Launch Configuration for the servers -->
+	<extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.JBossLaunchConfigurationDelegate"
-            id="org.jboss.ide.eclipse.as.core.jbossLaunch"
+            delegate="org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
             modes="run,debug"
             name="JBoss Application Server"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
    </extension>
+	
+	
+	<!-- Module Factory Stuff -->
+
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+         
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.ArchiveModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.ArchiveFactory"
+            order="2"
+            projects="true">
+            <moduleType
+         		versions="1.0"
+         		types="jboss.archive">
+            </moduleType>
+       </moduleFactory>
+   </extension>
+   
+   	<extension
+         point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
+      <factory id="org.jboss.ide.eclipse.as.core.ArchiveFactory"/>
+   </extension>
+   		
+   		
+   
+   <!-- Adapters and clients to make stuff 'runnable' on server -->
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
       <moduleArtifactAdapter
-            class="org.jboss.ide.eclipse.as.core.module.artifact.JBossModuleArtifactAdapter"
+            class="org.jboss.ide.eclipse.as.core.module.ArchiveModuleArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.artifactAdapter"
             priority="20">
          <enablement>
@@ -114,27 +144,14 @@
          </enablement>
       </moduleArtifactAdapter>
    </extension>
-   <extension
-         point="org.eclipse.wst.server.core.moduleFactories">
-         
-      <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.factory.ArchiveModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.ArchiveDeployer"
-            order="2"
-            projects="true">
-            <moduleType
-         		versions="1.0"
-         		types="jboss.ejb30">
-            </moduleType>
-       </moduleFactory>
-   </extension>
-
+   
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
-            class="org.jboss.ide.eclipse.as.core.launch.adapters.JBossLaunchAdapter"
+            class="org.jboss.ide.eclipse.as.core.client.JBossLaunchAdapter"
             id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
    </extension>
+
 
    <extension
          point="org.eclipse.wst.server.core.clients">
@@ -144,26 +161,36 @@
             id="org.jboss.ide.eclipse.as.core.client.DoNothingClient"
             name="Take No Action"
             priority="20"/> 
-      <client 
-            class="org.jboss.ide.eclipse.as.core.client.VerifyPublishClient"
-            description="Verify that your archive was successfully deployed to, and loaded by, the server."
-            id="org.jboss.ide.eclipse.as.core.verifyClient"
-            name="Verify Publish"
-            priority="20"/>
    </extension>
+
+
+
+
+   <!-- How to determine whether the server is up or down -->
    <extension
-         point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
-      <factory id="org.jboss.ide.eclipse.as.core.ArchiveDeployer"/>
+         point="org.jboss.ide.eclipse.as.core.pollers">
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.runtime.server.internal.TimeoutPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
+            name="Timeout Poller"/>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.twiddlepoller"
+            name="Twiddle Poller"/>
    </extension>
    
+   
+
+
+   <!-- Stuff for the dual model of runtimes... facet time baby! -->
    <extension
          point="org.eclipse.jst.server.core.runtimeFacetMappings">
       <runtimeFacetMapping
-            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component.32"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
             version="3.2"/>
       <runtimeFacetMapping
-            runtime-component="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component.40"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
             version="4.0"/>
    </extension>
@@ -173,13 +200,13 @@
 
    <extension
          point="org.eclipse.wst.common.project.facet.core.runtimes">
-      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"/>
-      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"/>
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component.32"/>
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component.40"/>
       <runtime-component-version
-            type="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+            type="org.jboss.ide.eclipse.as.runtime.component.32"
             version="3.2"/>
       <runtime-component-version
-            type="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            type="org.jboss.ide.eclipse.as.runtime.component.40"
             version="4.0"/>
 
 
@@ -187,7 +214,7 @@
 
       <supported>
         <runtime-component
-         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+         id="org.jboss.ide.eclipse.as.runtime.component.32"
          version="3.2"/>
        <facet
          id="jst.web"
@@ -210,7 +237,7 @@
 
       <supported>
         <runtime-component
-         id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+         id="org.jboss.ide.eclipse.as.runtime.component.40"
          version="4.0"/>
        <facet
          id="jst.web"
@@ -236,13 +263,13 @@
 
      <adapter>
       <runtime-component
-            id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.32"
+            id="org.jboss.ide.eclipse.as.runtime.component.32"
             version="3.2"/>
       <runtime-component
-            id="org.jboss.ide.eclipse.as.runtime.dynwebproject.component.40"
+            id="org.jboss.ide.eclipse.as.runtime.component.40"
             version="4.0"/>
       <factory
-         class="org.jboss.ide.eclipse.as.core.server.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider$Factory"/>
       <type
          class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
     </adapter>
@@ -257,7 +284,7 @@
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">
       <classpathContainerInitializer
-            class="org.jboss.ide.eclipse.as.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer"
+            class="org.jboss.ide.eclipse.as.core.runtime.internal.WebtoolsProjectJBossClasspathContainerInitializer"
             id="org.jboss.ide.eclipse.as.core.runtime.ProjectInitializer"/>
    </extension>
 
@@ -265,16 +292,8 @@
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
         runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40"
-        class="org.jboss.ide.eclipse.as.core.server.runtime.ProjectRuntimeClasspathProvider"/>
+        class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
    </extension>
    
-   <!--
-   <extension
-         point="org.eclipse.wst.common.project.facet.core.runtimeBridges">
-      <bridge
-            class="org.jboss.ide.eclipse.as.core.runtime.JBossRuntimeBridge"
-            id="org.jboss.ide.eclipse.as.core.runtime.bridge"/>
-   </extension>
-   -->
 
 </plugin>

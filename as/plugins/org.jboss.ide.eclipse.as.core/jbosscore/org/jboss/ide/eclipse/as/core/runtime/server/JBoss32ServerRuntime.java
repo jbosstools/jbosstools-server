@@ -1,10 +1,10 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
+* This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
@@ -19,12 +19,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.core.runtime.server;
 
-public interface IServerProcessListener {
-	public static final String PROCESS_ADDED = "__PROCESS_ADDED__";
-	public static final String PROCESS_REMOVED = "__PROCESS_REMOVED__";
-	
-	
-	public void ServerProcessEventFired(ServerProcessEvent event);
+import org.eclipse.wst.server.core.model.RuntimeDelegate;
+import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+
+public class JBoss32ServerRuntime extends AbstractJBossServerRuntime {
+
+	public JBoss32ServerRuntime() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public String getId() {
+		return "3.2";
+	}
 }

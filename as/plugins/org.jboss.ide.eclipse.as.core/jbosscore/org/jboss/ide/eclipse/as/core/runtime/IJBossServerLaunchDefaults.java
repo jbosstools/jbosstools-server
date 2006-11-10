@@ -19,10 +19,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.core.runtime;
 
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
+import java.util.List;
 
-public interface IServerLogListener {
-	public void logChanged(ProcessLogEvent event);
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+
+public interface IJBossServerLaunchDefaults {
+	public String getStartArgs();
+	public String getStopArgs();
+	public String getVMArgs();
+	public List getRuntimeClasspath(String action);
+	public String getStartJar();
+	public String getShutdownJar();
+	public String getTwiddleJar();
+	public String getStartMainType();
+	public String getStopMainType();
+	public String getTwiddleMainType();
+
+	
+	public void fillDefaults(ILaunchConfigurationWorkingCopy wc) throws CoreException;
 }

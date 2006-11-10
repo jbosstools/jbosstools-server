@@ -22,17 +22,21 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 
 /**
  * 
@@ -45,13 +49,6 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 	 * Static portion
 	 */
 	private static JBossServerCore instance;
-	
-	/*
-	 * Links to other models
-	 */
-	private ModuleModel moduleModel;
-	private ServerProcessModel processModel;
-	private String[] jbossFactories;
 	
 	public static JBossServerCore getDefault() {
 		if( instance == null ) {
@@ -101,39 +98,61 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 	public JBossServerCore() {
 		ServerCore.addRuntimeLifecycleListener(this);
 		ServerCore.addServerLifecycleListener(this);
-		
-		moduleModel = ModuleModel.getDefault();
-		processModel = ServerProcessModel.getDefault();
+		ModuleModel.getDefault();
 	}
 
 	
+	
+	private HashMap pollerListeners = null;
+	public IServerPollerTimeoutListener[] getTimeoutListeners(String pollerClass) {
+		if( pollerListeners == null ) 
+			loadTimeoutListeners();
+		ArrayList list = (ArrayList)pollerListeners.get(pollerClass);
+		if( list != null ) {
+			return (IServerPollerTimeoutListener[]) list.toArray(new IServerPollerTimeoutListener[list.size()]);
+		}
+		return new IServerPollerTimeoutListener[0];
+	}
+	
+	protected void loadTimeoutListeners() {
+		pollerListeners = new HashMap();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerTimeoutListener");
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				String poller = cf[i].getAttribute("pollerType");
+				Object listener = cf[i].createExecutableExtension("listener");
+				
+				ArrayList list = (ArrayList)pollerListeners.get(poller);
+				if( list == null ) list = new ArrayList();
+				list.add(listener);
+				pollerListeners.put(poller, list);
+			} catch( CoreException ce ) {
+				ce.printStackTrace();
+			}
+		}
+	}
 	
 	
 	/*
 	 * May implement these methods later on. For now, do nothing.
 	 */
 	public void serverAdded(IServer server) {
-		ASDebug.p("serverAdded", JBossServerCore.class);
 	}
 
 	public void serverChanged(IServer server) {
-		//ASDebug.p("serverChanged", JBossServerCore.class);
 	}
 
 	public void serverRemoved(IServer server) {
-		ASDebug.p("serverRemoved", JBossServerCore.class);
 	}
 
 
 	public void runtimeAdded(IRuntime runtime) {
-		ASDebug.p("runtimeAdded", JBossServerCore.class);
 	}
 
 	public void runtimeChanged(IRuntime runtime) {
-		ASDebug.p("runtimeChanged", JBossServerCore.class);
 	}
 
 	public void runtimeRemoved(IRuntime runtime) {
-		ASDebug.p("runtimeRemoved", JBossServerCore.class);		
 	}
 }

@@ -21,219 +21,280 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import java.util.List;
+import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessLog.ProcessLogEvent;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ProcessData;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.server.publishers.IJbossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.publishers.JstPublisher;
-import org.jboss.ide.eclipse.as.core.server.publishers.NullPublisher;
-import org.jboss.ide.eclipse.as.core.server.publishers.PackagedPublisher;
-import org.jboss.ide.eclipse.as.core.server.runtime.AbstractServerRuntimeDelegate;
-import org.jboss.ide.eclipse.as.core.server.runtime.IJBossServerRuntimeDelegate;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
+import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PackagedPublisher;
+import org.jboss.ide.eclipse.as.core.runtime.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
+import org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller;
+import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
 
 public class JBossServerBehavior extends ServerBehaviourDelegate {
-	public static final String ATTR_ACTION = "__ACTION__";
-	public static final String ACTION_STOPPING = "__ACTION_STOPPING__";
-	public static final String ACTION_STARTING = "__ACTION_STARTING__";
-	public static final String ACTION_TWIDDLE = "__ACTION_TWIDDLE__";
-	
 	public static final String LAUNCH_CONFIG_DEFAULT_CLASSPATH = "__JBOSS_SERVER_BEHAVIOR_LAUNCH_CONFIG_DEFAULT_CLASSPATH__";
 	
-	private JBossServer jbServer = null;
-	private ProcessLogEvent log = null;
-	private ServerStateChecker checker = null;
 	
-	
-
+	private PollThread pollThread = null;
 	public JBossServerBehavior() {
 		super();
 	}
 
-	/**
-	 * Probally called when it shouldn't be, but, 
-	 * ensures that a stopped server is indeed stopped and 
-	 * all process references are terminated and removed from
-	 * the serverProcessModel.
-	 *
-	 * Ensures no rogue unreferenced jboss processes are left
-	 * executing in the background draining resources. 
-	 */
-	public void forceStop() {
-		getJBossServer().getProcessModel().clearAll();
-		setServerStopped();
-		return;
-	}
-	
 	public void stop(boolean force) {
-
+		if( force ) {
+			forceStop();
+			return;
+		}
+		
+		// If the server's already terminated via processes, just abort
+		IProcess[] startProcesses = 
+			ServerProcessModel.getDefault().getModel(getServer().getId()).getProcesses(JBossServerLaunchConfiguration.START);
+		if( ServerProcessModel.allProcessesTerminated(startProcesses)) {
+			forceStop();
+			return;
+		}
+			
+		// if we're starting up or shutting down and they've tried again, 
+		// then force it to stop. 
 		int state = getServer().getServerState();
-		if (state == IServer.STATE_STOPPED || force ) {
+		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING || state == IServer.STATE_STOPPED) {
+			pollThread.cancel();
 			forceStop();
 			return;
 		}
-
 		
 		
-		JBossServer jbServer = getJBossServer();
-		JBossServerRuntime runtime = jbServer.getJBossRuntime();
-		AbstractServerRuntimeDelegate runtimeDelegate = runtime.getVersionDelegate();
-		ServerProcessModelEntity processModel = jbServer.getProcessModel();
-
-
-		
-		// If we have no reference to any start processes, give up
-		if( processModel.getProcessDatas(ServerProcessModel.START_PROCESSES).length == 0 ) {
-			// no start processes exist. Give it up.
-			setServerStopped(); 
-			return;
-		}
-		
-		// If we do have referneces but they're all terminated already, give up
-		ProcessData[] datas = processModel.getProcessDatas(ServerProcessModel.START_PROCESSES);
-		boolean alive = false;
-		for( int i = 0; i < datas.length; i++ ) {
-			if( !datas[i].getProcess().isTerminated()) {
-				alive = true;
-			}
-		}
-
-		// and clear it for good measure
-		if( !alive ) {
-			forceStop();
-			return;			
-		}
-		
-		
-		
-		// Now we actually have to shut it down. Oh well.
-
+		// Otherwise execute a shutdown attempt
 		try {
 			// Set up our launch configuration for a STOP call (to shutdown.jar)
-			ILaunchConfiguration wc = JBossLaunchConfigurationDelegate.setupLaunchConfiguration(jbServer, ACTION_STOPPING);
-			ServerAttributeHelper helper = getJBossServer().getAttributeHelper();
-
+			ILaunchConfiguration wc = JBossServerLaunchConfiguration.setupLaunchConfiguration(getServer(), JBossServerLaunchConfiguration.STOP);
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-			
-			int maxWait = helper.getStopTimeout();
-			int soFar = 0;
-			
-			// waiting for our stop process to be created
-			while( processModel.getProcesses(ServerProcessModel.STOP_PROCESSES) == null ) {
-				soFar += 250;
-				Thread.sleep(250);
-			}
-			
-			// Now waiting for them to all finish execution
-			while( !ServerProcessModel.allProcessesTerminated(processModel.getProcesses(ServerProcessModel.STOP_PROCESSES)) 
-					&& soFar < maxWait) {
-				soFar += 100;
-				try {
-					Thread.sleep(100);
-				} catch( InterruptedException ie ) {
-				}
-			}
-			
-			// We're going to stop the server and get rid of all processes, 
-			// so grab a reference to them all first!
-
-			IProcess[] stopProcesses = processModel.getProcesses(ServerProcessModel.STOP_PROCESSES);
-			IProcess[] startProcesses = processModel.getProcesses(ServerProcessModel.START_PROCESSES);
-			processModel.clear(ServerProcessModel.TWIDDLE_PROCESSES);
-			
-
-			if( soFar >= maxWait ) {
-				// we timed OUT... even our stop thread didn't finish yet
-				// time to manually terminate EVERYTHING
-				forceStop();
-				return;
-			} else {
-				// The stop process ended. Let's see if it ended successfully.
-				
-				if( stopProcesses[0].isTerminated()) {
-					if( stopProcesses[0].getExitValue() != 0 ) {
-						// Our stop process ended with exceptions. That means the server is still running.
-						// We need to shut it down.  
-						forceStop();
-						return;
-					}
-				}
-
-			}
+		} catch( Exception e ) {
 		}
-		catch (Exception e) {
-		}
-
-		/*
-		 * Ok... if we didn't switch to forceStop already, then that means
-		 * the server is in the process of shutting down. We can terminate the 
-		 * stop launch (the process executing shutdown.jar) but we must let 
-		 * the start processes (the server) to terminate on its own.
-		 * We can, however, tell the model to delete those processes upon completion.
-		 */
-		processModel.clear(ServerProcessModel.STOP_PROCESSES);
-		processModel.removeProcessOnTerminate(processModel.getProcesses(ServerProcessModel.START_PROCESSES));
-
 	}
-
+	
+	protected void forceStop() {
+		// just terminate the processes. All of them
+		try {
+			ServerProcessModel.getDefault().getModel(getServer().getId()).clearAll();
+			setServerStopped();
+		} catch( Throwable t ) {
+			t.printStackTrace();
+		}
+	}
 
 	
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		JBossLaunchConfigurationDelegate.setupLaunchConfiguration(workingCopy, getJBossServer(), ACTION_STARTING);
+		JBossServerLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer(), JBossServerLaunchConfiguration.START);
 	}
+
 	
-	/**
-	 * Outline that the server is starting.
-	 * Launch a continuous batch of twiddles to determine 
-	 * when the server is up.
-	 */
+	
+	
+	
 	public void serverStarting() {
 		setServerStarting();
-		if( checker != null ) {
-			checker.cancel();
-		}
-		checker = new ServerStateChecker(this, ServerStateChecker.UP);
-		checker.start();
+		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	/**
-	 * Outline that the server is stopping.
-	 * Launch a continuous batch of twiddles to determine 
-	 * when the server is down.
-	 */
 	public void serverStopping() {
 		setServerStopping();
-		if( checker != null ) {
-			checker.cancel();
+		pollServer(IServerStatePoller.SERVER_DOWN);
+	}
+	
+	
+	public class PollThread extends Thread {
+		private boolean expectedState;
+		private IServerStatePoller poller;
+		private boolean abort;
+		public PollThread(String name, IServerStatePoller poller, boolean expectedState) {
+			super(name);
+			this.expectedState = expectedState;
+			this.poller = poller;
+			this.abort = false;
+		}
+		
+		public void cancel() {
+			abort = true;
 		}
 
-		checker = new ServerStateChecker(this, ServerStateChecker.DOWN);
-		checker.start();
+		
+		// Getting the timeouts. First from plugin.xml as default, or from user settings.
+		public int getTimeout() {
+			int timeout;
+			JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
+			ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
+			if( expectedState == IServerStatePoller.SERVER_UP) {
+				int def = ((ServerType)getServer().getServerType()).getStartTimeout();
+				timeout = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, def);
+			} else {
+				int def = ((ServerType)getServer().getServerType()).getStopTimeout();
+				timeout = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, def);
+			}
+			return timeout;
+		}
+		
+		
+		public void run() {
+			int maxWait = getTimeout();
+
+			long startTime = new Date().getTime();
+			boolean done = false;
+			poller.beginPolling(getServer(), expectedState);
+			while( !abort && !done && new Date().getTime() < startTime + maxWait ) {
+				try {
+					Thread.sleep(100);
+					done = poller.isComplete();
+				} catch( InterruptedException ie ) { }
+			}
+			boolean currentState = !expectedState;
+			if( abort ) {
+				poller.cancel(IServerStatePoller.CANCEL);
+				poller.cleanup();
+			} else {
+			
+				if( done ) {
+					// the poller has an answer
+					currentState = poller.getState();
+					poller.cleanup();
+				} else {
+					// we timed out.  get response from preferences
+					poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
+					currentState = getTimeoutBehavior();
+					poller.cleanup();
+					fireTimeoutEvent();
+				}
+				
+				if( currentState != expectedState ) {
+					// it didnt work... cancel all processes!
+					forceStop();
+				} else {
+					if( currentState == IServerStatePoller.SERVER_UP ) 
+						setServerStarted();
+					else
+						setServerStopped();
+				}
+			}
+		}
+		protected boolean getTimeoutBehavior() {
+			// timeout has been reached, so let the user's preferences override
+			JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
+			ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
+				
+			boolean behavior = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, true);
+			if( behavior == IServerPollingAttributes.TIMEOUT_ABORT ) 
+				return !expectedState;
+
+			return expectedState;
+		}
+		
+		protected void fireTimeoutEvent() {
+			IServerPollerTimeoutListener[] listeners = 
+				JBossServerCore.getDefault().getTimeoutListeners(poller.getClass().getName());
+			for( int i = 0; i < listeners.length; i++ ) {
+				listeners[i].serverTimedOut(getServer(), expectedState);
+			}
+		}
 	}
+
+	protected void pollServer(final boolean expectedState) {
+		if( this.pollThread != null ) {
+			pollThread.cancel();
+		}
+		this.pollThread = new PollThread("Server Poller", new TwiddlePoller(), expectedState);
+//		this.pollThread = new PollThread("Server Poller", new TimeoutPoller(), expectedState);
+		pollThread.start();
+	}
+	
+	
+	// By default, goes to check if the members are all the same or any changes
+	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
+		return ((Server)getServer()).getPublishedResourceDelta(module);
+	}
+	
+	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
+		// kind = [incremental, full, auto, clean] = [1,2,3,4]
+		// delta = [no_change, added, changed, removed] = [0,1,2,3]
+
+		System.out.print("publishing module: ");
+		switch( kind ) {
+			case 1: System.out.print("incremental, "); break;
+			case 2: System.out.print("full, "); break;
+			case 3: System.out.print("auto, "); break;
+			case 4: System.out.print("clean, "); break;
+		}
+		switch( deltaKind ) {
+			case 0: System.out.print("no change"); break;
+			case 1: System.out.print("added"); break;
+			case 2: System.out.print("changed"); break;
+			case 3: System.out.print("removed"); break;
+		}
+		System.out.println("");
+		
+		if( module.length == 0 ) return;
+
+		IJBossServerPublisher publisher;
+
+		/**
+		 * If our modules are already packaged as ejb jars, wars, aop files, 
+		 * then go ahead and publish
+		 */
+		if( hasPackagingConfiguration(module) ) {
+			// will be changed
+			publisher = new NullPublisher();
+		} else if( arePackagedModules(module)) {
+			publisher = new PackagedPublisher(JBossServerCore.getServer(getServer()), this);
+		} else if( areJstModules(module)){
+			publisher = new JstPublisher(JBossServerCore.getServer(getServer()));
+		} else {
+			publisher = new NullPublisher();
+		}
+		
+		publisher.publishModule(kind, deltaKind, module, monitor);
+		setModulePublishState(module, publisher.getPublishState());
+	}
+	
+	public boolean arePackagedModules(IModule[] module) {
+		if( module.length == 1 && module[0].getModuleType().getId().equals("jboss.archive"))
+			return true;
+		return false;
+	}
+	
+	/* Temporary and will need to be fixed */
+	protected boolean areJstModules(IModule[] module) {
+		String type;
+		for( int i = 0; i < module.length; i++ ) {
+			type = module[i].getModuleType().getId();
+			if( type.equals("jst.ejb") || type.equals("jst.client") || type.equals("jst.web") || type.equals("jst.ear")) 
+				continue;
+			return false;
+		}
+		return true;
+	}
+	/* Temporary and will need to be fixed */
+	protected boolean hasPackagingConfiguration(IModule[] module) {
+		return false;
+	}
+		
+	
 	
 	
 	/*
@@ -255,160 +316,5 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		setServerState(IServer.STATE_STOPPING);
 	}
 
-	/**
-	 * This is where the ServerStateChecker responds. 
-	 * @param serverUp whether the server is up or not. 
-	 */
-	public void setServerState(boolean waitingFor, boolean serverUp) {
-		if( !serverUp ) {
-			/* Fail safe... if the server times OUT but it IS starting 
-			 * but not quick enough, clear / destroy all generated processes.
-			 * 
-			 * Otherwise, there are start processes but the gui has 'stop' greyed
-			 * OUT and unavailable for selection. 
-			 * 
-			 * Included inside if statement so it doesn't prematurely
-			 * shut down the server while it's in the process of shutting down.
-			 */
-			if( waitingFor == ServerStateChecker.UP ) {
-				getJBossServer().getProcessModel().clearAll();
-			}
-			setServerStopped();
-		} else {
-			setServerStarted();
-		}
-	}
-
-	private JBossServer getJBossServer() {
-		if( jbServer == null ) {
-			jbServer = (JBossServer)getServer().loadAdapter(JBossServer.class, null);
-		}
-		return jbServer;
-	}
 	
-	
-
-	/**
-	 * Here I go with the default implementatiion for MOST of the situations, 
-	 * but I first check my ModuleModel to see if I have any pressing / overriding
-	 * designations. 
-	 */
-	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
-		// if my model has any reference to them, use that.
-		ModuleModel model = ModuleModel.getDefault();
-		IModuleResourceDelta[] deltas = model.getDeltaModel().getRecentDeltas(module, getServer());
-		if( deltas.length != 0 )
-			return deltas;
-
-		return ((Server)getServer()).getPublishedResourceDelta(module);
-	}
-	
-	
-	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		if( module.length == 0 ) return;
-					
-		IJbossServerPublisher publisher;
-		ASDebug.p("Module type is " + module[0].getModuleType().getId(), this);
-		/**
-		 * If our modules are already packaged as ejb jars, wars, aop files, 
-		 * then go ahead and publish
-		 */
-		if( hasPackagingConfiguration(module) ) {
-			// will be changed
-			publisher = new NullPublisher();
-		} else if( ModuleModel.arePackagedModules(module)) {
-			publisher = new PackagedPublisher(getJBossServer(), this);
-		} else if( areJstModules(module)){
-			publisher = new JstPublisher(getJBossServer());
-		} else {
-			publisher = new NullPublisher();
-		}
-		
-		
-		publisher.publishModule(kind, deltaKind, module, monitor);
-		setModulePublishState(module, publisher.getPublishState());
-		log.addChildren(publisher.getLogEvents());
-	}
-	
-	/* Temporary and will need to be fixed */
-	protected boolean areJstModules(IModule[] module) {
-		String type;
-		for( int i = 0; i < module.length; i++ ) {
-			type = module[i].getModuleType().getId();
-			if( type.equals("jst.ejb") || type.equals("jst.client") || type.equals("jst.web") || type.equals("jst.ear")) 
-				continue;
-			return false;
-		}
-		return true;
-	}
-	/* Temporary and will need to be fixed */
-	protected boolean hasPackagingConfiguration(IModule[] module) {
-		return false;
-	}
-	
-	public static class PublishLogEvent extends ProcessLogEvent {
-		public static final int ROOT = 0;
-		public static final int PUBLISH = 1;
-		public static final int UNPUBLISH = 2;
-		
-		public static final String MODULE_NAME = "_MODULE_NAME_";
-		
-		public PublishLogEvent(int type) {
-			super(type);
-		}
-		
-		public String getModuleName() {
-			try {
-				return (String)getProperty(MODULE_NAME);
-			} catch( Exception e ) {}
-			return null;
-		}
-		
-	}
-	
-	
-	/**
-	 * Logging information for log listeners
-	 */
-	protected void publishStart(IProgressMonitor monitor) throws CoreException {
-		ServerProcessModelEntity e = ServerProcessModel.getDefault().getModel(getServer().getId());
-		log = new PublishLogEvent(PublishLogEvent.ROOT);
-		e.getEventLog().newMajorEvent(log);
-	}
-
-	/**
-	 * Logging information for log listeners
-	 */
-	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-		if( log.getChildren().length > 0 ) {
-			log.getRoot().branchChanged();
-		} else {
-			log.getParent().deleteChild(log);
-		}
-		
-		log = null;
-	}
-
-	public void restart(String launchMode) throws CoreException {
-		ASDebug.p("restart", this);
-		 throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, "Could not restart", null));
-	}
-
-	
-	
-	public boolean canControlModule(IModule[] module) {
-		ASDebug.p("canControlModule", this);
-		return false;
-	}
-
-	public void startModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
-	}
-
-	public void stopModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
-	}
-
-	public int getJndiPort() {
-		return getJBossServer().getDescriptorModel().getJNDIPort();
-	}
-
 }
