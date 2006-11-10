@@ -37,7 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 
-public class PackagedPublisher implements IJBossServerPublisher  {
+public class PathPublisher implements IJBossServerPublisher  {
 	
 	private JBossServer server;
 	private JBossServerBehavior behavior;
@@ -48,14 +48,13 @@ public class PackagedPublisher implements IJBossServerPublisher  {
 	public static final String DEST_FILENAME = "_DEST_FILENAME_";
 	
 	
-	public PackagedPublisher(JBossServer server, JBossServerBehavior behavior) {
+	public PathPublisher(JBossServer server, JBossServerBehavior behavior) {
 		this.server = server;
 		this.behavior = behavior;
 		publishState = IServer.PUBLISH_STATE_NONE;
 	}
 
 	public void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		//ASDebug.p("(kind, deltakind)=(" + kind + "," + deltaKind + ") : " + module, this);
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		
@@ -111,8 +110,6 @@ public class PackagedPublisher implements IJBossServerPublisher  {
 			}
 			
 		}
-
-		//ASDebug.p("publish done", this);
 	}
 
 	
@@ -140,9 +137,6 @@ public class PackagedPublisher implements IJBossServerPublisher  {
 			try {
 				File destFile = new File(dest);
 				destFile.delete();
-			
-				// tell the model you're aware of the change
-				//ModuleModel.getDefault().getDeltaModel().setDeltaSeen(module[i], server.getServer().getId());
 			} catch( Exception e ) {
 			}
 		}

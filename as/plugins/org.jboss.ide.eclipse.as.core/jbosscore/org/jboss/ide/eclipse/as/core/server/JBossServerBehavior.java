@@ -32,17 +32,19 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Module;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PackagedPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
 import org.jboss.ide.eclipse.as.core.runtime.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
 import org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller;
@@ -260,8 +262,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		if( hasPackagingConfiguration(module) ) {
 			// will be changed
 			publisher = new NullPublisher();
-		} else if( arePackagedModules(module)) {
-			publisher = new PackagedPublisher(JBossServerCore.getServer(getServer()), this);
+		} else if( arePathModules(module)) {
+			publisher = new PathPublisher(JBossServerCore.getServer(getServer()), this);
 		} else if( areJstModules(module)){
 			publisher = new JstPublisher(JBossServerCore.getServer(getServer()));
 		} else {
@@ -272,9 +274,12 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		setModulePublishState(module, publisher.getPublishState());
 	}
 	
-	public boolean arePackagedModules(IModule[] module) {
-		if( module.length == 1 && module[0].getModuleType().getId().equals("jboss.archive"))
-			return true;
+	public boolean arePathModules(IModule[] module) {
+		if( module.length == 1 && module[0] instanceof Module ) {
+			ModuleFactoryDelegate delegate = 
+				((Module)module[0]).getModuleFactory().getDelegate(new NullProgressMonitor());
+			if( delegate instanceof PathModuleFactory ) return true;
+		}
 		return false;
 	}
 	
