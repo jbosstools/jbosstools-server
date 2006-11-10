@@ -66,6 +66,9 @@
           <moduleType
                 types="jboss.archive"
                 versions="1.0"/>
+          <moduleType
+                types="jboss.xml"
+                versions="1.0"/>
                
       </runtimeType>
        <runtimeType
@@ -89,6 +92,9 @@
                 versions="1.0"/>
           <moduleType
                 types="jboss.ejb30"
+                versions="1.0"/>
+          <moduleType
+                types="jboss.xml"
                 versions="1.0"/>                
       </runtimeType>
    </extension>
@@ -123,11 +129,15 @@
          		types="jboss.archive">
             </moduleType>
        </moduleFactory>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.XMLModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.XmlFactory"/>
    </extension>
    
    	<extension
          point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
       <factory id="org.jboss.ide.eclipse.as.core.ArchiveFactory"/>
+      <factory id="org.jboss.ide.eclipse.as.core.XmlFactory"/>
    </extension>
    		
    		
@@ -136,7 +146,7 @@
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
       <moduleArtifactAdapter
-            class="org.jboss.ide.eclipse.as.core.module.ArchiveModuleArtifactAdapter"
+            class="org.jboss.ide.eclipse.as.core.module.JBossModuleArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.artifactAdapter"
             priority="20">
          <enablement>

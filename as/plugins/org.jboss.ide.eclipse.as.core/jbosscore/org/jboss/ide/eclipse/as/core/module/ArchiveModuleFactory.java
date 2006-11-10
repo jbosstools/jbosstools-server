@@ -27,14 +27,17 @@ import java.util.jar.JarFile;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
-public class ArchiveModuleFactory extends JBossModuleFactory {
+public class ArchiveModuleFactory extends PathModuleFactory {
 	
 	private static String GENERIC_JAR = "jboss.archive";
 	private static String VERSION = "1.0";
@@ -43,41 +46,14 @@ public class ArchiveModuleFactory extends JBossModuleFactory {
 
 	private static ArchiveModuleFactory factory;
 	public static ArchiveModuleFactory getDefault() {
+		if( factory == null ) {
+			factory = (ArchiveModuleFactory)PathModuleFactory.getDefaultInstance(FACTORY_ID);
+		}
 		return factory;
 	}
 	
 	public ArchiveModuleFactory() {
-		factory = this;
-	}
-
-	public void initialize() {
-	}
-
-	protected IModule acceptAddition(String path) {
-		if( !supports(path)) 
-			return null;
-
-		// otherwise create the module
-		//String path = getPath(resource);
-		String name = new Path(path).lastSegment();
-		IModule module = createModule(path, name, 
-				GENERIC_JAR, VERSION, null);
-		
-		
-		ArchiveModuleDelegate delegate = new ArchiveModuleDelegate();
-		delegate.initialize(module);
-		delegate.setResourcePath(path);
-		delegate.setFactory(this);
-		
-		// and insert it
-		pathToModule.put(path, module);
-		moduleToDelegate.put(module, delegate);
-		
-		// ensure the factory clears its cache
-		clearModuleCache();
-		
-		return module;	
-		
+		super();
 	}
 
 	public boolean supports(String path) {
@@ -89,23 +65,12 @@ public class ArchiveModuleFactory extends JBossModuleFactory {
 		}
 		return false;
 	}
-	
-	
-	public class ArchiveModuleDelegate extends JBossModuleDelegate {
-		public IModule[] getChildModules() {
-			return null;
-		}
 
-		public void initialize() {
-		}
+	public String getModuleType(String path) {
+		return GENERIC_JAR;
+	}
 
-		public IStatus validate() {
-			return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
-					0, "Deployment is valid", null);
-		}
-
-		public IModuleResource[] members() throws CoreException {
-			return new IModuleResource[0];
-		}
+	public String getModuleVersion(String path) {
+		return VERSION;
 	}
 }

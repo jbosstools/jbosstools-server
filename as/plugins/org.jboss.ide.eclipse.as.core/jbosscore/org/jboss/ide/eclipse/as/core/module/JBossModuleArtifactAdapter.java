@@ -28,32 +28,38 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleArtifactAdapterDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCore;
 
-public class ArchiveModuleArtifactAdapter extends ModuleArtifactAdapterDelegate {
+public class JBossModuleArtifactAdapter extends ModuleArtifactAdapterDelegate {
 	public IModuleArtifact getModuleArtifact(Object obj) {
 		if( obj instanceof IResource ) {
-			try {
-				IResource res = (IResource)obj;
-				if( ArchiveModuleFactory.getDefault() == null ) {
-					ModuleFactory[] factories = ServerPlugin.getModuleFactories(); // just make sure they're loaded
-					for( int i = 0; i < factories.length; i++ ) {
-						if( factories[i].getId().equals(ArchiveModuleFactory.FACTORY_ID)) {
-							factories[i].getDelegate(new NullProgressMonitor());
-						}
-					}
+			IResource res = (IResource)obj;
+			
+			ModuleFactory[] mfs = JBossServerCore.getJBossModuleFactories();
+			IModule mod = null;
+			for( int i = 0; i < mfs.length && mod == null; i++ ) {
+				if( getDelegate(mfs[i]) != null && getDelegate(mfs[i]).supports(res)) {
+					mod = getDelegate(mfs[i]).getModule(res);
 				}
-				if( !ArchiveModuleFactory.getDefault().supports(res)) return null;
-				
-				final IModule mod = ArchiveModuleFactory.getDefault().getModule(res);
-				return new IModuleArtifact() {
-					public IModule getModule() {
-						return mod;
-					} 
-				};
-			} catch( Throwable t ) {
-				t.printStackTrace();
 			}
+			if( mod != null )
+				return new JBossModuleArtifact(mod);
 		}
 		return null;
 	}
+	
+	protected JBossModuleFactory getDelegate(ModuleFactory mf) {
+		return (JBossModuleFactory) mf.getDelegate(new NullProgressMonitor());
+	}
+	
+	public static class JBossModuleArtifact implements IModuleArtifact {
+		private IModule module;
+		public JBossModuleArtifact(IModule module) {
+			this.module = module;
+		}
+		public IModule getModule() {
+			return this.module;
+		}
+	}
+	
 }

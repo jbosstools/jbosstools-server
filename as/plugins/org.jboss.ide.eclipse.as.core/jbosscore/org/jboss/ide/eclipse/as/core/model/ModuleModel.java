@@ -51,18 +51,23 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 public class ModuleModel implements IResourceChangeListener{
 	
 	private static ModuleModel singleton;
-	private ArrayList factories;
+	private static ArrayList factories;
 	
 	public static ModuleModel getDefault() {
 		if( singleton == null ) {
 			singleton = new ModuleModel();
 		}
-
-
 		return singleton;
 	}
 	
-	private ModuleModel() {
+	public static ModuleFactory[] getJBossModuleFactories() {
+		if( factories == null ) 
+			loadAcceptableFactories();
+		return (ModuleFactory[]) factories.toArray(new ModuleFactory[factories.size()]);
+	}
+	
+	private static void loadAcceptableFactories() {
+		
 		Comparator factoryComparator = new Comparator() {
 			public int compare(Object arg0, Object arg1) {
 				if( arg0 instanceof ModuleFactory  && !(arg1 instanceof ModuleFactory))
@@ -89,27 +94,38 @@ public class ModuleModel implements IResourceChangeListener{
 			}
 		};
 		factories = new ArrayList();
-		loadAcceptableFactories();
-		Collections.sort(factories, factoryComparator);
+
 		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE );
-		init();
-	}
-	
-	private void loadAcceptableFactories() {
-		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
+		ModuleFactory[] mfs = ServerPlugin.getModuleFactories();
 		String[] jbossIds = loadJBossFactoryIDs();
 		
-		for( int i = 0; i < factories.length; i++ ) {
+		for( int i = 0; i < mfs.length; i++ ) {
 			for( int j = 0; j < jbossIds.length; j++ ) {
-				if( jbossIds[j].equals(factories[i].getId()) ) {
-					this.factories.add(factories[i]);
+				if( jbossIds[j].equals(mfs[i].getId()) ) {
+					factories.add(mfs[i]);
 				}
 			}
 		}
+		
+		Collections.sort(factories, factoryComparator);
+
+		Iterator i = factories.iterator();
+		ModuleFactory f = null;
+		ModuleFactoryDelegate delegate = null;
+
+		while(i.hasNext()) {
+			f = (ModuleFactory)i.next();
+			delegate = f.getDelegate(null);
+			if( delegate instanceof JBossModuleFactory ) {
+				((JBossModuleFactory)delegate).initialize();
+			} else {
+				factories.remove(f);
+			}
+		}
+
 	}
 	
-	private String[] loadJBossFactoryIDs() {
+	private static String[] loadJBossFactoryIDs() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "jbossModuleFactory");
 
@@ -125,30 +141,16 @@ public class ModuleModel implements IResourceChangeListener{
 		list.toArray(jbossFactories);
 		return jbossFactories;
 	}
-	
-	
-	/**
-	 * At the end of this method, all JBossModuleFactories should 
-	 * be created, and have a basic initialization done.
-	 *
-	 */
-	private void init() {
-		Iterator i = this.factories.iterator();
-		ModuleFactory f = null;
-		ModuleFactoryDelegate delegate = null;
 
-		while(i.hasNext()) {
-			f = (ModuleFactory)i.next();
-			delegate = f.getDelegate(null);
-			if( delegate instanceof JBossModuleFactory ) {
-				((JBossModuleFactory)delegate).initialize();
-			} else {
-				this.factories.remove(f);
-			}
-		}
+
+
+	
+	private ModuleModel() {
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE );
 	}
+	
 
-
+	
 	/**
 	 * Gets the first module found for a resource. 
 	 * Checks the factories in order of their precedence.

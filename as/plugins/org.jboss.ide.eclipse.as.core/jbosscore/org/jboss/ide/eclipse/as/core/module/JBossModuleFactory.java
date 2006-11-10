@@ -34,10 +34,13 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
@@ -46,6 +49,8 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	
+	
+
 	public static final String NO_LOCATION = "__NO_LOCATION__";
 	
 	protected HashMap pathToModule = null;
