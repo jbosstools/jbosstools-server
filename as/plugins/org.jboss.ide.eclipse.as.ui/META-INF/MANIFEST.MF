@@ -55,11 +55,6 @@ Require-Bundle: org.eclipse.core.resources,
  org.jboss.ide.eclipse.firstrun
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.ui,
- org.jboss.ide.eclipse.as.ui.config,
- org.jboss.ide.eclipse.as.ui.dialogs,
- org.jboss.ide.eclipse.as.ui.editor,
- org.jboss.ide.eclipse.as.ui.util,
- org.jboss.ide.eclipse.as.ui.views,
  org.jboss.ide.eclipse.as.ui.wizards
 Bundle-ClassPath: jbossui.jar
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin

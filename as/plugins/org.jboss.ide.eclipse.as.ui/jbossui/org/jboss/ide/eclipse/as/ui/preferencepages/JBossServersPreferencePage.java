@@ -62,6 +62,7 @@ import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 
@@ -269,12 +270,12 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 		startSpinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setStartTimeout(startSpinner.getSelection());
+				getSelectedWC().setAttribute(IServerPollingAttributes.START_TIMEOUT, startSpinner.getSelection());
 			} 
 		});
 		stopSpinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setStopTimeout(stopSpinner.getSelection());
+				getSelectedWC().setAttribute(IServerPollingAttributes.STOP_TIMEOUT, stopSpinner.getSelection());
 			} 
 		});
 		
@@ -283,7 +284,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			}
 			public void widgetSelected(SelectionEvent e) {
 				if( getSelectedWC() != null ) 
-					getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_ABORT);
+					getSelectedWC().setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_ABORT);
 			} 
 		});
 		ignoreOnTimeout.addSelectionListener(new SelectionListener() {
@@ -291,7 +292,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			}
 			public void widgetSelected(SelectionEvent e) {
 				if( getSelectedWC() != null ) 
-					getSelectedWC().setTimeoutBehavior(ServerAttributeHelper.TIMEOUT_IGNORE);
+					getSelectedWC().setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
 			} 
 		});
 				
@@ -304,11 +305,11 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		/* Handle spinners */
 		startSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStartTimeout());
 		stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout());
-		startSpinner.setSelection(wcHelper.getStartTimeout());
-		stopSpinner.setSelection(wcHelper.getStopTimeout());
+		startSpinner.setSelection(getStartTimeout(wcHelper));
+		stopSpinner.setSelection(getStopTimeout(wcHelper));
 		
-		boolean currentVal = wcHelper.getTimeoutBehavior();
-		if( currentVal == ServerAttributeHelper.TIMEOUT_ABORT) {
+		boolean currentVal = wcHelper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
+		if( currentVal == IServerPollingAttributes.TIMEOUT_ABORT) {
 			abortOnTimeout.setSelection(true);
 			ignoreOnTimeout.setSelection(false);
 		} else {
@@ -317,6 +318,21 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		}
 	}
 	
+	public int getStartTimeout(ServerAttributeHelper helper) {
+		int prop = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, -1);
+		int max = ((ServerType)helper.getServer().getServerType()).getStartTimeout();
+		
+		if( prop <= 0 || prop > max ) return max;
+		return prop;
+	}
+	public int getStopTimeout(ServerAttributeHelper helper) {
+		int prop = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, -1);
+		int max = ((ServerType)helper.getServer().getServerType()).getStopTimeout();
+		
+		if( prop <= 0 || prop > max ) return max;
+		return prop;
+	}
+
 	
 	private ServerAttributeHelper getWCHelper(JBossServer server) {
 		if( workingCoppies.get(server) == null ) {
@@ -348,6 +364,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		return null;
 	}
 	
+
+	
 	
     public boolean performOk() {
     	super.performOk();
@@ -364,10 +382,10 @@ public class JBossServersPreferencePage extends PreferencePage implements
     	while(i.hasNext()) {
     		o = i.next();
     		if( o instanceof ServerAttributeHelper) {
-    			copy = ((ServerAttributeHelper)o).getServer();
-    			if( copy.isDirty()) {
+    			ServerAttributeHelper o2 = (ServerAttributeHelper)o;
+    			if( o2.isDirty() ) {
     				try {
-    					copy.save(true, new NullProgressMonitor());
+    					o2.save(true, new NullProgressMonitor());
     				} catch( CoreException ce) {
     					ce.printStackTrace();
     				}

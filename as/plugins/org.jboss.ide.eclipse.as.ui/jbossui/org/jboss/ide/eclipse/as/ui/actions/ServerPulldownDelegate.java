@@ -1,26 +1,6 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
-
 package org.jboss.ide.eclipse.as.ui.actions;
+
+import java.io.File;
 
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.IAction;
@@ -28,8 +8,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuAdapter;
@@ -57,7 +35,6 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard;
 
 public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate {
 
@@ -67,8 +44,6 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     private IWorkbench workbench;
     private ISelection selection;
     private Menu fMenu;
-    
-    private Image serverImage;
 
     private int fillMenuCurrentPos = 0;
     
@@ -234,7 +209,6 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 				}
 			} 
 		} );
-		
 	}
 
 	
@@ -248,27 +222,6 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		newMenuItem.setMenu(subMenu);
 		fillMenuCurrentPos++;
 		
-		MenuItem mbeanStubsMenuItem = new MenuItem(subMenu, SWT.NONE);
-		mbeanStubsMenuItem.setText(Messages.ActionDelegateNewMBeanStubs);
-		// TODO: get an image
-		
-		mbeanStubsMenuItem.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-			public void widgetSelected(SelectionEvent e) {
-				NewMBeanWizard newMBeanWizard = new NewMBeanWizard();
-				if( selection instanceof IStructuredSelection )
-					newMBeanWizard.init(workbench, (IStructuredSelection)selection);
-				else 
-					newMBeanWizard.init(workbench, null);
-					
-				WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), newMBeanWizard);
-			    int ret = dlg.open();
-
-			} 
-		});
-		
-		
 		MenuItem newServerItem = new MenuItem(subMenu, SWT.NONE);
 		newServerItem.setText(Messages.ActionDelegateNewServer);
 		newServerItem.setImage(getServerImage());
@@ -281,6 +234,27 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 				newServerAction.run();
 			} 
 		});
+
+		
+//		MenuItem mbeanStubsMenuItem = new MenuItem(subMenu, SWT.NONE);
+//		mbeanStubsMenuItem.setText(Messages.ActionDelegateNewMBeanStubs);
+//		// TODO: get an image
+//		
+//		mbeanStubsMenuItem.addSelectionListener(new SelectionListener() {
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//			}
+//			public void widgetSelected(SelectionEvent e) {
+//				NewMBeanWizard newMBeanWizard = new NewMBeanWizard();
+//				if( selection instanceof IStructuredSelection )
+//					newMBeanWizard.init(workbench, (IStructuredSelection)selection);
+//				else 
+//					newMBeanWizard.init(workbench, null);
+//					
+//				WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), newMBeanWizard);
+//			    int ret = dlg.open();
+//
+//			} 
+//		});
 	}
 	
     public void init(IWorkbenchWindow window) {
@@ -305,15 +279,10 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 
 	public void dispose() {
 		if( fMenu != null && !fMenu.isDisposed()) fMenu.dispose();
-		if( serverImage != null && !serverImage.isDisposed()) serverImage.dispose();
 	}
 	
 	protected Image getServerImage() {
-		if( serverImage == null ) {
-			ImageDescriptor id = ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_NEW_SERVER);
-			serverImage = id.createImage();
-		}
-		return serverImage;
+		return JBossServerUISharedImages.getImage(JBossServerUISharedImages.GENERIC_SERVER_IMAGE);
 	}
 	protected Image getStateImage(int state, String mode) {
 		return new ManagedUIDecorator().getStateImage(state, mode, 0);

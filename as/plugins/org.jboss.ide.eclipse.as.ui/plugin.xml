@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
-   
+ 
    <extension
          point="org.eclipse.wst.server.ui.serverImages"> 
       <image
@@ -27,6 +27,7 @@
             typeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"/>
 
    </extension>
+
    <extension
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
@@ -46,82 +47,31 @@
             id="org.jboss.ide.eclipse.as.ui.jboss40ServerWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.40"/>
    </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
-      <launchConfigurationTabGroup
-            class="org.jboss.ide.eclipse.as.ui.config.JBossLaunchConfigurationTabGroup"
-            id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
-            type="org.jboss.ide.eclipse.as.core.jbossLaunch"/>
-   </extension>
+
    <extension
          point="org.eclipse.ui.startup">
       <startup />
-   </extension>
+   </extension>   
+   
+   
    <extension
-         point="org.eclipse.ui.views">
-      <view
-            category="org.eclipse.wst.server.ui"
-            class="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-            icon="icons/jboss.gif"
-            id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-            name="JBoss Server View"/>
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup"
+            id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
+            type="org.jboss.ide.eclipse.as.core.server.launchConfiguration"/>
    </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.TaskList"/>
-      </perspectiveExtension>
-   </extension>
+   
+
+
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
             icon="icons/J2EEModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.archiveImage"
             typeIds="jboss.archive"/>
-      <image
-            icon="icons/AppClientModule16.gif"
-            id="org.jboss.ide.eclipse.as.ui.earImage"
-            typeIds="jboss.ear"/>
-      <image
-            icon="icons/WebModule16.gif"
-            id="org.jboss.ide.eclipse.as.ui.webImage"
-            typeIds="jboss.web"/>
-      <image
-            icon="icons/EJBModule16.gif"
-            id="org.jboss.ide.eclipse.as.ui.ejbImage"
-            typeIds="jboss.ejb"/> 
    </extension>
-   <extension
-         point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
-      <ViewProvider
-            description="Allow modules to be included in the tree."
-            icon="icons/J2EEModule16.gif"
-            id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
-            name="Modules"
-            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.ModuleViewProvider"/>
-      <ViewProvider
-            description="Keep a log of server-related events in the view."
-            icon="icons/file-info.png"
-            id="org.jboss.ide.eclipse.as.ui.EventLogProvider"
-            name="Event Log"
-            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.EventLogViewProvider"/>
-      <ViewProvider
-            description="Lists inactive categories and allows you to turn them back on."
-            icon="icons/inactiveCat.gif"
-            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
-            name="Inactive Categories"
-            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.InactiveExtensionViewProvider"/>
-      <ViewProvider
-            description="descriptor xpaths"
-            icon="icons/xml.gif"
-            id="org.jboss.ide.eclipse.as.ui.ViewProvider1"
-            name="Descriptor XPaths"
-            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider"/>
-   </extension>
+
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -129,96 +79,18 @@
             class="org.jboss.ide.eclipse.as.ui.preferencepages.JBossServersPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
             name="JBoss Servers"/>
+
       <page
             category="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
             class="org.jboss.ide.eclipse.as.ui.preferencepages.ViewPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
             name="View"/>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.contentTypes">
-      <content-type
-            base-type="org.eclipse.core.runtime.xml"
-            file-extensions="xml"
-            id="servicexml"
-            name="JBoss Service XML"
-            priority="normal">
-         <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
-            <parameter
-                  name="element"
-                  value="server"/>
-         </describer>
-      </content-type>
-   </extension>
-   <extension
-         point="org.eclipse.wst.sse.ui.editorConfiguration">
-      <sourceViewerConfiguration
-            class="org.jboss.ide.eclipse.as.ui.editors.ServiceXMLEditorConfiguration"
-            target="org.jboss.ide.eclipse.as.ui.servicexml"/>
-      <contentOutlineConfiguration
-            class="org.jboss.ide.eclipse.as.ui.editors.ServiceXMLOutlineConfiguration"
-            target="org.jboss.ide.eclipse.as.ui.servicexml"/>
-	<provisionalConfiguration
-			type="correctionassistant"
-			class="org.jboss.ide.eclipse.as.ui.editors.ServiceXMLCorrectionAssistantProvider"
-			target="org.jboss.ide.eclipse.as.ui.servicexml" />
-   </extension>
-   <extension
-         point="org.eclipse.wst.sse.core.modelHandler">
-      <modelHandler
-            associatedContentTypeId="org.jboss.ide.eclipse.as.ui.servicexml"
-            class="org.jboss.ide.eclipse.as.ui.editors.ServicexmlModelHandler"
-            default="false"
-            id="org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"/>
-   </extension>
-   <extension point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
-		<adapterFactoryDescription
-				class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            name="MBean Components"
-            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
-      <wizard
-            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            class="org.jboss.ide.eclipse.as.ui.wizards.NewMBeanWizard"
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
-            name="MBean Stubs"
-            project="false"/>
-   </extension>
-
-<!--
-   <extension
-         point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
-         <adapterFactoryDescription
-			class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
-   </extension> -->
+   </extension> 
 
 
 
-   <!--
-   <extension
-         point="org.eclipse.wst.server.ui.editorPageSections">
-      <section
-            class="org.jboss.ide.eclipse.as.ui.config.JBossServerEditorSection"
-            id="org.jboss.ide.eclipse.as.ui.serverEditorSection"
-            insertionId="org.eclipse.wst.server.editor.overview.right"
-            order="10"
-            typeIds="org.jboss.ide.eclipse.as.*"/>
-   </extension>
-   <extension
-         point="org.eclipse.wst.server.ui.editorPages">
-      <page
-            class="org.jboss.ide.eclipse.as.ui.editor.JBossPortsEditorPage"
-            id="org.jboss.ide.eclipse.as.ui.portsPage"
-            insertionIds="org.eclipse.wst.server.editor.overview.right"
-            name="JBoss Ports"
-            order="10"
-            typeIds="org.jboss.ide.eclipse.as.*"/>
-   </extension>
-   -->
+
+
 
    <extension
          id="org.jboss.ide.eclipse.as.ui.actionSet"
@@ -231,29 +103,58 @@
          <action
                class="org.jboss.ide.eclipse.as.ui.actions.ServerPulldownDelegate"
                icon="icons/jboss.gif"
-               id="org.jboss.ide.eclipse.as.ui.actions.StartServerShortcut"
+               id="org.jboss.ide.eclipse.as.ui.actions.ServerPulldownShortcut"
                label="JBoss AS Menu"
                style="pulldown"
                toolbarPath="Normal/additions"
                tooltip="Start Server"/>
       </actionSet>
    </extension>
+
+   
+   
+   
    <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.wst.server.ui"
+            class="org.jboss.ide.eclipse.as.ui.views.server.JBossServerView"
             icon="icons/jboss.gif"
-            id="org.jboss.ide.eclipse.as.ui.ASPerspective"
-            name="JBoss AS"/>
+            id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
+            name="JBoss Server View"/>
    </extension>
-   <extension
-         point="org.jboss.ide.eclipse.firstrun.FirstRunWizardPage">
-      <UpgradeWizard
-            WizardPage="org.jboss.ide.eclipse.as.ui.upgrades.UpdatePage20"
-            fromVersion="1.6.*"
-            id="org.jboss.ide.eclipse.as.ui.firstrun.16.20"
-            toVersion="2.0.0.*"
-            weight="50"/>
+   
+   
+   
+   
+      <extension
+         point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
+      <ViewProvider
+            description="Allow modules to be included in the tree."
+            icon="icons/J2EEModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
+            name="Modules"
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.ModuleViewProvider"/>
+      <ViewProvider
+            description="Lists inactive categories and allows you to turn them back on."
+            icon="icons/inactiveCat.gif"
+            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
+            name="Inactive Categories"
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
+<!--      <ViewProvider
+            description="descriptor xpaths"
+            icon="icons/xml.gif"
+            id="org.jboss.ide.eclipse.as.ui.ViewProvider1"
+            name="Descriptor XPaths"
+            providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider"/>
+            -->
    </extension>
+      <extension
+            point="org.jboss.ide.eclipse.as.core.pollerTimeoutListener">
+         <pollerTimeoutListener
+               listener="org.jboss.ide.eclipse.as.ui.views.server.TwiddlePollerListener"
+               pollerType="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"/>
+      </extension>
+   
    
 </plugin>

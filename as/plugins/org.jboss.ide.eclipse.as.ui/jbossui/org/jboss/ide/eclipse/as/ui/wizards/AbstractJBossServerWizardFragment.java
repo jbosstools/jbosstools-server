@@ -26,27 +26,18 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.preference.IPreferenceNode;
-import org.eclipse.jface.preference.PreferenceDialog;
-import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -54,7 +45,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -63,12 +53,9 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.runtime.JBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ASDebug;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.util.JBossConfigurationTableViewer;
 
 public class AbstractJBossServerWizardFragment extends WizardFragment {
 	//private final static int UNKNOWN_CHANGED = 0;
@@ -97,7 +84,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 	
 	private IVMInstall selectedVM;
 	private JBossServer server;
-	private JBossServerRuntime runtime;
+	private IJBossServerRuntime runtime;
 	
 
 	
@@ -392,19 +379,19 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		if( wc instanceof RuntimeWorkingCopy ) {
 			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy)wc;
 			homeDirText.setText(rwc.getLocation().toOSString());
-			configText.setText(rwc.getAttribute(JBossServerRuntime.PROPERTY_CONFIGURATION_NAME, ""));
+			configText.setText(rwc.getAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, ""));
 			
 			
 			String[] vmNames = jreCombo.getItems();
-			IVMInstallType vmInstallType = JavaRuntime.getVMInstallType(rwc.getAttribute(JBossServerRuntime.PROPERTY_VM_TYPE_ID, ""));
-			String vmId = rwc.getAttribute(JBossServerRuntime.PROPERTY_VM_ID, "");
+			IVMInstallType vmInstallType = JavaRuntime.getVMInstallType(rwc.getAttribute(IJBossServerRuntime.PROPERTY_VM_TYPE_ID, ""));
+			String vmId = rwc.getAttribute(IJBossServerRuntime.PROPERTY_VM_ID, "");
 			
 			IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
 			
 			int comboIndex = -1;
 			for (int i = 0; i < vmNames.length && comboIndex == -1; i++) {
 				for( int j = 0; j < vmInstalls.length && comboIndex == -1; j++ ) {
-					ASDebug.p("comparing " + vmNames[i] + " with " + vmInstalls[j].getName(), this);
+//					ASDebug.p("comparing " + vmNames[i] + " with " + vmInstalls[j].getName(), this);
 					if (vmNames[i].equals(vmInstalls[j].getName()) && vmInstalls[j].getId().equals(vmId))
 						comboIndex = i;
 				}
@@ -422,7 +409,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		runtime = (JBossServerRuntime) r.loadAdapter(JBossServerRuntime.class, null);
+		runtime = (IJBossServerRuntime) r.loadAdapter(IJBossServerRuntime.class, null);
 
 
 		
@@ -438,12 +425,6 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		if( server == null ) {
 			server = (JBossServer) serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		}
-		
-		try {
-			server.setRuntime(runtime);
-		} catch( Exception e ) {
-		}
-		
 	}
 
 	public boolean isComplete() {

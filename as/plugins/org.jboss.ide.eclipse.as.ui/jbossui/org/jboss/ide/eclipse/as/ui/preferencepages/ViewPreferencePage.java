@@ -51,8 +51,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.part.PageBook;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin.ServerViewProvider;
-import org.jboss.ide.eclipse.as.ui.views.JBossServerView;
+import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 
 public class ViewPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -65,7 +65,7 @@ public class ViewPreferencePage extends PreferencePage implements
 	private ArrayList preferenceComposites;
 	private PageBook book;
 	private Composite mainComposite;
-	ServerViewProvider[] providers;
+	private ServerViewProvider[] providers;
 	
 	
 	public ViewPreferencePage() {

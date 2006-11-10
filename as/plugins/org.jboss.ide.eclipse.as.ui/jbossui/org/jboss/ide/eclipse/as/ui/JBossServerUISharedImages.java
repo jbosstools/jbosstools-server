@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.osgi.framework.Bundle;
 
 /**
@@ -41,12 +42,9 @@ public class JBossServerUISharedImages {
 	public static final String WIZBAN_JBOSS32_LOGO = "jboss32logo";
 	public static final String WIZBAN_JBOSS40_LOGO = "jboss40logo";
 	
-	public static final String CONSOLE_IMAGE = "CONSOLE_IMAGE";
-	public static final String PUBLISH_IMAGE = "PUBLISH_IMAGE";
-	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE";
 	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE";
 	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE";
-	
+	public static final String GENERIC_SERVER_IMAGE = "GENERIC_SERVER_IMAGE";
 	
 	
 	private static JBossServerUISharedImages instance;
@@ -66,22 +64,20 @@ public class JBossServerUISharedImages {
 		descriptors.put(WIZBAN_JBOSS32_LOGO, createImageDescriptor(pluginBundle, "/icons/logo32.gif"));
 		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif"));
 		
-		
-		descriptors.put(CONSOLE_IMAGE, createImageDescriptor(pluginBundle, "/icons/console.gif"));
-		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
-		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
-		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "/icons/twiddle.gif"));
+		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
 		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
-		
-		
+
 		Iterator iter = descriptors.keySet().iterator();
-		while (iter.hasNext())
-		{
+
+		while (iter.hasNext()) {
 			String key = (String) iter.next();
 			ImageDescriptor descriptor = descriptor(key);
 			images.put(key,  descriptor.createImage());	
 		}
 		
+		
+		images.put(GENERIC_SERVER_IMAGE, ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_NEW_SERVER).createImage());
+		descriptors.put(GENERIC_SERVER_IMAGE, ImageDescriptor.createFromImage((Image)images.get(GENERIC_SERVER_IMAGE)));
 	}
 	
 	private ImageDescriptor createImageDescriptor (Bundle pluginBundle, String relativePath)
