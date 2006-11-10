@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.Trace;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -215,6 +216,10 @@ public class JBossServerView extends StrippedServerView {
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
 		menu.add(newServerAction);
 		menu.add(new Separator());
+		if( getSelectedServer() != null ) {
+			menu.add(new DeleteAction(new Shell(), getSelectedServer()));
+			menu.add(new Separator());
+		}
 		menu.add(actions[1]);
 		menu.add(actions[0]);
 		menu.add(actions[4]);
@@ -225,8 +230,14 @@ public class JBossServerView extends StrippedServerView {
 		menu.add(actions[6]);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		
-		boolean twiddleEnabled = getSelectedServer().getServerState() == IServer.STATE_STARTED;
-		twiddleAction.setEnabled(twiddleEnabled);
+		if( getSelectedServer() != null ) {
+			boolean twiddleEnabled = getSelectedServer().getServerState() == IServer.STATE_STARTED;
+			twiddleAction.setEnabled(twiddleEnabled);
+			editLaunchConfigAction.setEnabled(true);
+		} else {
+			twiddleAction.setEnabled(false);
+			editLaunchConfigAction.setEnabled(false);
+		}
 	}
 
 	
