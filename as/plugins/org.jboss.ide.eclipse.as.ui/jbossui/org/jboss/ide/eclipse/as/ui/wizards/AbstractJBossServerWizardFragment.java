@@ -47,9 +47,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
@@ -144,6 +147,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		nameLabel.setText(Messages.wizardFragmentNameLabel);
 		
 		nameText = new Text(nameComposite, SWT.BORDER);
+		nameText.setText(getDefaultNameText());
 		nameText.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
@@ -164,6 +168,23 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		nameText.setLayoutData(nameTextData);
 	}
 	
+	private String getDefaultNameText() {
+		String base = "JBoss-server";
+		if( findServer(base) == null ) return base;
+		int i = 1;
+		while( ServerCore.findServer(base + " " + i) != null ) 
+			i++;
+		return base + " " + i;
+	}
+	private IServer findServer(String name) {
+		IServer[] servers = ServerCore.getServers();
+		for( int i = 0; i < servers.length; i++ ) {
+			Server server = (Server) servers[i];
+			if (name.equals(server.getName()))
+				return server;
+		}
+		return null;
+	}
 	private void createHomeComposite(Composite main) {
 		// Create our composite
 		homeDirComposite = new Composite(main, SWT.NONE);

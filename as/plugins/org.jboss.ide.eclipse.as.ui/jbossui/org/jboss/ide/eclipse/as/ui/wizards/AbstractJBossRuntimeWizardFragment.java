@@ -115,6 +115,8 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		pristine = isPristineRuntime();
 		if( !pristine ) {
 			fillWidgets();
+		} else {
+			setWidgetDefaults();
 		}
 		//initTaskModel();
 		
@@ -157,6 +159,22 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 			}
 			
 		}
+	}
+	
+	private void setWidgetDefaults() {
+		nameText.setText(generateNewRuntimeName());
+		homeDirText.setText("");
+	}
+	private String generateNewRuntimeName() {
+		String base = "JBoss-runtime";
+		IRuntime rt = ServerCore.findRuntime(base);
+		if( rt == null ) return base;
+		
+		int i = 1;
+		while( rt != null ) {
+			rt = ServerCore.findRuntime(base + " " + i++);
+		}
+		return base + " " + i;
 	}
 	
 	private RuntimeWorkingCopy getRuntimeWorkingCopy() {
