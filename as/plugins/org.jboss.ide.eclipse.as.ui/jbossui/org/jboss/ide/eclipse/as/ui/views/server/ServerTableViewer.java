@@ -15,12 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -29,7 +26,6 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionFactory;
@@ -47,7 +43,7 @@ import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerActionHelper;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerTableLabelProvider;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCore;
 /**
  * Tree view showing servers and their associations.
  * This is for the TOP window
@@ -88,8 +84,7 @@ public class ServerTableViewer extends TreeViewer {
 	
 	public class TrimmedServerContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 		public Object[] getElements(Object element) {
-			//return JBossServerCore.getIServerJBossServers();
-			return ServerCore.getServers();
+			return JBossServerCore.getIServerJBossServers();
 		}
 
 		public void inputChanged(Viewer theViewer, Object oldInput, Object newInput) {
