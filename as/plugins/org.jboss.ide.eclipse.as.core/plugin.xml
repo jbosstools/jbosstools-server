@@ -131,7 +131,12 @@
        </moduleFactory>
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.XMLModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.XmlFactory"/>
+            id="org.jboss.ide.eclipse.as.core.XmlFactory"
+            projects="false">
+         <moduleType
+               types="jboss.xml"
+               versions="1.0"/>
+      </moduleFactory>
    </extension>
    
    	<extension
@@ -303,6 +308,15 @@
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
         runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40"
         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleTypes">
+      <moduleType
+            id="jboss.archive"
+            name="Archive Module"/>
+      <moduleType
+            id="jboss.xml"
+            name="XML Module"/>
    </extension>
    
 
