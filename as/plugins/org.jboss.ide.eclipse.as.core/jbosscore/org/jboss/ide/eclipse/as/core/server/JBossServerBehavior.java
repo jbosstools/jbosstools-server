@@ -82,14 +82,18 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			return;
 		}
 		
-		
-		// Otherwise execute a shutdown attempt
-		try {
-			// Set up our launch configuration for a STOP call (to shutdown.jar)
-			ILaunchConfiguration wc = JBossServerLaunchConfiguration.setupLaunchConfiguration(getServer(), JBossServerLaunchConfiguration.STOP);
-			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-		} catch( Exception e ) {
-		}
+		Thread t = new Thread() {
+			public void run() {
+				// Otherwise execute a shutdown attempt
+				try {
+					// Set up our launch configuration for a STOP call (to shutdown.jar)
+					ILaunchConfiguration wc = JBossServerLaunchConfiguration.setupLaunchConfiguration(getServer(), JBossServerLaunchConfiguration.STOP);
+					wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
+				} catch( Exception e ) {
+				}
+			}
+		};
+		t.start();
 	}
 	
 	protected void forceStop() {
@@ -201,7 +205,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
 			ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
 				
-			boolean behavior = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, true);
+			boolean behavior = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
 			if( behavior == IServerPollingAttributes.TIMEOUT_ABORT ) 
 				return !expectedState;
 
