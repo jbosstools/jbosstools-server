@@ -71,7 +71,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 	private final static int SEVERITY_MAJOR = 2;
 	
 	private IWizardHandle handle;
-	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel;// configLabel; 
+	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel, explanationLabel; 
 	private Text nameText, homeDirText, configText;
 	private Combo jreCombo;
 	private Composite nameComposite, homeDirComposite, jreComposite, configComposite;
@@ -82,7 +82,6 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 	protected ArrayList installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
-//	private JBossConfigurationTableViewer configurations;
 
 	
 	private IVMInstall selectedVM;
@@ -105,6 +104,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		
 		
 		updateJREs();
+		createExplanationLabel(main);
 		createNameComposite(main);
 		
 		g = new Group(main, SWT.NONE);
@@ -128,6 +128,17 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		//handle.setImageDescriptor (getImageDescriptor());
 		return main;
 	}
+	
+	private void createExplanationLabel(Composite main) {
+		explanationLabel = new Label(main, SWT.NONE);
+		FormData data = new FormData();
+		data.top = new FormAttachment(0,5);
+		data.left = new FormAttachment(0,5);
+		data.right = new FormAttachment(100,-5);
+		explanationLabel.setLayoutData(data);
+		
+		explanationLabel.setText(Messages.serverWizardFragmentExplanation);
+	}
 
 	private void createNameComposite(Composite main) {
 		// Create our name composite
@@ -136,7 +147,7 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(0, 10);
+		cData.top = new FormAttachment(explanationLabel, 10);
 		nameComposite.setLayoutData(cData);
 		
 		nameComposite.setLayout(new FormLayout());

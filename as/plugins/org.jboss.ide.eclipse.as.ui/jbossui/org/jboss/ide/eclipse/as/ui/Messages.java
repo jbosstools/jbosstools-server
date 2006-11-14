@@ -35,6 +35,8 @@ public class Messages {
 	public static String wizardFragmentJRELabel;
 	public static String installedJREs;
 	public static String wizardFragmentConfigLabel;
+	public static String runtimeWizardFragmentExplanation;
+	public static String serverWizardFragmentExplanation;
 	public static String serverNameInUse;
 	public static String runtimeNameInUse;
 	public static String invalidDirectory;

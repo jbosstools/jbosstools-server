@@ -228,8 +228,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 		stopSpinner.setMinimum(0);
 		startSpinner.setMinimum(0);
-		stopSpinner.setIncrement(1000);
-		startSpinner.setIncrement(1000);
+		stopSpinner.setIncrement(1);
+		startSpinner.setIncrement(1);
 		
 		Label uponTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
 		abortOnTimeout = new Button(timeoutGroup, SWT.RADIO);
@@ -270,12 +270,12 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 		startSpinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setAttribute(IServerPollingAttributes.START_TIMEOUT, startSpinner.getSelection());
+				getSelectedWC().setAttribute(IServerPollingAttributes.START_TIMEOUT, startSpinner.getSelection() * 1000);
 			} 
 		});
 		stopSpinner.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setAttribute(IServerPollingAttributes.STOP_TIMEOUT, stopSpinner.getSelection());
+				getSelectedWC().setAttribute(IServerPollingAttributes.STOP_TIMEOUT, stopSpinner.getSelection() * 1000);
 			} 
 		});
 		
@@ -303,8 +303,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		ServerAttributeHelper wcHelper = getWCHelper(server);
 		
 		/* Handle spinners */
-		startSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStartTimeout());
-		stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout());
+		startSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStartTimeout() / 1000);
+		stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout() / 1000);
 		startSpinner.setSelection(getStartTimeout(wcHelper));
 		stopSpinner.setSelection(getStopTimeout(wcHelper));
 		
@@ -322,15 +322,15 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		int prop = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, -1);
 		int max = ((ServerType)helper.getServer().getServerType()).getStartTimeout();
 		
-		if( prop <= 0 || prop > max ) return max;
-		return prop;
+		if( prop <= 0 || prop > max ) return max / 1000;
+		return prop / 1000;
 	}
 	public int getStopTimeout(ServerAttributeHelper helper) {
 		int prop = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, -1);
 		int max = ((ServerType)helper.getServer().getServerType()).getStopTimeout();
 		
-		if( prop <= 0 || prop > max ) return max;
-		return prop;
+		if( prop <= 0 || prop > max ) return max / 1000;
+		return prop / 1000;
 	}
 
 	

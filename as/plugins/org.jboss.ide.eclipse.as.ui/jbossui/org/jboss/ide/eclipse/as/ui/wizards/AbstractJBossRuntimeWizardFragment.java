@@ -79,7 +79,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	private final static int SEVERITY_MAJOR = 2;
 	
 	private IWizardHandle handle;
-	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel; 
+	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel, explanationLabel; 
 	private Text nameText, homeDirText;
 	private Combo jreCombo;
 	private Button homeDirButton, jreButton;
@@ -106,11 +106,12 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		main.setLayout(new FormLayout());
 		
 		updateJREs();
+		createExplanation(main);
 		createNameComposite(main);
 		createHomeComposite(main);
 		createJREComposite(main);
 		createConfigurationComposite(main);
-		
+
 		// If it's an already filled runtime (ie not new) fill our widgets
 		pristine = isPristineRuntime();
 		if( !pristine ) {
@@ -163,7 +164,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	
 	private void setWidgetDefaults() {
 		nameText.setText(generateNewRuntimeName());
-		homeDirText.setText("");
+		homeDirText.setText("c:/program files/jboss-4.0.5.ga");
 	}
 	private String generateNewRuntimeName() {
 		String base = "JBoss-runtime";
@@ -202,6 +203,17 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		return true;
 	}
 	
+	private void createExplanation(Composite main) {
+		explanationLabel = new Label(main, SWT.WRAP);
+		FormData data = new FormData();
+		data.top = new FormAttachment(0,5);
+		data.left = new FormAttachment(0,5);
+		data.right = new FormAttachment(100,-5);
+		explanationLabel.setLayoutData(data);
+		
+		explanationLabel.setText(Messages.runtimeWizardFragmentExplanation);
+	}
+	
 	private void createNameComposite(Composite main) {
 		// Create our name composite
 		nameComposite = new Composite(main, SWT.NONE);
@@ -209,7 +221,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(0, 10);
+		cData.top = new FormAttachment(explanationLabel, 10);
 		nameComposite.setLayoutData(cData);
 		
 		nameComposite.setLayout(new FormLayout());
