@@ -38,6 +38,8 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
@@ -116,20 +118,38 @@ public class JBossServer extends ServerDelegate implements IServerStartupParamet
 	
 	
 	
-	// TODO: PUT SOMEWHERE ELSE
+	public String getConfigDirectory() {
+		return getConfigDirectory(true);
+	}
 	public String getDeployDirectory() {
-		String deployDir = getLaunchConfigDeployDir();
-		if( deployDir == null )  
-			return getRuntimeDeployDirectory();
+		return getDeployDirectory(true);
+	}
 
-		File f = new File(deployDir);
-		if( !f.exists() || !f.canRead() || !f.isDirectory())
-			return getRuntimeDeployDirectory();
-
-		return deployDir;
+	public ServerDescriptorModel getDescriptorModel() {
+		String configPath = getConfigDirectory();
+		return DescriptorModel.getDefault().getServerModel(new Path(configPath));
 	}
 	
-	protected String getLaunchConfigDeployDir() {
+	public String getConfigDirectory(boolean checkLaunchConfig) {
+		if( !checkLaunchConfig ) 
+			return getRuntimeConfigDirectory();
+		
+		String configDir = getLaunchConfigConfigurationDirectory();
+		if( configDir == null )  
+			return getRuntimeConfigDirectory();
+
+		File f = new File(configDir);
+		if( !f.exists() || !f.canRead() || !f.isDirectory())
+			return getRuntimeConfigDirectory();
+
+		return configDir;
+	}
+	
+	public String getDeployDirectory(boolean checkLaunchConfig) {
+		return getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY;
+	}
+
+	protected String getLaunchConfigConfigurationDirectory() {
 		try {
 			Server s = (Server)getServer();
 			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
@@ -138,32 +158,28 @@ public class JBossServer extends ServerDelegate implements IServerStartupParamet
 			Map map = ArgsUtil.getSystemProperties(startArgs);
 			
 			if( map.get(JBOSS_SERVER_HOME_DIR) != null ) 
-				return (String)map.get(JBOSS_SERVER_HOME_DIR) + Path.SEPARATOR + DEPLOY;
+				return (String)map.get(JBOSS_SERVER_HOME_DIR);
 
 			if( map.get(JBOSS_SERVER_BASE_DIR) != null ) {
 				String name = map.get(JBOSS_SERVER_NAME) != null ? 
 						(String)map.get(JBOSS_SERVER_NAME) : DEFAULT_SERVER_NAME;
-				return (String)map.get(JBOSS_SERVER_BASE_DIR) + Path.SEPARATOR + name + Path.SEPARATOR + DEPLOY;
+				return (String)map.get(JBOSS_SERVER_BASE_DIR) + Path.SEPARATOR + name;
 			}
 			
 			if( map.get(JBOSS_HOME_DIR) != null ) {
 				return (String)map.get(JBOSS_HOME_DIR) + Path.SEPARATOR + SERVER 
-					+ Path.SEPARATOR + DEFAULT_SERVER_NAME + Path.SEPARATOR + DEPLOY;
+					+ Path.SEPARATOR + DEFAULT_SERVER_NAME;
 			}
-
-			return null;
 		} catch( CoreException ce ) {
-			return null;
 		}
+		return null;
 	}
-	
-	// The deploy directory of the configuration in the runtime
-	protected String getRuntimeDeployDirectory() {
-		IJBossServerRuntime runtime = (IJBossServerRuntime)
-		getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 
+	protected String getRuntimeConfigDirectory() {
+		IJBossServerRuntime runtime = (IJBossServerRuntime)
+			getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 		return getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + "server" + 
-		Path.SEPARATOR + runtime.getJBossConfiguration() + Path.SEPARATOR + "deploy";
+			Path.SEPARATOR + runtime.getJBossConfiguration();
 	}
 	
 }

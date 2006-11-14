@@ -66,34 +66,29 @@ public class DescriptorModel {
 		map = new HashMap();
 	}
 
-	public ServerDescriptorModel getServerModel(IPath home, IPath configName) {
-		String key = home.toOSString() + "::" + configName.toOSString();
+	public ServerDescriptorModel getServerModel(IPath configPath) {
+		String key = configPath.toOSString();
 		Object o = map.get(key);
 		if( o == null ) {
-			o = createEntity(home, configName);
+			o = createEntity(configPath);
 		}
 		return (ServerDescriptorModel)o;
 	}
 	
-	private ServerDescriptorModel createEntity(IPath home, IPath configName) {
-		ServerDescriptorModel val = new ServerDescriptorModel(home.toOSString(), configName.toOSString());
-		map.put(home.toOSString() + configName.toOSString(), val);
+	private ServerDescriptorModel createEntity(IPath configPath) {
+		ServerDescriptorModel val = new ServerDescriptorModel(configPath.toOSString());
+		map.put(configPath.toOSString(), val);
 		return val;
 	}
 
 	public static class ServerDescriptorModel {
-		private String home, config, key;
 		private String configPath;
 		
 		private HashMap pathToDocument;
 		private HashMap pathToLastRead;
 		
-		public ServerDescriptorModel(String home, String config) {
-			this.key = home + "::" + config;
-			this.home = home;
-			this.config = config;
-			configPath = + Path.SEPARATOR + "server" + Path.SEPARATOR + config;
-			
+		public ServerDescriptorModel(String configPath) {
+			this.configPath = configPath;
 			pathToDocument = new HashMap();
 			pathToLastRead = new HashMap();
 		}
