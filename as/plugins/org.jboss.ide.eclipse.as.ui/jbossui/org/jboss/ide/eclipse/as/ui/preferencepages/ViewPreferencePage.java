@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -61,6 +62,9 @@ public class ViewPreferencePage extends PreferencePage implements
 	private static final String WEIGHT = "_WEIGHT_";
 	
 	private Table table;
+	
+	private Label mainDescriptionLabel, preferenceCompositeDescriptionLabel;
+	
 	private HashMap providerToGroup;
 	private ArrayList preferenceComposites;
 	private PageBook book;
@@ -164,12 +168,22 @@ public class ViewPreferencePage extends PreferencePage implements
 	}
 
 	protected void addEnablementComposite(Composite parent) {
+				mainDescriptionLabel = new Label(parent, SWT.WRAP);
+		        FormData labelData = new FormData();
+		        labelData.left = new FormAttachment(0,5);
+		        labelData.right = new FormAttachment(100, -5);
+		        labelData.top = new FormAttachment(0,5);
+				mainDescriptionLabel.setLayoutData(labelData);
+		
+				mainDescriptionLabel.setText(Messages.ViewExtensionEnablementDescription);
+				
+				
 		        table = new Table(parent, SWT.BORDER);
 		        
 		        FormData tableData = new FormData();
 		        tableData.left = new FormAttachment(0,5);
 		        tableData.right = new FormAttachment(100, -5);
-		        tableData.top = new FormAttachment(0,5);
+		        tableData.top = new FormAttachment(mainDescriptionLabel,5);
 		        tableData.bottom = new FormAttachment(40,0);
 		        table.setLayoutData(tableData);
 		        
@@ -252,10 +266,20 @@ public class ViewPreferencePage extends PreferencePage implements
 	}
 	
 	protected void addExtensionPreferencePages(Composite parent) {
+		
+		preferenceCompositeDescriptionLabel = new Label(parent, SWT.WRAP);
+        FormData labelData = new FormData();
+        labelData.left = new FormAttachment(0,5);
+        labelData.right = new FormAttachment(100, -5);
+        labelData.top = new FormAttachment(45,5);
+        preferenceCompositeDescriptionLabel.setLayoutData(labelData);
+
+		preferenceCompositeDescriptionLabel.setText(Messages.ViewExtensionPreferenceDescription);
+
 		ScrolledComposite sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
 		FormData scData = new FormData();
 		scData.left = new FormAttachment(0,5);
-		scData.top = new FormAttachment(45, 0);
+		scData.top = new FormAttachment(preferenceCompositeDescriptionLabel, 5);
 		scData.right = new FormAttachment(100, -5);
 		scData.bottom = new FormAttachment(100, -5);
 		sc.setLayoutData(scData);

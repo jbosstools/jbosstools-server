@@ -137,6 +137,8 @@ public class Messages {
 	public static String ViewPreferencePageEnabled;
 	public static String ViewPreferencePageWeight;
 	public static String ViewPreferencePageDescription;
+	public static String ViewExtensionEnablementDescription;
+	public static String ViewExtensionPreferenceDescription;
 	
 	/* Upgrade Wizard to 2.0.0 */
 	public static String UpgradeWizardTitle;
