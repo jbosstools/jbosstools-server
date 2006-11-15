@@ -19,22 +19,32 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime.server.internal;
+package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.runtime.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher.ProcessData;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class TwiddlePoller implements IServerStatePoller {
 
+	public static final String STATUS = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.status";
+	public static final String EXPECTED_STATE = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.expectedState";
+
+	public static final String TYPE_TERMINATED = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_TERMINATED";
+	public static final String TYPE_RESULT = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_RESULT";
+	
+	public static final int STATE_STARTED = 1;
+	public static final int STATE_STOPPED = 0;
+	public static final int STATE_TRANSITION = -1;
+	
 	private boolean expectedState;
 	private int started; 
 	private boolean canceled;
@@ -42,12 +52,13 @@ public class TwiddlePoller implements IServerStatePoller {
 	private IServer server;
 	
 	private PollerRunnable currentRunnable;
-	public void beginPolling(IServer server, boolean expectedState) {
+	private EventLogTreeItem event;
+	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
 		this.expectedState = expectedState;
 		this.canceled = false;
 		this.done = false;
 		this.server = server;
-		
+		event = pt.getActiveEvent();
 		launchTwiddlePoller();
 	}
 
@@ -62,6 +73,7 @@ public class TwiddlePoller implements IServerStatePoller {
 				if( ServerProcessModel.allProcessesTerminated(processes)) {
 					done = true;
 					started = 0;
+					eventAllProcessesTerminated();
 				} else {
 					launcher = new TwiddleLauncher();
 					ProcessData[] datas = launcher.getTwiddleResults(server, args, true);
@@ -69,11 +81,11 @@ public class TwiddlePoller implements IServerStatePoller {
 						ProcessData d = datas[0];
 						String out = d.getOut();
 						if( out.startsWith("Started=true")) {
-							started = 1;
+							started = STATE_STARTED;
 						} else if(out.startsWith("Started=false")) {
-							started = -1; // it's alive and responding
+							started = STATE_TRANSITION; // it's alive and responding
 						} else {
-							started = 0; // It's fully down
+							started = STATE_STOPPED; // It's fully down
 						}
 						
 						if( started == 1 && expectedState == SERVER_UP ) {
@@ -83,6 +95,7 @@ public class TwiddlePoller implements IServerStatePoller {
 						} 
 					}
 				}
+				eventTwiddleExecuted();
 			}
 		}
 
@@ -91,6 +104,14 @@ public class TwiddlePoller implements IServerStatePoller {
 				launcher.setCanceled();
 			}
 		}
+	}
+	public void eventTwiddleExecuted() {
+		TwiddlePollerEvent tpe = new TwiddlePollerEvent(event, TYPE_RESULT, started, expectedState);
+		EventLogModel.markChanged(event);
+	}
+	public void eventAllProcessesTerminated() {
+		TwiddlePollerEvent tpe = new TwiddlePollerEvent(event, TYPE_TERMINATED, started, expectedState);
+		EventLogModel.markChanged(event);
 	}
 	
 	private void launchTwiddlePoller() {
@@ -127,5 +148,17 @@ public class TwiddlePoller implements IServerStatePoller {
 	public boolean isComplete() {
 		return done;
 	}
+	
+	
+	public class TwiddlePollerEvent extends EventLogTreeItem {
+		public TwiddlePollerEvent(SimpleTreeItem parent, String type, int status, boolean expectedState) {
+			super(parent, null, type);
+			setProperty(EXPECTED_STATE, new Boolean(expectedState));
+			setProperty(STATUS, new Integer(status));
+			//System.out.println("type:state:status = " + type + ":" + expectedState + ":" + status);
+		}
+	}
+	
+	
 
 }

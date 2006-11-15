@@ -2,6 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
    <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
+   <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
  
    <extension
          point="org.eclipse.wst.server.ui.serverImages"> 
@@ -141,6 +142,12 @@
             id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
             name="Inactive Categories"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
+      <ViewProvider
+            description="A place to view server-related events"
+            icon="icons/file-info.png"
+            id="org.jboss.ide.eclipse.as.ui.EventLogViewProvider"
+            name="Event Log"
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.EventLogViewProvider"/>
 <!--      <ViewProvider
             description="descriptor xpaths"
             icon="icons/xml.gif"
@@ -181,6 +188,10 @@
          <selectionProvider
                class="org.jboss.ide.eclipse.as.ui.wizards.initialSelectionProvider"
                id="org.jboss.ide.eclipse.as.ui.jboss40SelectionProvider"/>
+      </extension>
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.PollingLabelProvider"/>
       </extension>
    
    

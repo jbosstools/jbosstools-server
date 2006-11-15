@@ -40,7 +40,7 @@ public class SimpleTreeItem {
 		if( parent != null ) parent.addChild(this);
 	}	
 	
-	public SimpleTreeItem[] getChildren2() {
+	public SimpleTreeItem[] getChildren() {
 		SimpleTreeItem[] arr = new SimpleTreeItem[children.size()];
 		children.toArray(arr);
 		return arr;
@@ -98,6 +98,13 @@ public class SimpleTreeItem {
 		for( int i = 0; i < kids.length; i++ ) {
 			addChild(kids[i]);
 		}
+	}
+	
+	public SimpleTreeItem getRoot() {
+		SimpleTreeItem item = this;
+		while(item.getParent() != null)
+			item = item.getParent();
+		return item;
 	}
 
 }

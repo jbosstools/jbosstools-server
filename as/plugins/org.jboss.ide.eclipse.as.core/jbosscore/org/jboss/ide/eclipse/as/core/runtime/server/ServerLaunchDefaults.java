@@ -37,8 +37,11 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 
 public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
@@ -56,11 +59,21 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 
 	protected IServer server;
 	protected IJBossServerRuntime runtime;
+	protected JBossServer jbServer;
 	
 	public ServerLaunchDefaults(IServer server) {
 		this.server = server;
 	}
 	
+	protected JBossServer getJBServer() {
+		if( jbServer == null ) {
+			try {
+				jbServer = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+			} catch( Exception e) {
+			}
+		}
+		return jbServer;
+	}
 	protected IJBossServerRuntime getRuntime() {
 		if( runtime == null ) {
 			try {
@@ -93,7 +106,14 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 
 
 		// TODO FIX!
- 		int jndiPort = 1099; //server.getDescriptorModel().getJNDIPort();
+		int jndiPort;
+		try {
+			String serverConfDir = getJBServer().getConfigDirectory(false);
+			ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
+			jndiPort = descriptorModel.getJNDIPort();
+		} catch( Exception e ) {
+			jndiPort = 1099;
+		}
 		String host = server.getHost();
 		String twiddleArgs = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor ";
 

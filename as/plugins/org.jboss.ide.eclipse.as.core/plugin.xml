@@ -185,11 +185,11 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.pollers">
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.internal.TimeoutPoller"
+            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.TimeoutPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
             name="Timeout Poller"/>
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"
+            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.twiddlepoller"
             name="Twiddle Poller"/>
    </extension>

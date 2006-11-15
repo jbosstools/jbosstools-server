@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
+import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
 
 public abstract class JBossServerViewExtension {
 	protected ServerViewProvider provider;
@@ -61,9 +62,15 @@ public abstract class JBossServerViewExtension {
 	}
 	
 	protected void refreshViewer() {
+		refreshViewer(null);
+	}
+	protected void refreshViewer(Object o) {
 		if( isEnabled() ) {
 			try {
-				JBossServerView.getDefault().refreshJBTree(provider);
+				if( o == null )
+					JBossServerView.getDefault().refreshJBTree(provider);
+				else
+					JBossServerView.getDefault().refreshJBTree(new ContentWrapper(o, provider));
 			} catch(Exception e) {
 			}
 		}

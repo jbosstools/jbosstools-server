@@ -257,6 +257,7 @@ public class JBossServerView extends StrippedServerView {
 						JBossServerView.this.jbViewer.refresh();
 						JBossServerView.this.jbViewer.setExpandedElements(expanded);
 					} else {
+						
 						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
 						JBossServerView.this.jbViewer.refresh(obj2);
 						JBossServerView.this.jbViewer.setExpandedElements(expanded);

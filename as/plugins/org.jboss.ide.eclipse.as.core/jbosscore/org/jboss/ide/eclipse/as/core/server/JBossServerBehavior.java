@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import java.util.Date;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -34,21 +32,23 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Module;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
-import org.jboss.ide.eclipse.as.core.runtime.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
-import org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller.TwiddlePollerEvent;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class JBossServerBehavior extends ServerBehaviourDelegate {
 	public static final String LAUNCH_CONFIG_DEFAULT_CLASSPATH = "__JBOSS_SERVER_BEHAVIOR_LAUNCH_CONFIG_DEFAULT_CLASSPATH__";
@@ -101,12 +101,20 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		try {
 			ServerProcessModel.getDefault().getModel(getServer().getId()).clearAll();
 			setServerStopped();
+			EventLogTreeItem tpe = new ForceShutdownEvent();
+			EventLogModel.markChanged(tpe.getEventRoot());
+
 		} catch( Throwable t ) {
 			t.printStackTrace();
 		}
 	}
 
-	
+	public static final String FORCE_SHUTDOWN_EVENT_KEY = "org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.forceShutdown";
+	public class ForceShutdownEvent extends EventLogTreeItem {
+		public ForceShutdownEvent() {
+			super(EventLogModel.getModel(getServer()).getRoot(), null, FORCE_SHUTDOWN_EVENT_KEY);
+		}
+	}
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
 		JBossServerLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer(), JBossServerLaunchConfiguration.START);
@@ -127,105 +135,12 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	
-	public class PollThread extends Thread {
-		private boolean expectedState;
-		private IServerStatePoller poller;
-		private boolean abort;
-		public PollThread(String name, IServerStatePoller poller, boolean expectedState) {
-			super(name);
-			this.expectedState = expectedState;
-			this.poller = poller;
-			this.abort = false;
-		}
-		
-		public void cancel() {
-			abort = true;
-		}
-
-		
-		// Getting the timeouts. First from plugin.xml as default, or from user settings.
-		public int getTimeout() {
-			int timeout;
-			JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
-			ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
-			if( expectedState == IServerStatePoller.SERVER_UP) {
-				int def = ((ServerType)getServer().getServerType()).getStartTimeout();
-				timeout = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, def);
-			} else {
-				int def = ((ServerType)getServer().getServerType()).getStopTimeout();
-				timeout = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, def);
-			}
-			return timeout;
-		}
-		
-		
-		public void run() {
-			int maxWait = getTimeout();
-
-			long startTime = new Date().getTime();
-			boolean done = false;
-			poller.beginPolling(getServer(), expectedState);
-			while( !abort && !done && new Date().getTime() < startTime + maxWait ) {
-				try {
-					Thread.sleep(100);
-					done = poller.isComplete();
-				} catch( InterruptedException ie ) { }
-			}
-			boolean currentState = !expectedState;
-			if( abort ) {
-				poller.cancel(IServerStatePoller.CANCEL);
-				poller.cleanup();
-			} else {
-			
-				if( done ) {
-					// the poller has an answer
-					currentState = poller.getState();
-					poller.cleanup();
-				} else {
-					// we timed out.  get response from preferences
-					poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
-					currentState = getTimeoutBehavior();
-					poller.cleanup();
-					fireTimeoutEvent();
-				}
-				
-				if( currentState != expectedState ) {
-					// it didnt work... cancel all processes!
-					forceStop();
-				} else {
-					if( currentState == IServerStatePoller.SERVER_UP ) 
-						setServerStarted();
-					else
-						setServerStopped();
-				}
-			}
-		}
-		protected boolean getTimeoutBehavior() {
-			// timeout has been reached, so let the user's preferences override
-			JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
-			ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
-				
-			boolean behavior = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
-			if( behavior == IServerPollingAttributes.TIMEOUT_ABORT ) 
-				return !expectedState;
-
-			return expectedState;
-		}
-		
-		protected void fireTimeoutEvent() {
-			IServerPollerTimeoutListener[] listeners = 
-				JBossServerCore.getDefault().getTimeoutListeners(poller.getClass().getName());
-			for( int i = 0; i < listeners.length; i++ ) {
-				listeners[i].serverTimedOut(getServer(), expectedState);
-			}
-		}
-	}
 
 	protected void pollServer(final boolean expectedState) {
 		if( this.pollThread != null ) {
 			pollThread.cancel();
 		}
-		this.pollThread = new PollThread("Server Poller", new TwiddlePoller(), expectedState);
+		this.pollThread = new PollThread("Server Poller", new TwiddlePoller(), expectedState, this);
 //		this.pollThread = new PollThread("Server Poller", new TimeoutPoller(), expectedState);
 		pollThread.start();
 	}
@@ -309,19 +224,19 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	/*
 	 * Change the state of the server
 	 */
-	private void setServerStarted() {
+	public void setServerStarted() {
 		setServerState(IServer.STATE_STARTED);
 	}
 	
-	private void setServerStarting() {
+	public void setServerStarting() {
 		setServerState(IServer.STATE_STARTING);
 	}
 	
-	private void setServerStopped() {
+	public void setServerStopped() {
 		setServerState(IServer.STATE_STOPPED);
 	}
 	
-	private void setServerStopping() {
+	public void setServerStopping() {
 		setServerState(IServer.STATE_STOPPING);
 	}
 

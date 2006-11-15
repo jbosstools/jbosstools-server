@@ -19,23 +19,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerAttributes;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.swt.graphics.Image;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 
-public interface IServerStatePoller extends IServerPollingAttributes {
-	
-	public static final boolean SERVER_UP = true;
-	public static final boolean SERVER_DOWN = false;
-	
-	public static final int CANCEL = 0;
-	public static final int TIMEOUT_REACHED = 1;
-	
-	public void beginPolling(IServer server, boolean expectedState); // expected to launch own thread
-	public boolean isComplete();
-	public boolean getState(); 
-	public void cancel(int type);    // cancel the polling
-	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
+/**
+ *
+ * @author rob.stryker@jboss.com
+ */
+public interface IEventLogLabelProvider extends ILabelProvider {
+	public boolean supports( String type );
+	public Image getImage(EventLogTreeItem item);
+	public String getText(EventLogTreeItem item);
 }
