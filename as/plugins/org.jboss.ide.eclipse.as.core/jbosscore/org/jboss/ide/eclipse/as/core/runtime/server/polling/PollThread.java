@@ -177,27 +177,26 @@ public class PollThread extends Thread {
 	}
 	
 	protected void alertEventLogAbort() {
-		PollThreadEvent event = new PollThreadEvent(eventRoot, POLL_THREAD_ABORTED, expectedState);
-		EventLogModel.markChanged(eventRoot);
+		PollThreadEvent event = new PollThreadEvent(activeEvent, POLL_THREAD_ABORTED, expectedState);
+		EventLogModel.markChanged(activeEvent);
 	}
 	protected void alertEventLogTimeout() {
-		PollThreadEvent event = new PollThreadEvent(eventRoot, POLL_THREAD_TIMEOUT, expectedState);
-		EventLogModel.markChanged(eventRoot);
+		PollThreadEvent event = new PollThreadEvent(activeEvent, POLL_THREAD_TIMEOUT, expectedState);
+		EventLogModel.markChanged(activeEvent);
 	}
 	protected void alertEventLogFailure() {
 		PollThreadEvent event = new PollThreadEvent(eventRoot, FAILURE, expectedState);
 		EventLogModel.markChanged(eventRoot);
 	}
 	protected void alertEventLogSuccess(boolean currentState) {
-		PollThreadEvent event = new PollThreadEvent(eventRoot, SUCCESS, expectedState);
-		EventLogModel.markChanged(eventRoot);
+		PollThreadEvent event = new PollThreadEvent(activeEvent, SUCCESS, expectedState);
+		EventLogModel.markChanged(activeEvent);
 	}
 
 	public class PollThreadEvent extends EventLogTreeItem {
 		public PollThreadEvent(SimpleTreeItem parent, String type, boolean expectedState) {
 			super(parent, type);
 			setProperty(EXPECTED_STATE, new Boolean(expectedState));
-			//System.out.println("type:state = " + type + ":" + expectedState);
 		}
 		
 		public boolean getExpectedState() {
