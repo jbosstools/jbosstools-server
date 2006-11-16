@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
+import java.util.Properties;
+
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
@@ -33,4 +35,5 @@ public interface IEventLogLabelProvider extends ILabelProvider {
 	public boolean supports( String type );
 	public Image getImage(EventLogTreeItem item);
 	public String getText(EventLogTreeItem item);
+	public Properties getProperties(EventLogTreeItem item);
 }

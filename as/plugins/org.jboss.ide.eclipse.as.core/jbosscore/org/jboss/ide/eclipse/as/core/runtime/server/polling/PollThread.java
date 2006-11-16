@@ -197,6 +197,7 @@ public class PollThread extends Thread {
 		public PollThreadEvent(SimpleTreeItem parent, String type, boolean expectedState) {
 			super(parent, type);
 			setProperty(EXPECTED_STATE, new Boolean(expectedState));
+			setProperty(DATE, new Long(new Date().getTime()));
 		}
 		
 		public boolean getExpectedState() {

@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
  * @author rob.stryker@jboss.com
  */
 public class EventLogModel {
+	public static final String JBOSS_EVENT_ROOT_TYPE = "jboss.event.root";
 	private static EventLogModel instance;
 	public static EventLogModel getDefault() {
 		if( instance == null )
@@ -101,9 +102,13 @@ public class EventLogModel {
 		public EventLogRoot getRoot() {
 			return root;
 		}
+		public void clearEvents() {
+			root.deleteChildren();
+		}
 	}
 	
 	public static class EventLogTreeItem extends SimpleTreeItem {
+		public static final String DATE = "org.jboss.ide.eclipse.as.core.model.EventLogTreeItem.Date";
 		private String type;
 		public EventLogTreeItem(SimpleTreeItem parent, String type) {
 			super(parent, null);
@@ -128,7 +133,7 @@ public class EventLogModel {
 	public static class EventLogRoot extends EventLogTreeItem {
 		protected ServerEventModel model;
 		public EventLogRoot(ServerEventModel model) {
-			super(null, null, "jboss.event.root");
+			super(null, null, JBOSS_EVENT_ROOT_TYPE);
 			this.model = model;
 		}
 		public ServerEventModel getModel() {

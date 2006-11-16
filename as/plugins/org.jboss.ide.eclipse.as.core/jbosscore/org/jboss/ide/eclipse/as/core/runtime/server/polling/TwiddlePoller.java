@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
+import java.util.Date;
+
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
@@ -36,7 +38,6 @@ import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 public class TwiddlePoller implements IServerStatePoller {
 
 	public static final String STATUS = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.status";
-	public static final String EXPECTED_STATE = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.expectedState";
 
 	public static final String TYPE_TERMINATED = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_TERMINATED";
 	public static final String TYPE_RESULT = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_RESULT";
@@ -153,9 +154,9 @@ public class TwiddlePoller implements IServerStatePoller {
 	public class TwiddlePollerEvent extends EventLogTreeItem {
 		public TwiddlePollerEvent(SimpleTreeItem parent, String type, int status, boolean expectedState) {
 			super(parent, null, type);
-			setProperty(EXPECTED_STATE, new Boolean(expectedState));
+			setProperty(PollThread.EXPECTED_STATE, new Boolean(expectedState));
 			setProperty(STATUS, new Integer(status));
-			//System.out.println("type:state:status = " + type + ":" + expectedState + ":" + status);
+			setProperty(DATE, new Long(new Date().getTime()));
 		}
 	}
 	

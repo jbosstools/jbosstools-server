@@ -36,128 +36,128 @@ public class PropertySheetFactory {
 	 * It has a tree-table and a text box and the two can be moved around.
 	 * @return
 	 */
-	public static PropertiesTextSashPropertiesPage createPropertiesTextSashPropertiesPage() {
-		return new PropertiesTextSashPropertiesPage();
-	}
-	
-	public static class PropertiesTextSashPropertiesPage implements IPropertySheetPage {
-		
-		protected TreeViewer propertiesViewer;
-		protected SashForm propertiesForm;
-		protected Text propertiesText;
-		protected int[] propertyCols; // For the property columns
-		protected int[] sashCols; // for the properties sashform
-
-
-		public void createControl(Composite parent) {
-			setProperties();
-			addPropertyViewer(parent);
-		}
-
-		private void setProperties() {
-			sashCols = new int[2];
-			sashCols[0] = 100;
-			sashCols[1] = 0;
-			
-			propertyCols = new int[2];
-			propertyCols[0] = 100;
-			propertyCols[1] = 100;
-		}
-
-		private void addPropertyViewer(Composite form) {
-			propertiesForm = new SashForm(form, SWT.HORIZONTAL);
-			propertiesForm.setLayout(new FillLayout());
-			
-			Composite c1 = new Composite(propertiesForm, SWT.NONE);
-			c1.setLayout(new FillLayout());
-			Tree tTable = new Tree(c1, SWT.SINGLE | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NONE);
-			tTable.setHeaderVisible(true);
-			tTable.setLinesVisible(true);
-			tTable.setLayoutData(new GridData(GridData.FILL_BOTH));
-			tTable.setFont(c1.getFont());
-
-			TreeColumn column = new TreeColumn(tTable, SWT.SINGLE);
-			column.setText(Messages.property);
-			column.setWidth(propertyCols[0]);
-			
-			TreeColumn column2 = new TreeColumn(tTable, SWT.SINGLE);
-			column2.setText(Messages.value);
-			column2.setWidth(propertyCols[1]);
-
-			propertiesViewer = new TreeViewer(tTable);
-			
-			Composite c2 = new Composite(propertiesForm, SWT.NONE);
-			c2.setLayout(new FillLayout());
-			propertiesText = new Text(c2, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
-			
-			propertiesForm.setWeights(sashCols);
-		}
-
-		
-
-		public void dispose() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public Control getControl() {
-			return propertiesForm;
-		}
-
-		public void setActionBars(IActionBars actionBars) {
-		}
-
-		public void setFocus() {
-		}
-
-		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-			try {
-				propertiesViewer.setInput(((IStructuredSelection)selection).getFirstElement());
-			} catch( Exception e ) {
-			}
-		}
-		
-		
-		public void showTextOnly() {
-			sashCols[0] = 0;
-			sashCols[1] = 100;
-			propertiesForm.setWeights(sashCols);
-		}
-
-		public void showPropertiesOnly() {
-			sashCols[0] = 100;
-			sashCols[1] = 0;
-			propertiesForm.setWeights(sashCols);
-		}
-		
-		public void setSashWeights(int properties, int text) {
-			sashCols[0] = properties;
-			sashCols[1] = text;
-			propertiesForm.setWeights(sashCols);
-		}
-		
-		public void setSashWeights(int[] weights) {
-			sashCols = weights;
-			propertiesForm.setWeights(weights);
-		}
-		
-		public void setContentProvider(ITreeContentProvider provider) {
-			propertiesViewer.setContentProvider(provider);
-		}
-		
-		public void setLabelProvider(ITableLabelProvider provider) {
-			propertiesViewer.setLabelProvider(provider);
-		}
-		
-
-		public Text getText() {
-			return propertiesText;
-		}
-
-		public TreeViewer getViewer() {
-			return propertiesViewer;
-		}
-	}
+//	public static PropertiesTextSashPropertiesPage createPropertiesTextSashPropertiesPage() {
+//		return new PropertiesTextSashPropertiesPage();
+//	}
+//	
+//	public static class PropertiesTextSashPropertiesPage implements IPropertySheetPage {
+//		
+//		protected TreeViewer propertiesViewer;
+//		protected SashForm propertiesForm;
+//		protected Text propertiesText;
+//		protected int[] propertyCols; // For the property columns
+//		protected int[] sashCols; // for the properties sashform
+//
+//
+//		public void createControl(Composite parent) {
+//			setProperties();
+//			addPropertyViewer(parent);
+//		}
+//
+//		private void setProperties() {
+//			sashCols = new int[2];
+//			sashCols[0] = 100;
+//			sashCols[1] = 0;
+//			
+//			propertyCols = new int[2];
+//			propertyCols[0] = 100;
+//			propertyCols[1] = 100;
+//		}
+//
+//		private void addPropertyViewer(Composite form) {
+//			propertiesForm = new SashForm(form, SWT.HORIZONTAL);
+//			propertiesForm.setLayout(new FillLayout());
+//			
+//			Composite c1 = new Composite(propertiesForm, SWT.NONE);
+//			c1.setLayout(new FillLayout());
+//			Tree tTable = new Tree(c1, SWT.SINGLE | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NONE);
+//			tTable.setHeaderVisible(true);
+//			tTable.setLinesVisible(true);
+//			tTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+//			tTable.setFont(c1.getFont());
+//
+//			TreeColumn column = new TreeColumn(tTable, SWT.SINGLE);
+//			column.setText(Messages.property);
+//			column.setWidth(propertyCols[0]);
+//			
+//			TreeColumn column2 = new TreeColumn(tTable, SWT.SINGLE);
+//			column2.setText(Messages.value);
+//			column2.setWidth(propertyCols[1]);
+//
+//			propertiesViewer = new TreeViewer(tTable);
+//			
+//			Composite c2 = new Composite(propertiesForm, SWT.NONE);
+//			c2.setLayout(new FillLayout());
+//			propertiesText = new Text(c2, SWT.BORDER | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+//			
+//			propertiesForm.setWeights(sashCols);
+//		}
+//
+//		
+//
+//		public void dispose() {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//		public Control getControl() {
+//			return propertiesForm;
+//		}
+//
+//		public void setActionBars(IActionBars actionBars) {
+//		}
+//
+//		public void setFocus() {
+//		}
+//
+//		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+//			try {
+//				propertiesViewer.setInput(((IStructuredSelection)selection).getFirstElement());
+//			} catch( Exception e ) {
+//			}
+//		}
+//		
+//		
+//		public void showTextOnly() {
+//			sashCols[0] = 0;
+//			sashCols[1] = 100;
+//			propertiesForm.setWeights(sashCols);
+//		}
+//
+//		public void showPropertiesOnly() {
+//			sashCols[0] = 100;
+//			sashCols[1] = 0;
+//			propertiesForm.setWeights(sashCols);
+//		}
+//		
+//		public void setSashWeights(int properties, int text) {
+//			sashCols[0] = properties;
+//			sashCols[1] = text;
+//			propertiesForm.setWeights(sashCols);
+//		}
+//		
+//		public void setSashWeights(int[] weights) {
+//			sashCols = weights;
+//			propertiesForm.setWeights(weights);
+//		}
+//		
+//		public void setContentProvider(ITreeContentProvider provider) {
+//			propertiesViewer.setContentProvider(provider);
+//		}
+//		
+//		public void setLabelProvider(ITableLabelProvider provider) {
+//			propertiesViewer.setLabelProvider(provider);
+//		}
+//		
+//
+//		public Text getText() {
+//			return propertiesText;
+//		}
+//
+//		public TreeViewer getViewer() {
+//			return propertiesViewer;
+//		}
+//	}
 
 	
 	/**
@@ -239,7 +239,6 @@ public class PropertySheetFactory {
 	
 	
 	public static interface ISimplePropertiesHolder {
-		public String[] getPropertyKeys(Object selected);
 		public Properties getProperties(Object selected);
 	}
 	
@@ -272,7 +271,10 @@ public class PropertySheetFactory {
 			if( inputElement instanceof ContentWrapper ) {
 				inputElement = ((ContentWrapper)inputElement).getElement();
 			}
-			return holder.getPropertyKeys(inputElement);
+			if( properties != null ) 
+				return properties.keySet().toArray();
+
+			return new Object[0];
 		}
 	
 		public void dispose() {
@@ -307,7 +309,7 @@ public class PropertySheetFactory {
 				element = ((ContentWrapper)element).getElement();
 			
 			if( columnIndex == 0 ) return element.toString();
-			if( columnIndex == 1 && element instanceof String ) {
+			if( columnIndex == 1 && element instanceof String && properties != null ) {
 				return properties.getProperty((String)element);
 			}
 			return null;

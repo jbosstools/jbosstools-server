@@ -1,9 +1,33 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
+
+import java.util.Properties;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -18,23 +42,42 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel.IEventLogListener;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
 
-public class EventLogViewProvider extends JBossServerViewExtension implements IEventLogListener {
+public class EventLogViewProvider extends JBossServerViewExtension implements IEventLogListener, ISimplePropertiesHolder {
 	
 	private ITreeContentProvider contentProvider;
 	private LabelProvider labelProvider;
 	
 	private IEventLogLabelProvider[] labelProviderDelegates = null;
+	
+	private IPropertySheetPage propertyPage = null;
 
 	private IServer input;
+	private Action clearLogAction;
+	
 
 	public EventLogViewProvider() {
 		contentProvider = new EventLogContentProvider();
 		labelProvider = new EventLogLabelProvider();
 		EventLogModel.getDefault().addListener(this);
+		createActions();
 	}
 	
+	protected void createActions() {
+		clearLogAction = new Action() {
+			public void run() {
+				try {
+					EventLogModel.getModel(input).clearEvents();
+					refreshViewer();
+				} catch( Exception e) {}
+			}
+		};
+		clearLogAction.setText("Clear Event Log");
+		//clearLogAction.setImageDescriptor(newImage)
+	}
 	
 	public class EventLogContentProvider implements ITreeContentProvider {
 		public Object[] getChildren(Object parentElement) {
@@ -84,7 +127,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	    	for( int i = 0; i < labelProviderDelegates.length; i++ ) {
 	    		if( labelProviderDelegates[i] != null 
 	    				&& labelProviderDelegates[i].supports(item.getType())) {
-	    			Image image = labelProviderDelegates[i].getImage(element);
+	    			Image image = labelProviderDelegates[i].getImage((EventLogTreeItem)element);
 	    			if( image != null ) return image;
 	    		}
 	    	}
@@ -127,6 +170,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+		menu.add(clearLogAction);
 	}
 
 	public ITreeContentProvider getContentProvider() {
@@ -138,19 +182,33 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	}
 
 	public IPropertySheetPage getPropertySheetPage() {
-		return null;
+		if( propertyPage == null )
+			propertyPage = PropertySheetFactory.createSimplePropertiesSheet(this);
+		return propertyPage;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jboss.ide.eclipse.as.core.model.EventLogModel.IEventLogListener#eventModelChanged(java.lang.String, org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem)
-	 */
+	
 	public void eventModelChanged(String serverId, EventLogTreeItem changed) {
 		if( input != null && serverId.equals(input.getId())) {
-			if(changed.getType().equals("jboss.event.root"))
+			if(changed.getType().equals(EventLogModel.JBOSS_EVENT_ROOT_TYPE))
 				refreshViewer();
 			else
 				refreshViewer(changed);
 		}
+	}
+
+	public Properties getProperties(Object selected) {
+    	if( !(selected instanceof EventLogTreeItem)) return new Properties();
+    	EventLogTreeItem item = (EventLogTreeItem)selected;
+    	
+    	for( int i = 0; i < labelProviderDelegates.length; i++ ) {
+    		if( labelProviderDelegates[i] != null 
+    				&& labelProviderDelegates[i].supports(item.getType())) {
+    			Properties props = labelProviderDelegates[i].getProperties((EventLogTreeItem)selected);
+    			if( props != null ) return props;
+    		}
+    	}
+    	return new Properties();
 	}
 
 }
