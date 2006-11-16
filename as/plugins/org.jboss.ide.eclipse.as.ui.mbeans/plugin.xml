@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="servicexml"
+            name="JBoss Service XML"
+            priority="normal">
+         <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="server"/>
+         </describer>
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.editorConfiguration">
+      <sourceViewerConfiguration
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLEditorConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml"/>
+      <contentOutlineConfiguration
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLOutlineConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml"/>
+	<provisionalConfiguration
+			type="correctionassistant"
+			class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLCorrectionAssistantProvider"
+			target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml" />
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.core.modelHandler">
+      <modelHandler
+            associatedContentTypeId="org.jboss.ide.eclipse.as.ui.servicexml"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServicexmlModelHandler"
+            default="false"
+            id="org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"/>
+   </extension>
+   <extension point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
+		<adapterFactoryDescription
+				class="org.jboss.ide.eclipse.as.ui.editors.AdaptorFactoryProviderForServiceXML"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            name="MBean Components"
+            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
+      <wizard
+            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            name="MBean Stubs"
+            project="false"/>
+   </extension>
+
+</plugin>
