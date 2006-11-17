@@ -217,9 +217,9 @@ public class PollingLabelProvider extends LabelProvider implements IEventLogLabe
 		long minutes = seconds / 60;
 		long hours = minutes / 60;
 		minutes -= (hours * 60);
-		String minString = minutes + " " + (minutes == 1 ? "minute" : "minutes") + " ago";
+		String minString = minutes + "m ago";
 		if( hours == 0 )
 			return minString;
-		return hours + " " + (hours == 1 ? "hour" : "hours") + ", " + minString; 
+		return hours + "h " + minString; 
 	}
 }
