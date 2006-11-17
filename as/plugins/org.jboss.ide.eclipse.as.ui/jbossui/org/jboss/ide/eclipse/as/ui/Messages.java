@@ -24,8 +24,6 @@ package org.jboss.ide.eclipse.as.ui;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
-	public static String EventLogCategory;
-	public static String ModulesCategory;
 	public static String createWizardTitle;
 	public static String runtimeInformation;
 	public static String createRuntimeWizardTitle;
@@ -120,8 +118,7 @@ public class Messages {
 	public static String XPathPattern;
 	public static String XPathAttribute;
 	
-	/* XML service editor */
-	public static String ServiceXMLAddAttributeTags;
+
 	
 	/* Preference Page */
 	public static String PreferencePageServerTimeouts;
@@ -161,47 +158,6 @@ public class Messages {
 	public static String UpgradeWizardLaunchServerNamesInUse;
 	
 	
-	/* Server Clone Wizard */
-	public static String CloneWizardRequiredCheckedLabel;
-	public static String CloneWizardNewServerName;
-	public static String CloneWizardNewConfigName;
-	public static String CloneWizardTitle;
-	public static String CloneWizardDescription;
-	public static String CloneWizardServerNameInUse;
-	public static String CloneWizardConfigNameInUse;
-	public static String CloneWizardWindowTitle;
-	
-	
-	/* MBean Wizard */
-
-	public static String NewMBeanInterface;
-	public static String NewMBeanInterfaceDesc;
-	public static String NewMBeanName;
-	public static String NewMBeanInterfaceName;
-	public static String NewMBeanClass;
-	public static String MBeanClassDescription;
-	public static String MBeanServiceXML;
-	
-	
-	/* Event Log provider */
-	public static String EventLogStartingServer;
-	public static String EventLogStoppingServer;
-	public static String EventLogServerUp;
-	public static String EventLogServerDown;
-	public static String EventLogTwiddleLaunchServerStatePrefix; 
-	public static String EventLogStillStopping;
-	public static String EventLogStillStarting;
-	public static String EventLogUp;
-	public static String EventLogDown;
-	public static String EventLogServerActionCanceled;
-	public static String EventLogTimeoutReached;
-	public static String EventLogConsoleOutput;
-	public static String EventLogPublishEvent;
-	public static String EventLogPublishingToServer; 
-	public static String EventLogPublishRemoveFromServer; 
-	public static String EventLogPublishUnknownEvent;
-	public static String EventLogUnknownEvent;
-	
 	/* Inactive Categories */
 	public static String InactiveCategoriesReEnable;
 	
@@ -222,11 +178,6 @@ public class Messages {
 	public static String DescriptorXPathComplex;
 	public static String DescriptorXPathMatch;
 	
-	
-	
-	public static String HidePropertiesAction;
-	public static String HideTextAction;
-	public static String HideLowerFrameAction;
 	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages", Messages.class);
