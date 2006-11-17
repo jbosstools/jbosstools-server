@@ -29,10 +29,9 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -43,7 +42,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -66,11 +64,12 @@ public class ViewPreferencePage extends PreferencePage implements
 	private Label mainDescriptionLabel, preferenceCompositeDescriptionLabel;
 	
 	private HashMap providerToGroup;
-	private ArrayList preferenceComposites;
+	private ArrayList preferenceComposites, enabledButtons;
 	private PageBook book;
 	private Composite mainComposite;
 	private ServerViewProvider[] providers;
 	
+	private Button moveUp, moveDown;
 	
 	public ViewPreferencePage() {
 		providerToGroup = new HashMap();
@@ -103,9 +102,10 @@ public class ViewPreferencePage extends PreferencePage implements
     		Boolean bigB = ((Boolean)items[i].getData(ENABLED));
     		if( bigB != null ) 
     			provider.setEnabled(bigB.booleanValue());
-    		Integer weight  = ((Integer)items[i].getData(WEIGHT));
-    		if( weight != null ) 
-    			provider.setWeight(weight.intValue());
+//    		Integer weight  = ((Integer)items[i].getData(WEIGHT));
+//    		if( weight != null ) 
+//    			provider.setWeight(weight.intValue());
+    		provider.setWeight(i);
     	}
     	
     	// now let the composites save their preferences
@@ -168,103 +168,207 @@ public class ViewPreferencePage extends PreferencePage implements
 	}
 
 	protected void addEnablementComposite(Composite parent) {
-				mainDescriptionLabel = new Label(parent, SWT.WRAP);
-		        FormData labelData = new FormData();
-		        labelData.left = new FormAttachment(0,5);
-		        labelData.right = new FormAttachment(100, -5);
-		        labelData.top = new FormAttachment(0,5);
-				mainDescriptionLabel.setLayoutData(labelData);
+		mainDescriptionLabel = new Label(parent, SWT.WRAP);
+        FormData labelData = new FormData();
+        labelData.left = new FormAttachment(0,5);
+        labelData.right = new FormAttachment(100, -5);
+        labelData.top = new FormAttachment(0,5);
+		mainDescriptionLabel.setLayoutData(labelData);
+
+	//	mainDescriptionLabel.setText(Messages.ViewExtensionEnablementDescription);
 		
-				mainDescriptionLabel.setText(Messages.ViewExtensionEnablementDescription);
-				
-				
-		        table = new Table(parent, SWT.BORDER);
-		        
-		        FormData tableData = new FormData();
-		        tableData.left = new FormAttachment(0,5);
-		        tableData.right = new FormAttachment(100, -5);
-		        tableData.top = new FormAttachment(mainDescriptionLabel,5);
-		        tableData.bottom = new FormAttachment(40,0);
-		        table.setLayoutData(tableData);
-		        
-		        table.setHeaderVisible(true);
-		        table.setLinesVisible(false);
-		        TableColumn column0 = new TableColumn(table, SWT.NONE);
-		        column0.setText(Messages.ViewPreferencePageName);
-		        TableColumn column1 = new TableColumn(table, SWT.NONE);
-		        column1.setText(Messages.ViewPreferencePageEnabled);
-		        TableColumn column2 = new TableColumn(table, SWT.NONE);
-		        column2.setText(Messages.ViewPreferencePageWeight);
-		        TableColumn column3 = new TableColumn(table, SWT.NONE);
-		        column3.setText(Messages.ViewPreferencePageDescription);
-		        
-		        providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
-		        int minWidth = 0;
-		        
-		        for (int i = 0; i < providers.length; i++) {
-		                final TableItem item = new TableItem(table, SWT.NONE);
-		                
-		                // keep the object in the data
-		                item.setData(providers[i]);
-		                
-		                
-		                item.setText(new String[] {providers[i].getName(), "", "", providers[i].getDescription()});
-		                item.setImage(providers[i].getImage());
-
-                        final Button b = new Button(table, SWT.CHECK);
-                        b.setSelection(providers[i].isEnabled());
-                        b.pack();
-                        TableEditor editor = new TableEditor(table);
-                        Point size = b.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                        editor.minimumWidth = size.x;
-                        minWidth = Math.max(size.x, minWidth);
-                        editor.minimumHeight = size.y;
-                        editor.horizontalAlignment = SWT.CENTER;
-                        editor.verticalAlignment = SWT.CENTER;
-                        editor.setEditor(b, item , 1);
-                        b.addSelectionListener(new SelectionListener() {
-							public void widgetDefaultSelected(SelectionEvent e) {
-							}
-
-							public void widgetSelected(SelectionEvent e) {
-								item.setData(ENABLED, new Boolean(b.getSelection()));
-							} 
-                        });
-                        
-                        TableEditor editor2 = new TableEditor(table);
-
-                        final Spinner s = new Spinner(table, SWT.NONE);
-                        s.setMaximum(50);
-                        s.setMinimum(0);
-                        s.setIncrement(1);
-                        s.setSelection(providers[i].getWeight());
-                        Point size2 = s.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-                        editor2.minimumWidth = size2.x;
-                        minWidth = Math.max(size2.x, minWidth);
-                        editor2.minimumHeight = size2.y;
-                        editor2.horizontalAlignment = SWT.RIGHT;
-                        editor2.verticalAlignment = SWT.CENTER;
-                        editor2.setEditor(s, item , 2);
-                        
-                        s.addModifyListener(new ModifyListener() {
-							public void modifyText(ModifyEvent e) {
-								item.setData(WEIGHT, new Integer(s.getSelection()));
-							} 
-                        });
-                        
-                        
-		        }
-		        column0.pack();
-		        column1.pack();
-		        column1.setWidth(column1.getWidth() + minWidth);
-		        column2.pack();
-		        column2.setWidth(column2.getWidth() + minWidth);
-		        column3.pack();
-		        column3.setWidth(column3.getWidth() + minWidth);
-		        
+		Composite c = new Composite(parent, SWT.NONE);
+		c.setLayout(new FormLayout());
+		FormData cData = new FormData();
+        cData.left = new FormAttachment(0,5);
+        cData.right = new FormAttachment(100, -5);
+        cData.top = new FormAttachment(mainDescriptionLabel,5);
+        cData.bottom = new FormAttachment(40,0);
+		c.setLayoutData(cData);
 		
+        table = new Table(c, SWT.BORDER);
+        
+        FormData tableData = new FormData();
+        tableData.left = new FormAttachment(10,5);
+        tableData.right = new FormAttachment(100, -5);
+        tableData.top = new FormAttachment(0,5);
+        tableData.bottom = new FormAttachment(100,0);
+        table.setLayoutData(tableData);
+        
+        table.setHeaderVisible(true);
+        table.setLinesVisible(false);
+        TableColumn column0 = new TableColumn(table, SWT.NONE);
+        column0.setText(Messages.ViewPreferencePageName);
+        TableColumn column1 = new TableColumn(table, SWT.NONE);
+        column1.setText(Messages.ViewPreferencePageEnabled);
+//        TableColumn column2 = new TableColumn(table, SWT.NONE);
+//        column2.setText(Messages.ViewPreferencePageWeight);
+        TableColumn column3 = new TableColumn(table, SWT.NONE);
+        column3.setText(Messages.ViewPreferencePageDescription);
+        
+        providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
+        int minWidth = 0;
+        
+        enabledButtons = new ArrayList();
+        for (int i = 0; i < providers.length; i++) {
+                final TableItem item = new TableItem(table, SWT.NONE);
+                
+                // keep the object in the data
+                item.setData(providers[i]);
+                
+                
+                item.setText(new String[] {providers[i].getName(), "", providers[i].getDescription()});
+                item.setImage(providers[i].getImage());
+
+                final Button b = new Button(table, SWT.CHECK);
+                enabledButtons.add(b);
+                b.setSelection(providers[i].isEnabled());
+                b.pack();
+                TableEditor editor = new TableEditor(table);
+                Point size = b.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                editor.minimumWidth = size.x;
+                minWidth = Math.max(size.x, minWidth);
+                editor.minimumHeight = size.y;
+                editor.horizontalAlignment = SWT.CENTER;
+                editor.verticalAlignment = SWT.CENTER;
+                editor.setEditor(b, item , 1);
+                b.addSelectionListener(new SelectionListener() {
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+
+					public void widgetSelected(SelectionEvent e) {
+						item.setData(ENABLED, new Boolean(b.getSelection()));
+					} 
+                });
+                
+//                TableEditor editor2 = new TableEditor(table);
+//
+//                final Spinner s = new Spinner(table, SWT.NONE);
+//                s.setMaximum(50);
+//                s.setMinimum(0);
+//                s.setIncrement(1);
+//                s.setSelection(providers[i].getWeight());
+//                Point size2 = s.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+//                editor2.minimumWidth = size2.x;
+//                minWidth = Math.max(size2.x, minWidth);
+//                editor2.minimumHeight = size2.y;
+//                editor2.horizontalAlignment = SWT.RIGHT;
+//                editor2.verticalAlignment = SWT.CENTER;
+//                editor2.setEditor(s, item , 2);
+//                
+//                s.addModifyListener(new ModifyListener() {
+//					public void modifyText(ModifyEvent e) {
+//						item.setData(WEIGHT, new Integer(s.getSelection()));
+//					} 
+//                });
+                
+                
+        }
+        column0.pack();
+        column1.pack();
+        column1.setWidth(column1.getWidth() + minWidth);
+//        column2.pack();
+//        column2.setWidth(column2.getWidth() + minWidth);
+        column3.pack();
+        column3.setWidth(column3.getWidth() + minWidth);
+        
+        
+        
+        moveUp = new Button(c, SWT.PUSH);
+        moveDown = new Button(c, SWT.PUSH);
+
+        moveUp.setText("Move Up");
+        moveDown.setText("Move Down");
+        
+        FormData moveUpData = new FormData();
+        moveUpData.left = new FormAttachment(0,0);
+        moveUpData.right = new FormAttachment(table, -5);
+        moveUpData.top = new FormAttachment(30,0);
+        moveUp.setLayoutData(moveUpData);
+
+        FormData moveDownData = new FormData();
+        moveDownData.left = new FormAttachment(0,0);
+        moveDownData.right = new FormAttachment(table, -5);
+        moveDownData.top = new FormAttachment(moveUp, 5);
+        moveDown.setLayoutData(moveDownData);
+
+        moveUp.setEnabled(false);
+        moveDown.setEnabled(false);
+        
+        table.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				enableMoveButtons();
+			} 
+        });
+        
+        moveUp.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					move(table.getSelectionIndex(), table.getSelectionIndex()-1);
+					enableMoveButtons();
+				} catch( Exception ex ) {}
+			} 
+        });
+        moveDown.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					move(table.getSelectionIndex(), table.getSelectionIndex()+1);
+					enableMoveButtons();
+				} catch( Exception ex ) {}
+			} 
+        });
 	}
-	
+	protected void enableMoveButtons() {
+		int index = table.getSelectionIndex();
+		int length = table.getItemCount();
+		if( index == length-1 && index != 0) {
+			moveUp.setEnabled(true);
+			moveDown.setEnabled(false);
+		} else if( index == 0 && length > 1 ) {
+			moveUp.setEnabled(false);
+			moveDown.setEnabled(true);
+		} else {
+			moveUp.setEnabled(true);
+			moveDown.setEnabled(true);
+		}
+	}
+	protected void move(int selectedIndex, int swapIndex) {
+		TableItem selected = table.getItem(selectedIndex);
+		TableItem above = table.getItem(swapIndex);
+		
+		ServerViewProvider selectedProvider = (ServerViewProvider)selected.getData();
+		ServerViewProvider aboveProvider = (ServerViewProvider)above.getData();
+		selected.setData(aboveProvider);
+		above.setData(selectedProvider);
+		
+		String[] selectedTemp = new String[] {selected.getText(0), "", selected.getText(2)};
+		String[] aboveTemp = new String[] {above.getText(0), "", above.getText(2)};
+		selected.setText(aboveTemp);
+		above.setText(selectedTemp);
+		
+		Boolean bigB = ((Boolean)selected.getData(ENABLED));
+		selected.setData(ENABLED, above.getData(ENABLED));
+		above.setData(ENABLED, bigB);
+		
+		Image tmp = selected.getImage();
+		selected.setImage(above.getImage());
+		above.setImage(tmp);
+		
+		Button selectedButton = (Button)enabledButtons.get(selectedIndex);
+		Button nextButton = (Button)enabledButtons.get(swapIndex);
+		boolean tmpSelected = selectedButton.getSelection();
+		selectedButton.setSelection(nextButton.getSelection());
+		nextButton.setSelection(tmpSelected);
+		
+		table.setSelection(swapIndex);
+	}
 	protected void addExtensionPreferencePages(Composite parent) {
 		
 		preferenceCompositeDescriptionLabel = new Label(parent, SWT.WRAP);
