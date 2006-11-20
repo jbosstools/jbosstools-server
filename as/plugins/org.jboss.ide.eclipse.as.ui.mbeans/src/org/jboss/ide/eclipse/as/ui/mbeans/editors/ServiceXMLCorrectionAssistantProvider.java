@@ -206,7 +206,7 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 			
 			Image elImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_ELEMENT);
 
-			proposals.add( new CompletionProposal(buf.toString(), endOffset, 0, 0,
+			proposals.add( new CompletionProposal(buf.toString().substring(2), endOffset, 0, 0,
 					elImage, Messages.ServiceXMLAddAttributeTags, null, null) );
 		}
 
