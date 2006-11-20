@@ -59,6 +59,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup"
+            description="%jbossLaunchconfigurationTabGroupDescription"
             id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
             type="org.jboss.ide.eclipse.as.core.server.launchConfiguration"/>
    </extension>
@@ -148,6 +149,12 @@
             id="org.jboss.ide.eclipse.as.ui.EventLogViewProvider"
             name="Event Log"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.EventLogViewProvider"/>
+      <ViewProvider
+            description="An extension that lets you quickly change often-used fields or ports"
+            icon="icons/xml.gif"
+            id="org.jboss.ide.eclipse.as.ui.XPathDescriptors"
+            name="XML XPaths"
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider"/>
 <!--      <ViewProvider
             description="descriptor xpaths"
             icon="icons/xml.gif"
