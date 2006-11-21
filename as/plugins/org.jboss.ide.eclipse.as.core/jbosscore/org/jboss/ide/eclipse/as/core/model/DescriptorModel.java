@@ -40,6 +40,7 @@ import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.dom4j.tree.DefaultAttribute;
 import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -373,6 +374,40 @@ public class DescriptorModel {
 			public String elementAsXML() {
 				DefaultElement element = ((DefaultElement)getData());
 				return ((DefaultElement)getData()).asXML();
+			}
+			
+			public String getElementName() {
+				DefaultElement element = ((DefaultElement)getData());
+				return ((DefaultElement)getData()).getName();
+			}
+			
+			public String[] getElementChildrenNames() {
+				DefaultElement element = ((DefaultElement)getData());
+				List l = element.elements();
+				DefaultElement child;
+				ArrayList names = new ArrayList();
+				for( Iterator i = l.iterator();i.hasNext();) {
+					child = (DefaultElement)i.next();
+					if( !names.contains(child.getName()))
+						names.add(child.getName());
+				}
+				return (String[]) names.toArray(new String[names.size()]);
+			}
+			public String[] getElementAttributeNames() {
+				DefaultElement element = ((DefaultElement)getData());
+				List l = element.attributes();
+				DefaultAttribute child;
+				ArrayList names = new ArrayList();
+				for( Iterator i = l.iterator();i.hasNext();) {
+					child = (DefaultAttribute)i.next();
+					if( !names.contains(child.getName()))
+						names.add(child.getName());
+				}
+				return (String[]) names.toArray(new String[names.size()]);
+			}
+			public String[] getElementAttributeValues(String attName) {
+				DefaultElement element = ((DefaultElement)getData());
+				return new String[] {element.attribute(attName).getValue()};
 			}
 			
 			public void saveDescriptor() {
