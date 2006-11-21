@@ -23,9 +23,15 @@ package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -47,6 +53,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
@@ -205,7 +213,12 @@ public class XPathDialogs {
 			if( attribute != null ) attributeText.setText(attribute);
 			if( xpath != null ) xpathText.setText(xpath);
 			
-			
+			 ContentProposalAdapter adapter = new
+			 ContentProposalAdapter(xpathText, new TextContentAdapter(),
+			                                 new XPathProposalProvider(server), null, null);
+			                
+			 adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+
 			return main;
 		} 
 		
@@ -470,7 +483,204 @@ public class XPathDialogs {
 			if( xpathText != null && !xpathText.isDisposed())
 				xpathText.setText(this.xpath);
 		}
+	}
+	
+	
+	
+	public static class XPathProposalProvider implements IContentProposalProvider {
 		
+		private static final int NEW_ELEMENT = 1;
+		private static final int NEW_ATTRIBUTE = 2;
+		private static final int NEW_ATTRIBUTE_VALUE = 3;
+		private static final int IN_ELEMENT = 4;
+		private static final int IN_ATTRIBUTE = 5;
+		private static final int IN_ATTRIBUTE_VALUE = 6;
+		private static final int CLOSE_ATTRIBUTE = 7;
+		
+		
+		private JBossServer server;
+		private ServerDescriptorModel model;
+		public XPathProposalProvider(JBossServer server) {
+			this.server = server;
+			String serverConfDir = server.getConfigDirectory(false);
+			model = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
+		}
+		public IContentProposal[] getProposals(String contents, int position) {
+			if( contents.equals("") || contents.equals("/") || contents.equals(" ")) {
+				return new IContentProposal[] { new XPathContentProposal("/server/", "/server/".length(), null, null)};
+			}
+			
+			int type = getType(contents);
+			if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
+			if( type == IN_ELEMENT ) return getElementProposals(contents);
+			if( type == NEW_ATTRIBUTE ) return getAttributeNameProposals(contents.substring(0, contents.length()-1), "");
+			if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
+			if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
+			if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
+			return null;
+		}
+		
+		protected XPathTreeItem2[] getXPath(String xpath) {
+			ArrayList list = new ArrayList();
+			XPathTreeItem[] items = model.getXPath(xpath);
+			for( int i = 0; i < items.length; i++ ) {
+				SimpleTreeItem[] children = items[i].getChildren();
+				for( int j = 0; j < children.length; j++ ) {
+					XPathTreeItem2 i2 = (XPathTreeItem2)children[j];
+					list.add(i2);
+				}
+			}
+			return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
+		}
+		
+		public IContentProposal[] getElementProposals(String path) {
+			String parentPath = path.substring(0, path.lastIndexOf('/') + 1);
+			String prefix = path.substring(path.lastIndexOf('/') + 1);
+			return getElementProposals(parentPath, prefix);
+		}
+		
+		public IContentProposal[] getElementProposals(String parentPath, String elementPrefix ) {
+			String[] strings = getElementProposalStrings(parentPath, elementPrefix );
+			return convertProposals(strings);
+		}
+		
+		public String[] getElementProposalStrings(String parentPath, String elementPrefix) {
+			ArrayList list = new ArrayList();
+			XPathTreeItem2[] items = getXPath(parentPath + "*");
+			for( int i = 0; i < items.length; i++ ) {
+				if( items[i].getElementName().startsWith(elementPrefix) && !list.contains(parentPath + items[i].getElementName()))
+					list.add(parentPath + items[i].getElementName());
+			}
+			return (String[]) list.toArray(new String[list.size()]);
+		}
+		
+		public IContentProposal[] getAttributeNameProposals(String path) {
+			String parent = path.substring(0, path.lastIndexOf('['));
+			int attName = path.lastIndexOf('[') > path.lastIndexOf('@') ? path.lastIndexOf('[') : path.lastIndexOf('@');
+			return getAttributeNameProposals(parent, path.substring(attName+1));
+		}
+		public IContentProposal[] getAttributeNameProposals(String parentPath, String remainder) {
+			ArrayList names = new ArrayList();
+			XPathTreeItem2[] items = getXPath(parentPath);
+			String[] attributes;
+			for( int i = 0; i < items.length; i++ ) {
+				attributes = items[0].getElementAttributeNames();
+				for( int j = 0; j < attributes.length; j++ ) {
+					if( attributes[j].startsWith(remainder) && !names.contains(attributes[j])) 
+						names.add(attributes[j]);
+				}
+			}
+			
+			String[] results = new String[names.size()];
+			for( int i = 0; i < results.length; i++ ) {
+				results[i] = parentPath + "[@" + names.get(i) + "=";
+			}
+			return convertProposals(results);
+		}
+		
+		public IContentProposal[] getAttributeValueProposals(String path) {
+			return getAttributeValueProposals(path.substring(0, path.lastIndexOf('=')), path.substring(path.lastIndexOf('=')+1));
+		}
+		public IContentProposal[] getAttributeValueProposals(String parentPath, String remainder) {
+			String parentElementPath = parentPath.substring(0, parentPath.lastIndexOf('['));
+			int brackIndex = parentPath.lastIndexOf('[');
+			int eqIndex = parentPath.lastIndexOf('=') == -1 ? parentPath.length() : parentPath.lastIndexOf('=');
+			if( eqIndex < brackIndex ) eqIndex = parentPath.length();
+			String attName = parentPath.substring(brackIndex+2, eqIndex);
+
+			if( remainder.startsWith("'")) remainder = remainder.substring(1);
+			ArrayList values = new ArrayList();
+			XPathTreeItem2[] items = getXPath(parentElementPath);
+			String[] attributes;
+			for( int i = 0; i < items.length; i++ ) {
+				attributes = items[i].getElementAttributeValues(attName);
+				for( int j = 0; j < attributes.length; j++ ) {
+					if( attributes[j].startsWith(remainder) && !values.contains(attributes[j])) 
+						values.add(attributes[j]);
+				}
+			}
+			
+			String[] results = new String[values.size()];
+			String prefix = parentElementPath + "[@" + attName + "='";
+			for( int i = 0; i < results.length; i++ ) {
+				results[i] = prefix + values.get(i) + "']/";
+			}
+			Arrays.sort(results);
+			return convertProposals(results);
+		}
+		
+		public int getType(String contents) {
+			switch(contents.charAt(contents.length()-1)) {
+				case '/':
+					return NEW_ELEMENT;
+				case '[':
+					return NEW_ATTRIBUTE;
+				case ']':
+					return CLOSE_ATTRIBUTE;
+				case '=':
+					return NEW_ATTRIBUTE_VALUE;
+				default:
+					int max = -1;
+					int lastSlash = contents.lastIndexOf('/'); max = (lastSlash > max ? lastSlash : max);
+					int lastOpenBracket = contents.lastIndexOf('['); max = (lastOpenBracket > max ? lastOpenBracket : max);
+					int lastCloseBracket = contents.lastIndexOf(']'); max = (lastCloseBracket > max ? lastCloseBracket : max);
+					int lastEquals = contents.lastIndexOf('='); max = (lastEquals > max ? lastEquals : max);
+					
+					if( max == lastSlash ) return IN_ELEMENT;
+					if( max == lastOpenBracket ) return IN_ATTRIBUTE;
+					if( max == lastCloseBracket ) return CLOSE_ATTRIBUTE;
+					if( max == lastEquals ) return IN_ATTRIBUTE_VALUE;
+					break;
+			}
+			return -1;
+		}
+		
+		public IContentProposal[] convertProposals(String[] strings) {
+			ArrayList list = new ArrayList();
+			for( int i = 0; i < strings.length; i++ ) {
+				list.add(new XPathContentProposal(strings[i], strings[i].length(), null, null));
+			}
+			return (IContentProposal[]) list.toArray(new IContentProposal[list.size()]);
+		}
+		
+		public class XPathContentProposal implements IContentProposal {
+			private String content,description,label;
+			private int position;
+			public XPathContentProposal(String content, int position, String description, String label) {
+				this.content = content;
+				this.description = description;
+				this.label = label;
+				this.position = position;
+			}
+			public String getContent() {
+				return content;
+			}
+
+			public int getCursorPosition() {
+				return position;
+			}
+
+			public String getDescription() {
+				return description;
+			}
+
+			public String getLabel() {
+				return label;
+			}
+		}
+		
+		public String[] getAllSuggegstions() {
+			HashMap possibilities = new HashMap();
+			XPathTreeItem[] items = model.getXPath("/server/mbean");
+			for( int i = 0; i < items.length; i++ ) {
+				SimpleTreeItem[] children = items[i].getChildren();
+				for( int j = 0; j < children.length; j++ ) {
+					XPathTreeItem2 i2 = (XPathTreeItem2)children[j];
+					possibilities.put(i2.getElementName(), i2.getElementName());
+				}
+			}
+			return (String[]) possibilities.keySet().toArray(new String[possibilities.size()]);
+		}
 		
 	}
 }
