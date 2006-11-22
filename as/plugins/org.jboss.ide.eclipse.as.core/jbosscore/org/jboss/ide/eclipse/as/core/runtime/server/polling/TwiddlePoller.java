@@ -153,7 +153,7 @@ public class TwiddlePoller implements IServerStatePoller {
 	
 	public class TwiddlePollerEvent extends EventLogTreeItem {
 		public TwiddlePollerEvent(SimpleTreeItem parent, String type, int status, boolean expectedState) {
-			super(parent, null, type);
+			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, type);
 			setProperty(PollThread.EXPECTED_STATE, new Boolean(expectedState));
 			setProperty(STATUS, new Integer(status));
 			setProperty(DATE, new Long(new Date().getTime()));

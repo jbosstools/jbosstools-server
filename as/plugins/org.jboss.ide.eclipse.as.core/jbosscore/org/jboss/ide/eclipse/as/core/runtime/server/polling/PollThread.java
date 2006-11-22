@@ -40,6 +40,9 @@ import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
  * @author rob.stryker@jboss.com
  */
 public class PollThread extends Thread {
+	public static final String SERVER_STATE_MAJOR_TYPE = "org.jboss.ide.eclipse.as.core.runtime.server.polling.MajorType";
+	
+	
 	public static final String SERVER_STARTING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.starting";
 	public static final String SERVER_STOPPING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.stopping";
 	public static final String FAILURE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.failure";
@@ -195,7 +198,7 @@ public class PollThread extends Thread {
 
 	public class PollThreadEvent extends EventLogTreeItem {
 		public PollThreadEvent(SimpleTreeItem parent, String type, boolean expectedState) {
-			super(parent, type);
+			super(parent, SERVER_STATE_MAJOR_TYPE, type);
 			setProperty(EXPECTED_STATE, new Boolean(expectedState));
 			setProperty(DATE, new Long(new Date().getTime()));
 		}

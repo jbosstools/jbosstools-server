@@ -109,17 +109,22 @@ public class EventLogModel {
 	
 	public static class EventLogTreeItem extends SimpleTreeItem {
 		public static final String DATE = "org.jboss.ide.eclipse.as.core.model.EventLogTreeItem.Date";
-		private String type;
-		public EventLogTreeItem(SimpleTreeItem parent, String type) {
+		private String specificType, majorType;
+		public EventLogTreeItem(SimpleTreeItem parent, String majorType, String specificType) {
 			super(parent, null);
-			this.type = type;
+			this.specificType = specificType;
+			this.majorType = majorType;
 		}
-		public EventLogTreeItem(SimpleTreeItem parent, Object data, String type) {
+		public EventLogTreeItem(SimpleTreeItem parent, Object data, String majorType, String specificType) {
 			super(parent, data);
-			this.type = type;
+			this.specificType = specificType;
+			this.majorType = majorType;
 		}
-		public String getType() {
-			return type;
+		public String getEventClass() {
+			return majorType;
+		}
+		public String getSpecificType() {
+			return specificType;
 		}
 		public EventLogTreeItem getEventRoot() {
 			SimpleTreeItem item = this;
