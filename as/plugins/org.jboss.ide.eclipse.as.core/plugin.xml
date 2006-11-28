@@ -69,9 +69,12 @@
           <moduleType
                 types="jboss.xml"
                 versions="1.0"/>
+          <moduleType
+                types="jboss.packaged.project"
+                versions="1.0"/>
                
       </runtimeType>
-       <runtimeType
+      <runtimeType
              vendor="%providerName"
              class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss40ServerRuntime"
              description="%jboss.version.40.description"
@@ -96,6 +99,9 @@
           <moduleType
                 types="jboss.xml"
                 versions="1.0"/>                
+          <moduleType
+                types="jboss.packaged.project"
+                versions="1.0"/>
       </runtimeType>
    </extension>
 
@@ -137,6 +143,10 @@
                types="jboss.xml"
                versions="1.0"/>
       </moduleFactory>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.module.PackagedProjectModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.PackagedModuleFactory"
+            projects="true"/>
    </extension>
    
    	<extension
@@ -158,6 +168,17 @@
             <instanceof value="org.eclipse.core.resources.IResource"/>
          </enablement>
       </moduleArtifactAdapter>
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.as.core.module.PackagedArtifactAdapter"
+            id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
+            priority="20">
+         <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IProject"/>
+               <instanceof value="org.eclipse.jdt.core.IJavaProject"/>
+            </or>
+         </enablement>
+		</moduleArtifactAdapter>
    </extension>
    
    <extension
@@ -320,6 +341,9 @@
       <moduleType
             id="jboss.xml"
             name="XML Module"/>
+      <moduleType
+            id="jboss.packaged.project"
+            name="Packaged Project"/>
    </extension>
    
 
