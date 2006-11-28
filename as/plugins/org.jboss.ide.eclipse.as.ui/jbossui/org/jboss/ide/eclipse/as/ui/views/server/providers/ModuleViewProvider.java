@@ -24,7 +24,6 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.util.Properties;
 
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -41,6 +40,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
@@ -95,7 +95,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				for( int i = 0; i < selection.module.length; i++ ) 
 					ModuleModel.getDefault().markModuleChanged(selection.module[i]);
-				PublishServerJob job = new PublishServerJob(selection.server);
+				PublishServerJob job = new PublishServerJob(selection.server, IServer.PUBLISH_FULL, false);
 				job.schedule();
 			}
 		};
