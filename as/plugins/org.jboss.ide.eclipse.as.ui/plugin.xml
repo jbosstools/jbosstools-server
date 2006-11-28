@@ -72,6 +72,14 @@
             icon="icons/J2EEModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.archiveImage"
             typeIds="jboss.archive"/>
+      <image
+            icon="icons/J2EEModule16.gif"
+            id="org.jboss.ide.eclipse.as.ui.packagedProject.image"
+            typeIds="jboss.packaged.project"/>
+      <image
+            icon="icons/xml.gif"
+            id="org.jboss.ide.eclipse.as.ui.xmlImage"
+            typeIds="jboss.xml"/>
    </extension>
 
    <extension
@@ -139,7 +147,7 @@
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.ModuleViewProvider"/>
       <ViewProvider
             description="Lists inactive categories and allows you to turn them back on."
-            icon="icons/inactiveCat.gif"
+            icon="icons/garbage.png"
             id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
             name="Inactive Categories"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
@@ -199,6 +207,7 @@
       <extension
             point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
          <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.PollingLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.PackageBuildLabelProvider"/>
       </extension>
    
    
