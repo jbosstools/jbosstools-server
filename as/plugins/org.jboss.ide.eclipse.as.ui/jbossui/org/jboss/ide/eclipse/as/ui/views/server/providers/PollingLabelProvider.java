@@ -75,25 +75,25 @@ public class PollingLabelProvider extends LabelProvider implements IEventLogLabe
 	}
 
 	public Image getImage(EventLogTreeItem element) {
-		if( element.getType().equals(PollThread.SERVER_STARTING)) return getStartingImage();
-		if( element.getType().equals(PollThread.SERVER_STOPPING)) return getStoppingImage();
+		if( element.getSpecificType().equals(PollThread.SERVER_STARTING)) return getStartingImage();
+		if( element.getSpecificType().equals(PollThread.SERVER_STOPPING)) return getStoppingImage();
 		
 		if( element instanceof PollThreadEvent ) {
 			boolean expected = ((PollThreadEvent)element).getExpectedState();
 			//String expectedString = expected == IServerStatePoller.SERVER_UP ? "startup" : "shutdown";
-			if( element.getType().equals(PollThread.POLL_THREAD_ABORTED)) return getErrorImage();
-			if( element.getType().equals(PollThread.POLL_THREAD_TIMEOUT)) return getErrorImage();
-			if( element.getType().equals(PollThread.SUCCESS)) {
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return getErrorImage();
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return getErrorImage();
+			if( element.getSpecificType().equals(PollThread.SUCCESS)) {
 				if( expected == IServerStatePoller.SERVER_UP)
 					return getStartedImage();
 				return getStoppedImage();
 			}
-			if( element.getType().equals(PollThread.FAILURE)) 
+			if( element.getSpecificType().equals(PollThread.FAILURE)) 
 				return getErrorImage();
 		}
 		
-		if( element.getType().equals(TwiddlePoller.TYPE_TERMINATED)) return getErrorImage();
-		if( element.getType().equals(TwiddlePoller.TYPE_RESULT)) {
+		if( element.getSpecificType().equals(TwiddlePoller.TYPE_TERMINATED)) return getErrorImage();
+		if( element.getSpecificType().equals(TwiddlePoller.TYPE_RESULT)) {
 			int state = ((Integer)element.getProperty(TwiddlePoller.STATUS)).intValue();
 			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
 			if( state == TwiddlePoller.STATE_STOPPED) 
@@ -108,26 +108,26 @@ public class PollingLabelProvider extends LabelProvider implements IEventLogLabe
 		}
 		
 		
-		if( element.getType().equals(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY)) 
+		if( element.getSpecificType().equals(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY)) 
 			return getErrorImage();
 		return null;
 	}
 
 	public String getText(EventLogTreeItem element) {
-		if( element.getType().equals(PollThread.SERVER_STARTING)) return "Starting the Server";
-		if( element.getType().equals(PollThread.SERVER_STOPPING)) return "Stopping the Server";
+		if( element.getSpecificType().equals(PollThread.SERVER_STARTING)) return "Starting the Server";
+		if( element.getSpecificType().equals(PollThread.SERVER_STOPPING)) return "Stopping the Server";
 		
 		if( element instanceof PollThreadEvent ) {
 			boolean expected = ((PollThreadEvent)element).getExpectedState();
 			String expectedString = expected == IServerStatePoller.SERVER_UP ? "startup" : "shutdown";
-			if( element.getType().equals(PollThread.POLL_THREAD_ABORTED)) return expectedString + " aborted";
-			if( element.getType().equals(PollThread.POLL_THREAD_TIMEOUT)) return expectedString + " timed out";
-			if( element.getType().equals(PollThread.SUCCESS)) return expectedString + " succeeded";
-			if( element.getType().equals(PollThread.FAILURE)) return expectedString + " failed";
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return expectedString + " aborted";
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return expectedString + " timed out";
+			if( element.getSpecificType().equals(PollThread.SUCCESS)) return expectedString + " succeeded";
+			if( element.getSpecificType().equals(PollThread.FAILURE)) return expectedString + " failed";
 		}
 		
-		if( element.getType().equals(TwiddlePoller.TYPE_TERMINATED)) return "All processes have been terminated";
-		if( element.getType().equals(TwiddlePoller.TYPE_RESULT)) {
+		if( element.getSpecificType().equals(TwiddlePoller.TYPE_TERMINATED)) return "All processes have been terminated";
+		if( element.getSpecificType().equals(TwiddlePoller.TYPE_RESULT)) {
 			int state = ((Integer)element.getProperty(TwiddlePoller.STATUS)).intValue();
 			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
 			if( state == TwiddlePoller.STATE_STOPPED) 
@@ -142,7 +142,7 @@ public class PollingLabelProvider extends LabelProvider implements IEventLogLabe
 		}
 		
 		
-		if( element.getType().equals(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY)) 
+		if( element.getSpecificType().equals(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY)) 
 			return "The server was shutdown forcefully. All processes terminated.";
 		return null;
 	}
