@@ -253,14 +253,13 @@ public class JBossServerView extends StrippedServerView {
 				try {
 					// If it's null, refresh the whole thing
 					if( obj2 == null ) { 
-						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
+//						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
 						JBossServerView.this.jbViewer.refresh();
-						JBossServerView.this.jbViewer.setExpandedElements(expanded);
+//						JBossServerView.this.jbViewer.setExpandedElements(expanded);
 					} else {
-						
-						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
+//						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
 						JBossServerView.this.jbViewer.refresh(obj2);
-						JBossServerView.this.jbViewer.setExpandedElements(expanded);
+//						JBossServerView.this.jbViewer.setExpandedElements(expanded);
 					}
 				} catch (Exception e) {
 					// ignore
@@ -294,7 +293,7 @@ public class JBossServerView extends StrippedServerView {
 					ISelection sel = jbViewer.getSelection();
 					Object[] expanded = jbViewer.getExpandedElements();
 					jbViewer.setInput(server);
-					jbViewer.expandToLevel(2);
+//					jbViewer.expandToLevel(2);
 					Object[] alsoExpanded = jbViewer.getExpandedElements();
 					ArrayList tmp = new ArrayList();
 					tmp.addAll(Arrays.asList(expanded));
