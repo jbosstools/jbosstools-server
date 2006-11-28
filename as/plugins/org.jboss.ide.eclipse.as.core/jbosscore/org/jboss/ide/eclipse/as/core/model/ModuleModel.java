@@ -286,7 +286,7 @@ public class ModuleModel implements IResourceChangeListener{
 				s = (Server)servers[i];
 				int stateOnServer = s.getModulePublishState(new IModule[] {module});
 				if( stateOnServer != 0 ) {
-					s.setModulePublishState(new IModule[] { module }, IServer.PUBLISH_STATE_UNKNOWN);
+					s.setModulePublishState(new IModule[] { module }, IServer.PUBLISH_STATE_INCREMENTAL);
 				}
 			}
 		}
