@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.CoreException;
@@ -37,8 +38,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.IEventLogListener;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
@@ -82,14 +85,47 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	public class EventLogContentProvider implements ITreeContentProvider {
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof ServerViewProvider && input != null ) {
+				boolean categorize = true; // TODO: get from preferences 
+				if( categorize ) 
+					return getRootCategories();
 				return EventLogModel.getModel(input).getRoot().getChildren();
 			}
+			
+			if( parentElement instanceof String ) {
+				// get children only of this type
+				SimpleTreeItem[] children = EventLogModel.getModel(input).getRoot().getChildren();
+				ArrayList items = new ArrayList();
+				for( int i = 0; i < children.length; i++ ) {
+					if( children[i] instanceof EventLogTreeItem ) {
+						String type = ((EventLogTreeItem)children[i]).getEventClass();
+						if( type.equals(parentElement))
+							items.add(children[i]);
+					}
+				}
+				return (Object[]) items.toArray(new Object[items.size()]);
+			}
+			
+			// just return the object's kids
 			if( parentElement instanceof EventLogTreeItem ) {
 				return ((EventLogTreeItem)parentElement).getChildren();
 			}
 			return new Object[0];
 		}
 
+		protected Object[] getRootCategories() {
+			EventLogRoot root = EventLogModel.getModel(input).getRoot();
+			ArrayList majorTypes = new ArrayList();
+			SimpleTreeItem[] children = root.getChildren();
+			for( int i = 0; i < children.length; i++ ) {
+				if( children[i] instanceof EventLogTreeItem ) {
+					String type = ((EventLogTreeItem)children[i]).getEventClass();
+					if( !majorTypes.contains(type))
+						majorTypes.add(type);
+				}
+			}
+			return (String[]) majorTypes.toArray(new String[majorTypes.size()]);
+		}
+		
 		public Object getParent(Object element) {
 			return null;
 		}
@@ -126,7 +162,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	    	
 	    	for( int i = 0; i < labelProviderDelegates.length; i++ ) {
 	    		if( labelProviderDelegates[i] != null 
-	    				&& labelProviderDelegates[i].supports(item.getType())) {
+	    				&& labelProviderDelegates[i].supports(item.getSpecificType())) {
 	    			Image image = labelProviderDelegates[i].getImage((EventLogTreeItem)element);
 	    			if( image != null ) return image;
 	    		}
@@ -148,7 +184,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	    	
 	    	for( int i = 0; i < labelProviderDelegates.length; i++ ) {
 	    		if( labelProviderDelegates[i] != null 
-	    				&& labelProviderDelegates[i].supports(item.getType())) {
+	    				&& labelProviderDelegates[i].supports(item.getSpecificType())) {
 	    			String text = labelProviderDelegates[i].getText((EventLogTreeItem)element);
 	    			if( text != null ) return text;
 	    		}
@@ -190,7 +226,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	
 	public void eventModelChanged(String serverId, EventLogTreeItem changed) {
 		if( input != null && serverId.equals(input.getId())) {
-			if(changed.getType().equals(EventLogModel.JBOSS_EVENT_ROOT_TYPE))
+			if(changed.getSpecificType().equals(EventLogModel.JBOSS_EVENT_ROOT_TYPE))
 				refreshViewer();
 			else
 				refreshViewer(changed);
@@ -203,7 +239,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
     	
     	for( int i = 0; i < labelProviderDelegates.length; i++ ) {
     		if( labelProviderDelegates[i] != null 
-    				&& labelProviderDelegates[i].supports(item.getType())) {
+    				&& labelProviderDelegates[i].supports(item.getSpecificType())) {
     			Properties props = labelProviderDelegates[i].getProperties((EventLogTreeItem)selected);
     			if( props != null ) return props;
     		}
