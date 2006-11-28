@@ -297,6 +297,9 @@ public class XPathDialogs {
 				errorImage.setVisible(true);
 				errorLabel.setText("No XML elements matched your search.");
 				errorLabel.setVisible(true);
+			} else {
+				errorImage.setVisible(false);
+				errorLabel.setVisible(false);
 			}
 			
 			main.layout();
