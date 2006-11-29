@@ -71,6 +71,9 @@ public class ServerViewProvider {
 		if( icon == null && iconDescriptor != null ) {
 			icon = iconDescriptor.createImage();
 		}
+		if( icon.isDisposed() && iconDescriptor != null ) {
+			icon = iconDescriptor.createImage(); 
+		}
 		return icon;
 	}
 	
