@@ -82,8 +82,8 @@ public class JstPublisher implements IJBossServerPublisher {
 		state = IServer.PUBLISH_STATE_NONE;
 	}
 
-    public void publishModule(int kind, int deltaKind, IModule[] module,
-            IProgressMonitor monitor) throws CoreException {
+    public void publishModule(int kind, int deltaKind, int modulePublishState, 
+    		IModule[] module, IProgressMonitor monitor) throws CoreException {
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
     	checkClosed(module);

@@ -26,7 +26,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 
 public interface IJBossServerPublisher {
-	public void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) 
+	public void publishModule(int kind, int deltaKind, int modulePublishState,
+			IModule[] module, IProgressMonitor monitor) 
 								throws CoreException;
 	public int getPublishState();
 }
