@@ -368,7 +368,13 @@ public class ServiceXMLEditorConfiguration extends
 
 		protected void addTagInsertionProposals(ContentAssistRequest contentAssistRequest, int childPosition) {
 			super.addTagInsertionProposals(contentAssistRequest, childPosition);
-			
+			List superProps = contentAssistRequest.getProposals();
+			ICompletionProposal[] proposals = (ICompletionProposal[]) superProps.toArray(new ICompletionProposal[superProps.size()]);
+			ArrayList alreadyAddedStrings = new ArrayList();
+			for( int i = 0; i < proposals.length; i++ ) {
+				alreadyAddedStrings.add(proposals[i].getDisplayString());
+			}
+
 			String parentElement = contentAssistRequest.getParent().getNodeName();
 			ArrayList possibleNodes = (ArrayList)children.get(parentElement);
 
@@ -454,6 +460,13 @@ public class ServiceXMLEditorConfiguration extends
 		
 		protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest) {
 			super.addAttributeNameProposals(contentAssistRequest);
+			List superProps = contentAssistRequest.getProposals();
+			ICompletionProposal[] proposals = (ICompletionProposal[]) superProps.toArray(new ICompletionProposal[superProps.size()]);
+			ArrayList alreadyAddedStrings = new ArrayList();
+			for( int i = 0; i < proposals.length; i++ ) {
+				alreadyAddedStrings.add(proposals[i].getDisplayString());
+			}
+			
 			
 			Image attImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_ATTRIBUTE);
 
@@ -470,7 +483,7 @@ public class ServiceXMLEditorConfiguration extends
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
-				if( att.name.startsWith(match) && !activeAttributes.contains(att.name)) {
+				if( att.name.startsWith(match) && !activeAttributes.contains(att.name) && !alreadyAddedStrings.contains(att.name)) {
 					String txt = att.name + "=\"" + att.defaultValue + "\"";
 					contentAssistRequest.addProposal(new CompletionProposal(txt,  contentAssistRequest.getReplacementBeginPosition(), 
 							match.length(), txt.length()-1, attImage, att.name, null, null));
