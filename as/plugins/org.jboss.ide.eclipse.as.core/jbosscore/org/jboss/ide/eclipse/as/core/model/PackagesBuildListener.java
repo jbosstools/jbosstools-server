@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -184,7 +185,14 @@ public class PackagesBuildListener implements IPackagesBuildListener {
 	 * If a server cares about any one package, then it cares the building is starting
 	 */
 	protected IServer[] getServersWhoCare(IProject project) {
-		Set set = new TreeSet();
+		Set set = new TreeSet(new Comparator() {
+			public int compare(Object o1, Object o2) {
+				if( o1 instanceof IServer && o2 instanceof IServer) {
+					return ((IServer)o1).getId().compareTo(((IServer)o2).getId());
+				}
+				return 0;
+			} });
+		
 		IPackage[] packs = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
 		for( int i = 0; i < packs.length; i++ )
 			set.addAll(Arrays.asList(getServersWhoCare(packs[i])));
