@@ -177,15 +177,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
 
-		int newDeltaKind = -1;
-		switch( getServer().getModulePublishState(module)) {
-		case IServer.PUBLISH_STATE_FULL:
-			newDeltaKind = IServer.PUBLISH_FULL;
-			break;
-		case IServer.PUBLISH_STATE_INCREMENTAL:
-			newDeltaKind = IServer.PUBLISH_INCREMENTAL;
-			break;
-		}
+		int modulePublishState = getServer().getModulePublishState(module);
 		
 		/**
 		 * If our modules are already packaged as ejb jars, wars, aop files, 
@@ -201,7 +193,7 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 			publisher = new NullPublisher();
 		}
 		
-		publisher.publishModule(kind, deltaKind, module, monitor);
+		publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
 		setModulePublishState(module, publisher.getPublishState());
 	}
 	
