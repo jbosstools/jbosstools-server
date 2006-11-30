@@ -322,7 +322,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	// Preference Page
 
 	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent) {
-		return new DescriptorPreferencePage(parent);
+		return null; // new DescriptorPreferencePage(parent);
 	}
 	
 	public class DescriptorPreferencePage extends ViewProviderPreferenceComposite {
