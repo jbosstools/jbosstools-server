@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -47,14 +50,35 @@ import org.eclipse.wst.xml.ui.internal.correction.QuickAssistProcessorXML;
 import org.eclipse.wst.xml.ui.internal.correction.QuickFixProcessorXML;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
+import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLQuickFixProposalProvider;
 import org.jboss.ide.eclipse.as.ui.util.ServiceXMLEditorUtil;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantProviderXML {
-
+	public static IServiceXMLQuickFixProposalProvider[] providers;
+	
+	public static IServiceXMLQuickFixProposalProvider[] getProviders() {
+		if( providers == null ) {
+			ArrayList list = new ArrayList();
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLQuickFixProvider");
+			for( int i = 0; i < cf.length; i++ ) {
+				try {
+					list.add((IServiceXMLQuickFixProposalProvider)cf[i].createExecutableExtension("class"));
+				} catch( CoreException ce ) {
+					ce.printStackTrace();
+				}
+			}
+			providers = (IServiceXMLQuickFixProposalProvider[])
+				list.toArray(new IServiceXMLQuickFixProposalProvider[list.size()]);
+		}
+		return providers;
+	}
+	
 	public ServiceXMLCorrectionAssistantProvider() {
 		super();
 	}
@@ -161,9 +185,20 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 
 			IDOMNode node = (IDOMNode) ContentAssistUtils.getNodeAt(viewer, offset);
 			addMissingAttributesProposal(node, props);
-			
+			addXPathProposals(viewer, offset, props);
 			return (ICompletionProposal[]) props.toArray(new ICompletionProposal[props.size()]);
 		}
+		
+		protected void addXPathProposals(StructuredTextViewer viewer, int offset, ArrayList proposals) {
+			IServiceXMLQuickFixProposalProvider[] providers = getProviders();
+			ICompletionProposal[] props;
+			for( int i = 0; i < providers.length; i++ ) {
+				props = providers[i].getProposals(viewer, offset);
+				if( props != null )
+					proposals.addAll(Arrays.asList(props));
+			}
+		}
+		
 		
 		protected void addMissingAttributesProposal(IDOMNode node, ArrayList proposals) {
 			String[] missing = mbeanGetMissingAttributes(node);

@@ -219,6 +219,10 @@
                name="Startup / Shutdown Events"
                typeId="org.jboss.ide.eclipse.as.core.runtime.server.polling.MajorType"/>
       </extension>
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">
+         <QuickFixProvider class="org.jboss.ide.eclipse.as.ui.dialogs.ConvertNodeToXPathDialog$ConvertNodeToXPathDialogProvider"/>
+      </extension>
    
    
 </plugin>
