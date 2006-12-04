@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -75,7 +77,14 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorDescriptor;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
@@ -103,7 +112,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	private XPathTreeLabelProvider labelProvider;
 	private DescriptorXPathPropertySheetPage propertyPage;
 
-	private Action newXPathCategoryAction, deleteXPathCategoryAction, newXPathAction, editXPathAction, deleteXPathAction;
+	private Action newXPathCategoryAction, deleteXPathCategoryAction, newXPathAction, 
+					editXPathAction, deleteXPathAction, editFileAction;
 
 	private IServer server;
 	private JBossServer jbServer;
@@ -242,7 +252,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				Object o = getActiveCategory();
 				if( o != null && o instanceof SimpleXPathPreferenceTreeItem) {
 					String category = (String)  ((SimpleXPathPreferenceTreeItem)o).getData();
-					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, category, jbServer);
+					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), jbServer, category);
 					if( d.open() == Window.OK ) {
 						SimpleTreeItem[] categories = tree.getChildren();
 						SimpleTreeItem categoryItem = null;
@@ -265,14 +275,13 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 
 		editXPathAction = new Action() {
 			public void run() {
-				SimpleTreeItem tree = getRoot();
 				Object o = getPropertySelection();
 				if( o != null && o instanceof XPathPreferenceTreeItem) {
 					XPathPreferenceTreeItem original = (XPathPreferenceTreeItem)o;
 					String category = (String)  original.getParent().getData();
 					
-					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), tree, 
-													category, jbServer, original.getName());
+					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), 
+							jbServer, category, original.getName());
 					d.setAttribute(original.getAttributeName());
 					d.setXpath(original.getXPath());
 					
@@ -303,6 +312,27 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			}
 		};
 		deleteXPathAction.setText(Messages.DescriptorXPathDeleteXPath);
+		
+		editFileAction = new Action() {
+			public void run() {
+				try {
+					Object o = getPropertySelection();
+					File file = ((XPathTreeItem)o).getFile();
+					IWorkbench wb = PlatformUI.getWorkbench();
+					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+					IWorkbenchPage page = win.getActivePage();
+					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
+					if( fileStore != null ) {
+						IEditorInput input = new JavaFileEditorInput(fileStore);
+						IEditorDescriptor desc = PlatformUI.getWorkbench().
+							getEditorRegistry().getDefaultEditor(file.getName());
+					   page.openEditor(input, desc.getId());
+					}
+				} catch( Exception exc ) {
+				}
+			}
+		};
+		editFileAction.setText("Edit File");
 	}
 
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
@@ -313,6 +343,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		
 		if( selection instanceof SimpleXPathPreferenceTreeItem ) {
+			setActiveCategory(((SimpleXPathPreferenceTreeItem)selection));
 			menu.add(this.newXPathAction);
 			menu.add(this.deleteXPathCategoryAction);
 			menu.add(new Separator());
@@ -528,6 +559,10 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 			if( getPropertySelection() != null && getPropertySelection() instanceof XPathPreferenceTreeItem) {
 				menu.add(editXPathAction);
 				menu.add(deleteXPathAction);
+			}
+			if( getPropertySelection() != null && getPropertySelection() instanceof XPathTreeItem 
+					&& ((XPathTreeItem)getPropertySelection()).getFile() != null ) {
+				menu.add(editFileAction);
 			}
 		}
 
