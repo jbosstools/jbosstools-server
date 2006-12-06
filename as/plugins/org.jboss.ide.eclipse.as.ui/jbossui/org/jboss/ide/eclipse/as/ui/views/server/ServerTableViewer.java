@@ -262,6 +262,8 @@ public class ServerTableViewer extends TreeViewer {
 			public void run() {
 				try {
 					refresh(server);
+					ISelection sel = ServerTableViewer.this.getSelection();
+					ServerTableViewer.this.setSelection(sel);
 				} catch (Exception e) {
 					// ignore
 				}
