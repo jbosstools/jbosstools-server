@@ -21,7 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.core.internal.resources.WorkspaceRoot;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -43,15 +43,13 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JstPackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller.TwiddlePollerEvent;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 public class JBossServerBehavior extends ServerBehaviourDelegate {
@@ -177,18 +175,19 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
 
-		int modulePublishState = getServer().getModulePublishState(module);
+		int modulePublishState = getServer().getModulePublishState(module) + 0;
 		
 		/**
 		 * If our modules are already packaged as ejb jars, wars, aop files, 
 		 * then go ahead and publish
 		 */
-		if( hasPackagingConfiguration(module) ) {
-			publisher = new PackagesPublisher(JBossServerCore.getServer(getServer()));
-		} else if( arePathModules(module)) {
+		if( arePathModules(module)) {
 			publisher = new PathPublisher(JBossServerCore.getServer(getServer()), this);
+		} else if( hasPackagingConfiguration(module) ) {
+			publisher = new PackagesPublisher(JBossServerCore.getServer(getServer()));
 		} else if( areJstModules(module)){
-			publisher = new JstPublisher(JBossServerCore.getServer(getServer()));
+			//publisher = new JstPublisher(JBossServerCore.getServer(getServer()));
+			publisher = new JstPackagesPublisher(JBossServerCore.getServer(getServer()));
 		} else {
 			publisher = new NullPublisher();
 		}
@@ -224,7 +223,8 @@ public class JBossServerBehavior extends ServerBehaviourDelegate {
 	protected boolean hasPackagingConfiguration(IModule[] module) {
 		try {
 			String projectName = module[0].getName();
-			return PackagesCore.projectHasPackages(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName));
+			IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			return PackagesCore.getProjectPackages(proj, new NullProgressMonitor()).length == 0 ? false : true;
 		} catch( Exception e ) {} 
 		return false;
 	}
