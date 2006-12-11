@@ -131,7 +131,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 				for( int i = 0; i < children.length; i++ ) {
 					if( children[i] instanceof EventLogTreeItem ) {
 						String type = ((EventLogTreeItem)children[i]).getEventClass();
-						if( type.equals(parentElement))
+						if( type != null && type.equals(parentElement))
 							items.add(children[i]);
 					}
 				}
@@ -208,6 +208,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	    }
 
 	    public String getText(Object element) {
+	    	if( element == null ) return "NULL, ERROR";
 	    	String suffix = getShowTimestamp() ? createTimestamp(element) : "";
 	    	if( labelProviderDelegates == null )
 	    		loadLabelProviderDelegates();
