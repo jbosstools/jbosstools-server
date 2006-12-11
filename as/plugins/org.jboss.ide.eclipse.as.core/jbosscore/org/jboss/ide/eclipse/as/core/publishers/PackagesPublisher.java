@@ -68,7 +68,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
     	
     	if( kind == IServer.PUBLISH_INCREMENTAL ) {
     		boolean incremental = false;
-    		if( modulePublishState == IServer.PUBLISH_STATE_NONE ) return;
+    		if( modulePublishState == IServer.PUBLISH_STATE_NONE ) incremental = false;
     		if( modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL ) incremental = true;
     		publishModule(incremental, module, monitor);
     		return;
@@ -87,17 +87,25 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		
 		String projectName = module[0].getName();
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		PackagesCore.buildProject(project, monitor);
-		IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
-		for( int i = 0; i < packages.length; i++ ) {
-			if( packages[i].isDestinationInWorkspace()) {
-				IFile file = packages[i].getPackageFile();
-				IPath sourcePath = file.getLocation();
-				IPath destPath = new Path(server.getDeployDirectory(true)).append(sourcePath.lastSegment());
-				boolean deleted = destPath.toFile().delete();
-			} else {
-				IFile file = packages[i].getPackageFile();
-				boolean deleted = file.getLocation().toFile().delete();
+		if( project.exists() ) {
+			IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
+			for( int i = 0; i < packages.length; i++ ) {
+				if( packages[i].isDestinationInWorkspace()) {
+					IFile file = packages[i].getPackageFile();
+					IPath sourcePath = file.getLocation();
+					IPath destPath = new Path(server.getDeployDirectory(true)).append(sourcePath.lastSegment());
+					destPath.toFile().delete();
+				} else {
+					IPath path = packages[i].getPackageFilePath();
+					Path deployDir = new Path(server.getDeployDirectory(true));
+					if( path.toOSString().startsWith(deployDir.toOSString())) {
+						try {
+						path.toFile().delete();
+						} catch( Exception e ) {
+							e.printStackTrace();
+						}
+					}
+				}
 			}
 		}
 	}
@@ -108,6 +116,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		int inc2 = incremental ? IncrementalProjectBuilder.INCREMENTAL_BUILD : IncrementalProjectBuilder.FULL_BUILD;
 		String projectName = module[0].getName();
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		try {
 		PackagesCore.buildProject(project, inc2, monitor);
 		IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
 		for( int i = 0; i < packages.length; i++ ) {
@@ -122,6 +131,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 					e.printStackTrace();
 				}
 			}
+		}
+		}catch( Exception ce ) {
 		}
 	}
 }
