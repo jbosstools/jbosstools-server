@@ -171,7 +171,7 @@
       <moduleArtifactAdapter
             class="org.jboss.ide.eclipse.as.core.module.PackagedArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
-            priority="20">
+            priority="0">
          <enablement>
             <or>
                <instanceof value="org.eclipse.core.resources.IProject"/>
