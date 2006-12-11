@@ -172,13 +172,14 @@
             providerClass="org.jboss.ide.eclipse.as.ui.viewproviders.DescriptorXPathViewProvider"/>
             -->
    </extension>
+   <!--
       <extension
             point="org.jboss.ide.eclipse.as.core.pollerTimeoutListener">
          <pollerTimeoutListener
                listener="org.jboss.ide.eclipse.as.ui.views.server.TwiddlePollerListener"
                pollerType="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"/>
       </extension>
-   
+	-->   
 
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
