@@ -70,9 +70,10 @@ public class ServerViewProvider {
 	public Image getImage() {
 		if( icon == null && iconDescriptor != null ) {
 			icon = iconDescriptor.createImage();
-		}
-		if( icon.isDisposed() && iconDescriptor != null ) {
-			icon = iconDescriptor.createImage(); 
+		} else if( icon == null && iconDescriptor == null ){
+			icon = getDelegate().createIcon();
+		} else if( icon != null && icon.isDisposed()) {
+			icon = iconDescriptor == null ? getDelegate().createIcon() : iconDescriptor.createImage();
 		}
 		return icon;
 	}
@@ -118,7 +119,7 @@ public class ServerViewProvider {
 	
 	public void dispose() {
 		getDelegate().dispose();
-		if( icon != null ) 
+		if( icon != null && iconDescriptor != null ) 
 			icon.dispose();
 		
 		Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();

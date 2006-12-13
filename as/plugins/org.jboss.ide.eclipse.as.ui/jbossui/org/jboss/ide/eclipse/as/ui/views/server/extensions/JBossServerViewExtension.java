@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
@@ -58,6 +59,10 @@ public abstract class JBossServerViewExtension {
 	}
 	
 	public ViewProviderPreferenceComposite createPreferenceComposite(Composite parent) {
+		return null;
+	}
+	
+	public Image createIcon() {
 		return null;
 	}
 	
