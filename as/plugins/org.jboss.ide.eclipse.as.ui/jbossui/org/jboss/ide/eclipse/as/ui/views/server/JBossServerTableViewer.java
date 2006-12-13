@@ -46,7 +46,7 @@ public class JBossServerTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
 	
-	protected Action disableCategoryAction;
+	protected Action disableCategoryAction, refreshAction;
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
 		setContentProvider(new ContentProviderDelegator());
@@ -90,6 +90,16 @@ public class JBossServerTableViewer extends TreeViewer {
 			}
 		};
 		disableCategoryAction.setText(Messages.DisableCategoryAction);
+		refreshAction = new Action() { 
+			public void run() {
+				Object el = getSelectedElement();
+				if( el instanceof ServerViewProvider ) 
+					JBossServerView.getDefault().refreshJBTree(el);
+				else 
+					JBossServerView.getDefault().refreshJBTree(((IStructuredSelection)getSelection()).getFirstElement());
+			}
+		};
+		refreshAction.setText("Refresh Item");
 	}
 	
 	public static class ContentWrapper {
@@ -267,13 +277,12 @@ public class JBossServerTableViewer extends TreeViewer {
 
 	
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
-		
 		Object selected = getSelectedElement();
-		
+		menu.add(refreshAction);
 		if( selected instanceof ServerViewProvider ) {
 			menu.add(disableCategoryAction);
-			menu.add(new Separator());
 		}
+		menu.add(new Separator());
 	}
 
 	
