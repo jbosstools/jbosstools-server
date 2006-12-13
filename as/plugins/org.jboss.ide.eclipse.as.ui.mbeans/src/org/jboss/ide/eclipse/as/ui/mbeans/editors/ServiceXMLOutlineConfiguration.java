@@ -23,29 +23,29 @@ package org.jboss.ide.eclipse.as.ui.mbeans.editors;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.sse.ui.internal.IReleasable;
-import org.eclipse.wst.xml.core.internal.contentmodel.CMNode;
-import org.eclipse.wst.xml.core.internal.contentmodel.modelquery.ModelQuery;
 import org.eclipse.wst.xml.core.internal.document.DOMModelImpl;
-import org.eclipse.wst.xml.core.internal.modelquery.ModelQueryUtil;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.eclipse.wst.xml.ui.internal.contentoutline.XMLNodeActionManager;
-import org.eclipse.wst.xml.ui.internal.editor.CMImageUtil;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
 import org.eclipse.wst.xml.ui.views.contentoutline.XMLContentOutlineConfiguration;
-import org.w3c.dom.Attr;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
+import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineActionProvider;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -170,7 +170,6 @@ public class ServiceXMLOutlineConfiguration extends
 	
 	
 	private ActionManagerMenuListener fContextMenuFiller = null;
-
 	
 	/**
 	 * Pilfered from superclass, where it's currently PRIVATE (BOOOO!)
@@ -178,9 +177,28 @@ public class ServiceXMLOutlineConfiguration extends
 	private class ActionManagerMenuListener implements IMenuListener, IReleasable {
 		private XMLNodeActionManager fActionManager;
 		private TreeViewer fTreeViewer;
-
+		private OutlineMenuProvider[] menuProviders = null;
+		
 		public ActionManagerMenuListener(TreeViewer viewer) {
 			fTreeViewer = viewer;
+			
+		}
+
+		public OutlineMenuProvider[] getProviders() {
+			if( menuProviders == null ) {
+				ArrayList list = new ArrayList();
+				IExtensionRegistry registry = Platform.getExtensionRegistry();
+				IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLOutlineMenuProvider");
+				for( int i = 0; i < cf.length; i++ ) {
+					try {
+						list.add(new OutlineMenuProvider(cf[i]));
+					} catch( CoreException ce ) {
+						ce.printStackTrace();
+					}
+				}
+				menuProviders = (OutlineMenuProvider[]) list.toArray(new OutlineMenuProvider[list.size()]);
+			}
+			return menuProviders;
 		}
 
 		public void menuAboutToShow(IMenuManager manager) {
@@ -188,12 +206,33 @@ public class ServiceXMLOutlineConfiguration extends
 				fActionManager = createNodeActionManager(fTreeViewer);
 			}
 			fActionManager.fillContextMenu(manager, fTreeViewer.getSelection());
+			for( int i = 0; i < getProviders().length; i++ ) {
+				getProviders()[i].menuAboutToShow(manager, fTreeViewer.getSelection());
+			}
 		}
 
 		public void release() {
 			fTreeViewer = null;
 			if (fActionManager != null) {
 				fActionManager.setModel(null);
+			}
+			for( int i = 0; i < getProviders().length; i++ ) {
+				getProviders()[i].release();
+			}
+		}
+	}
+	
+	private static class OutlineMenuProvider {
+		private IServiceXMLOutlineActionProvider listener;
+		public OutlineMenuProvider(IConfigurationElement element) throws CoreException {
+			listener = (IServiceXMLOutlineActionProvider)element.createExecutableExtension("class");
+		}
+		public void menuAboutToShow(IMenuManager manager, ISelection selection) {
+			if( listener != null ) listener.menuAboutToShow(manager, selection);
+		}
+		public void release() {
+			if( listener != null && listener instanceof IReleasable) {
+				((IReleasable)listener).release();
 			}
 		}
 	}
