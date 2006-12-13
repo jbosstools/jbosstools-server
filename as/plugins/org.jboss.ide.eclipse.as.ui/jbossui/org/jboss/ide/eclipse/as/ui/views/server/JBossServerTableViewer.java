@@ -161,6 +161,8 @@ public class JBossServerTableViewer extends TreeViewer {
 		}
 
 		public ContentWrapper[] wrap( Object[] elements, ServerViewProvider provider ) {
+			if( elements == null ) return new ContentWrapper[0];
+			
 			ContentWrapper[] wrappers = new ContentWrapper[elements.length];
 			for( int i = 0; i < wrappers.length; i++ ) {
 				wrappers[i] = new ContentWrapper(elements[i], provider);
