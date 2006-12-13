@@ -142,11 +142,11 @@ public class JBossServer extends ServerDelegate implements IServerStartupParamet
 		if( !f.exists() || !f.canRead() || !f.isDirectory())
 			return getRuntimeConfigDirectory();
 
-		return configDir;
+		return new Path(configDir).toOSString();
 	}
 	
 	public String getDeployDirectory(boolean checkLaunchConfig) {
-		return getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY;
+		return new Path(getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY).toOSString();
 	}
 
 	protected String getLaunchConfigConfigurationDirectory() {
@@ -178,8 +178,9 @@ public class JBossServer extends ServerDelegate implements IServerStartupParamet
 	protected String getRuntimeConfigDirectory() {
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-		return getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + "server" + 
-			Path.SEPARATOR + runtime.getJBossConfiguration();
+		String p = getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + "server" + 
+				Path.SEPARATOR + runtime.getJBossConfiguration();
+		return new Path(p).toOSString();
 	}
 	
 }
