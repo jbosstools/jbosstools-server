@@ -54,7 +54,9 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.wst.ws.ui,
  org.jboss.ide.eclipse.firstrun,
  org.jboss.ide.eclipse.as.ui.mbeans,
- org.jboss.ide.eclipse.ui
+ org.jboss.ide.eclipse.ui,
+ org.jboss.ide.eclipse.packages.core,
+ org.apache.ant
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.wizards
