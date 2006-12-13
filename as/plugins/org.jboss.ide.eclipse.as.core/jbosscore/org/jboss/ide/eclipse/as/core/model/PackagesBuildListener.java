@@ -201,7 +201,8 @@ public class PackagesBuildListener implements IPackagesBuildListener {
 	
 	// TODO later
 	protected IServer[] getServersWhoCare(IPackage pack) {
-		return JBossServerCore.getIServerJBossServers();
+		return new IServer[] { };
+		//return JBossServerCore.getIServerJBossServers();
 	}
 	
 	public static final String EVENT_TYPE = "org.jboss.ide.eclipse.as.core.model.Packages";

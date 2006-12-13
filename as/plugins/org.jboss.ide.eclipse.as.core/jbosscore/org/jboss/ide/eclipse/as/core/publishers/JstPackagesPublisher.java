@@ -177,16 +177,16 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 				IJavaProject javaProject = JavaCore.create(project);
 				Assert.isNotNull(javaProject);
 				
-				IPath outputPath;
+				IPath sourcePath;
 				try {
-					outputPath = javaProject.getOutputLocation();
+					sourcePath = javaProject.getOutputLocation();
 				} catch (JavaModelException e) {
 					e.printStackTrace();
 					return null;
 				}
-				outputPath = outputPath.removeFirstSegments(1);
-				IContainer outputContainer = project.getFolder(outputPath);
-				return createGenericIPackage(module, deployDirectory, packageName, outputContainer);
+				sourcePath = sourcePath.removeFirstSegments(1);
+				IContainer sourcePathContainer = project.getFolder(sourcePath);
+				return createGenericIPackage(module, deployDirectory, packageName, sourcePathContainer);
 			} catch( Exception e ) {
 				e.printStackTrace();
 			}
@@ -249,9 +249,9 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 		}
 		public IPackage createEarPackages(IModule module, IProgressMonitor monitor) {
 			IProject proj = module.getProject();
-			IContainer outputContainer = proj.getFolder(EARCONTENT);
+			IContainer sourceContainer = proj.getFolder(EARCONTENT);
 
-			IPackage topLevel = createGenericIPackage(module, jbServer.getDeployDirectory(), proj.getName() + ".ear", outputContainer);
+			IPackage topLevel = createGenericIPackage(module, jbServer.getDeployDirectory(), proj.getName() + ".ear", sourceContainer);
 			addFileset(proj, topLevel, EARCONTENT, "**/*.*");
 			
 			// now add children
@@ -276,7 +276,7 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 			return null;
 		}
 		public IPackage createOtherPackages(IModule module, IProgressMonitor monitor) {
-			return null;
+			return createGenericIPackage(module, null, module.getName() + ".jar");
 		}
 
 		public IStatus[] unpublish(IProgressMonitor monitor) throws CoreException {
