@@ -119,7 +119,7 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 									inputChanged(JBossServerView.getDefault().getJBViewer(), null, JBossServerView.getDefault().getSelectedServer());
 								
 								try {
-									JBossServerView.getDefault().refreshJBTree(null);
+									JBossServerView.getDefault().getJBViewer().refresh();
 								} catch(Exception e) {
 								}
 							}

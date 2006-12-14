@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.as.ui.views.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.internal.refresh.RefreshJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.DebugUITools;
@@ -56,6 +57,8 @@ public class JBossServerView extends StrippedServerView {
 	protected Action  refreshViewerAction, editLaunchConfigAction, twiddleAction, cloneServerAction;
 
 	
+	private boolean suppressingRefresh = false;
+	
 	
 	public static JBossServerView instance;
 	public static JBossServerView getDefault() {
@@ -105,7 +108,7 @@ public class JBossServerView extends StrippedServerView {
 			public void run() {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						refresh();
+						getJBViewer().refresh(null);
 					} 
 				});
 			}
@@ -209,9 +212,6 @@ public class JBossServerView extends StrippedServerView {
 	}
 	
 	
-	protected void refresh() {
-		tableViewer.refresh(); // should auto-refresh the other
-	}
 	// for superclass, for the top viewer
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
 		menu.add(newServerAction);
@@ -246,28 +246,6 @@ public class JBossServerView extends StrippedServerView {
 		return (IServer)jbViewer.getInput();
 	}
 	
-	public void refreshJBTree(Object obj) {
-		final Object obj2 = obj;
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				try {
-					// If it's null, refresh the whole thing
-					if( obj2 == null ) { 
-//						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
-						JBossServerView.this.jbViewer.refresh();
-//						JBossServerView.this.jbViewer.setExpandedElements(expanded);
-					} else {
-//						Object[] expanded = JBossServerView.this.jbViewer.getExpandedElements();
-						JBossServerView.this.jbViewer.refresh(obj2);
-//						JBossServerView.this.jbViewer.setExpandedElements(expanded);
-					}
-				} catch (Exception e) {
-					// ignore
-				}
-			}
-		});
-	}
-	
 	public void addListeners() {
 		
 		/*
@@ -276,7 +254,6 @@ public class JBossServerView extends StrippedServerView {
 		
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				Object current = jbViewer.getInput();
 				Object selection = ((TreeSelection)event.getSelection()).getFirstElement();
 				Object server = selection;
 				if( selection instanceof ModuleServer ) {
@@ -284,22 +261,12 @@ public class JBossServerView extends StrippedServerView {
 				}
 
 				if( selection == null ) return;
-				
 				if( server != jbViewer.getInput()) {
-					jbViewer.setInput(server);
-					jbViewer.expandToLevel(2);
+					jbViewer.setInput(server); 
 				} else {
-					// This is entirely too cludgy but it works
-					ISelection sel = jbViewer.getSelection();
-					Object[] expanded = jbViewer.getExpandedElements();
-					jbViewer.setInput(server);
-//					jbViewer.expandToLevel(2);
-					Object[] alsoExpanded = jbViewer.getExpandedElements();
-					ArrayList tmp = new ArrayList();
-					tmp.addAll(Arrays.asList(expanded));
-					tmp.addAll(Arrays.asList(alsoExpanded));
-					jbViewer.setExpandedElements(tmp.toArray());
-					jbViewer.setSelection(sel);
+//					Object[] expanded = jbViewer.getExpandedElements();
+//					jbViewer.setInput(server);
+//					jbViewer.setExpandedElements(expanded);
 				}
 			} 
 			

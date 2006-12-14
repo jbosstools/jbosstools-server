@@ -50,6 +50,7 @@ import org.eclipse.ui.internal.util.SWTResourceUtil;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
@@ -82,7 +83,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					System.arraycopy(filesets, 0, filesetsNew, 0, filesets.length);
 					filesetsNew[filesetsNew.length-1] = fs;
 					filesets = filesetsNew;
-					saveFilesets();
+					saveFilesets(true);
+					refreshViewer();
 				}
 			}
 		};
@@ -94,7 +96,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 						ArrayList asList = new ArrayList(Arrays.asList(filesets));
 						asList.remove(selection);
 						filesets = (Fileset[]) asList.toArray(new Fileset[asList.size()]);
-						saveFilesets();
+						saveFilesets(true);
+						removeElement(selection);
 					} catch( Exception e ) {
 						e.printStackTrace();
 					}
@@ -112,7 +115,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					sel.setFolder(ret.getFolder());
 					sel.setIncludesPattern(ret.getIncludesPattern());
 					sel.setExcludesPattern(ret.getExcludesPattern());
-					saveFilesets();
+					saveFilesets(true);
+					refreshViewer(sel);
 				}
 			}
 		};
@@ -123,6 +127,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					PathWrapper wrapper = (PathWrapper)selection;
 					File file = wrapper.getPath().toFile();
 					file.delete();
+					refreshViewer();
 				} catch( Exception e ) {
 				}
 			}
@@ -230,17 +235,27 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 	}
 	
-	public void saveFilesets() {
-		IServer server = contentProvider.server;
-		if( server != null ) {
-			ArrayList list = new ArrayList();
-			for( int i = 0; i < filesets.length; i++ ) {
-				list.add(filesets[i].toString());
+	public void saveFilesets(boolean suppressRefresh) {
+		Runnable r = new Runnable() {
+			public void run() {
+				IServer server = contentProvider.server;
+				if( server != null ) {
+					ArrayList list = new ArrayList();
+					for( int i = 0; i < filesets.length; i++ ) {
+						list.add(filesets[i].toString());
+					}
+					JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+					ServerAttributeHelper helper = jbs.getAttributeHelper();
+					helper.setAttribute(FILESET_KEY, list);
+					helper.save();
+				}
 			}
-			JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-			ServerAttributeHelper helper = jbs.getAttributeHelper();
-			helper.setAttribute(FILESET_KEY, list);
-			helper.save();
+		};
+
+		if( suppressRefresh ) {
+			suppressingRefresh(r);
+		} else {
+			r.run();
 		}
 	}
 
@@ -327,6 +342,17 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			} catch( Exception e ) {}
 			return null;
 		}
+		
+		public boolean equals(Object other) {
+			if( !(other instanceof Fileset)) return false;
+			if( other == this ) return true;
+			Fileset o = (Fileset)other;
+			return o.getName().equals(getName()) && o.getFolder().equals(getFolder()) 
+				&& o.getIncludesPattern().equals(getIncludesPattern()) && o.getExcludesPattern().equals(getExcludesPattern());
+		}
+		public int hashCode() {
+			return (name + "::_::" +  folder + "::_::" +  includesPattern + "::_::" +  excludesPattern + "::_::").hashCode();
+		}
 	}
 	
 	public class FilesetLabelProvider extends LabelProvider {
@@ -349,22 +375,6 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		        }
 		        return image;
 	    	}
-//	    	if( element instanceof Path ) {
-//	    		((Path)element).
-//	    		
-//	    	}
-//			if (resource instanceof IFile) {
-//				contentType = IDE.guessContentType((IFile)resource);
-//			}
-//	        // @issue move IDE specific images
-//	        ImageDescriptor image = PlatformUI.getWorkbench().getEditorRegistry()
-//	                .getImageDescriptor(resource.getName(), contentType);
-//	        if (image == null) {
-//				image = PlatformUI.getWorkbench().getSharedImages()
-//	                    .getImageDescriptor(ISharedImages.IMG_OBJ_FILE);
-//			}
-//	        return image;
-
 	        return null;
 	    }
 
@@ -478,26 +488,26 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		protected void fillArea(Composite main) {
 			Label nameLabel = new Label(main, SWT.NONE);
-			nameLabel.setText("Name");
+			nameLabel.setText("Name: ");
 			
 			nameText = new Text(main, SWT.BORDER);
 			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 			
 			Label folderLabel = new Label(main, SWT.NONE);
-			folderLabel.setText("Folder");
+			folderLabel.setText("Root Directory: ");
 			
 			folderText = new Text(main, SWT.BORDER);
 			browse = new Button(main, SWT.PUSH);
 			browse.setText("Browse...");
 			
 			Label includesLabel = new Label(main, SWT.NONE);
-			includesLabel.setText("Include Pattern");
+			includesLabel.setText("Includes: ");
 			
 			includesText = new Text(main, SWT.BORDER);
 			includesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
 			
 			Label excludeLabel= new Label(main, SWT.NONE);
-			excludeLabel.setText("Exclude Pattern");
+			excludeLabel.setText("Excludes: ");
 			
 			excludesText = new Text(main, SWT.BORDER);
 			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));

@@ -45,8 +45,8 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.
 public class JBossServerTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
-	
 	protected Action disableCategoryAction, refreshAction;
+	protected boolean suppressingRefresh = false;
 	public JBossServerTableViewer(Tree tree) {
 		super(tree);
 		setContentProvider(new ContentProviderDelegator());
@@ -94,9 +94,9 @@ public class JBossServerTableViewer extends TreeViewer {
 			public void run() {
 				Object el = getSelectedElement();
 				if( el instanceof ServerViewProvider ) 
-					JBossServerView.getDefault().refreshJBTree(el);
+					refresh(el);
 				else 
-					JBossServerView.getDefault().refreshJBTree(((IStructuredSelection)getSelection()).getFirstElement());
+					refresh(((IStructuredSelection)getSelection()).getFirstElement());
 			}
 		};
 		refreshAction.setText("Refresh Item");
@@ -402,5 +402,20 @@ public class JBossServerTableViewer extends TreeViewer {
 			providers[i].dispose();
 		}
 	}
+
 	
+	public void suppressingRefresh(Runnable runnable) {
+		boolean currentVal = suppressingRefresh;
+		suppressingRefresh = true;
+		runnable.run();
+		suppressingRefresh = currentVal;
+	}
+
+	// for testing
+	public void refresh(final Object element) {
+		System.out.println("here: " + element);
+		super.refresh(element);
+	}
+	
+
 }

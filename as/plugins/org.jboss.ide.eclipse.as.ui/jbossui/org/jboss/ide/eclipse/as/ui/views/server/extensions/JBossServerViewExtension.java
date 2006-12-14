@@ -66,6 +66,10 @@ public abstract class JBossServerViewExtension {
 		return null;
 	}
 	
+	protected void suppressingRefresh(Runnable runnable) {
+		JBossServerView.getDefault().getJBViewer().suppressingRefresh(runnable);
+	}
+	
 	protected void refreshViewer() {
 		refreshViewer(null);
 	}
@@ -73,11 +77,17 @@ public abstract class JBossServerViewExtension {
 		if( isEnabled() ) {
 			try {
 				if( o == null )
-					JBossServerView.getDefault().refreshJBTree(provider);
+					JBossServerView.getDefault().getJBViewer().refresh(provider);
 				else
-					JBossServerView.getDefault().refreshJBTree(new ContentWrapper(o, provider));
+					JBossServerView.getDefault().getJBViewer().refresh(new ContentWrapper(o, provider));
 			} catch(Exception e) {
 			}
 		}
+	}
+	protected void removeElement(Object o) {
+		JBossServerView.getDefault().getJBViewer().remove(new ContentWrapper(o, provider));
+	}
+	protected void addElement(Object parent, Object child) {
+		JBossServerView.getDefault().getJBViewer().add(new ContentWrapper(parent, provider), new ContentWrapper(child, provider));
 	}
 }

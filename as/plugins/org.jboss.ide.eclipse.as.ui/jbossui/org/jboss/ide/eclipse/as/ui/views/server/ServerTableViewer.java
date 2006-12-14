@@ -262,6 +262,8 @@ public class ServerTableViewer extends TreeViewer {
 			public void run() {
 				try {
 					refresh(server);
+					
+					// This ensures the icons are updated in case of a publish or state change
 					ISelection sel = ServerTableViewer.this.getSelection();
 					ServerTableViewer.this.setSelection(sel);
 				} catch (Exception e) {

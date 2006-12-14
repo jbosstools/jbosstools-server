@@ -23,12 +23,16 @@ package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.jface.text.contentassist.IContextInformation;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,6 +61,7 @@ import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenc
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
+import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineActionProvider;
 import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLQuickFixProposalProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.w3c.dom.NamedNodeMap;
@@ -304,6 +309,31 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		}
 
 		public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
+			new ConvertNodeRunnable(node, attributeName).run();
+		}
+
+		public void selected(ITextViewer viewer, boolean smartToggle) {
+		}
+
+		public void unselected(ITextViewer viewer) {
+		}
+
+		public boolean validate(IDocument document, int offset, DocumentEvent event) {
+			return false;
+		}
+		
+	}
+	
+	public static class ConvertNodeRunnable implements Runnable {
+
+		private String attributeName;
+		private Node node;
+		public ConvertNodeRunnable(Node n, String att) {
+			attributeName = att;
+			node = n;
+		}
+		
+		public void run() {
 			ConvertNodeToXPathDialog d = new ConvertNodeToXPathDialog(new Shell(), node, attributeName);
 			int result = d.open();
 			if( result == Window.OK) {
@@ -326,20 +356,37 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 				ServerAttributeHelper helper = s.getAttributeHelper();
 				helper.saveXPathPreferenceTree(tree);
 				helper.save();
-				JBossServerView.getDefault().refreshJBTree(null);
 			}
-		}
-
-		public void selected(ITextViewer viewer, boolean smartToggle) {
-		}
-
-		public void unselected(ITextViewer viewer) {
-		}
-
-		public boolean validate(IDocument document, int offset, DocumentEvent event) {
-			return false;
 		}
 		
 	}
 	
+	public static class ConvertNodeToXPathDialogOutlineMenuItemProvider implements IServiceXMLOutlineActionProvider {
+		public void release() {
+		}
+
+		public void menuAboutToShow(IMenuManager manager, ISelection selection) {
+			Object o = ((IStructuredSelection)selection).getFirstElement();
+			Node n;
+			String attName = null;
+			if( o instanceof Node ) {
+				n = (Node)o;
+				if( n instanceof AttrImpl) {
+					attName = ((AttrImpl)n).getName();
+					n = ((AttrImpl)n).getOwnerElement();
+				}
+				final Node n2 = n;
+				final String attName2 = attName;
+				Action temp = new Action() { 
+					public void run() {
+						new ConvertNodeRunnable(n2, attName2).run();
+					}
+				};
+				temp.setText("Add to XPaths");
+				temp.setDescription("Add this element to the list of xpaths you can edit from the properties view.");
+				manager.add(temp);
+				System.out.println(o);
+			}
+		}
+	}
 }

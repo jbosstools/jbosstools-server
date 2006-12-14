@@ -117,7 +117,7 @@ public class ViewPreferencePage extends PreferencePage implements
 		}
     	
 		// refresh the viewer
-		JBossServerView.getDefault().refreshJBTree(null);
+		JBossServerView.getDefault().getJBViewer().refresh();
     	
         return retval;
     }
