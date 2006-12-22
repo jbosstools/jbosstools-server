@@ -244,7 +244,9 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			for( int i = 0; i < elements.length; i++ ) {
 				try {
 					labelProviderDelegates[i] = (IEventLogLabelProvider)elements[i].createExecutableExtension("class");
-				} catch( CoreException ce ) {}
+				} catch( CoreException ce ) {
+					ce.printStackTrace();
+				}
 			}
 	    }
 	}

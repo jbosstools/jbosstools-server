@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.views.server.providers;
+package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,14 +46,8 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvide
  *
  * @author rob.stryker@jboss.com
  */
-public class PollingLabelProvider extends LabelProvider implements IEventLogLabelProvider {
+public class PollingLabelProvider extends ComplexEventLogLabelProvider implements IEventLogLabelProvider {
 
-	private ArrayList supported;
-	private HashMap propertyToMessageMap;
-	public PollingLabelProvider() {
-		addSupportedTypes();
-		loadPropertyMap();
-	}
 	
 	protected void addSupportedTypes() {
 		supported = new ArrayList();
@@ -185,41 +179,5 @@ public class PollingLabelProvider extends LabelProvider implements IEventLogLabe
 		propertyToMessageMap.put(TwiddlePoller.STATUS + "::" + -1, "Server is in transition");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + "::" + "true", "Up");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + "::" + "false", "Down");
-	}
-	
-	public Properties getProperties(EventLogTreeItem item) {
-		loadPropertyMap(); // temporary to fascilitate debugging
-		
-		
-		Properties p = new Properties();
-		HashMap map = item.getProperties();
-		Object key = null;
-		String keyString, valueStringKey, valueString;
-		for( Iterator i = map.keySet().iterator(); i.hasNext();) {
-			key = i.next();
-			if( key.equals(EventLogTreeItem.DATE)) {
-				keyString = propertyToMessageMap.get(key) == null ? (String)key : propertyToMessageMap.get(key).toString();
-				valueString = getDateAsString(((Long)map.get(key)).longValue());
-				p.put(keyString, valueString);
-			} else if( key instanceof String ) {
-				keyString = propertyToMessageMap.get(key) == null ? (String)key : propertyToMessageMap.get(key).toString();
-				valueStringKey = key + "::" + map.get(key).toString();
-				valueString = propertyToMessageMap.get(valueStringKey) == null ? map.get(key).toString() : propertyToMessageMap.get(valueStringKey).toString();
-				p.put(keyString, valueString);
-			}
-		}
-		return p;
-	}
-	
-	protected String getDateAsString(long date) {
-		long now = new Date().getTime();
-		long seconds = (now - date) / 1000;
-		long minutes = seconds / 60;
-		long hours = minutes / 60;
-		minutes -= (hours * 60);
-		String minString = minutes + "m ago";
-		if( hours == 0 )
-			return minString;
-		return hours + "h " + minString; 
 	}
 }

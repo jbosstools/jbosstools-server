@@ -226,13 +226,13 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	private void addListeners() {
 		serverResourceListener = new IServerLifecycleListener() {
 			public void serverAdded(IServer server) {
-				if( JBossServerCore.getServer(server) != null ) 
+				if( JBossServerCore.getJBossServer(server) != null ) 
 					server.addServerListener(serverListener);
 			}
 			public void serverChanged(IServer server) {
 			}
 			public void serverRemoved(IServer server) {
-				if( JBossServerCore.getServer(server) != null ) 
+				if( JBossServerCore.getJBossServer(server) != null ) 
 					server.removeServerListener(serverListener);
 			}
 		};

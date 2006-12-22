@@ -245,7 +245,7 @@ public class XPathDialogs {
 		
 		protected void fillCombos() {
 			if( serverCombo != null ) {
-				IServer servers[] = JBossServerCore.getIServerJBossServers();
+				IServer servers[] = JBossServerCore.getJBossServersAsIServers();
 				String[] names = new String[servers.length];
 				for( int i = 0; i < servers.length; i++ ) {
 					names[i] = servers[i].getName();

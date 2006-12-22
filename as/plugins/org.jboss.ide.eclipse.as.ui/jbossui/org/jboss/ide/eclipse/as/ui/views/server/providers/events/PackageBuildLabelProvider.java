@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.views.server.providers;
+package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
 import java.util.ArrayList;
 import java.util.Properties;

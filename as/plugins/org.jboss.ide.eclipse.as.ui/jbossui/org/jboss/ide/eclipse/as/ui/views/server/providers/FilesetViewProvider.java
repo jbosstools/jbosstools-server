@@ -29,6 +29,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -48,9 +49,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.internal.util.SWTResourceUtil;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
@@ -75,7 +75,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	protected void createActions() {
 		createFilter =  new Action() { 
 			public void run() {
-				JBossServer server = (JBossServer)contentProvider.server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+				IDeployableServer server = (IDeployableServer)contentProvider.server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 				FilesetDialog d = new FilesetDialog(new Shell(), server);
 				if( d.open() == Window.OK ) {
 					Fileset fs = d.getFileset();
@@ -224,7 +224,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	public void loadFilesets() {
 		IServer server = contentProvider.server;
 		if( server != null ) {
-			JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+			IDeployableServer jbs = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 			ServerAttributeHelper helper = jbs.getAttributeHelper();
 			List tmp = helper.getAttribute(FILESET_KEY, new ArrayList());
 			String[] asStrings = (String[]) tmp.toArray(new String[tmp.size()]);
@@ -244,7 +244,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					for( int i = 0; i < filesets.length; i++ ) {
 						list.add(filesets[i].toString());
 					}
-					JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+					IDeployableServer jbs = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 					ServerAttributeHelper helper = jbs.getAttributeHelper();
 					helper.setAttribute(FILESET_KEY, list);
 					helper.save();
@@ -427,7 +427,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		private String name, dir, includes, excludes;
 		private Button browse;
 		private Text includesText, excludesText, folderText, nameText;
-		protected FilesetDialog(Shell parentShell, JBossServer server) {
+		private Composite main;
+		protected FilesetDialog(Shell parentShell, IDeployableServer server) {
 			super(parentShell);
 			this.fileset = new Fileset();
 			this.fileset.setFolder(server.getDeployDirectory());
@@ -436,11 +437,17 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			super(parentShell);
 			this.fileset = (Fileset)fileset.clone();
 		}
+		protected Point getInitialSize() {
+			//return new Point(400, 150);
+			Point p = super.getInitialSize();
+			return new Point(500, p.y);
+		}
+
 		protected Control createDialogArea(Composite parent) {
 			Composite sup = (Composite) super.createDialogArea(parent);
-			Composite main = new Composite(sup, SWT.NONE);
+			main = new Composite(sup, SWT.NONE);
 			main.setLayout(new GridLayout(3, false));
-			
+			main.setLayoutData(new GridData(GridData.FILL_BOTH));
 			fillArea(main);
 			
 			nameText.setText(fileset.getName());
@@ -476,6 +483,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			});
 		}
 		
+		protected void layout() {
+			int o, t;
+		}
+
 		protected void textModified() {
 			name = nameText.getText();
 			dir = folderText.getText();
@@ -497,6 +508,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			folderLabel.setText("Root Directory: ");
 			
 			folderText = new Text(main, SWT.BORDER);
+			folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
 			browse = new Button(main, SWT.PUSH);
 			browse.setText("Browse...");
 			

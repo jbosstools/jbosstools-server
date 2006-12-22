@@ -54,11 +54,7 @@ public class JBossServerView extends StrippedServerView {
 	protected Tree jbTreeTable;
 	
 	
-	protected Action  refreshViewerAction, editLaunchConfigAction, twiddleAction, cloneServerAction;
-
-	
-	private boolean suppressingRefresh = false;
-	
+	protected Action editLaunchConfigAction, twiddleAction, cloneServerAction;
 	
 	public static JBossServerView instance;
 	public static JBossServerView getDefault() {
@@ -104,19 +100,6 @@ public class JBossServerView extends StrippedServerView {
 	
 	
 	public void createActions() {
-		refreshViewerAction = new Action() {
-			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						getJBViewer().refresh(null);
-					} 
-				});
-			}
-			
-		};
-		refreshViewerAction.setText(Messages.RefreshViewerAction);
-		
-		
 		editLaunchConfigAction = new Action() {
 			public void run() {
 				Display.getDefault().asyncExec(new Runnable() { 
@@ -264,6 +247,7 @@ public class JBossServerView extends StrippedServerView {
 				if( server != jbViewer.getInput()) {
 					jbViewer.setInput(server); 
 				} else {
+					jbViewer.refresh();
 //					Object[] expanded = jbViewer.getExpandedElements();
 //					jbViewer.setInput(server);
 //					jbViewer.setExpandedElements(expanded);

@@ -10,24 +10,23 @@
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.32"
-            id="org.jboss.ide.eclipse.as.ui.jboss32Image"/>
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.40"
-            id="org.jboss.ide.eclipse.as.ui.jboss40Image"/>
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.32"
-            id="org.jboss.ide.eclipse.as.ui.jboss32Image"/>
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.40"
-            id="org.jboss.ide.eclipse.as.ui.jboss40Image"/>
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
-            id="org.jboss.ide.eclipse.as.ui.jbossProjectRuntimeImage"
-            typeIds="org.jboss.ide.eclipse.as.runtime.dynwebproject"/>
-
+            typeIds="org.jboss.ide.eclipse.as.systemCopyServer"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
    </extension>
 
    <extension
@@ -48,6 +47,10 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss40ServerWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.40"/>
+       <fragment
+             class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
+             id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"/>
    </extension>
 
    <extension
@@ -206,8 +209,9 @@
       </extension>
       <extension
             point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
-         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.PollingLabelProvider"/>
-         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.PackageBuildLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PollingLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PackageBuildLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PublishLabelProvider"/>
       </extension>
       <extension
             point="org.jboss.ide.eclipse.as.ui.EventLogMajorType">
@@ -217,6 +221,9 @@
          <MajorType
                name="Startup / Shutdown Events"
                typeId="org.jboss.ide.eclipse.as.core.runtime.server.polling.MajorType"/>
+         <MajorType
+               name="Publish Events"
+               typeId="org.jboss.ide.eclipse.as.core.publishers.MajorType"/>
       </extension>
       <extension
             point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">

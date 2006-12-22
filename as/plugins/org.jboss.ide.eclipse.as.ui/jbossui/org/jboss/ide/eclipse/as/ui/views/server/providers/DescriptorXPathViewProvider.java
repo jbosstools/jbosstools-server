@@ -150,8 +150,11 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	protected class XPathTreeContentProvider implements ITreeContentProvider {
 		
 		public Object[] getChildren(Object parentElement) {
-			if( parentElement instanceof ServerViewProvider ) 
-				return getRoot().getChildren();
+			if( parentElement instanceof ServerViewProvider ) {
+				SimpleXPathPreferenceTreeItem root = getRoot();
+				if( root == null ) return new Object[]{};
+				return root.getChildren();
+			}
 			return new Object[0];
 		}
 		public Object getParent(Object element) {
@@ -168,7 +171,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if( oldInput != newInput ) {
 				server = (IServer)newInput;
-				jbServer = server == null ? null : JBossServerCore.getServer(server);
+				jbServer = server == null ? null : JBossServerCore.getJBossServer(server);
 				root = null;
 			}
 		}
@@ -195,7 +198,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	}
 	
 	public SimpleXPathPreferenceTreeItem getRoot() {
-		if( root == null ) {
+		if( root == null && jbServer != null) {
 			root = jbServer.getAttributeHelper().getXPathPreferenceTree();
 		}
 		return root;
