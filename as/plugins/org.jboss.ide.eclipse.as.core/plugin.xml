@@ -43,6 +43,22 @@
             startTimeout="450000"
             stopTimeout="450000"
             supportsRemoteHosts="false"/>
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServer"
+            description="A server who&apos;s only functionality is to deploy files"
+            hasConfiguration="true"
+            id="org.jboss.ide.eclipse.as.systemCopyServer"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
+            launchModes="run,debug"
+            name="JBoss System Copy Server"
+            runtime="false"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
+            startBeforePublish="false"
+            startTimeout="100000"
+            stopTimeout="100000"
+            supportsRemoteHosts="true"/>
    </extension>
 
    <extension
@@ -103,6 +119,36 @@
                 types="jboss.packaged.project"
                 versions="1.0"/>
       </runtimeType>
+      <runtimeType
+            class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerRuntime"
+            description="A jboss stripped server runtime"
+            id="org.jboss.ide.eclipse.as.runtime.stripped"
+            name="JBoss Stripped Server Runtime"
+            vendor="%providerName"
+            version="1.0">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4"/>
+          <moduleType
+                types="jboss.archive"
+                versions="1.0"/>
+          <moduleType
+                types="jboss.ejb30"
+                versions="1.0"/>
+          <moduleType
+                types="jboss.xml"
+                versions="1.0"/>                
+          <moduleType
+                types="jboss.packaged.project"
+                versions="1.0"/>
+            
+      </runtimeType>
    </extension>
 
 
@@ -116,6 +162,13 @@
             modes="run,debug"
             name="JBoss Application Server"
             public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.server.stripped.DeployableLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
+            modes="run,debug"
+            name="Stripped Server Launch Configuration"
+            public="false"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
    </extension>
 	
@@ -146,7 +199,11 @@
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.PackagedProjectModuleFactory"
             id="org.jboss.ide.eclipse.as.core.PackagedModuleFactory"
-            projects="true"/>
+            projects="true">
+         <moduleType
+               types="jboss.packaged.project"
+               versions="1.0"/>
+      </moduleFactory>
    </extension>
    
    	<extension
@@ -344,6 +401,17 @@
       <moduleType
             id="jboss.packaged.project"
             name="Packaged Project"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.packages.core.packageTypes">
+      <packageType
+            class="org.jboss.ide.eclipse.as.core.packages.WarPackageType"
+            id="org.jboss.ide.eclipse.as.core.packages.warPackage"
+            label="WAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.as.core.packages.EarPackageType"
+            id="org.jboss.ide.eclipse.as.core.packages.earPackage"
+            label="EAR"/>
    </extension>
    
 

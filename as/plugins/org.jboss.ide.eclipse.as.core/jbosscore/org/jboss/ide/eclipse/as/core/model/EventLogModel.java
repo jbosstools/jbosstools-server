@@ -109,7 +109,7 @@ public class EventLogModel {
 	
 	public static class EventLogTreeItem extends SimpleTreeItem {
 		public static final String DATE = "org.jboss.ide.eclipse.as.core.model.EventLogTreeItem.Date";
-		private String specificType, majorType;
+		protected String specificType, majorType;
 		public EventLogTreeItem(SimpleTreeItem parent, String majorType, String specificType) {
 			super(parent, null);
 			this.specificType = specificType;

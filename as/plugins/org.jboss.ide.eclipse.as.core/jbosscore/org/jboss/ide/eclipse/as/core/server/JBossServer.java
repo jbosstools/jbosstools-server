@@ -43,10 +43,12 @@ import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
-public class JBossServer extends ServerDelegate implements IServerStartupParameters {
+public class JBossServer extends ServerDelegate 
+		implements IServerStartupParameters, IDeployableServer {
 
 	
 	public JBossServer() {

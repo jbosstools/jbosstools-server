@@ -32,6 +32,7 @@ import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.WebResource;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	public JBossLaunchAdapter() {
@@ -43,12 +44,12 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 			throws CoreException {
 		
 		// Only play to jboss servers
-		JBossServer jbServer = JBossServerCore.getServer(server);
-		if( jbServer == null ) 
+		IDeployableServer dserver = JBossServerCore.getDeployableServer(server);
+		if( dserver == null ) 
 			return null;
 		
-		if( isJstArtifact(moduleArtifact))
-			return prepareJstArtifact(moduleArtifact, jbServer);
+//		if( isJstArtifact(moduleArtifact))
+//			return prepareJstArtifact(moduleArtifact, dserver);
         
         return new NullLaunchable();
 	}

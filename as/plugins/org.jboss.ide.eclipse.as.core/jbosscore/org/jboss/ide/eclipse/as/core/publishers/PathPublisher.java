@@ -35,12 +35,14 @@ import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.module.JBossModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 
 public class PathPublisher implements IJBossServerPublisher  {
 	
-	private JBossServer server;
-	private JBossServerBehavior behavior;
+	private IDeployableServer server;
+	private DeployableServerBehavior behavior;
 	private int publishState;
 	
 	public static final String TARGET_FILENAME = "_TARGET_FILENAME_";
@@ -48,7 +50,7 @@ public class PathPublisher implements IJBossServerPublisher  {
 	public static final String DEST_FILENAME = "_DEST_FILENAME_";
 	
 	
-	public PathPublisher(JBossServer server, JBossServerBehavior behavior) {
+	public PathPublisher(IDeployableServer server, DeployableServerBehavior behavior) {
 		this.server = server;
 		this.behavior = behavior;
 		publishState = IServer.PUBLISH_STATE_NONE;

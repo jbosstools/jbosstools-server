@@ -48,7 +48,7 @@ public class DoNothingClient extends ClientDelegate {
 	}
 
 	public boolean supports(IServer server, Object launchable, String launchMode) {
-		if( JBossServerCore.getServer(server) == null ) return false;
+		if( JBossServerCore.getDeployableServer(server) == null ) return false;
 		return true;
 	}
 

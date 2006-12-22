@@ -72,7 +72,6 @@ public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurat
 		IServer server = ServerUtil.getServer(configuration);
 		JBossServerBehavior jbossServerBehavior = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
 		return jbossServerBehavior;
-
 	}
 	
 	public static JBossServer getJBossServer(ILaunchConfiguration configuration) throws CoreException {

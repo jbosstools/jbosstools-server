@@ -24,10 +24,37 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public interface IJBossServerPublisher {
+	// event constants
+	public static final String PUBLISH_MAJOR_TYPE = "org.jboss.ide.eclipse.as.core.publishers.MajorType";
+	public static final String MODULE_NAME = "org.jboss.ide.eclipse.as.core.publishers.ModuleName";
+	public static final int PUBLISH = 0;
+	public static final int REMOVE = 1;
+	public static final int SUCCESS = 0;
+	public static final int FAILURE = 1;
+	public static final int SKIPPED = 2;
+	
+	
+	
+	
 	public void publishModule(int kind, int deltaKind, int modulePublishState,
 			IModule[] module, IProgressMonitor monitor) 
 								throws CoreException;
 	public int getPublishState();
+	
+	public class PublishEvent extends EventLogTreeItem {
+		public PublishEvent(SimpleTreeItem parent, String specificType) {
+			super(parent, PUBLISH_MAJOR_TYPE, specificType);
+		}
+		public PublishEvent(SimpleTreeItem parent, String specificType, IModule module) {
+			super(parent, PUBLISH_MAJOR_TYPE, specificType);
+			setProperty(MODULE_NAME, module.getName());
+		}
+		
+		
+	}
+	
 }

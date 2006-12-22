@@ -188,7 +188,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	
 	
 	public void serverAdded(IServer server) {
-		if( JBossServerCore.getServer(server) != null ) {
+		if( JBossServerCore.getJBossServer(server) != null ) {
 			getModel(server.getId(), true);
 		}
 	}
@@ -197,7 +197,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	}
 
 	public void serverRemoved(IServer server) {
-		if( JBossServerCore.getServer(server) != null ) {
+		if( JBossServerCore.getJBossServer(server) != null ) {
 			ServerProcessModelEntity ent = getModel(server.getId());
 			map.remove(server.getId());
 		}

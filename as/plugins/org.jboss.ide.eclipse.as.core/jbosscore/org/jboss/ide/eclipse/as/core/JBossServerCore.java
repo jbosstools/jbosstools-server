@@ -39,13 +39,14 @@ import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 
 /**
  * 
  * @author rstryker
  *
  */
-public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecycleListener {
+public class JBossServerCore {
 
 	/*
 	 * Static portion
@@ -59,12 +60,20 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		return instance;
 	}
 	
-	public static JBossServer getServer(IServer server) {
+	public static JBossServer getJBossServer(IServer server) {
 		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
 			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		}
 		return jbServer;
+	}
+	
+	public static IDeployableServer getDeployableServer(IServer server) {
+		IDeployableServer dep = (IDeployableServer)server.getAdapter(IDeployableServer.class);
+		if (dep == null) {
+			dep = (IDeployableServer) server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
+		}
+		return dep;
 	}
 	
 	/**
@@ -75,8 +84,8 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		ArrayList servers = new ArrayList();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
-			if( getServer(iservers[i]) != null ) {
-				servers.add(getServer(iservers[i]));
+			if( getJBossServer(iservers[i]) != null ) {
+				servers.add(getJBossServer(iservers[i]));
 			}
 		}
 		JBossServer[] ret = new JBossServer[servers.size()];
@@ -84,11 +93,11 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		return ret;
 	}
 	
-	public static IServer[] getIServerJBossServers() {
+	public static IServer[] getJBossServersAsIServers() {
 		ArrayList servers = new ArrayList();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
-			if( getServer(iservers[i]) != null ) {
+			if( getJBossServer(iservers[i]) != null ) {
 				servers.add(iservers[i]);
 			}
 		}
@@ -96,10 +105,34 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 		servers.toArray(ret);
 		return ret;
 	}
+
+	public static IDeployableServer[] getAllDeployableServers() {
+		ArrayList servers = new ArrayList();
+		IServer[] iservers = ServerCore.getServers();
+		for( int i = 0; i < iservers.length; i++ ) {
+			if( getDeployableServer(iservers[i]) != null ) {
+				servers.add(getDeployableServer(iservers[i]));
+			}
+		}
+		IDeployableServer[] ret = new IDeployableServer[servers.size()];
+		servers.toArray(ret);
+		return ret;
+	}
+	public static IServer[] getDeployableServersAsIServers() {
+		ArrayList servers = new ArrayList();
+		IServer[] iservers = ServerCore.getServers();
+		for( int i = 0; i < iservers.length; i++ ) {
+			if( getDeployableServer(iservers[i]) != null ) {
+				servers.add(iservers[i]);
+			}
+		}
+		IServer[] ret = new IServer[servers.size()];
+		servers.toArray(ret);
+		return ret;
+	}
+
 	
 	public JBossServerCore() {
-		ServerCore.addRuntimeLifecycleListener(this);
-		ServerCore.addServerLifecycleListener(this);
 		ModuleModel.getDefault();
 		new PackagesBuildListener();
 	}
@@ -137,28 +170,5 @@ public class JBossServerCore implements IServerLifecycleListener, IRuntimeLifecy
 				ce.printStackTrace();
 			}
 		}
-	}
-	
-	
-	/*
-	 * May implement these methods later on. For now, do nothing.
-	 */
-	public void serverAdded(IServer server) {
-	}
-
-	public void serverChanged(IServer server) {
-	}
-
-	public void serverRemoved(IServer server) {
-	}
-
-
-	public void runtimeAdded(IRuntime runtime) {
-	}
-
-	public void runtimeChanged(IRuntime runtime) {
-	}
-
-	public void runtimeRemoved(IRuntime runtime) {
 	}
 }
