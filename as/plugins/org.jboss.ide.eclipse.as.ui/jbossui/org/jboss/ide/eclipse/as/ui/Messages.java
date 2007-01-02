@@ -41,7 +41,7 @@ public class Messages {
 	public static String nameTextBlank;
 	public static String homeDirBlank;
 	public static String browse;
-
+	public static String deployDirectory;
 	public static String ServerDialogHeading;
 	
 	/* Module extension properties */

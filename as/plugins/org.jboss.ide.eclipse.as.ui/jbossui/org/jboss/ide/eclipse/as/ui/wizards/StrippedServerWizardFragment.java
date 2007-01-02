@@ -56,7 +56,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		
 		nameLabel = new Label(main, SWT.NONE);
 		nameText = new Text(main, SWT.BORDER);
-		nameLabel.setText("Deploy Folder");
+		nameLabel.setText(Messages.deployDirectory);
 		
 		FormData namelData = new FormData();
 		namelData.top = new FormAttachment(0,5);
@@ -173,7 +173,8 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		ServerWorkingCopy swcInternal;
 		if( swc instanceof ServerWorkingCopy )  {
 			swcInternal = (ServerWorkingCopy)swc;
-			swcInternal.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployText.getText());
+			swcInternal.setName(name);
+			swcInternal.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
 			getTaskModel().putObject(TaskModel.TASK_SERVER, swcInternal);
 		}
 	}
@@ -194,7 +195,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 			getTaskModel().putObject(TaskModel.TASK_SERVER, saved);
 		} catch( Exception ce ) {
 		}
-		
 	}
 	private IFolder getJbossServerFolder(String serverName) {
 		try {
