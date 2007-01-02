@@ -163,6 +163,19 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	}
 	public void exit() {
 		textChanged();
+		IServer s = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		IServerWorkingCopy swc;
+		if( s instanceof IServerWorkingCopy)
+			swc = (IServerWorkingCopy)s;
+		else
+			swc = s.createWorkingCopy();
+		
+		ServerWorkingCopy swcInternal;
+		if( swc instanceof ServerWorkingCopy )  {
+			swcInternal = (ServerWorkingCopy)swc;
+			swcInternal.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployText.getText());
+			getTaskModel().putObject(TaskModel.TASK_SERVER, swcInternal);
+		}
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
