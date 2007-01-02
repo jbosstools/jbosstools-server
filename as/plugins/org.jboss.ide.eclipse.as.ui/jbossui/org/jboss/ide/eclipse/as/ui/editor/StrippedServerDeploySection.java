@@ -34,9 +34,6 @@ public class StrippedServerDeploySection extends ServerEditorSection {
 		// TODO Auto-generated constructor stub
 	}
 
-
-	private Table configurations;
-	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 	}
