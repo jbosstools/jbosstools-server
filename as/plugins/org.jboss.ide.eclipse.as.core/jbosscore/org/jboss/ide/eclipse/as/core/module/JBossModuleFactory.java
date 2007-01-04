@@ -57,9 +57,6 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	protected HashMap moduleToDelegate = null;
 	
 	public JBossModuleFactory() {
-		pathToModule = new HashMap();
-		moduleToDelegate = new HashMap();
-		initialize();
 	}
 	
 	public abstract void initialize();
@@ -96,17 +93,22 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * and are expected. 
 	 */
 	protected void cacheModules() {
-		this.pathToModule = new HashMap();
-		this.moduleToDelegate = new HashMap();
 		
 		String[] paths = getServerModulePaths();
-		for( int i = 0; i < paths.length; i++ ) {
-			acceptAddition(paths[i]);
+		if( paths != null ) {
+			this.pathToModule = new HashMap();
+			this.moduleToDelegate = new HashMap();
+			for( int i = 0; i < paths.length; i++ ) {
+				acceptAddition(paths[i]);
+			}
 		}
 	}
 	
 	// lifted from other class
 	private String[] getServerModulePaths() {
+		String factId = getFactoryId();
+		if( factId == null ) return null;
+		
 		// Stolen from Server.class, not public
 		final String MODULE_LIST = "modules";
 
@@ -140,11 +142,10 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 						moduleId = moduleId.substring(0, index);
 					}
 					
-					if( moduleId.startsWith(getFactoryId() + ":")) {
-						String path = moduleId.substring((getFactoryId()+":").length());
+					if( moduleId.startsWith(factId + ":")) {
+						String path = moduleId.substring((factId+":").length());
 						paths.add(path);
 					}
-					
 				}
 			}
 		}
@@ -186,7 +187,10 @@ public abstract class JBossModuleFactory extends ModuleFactoryDelegate {
 	 * @return
 	 */
 	public String getFactoryId() {
-		return getId();
+		try {
+			return getId();
+		} catch( NullPointerException npe ) {}
+		return null;
 	}
 	
 	protected abstract IModule acceptAddition(String path);

@@ -31,29 +31,32 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.JBossModuleDelegate;
+import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher.PublishEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherRemoveEvent;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class PathPublisher implements IJBossServerPublisher  {
 	
 	private IDeployableServer server;
 	private DeployableServerBehavior behavior;
 	private int publishState;
-	
-	public static final String TARGET_FILENAME = "_TARGET_FILENAME_";
-	public static final String SOURCE_FILENAME = "_SOURCE_FILENAME_";
-	public static final String DEST_FILENAME = "_DEST_FILENAME_";
-	
+	private EventLogRoot eventRoot;
 	
 	public PathPublisher(IDeployableServer server, DeployableServerBehavior behavior) {
 		this.server = server;
 		this.behavior = behavior;
 		publishState = IServer.PUBLISH_STATE_NONE;
+		eventRoot = EventLogModel.getModel(server.getServer()).getRoot();
 	}
 
     public void publishModule(int kind, int deltaKind, int modulePublishState, 
@@ -121,6 +124,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 	 * Proceed to remove it from the actual server directory.
 	 */
 	protected void unPublishModule(IModule[] module, IProgressMonitor monitor) {
+		PublishEvent event = new PublishEvent(eventRoot, UNPUBLISH_TOP_EVENT, module[0]);
+		EventLogModel.markChanged(eventRoot);
+
 		Object o;
 		JBossModuleDelegate delegate;
 		
@@ -140,8 +146,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 			try {
 				File destFile = new File(dest);
 				boolean result = destFile.delete();
+				addUnPublishEvent(module, event, dest, result, null);
 			} catch( Exception e ) {
-				e.printStackTrace();
+				addUnPublishEvent(module, event, dest, false, e);
 			}
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
@@ -150,6 +157,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 	
 	protected void publishModule(IModule[] module, IProgressMonitor monitor) {
 		
+		PublishEvent event = new PublishEvent(eventRoot, PUBLISH_TOP_EVENT, module[0]);
+		EventLogModel.markChanged(eventRoot);
+
 		JBossModuleDelegate delegate = null;
 		Object o = null;
 		String deployDirectory = server.getDeployDirectory();
@@ -170,9 +180,54 @@ public class PathPublisher implements IJBossServerPublisher  {
 			Path srcName = new Path(src);
 			
 			IStatus status = FileUtil.copyFile(src, dest);
+			addPublishEvent(module, event, src, dest, status);
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
 	}
+	
+	
+	
+	
+	public static final String PUBLISH_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.PUBLISH_TOP_EVENT";
+	public static final String UNPUBLISH_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.UNPUBLISH_TOP_EVENT";
+	
+	public static final String PUBLISH_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.PUBLISH_EVENT";
+	public static final String UNPUBLISH_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.UNPUBLISH_EVENT";
+	
+	public static final String SOURCE_FILE = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.SOURCE_FILE";
+	public static final String DEST_FILE = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.DEST_FILE";
+	public static final String TARGET_FILE = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.TARGET_FILE";
+	public static final String SUCCESS = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.SUCCESS";
+	public static final String EXCEPTION = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.EXCEPTION";
+	
+	
+	protected void addPublishEvent(IModule[] module, PublishEvent parent, String src, String dest, IStatus result) {
+		PathPublisherEvent event = new PathPublisherEvent(parent, PUBLISH_EVENT);
+		event.setProperty(SOURCE_FILE, src);
+		event.setProperty(DEST_FILE, dest);
+		event.setProperty(SUCCESS, new Boolean(result.isOK()).toString());
+		if( !result.isOK() && result.getException() != null) {
+			event.setProperty(EXCEPTION, result.getException().getLocalizedMessage());
+		}
+		EventLogModel.markChanged(parent);
+	}
+
+	protected void addUnPublishEvent(IModule[] module, PublishEvent parent, String dest, boolean success, Exception e) {
+		PathPublisherEvent event = new PathPublisherEvent(parent, UNPUBLISH_EVENT);
+		event.setProperty(DEST_FILE, dest);
+		event.setProperty(SUCCESS, new Boolean(success).toString());
+		if( !success && e != null ) {
+			event.setProperty(EXCEPTION, e.getLocalizedMessage());
+		}
+		EventLogModel.markChanged(parent);
+	}
+	
+	public static class PathPublisherEvent extends EventLogTreeItem {
+		public PathPublisherEvent(SimpleTreeItem parent, String specificType) {
+			super(parent, PUBLISH_MAJOR_TYPE, specificType);
+		}
+	}
+
 	
 	public int getPublishState() {
 		return this.publishState;

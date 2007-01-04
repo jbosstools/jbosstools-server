@@ -116,11 +116,14 @@ public class ModuleModel implements IResourceChangeListener{
 		while(i.hasNext()) {
 			f = (ModuleFactory)i.next();
 			delegate = f.getDelegate(null);
-			if( delegate instanceof JBossModuleFactory ) {
-				((JBossModuleFactory)delegate).initialize();
-			} else {
-				factories.remove(f);
-			}
+			// initialization is now done by the factory itself in wtp
+			if( (delegate instanceof JBossModuleFactory ))
+				i.remove();
+//			if( delegate instanceof JBossModuleFactory ) {
+//				((JBossModuleFactory)delegate).initialize();
+//			} else {
+//				i.remove();
+//			}
 		}
 
 	}

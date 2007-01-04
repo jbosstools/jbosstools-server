@@ -49,6 +49,7 @@ public abstract class PathModuleFactory extends JBossModuleFactory {
 	}
 	
 	public void initialize() {
+		cacheModules();
 	}
 
 	protected IModule acceptAddition(String path) {
