@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.util.Properties;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -39,13 +40,13 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.internal.PublishServerJob;
-import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
@@ -79,9 +80,9 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 						wc.modifyModules(null, selection.module , null);
 						wc.save(true, null);
 						// Re-publish in case the configuration change has not been published yet.
-						PublishServerJob publishJob = new PublishServerJob(selection.server, IServer.PUBLISH_INCREMENTAL, false);
-						publishJob.schedule();
-
+						DeployableServerBehavior behavior = (DeployableServerBehavior)
+							contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
+						behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
 					} catch (Exception e) {
 						// ignore
 					}
@@ -95,8 +96,9 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				for( int i = 0; i < selection.module.length; i++ ) 
 					ModuleModel.getDefault().markModuleChanged(selection.module[i]);
-				PublishServerJob job = new PublishServerJob(selection.server, IServer.PUBLISH_FULL, false);
-				job.schedule();
+				DeployableServerBehavior behavior = (DeployableServerBehavior)
+					contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
+				behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
 			}
 		};
 		publishModuleAction.setText(Messages.PublishModuleText);
@@ -185,6 +187,9 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			input = (IServer)newInput;
 		}
 		
+		public IServer getServer() {
+			return input;
+		}
 	}
 	
 	class ModuleLabelProvider extends LabelProvider {
