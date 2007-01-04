@@ -1,17 +1,26 @@
 package org.jboss.ide.eclipse.as.core.server.stripped;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.IModuleVisitor;
 import org.eclipse.wst.server.core.internal.Module;
+import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
+import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
@@ -20,7 +29,6 @@ import org.jboss.ide.eclipse.as.core.publishers.JstPackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
-import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
@@ -47,7 +55,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 
-		System.out.print("publishing module: ");
+		System.out.print("publishing module (" + module[0].getName() + "): ");
 		switch( kind ) {
 			case IServer.PUBLISH_INCREMENTAL: System.out.print("incremental, "); break;
 			case IServer.PUBLISH_FULL: System.out.print("full, "); break;
@@ -139,5 +147,47 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	public void setServerStopping() {
 		setServerState(IServer.STATE_STOPPING);
+	}
+	
+	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
+		ArrayList moduleList = new ArrayList();
+		ArrayList deltaKindList = new ArrayList();
+		moduleList.add(module);
+		deltaKindList.add(new Integer(deltaKind));
+		
+
+		try {
+			((Server)getServer()).getServerPublishInfo().startCaching();
+			
+			
+			PublishOperation[] tasks = getTasks(kind, moduleList, deltaKindList);
+			MultiStatus tempMulti = new MultiStatus(ServerPlugin.PLUGIN_ID, 0, "", null);
+			publishStart(ProgressUtil.getSubMonitorFor(monitor, 1000));
+			performTasks(tasks, monitor);
+			publishServer(kind, ProgressUtil.getSubMonitorFor(monitor, 1000));
+			publishModules(kind, moduleList, deltaKindList, tempMulti, monitor);
+			publishFinish(ProgressUtil.getSubMonitorFor(monitor, 500));
+			
+			final List modules2 = new ArrayList();
+			((Server)getServer()).visit(new IModuleVisitor() {
+				public boolean visit(IModule[] module) {
+					if (((Server)getServer()).getModulePublishState(module) == IServer.PUBLISH_STATE_NONE)
+						((Server)getServer()).getServerPublishInfo().fill(module);
+					
+					modules2.add(module);
+					return true;
+				}
+			}, monitor);
+			
+			((Server)getServer()).getServerPublishInfo().removeDeletedModulePublishInfo(((Server)getServer()), modules2);
+			((Server)getServer()).getServerPublishInfo().clearCache();
+			((Server)getServer()).getServerPublishInfo().save();
+			
+			return null;
+
+		} catch( Exception e ) {
+			
+		}
+		return null;
 	}
 }
