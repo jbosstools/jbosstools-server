@@ -13,7 +13,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherBuildEvent;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
-public class PublishLabelProvider extends ComplexEventLogLabelProvider implements
+public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider implements
 		IEventLogLabelProvider {
 
 	protected void addSupportedTypes() {
@@ -34,6 +34,8 @@ public class PublishLabelProvider extends ComplexEventLogLabelProvider implement
 		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
 		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherRemoveEvent.PACKAGE_NAME, "Package Name");
 		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherRemoveEvent.DESTINATION, "Package File");
+		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherMoveEvent.MOVE_SOURCE, "Source File");
+		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherMoveEvent.MOVE_DESTINATION, "Destination File");
 		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherRemoveEvent.EXCEPTION_MESSAGE, "Exception Message");
 	}
 

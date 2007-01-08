@@ -228,8 +228,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	public static class PackagesPublisherMoveEvent extends EventLogTreeItem {
 		// property names
 		public static final String PACKAGE_NAME = "PackagesPublisherRemoveEvent.PACKAGE_NAME";
-		public static final String MOVE_DESTINATION = "PackagesPublisherRemoveEvent.MOVE_DESTINATION";
-		public static final String MOVE_SOURCE = "PackagesPublisherRemoveEvent.MOVE_SOURCE";
+		public static final String MOVE_DESTINATION = "PackagesPublisherMoveEvent.MOVE_DESTINATION";
+		public static final String MOVE_SOURCE = "PackagesPublisherMoveEvent.MOVE_SOURCE";
 		public static final String EXCEPTION_MESSAGE = "PackagesPublisherRemoveEvent.EXCEPTION_MESSAGE";
 		
 		

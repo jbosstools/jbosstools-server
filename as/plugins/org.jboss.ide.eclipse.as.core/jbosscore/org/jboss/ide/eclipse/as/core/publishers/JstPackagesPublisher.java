@@ -33,7 +33,13 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.packages.ModulePackageTypeConverter;
+import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher.PublishEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherMoveEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherRemoveEvent;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
@@ -45,12 +51,18 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
  */
 public class JstPackagesPublisher implements IJBossServerPublisher {
 	
+	public static final String REMOVE_PACKAGE_SUCCESS = PackagesPublisher.REMOVE_PACKAGE_SUCCESS;
+	public static final String REMOVE_PACKAGE_FAIL = PackagesPublisher.REMOVE_PACKAGE_FAIL;
+	public static final String REMOVE_PACKAGE_SKIPPED = PackagesPublisher.REMOVE_PACKAGE_SKIPPED;
+
 	private int state;
 	private IDeployableServer server;
-	
+	private EventLogRoot eventRoot;
+
 	public JstPackagesPublisher(IDeployableServer server) {
 		this.server = server;
 		state = IServer.PUBLISH_STATE_NONE;
+		eventRoot = EventLogModel.getModel(server.getServer()).getRoot();
 	}
 	public int getPublishState() {
 		return state;
@@ -65,6 +77,8 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
         	publish(server, module, monitor);
+        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
+        	publish(server, module, monitor);
         }
 	}
 
@@ -72,9 +86,19 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
 			PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
+			addMoveEvent(eventRoot, topLevel, topLevel.isDestinationInWorkspace(), 
+					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), null);
 		}
 		return null;
 	}
+	protected void addMoveEvent(EventLogTreeItem parent, IPackage pack, boolean inWorkspace, 
+			IPath sourcePath, IPath destPath, Throwable e) {
+			String specType = PackagesPublisher.MOVE_PACKAGE_SKIP;
+		new PackagesPublisherMoveEvent(parent, specType, pack, sourcePath, destPath, e );
+		EventLogModel.markChanged(parent);
+	}
+
+	
 	protected IStatus[] unpublish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel.isDestinationInWorkspace() ) {
@@ -82,13 +106,28 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 			
 			IPath path = topLevel.getPackageFile().getRawLocation();
 			IPath p = new Path(deployDir).append(path.lastSegment());
-			p.toFile().delete();
+			boolean success = p.toFile().delete();
+			addRemoveEvent(eventRoot, topLevel, p, success ? SUCCESS : FAILURE);
 		} else {
 			IPath path = topLevel.getPackageFilePath();
-			path.toFile().delete();
+			boolean success = path.toFile().delete();
+			addRemoveEvent(eventRoot, topLevel, path, success ? SUCCESS : FAILURE);
 		}
-		
 		return null;
+	}
+	protected void addRemoveEvent(EventLogTreeItem parent, IPackage pack, IPath dest, int success ) {
+		addRemoveEvent(parent, pack, dest, success, null);	
+	}
+	protected void addRemoveEvent(EventLogTreeItem parent, IPackage pack, IPath dest, int success, Exception e ) {
+		String specType = null;
+		switch( success ) {
+			case SUCCESS: specType = REMOVE_PACKAGE_SUCCESS; break;
+			case FAILURE: specType = REMOVE_PACKAGE_FAIL; break;
+			case SKIPPED: specType = REMOVE_PACKAGE_SKIPPED; break;
+		}
+		PackagesPublisherRemoveEvent event = 
+			new PackagesPublisherRemoveEvent(parent, specType, pack, dest, e);
+		EventLogModel.markChanged(parent);
 	}
 	
     protected void checkClosed(IModule[] module) throws CoreException {

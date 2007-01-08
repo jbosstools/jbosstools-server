@@ -124,9 +124,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 	 * Proceed to remove it from the actual server directory.
 	 */
 	protected void unPublishModule(IModule[] module, IProgressMonitor monitor) {
-		PublishEvent event = new PublishEvent(eventRoot, UNPUBLISH_TOP_EVENT, module[0]);
-		EventLogModel.markChanged(eventRoot);
-
+//		PublishEvent event = new PublishEvent(eventRoot, UNPUBLISH_TOP_EVENT, module[0]);
+//		EventLogModel.markChanged(eventRoot);
+//
 		Object o;
 		JBossModuleDelegate delegate;
 		
@@ -146,9 +146,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 			try {
 				File destFile = new File(dest);
 				boolean result = destFile.delete();
-				addUnPublishEvent(module, event, dest, result, null);
+				addUnPublishEvent(module, eventRoot, dest, result, null);
 			} catch( Exception e ) {
-				addUnPublishEvent(module, event, dest, false, e);
+				addUnPublishEvent(module, eventRoot, dest, false, e);
 			}
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
@@ -156,10 +156,10 @@ public class PathPublisher implements IJBossServerPublisher  {
 
 	
 	protected void publishModule(IModule[] module, IProgressMonitor monitor) {
-		
-		PublishEvent event = new PublishEvent(eventRoot, PUBLISH_TOP_EVENT, module[0]);
-		EventLogModel.markChanged(eventRoot);
-
+//		
+//		PublishEvent event = new PublishEvent(eventRoot, PUBLISH_TOP_EVENT, module[0]);
+//		EventLogModel.markChanged(eventRoot);
+//
 		JBossModuleDelegate delegate = null;
 		Object o = null;
 		String deployDirectory = server.getDeployDirectory();
@@ -180,7 +180,7 @@ public class PathPublisher implements IJBossServerPublisher  {
 			Path srcName = new Path(src);
 			
 			IStatus status = FileUtil.copyFile(src, dest);
-			addPublishEvent(module, event, src, dest, status);
+			addPublishEvent(module, eventRoot, src, dest, status);
 		}
 		publishState = IServer.PUBLISH_STATE_NONE;
 	}
@@ -201,8 +201,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 	public static final String EXCEPTION = "org.jboss.ide.eclipse.as.core.publishers.PathPublisher.EXCEPTION";
 	
 	
-	protected void addPublishEvent(IModule[] module, PublishEvent parent, String src, String dest, IStatus result) {
+	protected void addPublishEvent(IModule[] module, EventLogTreeItem parent, String src, String dest, IStatus result) {
 		PathPublisherEvent event = new PathPublisherEvent(parent, PUBLISH_EVENT);
+		event.setProperty(IJBossServerPublisher.MODULE_NAME, module[0].getName());
 		event.setProperty(SOURCE_FILE, src);
 		event.setProperty(DEST_FILE, dest);
 		event.setProperty(SUCCESS, new Boolean(result.isOK()).toString());
@@ -212,8 +213,9 @@ public class PathPublisher implements IJBossServerPublisher  {
 		EventLogModel.markChanged(parent);
 	}
 
-	protected void addUnPublishEvent(IModule[] module, PublishEvent parent, String dest, boolean success, Exception e) {
+	protected void addUnPublishEvent(IModule[] module, EventLogTreeItem parent, String dest, boolean success, Exception e) {
 		PathPublisherEvent event = new PathPublisherEvent(parent, UNPUBLISH_EVENT);
+		event.setProperty(IJBossServerPublisher.MODULE_NAME, module[0].getName());
 		event.setProperty(DEST_FILE, dest);
 		event.setProperty(SUCCESS, new Boolean(success).toString());
 		if( !success && e != null ) {

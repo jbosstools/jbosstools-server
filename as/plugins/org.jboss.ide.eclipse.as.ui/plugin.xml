@@ -211,7 +211,8 @@
             point="org.jboss.ide.eclipse.as.ui.EventLogLabelProvider">
          <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PollingLabelProvider"/>
          <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PackageBuildLabelProvider"/>
-         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PublishLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PackagesPublishLabelProvider"/>
+         <labelProvider class="org.jboss.ide.eclipse.as.ui.views.server.providers.events.PathPublisherLabelProvider"/>
       </extension>
       <extension
             point="org.jboss.ide.eclipse.as.ui.EventLogMajorType">
