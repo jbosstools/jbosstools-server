@@ -16,9 +16,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -51,6 +53,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.ContainerGenerator;
+import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.wst.sse.core.internal.encoding.CommonEncodingPreferenceNames;
 import org.eclipse.wst.xml.core.internal.XMLCorePlugin;
 import org.eclipse.wst.xml.ui.internal.wizards.NewModelWizard;
@@ -63,7 +69,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 	private MBeanPage mbeanPage;
 	private NewFilePage newFilePage;
 	private static String INTERFACE_NAME = "__INTERFACE_NAME__";
-
+	
 	public NewMBeanWizard() {
 	}
 
@@ -97,10 +103,9 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 						
 						IPath fullPath = newFilePage.getContainerFullPath();
 
-						IPath newPath = new Path(fullPath.segment(0));
+						IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
+						createContainer(newPath);
 						
-						// TODO: BLOCKING on eclipse bug 153135
-//						IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
 						newFilePage.setContainerFullPath(newPath);
 						
 						IFile newFile = newFilePage.createNewFile();
@@ -125,6 +130,36 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		
 		return true;
 	}
+	
+	protected void createContainer(final IPath containerPath) {
+		IFile fileHandle = IDEWorkbenchPlugin.getPluginWorkspace().getRoot().getFile(containerPath);
+        WorkspaceModifyOperation op = new WorkspaceModifyOperation(createRule(fileHandle)) {
+            protected void execute(IProgressMonitor monitor)
+                    throws CoreException {
+                try {
+                    ContainerGenerator generator = new ContainerGenerator(containerPath);
+                    generator.generateContainer(new NullProgressMonitor());
+                } catch( Exception e ) {
+                }
+            }
+        };
+        
+        try {
+        	getContainer().run(true, true, op);
+        } catch( Exception e) {}
+	}
+    protected ISchedulingRule createRule(IResource resource) {
+		IResource parent = resource.getParent();
+    	while (parent != null) {
+    		if (parent.exists()) {
+				return resource.getWorkspace().getRuleFactory().createRule(resource);
+			}
+    		resource = parent;
+    		parent = parent.getParent();
+    	}
+		return resource.getWorkspace().getRoot();
+	}
+
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		sel = selection;
