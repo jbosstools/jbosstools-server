@@ -128,6 +128,9 @@ public class JBossServerTableViewer extends TreeViewer {
 		
 		public boolean equals(Object other) {
 			if( other == null ) return false;
+			if( ((ContentWrapper)other).getElement() == null )
+				return o == null;
+			
 			if( other instanceof ContentWrapper ) {
 				return ((ContentWrapper)other).getElement().equals(o); 
 			}
