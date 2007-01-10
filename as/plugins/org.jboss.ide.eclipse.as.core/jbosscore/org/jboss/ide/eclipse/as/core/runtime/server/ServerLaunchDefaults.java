@@ -105,7 +105,6 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 		workingCopy.setAttribute(vmArgsKey + STOP_SUFFIX,  getVMArgs());
 
 
-		// TODO FIX!
 		int jndiPort;
 		try {
 			String serverConfDir = getJBServer().getConfigDirectory(false);
@@ -145,8 +144,8 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 	public String getStartArgs() {
 		IJBossServerRuntime rt = getRuntime();
 		if( rt != null ) {
-			return "--configuration=" + rt.getJBossConfiguration() + 
-					" --host=" + server.getHost();
+			return "--configuration=" + rt.getJBossConfiguration();
+					//+ " --host=" + server.getHost();
 		}
 		return "";
 	}
