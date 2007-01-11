@@ -31,16 +31,20 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.PackagesPublisherBuildListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
+import org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 /**
@@ -62,14 +66,9 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	public static final String MOVE_PACKAGE_FAIL = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.MOVE_PACKAGE_FAIL";
 	public static final String MOVE_PACKAGE_SKIP = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.MOVE_PACKAGE_SKIP";
 	
-//	public static final String PACKAGE_NOT_PUBLISHED = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PACKAGE_NOT_PUBLISHED";
-//	public static final String PACKAGE_NOT_REMOVED = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PACKAGE_NOT_REMOVED";
+	protected IDeployableServer server;
+	protected EventLogRoot eventRoot;
 	
-	
-	
-	private IDeployableServer server;
-	private EventLogRoot eventRoot;
-
 	public PackagesPublisher(IDeployableServer server) {
 		this.server = server;
 		eventRoot = EventLogModel.getModel(server.getServer()).getRoot();
@@ -169,7 +168,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 					addMoveEvent(event, packages[i], packages[i].isDestinationInWorkspace(), sourcePath, destPath, status.isOK() ? SUCCESS : FAILURE, status.getException());
 				} else {					
 					IPath sourcePath = packages[i].getPackageFilePath();
-					addMoveEvent(event, packages[i], packages[i].isDestinationInWorkspace(), sourcePath, sourcePath, SKIPPED, null);
+					addMoveEvent(event, packages[i], packages[i].isDestinationInWorkspace(), sourcePath, sourcePath, SUCCESS, null);
 				}
 			}
 		}catch( Exception ce ) {
@@ -253,4 +252,27 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 	}
 
+	
+	
+	/*
+	 * Build events and stuff
+	 */
+	
+	public static final String PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS = 
+		"org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.ListenForBuildEventsPreferenceKey";
+	protected boolean getListenForBuildEvents() {
+		Preferences prefs = JBossServerCorePlugin.getDefault().getPluginPreferences();
+		if( prefs.contains(PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS) )
+			return prefs.getBoolean(PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS);
+		return true;
+	}
+	
+	protected IPackagesBuildListener addBuildListener(EventLogTreeItem parent) {
+			IPackagesBuildListener buildListener = new PackagesPublisherBuildListener(parent);
+			PackagesCore.addPackagesBuildListener(buildListener);
+		return buildListener;
+	}
+	protected void removeBuildListener(IPackagesBuildListener buildListener) {
+		PackagesCore.removePackagesBuildListener(buildListener);
+	}
 }

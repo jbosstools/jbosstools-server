@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,6 +43,8 @@ import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublis
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherRemoveEvent;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
+import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
+import org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 
@@ -49,29 +52,14 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
  *  This class provides a default implementation for packaging different types of projects
  * @author rob.stryker@jboss.com
  */
-public class JstPackagesPublisher implements IJBossServerPublisher {
+public class JstPackagesPublisher extends PackagesPublisher {
 	
-	public static final String REMOVE_PACKAGE_SUCCESS = PackagesPublisher.REMOVE_PACKAGE_SUCCESS;
-	public static final String REMOVE_PACKAGE_FAIL = PackagesPublisher.REMOVE_PACKAGE_FAIL;
-	public static final String REMOVE_PACKAGE_SKIPPED = PackagesPublisher.REMOVE_PACKAGE_SKIPPED;
-
-	private int state;
-	private IDeployableServer server;
-	private EventLogRoot eventRoot;
-
 	public JstPackagesPublisher(IDeployableServer server) {
-		this.server = server;
-		state = IServer.PUBLISH_STATE_NONE;
-		eventRoot = EventLogModel.getModel(server.getServer()).getRoot();
+		super(server);
 	}
-	public int getPublishState() {
-		return state;
-	}
-
 
 	public void publishModule(int kind, int deltaKind, int modulePublishState,
 			IModule[] module, IProgressMonitor monitor) throws CoreException {
-    	checkClosed(module);
         if(ServerBehaviourDelegate.REMOVED == deltaKind){
         	unpublish(server, module, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
@@ -83,23 +71,33 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 	}
 
 	protected IStatus[] publish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
+		PublishEvent event = new PublishEvent(eventRoot, PackagesPublisher.PUBLISH_TOP_EVENT, module[0]);
+		EventLogModel.markChanged(eventRoot);
+
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
+			IPackagesBuildListener listener = null;
+			if( getListenForBuildEvents()) listener = addBuildListener(event);
 			PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
-			addMoveEvent(eventRoot, topLevel, topLevel.isDestinationInWorkspace(), 
+			if( getListenForBuildEvents()) removeBuildListener(listener);
+
+			addMoveEvent(event, topLevel, topLevel.isDestinationInWorkspace(), 
 					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), null);
 		}
 		return null;
 	}
 	protected void addMoveEvent(EventLogTreeItem parent, IPackage pack, boolean inWorkspace, 
 			IPath sourcePath, IPath destPath, Throwable e) {
-			String specType = PackagesPublisher.MOVE_PACKAGE_SKIP;
+			String specType = PackagesPublisher.MOVE_PACKAGE_SUCCESS;
 		new PackagesPublisherMoveEvent(parent, specType, pack, sourcePath, destPath, e );
 		EventLogModel.markChanged(parent);
 	}
 
 	
 	protected IStatus[] unpublish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
+		PublishEvent event = new PublishEvent(eventRoot, PackagesPublisher.REMOVE_TOP_EVENT, module[0]);
+		EventLogModel.markChanged(eventRoot);
+
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel.isDestinationInWorkspace() ) {
 			String deployDir = jbServer.getDeployDirectory();
@@ -107,38 +105,15 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 			IPath path = topLevel.getPackageFile().getRawLocation();
 			IPath p = new Path(deployDir).append(path.lastSegment());
 			boolean success = p.toFile().delete();
-			addRemoveEvent(eventRoot, topLevel, p, success ? SUCCESS : FAILURE);
+			addRemoveEvent(event, topLevel, p, success ? SUCCESS : FAILURE);
 		} else {
 			IPath path = topLevel.getPackageFilePath();
 			boolean success = path.toFile().delete();
-			addRemoveEvent(eventRoot, topLevel, path, success ? SUCCESS : FAILURE);
+			addRemoveEvent(event, topLevel, path, success ? SUCCESS : FAILURE);
 		}
 		return null;
 	}
-	protected void addRemoveEvent(EventLogTreeItem parent, IPackage pack, IPath dest, int success ) {
-		addRemoveEvent(parent, pack, dest, success, null);	
-	}
-	protected void addRemoveEvent(EventLogTreeItem parent, IPackage pack, IPath dest, int success, Exception e ) {
-		String specType = null;
-		switch( success ) {
-			case SUCCESS: specType = REMOVE_PACKAGE_SUCCESS; break;
-			case FAILURE: specType = REMOVE_PACKAGE_FAIL; break;
-			case SKIPPED: specType = REMOVE_PACKAGE_SKIPPED; break;
-		}
-		PackagesPublisherRemoveEvent event = 
-			new PackagesPublisherRemoveEvent(parent, specType, pack, dest, e);
-		EventLogModel.markChanged(parent);
-	}
-	
-    protected void checkClosed(IModule[] module) throws CoreException {
-    	for(int i=0;i<module.length;i++) {
-    		if(module[i] instanceof DeletedModule) {	
-                IStatus status = new Status(IStatus.ERROR,JBossServerCorePlugin.PLUGIN_ID,0, "Failure", null);
-                throw new CoreException(status);
-    		}
-    	}
-    }
-    
+
 	protected IPackage createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
 		IPackageType type = ModulePackageTypeConverter.getPackageTypeFor(module);
 		if( type != null ) {
@@ -149,5 +124,4 @@ public class JstPackagesPublisher implements IJBossServerPublisher {
 		}
 		return null;
 	}
-    
 }
