@@ -99,7 +99,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	public static final String FORCE_SHUTDOWN_EVENT_KEY = "org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.forceShutdown";
 	public class ForceShutdownEvent extends EventLogTreeItem {
 		public ForceShutdownEvent() {
-			super(EventLogModel.getModel(getServer()).getRoot(), null, FORCE_SHUTDOWN_EVENT_KEY);
+			super(EventLogModel.getModel(getServer()).getRoot(), PollThread.SERVER_STATE_MAJOR_TYPE, FORCE_SHUTDOWN_EVENT_KEY);
 		}
 	}
 	
