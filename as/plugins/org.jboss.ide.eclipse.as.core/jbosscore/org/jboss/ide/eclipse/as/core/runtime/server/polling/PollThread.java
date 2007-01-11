@@ -110,7 +110,7 @@ public class PollThread extends Thread {
 			poller.cleanup();
 			alertEventLogAbort();
 		} else {
-		
+			boolean finalAlert = true;
 			if( done ) {
 				// the poller has an answer
 				currentState = poller.getState();
@@ -122,18 +122,19 @@ public class PollThread extends Thread {
 				poller.cleanup();
 				alertEventLogTimeout();
 				fireTimeoutEvent();
+				finalAlert = false;
 			}
 			
 			if( currentState != expectedState ) {
 				// it didnt work... cancel all processes! force stop
 				behavior.stop(true);
-				alertEventLogFailure();
+				if( finalAlert ) alertEventLogFailure();
 			} else {
 				if( currentState == IServerStatePoller.SERVER_UP ) 
 					behavior.setServerStarted();
 				else
 					behavior.setServerStopped();
-				alertEventLogSuccess(currentState);
+				if( finalAlert ) alertEventLogSuccess(currentState);
 			}
 		}
 	}

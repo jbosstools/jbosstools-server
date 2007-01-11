@@ -52,7 +52,6 @@ public class TwiddlePoller implements IServerStatePoller {
 	private boolean done;
 	private IServer server;
 	
-	private PollerRunnable currentRunnable;
 	private EventLogTreeItem event;
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
 		this.expectedState = expectedState;
@@ -96,7 +95,8 @@ public class TwiddlePoller implements IServerStatePoller {
 						} 
 					}
 				}
-				eventTwiddleExecuted();
+				if( !canceled )
+					eventTwiddleExecuted();
 			}
 		}
 
