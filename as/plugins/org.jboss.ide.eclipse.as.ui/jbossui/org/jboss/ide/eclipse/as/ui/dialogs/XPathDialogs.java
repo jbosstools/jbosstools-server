@@ -25,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -660,7 +661,11 @@ public class XPathDialogs {
 		
 		private JBossServer server;
 		private ServerDescriptorModel model;
+		
+		private HashMap xpathCache;
+		
 		public XPathProposalProvider() {
+			xpathCache = new HashMap();
 		}
 		public void setServer(JBossServer server) {
 			this.server = server;
@@ -670,6 +675,7 @@ public class XPathDialogs {
 			} else {
 				model = null;
 			}
+			xpathCache = new HashMap();
 		}
 		public IContentProposal[] getProposals(String contents, int position) {
 			if( model == null ) return new IContentProposal[]{};
@@ -689,6 +695,11 @@ public class XPathDialogs {
 		}
 		
 		protected XPathTreeItem2[] getXPath(String xpath) {
+			if( xpathCache.containsKey(xpath)) {
+				ArrayList list = (ArrayList)xpathCache.get(xpath);
+				return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
+			}
+				
 			ArrayList list = new ArrayList();
 			XPathTreeItem[] items = model.getXPath(xpath);
 			for( int i = 0; i < items.length; i++ ) {
@@ -698,6 +709,8 @@ public class XPathDialogs {
 					list.add(i2);
 				}
 			}
+			xpathCache.put(xpath, list);
+			System.out.println("added to cache");
 			return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
 		}
 		
@@ -713,21 +726,30 @@ public class XPathDialogs {
 		}
 		
 		public String[] getElementProposalStrings(String parentPath, String elementPrefix) {
-			ArrayList list = new ArrayList();
+			TreeSet set = new TreeSet();
 			XPathTreeItem2[] items = getXPath(parentPath + "*");
 			for( int i = 0; i < items.length; i++ ) {
-				if( items[i].getElementName().startsWith(elementPrefix) && !list.contains(parentPath + items[i].getElementName()))
-					list.add(parentPath + items[i].getElementName());
+				if( items[i].getElementName().startsWith(elementPrefix)) {
+					if( items[i].getElementName().equals(elementPrefix)) {
+						set.addAll(Arrays.asList(getAttributeNameProposalStrings(parentPath + elementPrefix, "")));
+					} else {
+						set.add(parentPath + items[i].getElementName());
+					}
+				}
 			}
-			return (String[]) list.toArray(new String[list.size()]);
+			return (String[]) set.toArray(new String[set.size()]);
 		}
 		
 		public IContentProposal[] getAttributeNameProposals(String path) {
 			String parent = path.substring(0, path.lastIndexOf('['));
 			int attName = path.lastIndexOf('[') > path.lastIndexOf('@') ? path.lastIndexOf('[') : path.lastIndexOf('@');
-			return getAttributeNameProposals(parent, path.substring(attName+1));
+			String[] props = getAttributeNameProposalStrings(parent, path.substring(attName+1));
+			return convertProposals(props);
 		}
 		public IContentProposal[] getAttributeNameProposals(String parentPath, String remainder) {
+			return convertProposals(getAttributeNameProposalStrings(parentPath, remainder));
+		}
+		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
 			ArrayList names = new ArrayList();
 			XPathTreeItem2[] items = getXPath(parentPath);
 			String[] attributes;
@@ -743,7 +765,7 @@ public class XPathDialogs {
 			for( int i = 0; i < results.length; i++ ) {
 				results[i] = parentPath + "[@" + names.get(i) + "=";
 			}
-			return convertProposals(results);
+			return results;
 		}
 		
 		public IContentProposal[] getAttributeValueProposals(String path) {
