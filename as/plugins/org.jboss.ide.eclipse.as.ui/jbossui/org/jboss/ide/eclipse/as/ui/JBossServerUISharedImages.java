@@ -45,6 +45,8 @@ public class JBossServerUISharedImages {
 	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE";
 	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE";
 	public static final String GENERIC_SERVER_IMAGE = "GENERIC_SERVER_IMAGE";
+	public static final String PUBLISH_IMAGE = "PUBLISH_IMAGE";
+	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE";
 	
 	
 	private static JBossServerUISharedImages instance;
@@ -66,6 +68,8 @@ public class JBossServerUISharedImages {
 		
 		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
 		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
+		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
+		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
 
 		Iterator iter = descriptors.keySet().iterator();
 
