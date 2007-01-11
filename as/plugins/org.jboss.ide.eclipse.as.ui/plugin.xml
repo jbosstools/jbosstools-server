@@ -27,6 +27,10 @@
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.runtime.stripped"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
    </extension>
 
    <extension

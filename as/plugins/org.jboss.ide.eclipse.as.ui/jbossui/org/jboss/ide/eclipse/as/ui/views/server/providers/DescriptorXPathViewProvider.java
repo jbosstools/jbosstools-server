@@ -79,6 +79,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -178,6 +179,9 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	}
 	protected class XPathTreeLabelProvider extends LabelProvider {
 		public Image getImage(Object element) {
+			if( element instanceof SimpleXPathPreferenceTreeItem) {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+			}
 			return null;
 		}
 		public String getText(Object element) {
