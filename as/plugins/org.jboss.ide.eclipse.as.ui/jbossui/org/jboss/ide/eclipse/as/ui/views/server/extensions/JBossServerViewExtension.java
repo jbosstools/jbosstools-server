@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
@@ -73,16 +74,24 @@ public abstract class JBossServerViewExtension {
 	protected void refreshViewer() {
 		refreshViewer(null);
 	}
-	protected void refreshViewer(Object o) {
-		if( isEnabled() ) {
-			try {
-				if( o == null )
-					JBossServerView.getDefault().getJBViewer().refresh(provider);
-				else
-					JBossServerView.getDefault().getJBViewer().refresh(new ContentWrapper(o, provider));
-			} catch(Exception e) {
+	protected void refreshViewer(final Object o) {
+		Runnable r = new Runnable() { 
+			public void run() {
+				if( isEnabled() ) {
+					try {
+						if( o == null )
+							JBossServerView.getDefault().getJBViewer().refresh(provider);
+						else
+							JBossServerView.getDefault().getJBViewer().refresh(new ContentWrapper(o, provider));
+					} catch(Exception e) {
+					}
+				}
 			}
-		}
+		};
+		if( Display.getCurrent() == null ) 
+			Display.getDefault().asyncExec(r);
+		else
+			r.run();
 	}
 	protected void removeElement(Object o) {
 		JBossServerView.getDefault().getJBViewer().remove(new ContentWrapper(o, provider));
