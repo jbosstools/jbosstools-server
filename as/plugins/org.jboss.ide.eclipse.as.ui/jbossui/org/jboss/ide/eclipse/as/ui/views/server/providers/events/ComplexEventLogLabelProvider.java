@@ -42,11 +42,17 @@ public abstract class ComplexEventLogLabelProvider
 	protected ArrayList supported;
 	protected HashMap propertyToMessageMap;
 	public ComplexEventLogLabelProvider() {
+		supported = new ArrayList();
+		propertyToMessageMap = new HashMap();
 		addSupportedTypes();
 		loadPropertyMap();
 	}
 	protected abstract void addSupportedTypes();
 	protected abstract void loadPropertyMap();
+
+	public boolean supports(String type) {
+		return supported.contains(type);
+	}
 
 	public Properties getProperties(EventLogTreeItem item) {
 		Properties p = new Properties();

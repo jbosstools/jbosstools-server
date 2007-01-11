@@ -21,47 +21,63 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.HashMap;
 
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public class PackageBuildLabelProvider extends LabelProvider implements IEventLogLabelProvider {
+public class PackageBuildLabelProvider extends ComplexEventLogLabelProvider implements IEventLogLabelProvider {
 
 	public Image getImage(EventLogTreeItem item) {
 		return null;
 	}
 
-	public Properties getProperties(EventLogTreeItem item) {
-		return null;
-	}
-
 	public String getText(EventLogTreeItem item) {
-		if( item.getSpecificType().equals(PackagesBuildListener.PROJECT_BUILD_STARTED)) return "Build Started: " + item.getProperty("project.name");
-		if( item.getSpecificType().equals(PackagesBuildListener.PROJECT_BUILD_FINISHED)) return "Build Finished: " + item.getProperty("project.name");
-		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_STARTED)) return "Package Build Started: " + item.getProperty("package.name");
-		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_FINISHED)) return "Package Build Finished: " + item.getProperty("package.name");
-		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_FINISHED)) return "Package Build Failed: " + item.getProperty("package.name");
+		if( item.getSpecificType().equals(PackagesBuildListener.PROJECT_BUILD_STARTED)) return "Build Started";
+		if( item.getSpecificType().equals(PackagesBuildListener.PROJECT_BUILD_FINISHED)) return "Build Finished";
+		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_STARTED)) return "Package Build Started";
+		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_FINISHED)) return "Package Build Finished";
+		if( item.getSpecificType().equals(PackagesBuildListener.PACKAGE_BUILD_FINISHED)) return "Package Build Failed";
+		if( item.getSpecificType().equals(PackagesBuildListener.FILESET_FINISHED)) return "Fileset Complete";
+		if( item.getSpecificType().equals(PackagesBuildListener.FILESET_START)) return "Fileset Started";
+		
 		return "";
 	}
 
-	public boolean supports(String type) {
-		ArrayList list = new ArrayList();
-		list.add(PackagesBuildListener.PROJECT_BUILD_STARTED);
-		list.add(PackagesBuildListener.PROJECT_BUILD_FINISHED);
-		list.add(PackagesBuildListener.PACKAGE_BUILD_STARTED);
-		list.add(PackagesBuildListener.PACKAGE_BUILD_FINISHED);
-		list.add(PackagesBuildListener.PACKAGE_BUILD_FAILED);
+
+	protected void addSupportedTypes() {
+		supported.add(PackagesBuildListener.PROJECT_BUILD_STARTED);
+		supported.add(PackagesBuildListener.PROJECT_BUILD_FINISHED);
+		supported.add(PackagesBuildListener.PACKAGE_BUILD_STARTED);
+		supported.add(PackagesBuildListener.PACKAGE_BUILD_FINISHED);
+		supported.add(PackagesBuildListener.PACKAGE_BUILD_FAILED);
+		supported.add(PackagesBuildListener.FILESET_FINISHED);
+		supported.add(PackagesBuildListener.FILESET_START);
+	}
+
+	protected void loadPropertyMap() {
+		// property names and their readable forms
+		propertyToMessageMap.put(EventLogTreeItem.DATE, "Time");
+
+		propertyToMessageMap.put(PackagesBuildListener.PACKAGE_NAME, "Package Name");
+		propertyToMessageMap.put(PackagesBuildListener.PROJECT_NAME, "Project Name");
 		
-		return list.contains(type);
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_DESTINATION_FILENAME, "Destination Filename");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_EXCLUDES_PATTERN, "Excludes Pattern");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_FILE_PATH, "File Path");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_INCLUDES_PATTERN, "Includes Pattern");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_PROJECT, "Project");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_SOURCE, "Source Container");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_SOURCE_FOLDER, "Source Folder");
+		propertyToMessageMap.put(PackagesBuildListener.FILESET_SOURCE_PROJECT, "Source Project");
 	}
 
 }

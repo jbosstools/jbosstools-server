@@ -29,6 +29,8 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
 /**
@@ -46,7 +48,6 @@ public class PathPublisherLabelProvider extends ComplexEventLogLabelProvider imp
 	}
 
 	protected void loadPropertyMap() {
-		propertyToMessageMap = new HashMap();
 		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
 		propertyToMessageMap.put(PathPublisher.SOURCE_FILE, "Source File");
 		propertyToMessageMap.put(PathPublisher.DEST_FILE, "Destination File");
@@ -55,11 +56,12 @@ public class PathPublisherLabelProvider extends ComplexEventLogLabelProvider imp
 		propertyToMessageMap.put(PathPublisher.EXCEPTION, "Exception");
 	}
 
-	public boolean supports(String type) {
-		return supported.contains(type);
-	}
-
 	public Image getImage(EventLogTreeItem item) {
+		String type = item.getSpecificType();
+		if( type.equals(PathPublisher.PUBLISH_EVENT)) 
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+		if( type.equals(PathPublisher.UNPUBLISH_EVENT)) 
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
 		return null;
 	}
 

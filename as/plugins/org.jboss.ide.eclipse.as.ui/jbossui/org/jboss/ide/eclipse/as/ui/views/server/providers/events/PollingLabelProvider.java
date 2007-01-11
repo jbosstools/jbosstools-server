@@ -64,10 +64,6 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY);
 	}
 
-	public boolean supports(String type) {
-		return supported.contains(type);
-	}
-
 	public Image getImage(EventLogTreeItem element) {
 		if( element.getSpecificType().equals(PollThread.SERVER_STARTING)) return getStartingImage();
 		if( element.getSpecificType().equals(PollThread.SERVER_STOPPING)) return getStoppingImage();
@@ -168,7 +164,6 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 	 */
 	protected void loadPropertyMap() {
 		// property names and their readable forms
-		propertyToMessageMap = new HashMap();
 		propertyToMessageMap.put(EventLogTreeItem.DATE, "Time");
 		propertyToMessageMap.put(TwiddlePoller.STATUS, "Status");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
