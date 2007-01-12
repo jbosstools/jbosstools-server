@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -54,6 +57,8 @@ import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
+import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
+import org.jboss.ide.eclipse.packages.ui.util.FilesetPreviewComposite;
 
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
@@ -428,6 +433,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		private Button browse;
 		private Text includesText, excludesText, folderText, nameText;
 		private Composite main;
+		private FilesetPreviewComposite preview;
 		protected FilesetDialog(Shell parentShell, IDeployableServer server) {
 			super(parentShell);
 			this.fileset = new Fileset();
@@ -483,10 +489,6 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			});
 		}
 		
-		protected void layout() {
-			int o, t;
-		}
-
 		protected void textModified() {
 			name = nameText.getText();
 			dir = folderText.getText();
@@ -496,6 +498,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			fileset.setFolder(dir);
 			fileset.setIncludesPattern(includes);
 			fileset.setExcludesPattern(excludes);
+			updatePreview();
 		}
 		protected void fillArea(Composite main) {
 			Label nameLabel = new Label(main, SWT.NONE);
@@ -523,8 +526,22 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			
 			excludesText = new Text(main, SWT.BORDER);
 			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+			
+			Group previewWrapper = new Group(main, SWT.NONE);
+			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 1));
+			previewWrapper.setText("Preview");
+			
+			previewWrapper.setLayout(new GridLayout(1, false));
+			preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);
+		}
+		
+		private void updatePreview() {
+			preview.setRootFolder(new Path(dir));
+			IPath files[] = PackagesCore.findMatchingPaths(new Path(dir), includesText.getText(), excludesText.getText());
+			preview.setInput(files);
 
 		}
+		
 		public String getDir() {
 			return dir;
 		}
