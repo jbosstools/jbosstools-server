@@ -70,6 +70,7 @@ import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider.XPathPropertyLabelProvider;
@@ -174,7 +175,7 @@ public class XPathDialogs {
 		protected XPathProposalProvider proposalProvider;
 		
 		protected SimpleTreeItem tree;
-		protected JBossServer server;
+		protected IDeployableServer server;
 		protected String name, xpath, attribute, category;
 		protected String originalName = null;
 		protected XPathPreferenceTreeItem original = null;
@@ -188,15 +189,16 @@ public class XPathDialogs {
 		public XPathDialog(Shell parentShell) {
 			this(parentShell, null);
 		}
-		public XPathDialog(Shell parentShell, JBossServer server) {
+		public XPathDialog(Shell parentShell, IDeployableServer server) {
 			this(parentShell, server, null);
 		}
-		public XPathDialog(Shell parentShell, JBossServer server, String categoryName) {
+		public XPathDialog(Shell parentShell, IDeployableServer server, String categoryName) {
 			this(parentShell, server, categoryName, null);
 		}
 
-		public XPathDialog(Shell parentShell, JBossServer server, String categoryName, String originalName) {
+		public XPathDialog(Shell parentShell, IDeployableServer server, String categoryName, String originalName) {
 			super(parentShell);
+			setShellStyle(getShellStyle() | SWT.RESIZE);
 			this.category = categoryName;
 			this.server = server;
 			this.originalName = this.name = originalName;
@@ -206,10 +208,13 @@ public class XPathDialogs {
 
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			setShellStyle(getShellStyle() | SWT.RESIZE);
 			shell.setText(Messages.XPathNewXpath);
 			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 400);
 		}
+	    protected int getShellStyle() {
+	        int ret = super.getShellStyle();
+	        return ret | SWT.RESIZE;
+	    }
 		
 		protected void createButtonsForButtonBar(Composite parent) {
 			// create OK and Cancel buttons by default
@@ -241,6 +246,16 @@ public class XPathDialogs {
 					proposalProvider, null, null);
 			                
 			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+			
+			
+			XPathAttributeProposalProvider provider2 = new XPathAttributeProposalProvider(xpathText);
+			provider2.setServer(server);
+			ContentProposalAdapter adapter2 = new
+			ContentProposalAdapter(attributeText, new TextContentAdapter(),
+					provider2, null, null);
+			adapter2.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+			
+			
 			return main;
 		} 
 		
@@ -623,7 +638,7 @@ public class XPathDialogs {
 		public String getCategory() {
 			return category;
 		}
-		public JBossServer getServer() {
+		public IDeployableServer getServer() {
 			return server;
 		}
 
@@ -646,7 +661,33 @@ public class XPathDialogs {
 		}
 	}
 	
-	
+	public static class XPathAttributeProposalProvider extends XPathProposalProvider {
+		private Text elementText;
+		public XPathAttributeProposalProvider(Text elementText) {
+			this.elementText = elementText;
+		}
+		public IContentProposal[] getProposals(String contents, int position) {
+			int type = getType(elementText.getText());
+			if( type == 4 ) {
+				String[] strings = getAttributeNameProposalStrings(elementText.getText(), contents);
+				return convertProposals(strings);
+			}
+			return null;
+		}
+		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
+			ArrayList names = new ArrayList();
+			XPathTreeItem2[] items = getXPath(parentPath);
+			String[] attributes;
+			for( int i = 0; i < items.length; i++ ) {
+				attributes = items[0].getElementAttributeNames();
+				for( int j = 0; j < attributes.length; j++ ) {
+					if( attributes[j].startsWith(remainder) && !names.contains(attributes[j])) 
+						names.add(attributes[j]);
+				}
+			}
+			return (String[]) names.toArray(new String[names.size()]);
+		}
+	}
 	
 	public static class XPathProposalProvider implements IContentProposalProvider {
 		
@@ -659,7 +700,7 @@ public class XPathDialogs {
 		private static final int CLOSE_ATTRIBUTE = 7;
 		
 		
-		private JBossServer server;
+		private IDeployableServer server;
 		private ServerDescriptorModel model;
 		
 		private HashMap xpathCache;
@@ -667,10 +708,10 @@ public class XPathDialogs {
 		public XPathProposalProvider() {
 			xpathCache = new HashMap();
 		}
-		public void setServer(JBossServer server) {
+		public void setServer(IDeployableServer server) {
 			this.server = server;
 			if( server != null ) {
-				String serverConfDir = server.getConfigDirectory(false);
+				String serverConfDir = server.getConfigDirectory();
 				model = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
 			} else {
 				model = null;

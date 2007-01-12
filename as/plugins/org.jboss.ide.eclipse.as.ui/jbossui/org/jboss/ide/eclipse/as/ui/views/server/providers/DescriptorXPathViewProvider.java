@@ -95,12 +95,12 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
@@ -117,7 +117,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					editXPathAction, deleteXPathAction, editFileAction;
 
 	private IServer server;
-	private JBossServer jbServer;
+	private IDeployableServer jbServer;
 	private SimpleXPathPreferenceTreeItem root;
 	
 	private Object activeCategory;
@@ -172,7 +172,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if( oldInput != newInput ) {
 				server = (IServer)newInput;
-				jbServer = server == null ? null : JBossServerCore.getJBossServer(server);
+				jbServer = server == null ? null : JBossServerCore.getDeployableServer(server);
 				root = null;
 			}
 		}

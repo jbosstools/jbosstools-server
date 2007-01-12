@@ -58,6 +58,7 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
@@ -337,7 +338,7 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			ConvertNodeToXPathDialog d = new ConvertNodeToXPathDialog(new Shell(), node, attributeName);
 			int result = d.open();
 			if( result == Window.OK) {
-				JBossServer s = d.getServer();
+				IDeployableServer s = d.getServer();
 				SimpleTreeItem tree = s.getAttributeHelper().getXPathPreferenceTree();
 				String category = d.getCategory();
 				SimpleTreeItem[] categories = tree.getChildren();
@@ -385,7 +386,6 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 				temp.setText("Add to XPaths");
 				temp.setDescription("Add this element to the list of xpaths you can edit from the properties view.");
 				manager.add(temp);
-				System.out.println(o);
 			}
 		}
 	}
