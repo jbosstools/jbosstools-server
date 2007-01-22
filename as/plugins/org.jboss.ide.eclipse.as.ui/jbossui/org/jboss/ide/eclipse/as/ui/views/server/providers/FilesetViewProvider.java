@@ -448,7 +448,11 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			Point p = super.getInitialSize();
 			return new Point(500, p.y);
 		}
-
+		protected int getShellStyle() {
+			return super.getShellStyle() | SWT.RESIZE;
+		}
+		
+		
 		protected Control createDialogArea(Composite parent) {
 			Composite sup = (Composite) super.createDialogArea(parent);
 			main = new Composite(sup, SWT.NONE);
@@ -505,13 +509,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			nameLabel.setText("Name: ");
 			
 			nameText = new Text(main, SWT.BORDER);
-			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Label folderLabel = new Label(main, SWT.NONE);
 			folderLabel.setText("Root Directory: ");
 			
 			folderText = new Text(main, SWT.BORDER);
-			folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+			folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 			browse = new Button(main, SWT.PUSH);
 			browse.setText("Browse...");
 			
@@ -519,16 +523,16 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			includesLabel.setText("Includes: ");
 			
 			includesText = new Text(main, SWT.BORDER);
-			includesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+			includesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Label excludeLabel= new Label(main, SWT.NONE);
 			excludeLabel.setText("Excludes: ");
 			
 			excludesText = new Text(main, SWT.BORDER);
-			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
+			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Group previewWrapper = new Group(main, SWT.NONE);
-			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 1));
+			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 3));
 			previewWrapper.setText("Preview");
 			
 			previewWrapper.setLayout(new GridLayout(1, false));
@@ -539,7 +543,6 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			preview.setRootFolder(new Path(dir));
 			IPath files[] = PackagesCore.findMatchingPaths(new Path(dir), includesText.getText(), excludesText.getText());
 			preview.setInput(files);
-
 		}
 		
 		public String getDir() {
