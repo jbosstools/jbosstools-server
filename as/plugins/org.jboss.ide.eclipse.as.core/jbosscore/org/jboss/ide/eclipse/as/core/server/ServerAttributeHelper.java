@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class ServerAttributeHelper {
@@ -286,7 +287,7 @@ public class ServerAttributeHelper {
 		}
 		
 		// actually a forced refresh
-		public void ensureLoaded(JBossServer jbServer) {
+		public void ensureLoaded(IDeployableServer jbServer) {
 			String XPATH_PROPERTY_LOADED = "_XPATH_PROPERTY_LOADED_";
 
 			String xpath = getXPath();

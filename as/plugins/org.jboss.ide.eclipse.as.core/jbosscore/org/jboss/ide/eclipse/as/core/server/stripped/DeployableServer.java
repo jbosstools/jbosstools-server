@@ -3,9 +3,12 @@ package org.jboss.ide.eclipse.as.core.server.stripped;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 
@@ -52,6 +55,15 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 			copy = getServer().createWorkingCopy();
 		}
 		return new ServerAttributeHelper(getServer(), copy);
+	}
+
+	// only used for xpaths and is a complete crap hack ;) misleading, too
+	public String getConfigDirectory() {
+		return getDeployDirectory();
+	}
+
+	public ServerDescriptorModel getDescriptorModel() {
+		return DescriptorModel.getDefault().getServerModel(new Path(getDeployDirectory()));
 	}
 
 

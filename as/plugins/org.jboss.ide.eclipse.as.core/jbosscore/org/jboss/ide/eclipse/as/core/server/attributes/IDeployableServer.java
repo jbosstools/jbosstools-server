@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.server.attributes;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 
 /**
@@ -30,6 +31,8 @@ import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
  */
 public interface IDeployableServer {
 	public String getDeployDirectory();
+	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();
 	public IServer getServer();
+	public ServerDescriptorModel getDescriptorModel();
 }
