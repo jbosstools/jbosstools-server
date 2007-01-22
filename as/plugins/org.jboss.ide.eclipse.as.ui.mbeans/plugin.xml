@@ -52,6 +52,7 @@
       <wizard
             category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
+            icon="icons/mbean16.gif"
             id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
             name="MBean Stubs"
             project="false"/>

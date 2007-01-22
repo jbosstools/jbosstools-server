@@ -148,8 +148,6 @@ public class ServiceXMLOutlineConfiguration extends
 		}
 
 		public Object[] getElements(Object inputElement) {
-			if( inputElement instanceof DOMModelImpl ) System.out.println(((DOMModelImpl)inputElement).getBaseLocation());
-
 			Object topNode = inputElement;
 			if (inputElement instanceof IDOMModel)
 				topNode = ((IDOMModel) inputElement).getDocument();
