@@ -58,4 +58,15 @@
             project="false"/>
    </extension>
 
+
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">
+         <QuickFixProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogProvider"/>
+      </extension>
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLOutlineMenuProvider">
+         <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
+      </extension>
+
+
 </plugin>

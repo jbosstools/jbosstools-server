@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.ui.mbeans.wizards;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -42,10 +43,13 @@ import org.eclipse.jdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
 import org.eclipse.jdt.internal.ui.wizards.dialogfields.StringDialogField;
 import org.eclipse.jdt.ui.wizards.NewTypeWizardPage;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -67,7 +71,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 	private IStructuredSelection sel;
 	private MBeanInterfacePage interfacePage;
 	private MBeanPage mbeanPage;
-	private NewFilePage newFilePage;
+	private NewFilePageExtension newFilePage;
 	private static String INTERFACE_NAME = "__INTERFACE_NAME__";
 	
 	public NewMBeanWizard() {
@@ -78,7 +82,81 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
     	newFilePage.setVisible(false);
     }
 
-	
+    // TODO:  Clean up after 158060, 153135
+	public class NewFilePageExtension extends NewFilePage {
+		private IFile newFile;
+		private IPath fullPath;
+		public NewFilePageExtension(IStructuredSelection selection) {
+			super(selection);
+		}
+		
+	    public IFile createNewFile() {
+	        if (newFile != null) {
+				return newFile;
+			}
+
+	        // create the new file and cache it if successful
+
+	        final IPath containerPath = getContainerFullPath();
+	        IPath newFilePath = containerPath.append(getFileName());
+	        final IFile newFileHandle = createFileHandle(newFilePath);
+	        final InputStream initialContents = getInitialContents();
+
+	        createLinkTarget();
+	        WorkspaceModifyOperation op = new WorkspaceModifyOperation(createRule(newFileHandle)) {
+	            protected void execute(IProgressMonitor monitor)
+	                    throws CoreException {
+	                try {
+	                    monitor.beginTask(IDEWorkbenchMessages.WizardNewFileCreationPage_progress, 2000);
+	                    ContainerGenerator generator = new ContainerGenerator(
+	                            containerPath);
+	                    generator.generateContainer(new SubProgressMonitor(monitor,
+	                            1000));
+	                    createFile(newFileHandle, initialContents,
+	                            new SubProgressMonitor(monitor, 1000));
+	                } finally {
+	                    monitor.done();
+	                }
+	            }
+	        };
+
+	        try {
+	            getContainer().run(true, true, op);
+	        } catch (InterruptedException e) {
+	            return null;
+	        } catch (InvocationTargetException e) {
+	            if (e.getTargetException() instanceof CoreException) {
+	                ErrorDialog
+	                        .openError(
+	                                getContainer().getShell(), // Was Utilities.getFocusShell()
+	                                IDEWorkbenchMessages.WizardNewFileCreationPage_errorTitle,
+	                                null, // no special message
+	                                ((CoreException) e.getTargetException())
+	                                        .getStatus());
+	            } else {
+	                // CoreExceptions are handled above, but unexpected runtime exceptions and errors may still occur.
+	                IDEWorkbenchPlugin.log(getClass(),
+	                        "createNewFile()", e.getTargetException()); //$NON-NLS-1$
+	                MessageDialog
+	                        .openError(
+	                                getContainer().getShell(),
+	                                IDEWorkbenchMessages.WizardNewFileCreationPage_internalErrorTitle, NLS.bind(IDEWorkbenchMessages.WizardNewFileCreationPage_internalErrorMessage, e.getTargetException().getMessage()));
+	            }
+	            return null;
+	        }
+
+	        newFile = newFileHandle;
+
+	        return newFile;
+	    }	
+	    public void setContainerFullPath(IPath path) {
+	    	fullPath = path;
+	    }
+	    public IPath getContainerFullPath() {
+	    	return fullPath == null ? super.getContainerFullPath() : fullPath;
+	    }
+
+	}
 	
 	public boolean performFinish() {
 		if( !canFinish() ) return false;
@@ -174,7 +252,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		mbeanPage.init(sel);
 		
 		
-		newFilePage = new NewFilePage(sel);
+		newFilePage = new NewFilePageExtension(sel);
 		Preferences preference = XMLCorePlugin.getDefault().getPluginPreferences();
 		String ext = "xml";
 		newFilePage.defaultFileExtension = "."+ext; //$NON-NLS-1$

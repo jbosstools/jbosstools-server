@@ -52,9 +52,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
-import org.eclipse.wst.xml.ui.internal.contentassist.ContentAssistRequest;
-import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentAssistProcessor;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
@@ -62,9 +59,6 @@ import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
-import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineActionProvider;
-import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLQuickFixProposalProvider;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
@@ -226,58 +220,6 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 	}
 
 	
-	public static class ConvertNodeToXPathDialogProvider extends XMLContentAssistProcessor implements IServiceXMLQuickFixProposalProvider {
-
-		public ICompletionProposal[] getProposals(ITextViewer viewer, int offset) {
-			return computeCompletionProposals(viewer, offset);
-		}
-		
-		protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest) {
-			Node n = contentAssistRequest.getNode();
-			String name = n.getNodeName();
-			String attName = ((AttrImpl)n.getAttributes().getNamedItem(contentAssistRequest.getText())).getName();
-			contentAssistRequest.addProposal(createProposal(n, attName));
-		}
-		
-		protected void addAttributeValueProposals(ContentAssistRequest contentAssistRequest) {
-			String elementName = contentAssistRequest.getNode().getNodeName();
-			String match = contentAssistRequest.getMatchString();
-			String text = contentAssistRequest.getText();
-			int beginPos = contentAssistRequest.getReplacementBeginPosition();
-
-			// find the attribute we're inside of, because the contentAssistRequester only returns the element (BOO!)
-			NamedNodeMap map = contentAssistRequest.getNode().getAttributes();
-			
-			boolean found = false;
-			AttrImpl attribute = null;
-			for( int i = 0; i < map.getLength() && !found; i++ ) {
-				Node tmp = map.item(i);
-				if( tmp instanceof AttrImpl ) {
-					int start = ((AttrImpl)tmp).getStartOffset();
-					int end = ((AttrImpl)tmp).getEndOffset();
-					if( beginPos > start && beginPos < end ) {
-						found = true;
-						attribute = (AttrImpl)tmp;
-					}
-				}
-			}
-			if( found ) {
-				contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), attribute.getName()));
-			}
-		}
-		
-		protected void addEmptyDocumentProposals(ContentAssistRequest contentAssistRequest) {
-		}
-		
-		protected void addTagInsertionProposals(ContentAssistRequest contentAssistRequest, int childPosition) {
-			contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), null));
-		}
-		
-		
-		protected ICompletionProposal createProposal(Node node, String attributeName) {
-			return new OpenXPathDialogProposal(node, attributeName);
-		}
-	}
 	
 	public static class OpenXPathDialogProposal implements ICompletionProposal, ICompletionProposalExtension2 {
 		private Node node;
@@ -360,33 +302,5 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			}
 		}
 		
-	}
-	
-	public static class ConvertNodeToXPathDialogOutlineMenuItemProvider implements IServiceXMLOutlineActionProvider {
-		public void release() {
-		}
-
-		public void menuAboutToShow(IMenuManager manager, ISelection selection) {
-			Object o = ((IStructuredSelection)selection).getFirstElement();
-			Node n;
-			String attName = null;
-			if( o instanceof Node ) {
-				n = (Node)o;
-				if( n instanceof AttrImpl) {
-					attName = ((AttrImpl)n).getName();
-					n = ((AttrImpl)n).getOwnerElement();
-				}
-				final Node n2 = n;
-				final String attName2 = attName;
-				Action temp = new Action() { 
-					public void run() {
-						new ConvertNodeRunnable(n2, attName2).run();
-					}
-				};
-				temp.setText("Add to XPaths");
-				temp.setDescription("Add this element to the list of xpaths you can edit from the properties view.");
-				manager.add(temp);
-			}
-		}
 	}
 }
