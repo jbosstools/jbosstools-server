@@ -68,5 +68,19 @@
          <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
       </extension>
 
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="org.jboss.ide.eclipse.packages.ui.jbossContribution"
+            targetID="org.jboss.ide.eclipse.packages.ui.newPackageMenu">
+         <action
+               class="org.jboss.ide.eclipse.as.ui.mbeans.packages.NewSARAction"
+               icon="icons/sar.gif"
+               id="org.jboss.ide.eclipse.packages.ui.newSARAction"
+               label="SAR"
+               menubarPath="additions"
+               style="push"/>
+      </viewerContribution>
+   </extension>
 
 </plugin>
