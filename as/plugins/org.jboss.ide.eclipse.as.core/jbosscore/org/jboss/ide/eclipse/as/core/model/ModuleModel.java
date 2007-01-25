@@ -149,7 +149,6 @@ public class ModuleModel implements IResourceChangeListener{
 
 	
 	private ModuleModel() {
-		System.out.println("x");
 		getJBossModuleFactories();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE );
 	}

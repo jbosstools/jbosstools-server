@@ -57,6 +57,8 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 			if (id.equals(vmInstalls[i].getId()))
 				return vmInstalls[i];
 		}
+		
+		// not found, return default vm
 		return null;
 	}
 	
