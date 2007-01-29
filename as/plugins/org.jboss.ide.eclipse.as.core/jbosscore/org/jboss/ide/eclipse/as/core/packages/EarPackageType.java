@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
+import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
 import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 
 /**
@@ -49,7 +50,12 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	
 	public IPackage createDefaultConfiguration2(IProject project,
 			IProgressMonitor monitor) {
-		return null;
+		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".war");
+		topLevel.setDestinationContainer(project);
+		IPackageFolder metainf = addFolder(project, topLevel, METAINF);
+		IPackageFolder lib = addFolder(project, metainf, LIB);
+		addFileset(project, metainf, METAINF, null);
+		return topLevel;
 	}
 
 	public IPackage createDefaultConfigFromModule(IModule module,

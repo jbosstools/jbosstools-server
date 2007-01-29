@@ -63,8 +63,8 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
 		IPackageFolder metainf = addFolder(project, topLevel, METAINF);
 		IPackageFolder lib = addFolder(project, metainf, LIB);
-		addFileset(project, metainf, WEBCONTENT + Path.SEPARATOR + METAINF, null);
-		addFileset(project, webinf, WEBCONTENT + Path.SEPARATOR + WEBINF, null);
+		addFileset(project, metainf, METAINF, null);
+		addFileset(project, webinf, WEBINF, null);
 		return topLevel;
 	}
 
