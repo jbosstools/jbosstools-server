@@ -272,6 +272,13 @@
                style="push"/>
      </viewerContribution>
   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            icon="icons/jboss.gif"
+            id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
+   </extension>
 
 
 </plugin>
