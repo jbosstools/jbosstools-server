@@ -51,6 +51,7 @@ public class TwiddlePoller implements IServerStatePoller {
 	private boolean canceled;
 	private boolean done;
 	private IServer server;
+	private boolean securityException = false;
 	
 	private EventLogTreeItem event;
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
@@ -84,6 +85,9 @@ public class TwiddlePoller implements IServerStatePoller {
 							started = STATE_STARTED;
 						} else if(out.startsWith("Started=false")) {
 							started = STATE_TRANSITION; // it's alive and responding
+						} else if( out.indexOf("java.lang.SecurityException") != -1 ) {
+							// throw exception 
+							securityException = true;
 						} else {
 							started = STATE_STOPPED; // It's fully down
 						}
@@ -136,7 +140,11 @@ public class TwiddlePoller implements IServerStatePoller {
 		}
 	}
 
-	public boolean getState() {
+	public class PollingSecurityException extends PollingException {
+		public PollingSecurityException(String msg) {super(msg);}
+	}
+	public boolean getState() throws PollingException  {
+		if( securityException ) throw new PollingSecurityException("Security Exception");
 		if( started == 0 ) return SERVER_DOWN;
 		if( started == 1 ) return SERVER_UP;
 
@@ -146,7 +154,7 @@ public class TwiddlePoller implements IServerStatePoller {
 		return expectedState; // done or canceled, doesnt matter
 	}
 
-	public boolean isComplete() {
+	public boolean isComplete() throws PollingException {
 		return done;
 	}
 	

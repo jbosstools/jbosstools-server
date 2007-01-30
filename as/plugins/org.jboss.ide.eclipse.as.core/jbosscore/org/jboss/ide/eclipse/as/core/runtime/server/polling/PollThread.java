@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
@@ -49,8 +50,9 @@ public class PollThread extends Thread {
 	public static final String SUCCESS = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.success";
 	public static final String POLL_THREAD_ABORTED = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.aborted";
 	public static final String POLL_THREAD_TIMEOUT = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.timeout";
-	
 	public static final String EXPECTED_STATE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThreadEvent.expectedState";
+	public static final String POLL_THREAD_EXCEPTION = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.exception";
+	public static final String POLL_THREAD_EXCEPTION_MESSAGE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.exception.message";
 
 	
 	private boolean expectedState;
@@ -101,8 +103,19 @@ public class PollThread extends Thread {
 		while( !abort && !done && new Date().getTime() < startTime + maxWait ) {
 			try {
 				Thread.sleep(100);
-				done = poller.isComplete();
 			} catch( InterruptedException ie ) { }
+			
+			try {
+				done = poller.isComplete();
+			} catch( PollingException e ) {
+				// abort and put the message in event log
+				poller.cancel(IServerStatePoller.CANCEL);
+				poller.cleanup();
+				if( expectedState == IServerStatePoller.SERVER_UP) behavior.stop(true);
+				if( expectedState == IServerStatePoller.SERVER_DOWN) behavior.setServerStarted();
+				alertEventLogPollerException(e);
+				return;
+			}
 		}
 		boolean currentState = !expectedState;
 		if( abort ) {
@@ -113,8 +126,18 @@ public class PollThread extends Thread {
 			boolean finalAlert = true;
 			if( done ) {
 				// the poller has an answer
-				currentState = poller.getState();
-				poller.cleanup();
+				try {
+					currentState = poller.getState();
+					poller.cleanup();
+				} catch( PollingException pe) {
+					// abort and put the message in event log
+					poller.cancel(IServerStatePoller.CANCEL);
+					poller.cleanup();
+					if( expectedState == IServerStatePoller.SERVER_UP) behavior.stop(true);
+					if( expectedState == IServerStatePoller.SERVER_DOWN) behavior.setServerStarted();
+					alertEventLogPollerException(pe);
+					return;
+				}
 			} else {
 				// we timed out.  get response from preferences
 				poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
@@ -178,6 +201,12 @@ public class PollThread extends Thread {
 	
 	public PollThreadEvent getActiveEvent() {
 		return activeEvent;
+	}
+	
+	protected void alertEventLogPollerException(PollingException e) {
+		PollThreadEvent event = new PollThreadEvent(activeEvent, POLL_THREAD_EXCEPTION, expectedState);
+		event.setProperty(POLL_THREAD_EXCEPTION_MESSAGE, e.getMessage());
+		EventLogModel.markChanged(activeEvent);
 	}
 	
 	protected void alertEventLogAbort() {
