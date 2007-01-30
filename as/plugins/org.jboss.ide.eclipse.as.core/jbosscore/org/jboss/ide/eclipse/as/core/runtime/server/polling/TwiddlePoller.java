@@ -155,6 +155,8 @@ public class TwiddlePoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
+		if( securityException ) 
+			throw new PollingSecurityException("Security Exception");
 		return done;
 	}
 	

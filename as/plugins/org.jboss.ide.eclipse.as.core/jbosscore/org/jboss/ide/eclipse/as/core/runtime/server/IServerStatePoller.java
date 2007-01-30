@@ -40,8 +40,6 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
 	
 	public class PollingException extends Exception {
-		private String message;
-		public PollingException() {}
-		public PollingException(String message) {this.message = message;}
+		public PollingException(String message) {super(message);}
 	}
 }

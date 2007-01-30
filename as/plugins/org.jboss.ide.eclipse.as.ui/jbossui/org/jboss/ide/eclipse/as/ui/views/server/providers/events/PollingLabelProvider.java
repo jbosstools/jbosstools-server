@@ -57,6 +57,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(PollThread.SUCCESS);
 		supported.add(PollThread.POLL_THREAD_ABORTED);
 		supported.add(PollThread.POLL_THREAD_TIMEOUT);
+		supported.add(PollThread.POLL_THREAD_EXCEPTION);
 		
 		supported.add(TwiddlePoller.TYPE_TERMINATED);
 		supported.add(TwiddlePoller.TYPE_RESULT);
@@ -73,6 +74,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			//String expectedString = expected == IServerStatePoller.SERVER_UP ? "startup" : "shutdown";
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return getErrorImage();
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return getErrorImage();
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_EXCEPTION)) return getErrorImage();
 			if( element.getSpecificType().equals(PollThread.SUCCESS)) {
 				if( expected == IServerStatePoller.SERVER_UP)
 					return getStartedImage();
@@ -112,6 +114,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			String expectedString = expected == IServerStatePoller.SERVER_UP ? "startup" : "shutdown";
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return expectedString + " aborted";
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return expectedString + " timed out";
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_EXCEPTION)) return "Failure: " + element.getProperty(PollThread.POLL_THREAD_EXCEPTION_MESSAGE);
 			if( element.getSpecificType().equals(PollThread.SUCCESS)) return expectedString + " succeeded";
 			if( element.getSpecificType().equals(PollThread.FAILURE)) return expectedString + " failed";
 		}
