@@ -279,6 +279,14 @@
             icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
    </extension>
-
+   <extension
+         point="org.jboss.ide.eclipse.firstrun.FirstRunWizardPage">
+      <UpgradeWizard
+            WizardPage="org.jboss.ide.eclipse.as.ui.upgrades.UpdatePage20"
+            fromVersion="1.6.*"
+            id="org.jboss.ide.eclipse.as.ui.firstrun.16.20"
+            toVersion="2.0.0.*"
+            weight="50"/>
+   </extension>
 
 </plugin>
