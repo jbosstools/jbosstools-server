@@ -50,6 +50,7 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 	protected static final String LIB = "lib";
 	protected static final String WEBCONTENT = "WebContent";
 	protected static final String EARCONTENT = "EarContent";
+	protected static final String EJBMODULE = "ejbModule";
 
 
 	protected boolean isModuleType(IModule module, String moduleTypeId){	

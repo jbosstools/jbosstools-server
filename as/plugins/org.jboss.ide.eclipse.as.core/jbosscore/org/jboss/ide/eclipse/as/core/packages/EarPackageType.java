@@ -36,6 +36,8 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
  * @author rob.stryker@jboss.com
  */
 public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
+	public static final String EAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.earPackage";
+
 	public String getAssociatedModuleType() {
 		return "jst.ear";
 	}

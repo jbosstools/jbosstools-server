@@ -30,14 +30,14 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
  * @author rob.stryker@jboss.com
  */
 public class ModulePackageTypeConverter {
-	public static final String WAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.warPackage";
-	public static final String EAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.earPackage";
 	public static IPackageType getPackageTypeFor(IModule module) {
 		String modType = module.getModuleType().getId();
 		if("jst.web".equals(modType)) {
-			return PackagesCore.getPackageType(WAR_PACKAGE_TYPE);
+			return PackagesCore.getPackageType(WarPackageType.WAR_PACKAGE_TYPE);
 		} else if("jst.ear".equals(modType)) {
-			return PackagesCore.getPackageType(EAR_PACKAGE_TYPE);
+			return PackagesCore.getPackageType(EarPackageType.EAR_PACKAGE_TYPE);
+		} else if("jbide.ejb30".equals(modType)) {
+			return PackagesCore.getPackageType("org.jboss.ide.eclipse.ejb3.wizards.core.ejbPackageType");
 		}
 
 		return null;
