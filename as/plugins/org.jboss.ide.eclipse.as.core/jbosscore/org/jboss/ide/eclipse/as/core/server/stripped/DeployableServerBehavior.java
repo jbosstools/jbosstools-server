@@ -83,7 +83,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			publisher = new PathPublisher(JBossServerCore.getDeployableServer(getServer()), this);
 		} else if( hasPackagingConfiguration(module) ) {
 			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
-		} else if( areJstModules(module)){
+		} else if( areJstStyleModules(module)){
 			publisher = new JstPackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
 		} else {
 			publisher = new NullPublisher();
@@ -105,12 +105,14 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	/* Temporary and will need to be fixed */
-	protected boolean areJstModules(IModule[] module) {
+	// TODO: Change to if it is a flex project. Don't know how to do that yet. 
+	protected boolean areJstStyleModules(IModule[] module) {
 		String type;
 		for( int i = 0; i < module.length; i++ ) {
 			type = module[i].getModuleType().getId();
 			if( type.equals("jst.ejb") || type.equals("jst.client") 
-					|| type.equals("jst.web") || type.equals("jst.ear")) 
+					|| type.equals("jst.web") || type.equals("jst.ear")
+					|| type.equals("jbide.ejb30"))
 				continue;
 			return false;
 		}
