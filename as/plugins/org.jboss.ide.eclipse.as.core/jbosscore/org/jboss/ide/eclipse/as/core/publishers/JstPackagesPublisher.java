@@ -73,16 +73,20 @@ public class JstPackagesPublisher extends PackagesPublisher {
 	protected IStatus[] publish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		PublishEvent event = new PublishEvent(eventRoot, PackagesPublisher.PUBLISH_TOP_EVENT, module[0]);
 		EventLogModel.markChanged(eventRoot);
-
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
 			IPackagesBuildListener listener = null;
 			if( getListenForBuildEvents()) listener = addBuildListener(event);
-			PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
+			Throwable t = null;
+			try {
+				PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
+			} catch( Exception e ) {
+				t = e;
+			}
 			if( getListenForBuildEvents()) removeBuildListener(listener);
 
 			addMoveEvent(event, topLevel, topLevel.isDestinationInWorkspace(), 
-					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), null);
+					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), t);
 		}
 		return null;
 	}
