@@ -171,9 +171,9 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		IRuntime rt = ServerCore.findRuntime(base);
 		if( rt == null ) return base;
 		
-		int i = 1;
+		int i = 0;
 		while( rt != null ) {
-			rt = ServerCore.findRuntime(base + " " + i++);
+			rt = ServerCore.findRuntime(base + " " + ++i);
 		}
 		return base + " " + i;
 	}
