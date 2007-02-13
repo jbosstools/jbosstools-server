@@ -4,9 +4,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
@@ -21,8 +23,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 
 	public IStatus canModifyModules(IModule[] add, IModule[] remove) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
