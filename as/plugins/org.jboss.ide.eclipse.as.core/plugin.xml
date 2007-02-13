@@ -86,7 +86,7 @@
                 types="jboss.xml"
                 versions="1.0"/>
           <moduleType
-                types="jboss.packaged.project"
+                types="jboss.package"
                 versions="1.0"/>
                
       </runtimeType>
@@ -116,7 +116,7 @@
                 types="jboss.xml"
                 versions="1.0"/>                
           <moduleType
-                types="jboss.packaged.project"
+                types="jboss.package"
                 versions="1.0"/>
       </runtimeType>
       <runtimeType
@@ -145,7 +145,7 @@
                 types="jboss.xml"
                 versions="1.0"/>                
           <moduleType
-                types="jboss.packaged.project"
+                types="jboss.package"
                 versions="1.0"/>
             
       </runtimeType>
@@ -198,10 +198,10 @@
       </moduleFactory>
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.PackagedProjectModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.PackagedModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
             projects="true">
          <moduleType
-               types="jboss.packaged.project"
+               types="jboss.package"
                versions="1.0"/>
       </moduleFactory>
    </extension>
@@ -399,8 +399,8 @@
             id="jboss.xml"
             name="XML Module"/>
       <moduleType
-            id="jboss.packaged.project"
-            name="Packaged Project"/>
+            id="jboss.package"
+            name="Project Package"/>
    </extension>
    <extension
          point="org.jboss.ide.eclipse.packages.core.packageTypes">

@@ -21,54 +21,58 @@
  */
 package org.jboss.ide.eclipse.as.core.module;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.model.ModuleModel;
+import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
+import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate implements IResourceChangeListener {
+public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate {
 	protected Map moduleDelegates = new HashMap(5);
 	protected HashMap projectsToModule = new HashMap(5);
 	
 	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackagedModuleFactory";
-	public static final String MODULE_TYPE = "jboss.packaged.project";
+	public static final String MODULE_TYPE = "jboss.package";
 	public static final String VERSION = "1.0";
 
 	public PackagedProjectModuleFactory() {
 		super();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE );
 	}
 	
 	protected IModule[] createModules(IProject project) {
 		if( PackagesCore.projectHasPackages(project) ) {
-			IModule module = createModule(project.getName(), 
-					project.getName(), MODULE_TYPE, VERSION, project);
-			Object moduleDelegate = new PackagedModuleDelegate();
-			moduleDelegates.put(module, moduleDelegate);
-			projectsToModule.put(project, module);
-			return new IModule[] {module};
+			ArrayList list = new ArrayList();
+			IModule module;
+			IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
+			for( int i = 0; i < packages.length; i++ ) {
+				module = createModule(project.getName() + ":" + packages[i].getName(), 
+						project.getName() + "/" + packages[i].getName(), 
+						MODULE_TYPE, VERSION, project);
+				list.add(module);
+				Object moduleDelegate = new PackagedModuleDelegate();
+				moduleDelegates.put(module, moduleDelegate);
+				projectsToModule.put(project, module);
+			}
+			return (IModule[]) list.toArray(new IModule[list.size()]);
 		}
-		
 		return null;
 	}
 
@@ -95,7 +99,7 @@ public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate i
 	 * @return a possibly empty array of paths
 	 */
 	protected IPath[] getListenerPaths() {
-		return null;
+		return new IPath[] { new Path(PackagesModel.PROJECT_PACKAGES_FILE) };
 	}
 
 	public class PackagedModuleDelegate extends ModuleDelegate {
@@ -111,20 +115,6 @@ public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate i
 		public IStatus validate() {
 			return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
 					0, "", null);
-		}
-	}
-
-	public void resourceChanged(IResourceChangeEvent event) {
-		IResource res;
-		IResourceDelta delta = event.getDelta();
-		IResourceDelta[] children = delta.getAffectedChildren();
-		for( int i = 0; i < children.length; i++ ) {
-			if( children[i].getResource() instanceof IProject ) {
-				res = children[i].getResource();
-				IModule mod = getModuleFromProject((IProject)res);
-				if( mod != null )
-					ModuleModel.getDefault().markModuleChanged(mod);
-			}
 		}
 	}
 }

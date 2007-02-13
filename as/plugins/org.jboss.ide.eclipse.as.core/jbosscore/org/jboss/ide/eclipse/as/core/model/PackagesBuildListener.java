@@ -46,25 +46,25 @@ import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
  * @author rob.stryker@jboss.com
  * This class is teh suck. I dont even know whether to keep it
  */
-//public class PackagesBuildListener implements IPackagesBuildListener {
-public class PackagesBuildListener {
+public class PackagesBuildListener implements IPackagesBuildListener {
+//public class PackagesBuildListener {
 
-//	public static PackagesBuildListener instance;
-//
-//	
-//	
-//	private HashMap projectServerToEvent = new HashMap();
-//	public PackagesBuildListener() {
-//		if( instance != null ) {
-//			instance.remove();
-//		}
-//		instance = this;
-//		PackagesCore.addPackagesBuildListener(this);
-//	}
-//	
-//	public void remove() {
-//		PackagesCore.removePackagesBuildListener(this);
-//	}
+	public static PackagesBuildListener instance;
+
+	
+	
+	private HashMap projectServerToEvent = new HashMap();
+	public PackagesBuildListener() {
+		if( instance != null ) {
+			instance.remove();
+		}
+		instance = this;
+		PackagesCore.addPackagesBuildListener(this);
+	}
+	
+	public void remove() {
+		PackagesCore.removePackagesBuildListener(this);
+	}
 //	
 //
 //	
@@ -313,6 +313,55 @@ public class PackagesBuildListener {
 			if( fileset.getSourceProject() != null )
 				child.setProperty(FILESET_SOURCE_PROJECT, fileset.getSourceProject().getName());
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#buildFailed(org.jboss.ide.eclipse.packages.core.model.IPackage, org.eclipse.core.runtime.IStatus)
+	 */
+	public void buildFailed(IPackage pkg, IStatus status) {
+		System.out.println("build failed");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#finishedBuild(org.eclipse.core.resources.IProject)
+	 */
+	public void finishedBuild(IProject project) {
+		System.out.println("finished build");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#finishedBuildingPackage(org.jboss.ide.eclipse.packages.core.model.IPackage)
+	 */
+	public void finishedBuildingPackage(IPackage pkg) {
+		System.out.println("finished building package");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#finishedCollectingFileSet(org.jboss.ide.eclipse.packages.core.model.IPackageFileSet)
+	 */
+	public void finishedCollectingFileSet(IPackageFileSet fileset) {
+		System.out.println("finished collecting fileset");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#startedBuild(org.eclipse.core.resources.IProject)
+	 */
+	public void startedBuild(IProject project) {
+		System.out.println("build started");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#startedBuildingPackage(org.jboss.ide.eclipse.packages.core.model.IPackage)
+	 */
+	public void startedBuildingPackage(IPackage pkg) {
+		System.out.println("started building package");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener#startedCollectingFileSet(org.jboss.ide.eclipse.packages.core.model.IPackageFileSet)
+	 */
+	public void startedCollectingFileSet(IPackageFileSet fileset) {
+		System.out.println("started collecting fileset");
 	}
 
 }

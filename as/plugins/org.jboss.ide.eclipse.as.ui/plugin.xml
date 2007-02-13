@@ -83,7 +83,7 @@
       <image
             icon="icons/J2EEModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.packagedProject.image"
-            typeIds="jboss.packaged.project"/>
+            typeIds="jboss.package"/>
       <image
             icon="icons/xml.gif"
             id="org.jboss.ide.eclipse.as.ui.xmlImage"
