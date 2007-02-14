@@ -29,6 +29,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
+import org.jboss.ide.eclipse.packages.ui.views.ProjectPackagesView;
 
 public class ASPerspective implements IPerspectiveFactory {
 
@@ -54,6 +55,7 @@ public class ASPerspective implements IPerspectiveFactory {
 		outputfolder.addView(JavaUI.ID_SOURCE_VIEW);
 		outputfolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 		outputfolder.addView("org.eclipse.ui.views.PropertySheet");
+		outputfolder.addView("org.jboss.ide.eclipse.packages.ui.ProjectPackagesView");
 		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
@@ -68,7 +70,7 @@ public class ASPerspective implements IPerspectiveFactory {
 		layout.addActionSet(JavaUI.ID_ACTION_SET);
 		layout.addActionSet(JavaUI.ID_ELEMENT_CREATION_ACTION_SET);
 		layout.addActionSet(IPageLayout.ID_NAVIGATE_ACTION_SET);
-		
+				
 		// views - java
 		layout.addShowViewShortcut(JavaUI.ID_PACKAGES);
 		layout.addShowViewShortcut(JavaUI.ID_TYPE_HIERARCHY);
