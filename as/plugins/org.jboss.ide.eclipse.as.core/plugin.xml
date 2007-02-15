@@ -197,7 +197,7 @@
                versions="1.0"/>
       </moduleFactory>
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.PackagedProjectModuleFactory"
+            class="org.jboss.ide.eclipse.as.core.module.PackageModuleFactory"
             id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
             projects="true">
          <moduleType

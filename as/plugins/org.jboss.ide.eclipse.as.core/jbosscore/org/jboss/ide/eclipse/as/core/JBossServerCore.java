@@ -134,7 +134,7 @@ public class JBossServerCore {
 	
 	public JBossServerCore() {
 		ModuleModel.getDefault();
-		new PackagesBuildListener();
+		PackagesBuildListener.getInstance();
 	}
 
 	public static ModuleFactory[] getJBossModuleFactories() {

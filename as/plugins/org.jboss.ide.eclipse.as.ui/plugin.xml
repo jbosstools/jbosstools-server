@@ -247,7 +247,7 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
-            id="org.jboss.ide.eclipse.packages.ui.jbossContribution"
+            id="org.jboss.ide.eclipse.as.ui.jbossContribution"
             targetID="org.jboss.ide.eclipse.packages.ui.newPackageMenu">
          <action
                class="org.jboss.ide.eclipse.as.ui.packages.NewWARAction"
@@ -271,6 +271,16 @@
                menubarPath="additions"
                style="push"/>
      </viewerContribution>
+      <viewerContribution
+            id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
+            targetID="org.jboss.ide.eclipse.packages.ui.nodeContextMenu">
+         <action
+               class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
+               icon="icons/publish.gif"
+               id="org.jboss.ide.eclipse.as.ui.packages.manualPublish"
+               label="Publish To Server"
+               menubarPath="additions"/>
+      </viewerContribution>
   </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">

@@ -75,15 +75,12 @@ public class JstPackagesPublisher extends PackagesPublisher {
 		EventLogModel.markChanged(eventRoot);
 		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
-			IPackagesBuildListener listener = null;
-			if( getListenForBuildEvents()) listener = addBuildListener(event);
 			Throwable t = null;
 			try {
 				PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
 			} catch( Exception e ) {
 				t = e;
 			}
-			if( getListenForBuildEvents()) removeBuildListener(listener);
 
 			addMoveEvent(event, topLevel, topLevel.isDestinationInWorkspace(), 
 					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), t);
@@ -122,7 +119,7 @@ public class JstPackagesPublisher extends PackagesPublisher {
 		IPackageType type = ModulePackageTypeConverter.getPackageTypeFor(module);
 		if( type != null ) {
     		IPackage topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
-    		topLevel.setDestinationFolder(new Path(deployDir));
+    		topLevel.setDestinationPath(new Path(deployDir));
     		//topLevel.setDestinationFolder(new Path("c:\\test"));
     		return topLevel;
 		}

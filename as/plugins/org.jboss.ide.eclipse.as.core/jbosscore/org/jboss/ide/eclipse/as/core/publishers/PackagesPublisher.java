@@ -39,7 +39,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.PackagesPublisherBuildListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
@@ -250,29 +249,5 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			super(parent, PUBLISH_MAJOR_TYPE, specificType);
 			setProperty(BUILD_TYPE, new Integer(type));
 		}
-	}
-
-	
-	
-	/*
-	 * Build events and stuff
-	 */
-	
-	public static final String PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS = 
-		"org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.ListenForBuildEventsPreferenceKey";
-	protected boolean getListenForBuildEvents() {
-		Preferences prefs = JBossServerCorePlugin.getDefault().getPluginPreferences();
-		if( prefs.contains(PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS) )
-			return prefs.getBoolean(PREFERENCE_KEY_LISTEN_FOR_BUILD_EVENTS);
-		return true;
-	}
-	
-	protected IPackagesBuildListener addBuildListener(EventLogTreeItem parent) {
-			IPackagesBuildListener buildListener = new PackagesPublisherBuildListener(parent);
-			PackagesCore.addPackagesBuildListener(buildListener);
-		return buildListener;
-	}
-	protected void removeBuildListener(IPackagesBuildListener buildListener) {
-		PackagesCore.removePackagesBuildListener(buildListener);
 	}
 }

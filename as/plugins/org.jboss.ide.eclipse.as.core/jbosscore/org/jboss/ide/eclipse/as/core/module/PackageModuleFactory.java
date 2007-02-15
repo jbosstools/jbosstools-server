@@ -45,15 +45,15 @@ import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
  *
  * @author rob.stryker@jboss.com
  */
-public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate {
+public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	protected Map moduleDelegates = new HashMap(5);
 	protected HashMap projectsToModule = new HashMap(5);
 	
-	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackagedModuleFactory";
+	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";
 	public static final String MODULE_TYPE = "jboss.package";
 	public static final String VERSION = "1.0";
 
-	public PackagedProjectModuleFactory() {
+	public PackageModuleFactory() {
 		super();
 	}
 	
@@ -63,8 +63,7 @@ public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate {
 			IModule module;
 			IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
 			for( int i = 0; i < packages.length; i++ ) {
-				module = createModule(project.getName() + ":" + packages[i].getName(), 
-						project.getName() + "/" + packages[i].getName(), 
+				module = createModule(getID(packages[i]), getName(packages[i]),						 
 						MODULE_TYPE, VERSION, project);
 				list.add(module);
 				Object moduleDelegate = new PackagedModuleDelegate();
@@ -75,7 +74,16 @@ public class PackagedProjectModuleFactory extends ProjectModuleFactoryDelegate {
 		}
 		return null;
 	}
+	
+	public static String getID(IPackage pack) {
+		String path = pack.isDestinationInWorkspace() ? pack.getPackageFile().getLocation().toOSString() : pack.getPackageFilePath().toFile().getAbsolutePath();
+		return pack.getProject().getName() + ":" + path;
+		//return pack.getProject().getName() + ":" + pack.getPackageFilePath();
+	}
 
+	public static String getName(IPackage pack) {
+		return pack.getProject().getName() + "/" + pack.getName();
+	}
 	public ModuleDelegate getModuleDelegate(IModule module) {
 		return (ModuleDelegate) moduleDelegates.get(module);
 	}

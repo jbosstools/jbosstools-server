@@ -91,7 +91,7 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 		IPackage jar = PackagesCore.createDetachedPackage(project, true);
 			
 		if( deployDirectory != null ) {
-			jar.setDestinationFolder(new Path(deployDirectory));
+			jar.setDestinationPath(new Path(deployDirectory));
 			jar.setExploded(false);
 		}
 		jar.setName(packageName);

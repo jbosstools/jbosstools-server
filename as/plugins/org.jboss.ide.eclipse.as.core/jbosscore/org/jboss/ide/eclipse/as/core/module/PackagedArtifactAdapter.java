@@ -15,7 +15,7 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 	public PackagedArtifactAdapter() {
 	}
 
-	private PackagedProjectModuleFactory factory;
+	private PackageModuleFactory factory;
 	public IModuleArtifact getModuleArtifact(Object obj) {
 		if( obj instanceof IJavaProject ) {
 			IProject[] projects2 = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -29,7 +29,7 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 			}
 		} 
 		if( obj instanceof IProject ) {
-			PackagedProjectModuleFactory factory = getFactory();
+			PackageModuleFactory factory = getFactory();
 			if( factory != null ) {
 				IModule mod = factory.getModuleFromProject((IProject)obj);
 				if( mod != null ) {
@@ -40,17 +40,17 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		return null;
 	}
 	
-	protected PackagedProjectModuleFactory getFactory() {
+	protected PackageModuleFactory getFactory() {
 		if( factory != null ) return factory;
 		
 		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
-		System.out.println(PackagedProjectModuleFactory.FACTORY_TYPE_ID);
+		System.out.println(PackageModuleFactory.FACTORY_TYPE_ID);
 		for( int i = 0; i < factories.length; i++ ) {
 			System.out.println("  " + factories[i].getId());
-			if( factories[i].getId().equals(PackagedProjectModuleFactory.FACTORY_TYPE_ID)) {
+			if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
 				Object o = factories[i].getDelegate(new NullProgressMonitor());
-				if( o instanceof PackagedProjectModuleFactory ) {
-					factory = (PackagedProjectModuleFactory)o;
+				if( o instanceof PackageModuleFactory ) {
+					factory = (PackageModuleFactory)o;
 					return factory;
 				}
 			}
