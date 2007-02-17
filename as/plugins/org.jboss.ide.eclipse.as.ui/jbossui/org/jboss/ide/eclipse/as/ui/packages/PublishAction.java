@@ -1,8 +1,5 @@
 package org.jboss.ide.eclipse.as.ui.packages;
 
-import java.util.ArrayList;
-
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -25,23 +22,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.ModuleFactory;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
-import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
+import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
+import org.jboss.ide.eclipse.packages.ui.actions.AbstractNodeActionDelegate;
 
-public class PublishAction extends ActionWithDelegate implements IViewActionDelegate {
+public class PublishAction extends AbstractNodeActionDelegate {
 
 	
 	public PublishAction() {
@@ -57,6 +46,19 @@ public class PublishAction extends ActionWithDelegate implements IViewActionDele
 			}
 			PackagesBuildListener.publish(node);
 		}
+	}
+	
+	public boolean isEnabledFor(IPackageNode node) {
+		if (node.getNodeType() == IPackageNode.TYPE_PACKAGE
+			|| node.getNodeType() == IPackageNode.TYPE_PACKAGE_REFERENCE)
+		{
+			IPackage pkg = (IPackage) node;
+			if (pkg.isTopLevel())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	protected String showSelectServersDialog(IPackage node) {
@@ -186,7 +188,5 @@ public class PublishAction extends ActionWithDelegate implements IViewActionDele
 	        return element == null ? "" : element.toString();//$NON-NLS-1$
 	    }
 
-	}
-	public void init(IViewPart view) {
 	}
 }

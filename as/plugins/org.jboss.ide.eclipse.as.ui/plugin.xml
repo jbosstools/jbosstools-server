@@ -271,16 +271,6 @@
                menubarPath="additions"
                style="push"/>
      </viewerContribution>
-      <viewerContribution
-            id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
-            targetID="org.jboss.ide.eclipse.packages.ui.nodeContextMenu">
-         <action
-               class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
-               icon="icons/publish.gif"
-               id="org.jboss.ide.eclipse.as.ui.packages.manualPublish"
-               label="Publish To Server"
-               menubarPath="additions"/>
-      </viewerContribution>
   </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
@@ -297,6 +287,16 @@
             id="org.jboss.ide.eclipse.as.ui.firstrun.16.20"
             toVersion="2.0.0.*"
             weight="50"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.packages.ui.nodePopupMenus">
+      <nodeContribution
+            class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
+            enablesForNodeType="package"
+            icon="icons/publish.gif"
+            id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
+            label="Publish To Server"
+            weight="1"/>
    </extension>
 
 </plugin>
