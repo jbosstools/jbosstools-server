@@ -9,6 +9,8 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleArtifactAdapterDelegate;
+import org.jboss.ide.eclipse.packages.core.model.IPackage;
+import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 
@@ -25,15 +27,17 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 				if( projects2[i].getName().equals(jpName)) {
 					done = true;
 					obj = projects2[i];
+					break;
 				}
 			}
 		} 
+		
 		if( obj instanceof IProject ) {
 			PackageModuleFactory factory = getFactory();
 			if( factory != null ) {
-				IModule mod = factory.getModuleFromProject((IProject)obj);
-				if( mod != null ) {
-					return getArtifact(mod);
+				IModule[] mods = factory.getModulesFromProject((IProject)obj);
+				if( mods != null && mods.length != 0) {
+					return getArtifact(mods);
 				}
 			}
 		}
@@ -58,8 +62,10 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		return null;
 	}
 	
-	protected IModuleArtifact getArtifact(IModule mod) {
-		return new PackagedArtifact(mod);
+	protected IModuleArtifact getArtifact(IModule[] mod) {
+		//return new PackagedArtifact(mod);
+		// TODO Blocking on eclipse bug 174372 
+		return null;
 	}
 	
 	public class PackagedArtifact implements IModuleArtifact{

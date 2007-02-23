@@ -47,7 +47,7 @@ import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
  */
 public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	protected Map moduleDelegates = new HashMap(5);
-	protected HashMap projectsToModule = new HashMap(5);
+	protected HashMap packageToModule = new HashMap(5);
 	
 	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";
 	public static final String MODULE_TYPE = "jboss.package";
@@ -66,9 +66,9 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 				module = createModule(getID(packages[i]), getName(packages[i]),						 
 						MODULE_TYPE, VERSION, project);
 				list.add(module);
-				Object moduleDelegate = new PackagedModuleDelegate();
+				Object moduleDelegate = new PackagedModuleDelegate(packages[i]);
 				moduleDelegates.put(module, moduleDelegate);
-				projectsToModule.put(project, module);
+				packageToModule.put(packages[i], module);
 			}
 			return (IModule[]) list.toArray(new IModule[list.size()]);
 		}
@@ -91,12 +91,22 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 
 	protected void clearCache() {
 		moduleDelegates = new HashMap(5);
-		projectsToModule = new HashMap(5);
+		packageToModule = new HashMap(5);
 	}
 	
-	public IModule getModuleFromProject(IProject project) {
+	public IModule getModuleFromPackage(IPackage pack) {
 		getModules(); // prime it
-		return (IModule)projectsToModule.get(project);
+		return (IModule)packageToModule.get(pack);
+	}
+	
+	public IModule[] getModulesFromProject(IProject project) {
+		ArrayList mods = new ArrayList();
+		IPackage[] packs = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
+		for( int i = 0; i < packs.length; i++ ) {
+			IModule mod = getModuleFromPackage(packs[i]);
+			if( mod != null ) mods.add(mod);
+		}
+		return (IModule[]) mods.toArray(new IModule[mods.size()]);
 	}
 	
 	/**
@@ -111,7 +121,11 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	}
 
 	public class PackagedModuleDelegate extends ModuleDelegate {
-
+		private IPackage pack;
+		public PackagedModuleDelegate(IPackage pack) {
+			this.pack = pack;
+		}
+		public IPackage getPackage() {return pack;}
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}

@@ -1,16 +1,11 @@
 package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherBuildEvent;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 

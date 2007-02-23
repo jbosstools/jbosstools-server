@@ -22,15 +22,9 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -38,16 +32,11 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
+import org.jboss.ide.eclipse.packages.core.model.AbstractPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
-import org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 /**
@@ -55,7 +44,7 @@ import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
  * @author rob.stryker@jboss.com
  * This class is teh suck. I dont even know whether to keep it
  */
-public class PackagesBuildListener implements IPackagesBuildListener {
+public class PackagesBuildListener extends AbstractPackagesBuildListener {
 //public class PackagesBuildListener {
 
 	public static PackagesBuildListener instance;
@@ -68,37 +57,65 @@ public class PackagesBuildListener implements IPackagesBuildListener {
 		}
 		return instance;
 	}
+	
+	//Keeping track of build changes
+	private HashMap changesOrAdditions = new HashMap();
+	private HashMap removals = new HashMap();
+	
+	
 	public PackagesBuildListener() {
 		PackagesCore.addPackagesBuildListener(this);
 	}
 	
-	public void remove() {
-		PackagesCore.removePackagesBuildListener(this);
-	}
-
-	public void buildFailed(IPackage pkg, IStatus status) {
-		System.out.println("build failed");
-	}
-
-	public void finishedBuild(IProject project) {
-		System.out.println("finished build");
-	}
-
-	public void finishedBuildingPackage(IPackage pkg) {
-		
-		if( new Boolean(pkg.getProperty(AUTO_DEPLOY)).booleanValue()) {
-			publish(pkg);
+	public void startedBuildingPackage(IPackage pkg) {
+		if( pkg.isTopLevel() ) {
+			changesOrAdditions.put(pkg, new ArrayList());
+			removals.put(pkg, new ArrayList());
 		}
 	}
 
-	public static void publish(IPackage pkg) {
+	public void fileRemoved(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
+		// make absolute
+		IPath filePath2 = makeAbsolute(filePath); // change
+		ArrayList removes = (ArrayList)removals.get(topLevelPackage);
+		if( !removes.contains(filePath2)) removes.add(filePath2);
+	}
+	public void fileUpdated(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
+		// make absolute
+		IPath filePath2 = makeAbsolute(filePath); // change
+		ArrayList changes = (ArrayList)changesOrAdditions.get(topLevelPackage);
+		if( !changes.contains(filePath2)) changes.add(filePath2);
+	}
+
+	public IPath makeAbsolute(IPath local) {
+		IPath file = PackagesCore.getBaseFile(local);
+		
+		return file;
+	}
+	public void finishedBuildingPackage(IPackage pkg) {
+		System.out.println("finished building package");
+		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(AUTO_DEPLOY)).booleanValue()) {
+			publish(pkg);
+			// then clean up what's been changed
+			changesOrAdditions.remove(pkg);
+			removals.remove(pkg);
+		}
+	}
+
+
+	
+	// If we're supposed to auto-deploy, get on it
+	protected static void publish(IPackage pkg) {
 		String servers = pkg.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
+		publish(pkg, servers);
+	} 
+	public static void publish(IPackage pkg, String servers) {
 		IModule[] module = getModule(pkg);
 		if( module[0] == null ) return; 
 		DeployableServerBehavior[] serverBehaviors = PackagesBuildListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
-				serverBehaviors[i].publishOneModule(IServer.PUBLISH_FULL, module, ServerBehaviourDelegate.ADDED, new NullProgressMonitor());
+				serverBehaviors[i].publishOneModule(IServer.PUBLISH_INCREMENTAL, module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
 			}
 		}
 	}
@@ -124,20 +141,16 @@ public class PackagesBuildListener implements IPackagesBuildListener {
 		return (DeployableServerBehavior[]) list.toArray(new DeployableServerBehavior[list.size()]);
 	}
 
-	public void finishedCollectingFileSet(IPackageFileSet fileset) {
-		System.out.println("finished collecting fileset");
-	}
 
-	public void startedBuild(IProject project) {
-		System.out.println("build started");
+	
+	// should be called from the publisher to figure out what's changed
+	public IPath[] getUpdatedFiles(IPackage pkg) {
+		ArrayList list = (ArrayList)changesOrAdditions.get(pkg);
+		return (IPath[]) list.toArray(new IPath[list.size()]);
 	}
-
-	public void startedBuildingPackage(IPackage pkg) {
-		System.out.println("started building package");
+	public IPath[] getRemovedFiles(IPackage pkg) {
+		ArrayList list = (ArrayList)removals.get(pkg);
+		return (IPath[]) list.toArray(new IPath[list.size()]);
 	}
-
-	public void startedCollectingFileSet(IPackageFileSet fileset) {
-		System.out.println("started collecting fileset");
-	}
-
+	
 }

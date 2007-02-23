@@ -44,7 +44,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			if( servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(node);
 			}
-			PackagesBuildListener.publish(node);
+			PackagesBuildListener.publish(node, servers);
 		}
 	}
 	
@@ -62,10 +62,9 @@ public class PublishAction extends AbstractNodeActionDelegate {
 	}
 	
 	protected String showSelectServersDialog(IPackage node) {
-		String servers = null;
 		SelectServerWizard wiz = new SelectServerWizard(node);
 		new WizardDialog(new Shell(), wiz).open();
-		return node.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
+		return wiz.getServers();
 	}
 
 	
@@ -76,6 +75,9 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			this.pack = pack;
 		}
 		public boolean performFinish() {
+			System.out.println("servers: " + getServers());
+			System.out.println("autodeploy: " + getAutoDeploy());
+			System.out.println("always publish to these: " + getAlwaysPublish());
 			pack.setProperty(PackagesBuildListener.DEPLOY_SERVERS, getServers());
 			pack.setProperty(PackagesBuildListener.AUTO_DEPLOY, getAutoDeploy());
 			return true;
@@ -91,14 +93,18 @@ public class PublishAction extends AbstractNodeActionDelegate {
 		protected String getAutoDeploy() {
 			return page.getAutoDeploy();
 		}
+		protected String getAlwaysPublish() {
+			return page.getAlwaysPublish();
+		}
 	}
 	
 	protected class SelectServerWizardPage extends WizardPage {
 		protected IPackage pack;
 		protected ListViewer viewer;
-		protected Button autoDeploy;
+		protected Button autoDeploy, alwaysPublish;
 		protected String viewerResult = "";
 		protected String deployResult = Boolean.toString(false);
+		protected String alwaysPublishResult = Boolean.toString(false);
 		
 		protected SelectServerWizardPage(IPackage pack) {
 			super("Wizard Page Name");
@@ -128,18 +134,31 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			
 			
 			
+			this.alwaysPublish = new Button(mainComposite, SWT.CHECK);
+			FormData always = new FormData();
+			always.left = new FormAttachment(15,0);
+			always.top = new FormAttachment(viewer.getList(), 5);
+			alwaysPublish.setLayoutData(always);
+			
+			Label alwaysPublishLabel = new Label(mainComposite, SWT.NONE);
+			FormData apl = new FormData();
+			apl.top = new FormAttachment(viewer.getList(), 5);
+			apl.left = new FormAttachment(alwaysPublish, 5);
+			alwaysPublishLabel.setLayoutData(apl);
+			alwaysPublishLabel.setText("Always publish to these servers");
+
 			autoDeploy = new Button(mainComposite, SWT.CHECK);
 			FormData add = new FormData();
 			add.left = new FormAttachment(15,0);
-			add.top = new FormAttachment(viewer.getList(), 5);
+			add.top = new FormAttachment(alwaysPublish, 5);
 			autoDeploy.setLayoutData(add);
 			
 			Label autoDeployLabel = new Label(mainComposite, SWT.NONE);
 			FormData adl = new FormData();
-			adl.top = new FormAttachment(viewer.getList(), 5);
+			adl.top = new FormAttachment(alwaysPublishLabel, 7);
 			adl.left = new FormAttachment(autoDeploy, 5);
 			autoDeployLabel.setLayoutData(adl);
-			autoDeployLabel.setText("Label Text");
+			autoDeployLabel.setText("Auto-deploy to selected servers after builds");
 		}
 		protected void addListeners() {
 			autoDeploy.addSelectionListener(new SelectionListener() {
@@ -147,7 +166,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 					widgetSelected(e);
 				}
 				public void widgetSelected(SelectionEvent e) {
-					deployResult = Boolean.toString(autoDeploy.getSelection());
+					deployResult = Boolean.toString(autoDeploy.getSelection() && autoDeploy.getEnabled());
 				}
 			});
 			viewer.addPostSelectionChangedListener(new ISelectionChangedListener() {
@@ -165,9 +184,21 @@ public class PublishAction extends AbstractNodeActionDelegate {
 				} 
 			} );
 			
+			alwaysPublish.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+					widgetSelected(e);
+				}
+				public void widgetSelected(SelectionEvent e) {
+					autoDeploy.setEnabled(alwaysPublish.getSelection());
+					deployResult = Boolean.toString(autoDeploy.getSelection() && autoDeploy.getEnabled());
+					alwaysPublishResult = Boolean.toString(alwaysPublish.getSelection());
+				} 
+			});
+			
 			viewer.setContentProvider(new ArrayContentProvider());
 			viewer.setLabelProvider(new PublishServerLabelProvider());
 			viewer.setInput(JBossServerCore.getAllDeployableServers());
+			autoDeploy.setEnabled(false);
 		}
 			
 		protected String getServers() {
@@ -175,6 +206,9 @@ public class PublishAction extends AbstractNodeActionDelegate {
 		}
 		protected String getAutoDeploy() {
 			return deployResult;
+		}
+		protected String getAlwaysPublish() {
+			return alwaysPublishResult;
 		}
 	}
 	protected class PublishServerLabelProvider extends LabelProvider {

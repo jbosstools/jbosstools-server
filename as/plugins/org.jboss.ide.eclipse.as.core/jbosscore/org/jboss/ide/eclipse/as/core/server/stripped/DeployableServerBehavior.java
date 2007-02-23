@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.IModuleVisitor;
 import org.eclipse.wst.server.core.internal.Module;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
@@ -23,6 +25,7 @@ import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
 import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPackagesPublisher;
@@ -68,7 +71,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			case ServerBehaviourDelegate.CHANGED: System.out.print("changed"); break;
 			case ServerBehaviourDelegate.REMOVED: System.out.print("removed"); break;
 		}
-		System.out.println("");
+		System.out.println(" to server " + getServer().getId());
 		
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
@@ -81,10 +84,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		 */
 		if( arePathModules(module)) {
 			publisher = new PathPublisher(JBossServerCore.getDeployableServer(getServer()), this);
-		} else if( hasPackagingConfiguration(module) ) {
-			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
 		} else if( areJstStyleModules(module)){
 			publisher = new JstPackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
+//			} else if( hasPackagingConfiguration(module) ) {
+//			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
+		} else if( module[0].getModuleType().getId().equals(PackageModuleFactory.MODULE_TYPE)) {
+			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
 		} else {
 			publisher = new NullPublisher();
 		}
@@ -151,7 +156,9 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		setServerState(IServer.STATE_STOPPING);
 	}
 	
+	
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
+		addAndRemoveModules( module, deltaKind);
 		ArrayList moduleList = new ArrayList();
 		ArrayList deltaKindList = new ArrayList();
 		moduleList.add(module);
@@ -191,5 +198,22 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			
 		}
 		return null;
+	}
+	
+	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
+		if( deltaKind != ServerBehaviourDelegate.ADDED && deltaKind != ServerBehaviourDelegate.REMOVED) return;
+
+		if (getServer() != null && !ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor())) {
+			IServerWorkingCopy wc = getServer().createWorkingCopy();
+			try {
+				if( deltaKind == ServerBehaviourDelegate.ADDED )
+					ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());
+				else if( deltaKind == ServerBehaviourDelegate.REMOVED) 
+					ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
+					
+				wc.save(false, new NullProgressMonitor());
+			} catch (CoreException ce) {
+			}
+		}
 	}
 }
