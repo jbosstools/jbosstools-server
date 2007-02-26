@@ -41,7 +41,8 @@ public class PublishAction extends AbstractNodeActionDelegate {
 		if( o instanceof IPackage ) {
 			IPackage node = (IPackage)o;
 			String servers = node.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
-			if( servers == null || "".equals(servers)) {
+			if( !Boolean.getBoolean(node.getProperty(PackagesBuildListener.AUTO_DEPLOY)) ||
+					servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(node);
 			}
 			PackagesBuildListener.publish(node, servers);

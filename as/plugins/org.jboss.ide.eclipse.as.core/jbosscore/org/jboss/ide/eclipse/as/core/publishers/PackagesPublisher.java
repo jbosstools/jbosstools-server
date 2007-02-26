@@ -22,27 +22,24 @@
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
+import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
+import org.jboss.ide.eclipse.core.util.ResourceUtil;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 /**
  *
@@ -111,28 +108,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < module.length; i++ ) {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
-			try {
-				
-				if( pack.isDestinationInWorkspace()) {
-					IFile file = pack.getPackageFile();
-					IPath sourcePath = file.getLocation();
-					IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-					boolean success = destPath.toFile().delete();
-					addRemoveEvent(event, pack, destPath, success ? SUCCESS : FAILURE);
-				} else {
-					IPath path = pack.getPackageFilePath();
-					Path deployDir = new Path(server.getDeployDirectory());
-					if( path.toOSString().startsWith(deployDir.toOSString())) {
-						boolean success = path.toFile().delete();
-						addRemoveEvent(event, pack, path, success ? SUCCESS : FAILURE);
-					} else {
-						addRemoveEvent(event, pack, path, SKIPPED, null);
-					}
-				}
-			} catch( Exception e ) {
-				IPath dest = pack.getPackageFile().getLocation();
-				addRemoveEvent(event, pack, dest, FAILURE, e);
-			}
+			IFile file = pack.getPackageFile();
+			IPath sourcePath = file.getLocation();
+			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+			boolean success = FileUtil.safeDelete(destPath.toFile());
+			addRemoveEvent(event, pack, destPath, success ? SUCCESS : FAILURE);
 		}
 	}
 	
@@ -144,18 +124,41 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < module.length; i++ ) {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
-			if( pack.isDestinationInWorkspace()) {
-				// destination is workspace. Move it. 
-				IFile file = pack.getPackageFile();
-				IPath sourcePath = file.getLocation();
-				IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-				IStatus status = FileUtil.copyFile(sourcePath.toFile(), destPath.toFile());
-				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, destPath, status.isOK() ? SUCCESS : FAILURE, status.getException());
-			} else {
-				
-				IPath sourcePath = pack.getPackageFilePath();
-				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, sourcePath, SUCCESS, null);
+			IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
+			IPath[] removed = PackagesBuildListener.getInstance().getRemovedFiles(pack);
+			IPath[] updated = PackagesBuildListener.getInstance().getUpdatedFiles(pack);
+			
+			IPath destPathRoot = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+			IPath suffix, destPath;
+
+			for( int j = 0; j < removed.length; j++ ) {
+				if( sourcePath.isPrefixOf(updated[j])) {
+					suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
+					destPath = destPathRoot.append(suffix);
+					FileUtil.completeDelete(destPath.toFile());
+				}
 			}
+			
+			for( int j = 0; j < updated.length; j++ ) {
+				if( sourcePath.isPrefixOf(updated[j])) {
+					suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
+					destPath = destPathRoot.append(suffix);
+					FileUtil.fileSafeCopy(updated[j].toFile(), destPath.toFile());
+				}
+			}
+			
+//			if( pack.isDestinationInWorkspace()) {
+//				// destination is workspace. Move it. 
+//				IFile file = pack.getPackageFile();
+//				IPath sourcePath = file.getLocation();
+//				IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+//				IStatus status = FileUtil.copyFile(sourcePath.toFile(), destPath.toFile());
+//				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, destPath, status.isOK() ? SUCCESS : FAILURE, status.getException());
+//			} else {
+//				
+//				IPath sourcePath = pack.getPackageFilePath();
+//				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, sourcePath, SUCCESS, null);
+//			}
 		}
 	}
 	protected void addMoveEvent(PublishEvent parent, IPackage pack, boolean inWorkspace, 

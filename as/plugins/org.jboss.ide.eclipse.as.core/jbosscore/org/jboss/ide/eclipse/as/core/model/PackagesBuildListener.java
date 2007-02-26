@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
@@ -38,6 +39,7 @@ import org.jboss.ide.eclipse.packages.core.model.AbstractPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
+import org.jboss.ide.eclipse.core.util.ResourceUtil;
 
 /**
  *
@@ -45,7 +47,6 @@ import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
  * This class is teh suck. I dont even know whether to keep it
  */
 public class PackagesBuildListener extends AbstractPackagesBuildListener {
-//public class PackagesBuildListener {
 
 	public static PackagesBuildListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.DeployServers";
@@ -76,24 +77,22 @@ public class PackagesBuildListener extends AbstractPackagesBuildListener {
 
 	public void fileRemoved(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath); // change
+		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
 		ArrayList removes = (ArrayList)removals.get(topLevelPackage);
 		if( !removes.contains(filePath2)) removes.add(filePath2);
 	}
 	public void fileUpdated(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath); // change
+		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
 		ArrayList changes = (ArrayList)changesOrAdditions.get(topLevelPackage);
 		if( !changes.contains(filePath2)) changes.add(filePath2);
 	}
 
-	public IPath makeAbsolute(IPath local) {
+	public IPath makeAbsolute(IPath local, IPackage topLevelPackage) {
 		IPath file = PackagesCore.getBaseFile(local);
-		
-		return file;
+		return ResourceUtil.makeAbsolute(file, topLevelPackage.isDestinationInWorkspace());
 	}
 	public void finishedBuildingPackage(IPackage pkg) {
-		System.out.println("finished building package");
 		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(AUTO_DEPLOY)).booleanValue()) {
 			publish(pkg);
 			// then clean up what's been changed

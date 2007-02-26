@@ -106,4 +106,48 @@ public class FileUtil {
 	}
 
 	
+	// Delete the file. If it's a folder, delete all children.
+	// Also, if parent is now empty, delete that as well. 
+	public static boolean safeDelete(File file) {
+		boolean ret = true;
+		if( file.isDirectory() ) {
+			File[] children = file.listFiles();
+			for( int i = 0; i < children.length; i++ ) {
+				ret = ret && safeDelete(children[i]);
+			}
+		}
+		ret = ret && file.delete();
+		return ret;
+	}
+	
+	public static boolean completeDelete(File file) {
+		boolean ret = safeDelete(file);
+		//delete all empty parent folders
+		while(file.getParentFile().listFiles().length == 0 ) {
+			file = file.getParentFile();
+			ret = ret && file.delete();
+		}
+		return ret;
+	}
+	
+	public static boolean fileSafeCopy(File src, File dest) {
+		File parent = dest.getParentFile();
+		parent.mkdirs();
+		try {
+		    FileInputStream fis  = new FileInputStream(src);
+		    FileOutputStream fos = new FileOutputStream(dest);
+		    byte[] buf = new byte[1024];
+		    int i = 0;
+		    while((i=fis.read(buf))!=-1) {
+		      fos.write(buf, 0, i);
+		      }
+		    fis.close();
+		    fos.close();
+			return true;
+		} catch( Exception e ) {
+			return false;
+		}
+	}
+
+	
 }

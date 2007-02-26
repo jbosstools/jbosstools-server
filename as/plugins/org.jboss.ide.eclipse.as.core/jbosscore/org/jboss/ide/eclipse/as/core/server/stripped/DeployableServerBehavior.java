@@ -159,7 +159,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
 		addAndRemoveModules( module, deltaKind);
-		ArrayList moduleList = new ArrayList();
+		ArrayList moduleList = new ArrayList(); 
 		ArrayList deltaKindList = new ArrayList();
 		moduleList.add(module);
 		deltaKindList.add(new Integer(deltaKind));
@@ -201,19 +201,18 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
-		if( deltaKind != ServerBehaviourDelegate.ADDED && deltaKind != ServerBehaviourDelegate.REMOVED) return;
-
-		if (getServer() != null && !ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor())) {
-			IServerWorkingCopy wc = getServer().createWorkingCopy();
-			try {
-				if( deltaKind == ServerBehaviourDelegate.ADDED )
-					ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());
-				else if( deltaKind == ServerBehaviourDelegate.REMOVED) 
-					ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
-					
+		if( getServer() == null ) return;
+		boolean contains = ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor());
+		try {
+			if( !contains && (deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.CHANGED)) {
+				IServerWorkingCopy wc = getServer().createWorkingCopy();
+				ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());			
 				wc.save(false, new NullProgressMonitor());
-			} catch (CoreException ce) {
+			} else if( contains && deltaKind == ServerBehaviourDelegate.REMOVED) {
+				IServerWorkingCopy wc = getServer().createWorkingCopy();
+				ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
+				wc.save(false, new NullProgressMonitor());
 			}
-		}
+		} catch( Exception e ) {} // swallowed
 	}
 }
