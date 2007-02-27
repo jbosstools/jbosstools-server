@@ -5,7 +5,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.ui.PackagesUIPlugin;
 import org.jboss.ide.eclipse.packages.ui.wizards.AbstractPackageWizard;
-import org.jboss.ide.eclipse.packages.ui.wizards.pages.WARInfoWizardPage;
 
 public class NewWARWizard extends AbstractPackageWizard {
 
