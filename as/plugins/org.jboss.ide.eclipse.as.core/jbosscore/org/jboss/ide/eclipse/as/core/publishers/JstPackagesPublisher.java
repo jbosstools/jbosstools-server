@@ -103,7 +103,7 @@ public class JstPackagesPublisher extends PackagesPublisher {
 		if( topLevel.isDestinationInWorkspace() ) {
 			String deployDir = jbServer.getDeployDirectory();
 			
-			IPath path = topLevel.getPackageFile().getRawLocation();
+			IPath path = topLevel.getPackageResource().getRawLocation();
 			IPath p = new Path(deployDir).append(path.lastSegment());
 			boolean success = p.toFile().delete();
 			addRemoveEvent(event, topLevel, p, success ? SUCCESS : FAILURE);

@@ -76,7 +76,7 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	}
 	
 	public static String getID(IPackage pack) {
-		String path = pack.isDestinationInWorkspace() ? pack.getPackageFile().getLocation().toOSString() : pack.getPackageFilePath().toFile().getAbsolutePath();
+		String path = pack.isDestinationInWorkspace() ? pack.getPackageResource().getLocation().toOSString() : pack.getPackageFilePath().toFile().getAbsolutePath();
 		return pack.getProject().getName() + ":" + path;
 		//return pack.getProject().getName() + ":" + pack.getPackageFilePath();
 	}

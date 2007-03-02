@@ -21,7 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -108,8 +108,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < module.length; i++ ) {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
-			IFile file = pack.getPackageFile();
-			IPath sourcePath = file.getLocation();
+			IResource resource = pack.getPackageResource();
+			IPath sourcePath = resource.getLocation();
 			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
 			boolean success = FileUtil.safeDelete(destPath.toFile());
 			addRemoveEvent(event, pack, destPath, success ? SUCCESS : FAILURE);
