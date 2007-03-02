@@ -7,13 +7,14 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.packages.ui.PackagesUIPlugin;
+import org.jboss.ide.eclipse.packages.ui.views.ProjectPackagesView;
 import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
 
 public class NewWARAction extends ActionWithDelegate implements IViewActionDelegate {
 
 	public void run() {
 		NewWARWizard wizard = new NewWARWizard();
-		wizard.init(PlatformUI.getWorkbench(), getSelection());
+		wizard.init(PlatformUI.getWorkbench(), ProjectPackagesView.instance().getSelection());
 		
 		WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 		int response = dialog.open();

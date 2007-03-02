@@ -39,8 +39,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
 		// TODO Auto-generated method stub
-		System.out.println("here in deployable server");
-
 	}
 
 	/* (non-Javadoc)

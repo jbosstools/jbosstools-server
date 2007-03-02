@@ -47,6 +47,7 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackageType {
 	protected static final String METAINF = "META-INF";
 	protected static final String WEBINF = "WEB-INF";
+	protected static final String CLASSES = "classes";
 	protected static final String LIB = "lib";
 	protected static final String WEBCONTENT = "WebContent";
 	protected static final String EARCONTENT = "EarContent";
@@ -78,7 +79,11 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 				return null;
 			}
 			sourcePath = sourcePath.removeFirstSegments(1);
-			IContainer sourcePathContainer = project.getFolder(sourcePath);
+			IContainer sourcePathContainer;
+			if( sourcePath.segmentCount() == 0 ) 
+				sourcePathContainer = project;
+			else
+				sourcePathContainer = project.getFolder(sourcePath);
 			return createGenericIPackage(project, deployDirectory, packageName, sourcePathContainer);
 		} catch( Exception e ) {
 			e.printStackTrace();
@@ -92,6 +97,9 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 			
 		if( deployDirectory != null ) {
 			jar.setDestinationPath(new Path(deployDirectory));
+			jar.setExploded(false);
+		} else {
+			jar.setDestinationContainer(project);
 			jar.setExploded(false);
 		}
 		jar.setName(packageName);
@@ -115,7 +123,13 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 		Assert.isNotNull(project);
 		IJavaProject javaProject = JavaCore.create(project);
 		Assert.isNotNull(javaProject);
-		IContainer sourceContainer = project.getFolder(new Path(sourcePath));
+
+		IContainer sourceContainer;
+		if( sourcePath != null && !sourcePath.equals("")) {
+			sourceContainer = project.getFolder(new Path(sourcePath));
+		} else {
+			sourceContainer = project;
+		}
 
 		fs.setSourceContainer(sourceContainer);
 		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern );

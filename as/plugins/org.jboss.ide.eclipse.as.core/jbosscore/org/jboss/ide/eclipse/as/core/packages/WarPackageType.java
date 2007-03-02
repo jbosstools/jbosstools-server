@@ -21,23 +21,25 @@
  */
 package org.jboss.ide.eclipse.as.core.packages;
 
-import org.eclipse.core.resources.IContainer;
+import java.util.ArrayList;
+
+import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IModuleArtifact;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.packages.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
-import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 
 /**
  *
@@ -60,15 +62,78 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	
 	protected IPackage createDefaultConfiguration2(IProject project, IProgressMonitor monitor) {
 		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".war");
+		return fillDefaultConfiguration(project, topLevel, monitor);
+	}
+	
+	public IPackage fillDefaultConfiguration(IProject project, IPackage topLevel, IProgressMonitor monitor) {
 		topLevel.setDestinationContainer(project);
 		IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
-		IPackageFolder metainf = addFolder(project, topLevel, METAINF);
-		IPackageFolder lib = addFolder(project, metainf, LIB);
-		addFileset(project, metainf, METAINF, null);
-		addFileset(project, webinf, WEBINF, null);
+		IPackageFolder lib = addFolder(project, webinf, LIB);
+		IPackageFolder classes = addFolder(project, webinf, CLASSES);
+		addWebinfFileset(project, webinf);
+		addLibFileset(project, lib);
+		addClassesFileset(project, classes);
 		return topLevel;
 	}
+	
+	protected void addClassesFileset(IProject project, IPackageFolder folder) {
+		IJavaProject jp = JavaCore.create(project);
+		if( jp != null ) {
+			try {
+				IPath outputLoc = project.getWorkspace().getRoot().getLocation();
+				outputLoc = outputLoc.append(jp.getOutputLocation());
+				addFileset(project, folder, jp.getOutputLocation().removeFirstSegments(1).toOSString(), "**/*.class");
+			} catch( JavaModelException jme ) {
+			}
+		}
+	}
+	protected void addWebinfFileset(IProject project, IPackageFolder folder) {
+		IPath projectPath = project.getLocation();
+		DirectoryScanner scanner = 
+			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null);
+		String[] files = scanner.getIncludedFiles();
+		// just take the first
+		if( files.length > 0 ) {
+			IPath path = new Path(files[0]);
+			path = path.removeLastSegments(1);
+			path.removeFirstSegments(projectPath.segmentCount());
+			addFileset(project, folder, path.toOSString(), "**/*");			
+		}
+	}
+	protected void addLibFileset(IProject project, IPackageFolder folder) {
+		addFileset(project, folder, "", "**/*.jar");  // add default jars
+		
+		// now add referenced projects
+		ArrayList list = new ArrayList();
+		IJavaProject jp = JavaCore.create(project);
+		if( jp != null ) {
+			try {
+				IClasspathEntry[] entries = jp.getRawClasspath();
+				for( int i = 0; i < entries.length; i++ ) {
+					System.out.println(entries[i].getContentKind());
+					if( entries[i].getEntryKind() == IClasspathEntry.CPE_PROJECT) {
+						IPath path = entries[i].getPath();
+						IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+						if( res instanceof IProject ) {
+							createLibFromProject((IProject)res, folder);
+						}
+					}
+				}
+			} catch( JavaModelException jme ) {
+				jme.printStackTrace();
+			}
+		}
+	}
+	protected void createLibFromProject(IProject project, IPackageFolder folder) {
+		IPackage pack = createGenericIPackage(project, null, project.getName() + ".jar");
+		folder.addChild(pack);
+		System.out.println("creating library from " + project);
+	}
 
+	
+	
+	
+	
 	protected IPackage createDefaultConfigFromModule(IModule mod, IProgressMonitor monitor) {
 		try {
 			IProject project = mod.getProject();
@@ -78,7 +143,6 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
 			IPackageFolder metainf = addFolder(project, topLevel, METAINF);
 			IPackageFolder lib = addFolder(project, metainf, LIB);
-			addFileset(project, metainf, WEBCONTENT + Path.SEPARATOR + METAINF, null);
 			addFileset(project, webinf, WEBCONTENT + Path.SEPARATOR + WEBINF, null);
 
 			IWebModule webModule = (IWebModule)mod.loadAdapter(IWebModule.class, monitor);
