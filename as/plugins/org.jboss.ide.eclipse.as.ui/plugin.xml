@@ -254,21 +254,21 @@
                icon="icons/packages/war.gif"
                id="org.jboss.ide.eclipse.packages.ui.newWARAction"
                label="WAR"
-               menubarPath="additions"
+               menubarPath="newPackageAdditions"
                style="push"/>
          <action
                class="org.jboss.ide.eclipse.as.ui.packages.NewEJBJARAction"
                icon="icons/packages/EJBJar.gif"
                id="org.jboss.ide.eclipse.packages.ui.newEJBJARAction"
                label="EJB JAR"
-               menubarPath="additions"
+               menubarPath="newPackageAdditions"
                style="push"/>
          <action
                class="org.jboss.ide.eclipse.as.ui.packages.NewEARAction"
                icon="icons/packages/ear.gif"
                id="org.jboss.ide.eclipse.packages.ui.newEARAction"
                label="EAR"
-               menubarPath="additions"
+               menubarPath="newPackageAdditions"
                style="push"/>
      </viewerContribution>
   </extension>
