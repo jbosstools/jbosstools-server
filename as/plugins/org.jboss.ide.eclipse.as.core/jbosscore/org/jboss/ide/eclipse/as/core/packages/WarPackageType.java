@@ -96,7 +96,7 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		if( files.length > 0 ) {
 			IPath path = new Path(files[0]);
 			path = path.removeLastSegments(1); // remove the file name
-			path.removeFirstSegments(projectPath.segmentCount()-1); // leave project name
+			path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
 			addFileset(project, folder, path.toOSString(), "**/*");			
 		}
 	}
