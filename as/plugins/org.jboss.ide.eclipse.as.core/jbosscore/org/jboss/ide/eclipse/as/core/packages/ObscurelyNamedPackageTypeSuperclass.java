@@ -23,6 +23,8 @@ package org.jboss.ide.eclipse.as.core.packages;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -45,13 +47,13 @@ import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
  * @author rob.stryker@jboss.com
  */
 public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackageType {
-	protected static final String METAINF = "META-INF";
-	protected static final String WEBINF = "WEB-INF";
-	protected static final String CLASSES = "classes";
-	protected static final String LIB = "lib";
-	protected static final String WEBCONTENT = "WebContent";
-	protected static final String EARCONTENT = "EarContent";
-	protected static final String EJBMODULE = "ejbModule";
+	public static final String METAINF = "META-INF";
+	public static final String WEBINF = "WEB-INF";
+	public static final String CLASSES = "classes";
+	public static final String LIB = "lib";
+	public static final String WEBCONTENT = "WebContent";
+	public static final String EARCONTENT = "EarContent";
+	public static final String EJBMODULE = "ejbModule";
 
 
 	protected boolean isModuleType(IModule module, String moduleTypeId){	
@@ -112,13 +114,13 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 	}
 
 	
-	protected static IPackageFolder addFolder(IProject project, IPackageNode parent, String name) {
+	public static IPackageFolder addFolder(IProject project, IPackageNode parent, String name) {
 		IPackageFolder folder = PackagesCore.createPackageFolder(project);
 		folder.setName(name);
 		parent.addChild(folder);
 		return folder;
 	}
-	protected static IPackageFileSet addFileset(IProject project, IPackageNode parent, String sourcePath, String includePattern) {
+	public static IPackageFileSet addFileset(IProject project, IPackageNode parent, String sourcePath, String includePattern) {
 		IPackageFileSet fs = PackagesCore.createPackageFileSet(project);
 		Assert.isNotNull(project);
 		IJavaProject javaProject = JavaCore.create(project);
@@ -126,7 +128,9 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 
 		IContainer sourceContainer;
 		if( sourcePath != null && !sourcePath.equals("")) {
-			sourceContainer = project.getFolder(new Path(sourcePath));
+			Path p = new Path(sourcePath);
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			sourceContainer = p.segmentCount() != 1 ? (IContainer)root.getFolder(p) : root.getProject(p.segment(0));
 		} else {
 			sourceContainer = project;
 		}

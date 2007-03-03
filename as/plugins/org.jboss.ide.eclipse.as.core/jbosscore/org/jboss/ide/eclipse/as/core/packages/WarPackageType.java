@@ -82,7 +82,7 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			try {
 				IPath outputLoc = project.getWorkspace().getRoot().getLocation();
 				outputLoc = outputLoc.append(jp.getOutputLocation());
-				addFileset(project, folder, jp.getOutputLocation().removeFirstSegments(1).toOSString(), "**/*.class");
+				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*.class");
 			} catch( JavaModelException jme ) {
 			}
 		}
@@ -95,16 +95,15 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		// just take the first
 		if( files.length > 0 ) {
 			IPath path = new Path(files[0]);
-			path = path.removeLastSegments(1);
-			path.removeFirstSegments(projectPath.segmentCount());
+			path = path.removeLastSegments(1); // remove the file name
+			path.removeFirstSegments(projectPath.segmentCount()-1); // leave project name
 			addFileset(project, folder, path.toOSString(), "**/*");			
 		}
 	}
 	protected void addLibFileset(IProject project, IPackageFolder folder) {
-		addFileset(project, folder, "", "**/*.jar");  // add default jars
+		addFileset(project, folder, project.getName(), "**/*.jar");  // add default jars
 		
 		// now add referenced projects
-		ArrayList list = new ArrayList();
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
 			try {
@@ -127,13 +126,8 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	protected void createLibFromProject(IProject project, IPackageFolder folder) {
 		IPackage pack = createGenericIPackage(project, null, project.getName() + ".jar");
 		folder.addChild(pack);
-		System.out.println("creating library from " + project);
 	}
 
-	
-	
-	
-	
 	protected IPackage createDefaultConfigFromModule(IModule mod, IProgressMonitor monitor) {
 		try {
 			IProject project = mod.getProject();
@@ -143,7 +137,8 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
 			IPackageFolder metainf = addFolder(project, topLevel, METAINF);
 			IPackageFolder lib = addFolder(project, metainf, LIB);
-			addFileset(project, webinf, WEBCONTENT + Path.SEPARATOR + WEBINF, null);
+			addFileset(project, webinf, 
+					new Path(project.getName()).append(WEBCONTENT).append(WEBINF).toOSString(), null);
 
 			IWebModule webModule = (IWebModule)mod.loadAdapter(IWebModule.class, monitor);
 			IModule[] childModules = webModule.getModules();

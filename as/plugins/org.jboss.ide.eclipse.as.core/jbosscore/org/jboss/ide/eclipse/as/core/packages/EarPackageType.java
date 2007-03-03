@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
@@ -56,7 +57,7 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		topLevel.setDestinationContainer(project);
 		IPackageFolder metainf = addFolder(project, topLevel, METAINF);
 		IPackageFolder lib = addFolder(project, metainf, LIB);
-		addFileset(project, metainf, METAINF, null);
+		addFileset(project, metainf, new Path(project.getName()).append(METAINF).toOSString(), null);
 		return topLevel;
 	}
 
@@ -66,7 +67,7 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		IContainer sourceContainer = project.getFolder(EARCONTENT);
 
 		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".ear", sourceContainer);
-		addFileset(project, topLevel, EARCONTENT, "**/*.*");
+		addFileset(project, topLevel, new Path(project.getName()).append(EARCONTENT).toOSString(), "**/*.*");
 		
 		// now add children
 		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);

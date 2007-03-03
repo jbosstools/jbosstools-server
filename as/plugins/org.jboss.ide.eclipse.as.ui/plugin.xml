@@ -245,34 +245,6 @@
 
 
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <viewerContribution
-            id="org.jboss.ide.eclipse.as.ui.jbossContribution"
-            targetID="org.jboss.ide.eclipse.packages.ui.newPackageMenu">
-         <action
-               class="org.jboss.ide.eclipse.as.ui.packages.NewWARAction"
-               icon="icons/packages/war.gif"
-               id="org.jboss.ide.eclipse.packages.ui.newWARAction"
-               label="WAR"
-               menubarPath="newPackageAdditions"
-               style="push"/>
-         <action
-               class="org.jboss.ide.eclipse.as.ui.packages.NewEJBJARAction"
-               icon="icons/packages/EJBJar.gif"
-               id="org.jboss.ide.eclipse.packages.ui.newEJBJARAction"
-               label="EJB JAR"
-               menubarPath="newPackageAdditions"
-               style="push"/>
-         <action
-               class="org.jboss.ide.eclipse.as.ui.packages.NewEARAction"
-               icon="icons/packages/ear.gif"
-               id="org.jboss.ide.eclipse.packages.ui.newEARAction"
-               label="EAR"
-               menubarPath="newPackageAdditions"
-               style="push"/>
-     </viewerContribution>
-  </extension>
-   <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
@@ -297,6 +269,26 @@
             id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
             label="Publish To Server"
             weight="1"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.packages.ui.newPackageActions">
+      <newPackageAction
+            class="org.jboss.ide.eclipse.as.ui.packages.NewWARAction"
+            icon="icons/packages/war.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newWARAction"
+            label="WAR"/>
+            <!--
+      <newPackageAction
+            class="org.jboss.ide.eclipse.as.ui.packages.NewEJBJARAction"
+            icon="icons/packages/EJBJar.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEJBJARAction"
+            label="EJB JAR"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.as.ui.packages.NewEARAction"
+            icon="icons/packages/ear.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
+            label="EAR"/>
+            -->
    </extension>
 
 </plugin>
