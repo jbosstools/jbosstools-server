@@ -92,7 +92,7 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 		previewGroup.setLayout(new FormLayout());
 		warPreview = new TreeViewer(previewGroup);
 		warPreview.setLabelProvider(new PackagesLabelProvider());
-		warPreview.setContentProvider(new PackagesContentProvider());
+		warPreview.setContentProvider(new PackagesContentProvider(false));
 		FormData warPreviewData = new FormData();
 		warPreviewData.left = new FormAttachment(0,5);
 		warPreviewData.right = new FormAttachment(100,-5);
