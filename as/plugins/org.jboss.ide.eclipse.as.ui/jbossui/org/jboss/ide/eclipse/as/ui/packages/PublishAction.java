@@ -36,16 +36,16 @@ public class PublishAction extends AbstractNodeActionDelegate {
 	public PublishAction() {
 	}
 
-	public void run() {
-		Object o = getSelection().getFirstElement();
-		if( o instanceof IPackage ) {
-			IPackage node = (IPackage)o;
+	public void run (IPackageNode node) {
+		if (node.getNodeType() == IPackageNode.TYPE_PACKAGE)	
+		{
+			IPackage pkg = (IPackage)node;
 			String servers = node.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
 			if( !Boolean.getBoolean(node.getProperty(PackagesBuildListener.AUTO_DEPLOY)) ||
 					servers == null || "".equals(servers)) {
-				servers = showSelectServersDialog(node);
+				servers = showSelectServersDialog(pkg);
 			}
-			PackagesBuildListener.publish(node, servers);
+			PackagesBuildListener.publish(pkg, servers);
 		}
 	}
 	
