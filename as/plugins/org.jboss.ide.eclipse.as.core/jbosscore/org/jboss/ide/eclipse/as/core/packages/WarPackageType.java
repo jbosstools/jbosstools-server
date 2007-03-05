@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.packages;
 
-import java.util.ArrayList;
-
 import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -38,7 +36,6 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.packages.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
 
 /**

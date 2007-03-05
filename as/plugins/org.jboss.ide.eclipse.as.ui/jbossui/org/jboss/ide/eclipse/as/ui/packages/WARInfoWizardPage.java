@@ -125,11 +125,10 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 				if( dialog.open() == Window.OK) {
 					ArrayList selectedFolders = new ArrayList();
 					Object[] o = dialog.getResult();
-					String imploded = "";
 					for( int i = 0; i < o.length; i++ ) {
 						selectedFolders.add(((IResource)o[i]).getFullPath().toOSString());
-						imploded += ((IResource)o[i]).getFullPath() + ",";
 					}
+
 					IPackageFolder webinf = getFolder(wizard.getPackage(), ObscurelyNamedPackageTypeSuperclass.WEBINF);
 					IPackageFileSet[] sets = webinf.getFileSets();
 					for( int i = 0; i < sets.length; i++ ) {
@@ -187,6 +186,8 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     			String path = filesets[i].getSourceContainer().getFullPath().toOSString();
     			s += path + ",";
     		}
+    		if( s.length() > 0 ) 
+    			s = s.substring(0, s.length()-1);
     	}
     	webinfFolders.setText(s);
     }
@@ -211,15 +212,27 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     // stuff that can be extracted
     public static class WorkspaceFolderSelectionDialog extends ElementTreeSelectionDialog {
     	
-   	 public WorkspaceFolderSelectionDialog(Shell parent, boolean allowMultiple, String selectedPaths) {
+    public WorkspaceFolderSelectionDialog(Shell parent, boolean allowMultiple, String selectedPaths) {
    		 super(parent, new FolderLabelProvider(), new FolderContentProvider());
    		 setAllowMultiple(allowMultiple);
    		 setupDestinationList();
+   		 setupInitialSelections(selectedPaths);
    	}
    	 
    	 private void setupDestinationList () {
    		 List projects = Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects());
    		 setInput(projects);
+   	 }
+   	 private void setupInitialSelections(String initialSelection) {
+   		 ArrayList resources = new ArrayList();
+   		 String[] paths = initialSelection.split(",");
+   		 // find IResources
+   		 IResource res;
+   		 for( int i = 0; i < paths.length; i++ ) {
+   			 res = ResourcesPlugin.getWorkspace().getRoot().findMember(paths[i]);
+   			 resources.add(res);
+   		 }
+   		 setInitialSelections((IResource[]) resources.toArray(new IResource[resources.size()]));
    	 }
    	 
    	 private static class FolderContentProvider implements ITreeContentProvider {
