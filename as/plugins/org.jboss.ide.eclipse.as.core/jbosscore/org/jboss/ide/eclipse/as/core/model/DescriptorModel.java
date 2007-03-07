@@ -407,7 +407,8 @@ public class DescriptorModel {
 			}
 			public String[] getElementAttributeValues(String attName) {
 				DefaultElement element = ((DefaultElement)getData());
-				return new String[] {element.attribute(attName).getValue()};
+				Attribute at = element.attribute(attName);
+				return at == null ? new String[0] : new String[] {at.getValue()};
 			}
 			
 			public void saveDescriptor() {
