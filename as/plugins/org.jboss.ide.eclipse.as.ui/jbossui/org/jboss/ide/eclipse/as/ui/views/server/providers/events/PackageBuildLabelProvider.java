@@ -24,7 +24,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 import java.util.HashMap;
 
 import org.eclipse.swt.graphics.Image;
-import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
+import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;

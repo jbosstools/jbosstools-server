@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
+import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
@@ -40,12 +40,12 @@ public class PublishAction extends AbstractNodeActionDelegate {
 		if (node.getNodeType() == IPackageNode.TYPE_PACKAGE)	
 		{
 			IPackage pkg = (IPackage)node;
-			String servers = node.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
-			if( !Boolean.getBoolean(node.getProperty(PackagesBuildListener.AUTO_DEPLOY)) ||
+			String servers = node.getProperty(PackagesListener.DEPLOY_SERVERS);
+			if( !Boolean.getBoolean(node.getProperty(PackagesListener.AUTO_DEPLOY)) ||
 					servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(pkg);
 			}
-			PackagesBuildListener.publish(pkg, servers);
+			PackagesListener.publish(pkg, servers);
 		}
 	}
 	
@@ -79,8 +79,8 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			System.out.println("servers: " + getServers());
 			System.out.println("autodeploy: " + getAutoDeploy());
 			System.out.println("always publish to these: " + getAlwaysPublish());
-			pack.setProperty(PackagesBuildListener.DEPLOY_SERVERS, getServers());
-			pack.setProperty(PackagesBuildListener.AUTO_DEPLOY, getAutoDeploy());
+			pack.setProperty(PackagesListener.DEPLOY_SERVERS, getServers());
+			pack.setProperty(PackagesListener.AUTO_DEPLOY, getAutoDeploy());
 			return true;
 		}
 		public void addPages() {

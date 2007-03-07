@@ -36,7 +36,7 @@ import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.jboss.ide.eclipse.as.core.model.ModuleModel;
-import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
+import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -134,7 +134,7 @@ public class JBossServerCore {
 	
 	public JBossServerCore() {
 		ModuleModel.getDefault();
-		PackagesBuildListener.getInstance();
+		PackagesListener.getInstance();
 	}
 
 	public static ModuleFactory[] getJBossModuleFactories() {

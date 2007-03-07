@@ -24,8 +24,11 @@ package org.jboss.ide.eclipse.as.core.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -34,27 +37,35 @@ import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.packages.core.model.AbstractPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
+import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
+import org.jboss.ide.eclipse.packages.core.model.IPackagesModelListener;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
+import org.jboss.ide.eclipse.packages.core.project.build.TruezipUtil;
 import org.jboss.ide.eclipse.core.util.ResourceUtil;
+
+import de.schlichtherle.io.ArchiveDetector;
+import de.schlichtherle.io.File;
 
 /**
  *
  * @author rob.stryker@jboss.com
  * This class is teh suck. I dont even know whether to keep it
  */
-public class PackagesBuildListener extends AbstractPackagesBuildListener {
+public class PackagesListener extends AbstractPackagesBuildListener implements IPackagesModelListener {
 
-	public static PackagesBuildListener instance;
+	public static PackagesListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.DeployServers";
 	public static final String AUTO_DEPLOY = "org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.AutoDeploy";
 	
-	public static PackagesBuildListener getInstance() {
+	public static PackagesListener getInstance() {
 		if( instance == null ) {
-			instance = new PackagesBuildListener();
+			instance = new PackagesListener();
 		}
 		return instance;
 	}
@@ -64,7 +75,7 @@ public class PackagesBuildListener extends AbstractPackagesBuildListener {
 	private HashMap removals = new HashMap();
 	
 	
-	public PackagesBuildListener() {
+	public PackagesListener() {
 		PackagesCore.addPackagesBuildListener(this);
 	}
 	
@@ -105,13 +116,13 @@ public class PackagesBuildListener extends AbstractPackagesBuildListener {
 	
 	// If we're supposed to auto-deploy, get on it
 	protected static void publish(IPackage pkg) {
-		String servers = pkg.getProperty(PackagesBuildListener.DEPLOY_SERVERS);
+		String servers = pkg.getProperty(PackagesListener.DEPLOY_SERVERS);
 		publish(pkg, servers);
 	} 
 	public static void publish(IPackage pkg, String servers) {
 		IModule[] module = getModule(pkg);
 		if( module[0] == null ) return; 
-		DeployableServerBehavior[] serverBehaviors = PackagesBuildListener.getServers(servers);
+		DeployableServerBehavior[] serverBehaviors = PackagesListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
 				serverBehaviors[i].publishOneModule(IServer.PUBLISH_INCREMENTAL, module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
@@ -121,6 +132,12 @@ public class PackagesBuildListener extends AbstractPackagesBuildListener {
 	protected static IModule[] getModule(IPackage node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
 		return new IModule[] { factory.getModule(PackageModuleFactory.getID(node)) };
+	}
+
+	protected IDeployableServer getDeployableServerFromBehavior(DeployableServerBehavior dsb) {
+		IServer server = dsb.getServer();
+		IDeployableServer ids = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
+		return ids;
 	}
 
 	public static DeployableServerBehavior[] getServers(String servers) {
@@ -145,11 +162,46 @@ public class PackagesBuildListener extends AbstractPackagesBuildListener {
 	// should be called from the publisher to figure out what's changed
 	public IPath[] getUpdatedFiles(IPackage pkg) {
 		ArrayList list = (ArrayList)changesOrAdditions.get(pkg);
-		return (IPath[]) list.toArray(new IPath[list.size()]);
+		return list == null ? new IPath[0] : (IPath[]) list.toArray(new IPath[list.size()]);
 	}
 	public IPath[] getRemovedFiles(IPackage pkg) {
 		ArrayList list = (ArrayList)removals.get(pkg);
-		return (IPath[]) list.toArray(new IPath[list.size()]);
+		return list == null ? new IPath[0] : (IPath[]) list.toArray(new IPath[list.size()]);
+	}
+
+	/*
+	 * If a node is changing from exploded to imploded, or vice versa
+	 * make sure to delete the pre-existing file or folder on the server. 
+	 */
+	public void packageNodeChanged(IPackageNode changed) {
+		if (changed.getNodeType() == IPackageNode.TYPE_PACKAGE
+			|| changed.getNodeType() == IPackageNode.TYPE_PACKAGE_REFERENCE)
+		{
+			IPackage pkg = (IPackage) changed;
+			File packageFile = TruezipUtil.getPackageFile(pkg);
+			
+			if ( (packageFile.getDelegate().isFile() && pkg.isExploded()) 
+					|| (packageFile.getDelegate().isDirectory() && !pkg.isExploded())) {
+				
+				String servers = pkg.getProperty(PackagesListener.DEPLOY_SERVERS);
+				DeployableServerBehavior[] serverBehaviors = PackagesListener.getServers(servers);
+				if( serverBehaviors != null ) {
+					IPath sourcePath, destPath;
+					IDeployableServer depServer;
+					for( int i = 0; i < serverBehaviors.length; i++ ) {
+						sourcePath = pkg.getPackageFilePath();
+						depServer = getDeployableServerFromBehavior(serverBehaviors[i]);
+						destPath = new Path(depServer.getDeployDirectory()).append(sourcePath.lastSegment());
+						boolean success = FileUtil.safeDelete(destPath.toFile());
+					}
+				}
+				
+			}
+		}
 	}
 	
+	public void packageNodeAdded(IPackageNode added) {	}
+	public void packageNodeAttached(IPackageNode attached) {	}
+	public void packageNodeRemoved(IPackageNode removed) {	}
+	public void projectRegistered(IProject project) { }
 }

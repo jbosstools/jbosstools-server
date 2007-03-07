@@ -31,7 +31,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.PackagesBuildListener;
+import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
@@ -108,8 +108,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < module.length; i++ ) {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
-			IResource resource = pack.getPackageResource();
-			IPath sourcePath = resource.getLocation();
+			IPath sourcePath = pack.getPackageFilePath();
 			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
 			boolean success = FileUtil.safeDelete(destPath.toFile());
 			addRemoveEvent(event, pack, destPath, success ? SUCCESS : FAILURE);
@@ -125,8 +124,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
 			IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
-			IPath[] removed = PackagesBuildListener.getInstance().getRemovedFiles(pack);
-			IPath[] updated = PackagesBuildListener.getInstance().getUpdatedFiles(pack);
+			IPath[] removed = PackagesListener.getInstance().getRemovedFiles(pack);
+			IPath[] updated = PackagesListener.getInstance().getUpdatedFiles(pack);
 			
 			IPath destPathRoot = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
 			IPath suffix, destPath;
