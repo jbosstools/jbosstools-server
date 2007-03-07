@@ -672,7 +672,7 @@ public class XPathDialogs {
 				String[] strings = getAttributeNameProposalStrings(elementText.getText(), contents);
 				return convertProposals(strings);
 			}
-			return null;
+			return new IContentProposal[0];
 		}
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
 			ArrayList names = new ArrayList();
@@ -725,6 +725,7 @@ public class XPathDialogs {
 				return new IContentProposal[] { new XPathContentProposal("/server/", "/server/".length(), null, null)};
 			}
 			
+			try {
 			int type = getType(contents);
 			if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
 			if( type == IN_ELEMENT ) return getElementProposals(contents);
@@ -732,6 +733,7 @@ public class XPathDialogs {
 			if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
 			if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
 			if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
+			} catch( Exception e) {e.printStackTrace();}
 			return new IContentProposal[]{};
 		}
 		

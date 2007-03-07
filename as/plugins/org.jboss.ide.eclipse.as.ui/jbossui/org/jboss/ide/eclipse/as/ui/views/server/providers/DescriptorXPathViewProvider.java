@@ -1020,7 +1020,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	protected void refreshViewer() {
 		if( isEnabled() ) {
 			try {
-				refreshViewer();
+				super.refreshViewer();
 				if( propertyPage != null ) {
 					propertyPage.xpathTreeViewer.refresh();
 				}
