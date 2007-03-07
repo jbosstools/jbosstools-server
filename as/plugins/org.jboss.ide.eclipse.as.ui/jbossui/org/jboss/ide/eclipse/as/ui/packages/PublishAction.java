@@ -20,9 +20,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IViewPart;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -41,7 +39,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 		{
 			IPackage pkg = (IPackage)node;
 			String servers = node.getProperty(PackagesListener.DEPLOY_SERVERS);
-			if( !Boolean.getBoolean(node.getProperty(PackagesListener.AUTO_DEPLOY)) ||
+			if( !new Boolean(pkg.getProperty(PackagesListener.DEPLOY_AFTER_BUILD)).booleanValue()  ||
 					servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(pkg);
 			}
@@ -80,7 +78,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			System.out.println("autodeploy: " + getAutoDeploy());
 			System.out.println("always publish to these: " + getAlwaysPublish());
 			pack.setProperty(PackagesListener.DEPLOY_SERVERS, getServers());
-			pack.setProperty(PackagesListener.AUTO_DEPLOY, getAutoDeploy());
+			pack.setProperty(PackagesListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 			return true;
 		}
 		public void addPages() {
@@ -133,33 +131,46 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			viewerData.bottom = new FormAttachment(80,0);
 			viewer.getList().setLayoutData(viewerData);
 			
-			
-			
 			this.alwaysPublish = new Button(mainComposite, SWT.CHECK);
 			FormData always = new FormData();
 			always.left = new FormAttachment(15,0);
 			always.top = new FormAttachment(viewer.getList(), 5);
 			alwaysPublish.setLayoutData(always);
+			alwaysPublish.setText("Always publish to these servers");
 			
-			Label alwaysPublishLabel = new Label(mainComposite, SWT.NONE);
-			FormData apl = new FormData();
-			apl.top = new FormAttachment(viewer.getList(), 5);
-			apl.left = new FormAttachment(alwaysPublish, 5);
-			alwaysPublishLabel.setLayoutData(apl);
-			alwaysPublishLabel.setText("Always publish to these servers");
-
 			autoDeploy = new Button(mainComposite, SWT.CHECK);
 			FormData add = new FormData();
 			add.left = new FormAttachment(15,0);
 			add.top = new FormAttachment(alwaysPublish, 5);
 			autoDeploy.setLayoutData(add);
+			autoDeploy.setText("Auto-deploy to selected servers after builds");
 			
-			Label autoDeployLabel = new Label(mainComposite, SWT.NONE);
-			FormData adl = new FormData();
-			adl.top = new FormAttachment(alwaysPublishLabel, 7);
-			adl.left = new FormAttachment(autoDeploy, 5);
-			autoDeployLabel.setLayoutData(adl);
-			autoDeployLabel.setText("Auto-deploy to selected servers after builds");
+			
+//			this.alwaysPublish = new Button(mainComposite, SWT.CHECK);
+//			FormData always = new FormData();
+//			always.left = new FormAttachment(15,0);
+//			always.top = new FormAttachment(viewer.getList(), 5);
+//			alwaysPublish.setLayoutData(always);
+//			
+//			Label alwaysPublishLabel = new Label(mainComposite, SWT.NONE);
+//			FormData apl = new FormData();
+//			apl.top = new FormAttachment(viewer.getList(), 5);
+//			apl.left = new FormAttachment(alwaysPublish, 5);
+//			alwaysPublishLabel.setLayoutData(apl);
+//			alwaysPublishLabel.setText("Always publish to these servers");
+//
+//			autoDeploy = new Button(mainComposite, SWT.CHECK);
+//			FormData add = new FormData();
+//			add.left = new FormAttachment(15,0);
+//			add.top = new FormAttachment(alwaysPublish, 5);
+//			autoDeploy.setLayoutData(add);
+//			
+//			Label autoDeployLabel = new Label(mainComposite, SWT.NONE);
+//			FormData adl = new FormData();
+//			adl.top = new FormAttachment(alwaysPublishLabel, 7);
+//			adl.left = new FormAttachment(autoDeploy, 5);
+//			autoDeployLabel.setLayoutData(adl);
+//			autoDeployLabel.setText("Auto-deploy to selected servers after builds");
 		}
 		protected void addListeners() {
 			autoDeploy.addSelectionListener(new SelectionListener() {
