@@ -1,10 +1,7 @@
 package org.jboss.ide.eclipse.as.ui.views.server;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.eclipse.core.internal.refresh.RefreshJob;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.Action;
@@ -12,7 +9,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -38,6 +34,7 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
@@ -215,8 +212,9 @@ public class JBossServerView extends StrippedServerView {
 		
 		if( getSelectedServer() != null ) {
 			boolean twiddleEnabled = getSelectedServer().getServerState() == IServer.STATE_STARTED;
+			boolean editLaunchEnabled = (JBossServerBehavior)getSelectedServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor()) != null;
 			twiddleAction.setEnabled(twiddleEnabled);
-			editLaunchConfigAction.setEnabled(true);
+			editLaunchConfigAction.setEnabled(editLaunchEnabled);
 		} else {
 			twiddleAction.setEnabled(false);
 			editLaunchConfigAction.setEnabled(false);
