@@ -60,8 +60,8 @@ import de.schlichtherle.io.File;
 public class PackagesListener extends AbstractPackagesBuildListener implements IPackagesModelListener {
 
 	public static PackagesListener instance;
-	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.DeployServers";
-	public static final String AUTO_DEPLOY = "org.jboss.ide.eclipse.as.core.model.PackagesBuildListener.AutoDeploy";
+	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";
+	public static final String DEPLOY_AFTER_BUILD = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployAfterBuild";
 	
 	public static PackagesListener getInstance() {
 		if( instance == null ) {
@@ -104,7 +104,7 @@ public class PackagesListener extends AbstractPackagesBuildListener implements I
 		return ResourceUtil.makeAbsolute(file, topLevelPackage.isDestinationInWorkspace());
 	}
 	public void finishedBuildingPackage(IPackage pkg) {
-		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(AUTO_DEPLOY)).booleanValue()) {
+		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
 			publish(pkg);
 			// then clean up what's been changed
 			changesOrAdditions.remove(pkg);
