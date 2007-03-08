@@ -124,40 +124,33 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 			IPackage pack = delegate.getPackage();
 			IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
-			IPath[] removed = PackagesListener.getInstance().getRemovedFiles(pack);
-			IPath[] updated = PackagesListener.getInstance().getUpdatedFiles(pack);
-			
 			IPath destPathRoot = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-			IPath suffix, destPath;
 
-			for( int j = 0; j < removed.length; j++ ) {
-				if( sourcePath.isPrefixOf(updated[j])) {
-					suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
-					destPath = destPathRoot.append(suffix);
-					FileUtil.completeDelete(destPath.toFile());
+			if( incremental ) {
+				IPath[] removed = PackagesListener.getInstance().getRemovedFiles(pack);
+				IPath[] updated = PackagesListener.getInstance().getUpdatedFiles(pack);
+				
+				IPath suffix, destPath;
+	
+				for( int j = 0; j < removed.length; j++ ) {
+					if( sourcePath.isPrefixOf(updated[j])) {
+						suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
+						destPath = destPathRoot.append(suffix);
+						FileUtil.completeDelete(destPath.toFile());
+					}
 				}
-			}
 			
-			for( int j = 0; j < updated.length; j++ ) {
-				if( sourcePath.isPrefixOf(updated[j])) {
-					suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
-					destPath = destPathRoot.append(suffix);
-					FileUtil.fileSafeCopy(updated[j].toFile(), destPath.toFile());
+				for( int j = 0; j < updated.length; j++ ) {
+					if( sourcePath.isPrefixOf(updated[j])) {
+						suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
+						destPath = destPathRoot.append(suffix);
+						FileUtil.fileSafeCopy(updated[j].toFile(), destPath.toFile());
+					}
 				}
+			} else {
+				// full publish
+				FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.toFile());
 			}
-			
-//			if( pack.isDestinationInWorkspace()) {
-//				// destination is workspace. Move it. 
-//				IFile file = pack.getPackageFile();
-//				IPath sourcePath = file.getLocation();
-//				IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-//				IStatus status = FileUtil.copyFile(sourcePath.toFile(), destPath.toFile());
-//				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, destPath, status.isOK() ? SUCCESS : FAILURE, status.getException());
-//			} else {
-//				
-//				IPath sourcePath = pack.getPackageFilePath();
-//				addMoveEvent(event, pack, pack.isDestinationInWorkspace(), sourcePath, sourcePath, SUCCESS, null);
-//			}
 		}
 	}
 	protected void addMoveEvent(PublishEvent parent, IPackage pack, boolean inWorkspace, 
