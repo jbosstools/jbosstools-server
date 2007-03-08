@@ -133,19 +133,35 @@ public class FileUtil {
 	public static boolean fileSafeCopy(File src, File dest) {
 		File parent = dest.getParentFile();
 		parent.mkdirs();
-		try {
-		    FileInputStream fis  = new FileInputStream(src);
-		    FileOutputStream fos = new FileOutputStream(dest);
-		    byte[] buf = new byte[1024];
-		    int i = 0;
-		    while((i=fis.read(buf))!=-1) {
-		      fos.write(buf, 0, i);
-		      }
-		    fis.close();
-		    fos.close();
-			return true;
-		} catch( Exception e ) {
-			return false;
+		
+		if (src.isDirectory())
+		{
+			File[] subFiles = src.listFiles();
+			boolean copied = true;
+			
+			for (int i = 0; i < subFiles.length; i++)
+			{
+				File newDest = new File(dest, subFiles[i].getName());
+				
+				copied = copied && fileSafeCopy(subFiles[i], newDest);
+			}
+			return copied;
+		}
+		else {
+			try {
+			    FileInputStream fis  = new FileInputStream(src);
+			    FileOutputStream fos = new FileOutputStream(dest);
+			    byte[] buf = new byte[1024];
+			    int i = 0;
+			    while((i=fis.read(buf))!=-1) {
+			      fos.write(buf, 0, i);
+			      }
+			    fis.close();
+			    fos.close();
+				return true;
+			} catch( Exception e ) {
+				return false;
+			}
 		}
 	}
 
