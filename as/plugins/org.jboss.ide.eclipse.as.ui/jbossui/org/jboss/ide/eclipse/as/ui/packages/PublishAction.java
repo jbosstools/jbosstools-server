@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -43,7 +44,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 					servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(pkg);
 			}
-			PackagesListener.publish(pkg, servers);
+			PackagesListener.publish(pkg, servers, IServer.PUBLISH_FULL);
 		}
 	}
 	
