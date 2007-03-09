@@ -31,7 +31,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 
@@ -69,18 +69,15 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	 * Each server has it's own entity instance.
 	 */
 	private HashMap map;
-	private ArrayList logListeners;
-
 	
 	public ServerProcessModel() {
 		map = new HashMap();
-		logListeners = new ArrayList();
 		initialize();
 	}
 	
 	private void initialize() {
 		ServerCore.addServerLifecycleListener(this);
-		JBossServer[] servers = JBossServerCore.getAllJBossServers();
+		JBossServer[] servers = ServerConverter.getAllJBossServers();
 		for( int i = 0; i < servers.length; i++ ) {
 			getModel(servers[i].getServer().getId(), true);
 		}
@@ -188,7 +185,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	
 	
 	public void serverAdded(IServer server) {
-		if( JBossServerCore.getJBossServer(server) != null ) {
+		if( ServerConverter.getJBossServer(server) != null ) {
 			getModel(server.getId(), true);
 		}
 	}
@@ -197,8 +194,7 @@ public class ServerProcessModel implements IServerLifecycleListener {
 	}
 
 	public void serverRemoved(IServer server) {
-		if( JBossServerCore.getJBossServer(server) != null ) {
-			ServerProcessModelEntity ent = getModel(server.getId());
+		if( ServerConverter.getJBossServer(server) != null ) {
 			map.remove(server.getId());
 		}
 	}

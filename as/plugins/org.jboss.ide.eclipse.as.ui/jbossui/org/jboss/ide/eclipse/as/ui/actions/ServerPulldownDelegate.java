@@ -1,12 +1,9 @@
 package org.jboss.ide.eclipse.as.ui.actions;
 
-import java.io.File;
-
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -26,11 +23,10 @@ import org.eclipse.ui.IWorkbenchWindowPulldownDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.StartServerJob;
-import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
 import org.eclipse.wst.server.ui.internal.provisional.ManagedUIDecorator;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -41,8 +37,6 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 	private static final String DEFAULT_JBOSS_SERVER = "_DEFAULT_JBOSS_SERVER_";
 	private static final String DEFAULT_JBOSS_SERVER_UNSET = "_DEFAULT_JBOSS_SERVER_UNSET_";
 	
-    private IWorkbench workbench;
-    private ISelection selection;
     private Menu fMenu;
 
     private int fillMenuCurrentPos = 0;
@@ -121,7 +115,7 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 		fillMenuCurrentPos++;
 
 		
-		JBossServer[] servers = JBossServerCore.getAllJBossServers();
+		JBossServer[] servers = ServerConverter.getAllJBossServers();
 		if( servers.length == 0 ) {
 			MenuItem selectDefaultServer = new MenuItem(menu, SWT.NONE);
 			selectDefaultServer.setText("Set Default Server");
@@ -234,31 +228,9 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
 				newServerAction.run();
 			} 
 		});
-
-		
-//		MenuItem mbeanStubsMenuItem = new MenuItem(subMenu, SWT.NONE);
-//		mbeanStubsMenuItem.setText(Messages.ActionDelegateNewMBeanStubs);
-//		// TODO: get an image
-//		
-//		mbeanStubsMenuItem.addSelectionListener(new SelectionListener() {
-//			public void widgetDefaultSelected(SelectionEvent e) {
-//			}
-//			public void widgetSelected(SelectionEvent e) {
-//				NewMBeanWizard newMBeanWizard = new NewMBeanWizard();
-//				if( selection instanceof IStructuredSelection )
-//					newMBeanWizard.init(workbench, (IStructuredSelection)selection);
-//				else 
-//					newMBeanWizard.init(workbench, null);
-//					
-//				WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), newMBeanWizard);
-//			    int ret = dlg.open();
-//
-//			} 
-//		});
 	}
 	
     public void init(IWorkbenchWindow window) {
-        workbench = window.getWorkbench();
     }
 
     public void run(IAction action) {
@@ -274,7 +246,6 @@ public class ServerPulldownDelegate implements IWorkbenchWindowPulldownDelegate 
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
-    	this.selection = selection;
     }
 
 	public void dispose() {

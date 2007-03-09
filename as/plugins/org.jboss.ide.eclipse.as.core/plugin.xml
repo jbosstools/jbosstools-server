@@ -2,9 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
 
-   <extension-point 
-   		id="jbossModuleFactory" name="org.jboss.ide.eclipse.as.core.jbossModuleFactory" 
-   		schema="schema/jbossModuleFactory.exsd"/>
    <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
    <extension-point id="pollerTimeoutListener" name="org.jboss.ide.eclipse.as.core.pollerTimeoutListener" schema="schema/pollerTimeoutListener.exsd"/>
    		
@@ -206,11 +203,6 @@
       </moduleFactory>
    </extension>
    
-   	<extension
-         point="org.jboss.ide.eclipse.as.core.jbossModuleFactory">
-      <factory id="org.jboss.ide.eclipse.as.core.ArchiveFactory"/>
-      <factory id="org.jboss.ide.eclipse.as.core.XmlFactory"/>
-   </extension>
    		
    		
    

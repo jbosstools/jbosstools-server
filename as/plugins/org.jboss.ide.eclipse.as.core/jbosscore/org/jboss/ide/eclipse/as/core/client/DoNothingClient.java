@@ -26,8 +26,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ClientDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 
 /**
  * This client will only copy to the deploy directory,
@@ -48,7 +48,7 @@ public class DoNothingClient extends ClientDelegate {
 	}
 
 	public boolean supports(IServer server, Object launchable, String launchMode) {
-		if( JBossServerCore.getDeployableServer(server) == null ) return false;
+		if( ServerConverter.getDeployableServer(server) == null ) return false;
 		return true;
 	}
 

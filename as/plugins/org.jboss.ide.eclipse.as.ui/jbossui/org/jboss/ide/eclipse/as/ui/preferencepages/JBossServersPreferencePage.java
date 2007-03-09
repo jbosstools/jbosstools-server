@@ -59,7 +59,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
@@ -136,7 +136,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		serverTableViewer.setContentProvider(new IStructuredContentProvider() {
 
 			public Object[] getElements(Object inputElement) {
-				return JBossServerCore.getAllJBossServers();
+				return ServerConverter.getAllJBossServers();
 			}
 
 			public void dispose() {

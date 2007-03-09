@@ -30,8 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.WebResource;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
@@ -44,7 +43,7 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 			throws CoreException {
 		
 		// Only play to jboss servers
-		IDeployableServer dserver = JBossServerCore.getDeployableServer(server);
+		IDeployableServer dserver = ServerConverter.getDeployableServer(server);
 		if( dserver == null ) 
 			return null;
 		

@@ -43,8 +43,7 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
-import org.jboss.ide.eclipse.as.core.model.ModuleModel;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -94,8 +93,6 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		
 		publishModuleAction = new Action() {
 			public void run() {
-				for( int i = 0; i < selection.module.length; i++ ) 
-					ModuleModel.getDefault().markModuleChanged(selection.module[i]);
 				DeployableServerBehavior behavior = (DeployableServerBehavior)
 					contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
 				behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
@@ -231,13 +228,13 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	private void addListeners() {
 		serverResourceListener = new IServerLifecycleListener() {
 			public void serverAdded(IServer server) {
-				if( JBossServerCore.getJBossServer(server) != null ) 
+				if( ServerConverter.getJBossServer(server) != null ) 
 					server.addServerListener(serverListener);
 			}
 			public void serverChanged(IServer server) {
 			}
 			public void serverRemoved(IServer server) {
-				if( JBossServerCore.getJBossServer(server) != null ) 
+				if( ServerConverter.getJBossServer(server) != null ) 
 					server.removeServerListener(serverListener);
 			}
 		};
@@ -255,7 +252,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			}
 		};
 		// add listeners to servers
-		JBossServer[] servers = JBossServerCore.getAllJBossServers();
+		JBossServer[] servers = ServerConverter.getAllJBossServers();
 		if (servers != null) {
 			int size = servers.length;
 			for (int i = 0; i < size; i++) {

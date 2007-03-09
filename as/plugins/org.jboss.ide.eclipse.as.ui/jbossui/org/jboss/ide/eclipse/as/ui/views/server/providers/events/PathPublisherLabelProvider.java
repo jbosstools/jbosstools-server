@@ -21,16 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import org.eclipse.swt.graphics.Image;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
 /**
@@ -40,36 +32,36 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvide
 public class PathPublisherLabelProvider extends ComplexEventLogLabelProvider implements IEventLogLabelProvider {
 
 	protected void addSupportedTypes() {
-		supported = new ArrayList();
-		supported.add(PathPublisher.PUBLISH_TOP_EVENT);
-		supported.add(PathPublisher.UNPUBLISH_TOP_EVENT);
-		supported.add(PathPublisher.PUBLISH_EVENT);
-		supported.add(PathPublisher.UNPUBLISH_EVENT);
+//		supported = new ArrayList();
+//		supported.add(PathPublisher.PUBLISH_TOP_EVENT);
+//		supported.add(PathPublisher.UNPUBLISH_TOP_EVENT);
+//		supported.add(PathPublisher.PUBLISH_EVENT);
+//		supported.add(PathPublisher.UNPUBLISH_EVENT);
 	}
 
 	protected void loadPropertyMap() {
-		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
-		propertyToMessageMap.put(PathPublisher.SOURCE_FILE, "Source File");
-		propertyToMessageMap.put(PathPublisher.DEST_FILE, "Destination File");
-		propertyToMessageMap.put(PathPublisher.TARGET_FILE, "Target File");
-		propertyToMessageMap.put(PathPublisher.SUCCESS, "Success");
-		propertyToMessageMap.put(PathPublisher.EXCEPTION, "Exception");
+//		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
+//		propertyToMessageMap.put(PathPublisher.SOURCE_FILE, "Source File");
+//		propertyToMessageMap.put(PathPublisher.DEST_FILE, "Destination File");
+//		propertyToMessageMap.put(PathPublisher.TARGET_FILE, "Target File");
+//		propertyToMessageMap.put(PathPublisher.SUCCESS, "Success");
+//		propertyToMessageMap.put(PathPublisher.EXCEPTION, "Exception");
 	}
 
 	public Image getImage(EventLogTreeItem item) {
-		String type = item.getSpecificType();
-		if( type.equals(PathPublisher.PUBLISH_EVENT)) 
-			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
-		if( type.equals(PathPublisher.UNPUBLISH_EVENT)) 
-			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
+//		String type = item.getSpecificType();
+//		if( type.equals(PathPublisher.PUBLISH_EVENT)) 
+//			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+//		if( type.equals(PathPublisher.UNPUBLISH_EVENT)) 
+//			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
 		return null;
 	}
 
 	public String getText(EventLogTreeItem item) {
-		String type = item.getSpecificType();
-		if( type.equals(PathPublisher.PUBLISH_EVENT)) return "Publishing: " + item.getProperty(IJBossServerPublisher.MODULE_NAME);
-		if( type.equals(PathPublisher.UNPUBLISH_EVENT)) return "Unpublishing: " + item.getProperty(IJBossServerPublisher.MODULE_NAME);
-		
+//		String type = item.getSpecificType();
+//		if( type.equals(PathPublisher.PUBLISH_EVENT)) return "Publishing: " + item.getProperty(IJBossServerPublisher.MODULE_NAME);
+//		if( type.equals(PathPublisher.UNPUBLISH_EVENT)) return "Unpublishing: " + item.getProperty(IJBossServerPublisher.MODULE_NAME);
+//		
 		return item.toString();
 	}
 

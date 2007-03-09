@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
@@ -210,7 +210,7 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			
 			viewer.setContentProvider(new ArrayContentProvider());
 			viewer.setLabelProvider(new PublishServerLabelProvider());
-			viewer.setInput(JBossServerCore.getAllDeployableServers());
+			viewer.setInput(ServerConverter.getAllDeployableServers());
 			autoDeploy.setEnabled(false);
 		}
 			

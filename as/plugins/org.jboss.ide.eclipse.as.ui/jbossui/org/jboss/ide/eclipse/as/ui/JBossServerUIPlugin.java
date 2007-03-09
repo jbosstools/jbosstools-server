@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.osgi.framework.BundleContext;
 
@@ -102,60 +102,24 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	public void earlyStartup() {
-		JBossServerCore.getDefault();
+		JBossServerCorePlugin.getDefault();
 	}
 	
 
 	
-	private ServerViewProvider[] serverViewExtensions;
 	public ServerViewProvider[] getEnabledViewProviders() {
-		getAllServerViewProviders();
+		ServerViewProvider[] serverViewExtensions = getAllServerViewProviders();
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < serverViewExtensions.length; i++ ) {
 			if( serverViewExtensions[i].isEnabled()) {
 				list.add(serverViewExtensions[i]);
 			}
 		}
-		ServerViewProvider[] providers = new ServerViewProvider[list.size()];
-		list.toArray(providers);
-		
-		Arrays.sort(providers, new Comparator() {
-			public int compare(Object arg0, Object arg1) {
-				if( arg0 instanceof ServerViewProvider && arg1 instanceof ServerViewProvider) {
-					return ((ServerViewProvider)arg0).getWeight() - ((ServerViewProvider)arg1).getWeight();
-				}
-				return 0;
-			}
-		});
-
-		return providers;
+		return (ServerViewProvider[]) list.toArray(new ServerViewProvider[list.size()]);
 	}
 	
 	public ServerViewProvider[] getAllServerViewProviders() {
-		if( serverViewExtensions == null ) {
-			loadAllServerViewProviders();
-		}
-		Arrays.sort(serverViewExtensions, new Comparator() {
-			public int compare(Object arg0, Object arg1) {
-				if( arg0 instanceof ServerViewProvider && arg1 instanceof ServerViewProvider) {
-					return ((ServerViewProvider)arg0).getWeight() - ((ServerViewProvider)arg1).getWeight();
-				}
-				return 0;
-			}
-		});
-		return serverViewExtensions;
-	}
-	private void loadAllServerViewProviders() {
-
-		// Create the extensions from the registry
-		
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] elements = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerViewExtension");
-		serverViewExtensions = new ServerViewProvider[elements.length];
-		for( int i = 0; i < elements.length; i++ ) {
-			serverViewExtensions[i] = new ServerViewProvider(elements[i]);
-			//serverViewExtensions[i].setEnabled(true);
-		}
+		return ExtensionManager.getDefault().getAllServerViewProviders();
 	}
 	
 	

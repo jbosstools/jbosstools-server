@@ -43,7 +43,7 @@ import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerActionHelper;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerTableLabelProvider;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 /**
  * Tree view showing servers and their associations.
  * This is for the TOP window
@@ -86,7 +86,7 @@ public class ServerTableViewer extends TreeViewer {
 	
 	public class TrimmedServerContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 		public Object[] getElements(Object element) {
-			return JBossServerCore.getDeployableServersAsIServers();
+			return ServerConverter.getDeployableServersAsIServers();
 		}
 
 		public void inputChanged(Viewer theViewer, Object oldInput, Object newInput) {

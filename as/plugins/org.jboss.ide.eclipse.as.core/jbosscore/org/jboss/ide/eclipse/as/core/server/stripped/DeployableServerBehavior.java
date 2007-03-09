@@ -16,22 +16,18 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.IModuleVisitor;
-import org.eclipse.wst.server.core.internal.Module;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
-import org.jboss.ide.eclipse.as.core.module.PathModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PathPublisher;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
@@ -82,14 +78,10 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		 * If our modules are already packaged as ejb jars, wars, aop files, 
 		 * then go ahead and publish
 		 */
-		if( arePathModules(module)) {
-			publisher = new PathPublisher(JBossServerCore.getDeployableServer(getServer()), this);
-		} else if( areJstStyleModules(module)){
-			publisher = new JstPackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
-//			} else if( hasPackagingConfiguration(module) ) {
-//			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
+		if( areJstStyleModules(module)){
+			publisher = new JstPackagesPublisher(ServerConverter.getDeployableServer(getServer()));
 		} else if( module[0].getModuleType().getId().equals(PackageModuleFactory.MODULE_TYPE)) {
-			publisher = new PackagesPublisher(JBossServerCore.getDeployableServer(getServer()));
+			publisher = new PackagesPublisher(ServerConverter.getDeployableServer(getServer()));
 		} else {
 			publisher = new NullPublisher();
 		}
@@ -97,18 +89,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
 		setModulePublishState(module, publisher.getPublishState());
 	}
-	
-	// Is it just a file being deployed? 
-	// .xml, or .jar specifically
-	public boolean arePathModules(IModule[] module) {
-		if( module.length == 1 && module[0] instanceof Module ) {
-			ModuleFactoryDelegate delegate = 
-				((Module)module[0]).getModuleFactory().getDelegate(new NullProgressMonitor());
-			if( delegate instanceof PathModuleFactory ) return true;
-		}
-		return false;
-	}
-	
+
 	/* Temporary and will need to be fixed */
 	// TODO: Change to if it is a flex project. Don't know how to do that yet. 
 	protected boolean areJstStyleModules(IModule[] module) {

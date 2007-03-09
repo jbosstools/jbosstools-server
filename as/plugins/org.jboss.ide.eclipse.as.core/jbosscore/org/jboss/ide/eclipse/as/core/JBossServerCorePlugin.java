@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.jboss.ide.eclipse.as.core.model.PackagesListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -40,9 +41,6 @@ public class JBossServerCorePlugin extends Plugin  {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.core";
-	public static final String MODULE_FACTORY_PREFIX = "org.jboss.ide.eclipse.as.core.factory";
-	
-	private JBossServerCore serverCore;
 	
 	/**
 	 * The constructor.
@@ -71,7 +69,7 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		serverCore = JBossServerCore.getDefault();
+		PackagesListener.getInstance();
 	}
 
 	/**

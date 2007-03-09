@@ -88,7 +88,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
@@ -172,7 +172,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if( oldInput != newInput ) {
 				server = (IServer)newInput;
-				jbServer = server == null ? null : JBossServerCore.getDeployableServer(server);
+				jbServer = server == null ? null : ServerConverter.getDeployableServer(server);
 				root = null;
 			}
 		}
@@ -405,7 +405,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		protected void fillPortPreferences(Composite portComp) {
 			portComp.setLayout(new RowLayout(SWT.VERTICAL));
 			
-			servers = JBossServerCore.getAllJBossServers();
+			servers = ServerConverter.getAllJBossServers();
 			String[] serverNames = new String[servers.length];
 			for( int i = 0; i < servers.length; i++ )
 				serverNames[i] = servers[i].getServer().getName();

@@ -63,7 +63,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCore;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
@@ -261,7 +261,7 @@ public class XPathDialogs {
 		
 		protected void fillCombos() {
 			if( serverCombo != null ) {
-				IServer servers[] = JBossServerCore.getJBossServersAsIServers();
+				IServer servers[] = ServerConverter.getJBossServersAsIServers();
 				String[] names = new String[servers.length];
 				for( int i = 0; i < servers.length; i++ ) {
 					names[i] = servers[i].getName();
@@ -308,7 +308,7 @@ public class XPathDialogs {
 					public void widgetSelected(SelectionEvent e) {
 						int index = serverCombo.getSelectionIndex();
 						String val = serverCombo.getItem(index);
-						JBossServer[] serverList = JBossServerCore.getAllJBossServers();
+						JBossServer[] serverList = ServerConverter.getAllJBossServers();
 						for( int i = 0; i < serverList.length; i++ ) {
 							if( serverList[i].getServer().getName().equals(val)) {
 								setServer(serverList[i]);

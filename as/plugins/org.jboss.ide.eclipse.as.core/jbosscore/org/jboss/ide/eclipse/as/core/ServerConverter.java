@@ -1,10 +1,10 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
- * This is free software; you can redistribute it and/or modify it
+* This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
@@ -22,44 +22,19 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.ModuleFactory;
-import org.jboss.ide.eclipse.as.core.model.ModuleModel;
-import org.jboss.ide.eclipse.as.core.model.PackagesListener;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 /**
- * 
- * @author rstryker
  *
+ * @author rob.stryker@jboss.com
  */
-public class JBossServerCore {
-
-	/*
-	 * Static portion
-	 */
-	private static JBossServerCore instance;
-	
-	public static JBossServerCore getDefault() {
-		if( instance == null ) {
-			instance = new JBossServerCore();
-		}
-		return instance;
-	}
-	
+public class ServerConverter {
 	public static JBossServer getJBossServer(IServer server) {
 		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
@@ -76,6 +51,10 @@ public class JBossServerCore {
 		return dep;
 	}
 	
+	public static DeployableServerBehavior getDeployableServerBehavior(IServer server) {
+		return (DeployableServerBehavior)server.loadAdapter(
+				DeployableServerBehavior.class, new NullProgressMonitor());
+	}
 	/**
 	 * Return all JBossServer instances from the ServerCore
 	 * @return
@@ -131,44 +110,4 @@ public class JBossServerCore {
 		return ret;
 	}
 
-	
-	public JBossServerCore() {
-		ModuleModel.getDefault();
-		PackagesListener.getInstance();
-	}
-
-	public static ModuleFactory[] getJBossModuleFactories() {
-		return ModuleModel.getJBossModuleFactories();
-	}
-	
-	
-	private HashMap pollerListeners = null;
-	public IServerPollerTimeoutListener[] getTimeoutListeners(String pollerClass) {
-		if( pollerListeners == null ) 
-			loadTimeoutListeners();
-		ArrayList list = (ArrayList)pollerListeners.get(pollerClass);
-		if( list != null ) {
-			return (IServerPollerTimeoutListener[]) list.toArray(new IServerPollerTimeoutListener[list.size()]);
-		}
-		return new IServerPollerTimeoutListener[0];
-	}
-	
-	protected void loadTimeoutListeners() {
-		pollerListeners = new HashMap();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerTimeoutListener");
-		for( int i = 0; i < cf.length; i++ ) {
-			try {
-				String poller = cf[i].getAttribute("pollerType");
-				Object listener = cf[i].createExecutableExtension("listener");
-				
-				ArrayList list = (ArrayList)pollerListeners.get(poller);
-				if( list == null ) list = new ArrayList();
-				list.add(listener);
-				pollerListeners.put(poller, list);
-			} catch( CoreException ce ) {
-				ce.printStackTrace();
-			}
-		}
-	}
 }
