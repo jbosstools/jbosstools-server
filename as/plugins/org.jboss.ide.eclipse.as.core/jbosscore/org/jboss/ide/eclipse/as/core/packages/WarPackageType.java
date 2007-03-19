@@ -37,6 +37,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.packages.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
+import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
 
 /**
  *
@@ -63,16 +64,42 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	}
 	
 	public IPackage fillDefaultConfiguration(IProject project, IPackage topLevel, IProgressMonitor monitor) {
-		topLevel.setDestinationContainer(project);
-		IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
-		IPackageFolder lib = addFolder(project, webinf, LIB);
-		IPackageFolder classes = addFolder(project, webinf, CLASSES);
-		addWebinfFileset(project, webinf);
-		addLibFileset(project, lib);
-		addClassesFileset(project, classes);
+		IModule mod = getModule(project);
+		if( mod == null ) {
+			topLevel.setDestinationContainer(project);
+			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
+			IPackageFolder lib = addFolder(project, webinf, LIB);
+			IPackageFolder classes = addFolder(project, webinf, CLASSES);
+			addWebinfFileset(project, webinf);
+			addLibFileset(project, lib, true);
+			addReferencedProjectsAsLibs(project, lib);
+			addClassesFileset(project, classes);
+		} else {
+			topLevel.setDestinationContainer(project);
+			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
+			IPackageFolder lib = addFolder(project, webinf, LIB);
+			IPackageFolder classes = addFolder(project, webinf, CLASSES);
+			addWebContentFileset(project, topLevel);
+			addReferencedProjectsAsLibs(project, lib);
+			addClassesFileset(project, classes);
+		}
 		return topLevel;
 	}
 	
+	// For modules only
+	protected void addWebContentFileset(IProject project, IPackageNode packageRoot) {
+		IPath projectPath = project.getLocation();
+		DirectoryScanner scanner = 
+			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null);
+		String[] files = scanner.getIncludedFiles();
+		// just take the first
+		if( files.length > 0 ) {
+			IPath path = new Path(files[0]);
+			path = path.removeLastSegments(2); // remove the file name
+			path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
+			addFileset(project, packageRoot, path.toOSString(), "**/*");			
+		}
+	}
 	protected void addClassesFileset(IProject project, IPackageFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
@@ -97,10 +124,12 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			addFileset(project, folder, path.toOSString(), "**/*");			
 		}
 	}
-	protected void addLibFileset(IProject project, IPackageFolder folder) {
+	
+	// Lib support
+	protected void addLibFileset(IProject project, IPackageFolder folder, boolean includeTopLevelJars) {
 		addFileset(project, folder, project.getName(), "**/*.jar");  // add default jars
-		
-		// now add referenced projects
+	}
+	protected void addReferencedProjectsAsLibs(IProject project, IPackageFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
 			try {
@@ -120,6 +149,8 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			}
 		}
 	}
+	
+	
 	protected void createLibFromProject(IProject project, IPackageFolder folder) {
 		IPackage pack = createGenericIPackage(project, null, project.getName() + ".jar");
 		folder.addChild(pack);

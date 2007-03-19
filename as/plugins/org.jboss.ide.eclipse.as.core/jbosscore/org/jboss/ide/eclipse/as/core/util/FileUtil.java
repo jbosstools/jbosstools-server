@@ -25,54 +25,78 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-
 public class FileUtil {
 
+	public static interface IFileUtilListener {
+		public void fileDeleted(File file, boolean result, Exception e);
+		public void folderDeleted(File file, boolean result, Exception e);
+		public void fileCoppied(File source, File dest, boolean result, Exception e);
+	}
+	
+	
 	// Delete the file. If it's a folder, delete all children.
 	// Also, if parent is now empty, delete that as well. 
-	public static boolean safeDelete(File file) {
+	public static void safeDelete(File file) {
+		safeDelete(file, null);
+	}
+	public static void safeDelete(File file, IFileUtilListener listener) {
 		boolean ret = true;
 		if( file.isDirectory() ) {
 			File[] children = file.listFiles();
 			for( int i = 0; i < children.length; i++ ) {
-				ret = ret && safeDelete(children[i]);
+				safeDelete(children[i], listener);
+			}
+			try {
+				boolean tmp = file.delete();
+				if( listener != null ) listener.folderDeleted(file, tmp, null);
+			} catch( SecurityException sex) {
+				if( listener != null ) listener.folderDeleted(file, false, sex);
 			}
 		}
-		ret = ret && file.delete();
-		return ret;
+		
+		// files only
+		try {
+			boolean tmp = file.delete();
+			if( listener != null ) listener.fileDeleted(file, tmp, null);
+		} catch( SecurityException sex) {
+			if( listener != null ) listener.fileDeleted(file, false, sex);
+		}
 	}
 	
-	public static boolean completeDelete(File file) {
-		boolean ret = safeDelete(file);
+	public static void completeDelete(File file) {
+		completeDelete(file, null);
+	}
+	public static void completeDelete(File file, IFileUtilListener listener) {
+		safeDelete(file, listener);
 		//delete all empty parent folders
 		while(file.getParentFile().listFiles().length == 0 ) {
 			file = file.getParentFile();
-			ret = ret && file.delete();
+			try {
+				boolean tmp = file.delete();
+				if( listener != null ) listener.folderDeleted(file, tmp, null);
+			} catch( SecurityException sex ) {
+				listener.folderDeleted(file, false, sex);
+			}
 		}
-		return ret;
 	}
 	
 	public static boolean fileSafeCopy(File src, File dest) {
+		return fileSafeCopy(src, dest, null);
+	}
+	public static boolean fileSafeCopy(File src, File dest, IFileUtilListener listener) {
 		File parent = dest.getParentFile();
 		parent.mkdirs();
 		
-		if (src.isDirectory())
-		{
+		if (src.isDirectory()) {
 			File[] subFiles = src.listFiles();
 			boolean copied = true;
 			
-			for (int i = 0; i < subFiles.length; i++)
-			{
+			for (int i = 0; i < subFiles.length; i++) {
 				File newDest = new File(dest, subFiles[i].getName());
-				
-				copied = copied && fileSafeCopy(subFiles[i], newDest);
+				copied = copied && fileSafeCopy(subFiles[i], newDest, listener);
 			}
 			return copied;
-		}
-		else {
+		} else {
 			try {
 			    FileInputStream fis  = new FileInputStream(src);
 			    FileOutputStream fos = new FileOutputStream(dest);
@@ -83,8 +107,10 @@ public class FileUtil {
 			      }
 			    fis.close();
 			    fos.close();
+			    if( listener != null ) listener.fileCoppied(src, dest, true, null);
 				return true;
 			} catch( Exception e ) {
+			    if( listener != null ) listener.fileCoppied(src, dest, false, e);
 				return false;
 			}
 		}

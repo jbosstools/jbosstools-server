@@ -35,6 +35,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.wst.server.core.IModuleArtifact;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.as.core.packages.ObscurelyNamedPackageTypeSuperclass;
 import org.jboss.ide.eclipse.as.core.packages.WarPackageType;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -151,7 +153,7 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 		});
 	}
 	public boolean isPageComplete() {
-		return true;
+		return hasCreated;
 	}
     public void pageEntered(int button) {
     	if( !hasCreated ) {
@@ -159,6 +161,17 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     		hasCreated = true;
     	}
     	fillWidgets(wizard.getPackage());
+    	
+    	// if it's already a module type project, hide the meta inf stuff
+		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(wizard.getProject());
+		if( moduleArtifact.getModule() != null ) {
+			webinfGroup.setVisible(false);
+			FormData d = (FormData)previewGroup.getLayoutData();
+			d.top = new FormAttachment(0,5);
+			previewGroup.setLayoutData(d);
+			((Composite)getControl()).layout();
+		}
+		getWizard().getContainer().updateButtons();
     }
     
     protected void addToPackage() {
@@ -169,7 +182,6 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     	}
     }
     protected void fillWidgets(IPackage pkg) {
-    	System.out.println("filling widgets");
     	warPreview.setInput(new IPackage[] {pkg});
     	warPreview.expandAll();
     	

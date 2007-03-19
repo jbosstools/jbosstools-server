@@ -17,7 +17,6 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 	public PackagedArtifactAdapter() {
 	}
 
-	private PackageModuleFactory factory;
 	public IModuleArtifact getModuleArtifact(Object obj) {
 		if( obj instanceof IJavaProject ) {
 			IProject[] projects2 = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -33,7 +32,7 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		} 
 		
 		if( obj instanceof IProject ) {
-			PackageModuleFactory factory = getFactory();
+			PackageModuleFactory factory = PackageModuleFactory.getFactory();
 			if( factory != null ) {
 				IModule[] mods = factory.getModulesFromProject((IProject)obj);
 				if( mods != null && mods.length != 0) {
@@ -43,25 +42,7 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		}
 		return null;
 	}
-	
-	protected PackageModuleFactory getFactory() {
-		if( factory != null ) return factory;
 		
-		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
-		System.out.println(PackageModuleFactory.FACTORY_TYPE_ID);
-		for( int i = 0; i < factories.length; i++ ) {
-			System.out.println("  " + factories[i].getId());
-			if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
-				Object o = factories[i].getDelegate(new NullProgressMonitor());
-				if( o instanceof PackageModuleFactory ) {
-					factory = (PackageModuleFactory)o;
-					return factory;
-				}
-			}
-		}
-		return null;
-	}
-	
 	protected IModuleArtifact getArtifact(IModule[] mod) {
 		//return new PackagedArtifact(mod);
 		// TODO Blocking on eclipse bug 174372 

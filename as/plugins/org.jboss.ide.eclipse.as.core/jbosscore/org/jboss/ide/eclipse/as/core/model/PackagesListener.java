@@ -34,6 +34,7 @@ import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
+import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -46,7 +47,6 @@ import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 /**
  *
  * @author rob.stryker@jboss.com
- * This class is teh suck. I dont even know whether to keep it
  */
 public class PackagesListener extends AbstractPackagesBuildListener {
 
@@ -61,43 +61,25 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 		return instance;
 	}
 	
-	//Keeping track of build changes
-	private HashMap changesOrAdditions = new HashMap();
-	private HashMap removals = new HashMap();
-	
-	
 	public PackagesListener() {
 		PackagesCore.addPackagesBuildListener(this);
 	}
 	
 	public void startedBuildingPackage(IPackage pkg) {
-//		if( pkg.isTopLevel() ) {
-//			changesOrAdditions.put(pkg, new ArrayList());
-//			removals.put(pkg, new ArrayList());
-//		}
+		System.out.println("starting pkg: " + pkg.getName());
 	}
 
 	public void fileRemoved(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
 		// make absolute
 		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
-		ArrayList removes = (ArrayList)removals.get(topLevelPackage);
-		if (removes == null) {
-			removes = new ArrayList();
-			changesOrAdditions.put(topLevelPackage, removes);
-		}
-		
-		if( !removes.contains(filePath2)) removes.add(filePath2);
+		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
+		del.fileRemoved(filePath2);
 	}
 	public void fileUpdated(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
 		// make absolute
 		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
-		ArrayList changes = (ArrayList)changesOrAdditions.get(topLevelPackage);
-		if (changes == null) {
-			changes = new ArrayList();
-			changesOrAdditions.put(topLevelPackage, changes);
-		}
-		
-		if( !changes.contains(filePath2)) changes.add(filePath2);
+		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
+		del.fileUpdated(filePath2);
 	}
 
 	public IPath makeAbsolute(IPath local, IPackage topLevelPackage) {
@@ -105,12 +87,11 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 		return ResourceUtil.makeAbsolute(file, topLevelPackage.isDestinationInWorkspace());
 	}
 	public void finishedBuildingPackage(IPackage pkg) {
+		System.out.println("finishedBuildingPackage started: " + pkg.getName());
 		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
 			publish(pkg);
-			// then clean up what's been changed
-			changesOrAdditions.remove(pkg);
-			removals.remove(pkg);
 		}
+		System.out.println("done publishing from finishedBuildingPackage: " + pkg.getName());
 	}
 
 
@@ -132,7 +113,12 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 	}
 	protected static IModule[] getModule(IPackage node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
-		return new IModule[] { factory.getModule(PackageModuleFactory.getID(node)) };
+		IModule mod = factory.getModule(PackageModuleFactory.getID(node));
+		return new IModule[] { mod };
+	}
+	protected static PackagedModuleDelegate getModuleDelegate(IPackage node) {
+		IModule mod = getModule(node)[0];
+		return (PackagedModuleDelegate)mod.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 	}
 
 	protected IDeployableServer getDeployableServerFromBehavior(DeployableServerBehavior dsb) {
@@ -158,18 +144,6 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 		return (DeployableServerBehavior[]) list.toArray(new DeployableServerBehavior[list.size()]);
 	}
 
-
-	
-	// should be called from the publisher to figure out what's changed
-	public IPath[] getUpdatedFiles(IPackage pkg) {
-		ArrayList list = (ArrayList)changesOrAdditions.get(pkg);
-		return list == null ? new IPath[0] : (IPath[]) list.toArray(new IPath[list.size()]);
-	}
-	public IPath[] getRemovedFiles(IPackage pkg) {
-		ArrayList list = (ArrayList)removals.get(pkg);
-		return list == null ? new IPath[0] : (IPath[]) list.toArray(new IPath[list.size()]);
-	}
-
 	/*
 	 * If a node is changing from exploded to imploded, or vice versa
 	 * make sure to delete the pre-existing file or folder on the server. 
@@ -184,7 +158,7 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 				sourcePath = topLevelPackage.getPackageFilePath();
 				depServer = getDeployableServerFromBehavior(serverBehaviors[i]);
 				destPath = new Path(depServer.getDeployDirectory()).append(sourcePath.lastSegment());
-				boolean success = FileUtil.safeDelete(destPath.toFile());
+				FileUtil.safeDelete(destPath.toFile());
 				FileUtil.fileSafeCopy(sourcePath.toFile(), destPath.toFile());
 			}
 		}

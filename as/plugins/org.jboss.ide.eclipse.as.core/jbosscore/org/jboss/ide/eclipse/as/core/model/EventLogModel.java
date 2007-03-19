@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.eclipse.wst.server.core.IServer;
@@ -114,11 +115,7 @@ public class EventLogModel {
 			super(parent, null);
 			this.specificType = specificType;
 			this.majorType = majorType;
-		}
-		public EventLogTreeItem(SimpleTreeItem parent, Object data, String majorType, String specificType) {
-			super(parent, data);
-			this.specificType = specificType;
-			this.majorType = majorType;
+			setProperty(DATE, new Long(new Date().getTime()));
 		}
 		public String getEventClass() {
 			return majorType;

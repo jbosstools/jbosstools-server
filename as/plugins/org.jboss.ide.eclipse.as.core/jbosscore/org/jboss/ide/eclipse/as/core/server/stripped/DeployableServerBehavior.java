@@ -3,8 +3,6 @@ package org.jboss.ide.eclipse.as.core.server.stripped;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,16 +17,16 @@ import org.eclipse.wst.server.core.internal.IModuleVisitor;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel;
+import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.JstPackagesPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
@@ -45,16 +43,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
 
 	
-	// By default, goes to check if the members are all the same or any changes
-	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
-		return ((Server)getServer()).getPublishedResourceDelta(module);
-	}
+//	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
+//		return ((Server)getServer()).getPublishedResourceDelta(module);
+//	}
 	
-	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		// kind = [incremental, full, auto, clean] = [1,2,3,4]
-		// delta = [no_change, added, changed, removed] = [0,1,2,3]
-
-		System.out.print("publishing module (" + module[0].getName() + "): ");
+	private void print(int kind, int deltaKind, String name) {
+		System.out.print("publishing module (" + name + "): ");
 		switch( kind ) {
 			case IServer.PUBLISH_INCREMENTAL: System.out.print("incremental, "); break;
 			case IServer.PUBLISH_FULL: System.out.print("full, "); break;
@@ -68,55 +62,53 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			case ServerBehaviourDelegate.REMOVED: System.out.print("removed"); break;
 		}
 		System.out.println(" to server " + getServer().getId());
-		
+	}
+	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
+		// kind = [incremental, full, auto, clean] = [1,2,3,4]
+		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
-
+		print(kind, deltaKind, module[0].getName());
 		int modulePublishState = getServer().getModulePublishState(module) + 0;
 		
-		/**
-		 * If our modules are already packaged as ejb jars, wars, aop files, 
-		 * then go ahead and publish
-		 */
-		if( areJstStyleModules(module)){
-			publisher = new JstPackagesPublisher(ServerConverter.getDeployableServer(getServer()));
-		} else if( module[0].getModuleType().getId().equals(PackageModuleFactory.MODULE_TYPE)) {
-			publisher = new PackagesPublisher(ServerConverter.getDeployableServer(getServer()));
-		} else {
-			publisher = new NullPublisher();
+		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
+		if( module.length > 1 ) {
+			root = PublisherEventLogger.createMultipleModuleTopLevelEvent(root, module.length);
 		}
 		
-		publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
-		setModulePublishState(module, publisher.getPublishState());
+		for( int i = 0; i < module.length; i++ ) {
+			try {
+				if( isJstModule(module[i]) ) {
+					publisher = new JstPublisher(getServer(), root);
+				} else if( isPackagesTypeModule(module[i]) ) {
+					publisher = new PackagesPublisher(getServer(), root);
+					((PackagesPublisher)publisher).setDelta(getPublishedResourceDelta(module));
+				} else {
+					publisher = new NullPublisher();
+				}
+				publisher.publishModule(kind, deltaKind, modulePublishState, module[0], monitor);
+				setModulePublishState(module, publisher.getPublishState());
+			}
+			catch( Throwable e ) {e.printStackTrace();}
+		}
 	}
 
+	
+	
 	/* Temporary and will need to be fixed */
 	// TODO: Change to if it is a flex project. Don't know how to do that yet. 
-	protected boolean areJstStyleModules(IModule[] module) {
-		String type;
-		for( int i = 0; i < module.length; i++ ) {
-			type = module[i].getModuleType().getId();
-			if( type.equals("jst.ejb") || type.equals("jst.client") 
-					|| type.equals("jst.web") || type.equals("jst.ear")
-					|| type.equals("jbide.ejb30"))
-				continue;
-			return false;
-		}
-		return true;
-	}
-	/* Temporary and will need to be fixed */
-	protected boolean hasPackagingConfiguration(IModule[] module) {
-		try {
-			String projectName = module[0].getName();
-			IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-			return PackagesCore.getProjectPackages(proj, new NullProgressMonitor()).length == 0 ? false : true;
-		} catch( Exception e ) {} 
+	protected boolean isJstModule(IModule mod) {
+		String type = mod.getModuleType().getId();
+		if( type.equals("jst.ejb") || type.equals("jst.client") 
+				|| type.equals("jst.web") || type.equals("jst.ear")
+				|| type.equals("jbide.ejb30"))
+			return true;
 		return false;
 	}
 	
-	
-	
-	
+	protected boolean isPackagesTypeModule(IModule module) {
+		return module.getModuleType().getId().equals(PackageModuleFactory.MODULE_TYPE);
+	}
 	
 	/*
 	 * Change the state of the server
@@ -138,6 +130,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	
+	// 	Basically stolen from RunOnServerActionDelegate
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
 		addAndRemoveModules( module, deltaKind);
 		ArrayList moduleList = new ArrayList(); 

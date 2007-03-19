@@ -172,10 +172,10 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
 		
 		// now values and their readable forms
-		propertyToMessageMap.put(TwiddlePoller.STATUS + "::" + 0, "Server is Down");
-		propertyToMessageMap.put(TwiddlePoller.STATUS + "::" + 1, "Server is Up");
-		propertyToMessageMap.put(TwiddlePoller.STATUS + "::" + -1, "Server is in transition");
-		propertyToMessageMap.put(PollThread.EXPECTED_STATE + "::" + "true", "Up");
-		propertyToMessageMap.put(PollThread.EXPECTED_STATE + "::" + "false", "Down");
+		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + 0, "Server is Down");
+		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + 1, "Server is Up");
+		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + -1, "Server is in transition");
+		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "true", "Up");
+		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "false", "Down");
 	}
 }

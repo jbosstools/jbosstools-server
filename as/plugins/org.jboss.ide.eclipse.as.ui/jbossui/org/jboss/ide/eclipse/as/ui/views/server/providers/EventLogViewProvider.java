@@ -22,9 +22,11 @@
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.CoreException;
@@ -118,10 +120,16 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	public class EventLogContentProvider implements ITreeContentProvider {
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof ServerViewProvider && input != null ) {
-				boolean categorize = getCategorize(); // TODO: get from preferences 
+				boolean categorize = getCategorize();  
 				if( categorize ) 
 					return getRootCategories();
-				return EventLogModel.getModel(input).getRoot().getChildren();
+				Object[] ret = EventLogModel.getModel(input).getRoot().getChildren();
+				if( getSortOrder()) {
+					List l = Arrays.asList(ret); 
+					Collections.reverse(l);
+					return l.toArray();
+				}
+				return ret;
 			}
 			
 			if( parentElement instanceof String ) {
@@ -326,47 +334,36 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			firstGroup.setText("Which elements should be at the top?");
 			firstGroup.setLayout(new GridLayout(2, false));
 			newestFirst = new Button(firstGroup, SWT.RADIO);
-			newestFirstLabel = new Label(firstGroup, SWT.NONE);
 			oldestFirst = new Button(firstGroup, SWT.RADIO);
-			oldestFirstLabel = new Label(firstGroup, SWT.NONE);
 			
-			newestFirstLabel.setText("Newest");
-			oldestFirstLabel.setText("Oldest");
+			newestFirst.setText("Newest");
+			oldestFirst.setText("Oldest");
 			
 			FormData firstGroupData = new FormData();
 			firstGroupData.left = new FormAttachment(0,5);
 			firstGroupData.top = new FormAttachment(0,5);
 			firstGroup.setLayoutData(firstGroupData);
 			
-			
-			showTimeLabel = new Label(this, SWT.NONE);
-			showTimeLabel.setText("Show timestamp? (ex: x minutes ago)");
 			showTime = new Button(this, SWT.CHECK);
+			showTime.setText("Show timestamp? (ex: x minutes ago)");
 			
 			FormData d = new FormData();
 			d.left = new FormAttachment(0, 5);
 			d.top = new FormAttachment(firstGroup, 5);
 			showTime.setLayoutData(d);
 			
-			d = new FormData();
-			d.left = new FormAttachment(showTime, 5);
-			d.top = new FormAttachment(firstGroup, 5);
-			showTimeLabel.setLayoutData(d);
-
-			
-			sortLabel = new Label(this, SWT.NONE);
-			sortLabel.setText("Sort by event category?");
 			sort = new Button(this, SWT.CHECK);
+			sort.setText("Sort by event category?");
 			
 			d = new FormData();
 			d.left = new FormAttachment(0, 5);
 			d.top = new FormAttachment(showTime, 5);
 			sort.setLayoutData(d);
 			
-			d = new FormData();
-			d.left = new FormAttachment(sort, 5);
-			d.top = new FormAttachment(showTime, 5);
-			sortLabel.setLayoutData(d);
+//			d = new FormData();
+//			d.left = new FormAttachment(sort, 5);
+//			d.top = new FormAttachment(showTime, 5);
+//			sortLabel.setLayoutData(d);
 		}
 		public boolean isValid() {
 			return true;

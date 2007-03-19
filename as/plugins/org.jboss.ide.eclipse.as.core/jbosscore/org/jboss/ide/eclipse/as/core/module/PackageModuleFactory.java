@@ -22,6 +22,8 @@
 package org.jboss.ide.eclipse.as.core.module;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.internal.ModuleFactory;
+import org.eclipse.wst.server.core.internal.ModuleFile;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
@@ -53,6 +58,27 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	public static final String MODULE_TYPE = "jboss.package";
 	public static final String VERSION = "1.0";
 
+	private static PackageModuleFactory factory;
+	public static PackageModuleFactory getFactory() {
+		if( factory != null ) return factory;
+		
+		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
+		System.out.println(PackageModuleFactory.FACTORY_TYPE_ID);
+		for( int i = 0; i < factories.length; i++ ) {
+			System.out.println("  " + factories[i].getId());
+			if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
+				Object o = factories[i].getDelegate(new NullProgressMonitor());
+				if( o instanceof PackageModuleFactory ) {
+					factory = (PackageModuleFactory)o;
+					return factory;
+				}
+			}
+		}
+		return null;
+	}
+
+	
+	
 	public PackageModuleFactory() {
 		super();
 	}
@@ -122,8 +148,10 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 
 	public class PackagedModuleDelegate extends ModuleDelegate {
 		private IPackage pack;
+		private HashMap members;
 		public PackagedModuleDelegate(IPackage pack) {
 			this.pack = pack;
+			members = new HashMap();
 		}
 		public IPackage getPackage() {return pack;}
 		public IModule[] getChildModules() {
@@ -131,8 +159,28 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		}
 
 		public IModuleResource[] members() throws CoreException {
-			return new IModuleResource[0];
+			Collection c = members.values();
+			return (IModuleResource[]) c.toArray(new IModuleResource[c.size()]);
 		}
+		
+		public void fileUpdated(IPath filePath) {
+			long timestamp;
+			timestamp = new Date().getTime(); // now
+
+			IPath dest = pack.getDestinationPath();
+			if( dest.isPrefixOf(filePath)) {
+				filePath = filePath.removeFirstSegments(dest.segmentCount());
+			}
+			members.put(filePath, new ModuleFile(filePath.lastSegment(), filePath, timestamp));
+		}
+		public void fileRemoved(IPath filePath) {
+			IPath dest = pack.getDestinationPath();
+			if( dest.isPrefixOf(filePath)) {
+				filePath = filePath.removeFirstSegments(dest.segmentCount());
+			}
+			members.remove(filePath);
+		}
+		
 
 		public IStatus validate() {
 			return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 

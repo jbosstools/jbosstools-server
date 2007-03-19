@@ -38,7 +38,8 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvide
  */
 public abstract class ComplexEventLogLabelProvider 
 		extends LabelProvider implements IEventLogLabelProvider {
-
+	protected static String DELIMITER = "::";
+	
 	protected ArrayList supported;
 	protected HashMap propertyToMessageMap;
 	public ComplexEventLogLabelProvider() {
@@ -51,10 +52,12 @@ public abstract class ComplexEventLogLabelProvider
 	protected abstract void loadPropertyMap();
 
 	public boolean supports(String type) {
+		supported.clear(); addSupportedTypes();
 		return supported.contains(type);
 	}
 
 	public Properties getProperties(EventLogTreeItem item) {
+		loadPropertyMap();
 		Properties p = new Properties();
 		HashMap map = item.getProperties();
 		Object key = null;
@@ -68,7 +71,7 @@ public abstract class ComplexEventLogLabelProvider
 				p.put(keyString, valueString);
 			} else {
 				keyString = propertyToMessageMap.get(key) == null ? (String)key : propertyToMessageMap.get(key).toString();
-				valueStringKey = key + "::" + toString2(map.get(key));
+				valueStringKey = key + DELIMITER + toString2(map.get(key));
 				valueString = propertyToMessageMap.get(valueStringKey) == null ? toString2(map.get(key)) : toString2(propertyToMessageMap.get(valueStringKey));
 				p.put(keyString, valueString);
 			}

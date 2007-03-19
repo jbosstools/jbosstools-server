@@ -21,7 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,88 +30,77 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.packages.ModulePackageTypeConverter;
-import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher.PublishEvent;
-import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherMoveEvent;
-import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PackagesPublisherRemoveEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
-import org.jboss.ide.eclipse.packages.core.model.IPackagesBuildListener;
 import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 
 /**
- *  This class provides a default implementation for packaging different types of projects
+ *  This class provides a default implementation for 
+ *  packaging different types of flexible projects. It uses 
+ *  the built-in heirarchy of the projects to do so. 
+ *  
  * @author rob.stryker@jboss.com
  */
-public class JstPackagesPublisher extends PackagesPublisher {
+public class JstPublisher extends PackagesPublisher {
 	
-	public JstPackagesPublisher(IDeployableServer server) {
-		super(server);
+	public static final int BUILD_FAILED_CODE = 100;
+	public static final int PACKAGE_UNDETERMINED_CODE = 101;
+	
+	public JstPublisher(IServer server, EventLogTreeItem context) {
+		super(server, context);
 	}
 
 	public void publishModule(int kind, int deltaKind, int modulePublishState,
-			IModule[] module, IProgressMonitor monitor) throws CoreException {
-        if(ServerBehaviourDelegate.REMOVED == deltaKind){
-        	unpublish(server, module, monitor);
+			IModule module, IProgressMonitor monitor) throws CoreException {
+		IStatus status;
+		if(ServerBehaviourDelegate.REMOVED == deltaKind){
+        	status = unpublish(server, module, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	publish(server, module, monitor);
+        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
-        	publish(server, module, monitor);
+        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
         }
 	}
 
-	protected IStatus[] publish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		PublishEvent event = new PublishEvent(eventRoot, PackagesPublisher.PUBLISH_TOP_EVENT, module[0]);
+	protected IStatus publish(IDeployableServer jbServer, IModule module, int kind, 
+						int deltaKind, int modulePublishState, IProgressMonitor monitor) throws CoreException {
+		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		EventLogModel.markChanged(eventRoot);
-		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
+		IPackage topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
 			Throwable t = null;
 			try {
 				PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
 			} catch( Exception e ) {
-				t = e;
+				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, BUILD_FAILED_CODE, "", e);
 			}
-
-			addMoveEvent(event, topLevel, topLevel.isDestinationInWorkspace(), 
-					topLevel.getPackageFilePath(), topLevel.getPackageFilePath(), t);
-		}
-		return null;
-	}
-	protected void addMoveEvent(EventLogTreeItem parent, IPackage pack, boolean inWorkspace, 
-			IPath sourcePath, IPath destPath, Throwable e) {
-			String specType = PackagesPublisher.MOVE_PACKAGE_SUCCESS;
-		new PackagesPublisherMoveEvent(parent, specType, pack, sourcePath, destPath, e );
-		EventLogModel.markChanged(parent);
-	}
-
-	
-	protected IStatus[] unpublish(IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		PublishEvent event = new PublishEvent(eventRoot, PackagesPublisher.REMOVE_TOP_EVENT, module[0]);
-		EventLogModel.markChanged(eventRoot);
-
-		IPackage topLevel = createTopPackage(module[0], jbServer.getDeployDirectory(), monitor);
-		if( topLevel.isDestinationInWorkspace() ) {
-			String deployDir = jbServer.getDeployDirectory();
-			
-			IPath path = topLevel.getPackageResource().getRawLocation();
-			IPath p = new Path(deployDir).append(path.lastSegment());
-			boolean success = p.toFile().delete();
-			addRemoveEvent(event, topLevel, p, success ? SUCCESS : FAILURE);
 		} else {
-			IPath path = topLevel.getPackageFilePath();
-			boolean success = path.toFile().delete();
-			addRemoveEvent(event, topLevel, path, success ? SUCCESS : FAILURE);
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, PACKAGE_UNDETERMINED_CODE, "", null);
 		}
-		return null;
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IStatus.OK, "", null);
+	}
+
+	protected IStatus unpublish(IDeployableServer jbServer, IModule module, 
+						int kind, int deltaKind, int modulePublishKind, IProgressMonitor monitor) throws CoreException {
+		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
+		IPackage topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
+		if( topLevel != null ) {
+			IPath path = topLevel.getPackageFilePath();
+			FileUtil.safeDelete(path.toFile(), new PublisherFileUtilListener(event));
+		} else {
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, PACKAGE_UNDETERMINED_CODE, "", null);
+		}
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IStatus.OK, "", null);
 	}
 
 	protected IPackage createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
@@ -120,9 +108,8 @@ public class JstPackagesPublisher extends PackagesPublisher {
 		if( type != null ) {
     		IPackage topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
     		topLevel.setDestinationPath(new Path(deployDir));
-    		//topLevel.setDestinationFolder(new Path("c:\\test"));
     		return topLevel;
-		}
+		} 
 		return null;
 	}
 }

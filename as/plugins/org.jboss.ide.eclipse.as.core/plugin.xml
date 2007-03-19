@@ -76,12 +76,12 @@
           <moduleType
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
-          <moduleType
+<!--          <moduleType
                 types="jboss.archive"
                 versions="1.0"/>
           <moduleType
                 types="jboss.xml"
-                versions="1.0"/>
+                versions="1.0"/> -->
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
@@ -104,14 +104,14 @@
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
           <moduleType
+                types="jbide.ejb30"
+                versions="1.0"/>
+<!--          <moduleType
                 types="jboss.archive"
                 versions="1.0"/>
           <moduleType
-                types="jbide.ejb30"
-                versions="1.0"/>
-          <moduleType
                 types="jboss.xml"
-                versions="1.0"/>                
+                versions="1.0"/>  -->
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
@@ -133,11 +133,11 @@
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
           <moduleType
-                types="jboss.archive"
-                versions="1.0"/>
-          <moduleType
                 types="jbide.ejb30"
                 versions="1.0"/>
+<!--          <moduleType
+                types="jboss.archive"
+                versions="1.0"/> -->
           <moduleType
                 types="jboss.xml"
                 versions="1.0"/>                
@@ -174,7 +174,7 @@
 
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
-         
+<!--         
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.ArchiveModuleFactory"
             id="org.jboss.ide.eclipse.as.core.ArchiveFactory"
@@ -192,7 +192,7 @@
          <moduleType
                types="jboss.xml"
                versions="1.0"/>
-      </moduleFactory>
+      </moduleFactory> -->
       <moduleFactory
             class="org.jboss.ide.eclipse.as.core.module.PackageModuleFactory"
             id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
@@ -384,15 +384,15 @@
    </extension>
    <extension
          point="org.eclipse.wst.server.core.moduleTypes">
-      <moduleType
+<!--      <moduleType
             id="jboss.archive"
             name="Archive Module"/>
       <moduleType
             id="jboss.xml"
-            name="XML Module"/>
+            name="XML Module"/> -->
       <moduleType
             id="jboss.package"
-            name="Project Package"/>
+            name="Project Package"/>  
    </extension>
    <extension
          point="org.jboss.ide.eclipse.packages.core.packageTypes">

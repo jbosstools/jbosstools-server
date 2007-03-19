@@ -21,7 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.core.resources.IResource;
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,15 +30,16 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.PackagesListener;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.core.util.ResourceUtil;
 import org.jboss.ide.eclipse.packages.core.model.IPackage;
 
@@ -47,173 +49,120 @@ import org.jboss.ide.eclipse.packages.core.model.IPackage;
  */
 public class PackagesPublisher implements IJBossServerPublisher {
 	
-	// Event Constants
-	public static final String REMOVE_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.REMOVE_TOP_EVENT";
-	public static final String REMOVE_PACKAGE_SUCCESS = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.REMOVE_PACKAGE_SUCCESS";
-	public static final String REMOVE_PACKAGE_FAIL = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.REMOVE_PACKAGE_FAIL";
-	public static final String REMOVE_PACKAGE_SKIPPED = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.REMOVE_PACKAGE_SKIPPED";
-	
-
-	public static final String PUBLISH_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PUBLISH_TOP_EVENT";
-	public static final String PROJECT_BUILD_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.PROJECT_BUILD_EVENT";
-	public static final String MOVE_PACKAGE_SUCCESS = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.MOVE_PACKAGE_SUCCESS";
-	public static final String MOVE_PACKAGE_FAIL = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.MOVE_PACKAGE_FAIL";
-	public static final String MOVE_PACKAGE_SKIP = "org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher.MOVE_PACKAGE_SKIP";
-	
 	protected IDeployableServer server;
-	protected EventLogRoot eventRoot;
+	protected IModuleResourceDelta[] delta;
+	protected EventLogTreeItem eventRoot;
 	
-	public PackagesPublisher(IDeployableServer server) {
+	public PackagesPublisher(IDeployableServer server, EventLogTreeItem eventContext) {
 		this.server = server;
-		eventRoot = EventLogModel.getModel(server.getServer()).getRoot();
+		eventRoot = eventContext;
 	}
+	public PackagesPublisher(IServer server, EventLogTreeItem eventContext) {
+		this( ServerConverter.getDeployableServer(server), eventContext);
+	}
+	public void setDelta(IModuleResourceDelta[] delta) {
+		this.delta = delta;
+	}
+
+	
 	public int getPublishState() {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
     public void publishModule(int kind, int deltaKind, int modulePublishState, 
-    		IModule[] module, IProgressMonitor monitor) throws CoreException {
-		
-    	// if it's being removed
-    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
-    		removeModule(module, monitor);
-    		return;
-    	}
-    	
-    	if( deltaKind == ServerBehaviourDelegate.ADDED || deltaKind == ServerBehaviourDelegate.CHANGED) {
-    		boolean incremental = (kind == IServer.PUBLISH_INCREMENTAL);
-    		publishModule(incremental, module, monitor);
-    		return;
-    	}
-    	
-    	if( kind == IServer.PUBLISH_INCREMENTAL ) {
-    		boolean incremental = false;
-    		if( modulePublishState == IServer.PUBLISH_STATE_NONE ) incremental = false;
-    		if( modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL ) incremental = true;
-    		publishModule(incremental, module, monitor);
-    		return;
-    	}
-    	
-    	if( kind == IServer.PUBLISH_FULL ) {
-    		publishModule(false, module, monitor);
-    		return;
-    	}
-	}
-
-	protected void removeModule(IModule[] module, IProgressMonitor monitor) {
-		
-		// remove all of the deployed items
-		PublishEvent event = new PublishEvent(eventRoot, REMOVE_TOP_EVENT, module[0]);
-		EventLogModel.markChanged(eventRoot);
-		for( int i = 0; i < module.length; i++ ) {
-			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
-			IPackage pack = delegate.getPackage();
-			IPath sourcePath = pack.getPackageFilePath();
-			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-			boolean success = FileUtil.safeDelete(destPath.toFile());
-			addRemoveEvent(event, pack, destPath, success ? SUCCESS : FAILURE);
+    		IModule module, IProgressMonitor monitor) throws CoreException {
+		try {
+	    	// if it's being removed
+	    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
+	    		removeModule(module, kind, deltaKind, monitor);
+	    		return;
+	    	}
+	    	
+	    	if( deltaKind == ServerBehaviourDelegate.ADDED || deltaKind == ServerBehaviourDelegate.CHANGED) {
+	    		publishModule(module, kind, deltaKind,  modulePublishState, monitor);
+	    		return;
+	    	}
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
+
+	protected void removeModule(IModule module, int kind, int deltaKind, IProgressMonitor monitor) {
+		IPackage pack = getPackage(module);
+		// remove all of the deployed items
+		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
+		IPath sourcePath = pack.getPackageFilePath();
+		IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+		// remove the entire file or folder
+		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
+		FileUtil.safeDelete(destPath.toFile(), listener);
+	}
 	
 
 	
-	protected void publishModule(boolean incremental, IModule[] module, IProgressMonitor monitor) {
-		PublishEvent event = new PublishEvent(eventRoot, PUBLISH_TOP_EVENT, module[0]);
-		EventLogModel.markChanged(eventRoot);
-		for( int i = 0; i < module.length; i++ ) {
-			PackagedModuleDelegate delegate = (PackagedModuleDelegate)module[i].loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
-			IPackage pack = delegate.getPackage();
-			IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
-			IPath destPathRoot = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
+		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
+		IPackage pack = getPackage(module);
+		IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
+		IPath destPathRoot = new Path(server.getDeployDirectory());
+		
+		// if destination is deploy directory... no need to re-copy!
+		if( destPathRoot.toOSString().equals(pack.getDestinationPath().toOSString())) {
+			// fire null publish event
+			return;
+		}
 
-			if( incremental ) {
-				IPath[] removed = PackagesListener.getInstance().getRemovedFiles(pack);
-				IPath[] updated = PackagesListener.getInstance().getUpdatedFiles(pack);
-				
-				IPath suffix, destPath;
-	
-				for( int j = 0; j < removed.length; j++ ) {
-					if( sourcePath.isPrefixOf(updated[j])) {
-						suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
-						destPath = destPathRoot.append(suffix);
-						FileUtil.completeDelete(destPath.toFile());
-					}
-				}
+		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
+
+		if( shouldPublishIncremental(module, kind, deltaKind, modulePublishState) ) {
+			IPath sourcePrefix = sourcePath.removeLastSegments(1);
+			IPath destPath;
 			
-				for( int j = 0; j < updated.length; j++ ) {
-					if( sourcePath.isPrefixOf(updated[j])) {
-						suffix = updated[j].removeFirstSegments(sourcePath.segmentCount());
-						destPath = destPathRoot.append(suffix);
-						FileUtil.fileSafeCopy(updated[j].toFile(), destPath.toFile());
-					}
-				}
-			} else {
-				// full publish
-				FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.toFile());
+			ArrayList updated2 = new ArrayList();
+			ArrayList removed2 = new ArrayList();
+			fillFromDelta(updated2, removed2, delta);
+			IPath[] updated = (IPath[]) updated2.toArray(new IPath[updated2.size()]);
+			IPath[] removed = (IPath[]) removed2.toArray(new IPath[removed2.size()]);
+
+			// incrementally remove removed files
+			for( int j = 0; j < removed.length; j++ ) {
+				destPath = destPathRoot.append(removed[j]);
+				FileUtil.completeDelete(destPath.toFile(), listener);
+			}
+			
+			// incrementally update updated files
+			for( int j = 0; j < updated.length; j++ ) {
+				destPath = destPathRoot.append(updated[j]);
+				IPath srcp = sourcePrefix.append(updated[j]);
+				FileUtil.fileSafeCopy(srcp.toFile(), destPath.toFile(), listener);
+			}
+			
+		} else {
+			// full publish, copy whole folder or file
+			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
+		}
+	}
+	protected boolean shouldPublishIncremental(IModule module, int kind, int deltaKind, int modulePublishState) {
+		if(modulePublishState == IServer.PUBLISH_STATE_FULL || kind == IServer.PUBLISH_FULL) 
+			return false;
+		return true;
+	}
+	protected void fillFromDelta(ArrayList updated2, ArrayList removed2, IModuleResourceDelta[] delta) {
+		for( int j = 0; j < delta.length; j++ ) {
+			switch(delta[j].getKind()) {
+				case IModuleResourceDelta.ADDED:
+				case IModuleResourceDelta.CHANGED:
+					updated2.add(delta[j].getModuleResource().getModuleRelativePath());
+					break;
+				case IModuleResourceDelta.REMOVED:
+					removed2.add(delta[j].getModuleResource().getModuleRelativePath());
+					break;
 			}
 		}
 	}
-	protected void addMoveEvent(PublishEvent parent, IPackage pack, boolean inWorkspace, 
-			IPath sourcePath, IPath destPath, int success, Throwable e) {
-		String specType = null;
-		switch( success ) {
-			case SUCCESS: specType = MOVE_PACKAGE_SUCCESS; break;
-			case FAILURE: specType = MOVE_PACKAGE_FAIL; break;
-			case SKIPPED: specType = MOVE_PACKAGE_SKIP; break;
-		}
-		new PackagesPublisherMoveEvent(parent, specType, pack, sourcePath, destPath, e );
-		EventLogModel.markChanged(parent);
+	
+	protected IPackage getPackage(IModule module) {
+		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
+		return delegate == null ? null : delegate.getPackage();
 	}
-	
-	
-	
-	protected void addRemoveEvent(PublishEvent parent, IPackage pack, IPath dest, int success ) {
-		addRemoveEvent(parent, pack, dest, success, null);	
-	}
-	protected void addRemoveEvent(PublishEvent parent, IPackage pack, IPath dest, int success, Exception e ) {
-		String specType = null;
-		switch( success ) {
-			case SUCCESS: specType = REMOVE_PACKAGE_SUCCESS; break;
-			case FAILURE: specType = REMOVE_PACKAGE_FAIL; break;
-			case SKIPPED: specType = REMOVE_PACKAGE_SKIPPED; break;
-		}
-		PackagesPublisherRemoveEvent event = 
-			new PackagesPublisherRemoveEvent(parent, specType, pack, dest, e);
-		EventLogModel.markChanged(parent);
-	}
-	
-	public static class PackagesPublisherRemoveEvent extends EventLogTreeItem {
-		// property names
-		public static final String PACKAGE_NAME = "PackagesPublisherRemoveEvent.PACKAGE_NAME";
-		public static final String DESTINATION = "PackagesPublisherRemoveEvent.DESTINATION";
-		public static final String EXCEPTION_MESSAGE = "PackagesPublisherRemoveEvent.EXCEPTION_MESSAGE";
-		
-		
-		public PackagesPublisherRemoveEvent(SimpleTreeItem parent, String specificType,
-				IPackage pack, IPath dest, Exception e ) {
-			super(parent, PUBLISH_MAJOR_TYPE, specificType);
-			setProperty(PACKAGE_NAME, pack.getName());
-			setProperty(DESTINATION, dest.toOSString());
-			if( e != null )
-				setProperty(EXCEPTION_MESSAGE, e.getLocalizedMessage());
-		}
-	}	
-	public static class PackagesPublisherMoveEvent extends EventLogTreeItem {
-		// property names
-		public static final String PACKAGE_NAME = "PackagesPublisherRemoveEvent.PACKAGE_NAME";
-		public static final String MOVE_DESTINATION = "PackagesPublisherMoveEvent.MOVE_DESTINATION";
-		public static final String MOVE_SOURCE = "PackagesPublisherMoveEvent.MOVE_SOURCE";
-		public static final String EXCEPTION_MESSAGE = "PackagesPublisherRemoveEvent.EXCEPTION_MESSAGE";
-		
-		
-		public PackagesPublisherMoveEvent(SimpleTreeItem parent, String specificType,
-				IPackage pack, IPath source, IPath dest, Throwable e ) {
-			super(parent, PUBLISH_MAJOR_TYPE, specificType);
-			setProperty(PACKAGE_NAME, pack.getName());
-			setProperty(MOVE_SOURCE, source.toOSString());
-			setProperty(MOVE_DESTINATION, dest.toOSString());
-			if( e != null )
-				setProperty(EXCEPTION_MESSAGE, e.getLocalizedMessage());
-		}
-	}	
 }
