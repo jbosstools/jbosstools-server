@@ -34,23 +34,23 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.packages.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
-import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
+public class WarArchiveType extends J2EEArchiveType {
 	public static final String WAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.warPackage";
 
 	public String getAssociatedModuleType() {
 		return "jst.web";
 	}
 
-	public IPackage createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
+	public IArchive createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
 		if( mod == null ) 
 			return createDefaultConfiguration2(project, monitor);
@@ -58,27 +58,27 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			return createDefaultConfigFromModule(mod, monitor);
 	}
 	
-	protected IPackage createDefaultConfiguration2(IProject project, IProgressMonitor monitor) {
-		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".war");
+	protected IArchive createDefaultConfiguration2(IProject project, IProgressMonitor monitor) {
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
 		return fillDefaultConfiguration(project, topLevel, monitor);
 	}
 	
-	public IPackage fillDefaultConfiguration(IProject project, IPackage topLevel, IProgressMonitor monitor) {
+	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
 		if( mod == null ) {
-			topLevel.setDestinationContainer(project);
-			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
-			IPackageFolder lib = addFolder(project, webinf, LIB);
-			IPackageFolder classes = addFolder(project, webinf, CLASSES);
+			topLevel.setDestinationPath(new Path(project.getName()), true);
+			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
+			IArchiveFolder lib = addFolder(project, webinf, LIB);
+			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 			addWebinfFileset(project, webinf);
 			addLibFileset(project, lib, true);
 			addReferencedProjectsAsLibs(project, lib);
 			addClassesFileset(project, classes);
 		} else {
-			topLevel.setDestinationContainer(project);
-			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
-			IPackageFolder lib = addFolder(project, webinf, LIB);
-			IPackageFolder classes = addFolder(project, webinf, CLASSES);
+			topLevel.setDestinationPath(new Path(project.getName()), true);
+			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
+			IArchiveFolder lib = addFolder(project, webinf, LIB);
+			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 			addWebContentFileset(project, topLevel);
 			addReferencedProjectsAsLibs(project, lib);
 			addClassesFileset(project, classes);
@@ -87,10 +87,10 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	}
 	
 	// For modules only
-	protected void addWebContentFileset(IProject project, IPackageNode packageRoot) {
+	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) {
 		IPath projectPath = project.getLocation();
 		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null);
+			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
 		String[] files = scanner.getIncludedFiles();
 		// just take the first
 		if( files.length > 0 ) {
@@ -100,7 +100,7 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			addFileset(project, packageRoot, path.toOSString(), "**/*");			
 		}
 	}
-	protected void addClassesFileset(IProject project, IPackageFolder folder) {
+	protected void addClassesFileset(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
 			try {
@@ -111,10 +111,10 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			}
 		}
 	}
-	protected void addWebinfFileset(IProject project, IPackageFolder folder) {
+	protected void addWebinfFileset(IProject project, IArchiveFolder folder) {
 		IPath projectPath = project.getLocation();
 		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null);
+			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null, true);
 		String[] files = scanner.getIncludedFiles();
 		// just take the first
 		if( files.length > 0 ) {
@@ -126,10 +126,10 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	}
 	
 	// Lib support
-	protected void addLibFileset(IProject project, IPackageFolder folder, boolean includeTopLevelJars) {
+	protected void addLibFileset(IProject project, IArchiveFolder folder, boolean includeTopLevelJars) {
 		addFileset(project, folder, project.getName(), "**/*.jar");  // add default jars
 	}
-	protected void addReferencedProjectsAsLibs(IProject project, IPackageFolder folder) {
+	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
 			try {
@@ -151,20 +151,20 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 	}
 	
 	
-	protected void createLibFromProject(IProject project, IPackageFolder folder) {
-		IPackage pack = createGenericIPackage(project, null, project.getName() + ".jar");
+	protected void createLibFromProject(IProject project, IArchiveFolder folder) {
+		IArchive pack = createGenericIArchive(project, null, project.getName() + ".jar");
 		folder.addChild(pack);
 	}
 
-	protected IPackage createDefaultConfigFromModule(IModule mod, IProgressMonitor monitor) {
+	protected IArchive createDefaultConfigFromModule(IModule mod, IProgressMonitor monitor) {
 		try {
 			IProject project = mod.getProject();
 
-			IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".war");
-			topLevel.setDestinationContainer(project);
-			IPackageFolder webinf = addFolder(project, topLevel, WEBINF);
-			IPackageFolder metainf = addFolder(project, topLevel, METAINF);
-			IPackageFolder lib = addFolder(project, metainf, LIB);
+			IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
+			topLevel.setDestinationPath(new Path(project.getName()), true);
+			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
+			IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
+			IArchiveFolder lib = addFolder(project, metainf, LIB);
 			addFileset(project, webinf, 
 					new Path(project.getName()).append(WEBCONTENT).append(WEBINF).toOSString(), null);
 
@@ -174,12 +174,22 @@ public class WarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			for (int i = 0; i < childModules.length; i++) {
 				IModule child = childModules[i];
 				// package each child and add
-				lib.addChild(createGenericIPackage(child.getProject(), null, child.getProject().getName() + ".jar"));
+				lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));
 			}
 			return topLevel;
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getLabel() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

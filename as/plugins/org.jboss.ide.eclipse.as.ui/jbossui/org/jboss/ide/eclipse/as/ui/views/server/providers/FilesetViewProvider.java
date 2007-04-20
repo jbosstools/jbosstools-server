@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -52,13 +50,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.internal.util.SWTResourceUtil;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
-import org.jboss.ide.eclipse.packages.ui.util.FilesetPreviewComposite;
 
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
@@ -192,7 +189,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				return filesets;
 			} else if( parentElement instanceof Fileset ) {
 				Fileset fs = (Fileset)parentElement;
-				IPath[] paths = PackagesCore.findMatchingPaths(
+				IPath[] paths = ArchivesCore.findMatchingPaths(
 						new Path(fs.getFolder()), fs.getIncludesPattern(), fs.getExcludesPattern());
 				PathWrapper[] wrappers = new PathWrapper[paths.length];
 				for( int i = 0; i < wrappers.length; i++ ) {
@@ -541,7 +538,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		
 		private void updatePreview() {
 			preview.setRootFolder(new Path(dir));
-			IPath files[] = PackagesCore.findMatchingPaths(new Path(dir), includesText.getText(), excludesText.getText());
+			IPath files[] = ArchivesCore.findMatchingPaths(new Path(dir), includesText.getText(), excludesText.getText());
 			preview.setInput(files);
 		}
 		

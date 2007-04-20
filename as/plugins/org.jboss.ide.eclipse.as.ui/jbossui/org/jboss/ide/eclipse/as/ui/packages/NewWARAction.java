@@ -6,15 +6,15 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.packages.ui.PackagesUIPlugin;
-import org.jboss.ide.eclipse.packages.ui.views.ProjectPackagesView;
+import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
 
 public class NewWARAction extends ActionWithDelegate implements IViewActionDelegate {
 
 	public void run() {
 		NewWARWizard wizard = new NewWARWizard();
-		wizard.init(PlatformUI.getWorkbench(), ProjectPackagesView.instance().getSelection());
+		wizard.init(PlatformUI.getWorkbench(), ProjectArchivesView.getInstance().getSelection());
 		
 		WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 		int response = dialog.open();
@@ -25,7 +25,7 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
-		return PackagesUIPlugin.getImageDescriptor(PackagesUIPlugin.IMG_WAR);
+		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_WAR);
 	}
 	
 	public String getText() {

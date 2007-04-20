@@ -41,10 +41,10 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchivesModel;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.internal.PackagesModel;
 
 /**
  *
@@ -84,10 +84,10 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	}
 	
 	protected IModule[] createModules(IProject project) {
-		if( PackagesCore.projectHasPackages(project) ) {
+		if( ArchivesCore.getProjectPackages(project, null, true).length > 0 ) {
 			ArrayList list = new ArrayList();
 			IModule module;
-			IPackage[] packages = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
+			IArchive[] packages = ArchivesCore.getProjectPackages(project, new NullProgressMonitor(), true);
 			for( int i = 0; i < packages.length; i++ ) {
 				module = createModule(getID(packages[i]), getName(packages[i]),						 
 						MODULE_TYPE, VERSION, project);
@@ -101,13 +101,11 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		return null;
 	}
 	
-	public static String getID(IPackage pack) {
-		String path = pack.isDestinationInWorkspace() ? pack.getPackageResource().getLocation().toOSString() : pack.getPackageFilePath().toFile().getAbsolutePath();
-		return pack.getProject().getName() + ":" + path;
-		//return pack.getProject().getName() + ":" + pack.getPackageFilePath();
+	public static String getID(IArchive pack) {
+		return pack.getProject().getName() + ":" + pack.getArchiveFilePath();
 	}
 
-	public static String getName(IPackage pack) {
+	public static String getName(IArchive pack) {
 		return pack.getProject().getName() + "/" + pack.getName();
 	}
 	public ModuleDelegate getModuleDelegate(IModule module) {
@@ -120,14 +118,14 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		packageToModule = new HashMap(5);
 	}
 	
-	public IModule getModuleFromPackage(IPackage pack) {
+	public IModule getModuleFromPackage(IArchive pack) {
 		getModules(); // prime it
 		return (IModule)packageToModule.get(pack);
 	}
 	
 	public IModule[] getModulesFromProject(IProject project) {
 		ArrayList mods = new ArrayList();
-		IPackage[] packs = PackagesCore.getProjectPackages(project, new NullProgressMonitor());
+		IArchive[] packs = ArchivesCore.getProjectPackages(project, new NullProgressMonitor(), true);
 		for( int i = 0; i < packs.length; i++ ) {
 			IModule mod = getModuleFromPackage(packs[i]);
 			if( mod != null ) mods.add(mod);
@@ -143,17 +141,17 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	 * @return a possibly empty array of paths
 	 */
 	protected IPath[] getListenerPaths() {
-		return new IPath[] { new Path(PackagesModel.PROJECT_PACKAGES_FILE) };
+		return new IPath[] { new Path(ArchivesModel.PROJECT_PACKAGES_FILE) };
 	}
 
 	public class PackagedModuleDelegate extends ModuleDelegate {
-		private IPackage pack;
+		private IArchive pack;
 		private HashMap members;
-		public PackagedModuleDelegate(IPackage pack) {
+		public PackagedModuleDelegate(IArchive pack) {
 			this.pack = pack;
 			members = new HashMap();
 		}
-		public IPackage getPackage() {return pack;}
+		public IArchive getPackage() {return pack;}
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}

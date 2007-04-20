@@ -22,22 +22,22 @@
 package org.jboss.ide.eclipse.as.core.packages;
 
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
 public class ModulePackageTypeConverter {
-	public static IPackageType getPackageTypeFor(IModule module) {
+	public static IArchiveType getPackageTypeFor(IModule module) {
 		String modType = module.getModuleType().getId();
 		if("jst.web".equals(modType)) {
-			return PackagesCore.getPackageType(WarPackageType.WAR_PACKAGE_TYPE);
+			return ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
 		} else if("jst.ear".equals(modType)) {
-			return PackagesCore.getPackageType(EarPackageType.EAR_PACKAGE_TYPE);
+			return ArchivesCore.getArchiveType(EarArchiveType.EAR_PACKAGE_TYPE);
 		} else if("jbide.ejb30".equals(modType)) {
-			return PackagesCore.getPackageType("org.jboss.ide.eclipse.ejb3.wizards.core.ejbPackageType");
+			return ArchivesCore.getArchiveType("org.jboss.ide.eclipse.ejb3.wizards.core.ejbPackageType");
 		}
 
 		return null;

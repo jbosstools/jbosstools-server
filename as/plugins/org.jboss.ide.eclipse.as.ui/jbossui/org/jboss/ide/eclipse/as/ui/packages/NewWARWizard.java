@@ -2,11 +2,11 @@ package org.jboss.ide.eclipse.as.ui.packages;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.ui.wizards.AbstractPackageWizard;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 
-public class NewWARWizard extends AbstractPackageWizard {
+public class NewWARWizard extends AbstractArchiveWizard {
 
 	private WARInfoWizardPage warInfoPage;
 	
@@ -25,12 +25,12 @@ public class NewWARWizard extends AbstractPackageWizard {
 		return new WizardPage[] { warInfoPage };
 	}
 
-	public boolean performFinish(IPackage pkg) {
-		pkg.setPackageType(PackagesCore.getPackageType("org.jboss.ide.eclipse.as.core.packages.warPackage"));
+	public boolean performFinish(IArchive pkg) {
+		pkg.setArchiveType(ArchivesCore.getArchiveType("org.jboss.ide.eclipse.as.core.packages.warPackage"));
 		return true;
 	}
 	
-	public String getPackageExtension() {
+	public String getArchiveExtension() {
 		return "war";
 	}
 

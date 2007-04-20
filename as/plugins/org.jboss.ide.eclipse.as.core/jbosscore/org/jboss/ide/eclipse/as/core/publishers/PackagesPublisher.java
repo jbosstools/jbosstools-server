@@ -32,8 +32,8 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.ServerConverter;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
@@ -41,7 +41,6 @@ import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFi
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.core.util.ResourceUtil;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
 
 /**
  *
@@ -88,10 +87,10 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 
 	protected void removeModule(IModule module, int kind, int deltaKind, IProgressMonitor monitor) {
-		IPackage pack = getPackage(module);
+		IArchive pack = getPackage(module);
 		// remove all of the deployed items
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		IPath sourcePath = pack.getPackageFilePath();
+		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
 		// remove the entire file or folder
 		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
@@ -102,8 +101,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	
 	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		IPackage pack = getPackage(module);
-		IPath sourcePath = ResourceUtil.makeAbsolute(pack.getPackageFilePath(), pack.isDestinationInWorkspace());
+		IArchive pack = getPackage(module);
+		IPath sourcePath = ResourceUtil.makeAbsolute(pack.getArchiveFilePath(), pack.isDestinationInWorkspace());
 		IPath destPathRoot = new Path(server.getDeployDirectory());
 		
 		// if destination is deploy directory... no need to re-copy!
@@ -161,7 +160,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 	}
 	
-	protected IPackage getPackage(IModule module) {
+	protected IArchive getPackage(IModule module) {
 		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 		return delegate == null ? null : delegate.getPackage();
 	}

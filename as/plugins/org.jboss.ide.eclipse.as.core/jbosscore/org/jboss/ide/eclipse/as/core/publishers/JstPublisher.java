@@ -31,6 +31,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
@@ -39,9 +42,6 @@ import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEven
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
 
 /**
  *  This class provides a default implementation for 
@@ -76,11 +76,10 @@ public class JstPublisher extends PackagesPublisher {
 						int deltaKind, int modulePublishState, IProgressMonitor monitor) throws CoreException {
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		EventLogModel.markChanged(eventRoot);
-		IPackage topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
+		IArchive topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
-			Throwable t = null;
 			try {
-				PackagesCore.buildPackage(topLevel, new NullProgressMonitor());
+				ArchivesCore.buildArchive(topLevel, new NullProgressMonitor());
 			} catch( Exception e ) {
 				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, BUILD_FAILED_CODE, "", e);
 			}
@@ -93,9 +92,9 @@ public class JstPublisher extends PackagesPublisher {
 	protected IStatus unpublish(IDeployableServer jbServer, IModule module, 
 						int kind, int deltaKind, int modulePublishKind, IProgressMonitor monitor) throws CoreException {
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		IPackage topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
+		IArchive topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
-			IPath path = topLevel.getPackageFilePath();
+			IPath path = topLevel.getArchiveFilePath();
 			FileUtil.safeDelete(path.toFile(), new PublisherFileUtilListener(event));
 		} else {
 			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, PACKAGE_UNDETERMINED_CODE, "", null);
@@ -103,11 +102,11 @@ public class JstPublisher extends PackagesPublisher {
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IStatus.OK, "", null);
 	}
 
-	protected IPackage createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
-		IPackageType type = ModulePackageTypeConverter.getPackageTypeFor(module);
+	protected IArchive createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
+		IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(module);
 		if( type != null ) {
-    		IPackage topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
-    		topLevel.setDestinationPath(new Path(deployDir));
+    		IArchive topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
+    		topLevel.setDestinationPath(new Path(deployDir), false);
     		return topLevel;
 		} 
 		return null;

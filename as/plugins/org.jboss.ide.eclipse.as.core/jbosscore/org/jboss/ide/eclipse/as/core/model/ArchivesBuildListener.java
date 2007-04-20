@@ -22,9 +22,10 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
@@ -33,60 +34,60 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveBuildListener;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
 import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.core.util.ResourceUtil;
-import org.jboss.ide.eclipse.packages.core.model.AbstractPackagesBuildListener;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public class PackagesListener extends AbstractPackagesBuildListener {
+public class ArchivesBuildListener implements IArchiveBuildListener {
 
-	public static PackagesListener instance;
+	public static ArchivesBuildListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";
 	public static final String DEPLOY_AFTER_BUILD = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployAfterBuild";
 	
-	public static PackagesListener getInstance() {
+	public static ArchivesBuildListener getInstance() {
 		if( instance == null ) {
-			instance = new PackagesListener();
+			instance = new ArchivesBuildListener();
 		}
 		return instance;
 	}
 	
-	public PackagesListener() {
-		PackagesCore.addPackagesBuildListener(this);
+	public ArchivesBuildListener() {
+		ArchivesCore.getInstance().addBuildListener(this);
 	}
 	
-	public void startedBuildingPackage(IPackage pkg) {
+	public void startedBuildingPackage(IArchive pkg) {
 		System.out.println("starting pkg: " + pkg.getName());
 	}
 
-	public void fileRemoved(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
+	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
+		IPath filePath2 = makeAbsolute(filePath, fileset); // change
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
 		del.fileRemoved(filePath2);
 	}
-	public void fileUpdated(IPackage topLevelPackage, IPackageFileSet fileset, IPath filePath) {
+	public void fileUpdated(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath, topLevelPackage); // change
+		IPath filePath2 = makeAbsolute(filePath, fileset); // change
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
 		del.fileUpdated(filePath2);
 	}
 
-	public IPath makeAbsolute(IPath local, IPackage topLevelPackage) {
-		IPath file = PackagesCore.getBaseFile(local);
-		return ResourceUtil.makeAbsolute(file, topLevelPackage.isDestinationInWorkspace());
+	public IPath makeAbsolute(IPath local, IArchiveFileSet fileset) {
+		IPath file = ModelUtil.getBaseFile(fileset, local);
+		return file;
 	}
-	public void finishedBuildingPackage(IPackage pkg) {
+	public void finishedBuildingPackage(IArchive pkg) {
 		System.out.println("finishedBuildingPackage started: " + pkg.getName());
 		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
 			publish(pkg);
@@ -97,26 +98,26 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 
 	
 	// If we're supposed to auto-deploy, get on it
-	protected static void publish(IPackage pkg) {
-		String servers = pkg.getProperty(PackagesListener.DEPLOY_SERVERS);
+	protected static void publish(IArchive pkg) {
+		String servers = pkg.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
 		publish(pkg, servers, IServer.PUBLISH_INCREMENTAL);
 	} 
-	public static void publish(IPackage pkg, String servers, int publishType) {
+	public static void publish(IArchive pkg, String servers, int publishType) {
 		IModule[] module = getModule(pkg);
 		if( module[0] == null ) return; 
-		DeployableServerBehavior[] serverBehaviors = PackagesListener.getServers(servers);
+		DeployableServerBehavior[] serverBehaviors = ArchivesBuildListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
 				serverBehaviors[i].publishOneModule(publishType, module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
 			}
 		}
 	}
-	protected static IModule[] getModule(IPackage node) {
+	protected static IModule[] getModule(IArchive node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
 		IModule mod = factory.getModule(PackageModuleFactory.getID(node));
 		return new IModule[] { mod };
 	}
-	protected static PackagedModuleDelegate getModuleDelegate(IPackage node) {
+	protected static PackagedModuleDelegate getModuleDelegate(IArchive node) {
 		IModule mod = getModule(node)[0];
 		return (PackagedModuleDelegate)mod.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 	}
@@ -148,19 +149,54 @@ public class PackagesListener extends AbstractPackagesBuildListener {
 	 * If a node is changing from exploded to imploded, or vice versa
 	 * make sure to delete the pre-existing file or folder on the server. 
 	 */
-	public void packageBuildTypeChanged(IPackage topLevelPackage, boolean isExploded) {
-		String servers = topLevelPackage.getProperty(PackagesListener.DEPLOY_SERVERS);
-		DeployableServerBehavior[] serverBehaviors = PackagesListener.getServers(servers);
+	public void packageBuildTypeChanged(IArchive topLevelPackage, boolean isExploded) {
+		String servers = topLevelPackage.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
+		DeployableServerBehavior[] serverBehaviors = ArchivesBuildListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			IPath sourcePath, destPath;
 			IDeployableServer depServer;
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
-				sourcePath = topLevelPackage.getPackageFilePath();
+				sourcePath = topLevelPackage.getArchiveFilePath();
 				depServer = getDeployableServerFromBehavior(serverBehaviors[i]);
 				destPath = new Path(depServer.getDeployDirectory()).append(sourcePath.lastSegment());
 				FileUtil.safeDelete(destPath.toFile());
 				FileUtil.fileSafeCopy(sourcePath.toFile(), destPath.toFile());
 			}
 		}
+	}
+
+	public void buildFailed(IArchive pkg, IStatus status) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finishedBuild(IProject project) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finishedBuildingArchive(IArchive pkg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void finishedCollectingFileSet(IArchiveFileSet fileset) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startedBuild(IProject project) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startedBuildingArchive(IArchive pkg) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void startedCollectingFileSet(IArchiveFileSet fileset) {
+		// TODO Auto-generated method stub
+		
 	}
 }

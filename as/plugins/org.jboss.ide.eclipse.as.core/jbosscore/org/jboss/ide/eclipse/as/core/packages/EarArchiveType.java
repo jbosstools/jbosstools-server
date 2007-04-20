@@ -28,22 +28,22 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
+public class EarArchiveType extends J2EEArchiveType {
 	public static final String EAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.earPackage";
 
 	public String getAssociatedModuleType() {
 		return "jst.ear";
 	}
 
-	public IPackage createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
+	public IArchive createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
 		if( mod != null ) 
 			return createDefaultConfigFromModule(mod, monitor);
@@ -51,22 +51,22 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 			return createDefaultConfiguration2(project, monitor);
 	}
 	
-	public IPackage createDefaultConfiguration2(IProject project,
+	public IArchive createDefaultConfiguration2(IProject project,
 			IProgressMonitor monitor) {
-		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".war");
-		topLevel.setDestinationContainer(project);
-		IPackageFolder metainf = addFolder(project, topLevel, METAINF);
-		IPackageFolder lib = addFolder(project, metainf, LIB);
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
+		topLevel.setDestinationPath(project.getLocation(), true);//setDestinationContainer(project);
+		IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
+		IArchiveFolder lib = addFolder(project, metainf, LIB);
 		addFileset(project, metainf, new Path(project.getName()).append(METAINF).toOSString(), null);
 		return topLevel;
 	}
 
-	public IPackage createDefaultConfigFromModule(IModule module,
+	public IArchive createDefaultConfigFromModule(IModule module,
 			IProgressMonitor monitor) {
 		IProject project = module.getProject();
 		IContainer sourceContainer = project.getFolder(EARCONTENT);
 
-		IPackage topLevel = createGenericIPackage(project, null, project.getName() + ".ear", sourceContainer);
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear", sourceContainer);
 		addFileset(project, topLevel, new Path(project.getName()).append(EARCONTENT).toOSString(), "**/*.*");
 		
 		// now add children
@@ -74,10 +74,10 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		IModule[] childModules = earModule.getModules();
 		for( int i = 0; i < childModules.length; i++ ) {
 			IModule child = childModules[i];
-			IPackageType type = ModulePackageTypeConverter.getPackageTypeFor(child);
-			IPackage childPack;
+			IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(child);
+			IArchive childPack;
 			if( type == null ) {
-				childPack = createGenericIPackage(child.getProject(), null, child.getProject().getName() + ".jar");
+				childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar");
 			} else {
 				childPack = type.createDefaultConfiguration(child.getProject(), new NullProgressMonitor());
 			}
@@ -85,5 +85,15 @@ public class EarPackageType extends ObscurelyNamedPackageTypeSuperclass {
 		}
 
 		return topLevel;
+	}
+
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

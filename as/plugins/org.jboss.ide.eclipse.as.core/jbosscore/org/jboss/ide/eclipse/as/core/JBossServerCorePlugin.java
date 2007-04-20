@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.jboss.ide.eclipse.as.core.model.PackagesListener;
+import org.jboss.ide.eclipse.as.core.model.ArchivesBuildListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -69,7 +69,7 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		PackagesListener.getInstance();
+		ArchivesBuildListener.getInstance();
 	}
 
 	/**

@@ -259,17 +259,16 @@
             weight="50"/>
    </extension>
    <extension
-         point="org.jboss.ide.eclipse.packages.ui.nodePopupMenus">
+         point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
       <nodeContribution
             class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
-            enablesForNodeType="package"
             icon="icons/publish.gif"
             id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
             label="Publish To Server"
             weight="1"/>
    </extension>
    <extension
-         point="org.jboss.ide.eclipse.packages.ui.newPackageActions">
+         point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
       <newPackageAction
             class="org.jboss.ide.eclipse.as.ui.packages.NewWARAction"
             icon="icons/packages/war.gif"

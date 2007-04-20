@@ -24,8 +24,6 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public interface IJBossServerPublisher {
 	public void publishModule(int kind, int deltaKind, int modulePublishState,

@@ -29,7 +29,6 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
-import org.jboss.ide.eclipse.packages.ui.views.ProjectPackagesView;
 
 public class ASPerspective implements IPerspectiveFactory {
 

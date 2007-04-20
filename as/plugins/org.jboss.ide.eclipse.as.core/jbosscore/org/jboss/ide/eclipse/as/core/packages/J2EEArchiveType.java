@@ -34,19 +34,18 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
-import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.types.AbstractPackageType;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
+import org.jboss.ide.eclipse.archives.core.util.ArchiveNodeFactory;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
-public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackageType {
+public abstract class J2EEArchiveType implements IArchiveType {
 	public static final String METAINF = "META-INF";
 	public static final String WEBINF = "WEB-INF";
 	public static final String CLASSES = "classes";
@@ -68,7 +67,7 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 	}
 	
 	// Find the source folder, then create the IPackage appropriately
-	public static IPackage createGenericIPackage(IProject project, String deployDirectory, String packageName) {
+	public static IArchive createGenericIArchive(IProject project, String deployDirectory, String packageName) {
 		try {
 			IJavaProject javaProject = JavaCore.create(project);
 			Assert.isNotNull(javaProject);
@@ -86,7 +85,7 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 				sourcePathContainer = project;
 			else
 				sourcePathContainer = project.getFolder(sourcePath);
-			return createGenericIPackage(project, deployDirectory, packageName, sourcePathContainer);
+			return createGenericIArchive(project, deployDirectory, packageName, sourcePathContainer);
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
@@ -94,34 +93,34 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 	} 
 	
 	// Create a detached package with some generic settings
-	public static IPackage createGenericIPackage(IProject project, String deployDirectory, String packageName, IContainer sourceContainer) {
-		IPackage jar = PackagesCore.createDetachedPackage(project, true);
+	public static IArchive createGenericIArchive(IProject project, String deployDirectory, String packageName, IContainer sourceContainer) {
+		IArchive jar = ArchiveNodeFactory.createArchive();
 			
 		if( deployDirectory != null ) {
-			jar.setDestinationPath(new Path(deployDirectory));
+			jar.setDestinationPath(new Path(deployDirectory), false);
 			jar.setExploded(false);
 		} else {
-			jar.setDestinationContainer(project);
+			jar.setDestinationPath(project.getLocation(), true);
 			jar.setExploded(false);
 		}
 		jar.setName(packageName);
 			
-		IPackageFileSet classes = PackagesCore.createDetachedPackageFileSet(project);
+		IArchiveFileSet classes = ArchiveNodeFactory.createFileset();
 		classes.setIncludesPattern("**/*");
-		classes.setSourceContainer(sourceContainer);
+		classes.setSourcePath(sourceContainer.getLocation());
 		jar.addChild(classes);
 		return jar;
 	}
 
 	
-	public static IPackageFolder addFolder(IProject project, IPackageNode parent, String name) {
-		IPackageFolder folder = PackagesCore.createPackageFolder(project);
+	public static IArchiveFolder addFolder(IProject project, IArchiveNode parent, String name) {
+		IArchiveFolder folder = ArchiveNodeFactory.createFolder();
 		folder.setName(name);
 		parent.addChild(folder);
 		return folder;
 	}
-	public static IPackageFileSet addFileset(IProject project, IPackageNode parent, String sourcePath, String includePattern) {
-		IPackageFileSet fs = PackagesCore.createPackageFileSet(project);
+	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent, String sourcePath, String includePattern) {
+		IArchiveFileSet fs = ArchiveNodeFactory.createFileset();
 		Assert.isNotNull(project);
 		IJavaProject javaProject = JavaCore.create(project);
 		Assert.isNotNull(javaProject);
@@ -135,29 +134,12 @@ public abstract class ObscurelyNamedPackageTypeSuperclass extends AbstractPackag
 			sourceContainer = project;
 		}
 
-		fs.setSourceContainer(sourceContainer);
+		fs.setSourcePath(sourceContainer.getLocation());
 		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern );
 		parent.addChild(fs);
 		return fs;
 	}
 	
-	public int getSupportFor(IProject project) {
-		String modType = getAssociatedModuleType();
-		IModule module = getModule(project);
-
-		if( modType == null )  // we require no module type
-			return IPackageType.SUPPORT_FULL;
-			
-		if( module == null ) // project is not a module
-			return IPackageType.SUPPORT_FULL;
-
-		// module and modType match
-		if( modType.equals(module.getModuleType().getId())) 
-			return IPackageType.SUPPORT_FULL;
-
-		// it's some other module type. Not Best Match
-		return IPackageType.SUPPORT_CONDITIONAL; 
-	}
 	public abstract String getAssociatedModuleType();
 	
 }

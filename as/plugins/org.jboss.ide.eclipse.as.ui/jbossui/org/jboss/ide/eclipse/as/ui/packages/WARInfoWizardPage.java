@@ -12,7 +12,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -37,17 +36,17 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.jboss.ide.eclipse.as.core.packages.ObscurelyNamedPackageTypeSuperclass;
-import org.jboss.ide.eclipse.as.core.packages.WarPackageType;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
+import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProvider;
+import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
+import org.jboss.ide.eclipse.as.core.packages.J2EEArchiveType;
+import org.jboss.ide.eclipse.as.core.packages.WarArchiveType;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFileSet;
-import org.jboss.ide.eclipse.packages.core.model.IPackageFolder;
-import org.jboss.ide.eclipse.packages.core.model.PackagesCore;
-import org.jboss.ide.eclipse.packages.core.model.types.IPackageType;
-import org.jboss.ide.eclipse.packages.ui.PackagesUIPlugin;
-import org.jboss.ide.eclipse.packages.ui.providers.PackagesContentProvider;
-import org.jboss.ide.eclipse.packages.ui.providers.PackagesLabelProvider;
 import org.jboss.ide.eclipse.ui.wizards.WizardPageWithNotification;
 
 public class WARInfoWizardPage extends WizardPageWithNotification {
@@ -59,7 +58,7 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 	private Text webinfFolders;
 	private Button webinfFoldersButton;
 	public WARInfoWizardPage (NewWARWizard wizard) {
-		super("WAR information", "WAR Information", PackagesUIPlugin.getImageDescriptor(PackagesUIPlugin.IMG_NEW_WAR_WIZARD));
+		super("WAR information", "WAR Information", ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		this.wizard = wizard;
 	}
 	
@@ -93,8 +92,8 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 		previewGroup.setLayoutData(previewData);
 		previewGroup.setLayout(new FormLayout());
 		warPreview = new TreeViewer(previewGroup);
-		warPreview.setLabelProvider(new PackagesLabelProvider());
-		warPreview.setContentProvider(new PackagesContentProvider(false));
+		warPreview.setLabelProvider(new ArchivesLabelProvider());
+		warPreview.setContentProvider(new ArchivesContentProvider());
 		FormData warPreviewData = new FormData();
 		warPreviewData.left = new FormAttachment(0,5);
 		warPreviewData.right = new FormAttachment(100,-5);
@@ -131,10 +130,11 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 						selectedFolders.add(((IResource)o[i]).getFullPath().toOSString());
 					}
 
-					IPackageFolder webinf = getFolder(wizard.getPackage(), ObscurelyNamedPackageTypeSuperclass.WEBINF);
-					IPackageFileSet[] sets = webinf.getFileSets();
+					IArchiveFolder webinf = getFolder(wizard.getArchive(), J2EEArchiveType.WEBINF);
+					IArchiveFileSet[] sets = webinf.getFileSets();
 					for( int i = 0; i < sets.length; i++ ) {
-						String path = sets[i].getSourceContainer().getFullPath().toOSString();
+						//String path = sets[i].getSourceContainer.getFullPath().toOSString();
+						String path = sets[i].getSourcePath().toOSString();
 						if( selectedFolders.contains(path)) {
 							selectedFolders.remove(path); // already added
 						} else {
@@ -144,10 +144,10 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 					}
 					// add whatever's left as new filesets
 					for( int i = 0; i < selectedFolders.size(); i++ ) {
-						ObscurelyNamedPackageTypeSuperclass.addFileset(wizard.getProject(), 
+						J2EEArchiveType.addFileset(wizard.getProject(), 
 								webinf, (String)selectedFolders.get(i), "**/*");
 					}
-					fillWidgets(wizard.getPackage());
+					fillWidgets(wizard.getArchive());
 				}
 			}  
 		});
@@ -160,7 +160,7 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     		addToPackage();
     		hasCreated = true;
     	}
-    	fillWidgets(wizard.getPackage());
+    	fillWidgets(wizard.getArchive());
     	
     	// if it's already a module type project, hide the meta inf stuff
 		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(wizard.getProject());
@@ -176,26 +176,27 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     
     protected void addToPackage() {
     	// fill it
-    	IPackageType type = PackagesCore.getPackageType("org.jboss.ide.eclipse.as.core.packages.warPackage");
-    	if( type instanceof WarPackageType ) {
-    		((WarPackageType)type).fillDefaultConfiguration(wizard.getProject(), wizard.getPackage(), new NullProgressMonitor());
+    	IArchiveType type = ArchivesCore.getArchiveType("org.jboss.ide.eclipse.as.core.packages.warPackage");
+    	if( type instanceof WarArchiveType ) {
+    		((WarArchiveType)type).fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
     	}
     }
-    protected void fillWidgets(IPackage pkg) {
-    	warPreview.setInput(new IPackage[] {pkg});
+    protected void fillWidgets(IArchive pkg) {
+    	warPreview.setInput(new IArchive[] {pkg});
     	warPreview.expandAll();
     	
     	fillWebinfText(pkg);
     }
     
-    protected void fillWebinfText(IPackage pkg) {
+    protected void fillWebinfText(IArchive pkg) {
     	// set webinf text
-    	IPackageFolder webinf = getFolder(pkg, ObscurelyNamedPackageTypeSuperclass.WEBINF);
+    	IArchiveFolder webinf = getFolder(pkg, J2EEArchiveType.WEBINF);
     	String s = "";
     	if( webinf != null ) {
-    		IPackageFileSet[] filesets = webinf.getFileSets();
+    		IArchiveFileSet[] filesets = webinf.getFileSets();
     		for( int i = 0; i < filesets.length; i++ ) {
-    			String path = filesets[i].getSourceContainer().getFullPath().toOSString();
+//    			String path = filesets[i].getSourceContainer().getFullPath().toOSString();
+    			String path = filesets[i].getSourcePath().toOSString();
     			s += path + ",";
     		}
     		if( s.length() > 0 ) 
@@ -204,9 +205,9 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     	webinfFolders.setText(s);
     }
     
-    protected IPackageFolder getFolder(IPackage pkg, String folderName) {
-    	IPackageFolder result = null;
-    	IPackageFolder[] folders = pkg.getFolders();
+    protected IArchiveFolder getFolder(IArchive pkg, String folderName) {
+    	IArchiveFolder result = null;
+    	IArchiveFolder[] folders = pkg.getFolders();
     	for( int i = 0; i < folders.length; i++ ) {
     		if( folders[i].getName().equals(folderName)) {
     			result = folders[i];

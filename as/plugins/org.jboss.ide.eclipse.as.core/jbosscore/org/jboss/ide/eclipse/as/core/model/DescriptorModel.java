@@ -45,7 +45,6 @@ import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class DescriptorModel {
@@ -121,8 +120,6 @@ public class DescriptorModel {
 			}
 		}
 		
-		
-		private static final String IGNORED_DESCRIPTOR_FOLDERS = "_IGNORED_DESCRIPTOR_FOLDERS_";
 		
 		/*
 		 * Do preference stuff here to see if the directory is ignored.
@@ -372,12 +369,10 @@ public class DescriptorModel {
 			}
 			
 			public String elementAsXML() {
-				DefaultElement element = ((DefaultElement)getData());
 				return ((DefaultElement)getData()).asXML();
 			}
 			
 			public String getElementName() {
-				DefaultElement element = ((DefaultElement)getData());
 				return ((DefaultElement)getData()).getName();
 			}
 			

@@ -395,14 +395,14 @@
             name="Project Package"/>  
    </extension>
    <extension
-         point="org.jboss.ide.eclipse.packages.core.packageTypes">
+         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.WarPackageType"
-            id="org.jboss.ide.eclipse.as.core.packages.warPackage"
+            class="org.jboss.ide.eclipse.as.core.packages.WarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.warArchive"
             label="WAR"/>
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.EarPackageType"
-            id="org.jboss.ide.eclipse.as.core.packages.earPackage"
+            class="org.jboss.ide.eclipse.as.core.packages.EarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.earArchive"
             label="EAR"/>
    </extension>
    

@@ -22,46 +22,43 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
 import org.jboss.ide.eclipse.as.core.ServerConverter;
-import org.jboss.ide.eclipse.as.core.model.PackagesListener;
+import org.jboss.ide.eclipse.as.core.model.ArchivesBuildListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.packages.core.model.IPackage;
-import org.jboss.ide.eclipse.packages.core.model.IPackageNode;
-import org.jboss.ide.eclipse.packages.ui.actions.AbstractNodeActionDelegate;
 
-public class PublishAction extends AbstractNodeActionDelegate {
+public class PublishAction implements INodeActionDelegate {
 
 	
 	public PublishAction() {
 	}
 
-	public void run (IPackageNode node) {
-		if (node.getNodeType() == IPackageNode.TYPE_PACKAGE)	
+	public void run (IArchiveNode node) {
+		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE)	
 		{
-			IPackage pkg = (IPackage)node;
-			String servers = node.getProperty(PackagesListener.DEPLOY_SERVERS);
-			if( !new Boolean(pkg.getProperty(PackagesListener.DEPLOY_AFTER_BUILD)).booleanValue()  ||
+			IArchive pkg = (IArchive)node;
+			String servers = node.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
+			if( !new Boolean(pkg.getProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD)).booleanValue()  ||
 					servers == null || "".equals(servers)) {
 				servers = showSelectServersDialog(pkg);
 			}
-			PackagesListener.publish(pkg, servers, IServer.PUBLISH_FULL);
+			ArchivesBuildListener.publish(pkg, servers, IServer.PUBLISH_FULL);
 		}
 	}
 	
-	public boolean isEnabledFor(IPackageNode node) {
-		if (node.getNodeType() == IPackageNode.TYPE_PACKAGE
-			|| node.getNodeType() == IPackageNode.TYPE_PACKAGE_REFERENCE)
-		{
-			IPackage pkg = (IPackage) node;
-			if (pkg.isTopLevel())
-			{
+	public boolean isEnabledFor(IArchiveNode node) {
+		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE ) {
+			IArchive pkg = (IArchive) node;
+			if (pkg.isTopLevel()) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	protected String showSelectServersDialog(IPackage node) {
+	protected String showSelectServersDialog(IArchive node) {
 		SelectServerWizard wiz = new SelectServerWizard(node);
 		new WizardDialog(new Shell(), wiz).open();
 		return wiz.getServers();
@@ -70,16 +67,16 @@ public class PublishAction extends AbstractNodeActionDelegate {
 	
 	protected class SelectServerWizard extends Wizard {
 		private SelectServerWizardPage page;
-		private IPackage pack;
-		protected SelectServerWizard(IPackage pack) {
+		private IArchive pack;
+		protected SelectServerWizard(IArchive pack) {
 			this.pack = pack;
 		}
 		public boolean performFinish() {
 			System.out.println("servers: " + getServers());
 			System.out.println("autodeploy: " + getAutoDeploy());
 			System.out.println("always publish to these: " + getAlwaysPublish());
-			pack.setProperty(PackagesListener.DEPLOY_SERVERS, getServers());
-			pack.setProperty(PackagesListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
+			pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, getServers());
+			pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 			return true;
 		}
 		public void addPages() {
@@ -99,14 +96,14 @@ public class PublishAction extends AbstractNodeActionDelegate {
 	}
 	
 	protected class SelectServerWizardPage extends WizardPage {
-		protected IPackage pack;
+		protected IArchive pack;
 		protected ListViewer viewer;
 		protected Button autoDeploy, alwaysPublish;
 		protected String viewerResult = "";
 		protected String deployResult = Boolean.toString(false);
 		protected String alwaysPublishResult = Boolean.toString(false);
 		
-		protected SelectServerWizardPage(IPackage pack) {
+		protected SelectServerWizardPage(IArchive pack) {
 			super("Wizard Page Name");
 			setDescription("Wizard Page Description");
 			setTitle("Wizard Page Title");
@@ -145,34 +142,8 @@ public class PublishAction extends AbstractNodeActionDelegate {
 			add.top = new FormAttachment(alwaysPublish, 5);
 			autoDeploy.setLayoutData(add);
 			autoDeploy.setText("Auto-deploy to selected servers after builds");
-			
-			
-//			this.alwaysPublish = new Button(mainComposite, SWT.CHECK);
-//			FormData always = new FormData();
-//			always.left = new FormAttachment(15,0);
-//			always.top = new FormAttachment(viewer.getList(), 5);
-//			alwaysPublish.setLayoutData(always);
-//			
-//			Label alwaysPublishLabel = new Label(mainComposite, SWT.NONE);
-//			FormData apl = new FormData();
-//			apl.top = new FormAttachment(viewer.getList(), 5);
-//			apl.left = new FormAttachment(alwaysPublish, 5);
-//			alwaysPublishLabel.setLayoutData(apl);
-//			alwaysPublishLabel.setText("Always publish to these servers");
-//
-//			autoDeploy = new Button(mainComposite, SWT.CHECK);
-//			FormData add = new FormData();
-//			add.left = new FormAttachment(15,0);
-//			add.top = new FormAttachment(alwaysPublish, 5);
-//			autoDeploy.setLayoutData(add);
-//			
-//			Label autoDeployLabel = new Label(mainComposite, SWT.NONE);
-//			FormData adl = new FormData();
-//			adl.top = new FormAttachment(alwaysPublishLabel, 7);
-//			adl.left = new FormAttachment(autoDeploy, 5);
-//			autoDeployLabel.setLayoutData(adl);
-//			autoDeployLabel.setText("Auto-deploy to selected servers after builds");
 		}
+
 		protected void addListeners() {
 			autoDeploy.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
