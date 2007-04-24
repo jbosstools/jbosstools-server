@@ -54,7 +54,7 @@ public class ASPerspective implements IPerspectiveFactory {
 		outputfolder.addView(JavaUI.ID_SOURCE_VIEW);
 		outputfolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 		outputfolder.addView("org.eclipse.ui.views.PropertySheet");
-		outputfolder.addView("org.jboss.ide.eclipse.packages.ui.ProjectPackagesView");
+		outputfolder.addView("org.jboss.ide.eclipse.archives.ui.ProjectArchivesView");
 		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
