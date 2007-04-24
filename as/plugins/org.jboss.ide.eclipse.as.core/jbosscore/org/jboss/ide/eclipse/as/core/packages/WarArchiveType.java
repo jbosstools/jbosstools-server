@@ -184,12 +184,10 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "war";
 	}
 
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return "WAR";
 	}
 }

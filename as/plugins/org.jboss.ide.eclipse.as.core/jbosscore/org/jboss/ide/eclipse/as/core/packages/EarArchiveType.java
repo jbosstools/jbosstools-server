@@ -88,12 +88,10 @@ public class EarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "ear";
 	}
 
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
+		return "EAR";
 	}
 }

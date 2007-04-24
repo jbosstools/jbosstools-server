@@ -40,7 +40,6 @@ import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEven
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.core.util.ResourceUtil;
 
 /**
  *
@@ -102,7 +101,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		IArchive pack = getPackage(module);
-		IPath sourcePath = ResourceUtil.makeAbsolute(pack.getArchiveFilePath(), pack.isDestinationInWorkspace());
+		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPathRoot = new Path(server.getDeployDirectory());
 		
 		// if destination is deploy directory... no need to re-copy!

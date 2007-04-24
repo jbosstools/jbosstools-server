@@ -66,10 +66,6 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		ArchivesCore.getInstance().addBuildListener(this);
 	}
 	
-	public void startedBuildingPackage(IArchive pkg) {
-		System.out.println("starting pkg: " + pkg.getName());
-	}
-
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
 		IPath filePath2 = makeAbsolute(filePath, fileset); // change
@@ -199,4 +195,8 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		// TODO Auto-generated method stub
 		
 	}
+	public void startedBuildingPackage(IArchive pkg) {
+		System.out.println("starting pkg: " + pkg.getName());
+	}
+
 }
