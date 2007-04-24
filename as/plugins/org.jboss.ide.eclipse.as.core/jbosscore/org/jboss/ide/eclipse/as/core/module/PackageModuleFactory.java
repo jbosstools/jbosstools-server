@@ -155,6 +155,10 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}
+		
+		public void reset() {
+			members = new HashMap();
+		}
 
 		public IModuleResource[] members() throws CoreException {
 			Collection c = members.values();
