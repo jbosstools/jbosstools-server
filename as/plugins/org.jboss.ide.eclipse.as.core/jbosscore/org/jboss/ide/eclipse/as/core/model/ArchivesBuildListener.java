@@ -72,6 +72,15 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		
 	}
 
+
+	public void finishedBuildingArchive(IArchive pkg) {
+		System.out.println("finishedBuildingPackage started: " + pkg.getName());
+		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
+			publish(pkg);
+		}
+		System.out.println("done publishing from finishedBuildingPackage: " + pkg.getName());
+	}
+
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
 		IPath filePath2 = makeAbsolute(filePath, fileset); // change
@@ -89,14 +98,6 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		IPath file = ModelUtil.getBaseFile(fileset, local);
 		return file;
 	}
-	public void finishedBuildingPackage(IArchive pkg) {
-		System.out.println("finishedBuildingPackage started: " + pkg.getName());
-		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
-			publish(pkg);
-		}
-		System.out.println("done publishing from finishedBuildingPackage: " + pkg.getName());
-	}
-
 
 	
 	// If we're supposed to auto-deploy, get on it
@@ -173,11 +174,6 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	}
 
 	public void finishedBuild(IProject project) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void finishedBuildingArchive(IArchive pkg) {
 		// TODO Auto-generated method stub
 		
 	}
