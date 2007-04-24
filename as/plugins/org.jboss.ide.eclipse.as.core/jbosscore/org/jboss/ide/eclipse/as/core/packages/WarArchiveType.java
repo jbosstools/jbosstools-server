@@ -184,7 +184,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getId() {
-		return "war";
+		return WAR_PACKAGE_TYPE;
 	}
 
 	public String getLabel() {

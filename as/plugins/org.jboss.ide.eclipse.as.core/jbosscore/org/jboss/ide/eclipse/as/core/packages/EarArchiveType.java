@@ -88,7 +88,7 @@ public class EarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getId() {
-		return "ear";
+		return EAR_PACKAGE_TYPE;
 	}
 
 	public String getLabel() {

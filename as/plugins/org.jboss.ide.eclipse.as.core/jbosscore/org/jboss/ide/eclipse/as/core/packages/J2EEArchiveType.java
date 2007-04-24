@@ -97,7 +97,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 		IArchive jar = ArchiveNodeFactory.createArchive();
 			
 		if( deployDirectory != null ) {
-			jar.setDestinationPath(new Path(deployDirectory), false);
+			jar.setDestinationPath(new Path(deployDirectory), ResourcesPlugin.getWorkspace().getRoot().getLocation().isPrefixOf(new Path(deployDirectory)));
 			jar.setExploded(false);
 		} else {
 			jar.setDestinationPath(project.getLocation(), true);
@@ -107,7 +107,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			
 		IArchiveFileSet classes = ArchiveNodeFactory.createFileset();
 		classes.setIncludesPattern("**/*");
-		classes.setSourcePath(sourceContainer.getLocation());
+		classes.setSourcePath(sourceContainer.getFullPath(), true);
 		jar.addChild(classes);
 		return jar;
 	}
@@ -134,7 +134,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			sourceContainer = project;
 		}
 
-		fs.setSourcePath(sourceContainer.getLocation());
+		fs.setSourcePath(sourceContainer.getFullPath(), true);
 		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern );
 		parent.addChild(fs);
 		return fs;
