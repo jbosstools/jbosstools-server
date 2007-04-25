@@ -59,9 +59,9 @@ public class JstPublisher extends PackagesPublisher {
 		super(server, context);
 	}
 
-	public void publishModule(int kind, int deltaKind, int modulePublishState,
+	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
 			IModule module, IProgressMonitor monitor) throws CoreException {
-		IStatus status;
+		IStatus status = null;
 		if(ServerBehaviourDelegate.REMOVED == deltaKind){
         	status = unpublish(server, module, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
@@ -70,6 +70,7 @@ public class JstPublisher extends PackagesPublisher {
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
         	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
         }
+		return status;
 	}
 
 	protected IStatus publish(IDeployableServer jbServer, IModule module, int kind, 
@@ -106,7 +107,8 @@ public class JstPublisher extends PackagesPublisher {
 		IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(module);
 		if( type != null ) {
     		IArchive topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
-    		topLevel.setDestinationPath(new Path(deployDir), false);
+    		topLevel.setDestinationPath(new Path(deployDir));
+    		topLevel.setInWorkspace(false);
     		return topLevel;
 		} 
 		return null;

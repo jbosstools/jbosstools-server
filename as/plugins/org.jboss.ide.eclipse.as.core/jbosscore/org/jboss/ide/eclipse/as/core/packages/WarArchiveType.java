@@ -65,23 +65,19 @@ public class WarArchiveType extends J2EEArchiveType {
 	
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
+		topLevel.setDestinationPath(new Path(project.getName()));
+		topLevel.setInWorkspace(true);
+		IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
+		IArchiveFolder lib = addFolder(project, webinf, LIB);
+		IArchiveFolder classes = addFolder(project, webinf, CLASSES);
+		addReferencedProjectsAsLibs(project, lib);
+		addClassesFileset(project, classes);
+
 		if( mod == null ) {
-			topLevel.setDestinationPath(new Path(project.getName()), true);
-			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
-			IArchiveFolder lib = addFolder(project, webinf, LIB);
-			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 			addWebinfFileset(project, webinf);
 			addLibFileset(project, lib, true);
-			addReferencedProjectsAsLibs(project, lib);
-			addClassesFileset(project, classes);
 		} else {
-			topLevel.setDestinationPath(new Path(project.getName()), true);
-			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
-			IArchiveFolder lib = addFolder(project, webinf, LIB);
-			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 			addWebContentFileset(project, topLevel);
-			addReferencedProjectsAsLibs(project, lib);
-			addClassesFileset(project, classes);
 		}
 		return topLevel;
 	}
@@ -161,7 +157,8 @@ public class WarArchiveType extends J2EEArchiveType {
 			IProject project = mod.getProject();
 
 			IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
-			topLevel.setDestinationPath(new Path(project.getName()), true);
+			topLevel.setDestinationPath(new Path(project.getName()));
+			topLevel.setInWorkspace(true);
 			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
 			IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
 			IArchiveFolder lib = addFolder(project, metainf, LIB);

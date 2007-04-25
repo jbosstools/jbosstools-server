@@ -23,10 +23,11 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 
 public interface IJBossServerPublisher {
-	public void publishModule(int kind, int deltaKind, int modulePublishState,
+	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
 			IModule module, IProgressMonitor monitor) 
 								throws CoreException;
 	public int getPublishState();

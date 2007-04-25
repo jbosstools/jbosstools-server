@@ -54,7 +54,8 @@ public class EarArchiveType extends J2EEArchiveType {
 	public IArchive createDefaultConfiguration2(IProject project,
 			IProgressMonitor monitor) {
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
-		topLevel.setDestinationPath(project.getLocation(), true);//setDestinationContainer(project);
+		topLevel.setDestinationPath(project.getLocation());
+		topLevel.setInWorkspace(true);
 		IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
 		IArchiveFolder lib = addFolder(project, metainf, LIB);
 		addFileset(project, metainf, new Path(project.getName()).append(METAINF).toOSString(), null);

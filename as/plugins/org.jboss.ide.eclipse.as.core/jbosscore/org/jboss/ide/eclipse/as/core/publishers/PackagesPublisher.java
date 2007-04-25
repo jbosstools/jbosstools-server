@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
@@ -67,22 +68,23 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
-    public void publishModule(int kind, int deltaKind, int modulePublishState, 
+    public IStatus publishModule(int kind, int deltaKind, int modulePublishState, 
     		IModule module, IProgressMonitor monitor) throws CoreException {
 		try {
 	    	// if it's being removed
 	    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
 	    		removeModule(module, kind, deltaKind, monitor);
-	    		return;
+	    		return null;
 	    	}
 	    	
 	    	if( deltaKind == ServerBehaviourDelegate.ADDED || deltaKind == ServerBehaviourDelegate.CHANGED) {
 	    		publishModule(module, kind, deltaKind,  modulePublishState, monitor);
-	    		return;
+	    		return null;
 	    	}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	protected void removeModule(IModule module, int kind, int deltaKind, IProgressMonitor monitor) {
