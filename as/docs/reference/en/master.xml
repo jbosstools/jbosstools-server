@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+"../../resources/support/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY setup SYSTEM "modules/setup.xml">
+
+]>
+<book>
+    <bookinfo>
+        <title>JBoss AS Plugin</title>
+        <copyright>
+			<year>2007</year>
+			<holder>Red Hat</holder>
+        </copyright>
+    	
+    </bookinfo>
+	<toc/>  
+
+&setup;
+   
+	
+</book>    
