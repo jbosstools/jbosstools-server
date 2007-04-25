@@ -36,6 +36,7 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
@@ -156,21 +157,23 @@ public class WarArchiveType extends J2EEArchiveType {
 		try {
 			IProject project = mod.getProject();
 
+			// create the stub
 			IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
 			topLevel.setDestinationPath(new Path(project.getName()));
 			topLevel.setInWorkspace(true);
+			
+			// add lib folder so we can add libraries
 			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
-			IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
-			IArchiveFolder lib = addFolder(project, metainf, LIB);
-			addFileset(project, webinf, 
-					new Path(project.getName()).append(WEBCONTENT).append(WEBINF).toOSString(), null);
+			IArchiveFolder lib = addFolder(project, webinf, LIB);
+			
+			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
 
+			
+			// package each child and add to lib folder
 			IWebModule webModule = (IWebModule)mod.loadAdapter(IWebModule.class, monitor);
 			IModule[] childModules = webModule.getModules();
-			
 			for (int i = 0; i < childModules.length; i++) {
 				IModule child = childModules[i];
-				// package each child and add
 				lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));
 			}
 			return topLevel;
