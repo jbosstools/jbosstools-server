@@ -59,10 +59,10 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 

@@ -63,7 +63,6 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
@@ -71,6 +70,7 @@ import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider.XPathPropertyLabelProvider;
