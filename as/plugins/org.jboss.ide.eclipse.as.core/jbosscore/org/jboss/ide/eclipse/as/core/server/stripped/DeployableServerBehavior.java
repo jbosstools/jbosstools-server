@@ -21,7 +21,7 @@ import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.module.PackageModuleFactory;
+import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;

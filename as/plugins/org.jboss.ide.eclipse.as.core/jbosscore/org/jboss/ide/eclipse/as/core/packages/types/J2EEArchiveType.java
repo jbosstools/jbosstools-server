@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.packages;
+package org.jboss.ide.eclipse.as.core.packages.types;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

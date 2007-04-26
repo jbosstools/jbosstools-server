@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.module;
+package org.jboss.ide.eclipse.as.core.packages;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;

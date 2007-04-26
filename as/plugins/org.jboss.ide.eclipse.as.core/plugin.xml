@@ -194,7 +194,7 @@
                versions="1.0"/>
       </moduleFactory> -->
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.module.PackageModuleFactory"
+            class="org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory"
             id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
             projects="true">
          <moduleType
@@ -218,7 +218,7 @@
          </enablement>
       </moduleArtifactAdapter>
       <moduleArtifactAdapter
-            class="org.jboss.ide.eclipse.as.core.module.PackagedArtifactAdapter"
+            class="org.jboss.ide.eclipse.as.core.packages.PackagedArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
             priority="0">
          <enablement>
@@ -397,11 +397,11 @@
    <extension
          point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.WarArchiveType"
+            class="org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.warArchive"
             label="WAR"/>
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.EarArchiveType"
+            class="org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.earArchive"
             label="EAR"/>
    </extension>

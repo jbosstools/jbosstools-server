@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.jboss.ide.eclipse.as.core.model.ArchivesBuildListener;
+import org.jboss.ide.eclipse.as.core.packages.ArchivesBuildListener;
 import org.osgi.framework.BundleContext;
 
 /**

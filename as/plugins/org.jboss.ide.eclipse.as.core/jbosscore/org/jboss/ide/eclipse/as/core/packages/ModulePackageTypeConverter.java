@@ -24,6 +24,8 @@ package org.jboss.ide.eclipse.as.core.packages;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
+import org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType;
+import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
 
 /**
  *
