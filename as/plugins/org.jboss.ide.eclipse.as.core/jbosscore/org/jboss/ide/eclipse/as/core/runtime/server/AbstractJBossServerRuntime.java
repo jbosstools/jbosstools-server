@@ -59,7 +59,7 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 		}
 		
 		// not found, return default vm
-		return null;
+		return JavaRuntime.getDefaultVMInstall();
 	}
 	
 	public String getJBossConfiguration() {
