@@ -31,9 +31,9 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class ServerProcessModel implements IServerLifecycleListener {
 

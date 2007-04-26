@@ -30,8 +30,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.WebResource;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	public JBossLaunchAdapter() {

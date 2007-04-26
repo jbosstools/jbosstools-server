@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.runtime.server;
 
-import org.eclipse.wst.server.core.model.RuntimeDelegate;
-import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 
 public class JBoss40ServerRuntime extends AbstractJBossServerRuntime {
 

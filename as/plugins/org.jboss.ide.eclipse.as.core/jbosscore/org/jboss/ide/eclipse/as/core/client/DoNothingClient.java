@@ -27,7 +27,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ClientDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * This client will only copy to the deploy directory,
