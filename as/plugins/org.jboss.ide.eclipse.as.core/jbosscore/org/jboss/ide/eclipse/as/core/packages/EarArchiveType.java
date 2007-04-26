@@ -30,7 +30,7 @@ import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
-import org.jboss.ide.eclipse.archives.core.model.types.IArchiveType;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 
 /**
  *

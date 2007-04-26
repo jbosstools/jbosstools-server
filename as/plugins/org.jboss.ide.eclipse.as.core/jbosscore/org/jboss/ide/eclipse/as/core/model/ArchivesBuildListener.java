@@ -74,11 +74,9 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 
 
 	public void finishedBuildingArchive(IArchive pkg) {
-		System.out.println("finishedBuildingPackage started: " + pkg.getName());
 		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
 			publish(pkg);
 		}
-		System.out.println("done publishing from finishedBuildingPackage: " + pkg.getName());
 	}
 
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
