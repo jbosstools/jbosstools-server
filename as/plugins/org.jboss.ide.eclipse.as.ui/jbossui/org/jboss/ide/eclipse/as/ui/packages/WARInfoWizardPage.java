@@ -45,8 +45,8 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProvider;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
-import org.jboss.ide.eclipse.as.core.packages.J2EEArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.WarArchiveType;
+import org.jboss.ide.eclipse.as.core.packages.types.J2EEArchiveType;
+import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class WARInfoWizardPage extends WizardPageWithNotification {
