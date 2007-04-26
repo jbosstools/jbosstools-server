@@ -44,19 +44,30 @@ import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 
+/**
+ * A class of launch defaults including how to start, stop, and twiddle 
+ * a server.
+ * @author <a href="rob.stryker@redhat.com">Rob Stryker</a>
+ *
+ */
 public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 
-	protected static String startMainType = "org.jboss.Main";
-	protected static String stopMainType = "org.jboss.Shutdown";
-	protected static String twiddleMainType = "org.jboss.console.twiddle.Twiddle";
+	/*
+	 * Can be overwritten by subclasses 
+	 */
+	protected String startMainType = "org.jboss.Main";
+	protected String stopMainType = "org.jboss.Shutdown";
+	protected String twiddleMainType = "org.jboss.console.twiddle.Twiddle";
 	
-	protected static String defaultShutdownArgs = "-S";
-	protected static String defaultVMArgs = "";
+	protected String defaultShutdownArgs = "-S";
+	protected String defaultVMArgs = "";
 	
-	protected static String runJar = "bin" + File.separator + "run.jar";
-	protected static String shutdownJar = "bin" + File.separator + "shutdown.jar";
-	protected static String twiddleJar = "bin" + File.separator + "twiddle.jar";
+	protected String runJar = "bin" + File.separator + "run.jar";
+	protected String shutdownJar = "bin" + File.separator + "shutdown.jar";
+	protected String twiddleJar = "bin" + File.separator + "twiddle.jar";
 
+
+	
 	protected IServer server;
 	protected IJBossServerRuntime runtime;
 	protected JBossServer jbServer;

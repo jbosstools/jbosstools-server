@@ -26,6 +26,11 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
+/**
+ * Setting launch defaults. Each server can have it's own implementation
+ * @author <a href="rob.stryker@redhat.com">Rob Stryker</a>
+ *
+ */
 public interface IJBossServerLaunchDefaults {
 	public String getStartArgs();
 	public String getStopArgs();
