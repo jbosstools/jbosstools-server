@@ -473,4 +473,13 @@
    </extension>
    
 
+   <extension
+         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
+      <packageType
+            class="org.jboss.ide.eclipse.as.core.packages.types.Ejb30PackageType"
+            id="org.jboss.ide.eclipse.as.core.packages.types.ejbPackageType"
+            label="EJB 3.0"/>
+   </extension>
+
+
 </plugin>

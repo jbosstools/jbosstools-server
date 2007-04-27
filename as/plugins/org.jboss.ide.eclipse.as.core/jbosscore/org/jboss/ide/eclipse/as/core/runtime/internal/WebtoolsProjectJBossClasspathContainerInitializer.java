@@ -47,6 +47,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 	private static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet("jst.web");
 	private static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet("jst.ejb");
 	private static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet("jst.ear");
+	private static final IProjectFacet JBOSS_EJB_FACET = ProjectFacetsManager.getProjectFacet("jbide.ejb30");
 	private static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet("jst.utility");
 	private static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet("jst.connector");
 	private static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet("jst.appclient");
@@ -132,11 +133,25 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				AbstractJBossServerRuntime jbsRuntime) {
 			if( facetId.equals(JST_JAVA_FACET.getId())) {
 				return loadJREClasspathEntries(jbsRuntime);
+			} else if( jbVersion.equals("4.2")) {
+				return loadClasspathEntries42(runtimeId, facetId, facetVersion, serverHome, configName);
 			} else if( jbVersion.equals("4.0"))
 				return loadClasspathEntries40(runtimeId, facetId, facetVersion, serverHome, configName);
 			if( jbVersion.equals("3.2")) 
 				return loadClasspathEntries32(runtimeId, facetId, facetVersion, serverHome, configName);
 			return loadClasspathEntriesDefault(runtimeId, facetId, facetVersion, serverHome, configName);
+		}
+		
+		protected boolean isEjb30(String facetId, String facetVersion) {
+			if( facetId.equals(EJB_FACET.getId()) && facetVersion.equals("3.0")) 
+				return true;
+			if( facetId.equals(JBOSS_EJB_FACET.getId())) 
+				return true;
+			return false;
+		}
+		
+		protected IClasspathEntry getEntry(IPath path) {
+			return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
 		}
 		
 		protected IClasspathEntry[] loadJREClasspathEntries(AbstractJBossServerRuntime jbsRuntime) {
@@ -148,36 +163,90 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			}
 			return null;
 		}
-		
+
+		protected IClasspathEntry[] loadClasspathEntries42(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
+			IPath homePath = new Path(serverHome);
+			IPath configPath = homePath.append("server").append(configName);
+			ArrayList list = new ArrayList();
+			if (facetId.equals(WEB_FACET.getId())) {
+				list.add(getEntry(configPath.append("lib").append("jsp-api.jar")));
+				list.add(getEntry(homePath.append("client").append("servlet-api.jar")));
+			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
+					list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
+			} else if( isEjb30(facetId, facetVersion)) {
+				// path roots
+				IPath deploy = configPath.append("deploy");
+				IPath deployer = deploy.append("ejb3.deployer");
+				IPath aopDeployer = deploy.append("jboss-aop-jdk50.deployer");
+				
+				list.add(getEntry(configPath.append("lib").append("jboss-ejb3x.jar")));
+				list.add(getEntry(deployer.append("jboss-ejb3.jar")));
+				list.add(getEntry(deployer.append("jboss-annotations-ejb3.jar")));
+				
+				// aop
+				list.add(getEntry(aopDeployer.append("jboss-aop-jdk50.jar")));
+				list.add(getEntry(aopDeployer.append("jboss-aspect-library-jdk50.jar")));
+				
+				// hibernate
+				list.add(getEntry(homePath.append("client").append("hibernate-client.jar")));
+				
+			
+			} else if( facetId.equals(EAR_FACET.getId())) {
+				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
+			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
+				list.add(getEntry(homePath.append("client").append("jbossall-client.jar")));
+			}
+			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+		}
+
 		protected IClasspathEntry[] loadClasspathEntries40(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
 			if (facetId.equals(WEB_FACET.getId())) {
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(configPath.append("lib").append("javax.servlet.jsp.jar")).getClasspathEntry());
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("javax.servlet.jar")).getClasspathEntry());
-			} else if( facetId.equals(EJB_FACET.getId()) || facetId.equals(EAR_FACET.getId())) {
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("jboss-j2ee.jar")).getClasspathEntry());
+				list.add(getEntry(configPath.append("lib").append("javax.servlet.jsp.jar")));
+				list.add(getEntry(homePath.append("client").append("javax.servlet.jar")));
+			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
+				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
+			} else if( isEjb30(facetId, facetVersion)) {
+				// path roots
+				IPath deploy = configPath.append("deploy");
+				IPath deployer = deploy.append("ejb3.deployer");
+				IPath aopDeployer = deploy.append("jboss-aop-jdk50.deployer");
+				
+				// ejb3
+				list.add(getEntry(deployer.append("jboss-ejb3x.jar")));
+				list.add(getEntry(deployer.append("jboss-ejb3.jar")));
+				list.add(getEntry(deployer.append("jboss-annotations-ejb3.jar")));
+				
+				// aop
+				list.add(getEntry(aopDeployer.append("jboss-aop-jdk50.jar")));
+				list.add(getEntry(aopDeployer.append("jboss-aspect-library-jdk50.jar")));
+				
+				// hibernate
+				list.add(getEntry(homePath.append("client").append("hibernate-client.jar")));
+				
+			} else if( facetId.equals(EAR_FACET.getId())) {
+				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
 				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("jbossall-client.jar")).getClasspathEntry());
 			}
-			// || pf.equals(UTILITY_FACET) || pf.equals(CONNECTOR_FACET) 
-			
-			
 			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
 		}
+
+		
 		protected IClasspathEntry[] loadClasspathEntries32(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
 			if (facetId.equals(WEB_FACET.getId())) {
 				IPath p = configPath.append("deploy").append("jbossweb-tomcat50.sar");
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(p.append("jsp-api.jar")).getClasspathEntry());
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(p.append("servlet-api.jar")).getClasspathEntry());
+				list.add(getEntry(p.append("jsp-api.jar")));
+				list.add(getEntry(p.append("servlet-api.jar")));
 			} else if( facetId.equals(EJB_FACET.getId()) || facetId.equals(EAR_FACET.getId()) ) {
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("jboss-j2ee.jar")).getClasspathEntry());
+				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
-				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("jbossall-client.jar")).getClasspathEntry());
+				list.add(getEntry(homePath.append("client").append("jbossall-client.jar")));
 			}
 			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
 		}
