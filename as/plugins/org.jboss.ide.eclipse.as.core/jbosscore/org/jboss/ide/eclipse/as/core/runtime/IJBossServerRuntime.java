@@ -31,4 +31,5 @@ public interface IJBossServerRuntime {
 
 	public IVMInstall getVM();
 	public String getJBossConfiguration();
+	public String getId();
 }

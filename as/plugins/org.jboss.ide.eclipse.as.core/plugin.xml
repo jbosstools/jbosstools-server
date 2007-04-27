@@ -40,6 +40,24 @@
             startTimeout="450000"
             stopTimeout="450000"
             supportsRemoteHosts="false"/>
+            
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            description="%jboss.version.42.description"
+            hasConfiguration="true"
+            id="org.jboss.ide.eclipse.as.42"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            launchModes="run,debug"
+            name="%jboss.version.42.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.42"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000" 
+            supportsRemoteHosts="false"/>
+            
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServer"
@@ -106,16 +124,35 @@
           <moduleType
                 types="jbide.ejb30"
                 versions="1.0"/>
-<!--          <moduleType
-                types="jboss.archive"
-                versions="1.0"/>
-          <moduleType
-                types="jboss.xml"
-                versions="1.0"/>  -->
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
       </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss42ServerRuntime"
+             description="%jboss.version.42.description"
+             name="JBoss 4.2 Server Adapter Runtime"
+             id="org.jboss.ide.eclipse.as.runtime.42"
+             version="4.2">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4"/>
+          <moduleType
+                types="jbide.ejb30"
+                versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+      </runtimeType>
+
+
       <runtimeType
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerRuntime"
             description="A jboss stripped server runtime"
@@ -135,12 +172,6 @@
           <moduleType
                 types="jbide.ejb30"
                 versions="1.0"/>
-<!--          <moduleType
-                types="jboss.archive"
-                versions="1.0"/> -->
-          <moduleType
-                types="jboss.xml"
-                versions="1.0"/>                
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
@@ -209,14 +240,14 @@
    <!-- Adapters and clients to make stuff 'runnable' on server -->
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
-      <moduleArtifactAdapter
+<!--      <moduleArtifactAdapter
             class="org.jboss.ide.eclipse.as.core.module.JBossModuleArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.artifactAdapter"
             priority="20">
          <enablement>
             <instanceof value="org.eclipse.core.resources.IResource"/>
          </enablement>
-      </moduleArtifactAdapter>
+      </moduleArtifactAdapter> -->
       <moduleArtifactAdapter
             class="org.jboss.ide.eclipse.as.core.packages.PackagedArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
@@ -278,6 +309,10 @@
             runtime-component="org.jboss.ide.eclipse.as.runtime.component.40"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
             version="4.0"/>
+      <runtimeFacetMapping
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component.42"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.42"
+            version="4.2"/>
    </extension>
 
 
@@ -287,12 +322,16 @@
          point="org.eclipse.wst.common.project.facet.core.runtimes">
       <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component.32"/>
       <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component.40"/>
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component.42"/>
       <runtime-component-version
             type="org.jboss.ide.eclipse.as.runtime.component.32"
             version="3.2"/>
       <runtime-component-version
             type="org.jboss.ide.eclipse.as.runtime.component.40"
             version="4.0"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component.42"
+            version="4.2"/>
 
 
 
@@ -345,6 +384,30 @@
              version="1.0"/>
      </supported>
 
+      <supported>
+        <runtime-component
+         id="org.jboss.ide.eclipse.as.runtime.component.42"
+         version="4.2"/>
+       <facet
+         id="jst.web"
+         version="2.2,2.3,2.4"/>
+       <facet id="jst.java" version="1.3,1.4,5.0"/>  
+       <facet
+         id="jst.utility"
+         version="1.0"/>
+       <facet
+             id="jst.ejb"
+             version="2.0,2.1"/>
+       <facet
+             id="jst.ear"
+             version="1.2,1.3,1.4"/>
+       <facet
+             id="jst.appclient"
+             version="1.2,1.3,1.4"/>
+       <facet
+             id="jbide.ejb30"
+             version="1.0"/>
+     </supported>
 
 
 
@@ -356,6 +419,9 @@
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component.40"
             version="4.0"/>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.42"
+            version="4.2"/>
       <factory
          class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider$Factory"/>
       <type
