@@ -17,11 +17,19 @@
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.42"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image
+            icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.32"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.40"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.runtime.42"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
@@ -44,6 +52,10 @@
             typeIds="org.jboss.ide.eclipse.as.runtime.40"
   			id="org.jboss.ide.eclipse.as.ui.jboss40RuntimeWizardFragmentWizardFragment"/>
       <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss42RuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.42"
+  			id="org.jboss.ide.eclipse.as.ui.jboss42RuntimeWizardFragmentWizardFragment"/>
+      <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss32ServerWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.32"/>
@@ -51,6 +63,10 @@
             class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss40ServerWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.40"/>
+       <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss42ServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.42"/>
        <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"

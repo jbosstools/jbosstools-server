@@ -164,7 +164,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	
 	private void setWidgetDefaults() {
 		nameText.setText(generateNewRuntimeName());
-		homeDirText.setText("c:/program files/jboss-4.0.5.ga");
+		homeDirText.setText("c:/program files/jboss-" + getRuntimeVersionId() + ".x");
 	}
 	private String generateNewRuntimeName() {
 		String base = "JBoss-runtime";
@@ -190,6 +190,19 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 			return rwc;
 		}
 		return null;
+	}
+	
+	private String getRuntimeVersionId() {
+		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
+		try {
+			Object o = rwc.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+			if( o != null ) {
+				IJBossServerRuntime jbsr = (IJBossServerRuntime)o;
+				return jbsr.getId();
+			}
+		} catch( Exception e ) {
+		}
+		return "4.0";
 	}
 	private boolean isPristineRuntime() {
 		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
