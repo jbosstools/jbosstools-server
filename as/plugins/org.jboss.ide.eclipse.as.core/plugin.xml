@@ -411,7 +411,7 @@
 
 
 
-
+<!--
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.as.runtime.component.32"
@@ -428,11 +428,37 @@
          class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
     </adapter>
      
+         -->
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.32"
+            version="3.2"/>
+      <factory
+         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider$Factory"/>
+      <type
+         class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.40"
+            version="4.0"/>
+      <factory
+         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider$Factory"/>
+      <type
+         class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.42"
+            version="4.2"/>
+      <factory
+         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider$Factory"/>
+      <type
+         class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
    </extension>
-   
-   
-   
-   
    
    
    <extension
@@ -445,7 +471,7 @@
    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
-        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40"
+        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40, org.jboss.ide.eclipse.as.runtime.42"
         class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
    </extension>
    <extension
@@ -470,16 +496,9 @@
             class="org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.earArchive"
             label="EAR"/>
-   </extension>
-   
-
-   <extension
-         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
             class="org.jboss.ide.eclipse.as.core.packages.types.Ejb30PackageType"
             id="org.jboss.ide.eclipse.as.core.packages.types.ejbPackageType"
-            label="EJB 3.0"/>
+            label="EJB 3.0 JAR"/>
    </extension>
-
-
 </plugin>
