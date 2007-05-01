@@ -66,8 +66,8 @@ public class WarArchiveType extends J2EEArchiveType {
 	
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
-		topLevel.setDestinationPath(new Path(project.getName()));
-		topLevel.setInWorkspace(true);
+//		topLevel.setDestinationPath(new Path(project.getName()));
+//		topLevel.setInWorkspace(true);
 		IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
 		IArchiveFolder lib = addFolder(project, webinf, LIB);
 		IArchiveFolder classes = addFolder(project, webinf, CLASSES);

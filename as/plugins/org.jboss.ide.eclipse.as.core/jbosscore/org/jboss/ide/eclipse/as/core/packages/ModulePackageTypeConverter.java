@@ -24,7 +24,6 @@ package org.jboss.ide.eclipse.as.core.packages;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType;
 import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
 
 /**
@@ -36,10 +35,10 @@ public class ModulePackageTypeConverter {
 		String modType = module.getModuleType().getId();
 		if("jst.web".equals(modType)) {
 			return ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
-		} else if("jst.ear".equals(modType)) {
-			return ArchivesCore.getArchiveType(EarArchiveType.EAR_PACKAGE_TYPE);
-		} else if("jbide.ejb30".equals(modType)) {
-			return ArchivesCore.getArchiveType("org.jboss.ide.eclipse.ejb3.wizards.core.ejbPackageType");
+//		} else if("jst.ear".equals(modType)) {
+//			return ArchivesCore.getArchiveType(EarArchiveType.EAR_PACKAGE_TYPE);
+//		} else if("jbide.ejb30".equals(modType)) {
+//			return ArchivesCore.getArchiveType("org.jboss.ide.eclipse.ejb3.wizards.core.ejbPackageType");
 		}
 
 		return null;
