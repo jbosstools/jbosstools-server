@@ -496,5 +496,9 @@
             class="org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
             label="EJB JAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
+            label="EAR"/>
    </extension>
 </plugin>
