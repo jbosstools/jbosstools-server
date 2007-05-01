@@ -12,6 +12,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
+import org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType;
 import org.jboss.ide.eclipse.as.ui.packages.NewWARAction.NewWARWizard;
 import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
 
@@ -25,7 +26,7 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
-		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_WAR);
+		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
 	}
 	
 	public String getText() {
@@ -49,7 +50,7 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 		}
 		
 		public ImageDescriptor getImageDescriptor() {
-			return null;
+			return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
 		}
 
 		public WizardPage[] createWizardPages() {
@@ -59,7 +60,7 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 		}
 
 		public boolean performFinish(IArchive pkg) {
-			pkg.setArchiveType(ArchivesCore.getArchiveType(""));
+			pkg.setArchiveType(ArchivesCore.getArchiveType(EjbArchiveType.ID));
 			return true;
 		}
 		
@@ -75,8 +76,8 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_JAR_WIZARD));
 		}
 		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getArchiveType("");
-	    	// fill please
+	    	IArchiveType type = ArchivesCore.getArchiveType(EjbArchiveType.ID);
+	    	
 		}
 
 		protected String getDescriptionMessage() {
