@@ -12,24 +12,20 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
@@ -38,33 +34,30 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProvider;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
+import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
-import org.jboss.ide.eclipse.as.core.packages.types.J2EEArchiveType;
 import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
-import org.jboss.ide.eclipse.as.ui.Messages;
 
-public class WARInfoWizardPage extends WizardPageWithNotification {
+public abstract class PreviewPage extends WizardPageWithNotification {
 
-	private Group webinfGroup, previewGroup;
-	private NewWARWizard wizard;
-	private TreeViewer warPreview;
+	private Group previewGroup;
+	protected AbstractArchiveWizard wizard;
+	private TreeViewer previewViewer;
 	private boolean hasCreated = false;
-	private Text webinfFolders;
-	private Button webinfFoldersButton;
-	public WARInfoWizardPage (NewWARWizard wizard) {
-		super("WAR information", "WAR Information", ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
+	public PreviewPage (AbstractArchiveWizard wizard, String name, String title, ImageDescriptor descriptor ) {
+		super( name, title, descriptor);
 		this.wizard = wizard;
 	}
 	
+	protected abstract String getDescriptionMessage();
 	public void createControl(Composite parent) {
-		setMessage("Information for the setup of your WAR. \n" + 
-				"Later, you can customize this packaging structure further.");
+		
+		setMessage(getDescription());
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
 		
@@ -74,83 +67,28 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 		setControl(main);
 	}
 	protected void layoutGroups(Composite main) {
-		webinfGroup = new Group(main, SWT.NONE);
-		FormData webinfData = new FormData();
-		webinfData.left = new FormAttachment(0,5);
-		webinfData.right = new FormAttachment(100,-5);
-		webinfData.top = new FormAttachment(0,5);
-		webinfGroup.setLayoutData(webinfData);
-		webinfGroup.setText("WEB-INF Folders");
-		
 		previewGroup = new Group(main, SWT.NONE);
 		previewGroup.setText("Preview");
 		FormData previewData = new FormData();
 		previewData.left = new FormAttachment(0,5);
 		previewData.right = new FormAttachment(100,-5);
-		previewData.top = new FormAttachment(webinfGroup,5);
+		previewData.top = new FormAttachment(0,5);
 		previewData.bottom = new FormAttachment(100,-5);
 		previewGroup.setLayoutData(previewData);
 		previewGroup.setLayout(new FormLayout());
-		warPreview = new TreeViewer(previewGroup);
-		warPreview.setLabelProvider(new ArchivesLabelProvider());
-		warPreview.setContentProvider(new ArchivesContentProvider());
+		previewViewer = new TreeViewer(previewGroup);
+		previewViewer.setLabelProvider(new ArchivesLabelProvider());
+		previewViewer.setContentProvider(new ArchivesContentProvider());
 		FormData warPreviewData = new FormData();
 		warPreviewData.left = new FormAttachment(0,5);
 		warPreviewData.right = new FormAttachment(100,-5);
 		warPreviewData.top = new FormAttachment(0,5);
 		warPreviewData.bottom = new FormAttachment(100,-5);
-		warPreview.getTree().setLayoutData(warPreviewData);
+		previewViewer.getTree().setLayoutData(warPreviewData);
 		
 	}
 
 	protected void fillGroups() {
-		webinfGroup.setLayout(new FormLayout());
-		webinfFolders = new Text(webinfGroup, SWT.BORDER | SWT.READ_ONLY);
-		webinfFoldersButton = new Button(webinfGroup, SWT.PUSH);
-		webinfFoldersButton.setText(Messages.browse);
-		
-		FormData buttonData = new FormData();
-		buttonData.right = new FormAttachment(100,-5);
-		webinfFoldersButton.setLayoutData(buttonData);
-		
-		FormData textData = new FormData();
-		textData.left = new FormAttachment(0,5);
-		textData.right = new FormAttachment(webinfFoldersButton, -5);
-		webinfFolders.setLayoutData(textData);
-		
-		webinfFoldersButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-			public void widgetSelected(SelectionEvent e) {
-				WorkspaceFolderSelectionDialog dialog = new WorkspaceFolderSelectionDialog(new Shell(), true, webinfFolders.getText());
-				if( dialog.open() == Window.OK) {
-					ArrayList selectedFolders = new ArrayList();
-					Object[] o = dialog.getResult();
-					for( int i = 0; i < o.length; i++ ) {
-						selectedFolders.add(((IResource)o[i]).getFullPath().toOSString());
-					}
-
-					IArchiveFolder webinf = getFolder(wizard.getArchive(), J2EEArchiveType.WEBINF);
-					IArchiveFileSet[] sets = webinf.getFileSets();
-					for( int i = 0; i < sets.length; i++ ) {
-						//String path = sets[i].getSourceContainer.getFullPath().toOSString();
-						String path = sets[i].getSourcePath().toOSString();
-						if( selectedFolders.contains(path)) {
-							selectedFolders.remove(path); // already added
-						} else {
-							// remove ir
-							webinf.removeChild(sets[i]);
-						}
-					}
-					// add whatever's left as new filesets
-					for( int i = 0; i < selectedFolders.size(); i++ ) {
-						J2EEArchiveType.addFileset(wizard.getProject(), 
-								webinf, (String)selectedFolders.get(i), "**/*");
-					}
-					fillWidgets(wizard.getArchive());
-				}
-			}  
-		});
 	}
 	public boolean isPageComplete() {
 		return hasCreated;
@@ -165,7 +103,6 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
     	// if it's already a module type project, hide the meta inf stuff
 		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(wizard.getProject());
 		if( moduleArtifact.getModule() != null ) {
-			webinfGroup.setVisible(false);
 			FormData d = (FormData)previewGroup.getLayoutData();
 			d.top = new FormAttachment(0,5);
 			previewGroup.setLayoutData(d);
@@ -174,35 +111,10 @@ public class WARInfoWizardPage extends WizardPageWithNotification {
 		getWizard().getContainer().updateButtons();
     }
     
-    protected void addToPackage() {
-    	// fill it
-    	IArchiveType type = ArchivesCore.getArchiveType("org.jboss.ide.eclipse.as.core.packages.warPackage");
-    	if( type instanceof WarArchiveType ) {
-    		((WarArchiveType)type).fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
-    	}
-    }
+    protected abstract void addToPackage();
     protected void fillWidgets(IArchive pkg) {
-    	warPreview.setInput(new IArchive[] {pkg});
-    	warPreview.expandAll();
-    	
-    	fillWebinfText(pkg);
-    }
-    
-    protected void fillWebinfText(IArchive pkg) {
-    	// set webinf text
-    	IArchiveFolder webinf = getFolder(pkg, J2EEArchiveType.WEBINF);
-    	String s = "";
-    	if( webinf != null ) {
-    		IArchiveFileSet[] filesets = webinf.getFileSets();
-    		for( int i = 0; i < filesets.length; i++ ) {
-//    			String path = filesets[i].getSourceContainer().getFullPath().toOSString();
-    			String path = filesets[i].getSourcePath().toOSString();
-    			s += path + ",";
-    		}
-    		if( s.length() > 0 ) 
-    			s = s.substring(0, s.length()-1);
-    	}
-    	webinfFolders.setText(s);
+    	previewViewer.setInput(new IArchive[] {pkg});
+    	previewViewer.expandAll();
     }
     
     protected IArchiveFolder getFolder(IArchive pkg, String folderName) {
