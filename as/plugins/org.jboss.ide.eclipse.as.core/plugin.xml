@@ -493,12 +493,8 @@
             id="org.jboss.ide.eclipse.as.core.packages.warArchive"
             label="WAR"/>
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.earArchive"
-            label="EAR"/>
-      <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.types.Ejb30PackageType"
-            id="org.jboss.ide.eclipse.as.core.packages.types.ejbPackageType"
-            label="EJB 3.0 JAR"/>
+            class="org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
+            label="EJB JAR"/>
    </extension>
 </plugin>
