@@ -57,7 +57,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 	protected abstract String getDescriptionMessage();
 	public void createControl(Composite parent) {
 		
-		setMessage(getDescription());
+		setMessage(getDescriptionMessage());
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
 		

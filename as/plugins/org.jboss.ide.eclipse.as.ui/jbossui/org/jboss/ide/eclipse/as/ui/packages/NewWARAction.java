@@ -1,8 +1,8 @@
 package org.jboss.ide.eclipse.as.ui.packages;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IViewActionDelegate;
@@ -12,10 +12,10 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
-import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
 
 public class NewWARAction extends ActionWithDelegate implements IViewActionDelegate {
 
@@ -77,16 +77,18 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		}
 		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getArchiveType("org.jboss.ide.eclipse.as.core.packages.warPackage");
-	    	if( type instanceof WarArchiveType ) {
-	    		((WarArchiveType)type).fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
-	    	}
+	    	IArchiveType type = ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
+    		type.fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
 		}
 
 		protected String getDescriptionMessage() {
 			return 	"Information for the setup of your WAR. \n" + 
 				"Later, you can customize this packaging structure further.";
 		}
+	}
+
+	public IStructuredSelection getSelection() {
+		return ProjectArchivesView.getInstance().getSelection();
 	}
 
 }

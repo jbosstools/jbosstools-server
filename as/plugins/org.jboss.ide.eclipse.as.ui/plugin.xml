@@ -295,6 +295,11 @@
             icon="icons/packages/EJBJar.gif"
             id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
             label="EJB JAR"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.as.ui.packages.NewEARAction"
+            icon="icons/packages/ear.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
+            label="EAR"/>
    </extension>
 
 </plugin>

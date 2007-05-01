@@ -1,6 +1,8 @@
 package org.jboss.ide.eclipse.as.ui.packages;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IViewActionDelegate;
@@ -10,20 +12,23 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType;
-import org.jboss.ide.eclipse.as.ui.packages.NewWARAction.NewWARWizard;
-import org.jboss.ide.eclipse.ui.util.ActionWithDelegate;
 
 public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDelegate {
 
 	public void run() {
-		NewWARWizard wizard = new NewWARWizard();
+		AbstractArchiveWizard wizard = new NewEJBWizard();
 		wizard.init(PlatformUI.getWorkbench(), ProjectArchivesView.getInstance().getSelection());
 		WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 		dialog.open();
 	}
+	public IStructuredSelection getSelection() {
+		return ProjectArchivesView.getInstance().getSelection();
+	}
+
 	
 	public ImageDescriptor getImageDescriptor() {
 		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
@@ -77,7 +82,7 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 		}
 		protected void addToPackage() {
 	    	IArchiveType type = ArchivesCore.getArchiveType(EjbArchiveType.ID);
-	    	
+    		type.fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
 		}
 
 		protected String getDescriptionMessage() {
