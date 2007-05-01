@@ -134,12 +134,12 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			if( facetId.equals(JST_JAVA_FACET.getId())) {
 				return loadJREClasspathEntries(jbsRuntime);
 			} else if( jbVersion.equals("4.2")) {
-				return loadClasspathEntries42(runtimeId, facetId, facetVersion, serverHome, configName);
+				return loadClasspathEntries42(facetId, facetVersion, serverHome, configName);
 			} else if( jbVersion.equals("4.0"))
-				return loadClasspathEntries40(runtimeId, facetId, facetVersion, serverHome, configName);
+				return loadClasspathEntries40(facetId, facetVersion, serverHome, configName);
 			if( jbVersion.equals("3.2")) 
-				return loadClasspathEntries32(runtimeId, facetId, facetVersion, serverHome, configName);
-			return loadClasspathEntriesDefault(runtimeId, facetId, facetVersion, serverHome, configName);
+				return loadClasspathEntries32( facetId, facetVersion, serverHome, configName);
+			return loadClasspathEntriesDefault(facetId, facetVersion, serverHome, configName);
 		}
 		
 		protected boolean isEjb30(String facetId, String facetVersion) {
@@ -164,7 +164,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			return null;
 		}
 
-		protected IClasspathEntry[] loadClasspathEntries42(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
+		protected IClasspathEntry[] loadClasspathEntries42(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
@@ -199,7 +199,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
 		}
 
-		protected IClasspathEntry[] loadClasspathEntries40(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
+		protected IClasspathEntry[] loadClasspathEntries40(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
@@ -235,7 +235,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		}
 
 		
-		protected IClasspathEntry[] loadClasspathEntries32(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
+		protected IClasspathEntry[] loadClasspathEntries32(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
@@ -243,17 +243,24 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				IPath p = configPath.append("deploy").append("jbossweb-tomcat50.sar");
 				list.add(getEntry(p.append("jsp-api.jar")));
 				list.add(getEntry(p.append("servlet-api.jar")));
-			} else if( facetId.equals(EJB_FACET.getId()) || facetId.equals(EAR_FACET.getId()) ) {
+			} else if( (facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion))
+					|| facetId.equals(EAR_FACET.getId()) ) {
 				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
 				list.add(getEntry(homePath.append("client").append("jbossall-client.jar")));
 			}
 			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
 		}
-		protected IClasspathEntry[] loadClasspathEntriesDefault(String runtimeId, String facetId, String facetVersion, String serverHome, String configName) {
+		protected IClasspathEntry[] loadClasspathEntriesDefault(String facetId, String facetVersion, String serverHome, String configName) {
 			return new IClasspathEntry[0];
 		}
 
+		protected IClasspathEntry[] pathsAsEntries(IPath[] paths) {
+			IClasspathEntry[] entries = new IClasspathEntry[paths.length];
+			for( int i = 0; i < paths.length; i++ )
+				entries[i] = getEntry(paths[i]);
+			return entries;
+		}
 		
 	}
 
