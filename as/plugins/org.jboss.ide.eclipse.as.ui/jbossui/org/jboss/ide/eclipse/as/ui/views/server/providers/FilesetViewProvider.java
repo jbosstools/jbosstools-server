@@ -78,15 +78,17 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		createFilter =  new Action() { 
 			public void run() {
 				IDeployableServer server = (IDeployableServer)contentProvider.server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-				FilesetDialog d = new FilesetDialog(new Shell(), server);
-				if( d.open() == Window.OK ) {
-					Fileset fs = d.getFileset();
-					Fileset[] filesetsNew = new Fileset[filesets.length + 1];
-					System.arraycopy(filesets, 0, filesetsNew, 0, filesets.length);
-					filesetsNew[filesetsNew.length-1] = fs;
-					filesets = filesetsNew;
-					saveFilesets(true);
-					refreshViewer();
+				if( server != null ) {
+					FilesetDialog d = new FilesetDialog(new Shell(), server);
+					if( d.open() == Window.OK ) {
+						Fileset fs = d.getFileset();
+						Fileset[] filesetsNew = new Fileset[filesets.length + 1];
+						System.arraycopy(filesets, 0, filesetsNew, 0, filesets.length);
+						filesetsNew[filesetsNew.length-1] = fs;
+						filesets = filesetsNew;
+						saveFilesets(true);
+						refreshViewer();
+					}
 				}
 			}
 		};
@@ -186,7 +188,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		public IServer server;
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof ServerViewProvider ) {
-				return filesets;
+				return filesets == null ? new Object[]{} : filesets;
 			} else if( parentElement instanceof Fileset ) {
 				Fileset fs = (Fileset)parentElement;
 				IPath[] paths = ArchivesCore.findMatchingPaths(
@@ -227,12 +229,14 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		IServer server = contentProvider.server;
 		if( server != null ) {
 			IDeployableServer jbs = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-			ServerAttributeHelper helper = jbs.getAttributeHelper();
-			List tmp = helper.getAttribute(FILESET_KEY, new ArrayList());
-			String[] asStrings = (String[]) tmp.toArray(new String[tmp.size()]);
-			filesets = new Fileset[asStrings.length];
-			for( int i = 0; i < asStrings.length; i++ ) {
-				filesets[i] = new Fileset(asStrings[i]);
+			if( jbs != null ) {
+				ServerAttributeHelper helper = jbs.getAttributeHelper();
+				List tmp = helper.getAttribute(FILESET_KEY, new ArrayList());
+				String[] asStrings = (String[]) tmp.toArray(new String[tmp.size()]);
+				filesets = new Fileset[asStrings.length];
+				for( int i = 0; i < asStrings.length; i++ ) {
+					filesets[i] = new Fileset(asStrings[i]);
+				}
 			}
 		}
 	}

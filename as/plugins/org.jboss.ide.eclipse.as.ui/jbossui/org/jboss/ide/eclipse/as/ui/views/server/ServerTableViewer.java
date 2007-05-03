@@ -86,7 +86,7 @@ public class ServerTableViewer extends TreeViewer {
 	
 	public class TrimmedServerContentProvider implements IStructuredContentProvider, ITreeContentProvider {
 		public Object[] getElements(Object element) {
-			return ServerConverter.getDeployableServersAsIServers();
+			return ServerCore.getServers();
 		}
 
 		public void inputChanged(Viewer theViewer, Object oldInput, Object newInput) {

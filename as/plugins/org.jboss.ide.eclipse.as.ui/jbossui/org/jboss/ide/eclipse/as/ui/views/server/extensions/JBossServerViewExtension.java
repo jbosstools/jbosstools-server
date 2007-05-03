@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -8,6 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
@@ -98,5 +102,21 @@ public abstract class JBossServerViewExtension {
 	}
 	protected void addElement(Object parent, Object child) {
 		JBossServerView.getDefault().getJBViewer().add(new ContentWrapper(parent, provider), new ContentWrapper(child, provider));
+	}
+	
+	// what servers should i show for?
+	protected boolean supports(IServer server) {
+		if( server == null ) return false;
+		return isJBossDeployable(server);
+	}
+	
+	// show for anything that's jboss deployable
+	protected boolean isJBossDeployable(IServer server) {
+		return (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor()) != null;
+	}
+	
+	// show only for full jboss servers
+	protected boolean isJBossServer(IServer server) {
+		return (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor()) != null;
 	}
 }

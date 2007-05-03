@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.osgi.framework.Bundle;
 
@@ -108,6 +109,9 @@ public class ServerViewProvider {
 		}
 	}
 	
+	public boolean supports(IServer server) {
+		return getDelegate().supports(server);
+	}
 	
 	public int getWeight() {
 		return weight;

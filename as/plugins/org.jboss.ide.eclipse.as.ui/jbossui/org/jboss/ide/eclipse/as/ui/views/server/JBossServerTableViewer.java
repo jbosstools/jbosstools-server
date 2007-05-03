@@ -1,6 +1,9 @@
 package org.jboss.ide.eclipse.as.ui.views.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.jface.action.Action;
@@ -186,7 +189,10 @@ public class JBossServerTableViewer extends TreeViewer {
 		
 		public Object[] getElements(Object inputElement) {
 			if( inputElement == null ) return new Object[0];
-			return JBossServerUIPlugin.getDefault().getEnabledViewProviders();
+			IServer tmp = (IServer)getInput();
+			if( tmp == null )
+				return new Object[0];
+			return JBossServerUIPlugin.getDefault().getEnabledViewProviders(tmp);
 		}
 
 		public Object[] getChildren(Object parentElement) {
@@ -225,7 +231,8 @@ public class JBossServerTableViewer extends TreeViewer {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().getEnabledViewProviders();
+			ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().
+				getEnabledViewProviders(newInput instanceof IServer ? (IServer)newInput : null);
 			for( int i = 0; i < providers.length; i++ ) {
 				try {
 					providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);

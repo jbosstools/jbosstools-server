@@ -22,16 +22,13 @@
 package org.jboss.ide.eclipse.as.ui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.osgi.framework.BundleContext;
@@ -107,11 +104,11 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	
 
 	
-	public ServerViewProvider[] getEnabledViewProviders() {
+	public ServerViewProvider[] getEnabledViewProviders(IServer server) {
 		ServerViewProvider[] serverViewExtensions = getAllServerViewProviders();
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < serverViewExtensions.length; i++ ) {
-			if( serverViewExtensions[i].isEnabled()) {
+			if( serverViewExtensions[i].isEnabled() && serverViewExtensions[i].supports(server)) {
 				list.add(serverViewExtensions[i]);
 			}
 		}

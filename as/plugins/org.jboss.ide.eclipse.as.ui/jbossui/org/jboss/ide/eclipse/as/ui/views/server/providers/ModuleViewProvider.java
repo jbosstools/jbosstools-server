@@ -118,6 +118,10 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		return labelProvider;
 	}
 
+	public boolean supports(IServer server) {
+		return true;
+	}
+
 	
 	class ModuleContentProvider implements ITreeContentProvider {
 
