@@ -314,7 +314,8 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 				break;
 			case JRE_CHANGED:
 				int sel = jreCombo.getSelectionIndex();
-				selectedVM = (IVMInstall) installedJREs.get(sel);
+				if( sel != -1 )
+					selectedVM = (IVMInstall) installedJREs.get(sel);
 				break;
 			case CONFIG_CHANGED:
 				break;
