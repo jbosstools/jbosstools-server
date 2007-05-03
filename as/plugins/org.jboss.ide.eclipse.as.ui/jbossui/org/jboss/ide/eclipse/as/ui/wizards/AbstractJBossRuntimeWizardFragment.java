@@ -416,7 +416,8 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 				break;
 			case JRE_CHANGED:
 				int sel = jreCombo.getSelectionIndex();
-				selectedVM = (IVMInstall) installedJREs.get(sel);
+				if( sel != -1 )
+					selectedVM = (IVMInstall) installedJREs.get(sel);
 				break;
 			default:
 				break;
