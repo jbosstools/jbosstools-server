@@ -409,7 +409,8 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 				// update config variable
 				int index = configurations.getTable().getSelectionIndex();
-				config = configurations.getTable().getItem(index).getText();
+				if( index != -1 ) 
+					config = configurations.getTable().getItem(index).getText();
 			}
 
 				updateErrorMessage(SEVERITY_MAJOR);
