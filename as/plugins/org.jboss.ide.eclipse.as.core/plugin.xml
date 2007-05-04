@@ -153,11 +153,12 @@
       </runtimeType>
 
 
+
       <runtimeType
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerRuntime"
-            description="A jboss stripped server runtime"
+            description="A runtime provided to allow a deploy-only server the ability to deploy certain project types."
             id="org.jboss.ide.eclipse.as.runtime.stripped"
-            name="JBoss Stripped Server Runtime"
+            name="JBoss Deploy-only Server Runtime"
             vendor="%providerName"
             version="1.0">
           <moduleType

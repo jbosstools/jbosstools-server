@@ -63,9 +63,7 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		if( factory != null ) return factory;
 		
 		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
-		System.out.println(PackageModuleFactory.FACTORY_TYPE_ID);
 		for( int i = 0; i < factories.length; i++ ) {
-			System.out.println("  " + factories[i].getId());
 			if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
 				Object o = factories[i].getDelegate(new NullProgressMonitor());
 				if( o instanceof PackageModuleFactory ) {

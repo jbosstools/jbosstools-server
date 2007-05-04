@@ -132,7 +132,6 @@ public class WarArchiveType extends J2EEArchiveType {
 			try {
 				IClasspathEntry[] entries = jp.getRawClasspath();
 				for( int i = 0; i < entries.length; i++ ) {
-					System.out.println(entries[i].getContentKind());
 					if( entries[i].getEntryKind() == IClasspathEntry.CPE_PROJECT) {
 						IPath path = entries[i].getPath();
 						IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
