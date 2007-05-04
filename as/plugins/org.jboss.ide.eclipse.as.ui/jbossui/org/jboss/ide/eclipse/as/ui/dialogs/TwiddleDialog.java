@@ -48,12 +48,11 @@ public class TwiddleDialog extends Dialog {
 	private Hyperlink twiddleTutorialLink;
 	
 	
-	public TwiddleDialog(Shell parentShell, IStructuredSelection selection) {
+	public TwiddleDialog(Shell parentShell, Object selection) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
-		Object o = selection.getFirstElement();
-		if( o instanceof IServer ) {
-			server = (IServer)o;
+		if( selection instanceof IServer ) {
+			server = (IServer)selection;
 			entity = ServerProcessModel.getDefault().getModel(server.getId());
 		}
 

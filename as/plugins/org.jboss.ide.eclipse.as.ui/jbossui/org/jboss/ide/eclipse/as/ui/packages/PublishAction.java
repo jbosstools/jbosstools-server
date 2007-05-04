@@ -72,9 +72,9 @@ public class PublishAction implements INodeActionDelegate {
 			this.pack = pack;
 		}
 		public boolean performFinish() {
-			System.out.println("servers: " + getServers());
-			System.out.println("autodeploy: " + getAutoDeploy());
-			System.out.println("always publish to these: " + getAlwaysPublish());
+//			System.out.println("servers: " + getServers());
+//			System.out.println("autodeploy: " + getAutoDeploy());
+//			System.out.println("always publish to these: " + getAlwaysPublish());
 			pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, getServers());
 			pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 			return true;

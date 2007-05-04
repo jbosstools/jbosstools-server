@@ -35,6 +35,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
@@ -131,7 +132,7 @@ public class JBossServerView extends StrippedServerView {
 				final IStructuredSelection selected = ((IStructuredSelection)tableViewer.getSelection());
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						TwiddleDialog dialog = new TwiddleDialog(tableViewer.getTree().getShell(), selected);
+						TwiddleDialog dialog = new TwiddleDialog(tableViewer.getTree().getShell(), selected.getFirstElement());
 						dialog.open();
 					} 
 				} );
@@ -141,54 +142,6 @@ public class JBossServerView extends StrippedServerView {
 		twiddleAction.setText(Messages.TwiddleServerAction);
 		twiddleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.TWIDDLE_IMAGE));
 		
-		
-//		cloneServerAction = new Action() {
-//			public void run() {
-//				Object selected = getSelectedElement();
-//				if( selected != null && selected instanceof JBossServer ) {
-//					final JBossServer server = (JBossServer)selected;
-//					
-//					// Show a wizard
-//					final ServerCloneWizard wizard = new ServerCloneWizard(server);
-//					WizardDialog dlg = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
-//				    int ret = dlg.open();
-//				    if( ret == Window.OK ) {
-//				    	
-//				    	
-//				    	IRunnableWithProgress op = new IRunnableWithProgress() {
-//
-//							public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-//								try {
-//									int filesWork = wizard.getSelectedFiles().length; 
-//							    	int totalWork = filesWork + 1 + 50;
-//							    	monitor.beginTask("Cloning Server", totalWork);
-//	
-//							    	// clone the directories
-//							    	File[] files = wizard.getSelectedFiles();
-//							    	String config = wizard.getConfig();
-//							    	ServerCloneUtil.directoriesClone(files, config, server, new SubProgressMonitor(monitor, filesWork+1));
-//
-//							    	// clone the wst server
-//							    	ServerCloneUtil.wstServerClone(server, wizard.getName(), wizard.getConfig(), 
-//											new SubProgressMonitor(monitor, 50));
-//									
-//									monitor.done();
-//								} catch( Exception e ) {
-//									e.printStackTrace();
-//								}
-//							}
-//				    		
-//				    	};
-//				    	try {
-//				    	new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, op);
-//				    	} catch( Exception e) {
-//				    		e.printStackTrace();
-//				    	}
-//				    }
-//				}
-//			}
-//		};
-//		cloneServerAction.setText(Messages.CloneServerAction);
 	}
 	
 	
@@ -211,10 +164,11 @@ public class JBossServerView extends StrippedServerView {
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		
 		if( getSelectedServer() != null ) {
-			boolean twiddleEnabled = getSelectedServer().getServerState() == IServer.STATE_STARTED;
+			boolean twiddleEnabled = getSelectedServer().getServerState() == IServer.STATE_STARTED
+									&& ServerConverter.getJBossServer(getSelectedServer()) != null;
 			boolean editLaunchEnabled = (JBossServerBehavior)getSelectedServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor()) != null;
 			twiddleAction.setEnabled(twiddleEnabled);
-			editLaunchConfigAction.setEnabled(editLaunchEnabled);
+			editLaunchConfigAction.setEnabled(true);
 		} else {
 			twiddleAction.setEnabled(false);
 			editLaunchConfigAction.setEnabled(false);

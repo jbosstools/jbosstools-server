@@ -753,7 +753,6 @@ public class XPathDialogs {
 				}
 			}
 			xpathCache.put(xpath, list);
-			System.out.println("added to cache");
 			return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
 		}
 		

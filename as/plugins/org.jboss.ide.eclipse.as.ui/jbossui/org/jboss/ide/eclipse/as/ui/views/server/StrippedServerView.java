@@ -59,7 +59,7 @@ public class StrippedServerView extends ViewPart {
 	protected Action[] actions;
 	protected MenuManager restartMenu;
 	
-	protected Action newServerAction, twiddleAction;
+	protected Action newServerAction;
 
 	/**
 	 * ServersView constructor comment.
@@ -287,20 +287,6 @@ public class StrippedServerView extends ViewPart {
 		};
 		newServerAction.setText("New Server");
 		newServerAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.GENERIC_SERVER_IMAGE));
-		
-		twiddleAction = new Action() {
-			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						TwiddleDialog dialog = new TwiddleDialog(tableViewer.getTree().getShell(), 
-								(IStructuredSelection)tableViewer.getSelection());
-						dialog.open();
-					} 
-				} );
-			}
-		};
-		twiddleAction.setText("Twiddle Server");
-		twiddleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.TWIDDLE_IMAGE));
 	}
 
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
