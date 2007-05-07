@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.tools.ant.types.FileSet;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.IPath;
@@ -152,10 +153,11 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 						IEditorInput input = new JavaFileEditorInput(fileStore);
 						IEditorDescriptor desc = PlatformUI.getWorkbench().
 							getEditorRegistry().getDefaultEditor(file.getName());
-					   page.openEditor(input, desc.getId());
+						if( desc != null ) 
+							page.openEditor(input, desc.getId());
 					} 
 				} catch( Exception e ) {
-					
+					e.printStackTrace();
 				}
 			}
 		};
@@ -410,7 +412,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
 	public class FilesetLabelProvider extends LabelProvider {
 	    public Image getImage(Object element) {
-	    	if( element instanceof FolderWrapper ) {
+	    	if( element instanceof Fileset ) {
+	    		return PlatformUI.getWorkbench().getSharedImages()
+                .getImage(ISharedImages.IMG_OBJ_FOLDER);
+	    	} else if( element instanceof FolderWrapper ) {
 	    		return PlatformUI.getWorkbench().getSharedImages()
                 .getImage(ISharedImages.IMG_OBJ_FOLDER);
 	    	} else if( element instanceof PathWrapper ) {
@@ -436,7 +441,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
 	    public String getText(Object element) {
 	    	if( element instanceof PathWrapper ) return ((PathWrapper)element).getLocalizedResourceName();
-	    	if( element instanceof Fileset ) return ((Fileset)element).getName();
+	    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getFolder();
 	        return element == null ? "" : element.toString();//$NON-NLS-1$
 	    }
 
@@ -455,6 +460,18 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			menu.add(editFilter);
 			menu.add(deleteFilter);
 		} else if( selection instanceof PathWrapper ) {
+			File file = ((PathWrapper)selection).getPath().toFile();
+			IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
+			boolean editable = false;
+			if( fileStore != null ) {
+				IEditorInput input = new JavaFileEditorInput(fileStore);
+				IEditorDescriptor desc = PlatformUI.getWorkbench().
+					getEditorRegistry().getDefaultEditor(file.getName());
+				if( input != null && desc != null ) 
+					editable = true;
+			}
+			editFileAction.setEnabled(editable);
+			deleteFileAction.setEnabled(file.isFile());
 			menu.add(editFileAction);
 			menu.add(deleteFileAction);
 		}
