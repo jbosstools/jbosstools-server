@@ -30,6 +30,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -54,6 +55,7 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -177,11 +179,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		 * @return the path
 		 */
 		public IPath getPath() {
-			return path;
+			return new Path(folder).append(path);
 		}
 		
 		public String getLocalizedResourceName() {
-			return path.toOSString().substring(new Path(folder).toOSString().length());
+			//return path.toOSString().substring(new Path(folder).toOSString().length());
+			return path.toOSString();
 		}
 	}
 	public class FilesetContentProvider implements ITreeContentProvider {
@@ -453,6 +456,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			return super.getShellStyle() | SWT.RESIZE;
 		}
 		
+		protected void configureShell(Shell shell) {
+			super.configureShell(shell);
+			shell.setText("New Fileset");
+		}
 		
 		protected Control createDialogArea(Composite parent) {
 			Composite sup = (Composite) super.createDialogArea(parent);
@@ -536,7 +543,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 3));
 			previewWrapper.setText("Preview");
 			
-			previewWrapper.setLayout(new GridLayout(1, false));
+			previewWrapper.setLayout(new FillLayout());
 			preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);
 		}
 		
