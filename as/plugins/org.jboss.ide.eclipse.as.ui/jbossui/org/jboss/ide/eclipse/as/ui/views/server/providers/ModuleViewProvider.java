@@ -33,6 +33,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
@@ -46,6 +48,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
@@ -90,6 +93,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		};
 		deleteModuleAction.setText(Messages.DeleteModuleText);
 		deleteModuleAction.setDescription(Messages.DeleteModuleDescription);
+		deleteModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.UNPUBLISH_IMAGE));
 		
 		publishModuleAction = new Action() {
 			public void run() {
@@ -100,6 +104,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		};
 		publishModuleAction.setText(Messages.PublishModuleText);
 		publishModuleAction.setDescription(Messages.PublishModuleDescription);
+		publishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
