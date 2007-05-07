@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -55,7 +56,6 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -164,29 +164,65 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
 	public static class PathWrapper {
 		private IPath path;
-		private String folder;
-		public PathWrapper(IPath path, String folder) {
+		private IPath folder;
+		public PathWrapper(IPath path, IPath folder) {
 			this.path = path;
 			this.folder = folder;
 		}
 		/**
 		 * @return the folder
 		 */
-		public String getFolder() {
+		public IPath getFolder() {
 			return folder;
 		}
 		/**
 		 * @return the path
 		 */
 		public IPath getPath() {
-			return new Path(folder).append(path);
+			return folder.append(path);
 		}
 		
 		public String getLocalizedResourceName() {
-			//return path.toOSString().substring(new Path(folder).toOSString().length());
 			return path.toOSString();
 		}
 	}
+	
+	public static class FolderWrapper extends PathWrapper {
+		private HashMap childrenFolders;
+		private ArrayList children;
+		public FolderWrapper(IPath path, IPath folder) {
+			super(path, folder);
+			children = new ArrayList();
+			childrenFolders = new HashMap();
+		}
+		public void addChild(IPath path) {
+			if( path.segmentCount() == 1 ) {
+				children.add(new PathWrapper(path, getFolder().append(getLocalizedResourceName())));
+			} else {
+				addPath(children, childrenFolders, path, getFolder().append(getLocalizedResourceName()));				
+			}
+		}
+		public Object[] getChildren() {
+			return (Object[]) children.toArray(new Object[children.size()]);
+		}
+	}
+	
+	private static void addPath(ArrayList children, HashMap folders, IPath path, IPath folder) {
+		try {
+		FolderWrapper fw = null;
+		if( !folders.containsKey(path.segment(0))) {
+			fw = new FolderWrapper(path.removeLastSegments(path.segmentCount()-1), folder);
+			folders.put(path.segment(0), fw);
+			children.add(fw);
+		} else {
+			fw = (FolderWrapper)folders.get( path.segment(0));
+		}
+		fw.addChild(path.removeFirstSegments(1));
+		} catch( Exception e ) {
+			e.printStackTrace();
+		}
+	}
+
 	public class FilesetContentProvider implements ITreeContentProvider {
 		public IServer server;
 		public Object[] getChildren(Object parentElement) {
@@ -196,11 +232,19 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				Fileset fs = (Fileset)parentElement;
 				IPath[] paths = ArchivesCore.findMatchingPaths(
 						new Path(fs.getFolder()), fs.getIncludesPattern(), fs.getExcludesPattern());
-				PathWrapper[] wrappers = new PathWrapper[paths.length];
-				for( int i = 0; i < wrappers.length; i++ ) {
-					wrappers[i] = new PathWrapper(paths[i], fs.getFolder());
+
+				HashMap folders = new HashMap();
+				ArrayList wrappers = new ArrayList();
+				for( int i = 0; i < paths.length; i++ ) {
+					if( paths[i].segmentCount() == 1 ) {
+						wrappers.add(new PathWrapper(paths[i], new Path(fs.getFolder())));
+					} else {
+						addPath(wrappers, folders, paths[i], new Path(fs.getFolder()));
+					}
 				}
-				return wrappers;
+				return (Object[]) wrappers.toArray(new Object[wrappers.size()]);
+			} else if( parentElement instanceof FolderWrapper ) {
+				return ((FolderWrapper)parentElement).getChildren();
 			}
 			return new Object[0];
 		}
@@ -366,7 +410,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
 	public class FilesetLabelProvider extends LabelProvider {
 	    public Image getImage(Object element) {
-	    	if( element instanceof PathWrapper ) {
+	    	if( element instanceof FolderWrapper ) {
+	    		return PlatformUI.getWorkbench().getSharedImages()
+                .getImage(ISharedImages.IMG_OBJ_FOLDER);
+	    	} else if( element instanceof PathWrapper ) {
 		    	String fileName = ((PathWrapper)element).getPath().toOSString();
 		    	IContentTypeManager manager = Platform.getContentTypeManager();
 		    	IContentTypeMatcher matcher = manager.getMatcher(null, null);
