@@ -2,9 +2,13 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
 "../../resources/support/docbook-dtd/docbookx.dtd"
 [
-<!ENTITY setup SYSTEM "modules/setup.xml">
+
+<!ENTITY runtimesAndServers SYSTEM "modules/runtimesAndServers.xml">
+<!ENTITY asPerspective SYSTEM "modules/thePerspective.xml">
 
 ]>
+
+
 <book>
     <bookinfo>
         <title>JBoss AS Plugin</title>
@@ -14,9 +18,10 @@
         </copyright>
     	
     </bookinfo>
-	<toc/>  
-
-&setup;
+    <toc/>  
+    
+&runtimesAndServers;
+&asPerspective;
    
 	
 </book>    

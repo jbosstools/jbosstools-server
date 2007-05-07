@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="perspective">
+  <title>The JBoss AS Perspective</title>
+
+  <para>The JBoss AS Perspective is similar to the Java perspective, but it contains
+	  a few additional views, as well as an addition to the workbench toolbar.  Two of
+	  the additional views are standard views, specifically the <emphasis>Console view</emphasis> and the 
+	  <emphasis>Properties view</emphasis>. 
+	  The other two views that are added are the <emphasis>Archives View</emphasis>
+	  and the <emphasis>JBoss Servers View</emphasis>.
+  </para>
+
+  <para> The <emphasis>Archives View</emphasis> will be given it's own chapter
+	  later in this guide. So as not to leave you completely curious, though, 
+	  the archives view is in charge of setting up specific packaging configurations
+	  for your projects and executing them to produce a .jar, .war, or 
+	  whatever type of zip-standard file you'd like to create.</para>
+
+  <para> Instead, this chapter will focus on the the <emphasis>JBoss Server's View</emphasis> 
+	  and it's related workbench toolbar actionsets.</para>
+ 
+  <section>
+    <title>The JBoss Servers View Introduction</title>
+
+
+
+    <figure id="serversView1"> <title>The JBoss Servers View</title>
+      <mediaobject>
+	  <alt>The JBoss Servers View</alt>
+	  <imageobject>
+	      <imagedata 
+		fileref="..\..\..\..\reference\en\images\asPerspective\theView1.jpg"/>
+	  </imageobject>
+      </mediaobject>
+    </figure>
+    <para>
+	   The JBoss Servers View is based on the Webtool's view, <emphasis>Servers View</emphasis>.
+	   The top half of the <emphasis>JBoss Servers View</emphasis> essentially embeds the 
+	   original <emphasis>Servers View</emphasis> directly into it, making slight changes to 
+	   the context menu.</para>
+    <para>
+	   A second half was added to provide additional information about the server selected
+	   in the top half. In the image provided, categories in the second half include
+	   which modules are currently deployed, an Event Log which keeps track of 
+	   server-specific events such as startup, shutdown, and publish information, 
+	   an XPaths category to allow easy editing of your server's various configuration
+	   descriptors, and a fileset section to allow you easy access to files that may be relevent
+	   to that server's needs. </para>
+   </section>
+
+   <section><title>Toolbar actions</title>
+    <figure id="serversViewToolbar"> <title>The JBoss Servers View Toolbar</title>
+      <mediaobject>
+	  <alt>The JBoss Servers View Toolbar</alt>
+	  <imageobject>
+	      <imagedata 
+		fileref="..\..\..\..\reference\en\images\asPerspective\viewToolbar.jpg"/>
+	  </imageobject>
+      </mediaobject>
+    </figure>
+    <para>
+	    The view's toolbar shown above provides quick access to starting a server
+	    (in debug mode, run mode, or profile mode), restarting the server, stopping the server, 
+	    or publishing to the server </para>
+
+    <para>
+	    In order to debug your applications or EJB's that are deployed to the server,
+	    you <emphasis>must</emphasis> start the server in debug mode. By starting the server in debug mode, 
+	    eclipse will allow you to set breakpoints on code in your workspace and step through
+	    the code. </para>
+    <para>
+	    The publish icon, on the extreme right, will republish any modules where it has
+	    determined the workspace is out of sync with the server.  It will
+	    attempt to do an incremental publish if it turns out that the module in question
+	    is capable of doing one.</para>
+   </section>
+   <section><title>The Server Section</title>
+
+
+
+    <figure id="viewMain"> <title>JBoss Servers View: Main Section</title>
+    <mediaobject>
+	<alt>JBoss Servers View Main Section</alt>
+	<imageobject>
+		<imagedata 
+			fileref="..\..\..\..\reference\en\images\asPerspective\viewMain.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+
+	   <para>
+		   The Server section of the view lists all declared servers and their current
+		   status, that is, whether they are started or stopped. By Double-clicking
+		   on each server, an editor window will appear allowing you to edit parts of 
+		   that server. The editor will also link you to modify that server's launch 
+		   configuration, set command line arguments, and other things that are relevent
+		   to launching the server.</para>
+
+   <figure id="viewMainMenu"> <title> JBoss Servers View: Main Context Menu</title>
+    <mediaobject>
+	<alt>JBoss Servers View: Main Context Menu</alt>
+	<imageobject>
+		<imagedata width="120px" scalefit="0" 
+		fileref="..\..\..\..\reference\en\images\asPerspective\viewMainMenu.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+	   <para>Because the JBoss servers have few (if any) properties to edit in the editor, 
+		   a shortcut to the launch configuration has been provided in the 
+		   context menu when right-clicking on a server. This menu also
+		   provides the (by now redundant) functionality of starting the 
+		   server in run or debug mode, stopping it, or
+		   synching the publish information between the server and workspace. </para>
+
+	   <para>
+		   Near the bottom you'll also see the 
+		   <emphasis>Add and Remove Projects...</emphasis> item, which allows you
+		   to publish a new project to the server (if its type is supported). 
+		   The last menu item I'd like to mention is the one labeled 
+		   <emphasis>Twiddle Server</emphasis>.</para>
+	   <para>
+		   The <emphasis>Twiddle Server</emphasis> item will open a dialog 
+		   and allow you to run <emphasis>Twiddle</emphasis> commands against it.
+		   Twiddle is a JMX library that comes with JBoss, and you can use it to 
+		   access any variables that exposed via the JBoss JMX interfaces. </para>
+
+    <figure id="twiddleDialog"> <title>Twiddle Dialog</title>
+    <mediaobject>
+	<alt>Twiddle Dialig</alt>
+	<imageobject>
+		<imagedata 
+			fileref="..\..\..\..\reference\en\images\asPerspective\twiddleDialog.jpg" width="3in" scalefit="0"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+   <para>
+	   As you can see above, twiddle can serve as a useful information-gathering tool. 
+   </para>
+   </section>
+
+   <section><title>View Extensions</title>
+    <figure id="viewExtensions"> <title>View Extensions</title>
+    <mediaobject>
+	<alt>View Extensions</alt>
+	<imageobject>
+		<imagedata 
+			fileref="..\..\..\..\reference\en\images\asPerspective\viewAdditions.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+
+   <para>The final part of the JBoss Servers View is extendable, and can be added to by any extender. 
+	   It is meant to provide additional functionality relevent to the server selected in the 
+	   top half of the view. Currently, most of the extensions apply only to servers
+	   created with the JBoss AS Adapter. If a standard server element is selected from 
+	   above, some of the extensions may still provide the additional information. Others
+	   may not.</para>
+   <para>Each category provides its own context menu, it's own sub-elements, and
+	   it's own structure. A few menu items are common to all elements in this
+	   part of the view, however. The first two allow the user to refresh parts of the tree
+	   if they believe they have become out of sync with the underlying model. Obviously
+	   such a loss of synchronization would be a bug, but this at least empowers the user
+	   to force a refresh and ensure that what they're seeing is both current and accurate. </para>
+
+   <para>The third *common* menu item, common only to the categories, is the ability to disable and hide them.
+	   If there's a category you don't think you'll be using much, some additional functionality who's
+	   presence you annoying or in the way, you can disable it. You'll be able to re-enable any 
+	   disabled categories if you find you need to via a preference page. </para>
+
+   <para>So, let's look now at the currently available extensions to the JBoss Server's View.</para>
+   <section><title>Modules</title>
+
+    <figure id="Modules Actions"> <title>Modules Actions</title>
+    <mediaobject>
+	<alt>Modules</alt>
+	<imageobject>
+		<imagedata 
+			fileref="..\..\..\..\reference\en\images\asPerspective\modulesActions.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+   <para>
+		   The <emphasis>modules</emphasis> section shows what modules are currently deployed
+		   to the server, and allows you to remove them from the server, or force a full 
+		   republish upon them. It only shows which modules have been deployed through eclipse, 
+		  not any and all modules that happen to be in the deploy directory. 
+	    </para>
+     </section>
+
+     <section><title>Event Log</title>
+	     <figure id="Event Log Actions"><title>Event Log Actions</title>
+		     <mediaobject><alt>Event Log</alt>
+			     <imageobject><imagedata width="3in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\eventLogActions.jpg"/></imageobject>
+		     </mediaobject>
+	     </figure>
+	<para>
+		The Event Log will show relevent information to your server's startup, shutdown, 
+		and publish processes. This allows you to keep an eye on what's going on (such as 
+		automatic incremental deployment if you have it enabled). The only action
+		available is to clear the event log. However if the properties view is opened, 
+		you can receive further information on each event log item (when available). </para>
+	<para>
+		This section will only appear for server types declared by the JBoss AS Adapter.
+		Webtools adapters (such as the tomcat server) will not show this view extension.</para>
+	</section>
+
+	<section><title>XML XPaths</title>
+		<para>
+			The XML XPaths category allows you to quickly browse to descriptor files
+			in your server's deploy directory and check or change the values. It's use
+			requires the properties view. If you are not familiar with xpaths, 
+			I highly suggest reading the w3c's summaries and tutorials on the topic.
+			Basically, though, an xpath is a path used to access some specific part of an xml
+			document.
+		</para>
+		<figure id="XMLXPaths"><title>XML XPaths And Properties</title>
+			<mediaobject><alt>XML XPaths and Properties</alt>
+				<imageobject><imagedata width="5in" scalefit="0" 
+						fileref="..\..\..\..\reference\en\images\asPerspective\xpaths1.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+		<section><title>What it means...</title>
+
+		<para>
+			The view itself contains only a list of categories. 
+			By right-clicking on <emphasis>XML XPaths</emphasis>, you can create a new 
+			category. <emphasis>Ports</emphasis> is provided by default and is filled with
+			many of the most commonly used ports in the JBoss Server</para>
+		<para>
+			By right-clicking on a category in the view, you can either delete that cateogory,
+			or add a new xpath to it. Before we see what adding a new xpath is like, let's
+			quickly see what we can do with them once they *are* declared by looking in the 
+			<emphasis>Properties View</emphasis>.</para>
+		<para>
+			In the properties view you'll see an identifier, and nested underneath is
+			the files where that xpath can be found as well as it's current value.
+			The details of the xpath are hidden from the view at the moment so that 
+			all you need to see is which file you're referring to, and what its current
+			value is. To change the value, simply double-click on it, change it's value, 
+			and press enter. This will modify the value in the file.</para>
+		<para><emphasis>Note: This will only modify the value in your server's deploy directory.
+				This will NOT modify the value in the workspace. So if you're making use
+				of deployment tools, packaging tools, or other things that copy
+				files into your server's deploy directory, those tools will
+				overwrite whatever changes you make here.</emphasis></para>
+		<figure id="XMLXPaths2"><title>Editing XML XPath Values</title>
+			<mediaobject><alt>Editing XML XPath Values</alt>
+				<imageobject><imagedata fileref="..\..\..\..\reference\en\images\asPerspective\xpaths2.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+		<para>
+			To edit the entire file manually, rather than just that value, you can right-click on
+			<emphasis>naming-service.xml</emphasis> and select <emphasis>Edit File</emphasis>.</para>
+		</section>
+		<section><title>Adding an XPath</title></section>
+			<para>To begin, you can either right-click on a category in the view, 
+				or when browsing a category in the properties view, right-clicking anywhere. This will
+				allow you to select <emphasis>New XPath</emphasis>. After that, the dialog shown
+			below will appear.</para>
+		<figure id="XMLXPaths3"><title>Adding an XPath</title>
+			<mediaobject><alt>Adding an XPath</alt>
+				<imageobject><imagedata width="5in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\xpaths3.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+		<para>
+			As you type, the fields autocomplete to help you locate exactly what xpath you're looking for.
+			The goal here is to get an end result where the xpath matches up with an easily changed
+			property. With that in mind, if the property you want to change is the text of an element, 
+			for example &lt;port&gt;35&lt;port&gt;, then the final field <emphasis>Attribute Name</emphasis>
+			should be left blank and your xpath should end with <emphasis>port</emphasis>.</para>
+		<para>
+			If, on the other hand, your desired field is the port attribute of
+			&lt;fieldName port="35"&gt;,  then your <emphasis>xpath</emphasis> will end with 
+			fieldName and your <emphasis>Attribute Name</emphasis> will be "port". </para>
+		<para> 
+			When finished, you can click preview to see how many matches you have for that 
+			particular xpath, as shown below.</para>
+		<figure id="XMLXPaths4"><title>XPath Preview</title>
+			<mediaobject><alt>XPath Preview</alt>
+				<imageobject><imagedata width="5in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\xpaths4.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+
+	</section>
+	<section><title>Filesets</title>
+		<para>
+			The Filesets section allows you easy access to groups of files on your
+			hard drive, most likely relevent to the server at hand. It does this 
+			to ensure and speed up raw filesystem access with the ability to quickly navigate
+			to descriptor or configuration files and either delete or edit them. </para>
+		<para>
+			This could also be useful if, for some reason, when packaging your application 
+			you draw from some non-workspace folder on your machine</para>
+		<para>
+			Creating a new fileset requires only naming it, giving it
+			a root directory, an includes pattern, and an excludes pattern. </para>
+		<figure id="Filesets"><title>Filesets</title>
+			<mediaobject><alt>Filesets</alt>
+				<imageobject><imagedata width="5in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\filesets.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+<figure id="FilesetsDialog"><title>Filesets Dialog</title>
+			<mediaobject><alt>Filesets Dialog</alt>
+				<imageobject><imagedata width="3in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\filesetsDialog.jpg" /></imageobject>
+			</mediaobject>
+		</figure>
+
+	</section>
+
+</section>
+<section><title>View Preferences</title>
+	<figure id="ViewPreferences"><title>View Preferences </title>
+		<mediaobject><alt>View Preferences</alt>
+			<imageobject><imagedata width="6in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\viewPreferences.jpg" /></imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		In order to access the view's preferences, you should access 
+		<emphasis>Window -&gt; Preferences -&gt; JBoss IDE -&gt; JBoss Servers -&gt; View</emphasis>
+		This preference page allows you to select which view extensions you want on or off, 
+		the order they appear in the view, as well as any other extension-specific preferences
+		that may be available.</para> 
+</section>
+<section><title>Server Action Set</title>
+	<figure id="ActionSet"><title>Servers Action Set </title>
+		<mediaobject><alt>Servers Action Set</alt>
+			<imageobject><imagedata width="4in" scalefit="0" fileref="..\..\..\..\reference\en\images\asPerspective\actionSets.jpg" /></imageobject>
+		</mediaobject>
+	</figure>
+	<para>
+		The actionset shown above enables quick starting and stopping of a server, in the event
+		that you do not want to use the view and all of its added functionality. 
+		If that's the case, then you simply select a server to be the default from the pulldown menu.
+		Only one server can be selected at a time. Once a server is selected (with a check mark),
+		the start, stop, and debug options will become enabled depending on which are appropriate 
+		at the time. (If the server is running, start and debug will not be enabled, but stop will be.)</para>
+</section>
+</chapter>
