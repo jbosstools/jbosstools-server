@@ -1,9 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.views.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.jface.action.Action;
@@ -423,12 +420,17 @@ public class JBossServerTableViewer extends TreeViewer {
 		suppressingRefresh = currentVal;
 	}
 
-	// for testing
+	public void refresh() {
+		refresh(null);
+	}
 	public void refresh(final Object element) {
 		if(!suppressingRefresh) {
-			super.refresh(element);
-		} else {
-		}
+			try {
+				super.refresh(element);
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
+		} 
 	}
 	
 
