@@ -104,9 +104,12 @@ public class PublishAction implements INodeActionDelegate {
 		protected String alwaysPublishResult = Boolean.toString(false);
 		
 		protected SelectServerWizardPage(IArchive pack) {
-			super("Wizard Page Name");
-			setDescription("Wizard Page Description");
-			setTitle("Wizard Page Title");
+			super("Select Server Wizard");
+			setDescription("Select the server to publish the archive to.\n"
+					+ "If you would like the publish action on this archive\n"
+					+ "to always target these servers, check the first checkbox.\n"
+					+ "If you want to enable automatic publishing on builds, check both boxes.");
+			setTitle("Publish archive to a server");
 			this.pack = pack;
 		}
 
