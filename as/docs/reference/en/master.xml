@@ -5,7 +5,7 @@
 
 <!ENTITY runtimesAndServers SYSTEM "modules/runtimesAndServers.xml">
 <!ENTITY asPerspective SYSTEM "modules/thePerspective.xml">
-
+<!ENTITY archives SYSTEM "modules/archives.xml">
 ]>
 
 
@@ -22,6 +22,6 @@
     
 &runtimesAndServers;
 &asPerspective;
-   
+&archives;  
 	
 </book>    
