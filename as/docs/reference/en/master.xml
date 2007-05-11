@@ -6,6 +6,8 @@
 <!ENTITY runtimesAndServers SYSTEM "modules/runtimesAndServers.xml">
 <!ENTITY asPerspective SYSTEM "modules/thePerspective.xml">
 <!ENTITY archives SYSTEM "modules/archives.xml">
+<!ENTITY facetedProjects SYSTEM "modules/projects.xml">
+<!ENTITY deploying SYSTEM "modules/deploy.xml">
 ]>
 
 
@@ -23,5 +25,6 @@
 &runtimesAndServers;
 &asPerspective;
 &archives;  
-	
+&facetedProjects;
+&deploying;
 </book>    

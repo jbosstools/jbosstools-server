@@ -129,7 +129,8 @@
 			   an excludes pattern. As you type in either of these fields, 
 			   the preview viewer should update itself with which files are matched.</para>
 	   </section>
-	   <section><title>View Actions</title>
+   </section>
+   <section><title>View Actions</title>
 		   <para>
 			   The context menu on the items in the view is extendable, but there are
 			   several that come standard. The first is the <emphasis>Build Archive</emphasis>
@@ -138,13 +139,33 @@
 			   not needing an explanation. The edit action brings up the wizard associated
 			   with that particular node type and allows the details to be changed. The final
 			   action contribution here is the ability to publish to a declared server.</para>
-		   <section><title>Publishing to a server</title>
-
-		   </section>
 	   </section>
-   </section>
+	   <section><title>The Publish to Server Action</title>
+		   <figure id="publishAction"> <title>Publish to Server</title>
+			   <mediaobject>
+				   <alt>Publish to Server</alt>
+				   <imageobject>
+					   <imagedata 
+			fileref="..\..\..\..\reference\en\images\archives\publish.jpg"/>
+				   </imageobject>
+			   </mediaobject>
+		   </figure>
+		   <para>
+			   The dialog above appears after selecting <emphasis>Publish to Server</emphasis>.
+			   To simply publish once, you just select the server(s) that you want, and 
+			   finish. If you want the <emphasis>Publish to Server</emphasis> action 
+			   on that particular Archive to <emphasis>always</emphasis> publish to 
+			   that set of servers, then check the appropriate checkbox. And finally, to
+			   enable automatic publishing upon build events, check the last checkbox.</para>
+		   <para>
+			   The automatic publishing feature is nice if, for example, your 
+			   package's destination (where it is built) is a temporary folder and 
+			   you want the archive published to several servers. If you only really want your 
+			   archive published to one server, it might be easier to have the archive's
+			   destination folder be the deploy folder of the server.</para>
 
-	  
+
+	   </section>
   </section>
 
 
