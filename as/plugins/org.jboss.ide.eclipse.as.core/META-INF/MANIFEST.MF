@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.jst.common.project.facet.core,
  org.eclipse.wst.xml.core,
- org.jboss.ide.eclipse.archives.core
+ org.jboss.ide.eclipse.archives.core,
+ org.apache.ant
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.model,
