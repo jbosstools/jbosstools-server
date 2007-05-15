@@ -262,6 +262,7 @@
 		</moduleArtifactAdapter>
    </extension>
    
+   <!--
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
@@ -279,7 +280,7 @@
             name="Take No Action"
             priority="20"/> 
    </extension>
-
+-->
 
 
 
