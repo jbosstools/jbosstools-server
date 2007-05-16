@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.model;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -121,23 +122,6 @@ public class DescriptorModel {
 		}
 		
 		
-		/*
-		 * Do preference stuff here to see if the directory is ignored.
-		 */
-		private boolean isIgnoredDirectory(File f) {
-			boolean found = false;
-			List ignored = Arrays.asList(getIgnoredDirectories());
-			while( f != null && !found ) {
-				if( ignored.contains(f.getAbsoluteFile())) 
-					return true;
-				f = f.getParentFile();
-			}
-			return false;
-		}
-
-		public String[] getIgnoredDirectories() {
-			return new String[0];
-		}
 		
 		private Document getDocument(String path) {
 			// First get last time loaded.
@@ -206,14 +190,14 @@ public class DescriptorModel {
 		}
 		
 		public XPathTreeItem[] getXPath(String xpath, String attributeName) {
-			return getXPath(xpath, attributeName, true);
+			return getXPath(xpath, attributeName, null);
 		}
 		
-		public XPathTreeItem[] getXPath(String xpath, String attributeName, boolean filter ) {
+		public XPathTreeItem[] getXPath(String xpath, String attributeName, FileFilter filter ) {
 			return getXPath(xpath, attributeName, filter, true);
 		}
 		
-		public XPathTreeItem[] getXPath(String xpath, String attributeName, boolean filter, boolean refresh ) {
+		public XPathTreeItem[] getXPath(String xpath, String attributeName, FileFilter filter, boolean refresh ) {
 			if( refresh ) 
 				refreshDescriptors(new NullProgressMonitor());
 
@@ -226,7 +210,7 @@ public class DescriptorModel {
 			while(i.hasNext()) {
 				p = (String)i.next();
 				
-				if( !filter || !isIgnoredDirectory(new File(p))) {
+				if( filter == null || filter.accept(new File(p))) {
 					tmp = getXPathFromFile(p, xpath);
 					if( tmp.size() > 0 ) { 
 						if( attributeName == null || attributeName.equals("")) {

@@ -262,7 +262,6 @@
 		</moduleArtifactAdapter>
    </extension>
    
-   <!--
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
@@ -270,6 +269,7 @@
             id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
    </extension>
 
+   <!--
 
    <extension
          point="org.eclipse.wst.server.core.clients">

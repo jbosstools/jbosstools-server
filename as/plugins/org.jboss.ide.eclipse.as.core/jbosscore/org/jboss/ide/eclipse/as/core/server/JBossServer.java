@@ -22,6 +22,8 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -32,14 +34,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
@@ -48,7 +54,7 @@ import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
 public class JBossServer extends ServerDelegate 
-		implements IServerStartupParameters, IDeployableServer {
+		implements IServerStartupParameters, IDeployableServer, IURLProvider {
 
 	
 	public JBossServer() {
@@ -184,5 +190,50 @@ public class JBossServer extends ServerDelegate
 				Path.SEPARATOR + runtime.getJBossConfiguration();
 		return new Path(p).toOSString();
 	}
+	
+	
+	
+	
+	public URL getModuleRootURL(IModule module) {
+
+		try {
+            if (module == null || module.loadAdapter(IWebModule.class,null)==null )
+				return null;
+            
+            IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
+            String host = getServer().getHost();
+			String url = "http://"+host; //$NON-NLS-1$
+			int port = -1;
+			
+			ServerDescriptorModel sdm = DescriptorModel.getDefault().getServerModel(new Path(getConfigDirectory()));
+			FileFilter filter = new FileFilter() {
+				public boolean accept(File pathname) {
+					return pathname.getAbsolutePath().endsWith("server.xml");
+				}
+			};
+			XPathTreeItem[] items = sdm.getXPath(
+					"//Server/Service[@name='jboss.web']/Connector[count(@sslProtocol) = 0 and (count(@protocol) = 0 or @protocol = 'HTTP/1.1')]", 
+					"port", filter, false);
+			if( items.length > 0 ) {
+				try {
+				port = Integer.parseInt(((XPathTreeItem2)items[0].getChildren()[0]).getAttributeValue());
+				} catch(Exception e) {}
+			}
+			if( port == -1 ) port = 8080;
+			//port =ServerUtil.getMonitoredPort(getServer(), port, "web"); //$NON-NLS-1$
+			if (port != 80)
+				url += ":" + port; //$NON-NLS-1$
+
+			url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+
+			if (!url.endsWith("/")) //$NON-NLS-1$
+				url += "/"; //$NON-NLS-1$
+
+			return new URL(url);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	
 }
