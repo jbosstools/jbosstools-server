@@ -7,7 +7,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
@@ -64,7 +64,7 @@ public class NewEARAction extends ActionWithDelegate {
 		}
 
 		public boolean performFinish(IArchive pkg) {
-			pkg.setArchiveType(ArchivesCore.getArchiveType(EarArchiveType.ID));
+			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID));
 			return true;
 		}
 		
@@ -80,8 +80,8 @@ public class NewEARAction extends ActionWithDelegate {
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EAR));
 		}
 		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getArchiveType(EarArchiveType.ID);
-    		type.fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
+	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID);
+    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
 		}
 
 		protected String getDescriptionMessage() {
