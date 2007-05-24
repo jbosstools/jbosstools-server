@@ -61,11 +61,14 @@ public abstract class J2EEArchiveType implements IArchiveType {
 		return false;
 	}
 
-	protected IModule getModule(IProject project) {
-		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(project);
+	protected IModule getModule(String projectName) {
+		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(getProject(projectName));
 		return moduleArtifact == null ? null : moduleArtifact.getModule();
 	}
 	
+	protected IProject getProject(String projectName) {
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+	}
 	// Find the source folder, then create the IPackage appropriately
 	public static IArchive createGenericIArchive(IProject project, String deployDirectory, String packageName) {
 		try {

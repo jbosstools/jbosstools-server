@@ -23,14 +23,18 @@ public class EjbArchiveType extends J2EEArchiveType {
 		return "EJB JAR";
 	}
 
-	public IArchive createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
+	public IArchive createDefaultConfiguration(String projectName, IProgressMonitor monitor) {
+		IProject project = getProject(projectName);
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".jar");
-		fillDefaultConfiguration(project, topLevel, monitor); 
-		return fillDefaultConfiguration(project, topLevel, monitor);
+		return fillDefaultConfiguration(project, topLevel, monitor); 
 	}
 
+	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
+		return fillDefaultConfiguration(getProject(projectName), topLevel, monitor);
+	}
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
-		IModule mod = getModule(project);
+
+		IModule mod = getModule(project.getName());
 		
 		// TODO:  module artifact to adapt a jboss ejb 30 to a module is MIA. CREATE IT
 		if( mod == null ) {

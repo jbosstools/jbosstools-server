@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.packages.types;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -27,7 +28,7 @@ public class EarArchiveType extends J2EEArchiveType {
 	}
 
 	
-	public IArchive createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
+	public IArchive createDefaultConfiguration(String project, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
 		if( mod != null ) 
 			return createDefaultConfigFromModule(mod, monitor);
@@ -35,13 +36,14 @@ public class EarArchiveType extends J2EEArchiveType {
 			return createDefaultConfiguration2(project, monitor);
 	}
 	
-	public IArchive createDefaultConfiguration2(IProject project,
+	public IArchive createDefaultConfiguration2(String projectName,
 			IProgressMonitor monitor) {
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear");
 		topLevel.setDestinationPath(project.getLocation());
 		topLevel.setInWorkspace(true);
 		
-		fillDefaultConfiguration(project, topLevel, monitor);
+		fillDefaultConfiguration(projectName, topLevel, monitor);
 		return topLevel;
 	}
 
@@ -53,17 +55,18 @@ public class EarArchiveType extends J2EEArchiveType {
 		topLevel.setDestinationPath(project.getLocation());
 		topLevel.setInWorkspace(true);
 		
-		fillDefaultConfiguration(project, topLevel, monitor);
+		fillDefaultConfiguration(project.getName(), topLevel, monitor);
 		return topLevel;
 	}
 
-	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
-		IModule mod = getModule(project);
+	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
+		IModule mod = getModule(projectName);
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 
 		if( mod == null ) {
 			// add fileset
 			IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
-			addFileset(project, metainf, new Path(project.getName()).append(METAINF).toOSString(), null);
+			addFileset(project, metainf, new Path(projectName).append(METAINF).toOSString(), null);
 			
 		} else {
 			// now add children
@@ -77,7 +80,7 @@ public class EarArchiveType extends J2EEArchiveType {
 				if( type == null ) {
 					childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar");
 				} else {
-					childPack = type.createDefaultConfiguration(child.getProject(), new NullProgressMonitor());
+					childPack = type.createDefaultConfiguration(child.getProject().getName(), new NullProgressMonitor());
 				}
 				topLevel.addChild(childPack);
 			}

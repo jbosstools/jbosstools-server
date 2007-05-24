@@ -91,11 +91,13 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		IArchive pack = getPackage(module);
 		// remove all of the deployed items
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		IPath sourcePath = pack.getArchiveFilePath();
-		IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
-		// remove the entire file or folder
-		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
-		FileUtil.safeDelete(destPath.toFile(), listener);
+		if( pack != null ) {
+			IPath sourcePath = pack.getArchiveFilePath();
+			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+			// remove the entire file or folder
+			PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
+			FileUtil.safeDelete(destPath.toFile(), listener);
+		}
 	}
 	
 

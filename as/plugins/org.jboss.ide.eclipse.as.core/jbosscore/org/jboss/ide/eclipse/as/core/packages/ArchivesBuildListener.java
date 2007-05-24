@@ -23,7 +23,6 @@ package org.jboss.ide.eclipse.as.core.packages;
 
 import java.util.ArrayList;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -34,10 +33,10 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.other.IArchiveBuildListener;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -62,7 +61,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	}
 	
 	public ArchivesBuildListener() {
-		ArchivesCore.getInstance().addBuildListener(this);
+		ArchivesModel.instance().addBuildListener(this);
 	}
 	
 	public void cleanArchive(IArchive pkg) {
@@ -170,7 +169,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		
 	}
 
-	public void finishedBuild(IProject project) {
+	public void finishedBuild(IPath project) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -180,7 +179,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		
 	}
 
-	public void startedBuild(IProject project) {
+	public void startedBuild(IPath project) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -197,7 +196,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 		// TODO Auto-generated method stub
 	}
 
-	public void cleanProject(IProject project) {
+	public void cleanProject(IPath project) {
 	}
 
 

@@ -28,12 +28,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ModuleFile;
@@ -41,9 +43,10 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
@@ -54,10 +57,15 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	protected Map moduleDelegates = new HashMap(5);
 	protected HashMap packageToModule = new HashMap(5);
 	
+	private static int nextArchiveId = -1;
+	private static final String NEXT_ARCHIVE_KEY = "org.jboss.ide.eclipse.as.core.PackageModuleFactory.nextId";
+	
 	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";
 	public static final String MODULE_TYPE = "jboss.package";
 	public static final String VERSION = "1.0";
 
+	public static final String MODULE_ID_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey";
+	
 	private static PackageModuleFactory factory;
 	public static PackageModuleFactory getFactory() {
 		if( factory != null ) return factory;
@@ -81,11 +89,31 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		super();
 	}
 	
+	/**
+	 * @param archives
+	 * @return  returns whether a save has occurred
+	 */
+	protected boolean ensureArchivesHaveIDs(IProject project, IArchive[] archives) {
+		boolean requiresSave = false;
+		for( int i = 0; i < archives.length; i++ ) {
+			if( getID(archives[i]) == null ) {
+				requiresSave = true;
+				archives[i].setProperty(MODULE_ID_PROPERTY_KEY, getID(archives[i], true));
+			}
+		}
+		if( requiresSave ) {
+			// save
+			ArchivesModel.instance().saveModel(project.getLocation(), new NullProgressMonitor());
+		}
+		return requiresSave;
+	}
 	protected IModule[] createModules(IProject project) {
-		if( ArchivesCore.getProjectPackages(project, null, true).length > 0 ) {
+		try {
+		if( ArchivesModelCore.getProjectPackages(project.getLocation(), null, true).length > 0 ) {
 			ArrayList list = new ArrayList();
 			IModule module;
-			IArchive[] packages = ArchivesCore.getProjectPackages(project, new NullProgressMonitor(), true);
+			IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
+			boolean saved = ensureArchivesHaveIDs(project, packages);
 			for( int i = 0; i < packages.length; i++ ) {
 				module = createModule(getID(packages[i]), getName(packages[i]),						 
 						MODULE_TYPE, VERSION, project);
@@ -96,15 +124,43 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 			}
 			return (IModule[]) list.toArray(new IModule[list.size()]);
 		}
+		} catch( Throwable t ) {
+			t.printStackTrace();
+		}
 		return null;
 	}
 	
 	public static String getID(IArchive pack) {
-		return pack.getProject().getName() + ":" + pack.getArchiveFilePath();
+		return getID(pack, false);
+	}
+	protected static String getID(IArchive pack, boolean create) {
+		String propVal = pack.getProperty(MODULE_ID_PROPERTY_KEY);
+		if( propVal == null && create ) {
+			if( nextArchiveId == -1 ) {
+				nextArchiveId = 
+					new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).getInt(MODULE_ID_PROPERTY_KEY, 0);
+			}
+			nextArchiveId++;
+			new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).putInt(MODULE_ID_PROPERTY_KEY, nextArchiveId);
+			return MODULE_ID_PROPERTY_KEY + "." + nextArchiveId;
+		} else if( propVal == null ) {
+			return null;
+		} 
+		return propVal;
 	}
 
+	public static String getProjectName(IArchiveNode node) {
+		IPath projPath = node.getProjectPath();
+		if( projPath == null ) return null;
+		IProject[] list = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for( int i = 0; i < list.length; i++ )
+			if( list[i].getLocation().equals(projPath))
+				return list[i].getName();
+		return null;
+	}
 	public static String getName(IArchive pack) {
-		return pack.getProject().getName() + "/" + pack.getName();
+		String projName = getProjectName(pack);
+		return projName + "/" + pack.getName();
 	}
 	public ModuleDelegate getModuleDelegate(IModule module) {
 		return (ModuleDelegate) moduleDelegates.get(module);
@@ -123,7 +179,7 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	
 	public IModule[] getModulesFromProject(IProject project) {
 		ArrayList mods = new ArrayList();
-		IArchive[] packs = ArchivesCore.getProjectPackages(project, new NullProgressMonitor(), true);
+		IArchive[] packs = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
 		for( int i = 0; i < packs.length; i++ ) {
 			IModule mod = getModuleFromPackage(packs[i]);
 			if( mod != null ) mods.add(mod);

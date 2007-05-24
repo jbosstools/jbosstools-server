@@ -36,7 +36,6 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
@@ -51,21 +50,25 @@ public class WarArchiveType extends J2EEArchiveType {
 		return "jst.web";
 	}
 
-	public IArchive createDefaultConfiguration(IProject project, IProgressMonitor monitor) {
-		IModule mod = getModule(project);
+	public IArchive createDefaultConfiguration(String projectName, IProgressMonitor monitor) {
+		IModule mod = getModule(projectName);
 		if( mod == null ) 
-			return createDefaultConfiguration2(project, monitor);
+			return createDefaultConfiguration2(projectName, monitor);
 		else
 			return createDefaultConfigFromModule(mod, monitor);
 	}
 	
-	protected IArchive createDefaultConfiguration2(IProject project, IProgressMonitor monitor) {
+	protected IArchive createDefaultConfiguration2(String projectName, IProgressMonitor monitor) {
+		IProject project = getProject(projectName);
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
 		return fillDefaultConfiguration(project, topLevel, monitor);
 	}
 	
-	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
-		IModule mod = getModule(project);
+	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
+		return fillDefaultConfiguration(getProject(projectName), topLevel, monitor);
+	}
+	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {	
+		IModule mod = getModule(project.getName());
 //		topLevel.setDestinationPath(new Path(project.getName()));
 //		topLevel.setInWorkspace(true);
 		IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);

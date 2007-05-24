@@ -22,7 +22,7 @@
 package org.jboss.ide.eclipse.as.core.packages;
 
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType;
 import org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType;
@@ -36,13 +36,13 @@ public class ModulePackageTypeConverter {
 	public static IArchiveType getPackageTypeFor(IModule module) {
 		String modType = module.getModuleType().getId();
 		if("jst.web".equals(modType)) {
-			return ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
+			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
 		} else if("jst.ear".equals(modType)) {
-			return ArchivesCore.getArchiveType(EarArchiveType.ID);
+			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID);
 		} else if("jbide.ejb30".equals(modType)) {
-			return ArchivesCore.getArchiveType(EjbArchiveType.ID);
+			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
 		} else if("jst.ejb".equals(modType)) {
-			return ArchivesCore.getArchiveType(EjbArchiveType.ID);
+			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
 		}
 
 		return null;
