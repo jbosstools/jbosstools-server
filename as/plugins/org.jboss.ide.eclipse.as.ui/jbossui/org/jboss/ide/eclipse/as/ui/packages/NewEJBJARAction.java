@@ -8,7 +8,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
@@ -65,7 +65,7 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 		}
 
 		public boolean performFinish(IArchive pkg) {
-			pkg.setArchiveType(ArchivesCore.getArchiveType(EjbArchiveType.ID));
+			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID));
 			return true;
 		}
 		
@@ -81,8 +81,8 @@ public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDe
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_JAR_WIZARD));
 		}
 		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getArchiveType(EjbArchiveType.ID);
-    		type.fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
+	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
+    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
 		}
 
 		protected String getDescriptionMessage() {

@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
@@ -41,13 +42,20 @@ public class PublishAction implements INodeActionDelegate {
 			IArchive pkg = (IArchive)node;
 			String servers = node.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
 			if( !new Boolean(pkg.getProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD)).booleanValue()  ||
-					servers == null || "".equals(servers)) {
+					servers == null || "".equals(servers) || anyServerDoesntExist(servers)){
 				servers = showSelectServersDialog(pkg);
 			}
 			ArchivesBuildListener.publish(pkg, servers, IServer.PUBLISH_FULL);
 		}
 	}
 	
+	protected boolean anyServerDoesntExist(String servers) {
+		String[] asArray = servers.split(",");
+		for( int i = 0; i < asArray.length; i++ ) 
+			if( ServerCore.findServer(asArray[i]) == null ) 
+				return true;
+		return false;
+	}
 	public boolean isEnabledFor(IArchiveNode node) {
 		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE ) {
 			IArchive pkg = (IArchive) node;

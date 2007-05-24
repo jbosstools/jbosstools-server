@@ -8,7 +8,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
@@ -62,7 +62,7 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 		}
 
 		public boolean performFinish(IArchive pkg) {
-			pkg.setArchiveType(ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE));
+			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE));
 			return true;
 		}
 		
@@ -77,8 +77,8 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		}
 		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
-    		type.fillDefaultConfiguration(wizard.getProject(), wizard.getArchive(), new NullProgressMonitor());
+	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
+    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
 		}
 
 		protected String getDescriptionMessage() {
