@@ -86,6 +86,8 @@ public class FileUtil {
 	public static boolean fileSafeCopy(File src, File dest, IFileUtilListener listener) {
 		File parent = dest.getParentFile();
 		parent.mkdirs();
+		if( dest.exists()) 
+			safeDelete(dest);
 		
 		if (src.isDirectory()) {
 			File[] subFiles = src.listFiles();
