@@ -104,7 +104,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			jar.setInWorkspace(ResourcesPlugin.getWorkspace().getRoot().getLocation().isPrefixOf(new Path(deployDirectory)));
 			jar.setExploded(false);
 		} else {
-			jar.setDestinationPath(project.getLocation());
+			jar.setDestinationPath(project.getFullPath());
 			jar.setInWorkspace(true);
 			jar.setExploded(false);
 		}

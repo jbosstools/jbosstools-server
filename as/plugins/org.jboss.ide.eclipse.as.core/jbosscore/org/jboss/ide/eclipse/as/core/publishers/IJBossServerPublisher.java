@@ -25,10 +25,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 public interface IJBossServerPublisher {
 	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
 			IModule module, IProgressMonitor monitor) 
 								throws CoreException;
 	public int getPublishState();
+	public void setDelta(IModuleResourceDelta[] delta);
+
 }

@@ -25,13 +25,13 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -55,8 +55,15 @@ public class JstPublisher extends PackagesPublisher {
 	public static final int BUILD_FAILED_CODE = 100;
 	public static final int PACKAGE_UNDETERMINED_CODE = 101;
 	
+	protected IModuleResourceDelta[] delta;
+
 	public JstPublisher(IServer server, EventLogTreeItem context) {
 		super(server, context);
+	}
+
+
+	public void setDelta(IModuleResourceDelta[] delta) {
+		this.delta = delta;
 	}
 
 	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
@@ -80,7 +87,7 @@ public class JstPublisher extends PackagesPublisher {
 		IArchive topLevel = createTopPackage(module, jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
 			try {
-				ArchivesCore.buildArchive(topLevel, new NullProgressMonitor());
+				new ArchiveBuildDelegate().fullArchiveBuild(topLevel);//, new NullProgressMonitor());
 			} catch( Exception e ) {
 				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, BUILD_FAILED_CODE, "", e);
 			}
@@ -106,7 +113,7 @@ public class JstPublisher extends PackagesPublisher {
 	protected IArchive createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
 		IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(module);
 		if( type != null ) {
-    		IArchive topLevel = type.createDefaultConfiguration(module.getProject(), monitor);
+    		IArchive topLevel = type.createDefaultConfiguration(module.getProject().getName(), monitor);
     		topLevel.setDestinationPath(new Path(deployDir));
     		topLevel.setInWorkspace(false);
     		return topLevel;

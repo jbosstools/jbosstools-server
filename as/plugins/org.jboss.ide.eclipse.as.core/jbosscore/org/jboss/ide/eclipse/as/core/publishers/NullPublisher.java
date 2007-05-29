@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 /**
  *
@@ -40,6 +41,11 @@ public class NullPublisher implements IJBossServerPublisher {
     public IStatus publishModule(int kind, int deltaKind, int modulePublishState, 
     		IModule module, IProgressMonitor monitor) throws CoreException {
     	return null;
+	}
+
+	public void setDelta(IModuleResourceDelta[] delta) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

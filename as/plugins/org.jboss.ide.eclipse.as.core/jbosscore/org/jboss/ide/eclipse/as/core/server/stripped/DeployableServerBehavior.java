@@ -82,10 +82,10 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 					publisher = new JstPublisher(getServer(), root);
 				} else if( isPackagesTypeModule(module[i]) ) {
 					publisher = new PackagesPublisher(getServer(), root);
-					((PackagesPublisher)publisher).setDelta(getPublishedResourceDelta(module));
 				} else {
 					publisher = new NullPublisher();
 				}
+				publisher.setDelta(getPublishedResourceDelta(module));
 				publisher.publishModule(kind, deltaKind, modulePublishState, module[0], monitor);
 				setModulePublishState(module, publisher.getPublishState());
 			}
