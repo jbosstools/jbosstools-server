@@ -40,7 +40,7 @@ public class EarArchiveType extends J2EEArchiveType {
 			IProgressMonitor monitor) {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear");
-		topLevel.setDestinationPath(project.getLocation());
+		topLevel.setDestinationPath(new Path(project.getName()));
 		topLevel.setInWorkspace(true);
 		
 		fillDefaultConfiguration(projectName, topLevel, monitor);
@@ -52,7 +52,7 @@ public class EarArchiveType extends J2EEArchiveType {
 		IProject project = module.getProject();
 		IContainer sourceContainer = project.getFolder(EARCONTENT);
 		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear", sourceContainer);
-		topLevel.setDestinationPath(project.getLocation());
+		topLevel.setDestinationPath(new Path(project.getName()));
 		topLevel.setInWorkspace(true);
 		
 		fillDefaultConfiguration(project.getName(), topLevel, monitor);
