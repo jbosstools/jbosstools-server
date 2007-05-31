@@ -103,7 +103,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	{
 		this.handle = handle;
 		
-		Composite main = new Composite(parent, SWT.NONE);
+		Composite main = new Composite(parent, SWT.BORDER);
 		main.setLayout(new FormLayout());
 		
 		updateJREs();
@@ -566,12 +566,13 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	}
 	
 	private void createConfigurationComposite(Composite main) {
-		configComposite = new Composite(main, SWT.NONE);
+		configComposite = new Composite(main, SWT.BORDER);
 		
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
 		cData.top = new FormAttachment(jreComposite, 10);
+		cData.bottom = new FormAttachment(100, -5);
 		configComposite.setLayoutData(cData);
 
 		configComposite.setLayout(new FormLayout());
@@ -591,6 +592,8 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		viewerData.left = new FormAttachment(0, 5);
 		viewerData.right = new FormAttachment(100, -5);
 		viewerData.top = new FormAttachment(configLabel, 5);
+		viewerData.bottom = new FormAttachment(100, -5);
+		
 		configurations.getTable().setLayoutData(viewerData);
 		
 		configurations.getTable().addSelectionListener(new SelectionListener() {
