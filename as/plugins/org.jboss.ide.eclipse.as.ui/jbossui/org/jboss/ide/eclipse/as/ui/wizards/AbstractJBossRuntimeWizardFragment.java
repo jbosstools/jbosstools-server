@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -164,7 +165,9 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	
 	private void setWidgetDefaults() {
 		nameText.setText(generateNewRuntimeName());
-		homeDirText.setText("c:/program files/jboss-" + getRuntimeVersionId() + ".x");
+		homeDirText.setText(  Platform.getOS() == Platform.WS_WIN32 ? 
+				"c:/program files/jboss-" + getRuntimeVersionId() + ".x" : 
+				"/usr/bin/jboss-" + getRuntimeVersionId() + ".x");
 	}
 	private String generateNewRuntimeName() {
 		String base = "JBoss-runtime";

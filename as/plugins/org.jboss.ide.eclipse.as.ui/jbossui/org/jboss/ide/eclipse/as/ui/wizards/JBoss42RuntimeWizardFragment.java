@@ -7,7 +7,7 @@ public class JBoss42RuntimeWizardFragment extends
 		AbstractJBossRuntimeWizardFragment {
 
 	protected ImageDescriptor getImageDescriptor() {
-		return JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO);
+		return JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO);
 	}
 
 }
