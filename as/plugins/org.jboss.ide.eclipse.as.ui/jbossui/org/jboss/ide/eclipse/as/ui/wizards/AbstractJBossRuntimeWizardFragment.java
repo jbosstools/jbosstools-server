@@ -103,7 +103,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	{
 		this.handle = handle;
 		
-		Composite main = new Composite(parent, SWT.BORDER);
+		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
 		
 		updateJREs();
@@ -246,7 +246,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 
 		
 		// create internal widgets
-		nameLabel = new Label(nameComposite, SWT.None);
+		nameLabel = new Label(nameComposite, SWT.NONE);
 		nameLabel.setText(Messages.wizardFragmentNameLabel);
 		
 		nameText = new Text(nameComposite, SWT.BORDER);
@@ -566,7 +566,7 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	}
 	
 	private void createConfigurationComposite(Composite main) {
-		configComposite = new Composite(main, SWT.BORDER);
+		configComposite = new Composite(main, SWT.NONE);
 		
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
