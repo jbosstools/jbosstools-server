@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.packages;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -39,6 +40,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ModuleFile;
+import org.eclipse.wst.server.core.internal.ModuleFolder;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
@@ -138,10 +140,10 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 		if( propVal == null && create ) {
 			if( nextArchiveId == -1 ) {
 				nextArchiveId = 
-					new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).getInt(MODULE_ID_PROPERTY_KEY, 0);
+					new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).getInt(NEXT_ARCHIVE_KEY, 0);
 			}
 			nextArchiveId++;
-			new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).putInt(MODULE_ID_PROPERTY_KEY, nextArchiveId);
+			new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).putInt(NEXT_ARCHIVE_KEY, nextArchiveId);
 			return MODULE_ID_PROPERTY_KEY + "." + nextArchiveId;
 		} else if( propVal == null ) {
 			return null;
@@ -201,25 +203,54 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 	public class PackagedModuleDelegate extends ModuleDelegate {
 		private IArchive pack;
 		private HashMap members;
+		private IPath root;
 		public PackagedModuleDelegate(IArchive pack) {
 			this.pack = pack;
-			members = new HashMap();
 		}
-		public IArchive getPackage() {return pack;}
+		public IArchive getPackage() {
+			return pack;
+		}
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}
 		
 		public void reset() {
-			members = new HashMap();
+			members = null;
+		}
+
+		protected void init() {
+			if( members == null ) {
+				members = new HashMap();
+				root = pack.getArchiveFilePath();
+				addResource(root.toFile());
+			}
+		}
+		protected void addResource(File f) {
+			if( f.isDirectory() ) {
+				IPath relative = getRelativePath(f);
+				members.put(relative, new ModuleFolder(f.getName(), relative));
+				File[] kids = f.listFiles();
+				for( int i = 0; i < kids.length; i++ ) {
+					addResource(kids[i]);
+				}
+			} else if( f.isFile() ) { 
+				members.put(root, new ModuleFile(f.getName(), new Path(f.getName()), f.lastModified()));				
+			}
+		}
+		protected IPath getRelativePath(File f) {
+			IPath tmp = new Path(f.getAbsolutePath());
+			return tmp.removeFirstSegments(root.segmentCount()-1);
 		}
 
 		public IModuleResource[] members() throws CoreException {
+			reset();
+			init();
 			Collection c = members.values();
 			return (IModuleResource[]) c.toArray(new IModuleResource[c.size()]);
 		}
 		
 		public void fileUpdated(IPath filePath) {
+			init();
 			long timestamp;
 			timestamp = new Date().getTime(); // now
 
@@ -230,6 +261,7 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 			members.put(filePath, new ModuleFile(filePath.lastSegment(), filePath, timestamp));
 		}
 		public void fileRemoved(IPath filePath) {
+			init();
 			IPath dest = pack.getDestinationPath();
 			if( dest.isPrefixOf(filePath)) {
 				filePath = filePath.removeFirstSegments(dest.segmentCount());
