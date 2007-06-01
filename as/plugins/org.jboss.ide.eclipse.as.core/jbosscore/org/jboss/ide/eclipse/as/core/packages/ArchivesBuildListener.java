@@ -67,7 +67,6 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	public void cleanArchive(IArchive pkg) {
 		PackagedModuleDelegate del = getModuleDelegate(pkg);
 		del.reset();
-		
 	}
 
 
@@ -79,22 +78,16 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath, fileset); // change
+		IPath filePath2 = ModelUtil.getBaseDestinationFile(fileset, filePath);
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
 		del.fileRemoved(filePath2);
 	}
 	public void fileUpdated(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
 		// make absolute
-		IPath filePath2 = makeAbsolute(filePath, fileset); // change
+		IPath filePath2 = ModelUtil.getBaseDestinationFile(fileset, filePath);
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
 		del.fileUpdated(filePath2);
 	}
-
-	public IPath makeAbsolute(IPath local, IArchiveFileSet fileset) {
-		IPath file = ModelUtil.getBaseFile(fileset, local);
-		return file;
-	}
-
 	
 	// If we're supposed to auto-deploy, get on it
 	protected static void publish(IArchive pkg) {
