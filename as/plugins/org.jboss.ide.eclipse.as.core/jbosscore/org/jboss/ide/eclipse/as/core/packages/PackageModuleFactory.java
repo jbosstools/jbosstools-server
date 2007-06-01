@@ -36,6 +36,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
@@ -50,6 +51,7 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
@@ -143,7 +145,12 @@ public class PackageModuleFactory extends ProjectModuleFactoryDelegate {
 					new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).getInt(NEXT_ARCHIVE_KEY, 0);
 			}
 			nextArchiveId++;
-			new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).putInt(NEXT_ARCHIVE_KEY, nextArchiveId);
+			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+			prefs.putInt(NEXT_ARCHIVE_KEY, nextArchiveId);
+			try {
+				prefs.flush();
+			} catch( BackingStoreException bse ) {
+			}
 			return MODULE_ID_PROPERTY_KEY + "." + nextArchiveId;
 		} else if( propVal == null ) {
 			return null;
