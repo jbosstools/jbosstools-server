@@ -32,8 +32,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 
 	public IModule[] getRootModules(IModule module) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		return new IModule[] { module };
 	}
 
 	public void modifyModules(IModule[] add, IModule[] remove,
