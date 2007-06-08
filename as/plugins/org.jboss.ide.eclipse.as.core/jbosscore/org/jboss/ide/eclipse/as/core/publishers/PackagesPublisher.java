@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -103,6 +104,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	
 	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
+		System.out.println("***********   publishing");
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
@@ -117,28 +119,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
 
 		if( shouldPublishIncremental(module, kind, deltaKind, modulePublishState) ) {
-			IPath sourcePrefix = sourcePath.removeLastSegments(1);
-			IPath destPath;
-			
-			ArrayList updated2 = new ArrayList();
-			ArrayList removed2 = new ArrayList();
-			fillFromDelta(updated2, removed2, delta);
-			IPath[] updated = (IPath[]) updated2.toArray(new IPath[updated2.size()]);
-			IPath[] removed = (IPath[]) removed2.toArray(new IPath[removed2.size()]);
-
-			// incrementally remove removed files
-			for( int j = 0; j < removed.length; j++ ) {
-				destPath = destPathRoot.append(removed[j]);
-				FileUtil.completeDelete(destPath.toFile(), listener);
-			}
-			
-			// incrementally update updated files
-			for( int j = 0; j < updated.length; j++ ) {
-				destPath = destPathRoot.append(updated[j]);
-				IPath srcp = sourcePrefix.append(updated[j]);
-				FileUtil.fileSafeCopy(srcp.toFile(), destPath.toFile(), listener);
-			}
-			
+			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta, listener);
 		} else {
 			// full publish, copy whole folder or file
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
@@ -149,15 +130,29 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			return false;
 		return true;
 	}
-	protected void fillFromDelta(ArrayList updated2, ArrayList removed2, IModuleResourceDelta[] delta) {
+	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix, 
+								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
+		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
+		IPath concrete = null, destPath;
 		for( int j = 0; j < delta.length; j++ ) {
 			switch(delta[j].getKind()) {
 				case IModuleResourceDelta.ADDED:
 				case IModuleResourceDelta.CHANGED:
-					updated2.add(delta[j].getModuleResource().getModuleRelativePath());
+					concrete = delegate.getConcreteDestFile(delta[j].getModuleResource());
+					destPath = destPathRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+					if( delta[j].getModuleResource() instanceof IModuleFolder ) {
+						System.out.println("mkdirs " + destPath.toOSString());
+						destPath.toFile().mkdirs();
+					} else {
+						System.out.println("safe-copying " + destPath.toOSString());
+						FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
+					}
 					break;
 				case IModuleResourceDelta.REMOVED:
-					removed2.add(delta[j].getModuleResource().getModuleRelativePath());
+					concrete = delegate.getConcreteDestFile(delta[j].getModuleResource());
+					destPath = destPathRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+					System.out.println("safe-deleting " + destPath.toOSString());
+					FileUtil.safeDelete(destPath.toFile(), listener);
 					break;
 			}
 		}

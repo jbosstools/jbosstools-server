@@ -176,14 +176,14 @@ public class JstPublisher extends PackagesPublisher {
 	protected void handleResource(int kind, IModuleResource resource, Set addedChanged, Set removed) {
 		if( resource instanceof ModuleFile ) {
 			ModuleFile mf = (ModuleFile)resource;
-			File f = (File)resource.getAdapter(java.io.File.class);
+			IFile f = (IFile)resource.getAdapter(IFile.class);
 			IPath p = null;
 			if( f == null ) {
 				IFile ifile = (IFile)resource.getAdapter(IFile.class);
 				if( ifile != null )
 					p = ifile.getLocation();
 			} else {
-				p = new Path(f.getAbsolutePath());
+				p = f.getLocation();
 			}
 			
 			if( p != null ) {

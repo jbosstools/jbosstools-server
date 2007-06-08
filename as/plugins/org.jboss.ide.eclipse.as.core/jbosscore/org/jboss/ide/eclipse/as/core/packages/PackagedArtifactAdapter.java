@@ -29,10 +29,10 @@ public class PackagedArtifactAdapter extends ModuleArtifactAdapterDelegate {
 		if( obj instanceof IProject ) {
 			PackageModuleFactory factory = PackageModuleFactory.getFactory();
 			if( factory != null ) {
-				IModule[] mods = factory.getModulesFromProject((IProject)obj);
-				if( mods != null && mods.length != 0) {
-					return getArtifact(mods);
-				}
+//				IModule[] mods = factory.getModulesFromProject((IProject)obj);
+//				if( mods != null && mods.length != 0) {
+//					return getArtifact(mods);
+//				}
 			}
 		}
 		return null;

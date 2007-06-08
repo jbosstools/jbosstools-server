@@ -36,7 +36,9 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.core.model.other.IArchiveBuildListener;
+import org.jboss.ide.eclipse.archives.core.model.other.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -47,7 +49,7 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
  *
  * @author rob.stryker@jboss.com
  */
-public class ArchivesBuildListener implements IArchiveBuildListener {
+public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveModelListener {
 
 	public static ArchivesBuildListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";
@@ -62,6 +64,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	
 	public ArchivesBuildListener() {
 		ArchivesModel.instance().addBuildListener(this);
+		ArchivesModel.instance().addModelListener(this, ArchivesModel.LIST_FRONT);
 	}
 	
 	public void cleanArchive(IArchive pkg) {
@@ -77,16 +80,12 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	}
 
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-		// make absolute
-		IPath filePath2 = ModelUtil.getBaseDestinationFile(fileset, filePath);
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
-		del.fileRemoved(filePath2);
+		del.fileRemoved(filePath, fileset);
 	}
 	public void fileUpdated(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-		// make absolute
-		IPath filePath2 = ModelUtil.getBaseDestinationFile(fileset, filePath);
 		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
-		del.fileUpdated(filePath2);
+		del.fileUpdated(filePath, fileset);
 	}
 	
 	// If we're supposed to auto-deploy, get on it
@@ -190,6 +189,16 @@ public class ArchivesBuildListener implements IArchiveBuildListener {
 	}
 
 	public void cleanProject(IPath project) {
+	}
+
+	public void modelChanged(IArchiveNodeDelta delta) {
+		IPath p ;
+		if( delta.getPreNode() == null )
+			p = delta.getPostNode().getProjectPath();
+		else
+			p = delta.getPreNode().getProjectPath();
+		
+		PackageModuleFactory.getFactory().refreshProject(p);
 	}
 
 
