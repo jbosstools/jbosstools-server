@@ -35,12 +35,10 @@ public class FileUtil {
 	
 	
 	// Delete the file. If it's a folder, delete all children.
-	// Also, if parent is now empty, delete that as well. 
 	public static void safeDelete(File file) {
 		safeDelete(file, null);
 	}
 	public static void safeDelete(File file, IFileUtilListener listener) {
-		boolean ret = true;
 		if( file.isDirectory() ) {
 			File[] children = file.listFiles();
 			for( int i = 0; i < children.length; i++ ) {
@@ -63,13 +61,18 @@ public class FileUtil {
 		}
 	}
 	
+	// calls safedelete, but also deletes empty parent folders
 	public static void completeDelete(File file) {
 		completeDelete(file, null);
 	}
+	
 	public static void completeDelete(File file, IFileUtilListener listener) {
+		completeDelete(file, null, listener);
+	}
+	public static void completeDelete(File file, File archiveRoot, IFileUtilListener listener) {
 		safeDelete(file, listener);
 		//delete all empty parent folders
-		while(file.getParentFile().listFiles().length == 0 ) {
+		while(!file.getParentFile().equals(archiveRoot) && file.getParentFile().listFiles().length == 0 ) {
 			file = file.getParentFile();
 			try {
 				boolean tmp = file.delete();
@@ -92,7 +95,7 @@ public class FileUtil {
 		if (src.isDirectory()) {
 			File[] subFiles = src.listFiles();
 			boolean copied = true;
-			
+			dest.mkdirs();
 			for (int i = 0; i < subFiles.length; i++) {
 				File newDest = new File(dest, subFiles[i].getName());
 				copied = copied && fileSafeCopy(subFiles[i], newDest, listener);
