@@ -165,33 +165,34 @@
          point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
       <ViewProvider
             description="Allow modules to be included in the tree."
-            icon="icons/J2EEModule16.gif"
+            icon="icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
             name="Modules"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.ModuleViewProvider"/>
       <ViewProvider
-            description="Lists inactive categories and allows you to turn them back on."
-            icon="icons/garbage.png"
-            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
-            name="Inactive Categories"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
-      <ViewProvider
             description="A place to view server-related events"
-            icon="icons/file-info.png"
+            icon="icons/info_obj.gif"
             id="org.jboss.ide.eclipse.as.ui.EventLogViewProvider"
             name="Event Log"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.EventLogViewProvider"/>
       <ViewProvider
             description="An extension that lets you quickly change often-used fields or ports"
-            icon="icons/xml.gif"
+            icon="icons/XMLFile.gif"
             id="org.jboss.ide.eclipse.as.ui.XPathDescriptors"
-            name="XML XPaths"
+            name="XML Configuration"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider"/>
       <ViewProvider
             description="A front end to open, edit, or view files in your server&apos;s directories."
+            icon="icons/multiple_files.gif"
             id="org.jboss.ide.eclipse.as.ui.FilesetViewProvider"
             name="Filesets"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider"/>
+      <ViewProvider
+            description="Lists inactive categories and allows you to turn them back on."
+            icon="icons/ignore.gif"
+            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
+            name="Inactive Categories"
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
    </extension>
    <!--
       <extension
