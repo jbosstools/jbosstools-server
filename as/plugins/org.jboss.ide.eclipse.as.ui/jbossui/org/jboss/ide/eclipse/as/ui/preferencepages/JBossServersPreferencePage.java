@@ -47,6 +47,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -83,7 +85,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 
 	protected Control createContents(Composite parent) {
 		Composite main = new Composite(parent, SWT.BORDER);
-		main.setLayout(new FormLayout());
+		main.setLayout(new GridLayout(1, false));
 		
 		createServerViewer(main);
 		createTimeoutGroup(main);
@@ -91,14 +93,14 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 		
 		// minimum width enforcer
-		Label l = new Label(main, SWT.NONE);
-		FormData lData = new FormData();
-		lData.left = new FormAttachment(0,0);
-		lData.right = new FormAttachment(0,600);
-		lData.bottom = new FormAttachment(100,0);
-		lData.top = new FormAttachment(100,0);
-		l.setLayoutData(lData);
-		main.layout();
+//		Label l = new Label(main, SWT.NONE);
+//		FormData lData = new FormData();
+//		lData.left = new FormAttachment(0,0);
+//		lData.right = new FormAttachment(0,600);
+//		lData.bottom = new FormAttachment(100,0);
+//		lData.top = new FormAttachment(100,0);
+//		l.setLayoutData(lData);
+//		main.layout();
 
 		
 		return main;
@@ -122,15 +124,21 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	
 	protected void createServerViewer(Composite main) {
 		
+		Group serverGroup = new Group(main, SWT.NONE);
+		serverGroup.setLayout(new GridLayout(1, false));
+		serverGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+		serverGroup.setText("Servers");
+		
 		workingCoppies = new HashMap();
 		
-		serverTable = new Table(main, SWT.BORDER);
-		FormData lData = new FormData();
-		lData.left = new FormAttachment(0,5);
-		lData.right = new FormAttachment(pageColumn-2,0);
-		lData.top = new FormAttachment(0,5);
-		lData.bottom = new FormAttachment(0,80);
-		serverTable.setLayoutData(lData);
+		serverTable = new Table(serverGroup, SWT.BORDER);
+		serverTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+//		FormData lData = new FormData();
+//		lData.left = new FormAttachment(0,5);
+//		lData.right = new FormAttachment(pageColumn-2,0);
+//		lData.top = new FormAttachment(0,5);
+//		lData.bottom = new FormAttachment(0,80);
+//		serverTable.setLayoutData(lData);
 		
 		serverTableViewer = new TableViewer(serverTable);
 		serverTableViewer.setContentProvider(new IStructuredContentProvider() {
@@ -177,11 +185,12 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	protected void createTimeoutGroup(Composite main) {
 		timeoutGroup = new Group(main, SWT.NONE);
 		timeoutGroup.setText(Messages.PreferencePageServerTimeouts);
-		FormData groupData = new FormData();
-		groupData.right = new FormAttachment(100, -5);
-		groupData.left = new FormAttachment(pageColumn+2, 0);
-		groupData.top = new FormAttachment(0,5);
-		timeoutGroup.setLayoutData(groupData);
+		timeoutGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+//		FormData groupData = new FormData();
+//		groupData.right = new FormAttachment(100, -5);
+//		groupData.left = new FormAttachment(pageColumn+2, 0);
+//		groupData.top = new FormAttachment(0,5);
+//		timeoutGroup.setLayoutData(groupData);
 		
 		timeoutGroup.setLayout(new FormLayout());
 		
@@ -193,13 +202,12 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 		stopSpinner = new Spinner(timeoutGroup, SWT.BORDER);
 		startSpinner = new Spinner(timeoutGroup, SWT.BORDER);
-
+		
 		FormData startTD = new FormData();
 		startTD.left = new FormAttachment(0,5);
 		startTD.top = new FormAttachment(0,5);
 		startTimeoutLabel.setLayoutData(startTD);
 		startTimeoutLabel.setText(Messages.PreferencePageStartTimeouts);
-		
 		
 		FormData stopTD = new FormData();
 		stopTD.left = new FormAttachment(0,5);
@@ -230,6 +238,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		startSpinner.setMinimum(0);
 		stopSpinner.setIncrement(1);
 		startSpinner.setIncrement(1);
+		stopSpinner.setEnabled(false);
+		startSpinner.setEnabled(false);
 		
 		Label uponTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
 		abortOnTimeout = new Button(timeoutGroup, SWT.RADIO);
@@ -256,7 +266,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		uponTimeoutLabel.setText(Messages.PreferencePageUponTimeout);
 		abortOnTimeout.setText(Messages.PreferencePageUponTimeoutAbort);
 		ignoreOnTimeout.setText(Messages.PreferencePageUponTimeoutIgnore);
-
+		abortOnTimeout.setEnabled(false);
+		ignoreOnTimeout.setEnabled(false);
 		
 	}
 	
@@ -307,6 +318,11 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout() / 1000);
 		startSpinner.setSelection(getStartTimeout(wcHelper));
 		stopSpinner.setSelection(getStopTimeout(wcHelper));
+		
+		startSpinner.setEnabled(true);
+		stopSpinner.setEnabled(true);
+		abortOnTimeout.setEnabled(true);
+		ignoreOnTimeout.setEnabled(true);
 		
 		boolean currentVal = wcHelper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
 		if( currentVal == IServerPollingAttributes.TIMEOUT_ABORT) {
