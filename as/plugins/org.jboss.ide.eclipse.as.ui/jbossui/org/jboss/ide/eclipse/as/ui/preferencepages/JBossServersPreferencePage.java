@@ -44,11 +44,10 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -85,7 +84,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 
 	protected Control createContents(Composite parent) {
 		Composite main = new Composite(parent, SWT.BORDER);
-		main.setLayout(new GridLayout(1, false));
+//		main.setLayout(new GridLayout(1, false));
+		main.setLayout(new FormLayout());
 		
 		createServerViewer(main);
 		createTimeoutGroup(main);
@@ -120,25 +120,31 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 	// where the page fold is
 	int pageColumn = 55;
+
+	private Group serverGroup;
 	
 	
 	protected void createServerViewer(Composite main) {
 		
-		Group serverGroup = new Group(main, SWT.NONE);
-		serverGroup.setLayout(new GridLayout(1, false));
-		serverGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+		serverGroup = new Group(main, SWT.NONE);
+		//		serverGroup.setLayout(new GridLayout(1, false));
+		FillLayout serverGroupLayout = new FillLayout();
+		serverGroupLayout.marginHeight = 5;
+		serverGroupLayout.marginWidth = 5;
+		serverGroup.setLayout(serverGroupLayout);
+//		serverGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		serverGroup.setText("Servers");
 		
 		workingCoppies = new HashMap();
 		
 		serverTable = new Table(serverGroup, SWT.BORDER);
-		serverTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-//		FormData lData = new FormData();
-//		lData.left = new FormAttachment(0,5);
-//		lData.right = new FormAttachment(pageColumn-2,0);
-//		lData.top = new FormAttachment(0,5);
-//		lData.bottom = new FormAttachment(0,80);
-//		serverTable.setLayoutData(lData);
+//		serverTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+		FormData lData = new FormData();
+		lData.left = new FormAttachment(0,5);
+		lData.right = new FormAttachment(100,-5);
+		lData.top = new FormAttachment(0,5);
+		lData.bottom = new FormAttachment(30,-5);
+		serverGroup.setLayoutData(lData);
 		
 		serverTableViewer = new TableViewer(serverTable);
 		serverTableViewer.setContentProvider(new IStructuredContentProvider() {
@@ -185,12 +191,13 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	protected void createTimeoutGroup(Composite main) {
 		timeoutGroup = new Group(main, SWT.NONE);
 		timeoutGroup.setText(Messages.PreferencePageServerTimeouts);
-		timeoutGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-//		FormData groupData = new FormData();
-//		groupData.right = new FormAttachment(100, -5);
-//		groupData.left = new FormAttachment(pageColumn+2, 0);
-//		groupData.top = new FormAttachment(0,5);
-//		timeoutGroup.setLayoutData(groupData);
+//		timeoutGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+		FormData groupData = new FormData();
+
+		groupData.left = new FormAttachment(0, 5);
+		groupData.right = new FormAttachment(100, -5);
+		groupData.top = new FormAttachment(serverGroup,5);
+		timeoutGroup.setLayoutData(groupData);
 		
 		timeoutGroup.setLayout(new FormLayout());
 		
