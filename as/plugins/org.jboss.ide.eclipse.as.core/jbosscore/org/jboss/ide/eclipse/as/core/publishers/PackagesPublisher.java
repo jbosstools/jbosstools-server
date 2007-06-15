@@ -159,11 +159,9 @@ public class PackagesPublisher implements IJBossServerPublisher {
 					boolean delete = concreteRelative.equals(emrModRelative);
 					
 					if( delete ) {
-						System.out.println("safe-deleting " + destPath.toOSString());
 						FileUtil.safeDelete(destPath.toFile(), listener);
 					} else {
 						// copy
-						System.out.println("safe-copying " + destPath.toOSString());
 						FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
 					}
 				}
@@ -179,7 +177,6 @@ public class PackagesPublisher implements IJBossServerPublisher {
 				if( !changedFiles.contains(concrete)) {
 					changedFiles.add(concrete);
 					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
-					System.out.println("safe-copying " + destPath.toOSString());
 					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
 				}
 				return;
