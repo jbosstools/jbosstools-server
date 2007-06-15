@@ -75,11 +75,11 @@ public class WarArchiveType extends J2EEArchiveType {
 		IArchiveFolder lib = addFolder(project, webinf, LIB);
 		IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 		addReferencedProjectsAsLibs(project, lib);
+		addLibFileset(project, lib, true);
 		addClassesFileset(project, classes);
 
 		if( mod == null ) {
 			addWebinfFileset(project, webinf);
-			addLibFileset(project, lib, true);
 		} else {
 			addWebContentFileset(project, topLevel);
 		}
@@ -131,7 +131,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
-		if( jp != null ) {
+		if( jp != null && jp.exists()) {
 			try {
 				IClasspathEntry[] entries = jp.getRawClasspath();
 				for( int i = 0; i < entries.length; i++ ) {
