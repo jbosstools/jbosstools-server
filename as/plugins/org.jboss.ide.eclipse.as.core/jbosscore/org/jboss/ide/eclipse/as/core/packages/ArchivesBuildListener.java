@@ -68,8 +68,6 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 	}
 	
 	public void cleanArchive(IArchive pkg) {
-		PackagedModuleDelegate del = getModuleDelegate(pkg);
-		del.reset();
 	}
 
 
@@ -80,12 +78,8 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 	}
 
 	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
-		del.fileRemoved(filePath, fileset);
 	}
 	public void fileUpdated(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-		PackagedModuleDelegate del = getModuleDelegate(topLevelPackage);
-		del.fileUpdated(filePath, fileset);
 	}
 	
 	// If we're supposed to auto-deploy, get on it

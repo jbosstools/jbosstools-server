@@ -21,7 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Set;
@@ -39,7 +38,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.ModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;

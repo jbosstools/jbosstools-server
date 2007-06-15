@@ -21,12 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.core.packages;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -34,19 +31,18 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ModuleFile;
-import org.eclipse.wst.server.core.internal.ModuleFolder;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
-import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -114,7 +110,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				prefs.flush();
 			} catch( BackingStoreException bse ) {
 			}
-			return MODULE_ID_PROPERTY_KEY + "." + nextArchiveId;
+			return "" + nextArchiveId;
 		} else if( propVal == null ) {
 			return null;
 		} 
@@ -242,69 +238,239 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			IArchive[] archives = (IArchive[])projectToPackages.get(proj);
 			IModule mod;
 			projectToPackages.remove(proj);
-			for( int i = 0; i < archives.length; i++ ) {
-				mod = (IModule)packageToModule.get(archives[i]);
-				packageToModule.remove(archives[i]);
-				moduleDelegates.remove(mod);
+			if( archives != null ) {
+				for( int i = 0; i < archives.length; i++ ) {
+					mod = (IModule)packageToModule.get(archives[i]);
+					packageToModule.remove(archives[i]);
+					moduleDelegates.remove(mod);
+				}
 			}
 			createModules(proj);
+			System.out.println("clearing cache");
 			clearModuleCache();
 		}
 	}
 	
-	protected static interface IExtendedModuleResource {
-		public IPath getPath();
+	public static interface IExtendedModuleResource extends IModuleResource {
+		public IPath getSourcePath();
 		public IArchiveNode getNode();
 		public IPath getDeepDestination();
+		public IPath getConcreteDestFile();
 	}
 
-	public class PackagedModuleDelegate extends ModuleDelegate {
+	public class DelegateInitVisitor implements IArchiveNodeVisitor {
+
 		private IArchive pack;
-		private HashMap members;
-		private IArchiveNodeVisitor initVisitor;
-		public PackagedModuleDelegate(IArchive pack) {
+		private HashMap members;  // node -> imoduleresource
+		private HashMap pathToNode; // path -> node
+		public DelegateInitVisitor(IArchive pack) {
 			this.pack = pack;
-			initVisitor = createInitVisitor();
+			reset();
 		}
-		private IArchiveNodeVisitor createInitVisitor() {
-			return new IArchiveNodeVisitor() {
-				public boolean visit(IArchiveNode node) {
-					if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE ) {
-						IPath rel = ((IArchive)node).getRootArchiveRelativePath();
-						members.put(rel, new ArchiveFolderModuleFolder(((IArchive)node).getName(), rel, node));
-					} else if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
-						IPath rel = ((IArchiveFolder)node).getRootArchiveRelativePath();
-						members.put(rel, new ArchiveFolderModuleFolder(((IArchiveFolder)node).getName(), rel, node));
-					} else if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
-						IArchiveFileSet fs = (IArchiveFileSet)node;
-						IPath[] paths = fs.findMatchingPaths();
-						File tmp = null;
-						IPath archiveRelative;
-						for( int i = 0; i < paths.length; i++ ) {
-							archiveRelative = fs.getRootArchiveRelativePath(paths[i]);
-							tmp = paths[i].toFile();
-							ExtendedModuleFile emf = new ExtendedModuleFile(tmp.getName(), archiveRelative, tmp.lastModified(), paths[i], fs);							
-							members.put(archiveRelative, emf);
-							IPath tmp2 = archiveRelative.removeFirstSegments(fs.getRootArchiveRelativePath().segmentCount()).removeLastSegments(1);
-							if( tmp2.segmentCount() > 0 ) 
-								addFoldersFor(fs, tmp2);
-						}
-					}
-					return true;
-				} 
-			};
+		public void reset() {
+			members = new HashMap();
+			pathToNode = new HashMap();
 		}
-		protected void addFoldersFor(IArchiveFileSet fs, IPath fsRelative) {
-			IPath fsBase = fs.getRootArchiveRelativePath();
-			IPath folderPath = null;
-			IPath tmpRelative;
-			for( int i = 0; i < fsRelative.segmentCount(); i++ ) {
-				tmpRelative = fsRelative.removeLastSegments(i);
-				folderPath = fsBase.append(tmpRelative);
-				if( !members.containsKey(folderPath))
-					members.put(folderPath, new FilesetModuleFolder(folderPath.lastSegment(), folderPath, fs, fs.getGlobalSourcePath().append(tmpRelative)));
+		public boolean visit(IArchiveNode node) {
+			int type = node.getNodeType();
+			if( type == IArchiveNode.TYPE_ARCHIVE && ((IArchive)node).isTopLevel()) {
+				IPath rel = ((IArchive)node).getRootArchiveRelativePath();
+				members.put(node, new ArchiveContainerResource(((IArchive)node).getName(), node, rel));
+				pathToNode.put(rel, node);
+			} else if( type == IArchiveNode.TYPE_ARCHIVE || type == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
+				String name = type == IArchiveNode.TYPE_ARCHIVE ? ((IArchive)node).getName() : ((IArchiveFolder)node).getName();
+				// if we're any other archive or a folder, create us and add to parent
+				IArchiveNode parent = node.getParent();
+				ArchiveContainerResource parentAsResource = (ArchiveContainerResource)members.get(parent);
+				IPath rel = node.getRootArchiveRelativePath();
+				members.put(node, new ArchiveContainerResource(name, node, rel));					
+				pathToNode.put(rel, node);
+				parentAsResource.addChild((IModuleResource)members.get(node));
+			} else if( type == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
+				ArchiveContainerResource parentAsResource = (ArchiveContainerResource)members.get(node.getParent());
+				parentAsResource.addFilesetAsChild((IArchiveFileSet)node);
+			}
+
+			return true;
+		}
+		
+		public IModuleResource getRootResource() {
+			return (IModuleResource)members.get(pack);
+		}
+		
+		public IModuleResource getResourceForNode(IArchiveNode node) {
+			return (IModuleResource)members.get(node);
+		}
+	}
+	
+	public class ArchiveContainerResource implements IModuleFolder, IExtendedModuleResource {
+
+		protected IPath moduleRelativePath;
+		protected IArchiveNode node;
+		protected String name;
+		private HashMap members;
+				
+		// represents source folder on disk. only used if node is fileset
+		private IPath folderGlobalPath = null;
+		public ArchiveContainerResource(String name,IArchiveNode node,IPath moduleRelativePath ) {
+			this.name = name;
+			this.node = node;
+			this.moduleRelativePath = moduleRelativePath;
+			members = new HashMap();
+			if( node instanceof IArchiveFileSet) {
+				IPath tmp = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
+				folderGlobalPath = ((IArchiveFileSet)node).getGlobalSourcePath().append(tmp);
 			}
 		}
+		
+		public int hashCode() {
+			return name.hashCode() * 37 + moduleRelativePath.hashCode();
+		}
+
+		public boolean equals(Object other) {
+			if (other instanceof IModuleFolder) {
+				IModuleFolder resource = (IModuleFolder) other;
+				return resource.getModuleRelativePath().equals(getModuleRelativePath());
+			}
+			return false;
+		}
+
+		public void addChild(IModuleResource resource) {
+			members.put(resource.getModuleRelativePath(), resource);
+		}
+		
+		public void removeChild(IPath moduleRelativePath) {
+			members.remove(moduleRelativePath);
+		}
+		public IModuleResource getChild(IPath path) {
+			return (IModuleResource)members.get(path);
+		}
+		
+		public void addFilesetAsChild(IArchiveFileSet fs) {
+			IPath[] paths = fs.findMatchingPaths(); // file-system based source paths
+			IPath globalSource = fs.getGlobalSourcePath();
+			for( int i = 0; i < paths.length; i++ ) {
+				addFilesetPathAsChild(fs, globalSource, paths[i]);
+			}
+		}
+		
+		public void addFilesetPathAsChild(IArchiveFileSet fs, IPath globalSource, IPath path) {
+			IPath archiveRelative = fs.getRootArchiveRelativePath(path);
+			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
+			ArchiveContainerResource parent = find(fs, globalSource, fsRelative.removeLastSegments(1), true);
+			ExtendedModuleFile emf = new ExtendedModuleFile(archiveRelative.lastSegment(), archiveRelative, path.toFile().lastModified(), path, fs);
+			parent.addChild(emf);
+		}
+		
+		public void removeFilesetPathAsChild(IArchiveFileSet fs, IPath path) {
+			IPath archiveRelative = fs.getRootArchiveRelativePath(path);
+			IPath globalSource = fs.getGlobalSourcePath();
+			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
+			ArchiveContainerResource parent = find(fs, globalSource, fsRelative.removeLastSegments(1), false);
+			if( parent != null ) 
+				parent.removeFilesetPathAsChild(fs, path);
+		}
+		
+		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath globalSource, IPath fsRelative, boolean create) {
+			ArchiveContainerResource resource = this;
+			ArchiveContainerResource tmpResource;
+			IPath tmpPath = fs.getRootArchiveRelativePath();
+			int count = fsRelative.segmentCount();
+			for( int i = 0; i < count; i++ ) {
+				tmpPath = tmpPath.append(fsRelative.segment(i));
+				tmpResource = (ArchiveContainerResource)resource.getChild(tmpPath);
+				if( tmpResource == null ) {
+					if( !create )
+						return null;
+					tmpResource = new ArchiveContainerResource(tmpPath.lastSegment(), fs, tmpPath);
+					resource.addChild(tmpResource);
+				}
+				resource = tmpResource;
+			}
+			return resource;
+		}
+		
+		public IModuleResource[] members() {
+			Collection c = members.values();
+			return (IModuleResource[]) c.toArray(new IModuleResource[c.size()]);
+		}
+
+		public IPath getModuleRelativePath() {
+			return moduleRelativePath;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Object getAdapter(Class adapter) {
+			return null;
+		}
+
+		public IPath getDeepDestination() {
+			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ?  
+					((IArchiveFileSet)node).getRootArchiveRelativePath(folderGlobalPath) : node.getRootArchiveRelativePath();
+			return node.getRootArchive().getGlobalDestinationPath().append(tmp);
+		}
+		public IPath getConcreteDestFile() {
+			return ModelUtil.getBaseDestinationFile(node,folderGlobalPath);
+		}
+		public IArchiveNode getNode() {
+			return node;
+		}
+
+		public IPath getSourcePath() {
+			return null;
+		}
+		
+	}
+
+	public class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
+		private IPath srcPath;
+		private IArchiveFileSet node;
+		public ExtendedModuleFile(String name, IPath relativePath, long stamp, 
+				IPath srcPath, IArchiveFileSet fs) {
+			super(name, relativePath, stamp);
+			this.srcPath = srcPath;
+			this.node = fs;
+		}
+		public int hashCode() {
+			return name.hashCode() * 37 + path.hashCode();
+		}
+		
+		public IPath getPath() { return srcPath; }
+		public IArchiveNode getNode() { return node; }
+		public IPath getDeepDestination() {
+			return node.getRootArchive().getGlobalDestinationPath().append(node.getRootArchiveRelativePath(path));
+		}
+		public IPath getSourcePath() {
+			return this.srcPath;
+		}
+
+		public IPath getConcreteDestFile() {
+			return ModelUtil.getBaseDestinationFile(node, srcPath);
+		}
+
+		public boolean equals(Object other) {
+			if (other instanceof IModuleFile) {
+				IModuleFile resource = (IModuleFile) other;
+				return resource.getModuleRelativePath().equals(getModuleRelativePath());
+			}
+			return false;
+		}
+		
+	}
+	
+	
+	public class PackagedModuleDelegate extends ModuleDelegate {
+		private IArchive pack;
+		private IModuleResource rootResource;
+		private DelegateInitVisitor initVisitor;
+		public PackagedModuleDelegate(IArchive pack) {
+			this.pack = pack;
+			initVisitor = new DelegateInitVisitor(pack);
+		}
+		
 		public IArchive getPackage() {
 			return pack;
 		}
@@ -312,103 +478,17 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			return new IModule[0];
 		}
 		
-		public void reset() {
-			members = null;
-		}
-
 		protected void init() {
-			members = new HashMap();
+			initVisitor.reset();
 			pack.accept(initVisitor);
+			rootResource = initVisitor.getRootResource();
 		}
 
 		public IModuleResource[] members() throws CoreException {
 			init();
-			Collection c = members.values();
-			return (IModuleResource[]) c.toArray(new IModuleResource[c.size()]);
+			return new IModuleResource[] { rootResource };
 		}
 		
-		public void fileUpdated(IPath changedFile, IArchiveFileSet fs) {
-			IPath archiveRelative = fs.getRootArchiveRelativePath(changedFile);
-			long stamp = new Date().getTime();
-			ExtendedModuleFile emf = new ExtendedModuleFile(changedFile.lastSegment(), archiveRelative, stamp, changedFile, fs);
-			members.put(archiveRelative, emf);
-		}
-		public void fileRemoved(IPath removedFile, IArchiveFileSet fs) {
-			IPath archiveRelative = fs.getRootArchiveRelativePath(removedFile);
-			members.remove(archiveRelative);
-		}
-				
-		
-		public class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
-			private IPath srcPath;
-			private IArchiveFileSet node;
-			public ExtendedModuleFile(String name, IPath relativePath, long stamp, 
-					IPath srcPath, IArchiveFileSet fs) {
-				super(name, relativePath, stamp);
-				this.srcPath = srcPath;
-				this.node = fs;
-				System.out.println("adding emfile " + srcPath);
-			}
-			public IPath getPath() { return srcPath; }
-			public IArchiveNode getNode() { return node; }
-			public IPath getDeepDestination() {
-				return node.getRootArchive().getDestinationPath().append(node.getRootArchiveRelativePath(path));
-			}
-		}
-
-		public class FilesetModuleFolder extends ModuleFolder implements IExtendedModuleResource {
-
-			private IArchiveFileSet node;
-			private IPath srcPath;
-			public FilesetModuleFolder(String name, IPath path, IArchiveFileSet fs, IPath srcPath) {
-				super(name, path);
-				this.node = fs;
-				this.srcPath = srcPath;
-			}
-			public IPath getPath() { return srcPath; }
-			public IArchiveNode getNode() { return node; }
-			public IPath getDeepDestination() {
-				return node.getRootArchive().getDestinationPath().append(node.getRootArchiveRelativePath(path));
-			}
-		}
-		
-		public class ArchiveFolderModuleFolder extends ModuleFolder implements IExtendedModuleResource {
-			private IArchiveNode node;
-			private IPath srcPath;
-			public ArchiveFolderModuleFolder(String name, IPath path, IArchiveNode node) {
-				super(name, path);
-				this.node = node;
-				this.srcPath = null;
-			}
-			public IPath getPath() { return srcPath; }
-			public IArchiveNode getNode() { return node; }
-			public IPath getDeepDestination() {
-				return node.getRootArchive().getDestinationPath().append(node.getRootArchiveRelativePath());
-			}
-		}
-		
-		public IPath getSourceFile(IModuleResource mf) {
-			if( mf instanceof IExtendedModuleResource ) {
-				return ((IExtendedModuleResource)mf).getPath();
-			}
-			return null;
-		}
-		
-		public IPath getConcreteDestFile(IModuleResource mr) {
-			if( mr instanceof IExtendedModuleResource ) {
-				IExtendedModuleResource emf =(IExtendedModuleResource)mr;
-				return ModelUtil.getBaseDestinationFile(emf.getNode(), emf.getPath());
-			}
-			return null;
-		}
-
-		public IPath getDeepDestFile(IModuleResource mf) {
-			if( mf instanceof IExtendedModuleResource ) {
-				return ((IExtendedModuleResource)mf).getDeepDestination();
-			}
-			return null;
-		}
-
 		public IStatus validate() {
 			return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
 					0, "", null);

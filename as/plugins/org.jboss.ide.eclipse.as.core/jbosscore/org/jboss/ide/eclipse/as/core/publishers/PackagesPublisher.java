@@ -31,11 +31,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.IModuleFolder;
+import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.ExtendedModuleFile;
+import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
@@ -104,14 +106,13 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	
 	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
-		System.out.println("***********   publishing");
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPathRoot = new Path(server.getDeployDirectory());
 		
 		// if destination is deploy directory... no need to re-copy!
-		if( destPathRoot.toOSString().equals(pack.getDestinationPath().toOSString())) {
+		if( destPathRoot.toOSString().equals(pack.getGlobalDestinationPath().toOSString())) {
 			// fire null publish event
 			return;
 		}
@@ -132,28 +133,77 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix, 
 								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
-		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
-		IPath concrete = null, destPath;
-		for( int j = 0; j < delta.length; j++ ) {
-			switch(delta[j].getKind()) {
-				case IModuleResourceDelta.ADDED:
-				case IModuleResourceDelta.CHANGED:
-					concrete = delegate.getConcreteDestFile(delta[j].getModuleResource());
-					destPath = destPathRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
-					if( delta[j].getModuleResource() instanceof IModuleFolder ) {
-						System.out.println("mkdirs " + destPath.toOSString());
-						destPath.toFile().mkdirs();
+		ArrayList changedFiles = new ArrayList();
+		for( int i = 0; i < delta.length; i++ ) {
+			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles, listener);
+		}
+	}
+	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot, 
+			IPath sourcePrefix, ArrayList changedFiles, PublisherFileUtilListener listener) {
+		switch( delta.getKind()) {
+		case IModuleResourceDelta.REMOVED:
+			// removed might not be IExtendedModuleResource
+			IModuleResource imr = delta.getModuleResource();
+			if( imr instanceof IExtendedModuleResource) {
+				IExtendedModuleResource emr = ((IExtendedModuleResource)imr);
+				IPath concrete = emr.getConcreteDestFile();
+				if( !changedFiles.contains(concrete)) {  
+					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+
+					// file hasnt been updated yet. 
+					// But we don't know whether to delete or copy this file. 
+					// depends where it is in the tree and what's exploded. 
+					changedFiles.add(concrete);
+					IPath concreteRelative = concrete.removeFirstSegments(sourcePrefix.segmentCount()).setDevice(null);
+					IPath emrModRelative = emr.getModuleRelativePath();
+					boolean delete = concreteRelative.equals(emrModRelative);
+					
+					if( delete ) {
+						System.out.println("safe-deleting " + destPath.toOSString());
+						FileUtil.safeDelete(destPath.toFile(), listener);
 					} else {
+						// copy
 						System.out.println("safe-copying " + destPath.toOSString());
 						FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
 					}
-					break;
-				case IModuleResourceDelta.REMOVED:
-					concrete = delegate.getConcreteDestFile(delta[j].getModuleResource());
-					destPath = destPathRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
-					System.out.println("safe-deleting " + destPath.toOSString());
-					FileUtil.safeDelete(destPath.toFile(), listener);
-					break;
+				}
+				return;
+			} else {
+				System.out.println("not an extended module resource. need help here");
+				return;
+			}
+		case IModuleResourceDelta.ADDED:
+			imr = delta.getModuleResource();
+			if( imr instanceof IExtendedModuleResource) {
+				IPath concrete = ((IExtendedModuleResource)imr).getConcreteDestFile();
+				if( !changedFiles.contains(concrete)) {
+					changedFiles.add(concrete);
+					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+					System.out.println("safe-copying " + destPath.toOSString());
+					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
+				}
+				return;
+			} else {
+				System.out.println("not an extended module resource. need help here");
+				return;
+			}
+		case IModuleResourceDelta.CHANGED:
+			imr = delta.getModuleResource();
+			if( imr instanceof ExtendedModuleFile ) {
+				IPath concrete = ((ExtendedModuleFile)imr).getConcreteDestFile();
+				if( !changedFiles.contains(concrete)) {
+					changedFiles.add(concrete);
+					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
+				}
+			}
+			break;			
+		}
+		
+		IModuleResourceDelta[] children = delta.getAffectedChildren();
+		if( children != null ) {
+			for( int i = 0; i < children.length; i++ ) {
+				publishFromDeltaHandle(children[i], destRoot, sourcePrefix, changedFiles, listener);
 			}
 		}
 	}
