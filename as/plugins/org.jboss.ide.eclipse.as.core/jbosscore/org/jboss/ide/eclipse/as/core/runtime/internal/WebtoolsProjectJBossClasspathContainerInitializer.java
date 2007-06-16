@@ -178,6 +178,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				IPath deploy = configPath.append("deploy");
 				IPath deployer = deploy.append("ejb3.deployer");
 				IPath aopDeployer = deploy.append("jboss-aop-jdk50.deployer");
+				IPath client = homePath.append("client");
 				
 				list.add(getEntry(configPath.append("lib").append("jboss-ejb3x.jar")));
 				list.add(getEntry(deployer.append("jboss-ejb3.jar")));
@@ -190,7 +191,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				// hibernate
 				list.add(getEntry(homePath.append("client").append("hibernate-client.jar")));
 				
-			
+				// persistence jar
+				list.add(getEntry(client.append("ejb3-persistence.jar")));
+				
 			} else if( facetId.equals(EAR_FACET.getId())) {
 				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
