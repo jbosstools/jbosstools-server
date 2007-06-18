@@ -62,8 +62,11 @@ public abstract class J2EEArchiveType implements IArchiveType {
 	}
 
 	protected IModule getModule(String projectName) {
-		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(getProject(projectName));
-		return moduleArtifact == null ? null : moduleArtifact.getModule();
+		IModuleArtifact moduleArtifacts[] = ServerPlugin.getModuleArtifacts(getProject(projectName));
+		
+		if (moduleArtifacts != null && moduleArtifacts.length > 0)
+			return moduleArtifacts[0].getModule();
+		else return null;
 	}
 	
 	protected IProject getProject(String projectName) {

@@ -10,7 +10,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -18,7 +17,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
@@ -35,17 +33,14 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Trace;
 import org.eclipse.wst.server.ui.internal.ContextIds;
-import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
-import org.eclipse.wst.server.ui.internal.view.servers.ModuleSloshAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishAction;
-import org.eclipse.wst.server.ui.internal.view.servers.RestartAction;
+import org.eclipse.wst.server.ui.internal.view.servers.PublishCleanAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
-import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 
 public class StrippedServerView extends ViewPart {
 	private static final String TAG_COLUMN_WIDTH = "columnWidth";
@@ -180,104 +175,122 @@ public class StrippedServerView extends ViewPart {
 	 */
 	public void initializeActions(ISelectionProvider provider) {
 		Shell shell = getSite().getShell();
-
-		// create the debug action
-		Action debugAction = new StartAction(shell, provider, "debug", ILaunchManager.DEBUG_MODE);
-		debugAction.setToolTipText(Messages.actionDebugToolTip);
-		debugAction.setText(Messages.actionDebug);
-		debugAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_DEBUG));
-		debugAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_DEBUG));
-		debugAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_DEBUG));
-	
-		// create the start action
-		Action runAction = new StartAction(shell, provider, "start", ILaunchManager.RUN_MODE);
-		runAction.setToolTipText(Messages.actionStartToolTip);
-		runAction.setText(Messages.actionStart);
-		runAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START));
-		runAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START));
-		runAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START));
 		
-		// create the profile action
-		Action profileAction = new StartAction(shell, provider, "profile", ILaunchManager.PROFILE_MODE);
-		profileAction.setToolTipText(Messages.actionProfileToolTip);
-		profileAction.setText(Messages.actionProfile);
-		profileAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_PROFILE));
-		profileAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_PROFILE));
-		profileAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_PROFILE));
-	
-		// create the restart menu
-		restartMenu = new MenuManager(Messages.actionRestart);
+		actions = new Action[6];
+		// create the start actions
+		actions[0] = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
+		actions[1] = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
+		actions[2] = new StartAction(shell, provider, ILaunchManager.PROFILE_MODE);
 		
-		Action restartAction = new RestartAction(shell, provider, "restartDebug", ILaunchManager.DEBUG_MODE);
-		restartAction.setToolTipText(Messages.actionDebugToolTip);
-		restartAction.setText(Messages.actionDebug);
-		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_DEBUG));
-		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_DEBUG));
-		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_DEBUG));
-		restartMenu.add(restartAction);
-		
-		restartAction = new RestartAction(shell, provider, "restartRun", ILaunchManager.RUN_MODE);
-		restartAction.setToolTipText(Messages.actionRestartToolTip);
-		restartAction.setText(Messages.actionStart);
-		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START));
-		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START));
-		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START));
-		restartMenu.add(restartAction);
-		
-		restartAction = new RestartAction(shell, provider, "restartProfile", ILaunchManager.PROFILE_MODE);
-		restartAction.setToolTipText(Messages.actionRestartToolTip);
-		restartAction.setText(Messages.actionProfile);
-		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_PROFILE));
-		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_PROFILE));
-		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_PROFILE));
-		restartMenu.add(restartAction);
-		
-		// create the restart action
-		restartAction = new RestartAction(shell, provider, "restart");
-		restartAction.setToolTipText(Messages.actionRestartToolTip);
-		restartAction.setText(Messages.actionRestart);
-		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_RESTART));
-		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_RESTART));
-		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_RESTART));
-
 		// create the stop action
-		Action stopAction = new StopAction(shell, provider, "stop");
-		stopAction.setToolTipText(Messages.actionStopToolTip);
-		stopAction.setText(Messages.actionStop);
-		stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_STOP));
-		stopAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_STOP));
-		stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_STOP));
-
-		// create the publish action
-		Action publishAction = new PublishAction(shell, provider, "publish");
-		publishAction.setToolTipText(Messages.actionPublishToolTip);
-		publishAction.setText(Messages.actionPublish);
-		publishAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_PUBLISH));
-		publishAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_PUBLISH));
-		publishAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_PUBLISH));
+		actions[3] = new StopAction(shell, provider);
 		
-		// create the module slosh dialog action
-		Action addModuleAction = new ModuleSloshAction(shell, provider, "modules");
-		addModuleAction.setToolTipText(Messages.actionModifyModulesToolTip);
-		addModuleAction.setText(Messages.actionModifyModules);
-		addModuleAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ETOOL_MODIFY_MODULES));
-		addModuleAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_MODIFY_MODULES));
-		addModuleAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DTOOL_MODIFY_MODULES));
-		
-		actions = new Action[7];
-		actions[0] = debugAction;
-		actions[1] = runAction;
-		actions[2] = profileAction;
-		actions[3] = restartAction;
-		actions[4] = stopAction;
-		actions[5] = publishAction;
-		actions[6] = addModuleAction;
+		// create the publish actions
+		actions[4] = new PublishAction(shell, provider);
+		actions[5] = new PublishCleanAction(shell, provider);
 		
 		// add toolbar buttons
 		IContributionManager cm = getViewSite().getActionBars().getToolBarManager();
-		for (int i = 0; i < actions.length - 1; i++) {
+		for (int i = 0; i < actions.length - 1; i++)
 			cm.add(actions[i]);
-		}
+		
+//		// create the debug action
+//		Action debugAction = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
+//		debugAction.setToolTipText(Messages.actionDebugToolTip);
+//		debugAction.setText(Messages.actionDebug);
+//		debugAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_DEBUG));
+//		debugAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_DEBUG));
+//		debugAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_DEBUG));
+//	
+//		// create the start action
+//		Action runAction = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
+//		runAction.setToolTipText(Messages.actionStartToolTip);
+//		runAction.setText(Messages.actionStart);
+//		runAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START));
+//		runAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START));
+//		runAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START));
+//		
+//		// create the profile action
+//		Action profileAction = new StartAction(shell, provider, ILaunchManager.PROFILE_MODE);
+//		profileAction.setToolTipText(Messages.actionProfileToolTip);
+//		profileAction.setText(Messages.actionProfile);
+//		profileAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_PROFILE));
+//		profileAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_PROFILE));
+//		profileAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_PROFILE));
+//	
+//		// create the restart menu
+//		restartMenu = new MenuManager(Messages.actionRestart);
+//		
+//		Action restartAction = new RestartAction(shell, provider, ILaunchManager.DEBUG_MODE);
+//		restartAction.setToolTipText(Messages.actionDebugToolTip);
+//		restartAction.setText(Messages.actionDebug);
+//		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_DEBUG));
+//		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_DEBUG));
+//		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_DEBUG));
+//		restartMenu.add(restartAction);
+//		
+//		restartAction = new RestartAction(shell, provider, ILaunchManager.RUN_MODE);
+//		restartAction.setToolTipText(Messages.actionRestartToolTip);
+//		restartAction.setText(Messages.actionStart);
+//		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START));
+//		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START));
+//		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START));
+//		restartMenu.add(restartAction);
+//		
+//		restartAction = new RestartAction(shell, provider, "restartProfile", ILaunchManager.PROFILE_MODE);
+//		restartAction.setToolTipText(Messages.actionRestartToolTip);
+//		restartAction.setText(Messages.actionProfile);
+//		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_START_PROFILE));
+//		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_START_PROFILE));
+//		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_START_PROFILE));
+//		restartMenu.add(restartAction);
+//		
+//		// create the restart action
+//		restartAction = new RestartAction(shell, provider, "restart");
+//		restartAction.setToolTipText(Messages.actionRestartToolTip);
+//		restartAction.setText(Messages.actionRestart);
+//		restartAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_RESTART));
+//		restartAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_RESTART));
+//		restartAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_RESTART));
+//
+//		// create the stop action
+//		Action stopAction = new StopAction(shell, provider, "stop");
+//		stopAction.setToolTipText(Messages.actionStopToolTip);
+//		stopAction.setText(Messages.actionStop);
+//		stopAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_STOP));
+//		stopAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_STOP));
+//		stopAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_STOP));
+//
+//		// create the publish action
+//		Action publishAction = new PublishAction(shell, provider, "publish");
+//		publishAction.setToolTipText(Messages.actionPublishToolTip);
+//		publishAction.setText(Messages.actionPublish);
+//		publishAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ELCL_PUBLISH));
+//		publishAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CLCL_PUBLISH));
+//		publishAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DLCL_PUBLISH));
+//		
+//		// create the module slosh dialog action
+//		Action addModuleAction = new ModuleSloshAction(shell, provider, "modules");
+//		addModuleAction.setToolTipText(Messages.actionModifyModulesToolTip);
+//		addModuleAction.setText(Messages.actionModifyModules);
+//		addModuleAction.setImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_ETOOL_MODIFY_MODULES));
+//		addModuleAction.setHoverImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_MODIFY_MODULES));
+//		addModuleAction.setDisabledImageDescriptor(ImageResource.getImageDescriptor(ImageResource.IMG_DTOOL_MODIFY_MODULES));
+//		
+//		actions = new Action[7];
+//		actions[0] = debugAction;
+//		actions[1] = runAction;
+//		actions[2] = profileAction;
+//		actions[3] = restartAction;
+//		actions[4] = stopAction;
+//		actions[5] = publishAction;
+//		actions[6] = addModuleAction;
+//		
+//		// add toolbar buttons
+//		IContributionManager cm = getViewSite().getActionBars().getToolBarManager();
+//		for (int i = 0; i < actions.length - 1; i++) {
+//			cm.add(actions[i]);
+//		}
 		
 		newServerAction = new Action() {
 			public void run() {

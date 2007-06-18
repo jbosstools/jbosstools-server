@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -72,6 +73,8 @@ public class JBossServerView extends StrippedServerView {
 	public void createPartControl(Composite parent) {
 				
 		form = new SashForm(parent, SWT.VERTICAL);
+		form.setBackground(new Color(parent.getDisplay(), 255, 255, 255));
+		
 		form.setLayout(new FillLayout());
 		
 		addServerViewer(form);

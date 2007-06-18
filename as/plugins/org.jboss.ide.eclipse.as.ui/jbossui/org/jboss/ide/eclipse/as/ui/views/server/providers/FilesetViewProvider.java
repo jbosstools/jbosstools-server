@@ -9,6 +9,8 @@ import java.util.Properties;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -49,8 +51,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.internal.util.SWTResourceUtil;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
@@ -144,12 +146,14 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				try {
 					PathWrapper wrapper = (PathWrapper)selection;
 					File file = wrapper.getPath().toFile();
+					IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
+					
 					IWorkbench wb = PlatformUI.getWorkbench();
 					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 					IWorkbenchPage page = win.getActivePage();
-					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
-					if( fileStore != null ) {
-						IEditorInput input = new JavaFileEditorInput(fileStore);
+//					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
+					if( eclipseFile != null ) {
+						IEditorInput input = new FileEditorInput(eclipseFile);
 						IEditorDescriptor desc = PlatformUI.getWorkbench().
 							getEditorRegistry().getDefaultEditor(file.getName());
 						if( desc != null ) 
@@ -460,10 +464,11 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			menu.add(deleteFilter);
 		} else if( selection instanceof PathWrapper ) {
 			File file = ((PathWrapper)selection).getPath().toFile();
+			IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
 			IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
 			boolean editable = false;
-			if( fileStore != null ) {
-				IEditorInput input = new JavaFileEditorInput(fileStore);
+			if( eclipseFile != null ) {
+				IEditorInput input = new FileEditorInput(eclipseFile);
 				IEditorDescriptor desc = PlatformUI.getWorkbench().
 					getEditorRegistry().getDefaultEditor(file.getName());
 				if( input != null && desc != null ) 

@@ -96,8 +96,8 @@ public abstract class PreviewPage extends WizardPageWithNotification {
     	fillWidgets(wizard.getArchive());
     	
     	// if it's already a module type project, hide the meta inf stuff
-		IModuleArtifact moduleArtifact = ServerPlugin.loadModuleArtifact(wizard.getProject());
-		if( moduleArtifact != null && moduleArtifact.getModule() != null ) {
+		IModuleArtifact moduleArtifacts[] = ServerPlugin.getModuleArtifacts(wizard.getProject());
+		if( moduleArtifacts != null && moduleArtifacts.length > 0) {
 			FormData d = (FormData)previewGroup.getLayoutData();
 			d.top = new FormAttachment(0,5);
 			previewGroup.setLayoutData(d);

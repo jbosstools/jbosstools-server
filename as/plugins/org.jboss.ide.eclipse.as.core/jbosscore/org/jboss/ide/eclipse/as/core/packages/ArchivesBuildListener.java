@@ -99,7 +99,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 	}
 	protected static IModule[] getModule(IArchive node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
-		IModule mod = factory.getModule(PackageModuleFactory.getID(node));
+		IModule mod = factory.findModule(PackageModuleFactory.getID(node), new NullProgressMonitor());
 		return new IModule[] { mod };
 	}
 	protected static PackagedModuleDelegate getModuleDelegate(IArchive node) {
