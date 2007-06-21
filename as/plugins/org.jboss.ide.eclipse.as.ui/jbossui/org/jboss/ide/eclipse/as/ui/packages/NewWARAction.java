@@ -73,7 +73,7 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 
 	protected static class WarPreviewPage extends PreviewPage {
 		protected WarPreviewPage(NewWARWizard wiz) {
-			super(wiz, "WAR information", "WAR Information", 
+			super(wiz, "WAR Archive Stub", "WAR Archive Stub", 
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		}
 		protected void addToPackage() {
@@ -82,8 +82,8 @@ public class NewWARAction extends ActionWithDelegate implements IViewActionDeleg
 		}
 
 		protected String getDescriptionMessage() {
-			return 	"Information for the setup of your WAR. \n" + 
-				"Later, you can customize this packaging structure further.";
+			return 	"Below is a stub archive configuration for your project. \n" + 
+				"You can customize this structure further after pressing finish.";
 		}
 	}
 

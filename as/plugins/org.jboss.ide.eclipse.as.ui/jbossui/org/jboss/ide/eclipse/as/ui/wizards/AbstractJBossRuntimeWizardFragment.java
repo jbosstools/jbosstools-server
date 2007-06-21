@@ -165,8 +165,6 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 	
 	private void setWidgetDefaults() {
 		nameText.setText(generateNewRuntimeName());
-		System.out.println("platform os = " + Platform.getOS());
-		System.out.println("win32 value: " + Platform.WS_WIN32);
 		homeDirText.setText(  Platform.getOS().equals( Platform.WS_WIN32 ) ? 
 				"c:/program files/jboss-" + getRuntimeVersionId() + ".x" : 
 				"/usr/bin/jboss-" + getRuntimeVersionId() + ".x");
