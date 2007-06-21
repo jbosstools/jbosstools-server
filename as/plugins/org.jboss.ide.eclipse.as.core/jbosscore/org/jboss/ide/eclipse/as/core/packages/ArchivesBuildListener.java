@@ -192,7 +192,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 		else
 			p = delta.getPreNode().getProjectPath();
 		
-		PackageModuleFactory.getFactory().refreshProject(p);
+		ArchivesModelModuleContributor.getInstance().refreshProject(p);
 	}
 
 

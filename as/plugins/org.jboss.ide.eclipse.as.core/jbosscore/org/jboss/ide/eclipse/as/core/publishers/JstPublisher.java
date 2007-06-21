@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -46,6 +47,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.packages.ModulePackageTypeConverter;
+import org.jboss.ide.eclipse.as.core.packages.ProjectArchiveStorer;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
@@ -96,7 +98,7 @@ public class JstPublisher extends PackagesPublisher {
 		EventLogModel.markChanged(eventRoot);
 		boolean incremental = shouldPublishIncremental(module, kind, deltaKind, modulePublishState);
 
-		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), incremental, monitor);
+		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), monitor);
 
 		
 		if( topLevel != null ) {
@@ -122,7 +124,7 @@ public class JstPublisher extends PackagesPublisher {
 						int kind, int deltaKind, int modulePublishKind, IProgressMonitor monitor) throws CoreException {
 		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
 		
-		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), false, monitor);
+		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), monitor);
 		if( topLevel != null ) {
 			IPath path = topLevel.getArchiveFilePath();
 			FileUtil.safeDelete(path.toFile(), new PublisherFileUtilListener(event));
@@ -135,14 +137,21 @@ public class JstPublisher extends PackagesPublisher {
 	}
 
 
-	protected IArchive getTopPackage(IModule module, String deployDir,
-			boolean incremental, IProgressMonitor monitor) {
-		if( !moduleToArchiveMap.containsKey(module.getId()) || !incremental) {
-			IArchive top = createTopPackage(module, deployDir, monitor);
-			if( top != null )
-				moduleToArchiveMap.put(module.getId(), top);
+	protected IArchive getTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
+		if( moduleToArchiveMap.containsKey(module.getId())) {
+			return (IArchive)moduleToArchiveMap.get(module.getId());
 		}
-		return (IArchive)moduleToArchiveMap.get(module.getId());
+		
+		IProject project = module.getProject();
+		IArchive top = ProjectArchiveStorer.getArchiveFor(project);
+		if( top == null ) {
+			top = createTopPackage(module, deployDir, monitor);
+			if( top != null ) {
+				ProjectArchiveStorer.storeArchive(project, top);
+				moduleToArchiveMap.put(module.getId(), top);
+			}
+		}
+		return top;
 	}
 	
 	protected IArchive createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {

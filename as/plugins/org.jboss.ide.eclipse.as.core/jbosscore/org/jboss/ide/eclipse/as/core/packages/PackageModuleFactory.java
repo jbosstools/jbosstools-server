@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.packages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -43,8 +44,6 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
@@ -73,19 +72,21 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	private static PackageModuleFactory factDelegate;
 	private static ModuleFactory factory;
 
+	/**
+	 * Find the module factory wrapper WTP provides for us
+	 * @return
+	 */
 	public static PackageModuleFactory getFactory() {
 		if( factDelegate == null ) {
-			// find them
 			ModuleFactory[] factories = ServerPlugin.getModuleFactories();
 			
-			search:
 			for( int i = 0; i < factories.length; i++ ) {
 				if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
 					Object o = factories[i].getDelegate(new NullProgressMonitor());
 					if( o instanceof PackageModuleFactory ) {
 						factory = factories[i];
 						factDelegate = (PackageModuleFactory)o;
-						break search;
+						return factDelegate;
 					}
 				}
 			}
@@ -93,9 +94,23 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		return factDelegate;
 	}
 
+	/**
+	 * Get the module ID of this IArchive if it exists. 
+	 * Do not create a new one otherwise
+	 * @param pack
+	 * @return
+	 */
 	public static String getID(IArchive pack) {
 		return getID(pack, false);
 	}
+	
+	/**
+	 * Get the module ID of this IArchive if it exists.
+	 * If create is true, and the ID is not set, set a default ID.
+	 * @param pack
+	 * @param create
+	 * @return
+	 */
 	protected static String getID(IArchive pack, boolean create) {
 		String propVal = pack.getProperty(MODULE_ID_PROPERTY_KEY);
 		if( propVal == null && create ) {
@@ -116,6 +131,12 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		} 
 		return propVal;
 	}
+	
+	/**
+	 * Return the name of the project in the workspace
+	 * @param node
+	 * @return
+	 */
 	public static String getProjectName(IArchiveNode node) {
 		IPath projPath = node.getProjectPath();
 		if( projPath == null ) return null;
@@ -125,130 +146,50 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				return list[i].getName();
 		return null;
 	}
+	
+	/**
+	 * Get the visible name of this module
+	 * @param pack
+	 * @return
+	 */
 	public static String getName(IArchive pack) {
-		String projName = getProjectName(pack);
-		return projName + "/" + pack.getName();
+		return getProjectName(pack) + "/" + pack.getName();
 	}
 
 	
 	
-	/*
-	 * The beginning of the class. Finally!
-	 */
-	
-	
-	
-	
-	
-	protected HashMap moduleDelegates = new HashMap(5);
-	protected HashMap packageToModule = new HashMap(5);	
-	protected HashMap projectToPackages = new HashMap(5);
+	protected IModuleContributor[] moduleContributors;
 	public PackageModuleFactory() {
 		super();
-	}
-
-	/**
-	 * Set a property so that each module that's here in the factory
-	 * has a unique ID other than it's name (which is not unique)
-	 * @param archives
-	 * @return  returns whether a save has occurred
-	 */
-	protected boolean ensureArchivesHaveIDs(IProject project, IArchive[] archives) {
-		boolean requiresSave = false;
-		for( int i = 0; i < archives.length; i++ ) {
-			if( getID(archives[i]) == null ) {
-				requiresSave = true;
-				archives[i].setProperty(MODULE_ID_PROPERTY_KEY, getID(archives[i], true));
-			}
-		}
-		if( requiresSave ) {
-			// save
-			ArchivesModel.instance().saveModel(project.getLocation(), new NullProgressMonitor());
-		}
-		return requiresSave;
-	}
-	
-	
-	
-	/**
-	 * Create and return the modules for a given IProject
-	 * @param project The project which has the modules
-	 * @return The modules that the project has
-	 */
-	protected IModule[] createModules(IProject project) {
-		try {
-			if( ArchivesModelCore.getProjectPackages(project.getLocation(), null, true).length > 0 ) {
-				ArrayList list = new ArrayList();
-				IModule module;
-				IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
-				boolean saved = ensureArchivesHaveIDs(project, packages);
-				for( int i = 0; i < packages.length; i++ ) {
-					module = createModule(getID(packages[i]), getName(packages[i]),						 
-							MODULE_TYPE, VERSION, project);
-					list.add(module);
-					Object moduleDelegate = new PackagedModuleDelegate(packages[i]);
-					moduleDelegates.put(module, moduleDelegate);
-					packageToModule.put(packages[i], module);
-				}
-				projectToPackages.put(project, packages);
-				return (IModule[]) list.toArray(new IModule[list.size()]);
-			}
-		} catch( Throwable t ) {
-			t.printStackTrace();
-		}
-		return new IModule[]{};
-	}
-
-	public ModuleDelegate getModuleDelegate(IModule module) {
-		return (ModuleDelegate) moduleDelegates.get(module);
-	}
-
-	public IModule getModuleFromPackage(IArchive pack) {
-		return (IModule)packageToModule.get(pack);
-	}
-
-	private static boolean initiated = false;
-	public IModule[] getModules() {
-		if( !initiated ) 
-			init();
-		Collection c = packageToModule.values();
-		return (IModule[]) c.toArray(new IModule[c.size()]);
-	}
-	
-	protected void init() {
-		IProject[] projects2 = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		int size = projects2.length;
-		for (int i = 0; i < size; i++) {
-			if (projects2[i].isAccessible()) {
-				createModules(projects2[i]);
-			}
-		}
-	}
+		moduleContributors = new IModuleContributor[] { ArchivesModelModuleContributor.getInstance() };
 		
+	}
+
+	protected IModule createModule2(IArchive pack, IProject project) {
+		return createModule(getID(pack), getName(pack), MODULE_TYPE, VERSION, project);
+	}
 	
-	public void refreshProject(IPath projectLoc) {
-		IProject proj = null;
-		IProject[] projects2 = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		int size = projects2.length;
-		for (int i = 0; i < size; i++) {
-			if( projects2[i].getLocation().equals(projectLoc))
-				proj = projects2[i];
+	
+	public IModule[] getModules() {
+		ArrayList list = new ArrayList();
+		for( int i = 0; i < moduleContributors.length; i++ ) {
+			list.addAll(Arrays.asList(moduleContributors[i].getModules()));
 		}
-		if( proj != null ) {
-			IArchive[] archives = (IArchive[])projectToPackages.get(proj);
-			IModule mod;
-			projectToPackages.remove(proj);
-			if( archives != null ) {
-				for( int i = 0; i < archives.length; i++ ) {
-					mod = (IModule)packageToModule.get(archives[i]);
-					packageToModule.remove(archives[i]);
-					moduleDelegates.remove(mod);
-				}
-			}
-			createModules(proj);
-			System.out.println("clearing cache");
-			clearModuleCache();
+		return (IModule[]) list.toArray(new IModule[list.size()]);
+	}
+	
+	public ModuleDelegate getModuleDelegate(IModule module) {
+		for( int i = 0; i < moduleContributors.length; i++ ) {
+			if( moduleContributors[i].containsModule(module)) 
+				return moduleContributors[i].getModuleDelegate(module);
 		}
+		return null;
+	}
+	
+	public static interface IModuleContributor {
+		public IModule[] getModules();
+		public boolean containsModule(IModule module);
+		public PackagedModuleDelegate getModuleDelegate(IModule module);
 	}
 	
 	public static interface IExtendedModuleResource extends IModuleResource {
@@ -258,7 +199,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public IPath getConcreteDestFile();
 	}
 
-	public class DelegateInitVisitor implements IArchiveNodeVisitor {
+	public static class DelegateInitVisitor implements IArchiveNodeVisitor {
 
 		private IArchive pack;
 		private HashMap members;  // node -> imoduleresource
@@ -303,7 +244,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 	}
 	
-	public class ArchiveContainerResource implements IModuleFolder, IExtendedModuleResource {
+	public static class ArchiveContainerResource implements IModuleFolder, IExtendedModuleResource {
 
 		protected IPath moduleRelativePath;
 		protected IArchiveNode node;
@@ -363,7 +304,6 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		
 		public void removeFilesetPathAsChild(IArchiveFileSet fs, IPath path) {
-			IPath archiveRelative = fs.getRootArchiveRelativePath(path);
 			IPath globalSource = fs.getGlobalSourcePath();
 			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
 			ArchiveContainerResource parent = find(fs, globalSource, fsRelative.removeLastSegments(1), false);
@@ -425,7 +365,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		
 	}
 
-	public class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
+	public static class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
 		private IPath srcPath;
 		private IArchiveFileSet node;
 		public ExtendedModuleFile(String name, IPath relativePath, long stamp, 
@@ -461,8 +401,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		
 	}
 	
-	
-	public class PackagedModuleDelegate extends ModuleDelegate {
+	public static class PackagedModuleDelegate extends ModuleDelegate {
 		private IArchive pack;
 		private IModuleResource rootResource;
 		private DelegateInitVisitor initVisitor;
