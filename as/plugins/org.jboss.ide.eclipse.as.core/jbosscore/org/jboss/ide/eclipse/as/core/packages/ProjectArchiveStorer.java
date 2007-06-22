@@ -31,7 +31,7 @@ public class ProjectArchiveStorer {
 				XbPackages packs = XMLBinding.unmarshal(s, new NullProgressMonitor());
 				if( packs != null && packs.getAllChildren().size() == 1 ) {
 					XbPackage pack = (XbPackage)packs.getAllChildren().get(0);
-					IArchive node = (IArchive)ArchivesModel.createPackageNodeImpl(project.getLocation(), pack, null);
+					IArchive node = (IArchive)ArchivesModel.instance().createPackageNodeImpl(project.getLocation(), pack, null);
 					if( node != null ) {
 						cache.put(project, node);
 					}
