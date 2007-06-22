@@ -22,16 +22,23 @@
 package org.jboss.ide.eclipse.as.core.runtime.server;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 
 public abstract class AbstractJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
+
+	public void setDefaults(IProgressMonitor monitor) {
+		getRuntimeWorkingCopy().setLocation(new Path(""));
+	}
 
 	public void setVMInstall(IVMInstall selectedVM) {
 		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();
