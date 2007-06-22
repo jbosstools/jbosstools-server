@@ -163,7 +163,7 @@ public class JBossServerView extends StrippedServerView {
 		menu.add(new Separator());
 		menu.add(twiddleAction);
 		menu.add(editLaunchConfigAction);
-		menu.add(actions[6]);
+		//menu.add(actions[6]);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		
 		if( getSelectedServer() != null ) {
