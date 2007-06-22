@@ -225,6 +225,7 @@ public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurat
 			if( action.equals(START)) {
 				processes = launchConfiguration(configuration, launch, monitor, mode);
 				processModel.add(processes, action, configuration);
+				jbossServerBehavior.setProcess(processes[0]);
 				jbossServerBehavior.serverStarting();
 			} else if( action.equals(STOP)) {
 				processes = launchConfiguration(configuration, launch, monitor, mode);

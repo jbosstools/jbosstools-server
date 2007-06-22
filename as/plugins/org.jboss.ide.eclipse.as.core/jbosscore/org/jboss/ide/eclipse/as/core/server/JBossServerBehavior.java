@@ -24,6 +24,9 @@ package org.jboss.ide.eclipse.as.core.server;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.DebugEvent;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -87,6 +90,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		// just terminate the processes. All of them
 		try {
 			ServerProcessModel.getDefault().getModel(getServer().getId()).clearAll();
+			process = null;
 			setServerStopped();
 			EventLogTreeItem tpe = new ForceShutdownEvent();
 			EventLogModel.markChanged(tpe.getEventRoot());
@@ -108,6 +112,33 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 
 	
+	protected transient IProcess process;
+	protected transient IDebugEventSetListener processListener;
+	public void setProcess(final IProcess newProcess) {
+		if (process != null)
+			return;
+
+		process = newProcess;
+		if (processListener != null)
+			DebugPlugin.getDefault().removeDebugEventListener(processListener);
+		if (newProcess == null)
+			return;
+		
+		processListener = new IDebugEventSetListener() {
+			public void handleDebugEvents(DebugEvent[] events) {
+				if (events != null) {
+					int size = events.length;
+					for (int i = 0; i < size; i++) {
+						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
+							DebugPlugin.getDefault().removeDebugEventListener(this);
+							forceStop();
+						}
+					}
+				}
+			}
+		};
+		DebugPlugin.getDefault().addDebugEventListener(processListener);
+	}
 	
 	
 	
