@@ -56,27 +56,12 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		
 		nameLabel = new Label(main, SWT.NONE);
 		nameText = new Text(main, SWT.BORDER);
-		nameLabel.setText(Messages.deployDirectory);
-		
-		FormData namelData = new FormData();
-		namelData.top = new FormAttachment(0,5);
-		namelData.left = new FormAttachment(0,5);
-		nameLabel.setLayoutData(namelData);
-		
-		FormData nametData = new FormData();
-		nametData.top = new FormAttachment(0,5);
-		nametData.left = new FormAttachment(nameLabel,5);
-		nametData.right = new FormAttachment(100,0);
-		nameText.setLayoutData(nametData);
-
-		
-		
-		
+		nameLabel.setText("Server Name");
 		
 		deployLabel = new Label(main, SWT.NONE);
 		deployText = new Text(main, SWT.BORDER);
 		Button browse = new Button(main, SWT.PUSH);
-		deployLabel.setText("Deploy Folder");
+		deployLabel.setText(Messages.deployDirectory);
 		browse.setText(Messages.browse);
 		
 		FormData lData = new FormData();
@@ -89,6 +74,22 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		tData.left = new FormAttachment(deployLabel,5);
 		tData.right = new FormAttachment(browse, -5);
 		deployText.setLayoutData(tData);
+
+		FormData namelData = new FormData();
+		namelData.top = new FormAttachment(0,5);
+		namelData.left = new FormAttachment(0,5);
+		nameLabel.setLayoutData(namelData);
+		
+		FormData nametData = new FormData();
+		nametData.top = new FormAttachment(0,5);
+		nametData.left = new FormAttachment(deployLabel,5);
+		nametData.right = new FormAttachment(100,-5);
+		nameText.setLayoutData(nametData);
+
+		
+		
+		
+		
 		
 		FormData bData = new FormData();
 		bData.right = new FormAttachment(100,-5);
