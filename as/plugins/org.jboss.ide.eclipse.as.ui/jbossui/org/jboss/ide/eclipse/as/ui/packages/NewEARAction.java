@@ -69,7 +69,7 @@ public class NewEARAction extends ActionWithDelegate {
 		}
 		
 		public String getArchiveExtension() {
-			return "jar";
+			return "ear";
 		}
 	}
 
