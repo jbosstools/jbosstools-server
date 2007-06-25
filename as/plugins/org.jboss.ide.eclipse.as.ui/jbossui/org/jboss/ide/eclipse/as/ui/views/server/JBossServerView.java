@@ -158,6 +158,7 @@ public class JBossServerView extends StrippedServerView {
 		}
 		menu.add(actions[1]);
 		menu.add(actions[0]);
+		menu.add(actions[3]);
 		menu.add(actions[4]);
 		menu.add(actions[5]);
 		menu.add(new Separator());
