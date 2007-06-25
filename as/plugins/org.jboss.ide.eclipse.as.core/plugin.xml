@@ -61,7 +61,7 @@
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServer"
-            description="A server who&apos;s only functionality is to deploy files"
+            description="A server which cannot be started, stopped, or debugged\nbut provides a deploy folder for publishing."
             hasConfiguration="true"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
             initialState="stopped"
