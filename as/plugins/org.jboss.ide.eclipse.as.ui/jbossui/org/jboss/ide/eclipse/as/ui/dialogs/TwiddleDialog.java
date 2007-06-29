@@ -7,7 +7,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -29,9 +28,6 @@ import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher.ProcessData;
@@ -42,7 +38,6 @@ public class TwiddleDialog extends Dialog {
 	private static final int EXECUTE_ID = 2042;
 	private Text query, results;
 	private Label queryLabel;
-	private ServerProcessModelEntity entity = null;
 	private IServer server = null;
 	private Composite parentComposite;
 	private Hyperlink twiddleTutorialLink;
@@ -53,7 +48,6 @@ public class TwiddleDialog extends Dialog {
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		if( selection instanceof IServer ) {
 			server = (IServer)selection;
-			entity = ServerProcessModel.getDefault().getModel(server.getId());
 		}
 
 	}
@@ -86,7 +80,6 @@ public class TwiddleDialog extends Dialog {
 		final String args = query.getText();
 		final Display dis = getShell().getDisplay();
 		final IServer jbs = server;
-		final ServerProcessModelEntity spme = entity;
 		getButton(EXECUTE_ID).setEnabled(false);
 		Thread t = new Thread() {
 			public void run() {
