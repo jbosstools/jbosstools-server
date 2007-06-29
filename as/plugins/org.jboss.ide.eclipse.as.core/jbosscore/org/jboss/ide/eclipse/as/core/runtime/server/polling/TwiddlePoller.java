@@ -21,25 +21,19 @@
  */
 package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
@@ -48,7 +42,6 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModel
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class TwiddlePoller implements IServerStatePoller {
@@ -128,8 +121,10 @@ public class TwiddlePoller implements IServerStatePoller {
 		}
 		protected ClassLoader getClassLoader() {
 			try {
-				URL url = new URL("file:///C:/apps/jboss/4.2.ga.src/build/output/jboss-4.2.0.GA/client/jbossall-client.jar");
-				URL url2 = new URL("file:///C:/apps/jboss/4.2.ga.src/build/output/jboss-4.2.0.GA/bin/twiddle.jar");
+				IRuntime rt = server.getRuntime();
+				IPath loc = rt.getLocation();
+				URL url = loc.append("client").append("jbossall-client.jar").toFile().toURI().toURL();
+				URL url2 = loc.append("bin").append("twiddle.jar").toFile().toURI().toURL();
 				URLClassLoader loader = new URLClassLoader(new URL[] {url, url2}, Thread.currentThread().getContextClassLoader());
 				return loader;
 			} catch( MalformedURLException murle) {
