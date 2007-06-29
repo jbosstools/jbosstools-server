@@ -57,7 +57,7 @@ public class TwiddlePoller implements IServerStatePoller {
 	private boolean canceled;
 	private boolean done;
 	private IServer server;
-	private boolean securityException = false;
+	private PollingException pollingException = null;
 	
 	private EventLogTreeItem event;
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
@@ -76,7 +76,6 @@ public class TwiddlePoller implements IServerStatePoller {
 			ClassLoader twiddleLoader = getClassLoader();
 			if( twiddleLoader != null ) {
 				Thread.currentThread().setContextClassLoader(twiddleLoader);
-				System.out.println("here we go");
 				
 				Properties props = new Properties();
 		        props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
@@ -99,12 +98,10 @@ public class TwiddlePoller implements IServerStatePoller {
 			                    	done = true;
 			            }
 					} catch (NamingException e) {
-						// should give up now
+						pollingException = new PollingNamingException("Naming Exception: " + e.getMessage());
 					} catch( SecurityException se ) {
-						securityException = true;
+						pollingException = new PollingSecurityException("Security Exception: " + se.getMessage());
 					} catch( Exception e ) {
-						System.out.println("exception: " + e.getMessage());
-						e.printStackTrace();
 						started = STATE_STOPPED;
 						if( !expectedState )
 							done = true;
@@ -161,8 +158,13 @@ public class TwiddlePoller implements IServerStatePoller {
 	public class PollingSecurityException extends PollingException {
 		public PollingSecurityException(String msg) {super(msg);}
 	}
+	public class PollingNamingException extends PollingException {
+		public PollingNamingException(String msg) {super(msg);}
+	}
+	
+	
 	public boolean getState() throws PollingException  {
-		if( securityException ) throw new PollingSecurityException("Security Exception");
+		if( pollingException != null ) throw pollingException;
 		if( started == 0 ) return SERVER_DOWN;
 		if( started == 1 ) return SERVER_UP;
 
@@ -173,8 +175,8 @@ public class TwiddlePoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
-		if( securityException ) 
-			throw new PollingSecurityException("Security Exception");
+		if( pollingException != null )
+			throw pollingException;
 		return done;
 	}
 	
