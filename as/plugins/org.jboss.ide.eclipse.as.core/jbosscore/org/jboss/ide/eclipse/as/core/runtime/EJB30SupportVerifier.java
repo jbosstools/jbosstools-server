@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.util;
+package org.jboss.ide.eclipse.as.core.runtime;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
