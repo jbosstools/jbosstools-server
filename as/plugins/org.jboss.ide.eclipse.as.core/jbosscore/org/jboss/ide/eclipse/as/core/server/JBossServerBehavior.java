@@ -45,6 +45,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	
 	private PollThread pollThread = null;
+	
 	public JBossServerBehavior() {
 		super();
 	}
@@ -87,14 +88,18 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	protected void forceStop() {
+		forceStop(true);
+	}
+	protected void forceStop(boolean addEvent) {
 		// just terminate the processes. All of them
 		try {
 			ServerProcessModel.getDefault().getModel(getServer().getId()).clearAll();
 			process = null;
 			setServerStopped();
-			EventLogTreeItem tpe = new ForceShutdownEvent();
-			EventLogModel.markChanged(tpe.getEventRoot());
-
+			if( addEvent ) {
+				EventLogTreeItem tpe = new ForceShutdownEvent();
+				EventLogModel.markChanged(tpe.getEventRoot());
+			}
 		} catch( Throwable t ) {
 			t.printStackTrace();
 		}
@@ -131,7 +136,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 					for (int i = 0; i < size; i++) {
 						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
 							DebugPlugin.getDefault().removeDebugEventListener(this);
-							forceStop();
+							forceStop(false);
 						}
 					}
 				}

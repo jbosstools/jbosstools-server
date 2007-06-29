@@ -21,9 +21,25 @@
  */
 package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Date;
+import java.util.Properties;
 
-import org.eclipse.debug.core.model.IProcess;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
@@ -32,7 +48,7 @@ import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModel
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher.ProcessData;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class TwiddlePoller implements IServerStatePoller {
@@ -66,44 +82,61 @@ public class TwiddlePoller implements IServerStatePoller {
 	private class PollerRunnable implements Runnable {
 		private TwiddleLauncher launcher;
 		public void run() {
-			String args = "get \"jboss.system:type=Server\" Started";
-			while( !canceled && !done ) {
-				// are start processes still going?
-				ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(server.getId());
-				IProcess[] processes = ent.getProcesses(JBossServerLaunchConfiguration.START);
-				if( ServerProcessModel.allProcessesTerminated(processes)) {
-					done = true;
-					started = 0;
-					eventAllProcessesTerminated();
-				} else {
-					launcher = new TwiddleLauncher();
-					ProcessData[] datas = launcher.getTwiddleResults(server, args, true);
-					if( datas.length == 1 ) {
-						ProcessData d = datas[0];
-						String out = d.getOut();
-						if( out.startsWith("Started=true")) {
-							started = STATE_STARTED;
-						} else if(out.startsWith("Started=false")) {
-							started = STATE_TRANSITION; // it's alive and responding
-						} else if( out.indexOf("java.lang.SecurityException") != -1 ) {
-							// throw exception 
-							securityException = true;
-						} else {
-							started = STATE_STOPPED; // It's fully down
-						}
-						
-						if( started == 1 && expectedState == SERVER_UP ) {
+			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader twiddleLoader = getClassLoader();
+			if( twiddleLoader != null ) {
+				Thread.currentThread().setContextClassLoader(twiddleLoader);
+				System.out.println("here we go");
+				
+				Properties props = new Properties();
+		        props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
+		        props.put("java.naming.provider.url","jnp://localhost:1099");
+		        props.put("java.naming.factory.url.pkgs","org.jboss.naming:org.jnp.interfaces");
+		        
+		        while( !done && !canceled ) {
+					InitialContext ic;
+					try {
+						ic = new InitialContext(props);
+			            Object obj = ic.lookup("jmx/invoker/RMIAdaptor");
+			            ic.close();
+			            System.out.println(obj);
+			            if( obj instanceof MBeanServerConnection ) {
+			                    MBeanServerConnection connection = (MBeanServerConnection)obj;
+			                    Object attInfo = connection.getAttribute(new ObjectName("jboss.system:type=Server"), "Started");
+			                    boolean b = ((Boolean)attInfo).booleanValue();
+			                    started = b ? STATE_STARTED : STATE_TRANSITION;
+			                    if( b && expectedState )
+			                    	done = true;
+			            }
+					} catch (NamingException e) {
+						// should give up now
+					} catch( SecurityException se ) {
+						securityException = true;
+					} catch( Exception e ) {
+						System.out.println("exception: " + e.getMessage());
+						e.printStackTrace();
+						started = STATE_STOPPED;
+						if( !expectedState )
 							done = true;
-						} else if( started == 0 && expectedState == SERVER_DOWN) {
-							done = true;
-						} 
 					}
-				}
-				if( !canceled )
-					eventTwiddleExecuted();
-			}
-		}
 
+		        } // end while
+			}
+			
+			Thread.currentThread().setContextClassLoader(currentLoader);
+
+		}
+		protected ClassLoader getClassLoader() {
+			try {
+				URL url = new URL("file:///C:/apps/jboss/4.2.ga.src/build/output/jboss-4.2.0.GA/client/jbossall-client.jar");
+				URL url2 = new URL("file:///C:/apps/jboss/4.2.ga.src/build/output/jboss-4.2.0.GA/bin/twiddle.jar");
+				URLClassLoader loader = new URLClassLoader(new URL[] {url, url2}, Thread.currentThread().getContextClassLoader());
+				return loader;
+			} catch( MalformedURLException murle) {
+				murle.printStackTrace();
+			}
+			return null;
+		}
 		public void setCanceled() {
 			if( launcher != null ) {
 				launcher.setCanceled();
