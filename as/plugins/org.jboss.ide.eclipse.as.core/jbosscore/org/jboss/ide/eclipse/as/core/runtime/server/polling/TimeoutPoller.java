@@ -24,21 +24,17 @@ package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 
-// Wait 10 seconds, then say it's at it's expected state
+// Wait 15 seconds, then say it's at it's expected state
 public class TimeoutPoller implements IServerStatePoller {
 
-	private PollThread pollThread;
 	private boolean expectedState;
 	private long endTime;
-	private IServer server;
 	int timeout = -1;
 	
 	
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
-		this.server = server;
 		this.expectedState = expectedState;
 		this.endTime = new Date().getTime() + getTimeout();
 	}
@@ -60,10 +56,5 @@ public class TimeoutPoller implements IServerStatePoller {
 	}
 
 	public void cleanup() {
-		if( !expectedState ) {
-			ServerProcessModel.getDefault().getModel(server.getId()).clearAll();
-		} 
 	}
-
-	
 }

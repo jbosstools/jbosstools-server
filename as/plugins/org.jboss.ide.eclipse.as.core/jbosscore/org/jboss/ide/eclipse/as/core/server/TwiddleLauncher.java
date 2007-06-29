@@ -34,7 +34,6 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 
 public class TwiddleLauncher {
 	

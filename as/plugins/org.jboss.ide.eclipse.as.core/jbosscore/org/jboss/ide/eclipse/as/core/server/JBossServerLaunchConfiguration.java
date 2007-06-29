@@ -48,8 +48,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 
 public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -221,19 +219,15 @@ public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurat
 			IProcess[] processes = new IProcess[0];
 			JBossServerBehavior jbossServerBehavior = getServerBehavior(configuration);
 			String serverID = jbossServerBehavior.getServer().getId();
-			ServerProcessModelEntity processModel = ServerProcessModel.getDefault().getModel(serverID);
 			if( action.equals(START)) {
 				processes = launchConfiguration(configuration, launch, monitor, mode);
-				processModel.add(processes, action, configuration);
 				jbossServerBehavior.setProcess(processes[0]);
 				jbossServerBehavior.serverStarting();
 			} else if( action.equals(STOP)) {
 				processes = launchConfiguration(configuration, launch, monitor, mode);
-				processModel.add(processes, action, configuration);
 				jbossServerBehavior.serverStopping();
 			} else if( action.equals(TWIDDLE)) {
 				processes = launchConfiguration(configuration, launch, monitor, mode);
-				processModel.add(processes, action, configuration);
 			}
 		} catch( Exception e ) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Error launching twiddle", e));

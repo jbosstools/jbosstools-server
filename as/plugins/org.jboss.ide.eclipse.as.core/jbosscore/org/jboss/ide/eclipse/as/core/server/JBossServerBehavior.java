@@ -33,7 +33,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
@@ -41,33 +40,22 @@ import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 public class JBossServerBehavior extends DeployableServerBehavior {
-	public static final String LAUNCH_CONFIG_DEFAULT_CLASSPATH = "__JBOSS_SERVER_BEHAVIOR_LAUNCH_CONFIG_DEFAULT_CLASSPATH__";
-	
-	
 	private PollThread pollThread = null;
-	
+	protected transient IProcess process;
 	public JBossServerBehavior() {
 		super();
 	}
 
 	public void stop(boolean force) {
-		if( force ) {
+		int state = getServer().getServerState();
+		if( force || process.isTerminated() || state == IServer.STATE_STOPPED) {
 			forceStop();
 			return;
 		}
 		
-		// If the server's already terminated via processes, just abort
-		IProcess[] startProcesses = 
-			ServerProcessModel.getDefault().getModel(getServer().getId()).getProcesses(JBossServerLaunchConfiguration.START);
-		if( ServerProcessModel.allProcessesTerminated(startProcesses)) {
-			forceStop();
-			return;
-		}
-			
 		// if we're starting up or shutting down and they've tried again, 
 		// then force it to stop. 
-		int state = getServer().getServerState();
-		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING || state == IServer.STATE_STOPPED) {
+		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING ) {
 			pollThread.cancel();
 			forceStop();
 			return;
@@ -91,9 +79,10 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		forceStop(true);
 	}
 	protected void forceStop(boolean addEvent) {
-		// just terminate the processes. All of them
+		// just terminate the process.
 		try {
-			ServerProcessModel.getDefault().getModel(getServer().getId()).clearAll();
+			if( process != null ) 
+				process.terminate();
 			process = null;
 			setServerStopped();
 			if( addEvent ) {
@@ -117,7 +106,6 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 
 	
-	protected transient IProcess process;
 	protected transient IDebugEventSetListener processListener;
 	public void setProcess(final IProcess newProcess) {
 		if (process != null)

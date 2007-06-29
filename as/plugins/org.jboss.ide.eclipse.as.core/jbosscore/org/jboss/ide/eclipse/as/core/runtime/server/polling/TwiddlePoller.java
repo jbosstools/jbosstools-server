@@ -36,11 +36,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.model.ServerProcessModel.ServerProcessModelEntity;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
@@ -159,13 +156,6 @@ public class TwiddlePoller implements IServerStatePoller {
 	}
 
 	public void cleanup() {
-		ServerProcessModelEntity ent = ServerProcessModel.getDefault().getModel(server.getId());
-		if( expectedState == SERVER_UP) {
-			ent.terminateProcesses(JBossServerLaunchConfiguration.TWIDDLE);
-		} else {
-			ent.terminateProcesses(JBossServerLaunchConfiguration.TWIDDLE);
-			ent.terminateProcesses(JBossServerLaunchConfiguration.STOP);
-		}
 	}
 
 	public class PollingSecurityException extends PollingException {
