@@ -29,8 +29,8 @@ public class ArgsUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
 
-	public static Map getSystemProperties(String s) {
-		String[] args = parse(s);
+	public static Map getSystemProperties(String argString) {
+		String[] args = parse(argString);
 		HashMap map = new HashMap();
 		
 		for( int i = 0; i < args.length; i++ ) {
@@ -44,11 +44,19 @@ public class ArgsUtil {
 				}
 			}
 		}
-		
 		return map;
-		
 	}
 
+	public static String getValue(String allArgs, String shortOpt, String longOpt) {
+		String[] args = parse(allArgs);
+		for( int i = 0; i < args.length; i++ ) {
+			if( args[i].equals(shortOpt))
+				return args[i+1];
+			if( args[i].startsWith(longOpt + "=")) 
+				return args[i].substring(args[i].indexOf('=') + 1);
+		}
+		return null;
+	}
 	public static String[] parse(String s) {
 		try {
 			ArrayList l = new ArrayList();

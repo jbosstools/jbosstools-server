@@ -21,24 +21,35 @@
  */
 package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.Principal;
 import java.util.Date;
 import java.util.Properties;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
+import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class TwiddlePoller implements IServerStatePoller {
@@ -75,12 +86,17 @@ public class TwiddlePoller implements IServerStatePoller {
 			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
 			ClassLoader twiddleLoader = getClassLoader();
 			if( twiddleLoader != null ) {
+				String serverConfDir = ServerConverter.getJBossServer(server).getConfigDirectory(false);
+				ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
+				int port = descriptorModel.getJNDIPort();
+
 				Thread.currentThread().setContextClassLoader(twiddleLoader);
-				
 				Properties props = new Properties();
 		        props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
-		        props.put("java.naming.provider.url","jnp://localhost:1099");
 		        props.put("java.naming.factory.url.pkgs","org.jboss.naming:org.jnp.interfaces");
+		        props.put("java.naming.provider.url","jnp://" + server.getHost() + ":" + port);
+		        
+		        setCredentials();
 		        
 		        while( !done && !canceled ) {
 					InitialContext ic;
@@ -88,7 +104,6 @@ public class TwiddlePoller implements IServerStatePoller {
 						ic = new InitialContext(props);
 			            Object obj = ic.lookup("jmx/invoker/RMIAdaptor");
 			            ic.close();
-			            System.out.println(obj);
 			            if( obj instanceof MBeanServerConnection ) {
 			                    MBeanServerConnection connection = (MBeanServerConnection)obj;
 			                    Object attInfo = connection.getAttribute(new ObjectName("jboss.system:type=Server"), "Started");
@@ -97,8 +112,6 @@ public class TwiddlePoller implements IServerStatePoller {
 			                    if( b && expectedState )
 			                    	done = true;
 			            }
-					} catch (NamingException e) {
-						pollingException = new PollingNamingException("Naming Exception: " + e.getMessage());
 					} catch( SecurityException se ) {
 						pollingException = new PollingSecurityException("Security Exception: " + se.getMessage());
 					} catch( Exception e ) {
@@ -106,12 +119,47 @@ public class TwiddlePoller implements IServerStatePoller {
 						if( !expectedState )
 							done = true;
 					}
-
+					
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		        } // end while
 			}
 			
 			Thread.currentThread().setContextClassLoader(currentLoader);
 
+		}
+		
+		protected void setCredentials() {
+			try {
+				ILaunchConfiguration lc = server.getLaunchConfiguration(true, new NullProgressMonitor());
+				String twiddleArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
+						+ JBossServerLaunchConfiguration.PRGM_ARGS_TWIDDLE_SUFFIX, (String)null);
+				String user = ArgsUtil.getValue(twiddleArgs, "-u", "--user");
+				String password = ArgsUtil.getValue(twiddleArgs, "-p", "--password");
+
+				// get our methods
+			Class simplePrincipal = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.security.SimplePrincipal");
+			Class securityAssoc = Thread.currentThread().getContextClassLoader().loadClass("org.jboss.security.SecurityAssociation");
+			securityAssoc.getMethods(); // force-init the methods since the class hasn't been initialized yet. 
+			
+			Constructor newSimplePrincipal = simplePrincipal.getConstructor(new Class[] { String.class });
+			Object newPrincipalInstance = newSimplePrincipal.newInstance(new Object[] {user});
+			
+
+			// set the principal
+			Method setPrincipalMethod = securityAssoc.getMethod("setPrincipal", new Class[] {Principal.class});
+			setPrincipalMethod.invoke(null, new Object[] {newPrincipalInstance});
+			
+			// set the credential
+			Method setCredentialMethod = securityAssoc.getMethod("setCredential", new Class[] {Object.class});
+			setCredentialMethod.invoke(null, new Object[] {password});
+			} catch( Exception e ) {
+				e.printStackTrace();
+			}
 		}
 		protected ClassLoader getClassLoader() {
 			try {
