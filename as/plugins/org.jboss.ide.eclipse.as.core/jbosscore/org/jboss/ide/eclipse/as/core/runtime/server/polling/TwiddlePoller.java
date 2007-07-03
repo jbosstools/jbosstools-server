@@ -114,6 +114,7 @@ public class TwiddlePoller implements IServerStatePoller {
 			            }
 					} catch( SecurityException se ) {
 						pollingException = new PollingSecurityException("Security Exception: " + se.getMessage());
+						done = true;
 					} catch( Exception e ) {
 						started = STATE_STOPPED;
 						if( !expectedState )
