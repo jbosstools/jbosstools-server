@@ -26,8 +26,8 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
+import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer;
+import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 public class PropertySheetFactory {
 	

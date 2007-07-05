@@ -116,10 +116,10 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 							if( selected instanceof ServerViewProvider) {
 								((ServerViewProvider)selected).setEnabled(true);
 								((ServerViewProvider)selected).getDelegate().getContentProvider().
-									inputChanged(JBossServerView.getDefault().getJBViewer(), null, JBossServerView.getDefault().getSelectedServer());
+									inputChanged(JBossServerView.getDefault().getServerFrame().getViewer(), null, JBossServerView.getDefault().getSelectedServer());
 								
 								try {
-									JBossServerView.getDefault().getJBViewer().refresh();
+									JBossServerView.getDefault().getServerFrame().getViewer().refresh();
 								} catch(Exception e) {
 								}
 							}

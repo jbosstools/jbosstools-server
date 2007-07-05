@@ -102,7 +102,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
+import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 

@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IServer;
@@ -43,7 +44,6 @@ import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerActionHelper;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerTableLabelProvider;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 /**
  * Tree view showing servers and their associations.
  * This is for the TOP window
@@ -64,7 +64,7 @@ public class ServerTableViewer extends TreeViewer {
 	protected ServerTableLabelProvider2 labelProvider;
 	//protected ISelectionListener dsListener;
 
-	protected StrippedServerView view;
+	protected IViewSite viewSite;
 	
 	protected class ServerTableLabelProvider2 extends ServerTableLabelProvider {
 		private int myCount = 0;
@@ -152,9 +152,9 @@ public class ServerTableViewer extends TreeViewer {
 	 * @param view the view 
 	 * @param tree the tree
 	 */
-	public ServerTableViewer(final StrippedServerView view, final Tree tree) {
+	public ServerTableViewer(final IViewSite site, final Tree tree) {
 		super(tree);
-		this.view = view;
+		this.viewSite = site;
 		
 		setContentProvider(new TrimmedServerContentProvider());
 		labelProvider = new ServerTableLabelProvider2();
@@ -179,7 +179,7 @@ public class ServerTableViewer extends TreeViewer {
 		
 		addListeners();
 		
-		IActionBars actionBars = view.getViewSite().getActionBars();
+		IActionBars actionBars = viewSite.getActionBars();
 		actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), new ServerAction(getControl().getShell(), this, "Delete it!", ServerActionHelper.ACTION_DELETE));
 	}
 
@@ -352,7 +352,7 @@ public class ServerTableViewer extends TreeViewer {
 		String serverId = server.getId();
 		publishing.remove(serverId);
 
-		view.getViewSite().getActionBars().getStatusLineManager().setMessage(null, null);
+		viewSite.getActionBars().getStatusLineManager().setMessage(null, null);
 	}
 	
 	protected void addServer(final IServer server) {

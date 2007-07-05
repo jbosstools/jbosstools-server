@@ -14,7 +14,7 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerTableViewer.ContentWrapper;
+import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 public abstract class JBossServerViewExtension {
 	protected ServerViewProvider provider;
@@ -72,7 +72,7 @@ public abstract class JBossServerViewExtension {
 	}
 	
 	protected void suppressingRefresh(Runnable runnable) {
-		JBossServerView.getDefault().getJBViewer().suppressingRefresh(runnable);
+		JBossServerView.getDefault().getExtensionFrame().getViewer().suppressingRefresh(runnable);
 	}
 	
 	protected void refreshViewer() {
@@ -84,9 +84,9 @@ public abstract class JBossServerViewExtension {
 				if( isEnabled() ) {
 					try {
 						if( o == null )
-							JBossServerView.getDefault().getJBViewer().refresh(provider);
+							JBossServerView.getDefault().getServerFrame().getViewer().refresh(provider);
 						else
-							JBossServerView.getDefault().getJBViewer().refresh(new ContentWrapper(o, provider));
+							JBossServerView.getDefault().getServerFrame().getViewer().refresh(new ContentWrapper(o, provider));
 					} catch(Exception e) {
 					}
 				}
@@ -98,10 +98,10 @@ public abstract class JBossServerViewExtension {
 			r.run();
 	}
 	protected void removeElement(Object o) {
-		JBossServerView.getDefault().getJBViewer().remove(new ContentWrapper(o, provider));
+		JBossServerView.getDefault().getServerFrame().getViewer().remove(new ContentWrapper(o, provider));
 	}
 	protected void addElement(Object parent, Object child) {
-		JBossServerView.getDefault().getJBViewer().add(new ContentWrapper(parent, provider), new ContentWrapper(child, provider));
+		JBossServerView.getDefault().getServerFrame().getViewer().add(new ContentWrapper(parent, provider), new ContentWrapper(child, provider));
 	}
 	
 	// what servers should i show for?

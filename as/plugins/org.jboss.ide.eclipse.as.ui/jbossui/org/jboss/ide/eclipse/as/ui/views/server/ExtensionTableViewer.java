@@ -35,12 +35,12 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.SimplePropertiesPropertySheetPage;
 
-public class JBossServerTableViewer extends TreeViewer {
+public class ExtensionTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
 	protected Action disableCategoryAction, refreshAction, refreshFullAction;
 	protected boolean suppressingRefresh = false;
-	public JBossServerTableViewer(Tree tree) {
+	public ExtensionTableViewer(Tree tree) {
 		super(tree);
 		setContentProvider(new ContentProviderDelegator());
 		setLabelProvider(new LabelProviderDelegator());

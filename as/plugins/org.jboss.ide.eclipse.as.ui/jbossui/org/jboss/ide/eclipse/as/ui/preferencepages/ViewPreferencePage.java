@@ -57,7 +57,6 @@ public class ViewPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private static final String ENABLED = "_ENABLED_";
-	private static final String WEIGHT = "_WEIGHT_";
 	
 	private Table table;
 	
@@ -102,9 +101,6 @@ public class ViewPreferencePage extends PreferencePage implements
     		Boolean bigB = ((Boolean)items[i].getData(ENABLED));
     		if( bigB != null ) 
     			provider.setEnabled(bigB.booleanValue());
-//    		Integer weight  = ((Integer)items[i].getData(WEIGHT));
-//    		if( weight != null ) 
-//    			provider.setWeight(weight.intValue());
     		provider.setWeight(i);
     	}
     	
@@ -117,9 +113,7 @@ public class ViewPreferencePage extends PreferencePage implements
 		}
     	
 		// refresh the viewer
-		try {
-			JBossServerView.getDefault().getJBViewer().refresh();
-		} catch( Exception e ) {};
+		JBossServerView.getDefault().refreshAll();
 		
         return retval;
     }
@@ -242,35 +236,10 @@ public class ViewPreferencePage extends PreferencePage implements
 						item.setData(ENABLED, new Boolean(b.getSelection()));
 					} 
                 });
-                
-//                TableEditor editor2 = new TableEditor(table);
-//
-//                final Spinner s = new Spinner(table, SWT.NONE);
-//                s.setMaximum(50);
-//                s.setMinimum(0);
-//                s.setIncrement(1);
-//                s.setSelection(providers[i].getWeight());
-//                Point size2 = s.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-//                editor2.minimumWidth = size2.x;
-//                minWidth = Math.max(size2.x, minWidth);
-//                editor2.minimumHeight = size2.y;
-//                editor2.horizontalAlignment = SWT.RIGHT;
-//                editor2.verticalAlignment = SWT.CENTER;
-//                editor2.setEditor(s, item , 2);
-//                
-//                s.addModifyListener(new ModifyListener() {
-//					public void modifyText(ModifyEvent e) {
-//						item.setData(WEIGHT, new Integer(s.getSelection()));
-//					} 
-//                });
-                
-                
         }
         column0.pack();
         column1.pack();
         column1.setWidth(column1.getWidth() + minWidth);
-//        column2.pack();
-//        column2.setWidth(column2.getWidth() + minWidth);
         column3.pack();
         column3.setWidth(column3.getWidth() + minWidth);
         
@@ -439,11 +408,7 @@ public class ViewPreferencePage extends PreferencePage implements
 			Button enabled = new Button(this, SWT.CHECK);
 			enabled.setText(Messages.ViewPreferencePageEnabled);
 			enabled.setSelection(provider.isEnabled());
-			
-			
-			
 		}
-		
 	}
 	
 	public void init(IWorkbench workbench) {
