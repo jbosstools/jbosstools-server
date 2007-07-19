@@ -34,6 +34,8 @@ import org.eclipse.wst.server.ui.internal.ContextIds;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
+import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
+import org.eclipse.wst.server.ui.internal.view.servers.ModuleSloshAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishCleanAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
@@ -118,20 +120,25 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 	
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
 		menu.add(newServerAction);
-		menu.add(new Separator());
-		//menu.add(new DeleteAction(new Shell(), getSelectedServer()));
-		menu.add(new Separator());
-		menu.add(actions[1]);
-		menu.add(actions[0]);
-		menu.add(actions[3]);
-		menu.add(actions[4]);
-		menu.add(actions[5]);
-		menu.add(new Separator());
-		menu.add(twiddleAction);
-		menu.add(editLaunchConfigAction);
-		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		twiddleAction.setEnabled(true);
-		editLaunchConfigAction.setEnabled(true);
+		if( getSelectedServer() != null ) {
+			menu.add(new Separator());
+			menu.add(new DeleteAction(new Shell(), getSelectedServer()));
+			menu.add(new Separator());
+			menu.add(actions[1]);
+			menu.add(actions[0]);
+			menu.add(actions[3]);
+			menu.add(actions[4]);
+			menu.add(actions[5]);
+			menu.add(new Separator());
+			menu.add(twiddleAction);
+			menu.add(editLaunchConfigAction);
+			menu.add(actions[6]);
+			menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			twiddleAction.setEnabled(true);
+			editLaunchConfigAction.setEnabled(true);
+		} else {
+			menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		}
 	}
 
 	public IServer getSelectedServer() {
@@ -144,20 +151,20 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 
 		createActions();
 		
-		actions = new Action[8];
-		// create the start actions
-		actions[0] = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
-		actions[1] = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
-		actions[2] = new StartAction(shell, provider, ILaunchManager.PROFILE_MODE);
+		actions = new Action[] {
+				// create the start actions
+				new StartAction(shell, provider, ILaunchManager.DEBUG_MODE),
+				new StartAction(shell, provider, ILaunchManager.RUN_MODE),
+				new StartAction(shell, provider, ILaunchManager.PROFILE_MODE),
 		
-		// create the stop action
-		actions[3] = new StopAction(shell, provider);
+				// create the stop action
+				new StopAction(shell, provider),
 		
-		// create the publish actions
-		actions[4] = new PublishAction(shell, provider);
-		actions[5] = new PublishCleanAction(shell, provider);
-		actions[6] = editLaunchConfigAction;
-		actions[7] = twiddleAction;
+				// create the publish actions
+				new PublishAction(shell, provider),
+				new PublishCleanAction(shell, provider),
+				new ModuleSloshAction(shell, provider)
+		};
 	}
 	
 	protected void createActions() {

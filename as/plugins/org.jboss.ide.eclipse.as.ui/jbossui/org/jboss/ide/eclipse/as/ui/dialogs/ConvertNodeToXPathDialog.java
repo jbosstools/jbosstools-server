@@ -23,16 +23,12 @@ package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import java.util.ArrayList;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposalExtension2;
 import org.eclipse.jface.text.contentassist.IContextInformation;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -52,20 +48,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.SimpleXPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
+import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+
+
 /**
  *
  * @author rob.stryker@jboss.com
  */
+
+// TODO FIX ME!
 public class ConvertNodeToXPathDialog extends XPathDialog {
 	private Node node;
 	private ArrayList keyRows;
@@ -183,6 +182,7 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			
 			// fill the combo
 			NamedNodeMap map = node.getAttributes();
+			System.out.println(map.getLength());
 			ArrayList list = new ArrayList();
 			list.add(NO_ATTRIBUTE);
 			int selectedIndex = 0;
@@ -278,29 +278,21 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		
 		public void run() {
 			ConvertNodeToXPathDialog d = new ConvertNodeToXPathDialog(new Shell(), node, attributeName);
-			int result = d.open();
+			int result = -1;
+			try {
+			result = d.open();
+			} catch(Exception e) {e.printStackTrace(); }
 			if( result == Window.OK) {
-				IDeployableServer s = d.getServer();
-				SimpleTreeItem tree = s.getAttributeHelper().getXPathPreferenceTree();
+				JBossServer s = d.getServer();
 				String category = d.getCategory();
-				SimpleTreeItem[] categories = tree.getChildren();
-				SimpleTreeItem categoryItem = null;
-				for( int i = 0; i < categories.length; i++ ) {
-					if( categories[i].getData().equals(category)) 
-						categoryItem = categories[i];
+				XPathCategory cat = XPathModel.getDefault().getCategory(s, category);
+				if( cat == null ) {
+					cat = XPathModel.getDefault().addCategory(s, category);
 				}
-				
-				// If the category doesn't exist, create it
-				if( categoryItem == null ) {
-					categoryItem = new SimpleXPathPreferenceTreeItem(tree, category);
-				}
-				
-				XPathPreferenceTreeItem dsfa = new XPathPreferenceTreeItem(categoryItem, d.getName(), d.getXpath(), d.getAttribute());
-				ServerAttributeHelper helper = s.getAttributeHelper();
-				helper.saveXPathPreferenceTree(tree);
-				helper.save();
+				XPathQuery q = new XPathQuery(d.getName(), s.getConfigDirectory(), null, d.getXpath(), d.getAttribute());
+				cat.addQuery(q);
+				cat.save();
 			}
 		}
-		
 	}
 }

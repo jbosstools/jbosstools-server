@@ -212,7 +212,9 @@ public class ExtensionTableViewer extends TreeViewer {
 						return new Object[0];
 					return wrap(o, parentWrapper.getProvider());
 				}
-			} catch( Exception e ) { e.printStackTrace(); }
+			} catch( Exception e ) { 
+				//e.printStackTrace(); 
+			}
 			return new Object[0];
 		}
 
@@ -234,7 +236,6 @@ public class ExtensionTableViewer extends TreeViewer {
 				try {
 					providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);
 				} catch( Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -291,10 +292,10 @@ public class ExtensionTableViewer extends TreeViewer {
 		if( selected instanceof ServerViewProvider ) {
 			menu.add(disableCategoryAction);
 		}
+		
+		//menu.add(new TempAction());
 		menu.add(new Separator());
 	}
-
-	
 
 	public IPropertySheetPage getPropertySheet() {
 			return propertySheet;

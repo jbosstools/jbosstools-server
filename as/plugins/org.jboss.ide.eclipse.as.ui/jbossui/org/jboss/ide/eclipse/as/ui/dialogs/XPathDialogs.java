@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -63,34 +62,37 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XMLDocumentRepository;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper.XPathPreferenceTreeItem;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider.XPathPropertyLabelProvider;
+import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.XPathPropertyLabelProvider;
 
+
+/**
+ * A class with some XPath-related dialogs
+ */
 public class XPathDialogs {
-
 	public static class XPathCategoryDialog extends Dialog {
 
-		private String textValue;
+		private String initialName;
+		private String currentText;
+		private JBossServer jbs;
 		private Label errorLabel;
-		private SimpleTreeItem tree;
 		
-		public XPathCategoryDialog(Shell parentShell, SimpleTreeItem tree) {
+		public XPathCategoryDialog(Shell parentShell, JBossServer jbs) {
 			super(parentShell);
-			this.tree = tree;
+			this.jbs = jbs;
 		}
-		public XPathCategoryDialog(Shell parentShell, SimpleTreeItem tree, String startText) {
-			super(parentShell);
-			this.tree = tree;
-			this.textValue = startText;
+		public XPathCategoryDialog(Shell parentShell, JBossServer jbs, String initialName) {
+			this(parentShell, jbs);
+			this.initialName = initialName;
 		}
 		
 		
@@ -126,8 +128,8 @@ public class XPathDialogs {
 			tData.right = new FormAttachment(100, -5);
 			t.setLayoutData(tData);
 
-			if( textValue != null ) {
-				t.setText(textValue);
+			if( currentText != null ) {
+				t.setText(currentText);
 			}
 			
 			t.addModifyListener(new ModifyListener() {
@@ -140,30 +142,22 @@ public class XPathDialogs {
 		}
 		
 		private void verifyText(String text) {
-			boolean valid = true;
-			SimpleTreeItem[] kids = tree.getChildren();
-			for( int i = 0; i < kids.length; i++ ) {
-				if( text.equals(kids[i].getData())) 
-					valid = false;
-			}
-			
+			boolean valid = !XPathModel.getDefault().containsCategory(jbs, text) || (initialName != null && initialName.equals(text));
 			if( valid ) {
 				errorLabel.setVisible(false);
-				textValue = text;
+				currentText = text;
 				getButton(IDialogConstants.OK_ID).setEnabled(true);
 			} else {
 				errorLabel.setVisible(true);
 				getButton(IDialogConstants.OK_ID).setEnabled(false);
 			}
-			
 		}
 		
 		public String getText() {
-			return textValue;
+			return currentText;
 		}
 	}
 
-	
 	public static class XPathDialog extends Dialog {
 
 		protected Label errorImage, errorLabel, descriptionLabel;
@@ -174,36 +168,35 @@ public class XPathDialogs {
 		
 		protected XPathProposalProvider proposalProvider;
 		
-		protected SimpleTreeItem tree;
-		protected IDeployableServer server;
+		protected JBossServer server;
 		protected String name, xpath, attribute, category;
 		protected String originalName = null;
-		protected XPathPreferenceTreeItem original = null;
+		protected XPathQuery original = null;
 		protected int previewId = 48879;
 		
 		protected Tree previewTree;
 		protected TreeColumn column, column2, column3;
 		protected TreeViewer previewTreeViewer;
 		protected Composite main;
+		protected XMLDocumentRepository repository;
 		
 		public XPathDialog(Shell parentShell) {
 			this(parentShell, null);
 		}
-		public XPathDialog(Shell parentShell, IDeployableServer server) {
+		public XPathDialog(Shell parentShell, JBossServer server) {
 			this(parentShell, server, null);
 		}
-		public XPathDialog(Shell parentShell, IDeployableServer server, String categoryName) {
+		public XPathDialog(Shell parentShell, JBossServer server, String categoryName) {
 			this(parentShell, server, categoryName, null);
 		}
 
-		public XPathDialog(Shell parentShell, IDeployableServer server, String categoryName, String originalName) {
+		public XPathDialog(Shell parentShell, JBossServer server, String categoryName, String originalName) {
 			super(parentShell);
 			setShellStyle(getShellStyle() | SWT.RESIZE);
 			this.category = categoryName;
 			this.server = server;
 			this.originalName = this.name = originalName;
-			if( server != null )
-				this.tree = server.getAttributeHelper().getXPathPreferenceTree();
+			repository = new XMLDocumentRepository(XMLDocumentRepository.getDefault());
 		}
 
 		protected void configureShell(Shell shell) {
@@ -239,7 +232,7 @@ public class XPathDialogs {
 			if( attribute != null ) attributeText.setText(attribute);
 			if( xpath != null ) xpathText.setText(xpath);
 			
-			proposalProvider = new XPathProposalProvider();
+			proposalProvider = new XPathProposalProvider(repository);
 			proposalProvider.setServer(server);
 			ContentProposalAdapter adapter = new
 			ContentProposalAdapter(xpathText, new TextContentAdapter(),
@@ -248,7 +241,7 @@ public class XPathDialogs {
 			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 			
 			
-			XPathAttributeProposalProvider provider2 = new XPathAttributeProposalProvider(xpathText);
+			XPathAttributeProposalProvider provider2 = new XPathAttributeProposalProvider(repository, xpathText);
 			provider2.setServer(server);
 			ContentProposalAdapter adapter2 = new
 			ContentProposalAdapter(attributeText, new TextContentAdapter(),
@@ -269,7 +262,7 @@ public class XPathDialogs {
 				serverCombo.setItems(names);
 			}
 			
-			if( categoryCombo != null && tree != null ) {
+			if( categoryCombo != null ) { 
 				refreshCategoryCombo();
 			}
 		}
@@ -386,22 +379,21 @@ public class XPathDialogs {
 			if( nameText.getText().equals("")) {
 				return Messages.XPathNameEmpty;
 			}
-			if( tree != null ) {
-				SimpleTreeItem[] categories = tree.getChildren();
-				SimpleTreeItem categoryItem = null;
-				for( int i = 0; i < categories.length; i++ ) {
-					if( categories[i].getData().equals(category)) 
-						categoryItem = categories[i];
-				}
-				if( categoryItem != null ) {
-					SimpleTreeItem[] xpathNames = categoryItem.getChildren();
-					boolean found = false;
-					for( int i = 0; i < xpathNames.length; i++ ) {
-						if(nameText.getText().equals( ((XPathPreferenceTreeItem)xpathNames[i]).getName())) {
-							
-							if( originalName == null || !nameText.getText().equals(originalName)) 
-								return Messages.XPathNameInUse;
-						}
+			if( server == null ) return null;
+			XPathCategory[] categories = XPathModel.getDefault().getCategories((JBossServer)server);
+			XPathCategory category = null;
+			for( int i = 0; i < categories.length; i++ ) {
+				if( categories[i].getName().equals(this.category)) 
+					category = categories[i];
+			}
+			if( category != null ) {
+				XPathQuery[] queries = category.getQueries();
+				boolean found = false;
+				for( int i = 0; i < queries.length; i++ ) {
+					if(nameText.getText().equals( ((XPathQuery)queries[i]).getName())) {
+						
+						if( originalName == null || !nameText.getText().equals(originalName)) 
+							return Messages.XPathNameInUse;
 					}
 				}
 			}
@@ -411,19 +403,20 @@ public class XPathDialogs {
 		
 		protected void setServer(JBossServer s) {
 			server = s;
-			tree = server.getAttributeHelper().getXPathPreferenceTree();
 			proposalProvider.setServer(s);
 			refreshCategoryCombo();
 			checkErrors();
 		}
 		
 		protected void refreshCategoryCombo() {
-			SimpleTreeItem[] categories = tree.getChildren();
-			String[] categoryNames = new String[categories.length];
-			for( int i = 0; i < categories.length; i++ ) {
-				categoryNames[i] = (String)categories[i].getData();
+			if( server != null ) {
+				XPathCategory[] categories = XPathModel.getDefault().getCategories(server);
+				String[] categoryNames = new String[categories.length];
+				for( int i = 0; i < categories.length; i++ ) {
+					categoryNames[i] = (String)categories[i].getName();
+				}
+				categoryCombo.setItems(categoryNames);
 			}
-			categoryCombo.setItems(categoryNames);
 		}
 		
 		protected void previewPressed() {
@@ -435,10 +428,10 @@ public class XPathDialogs {
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					final IProgressMonitor monitor2 = monitor;
-					server.getDescriptorModel().refreshDescriptors(monitor2);
-					XPathTreeItem[] item = server.getDescriptorModel().getXPath(xpathText.getText(), attributeText.getText());
+					XPathQuery tmp = new XPathQuery("", server.getConfigDirectory(), null, xpathText.getText(), attributeText.getText());
+					tmp.setRepository(repository);
 					final ArrayList list = new ArrayList();
-					list.addAll(Arrays.asList(item));
+					list.addAll(Arrays.asList(tmp.getResults()));
 					Display.getDefault().asyncExec(new Runnable() { 
 						public void run() {
 							previewTreeViewer.setInput(list);
@@ -493,10 +486,6 @@ public class XPathDialogs {
 
 			previewTreeViewer = new TreeViewer(previewTree);
 
-
-
-			
-			
 			c.layout();
 			int pixel = Math.max(Math.max(nameLabel.getSize().x, xpathLabel.getSize().x), attributeLabel.getSize().x);
 			pixel += 5;
@@ -540,19 +529,19 @@ public class XPathDialogs {
 			previewTreeViewer.setContentProvider(new ITreeContentProvider() {
 				public Object[] getChildren(Object parentElement) {
 					// we're a leaf
-					if( parentElement instanceof XPathTreeItem2 ) 
+					if( parentElement instanceof XPathResultNode ) 
 						return new Object[0];
 					
 					// we're a file node (blah.xml) 
-					if( parentElement instanceof XPathTreeItem ) {
-						if( ((XPathTreeItem)parentElement).getChildren().length > 1 ) 
-							return ((XPathTreeItem)parentElement).getChildren();
+					if( parentElement instanceof XPathFileResult ) {
+						if( ((XPathFileResult)parentElement).getChildren().length > 1 ) 
+							return ((XPathFileResult)parentElement).getChildren();
 						return new Object[0];
 					}
 					
 					// we're the named element (JNDI)
-					if( parentElement instanceof XPathPreferenceTreeItem ) {
-						SimpleTreeItem[] kids = ((XPathPreferenceTreeItem)parentElement).getChildren();
+					if( parentElement instanceof XPathQuery ) {
+						XPathFileResult[] kids = ((XPathQuery)parentElement).getResults();
 						return kids;
 					}
 
@@ -638,7 +627,7 @@ public class XPathDialogs {
 		public String getCategory() {
 			return category;
 		}
-		public IDeployableServer getServer() {
+		public JBossServer getServer() {
 			return server;
 		}
 
@@ -663,20 +652,22 @@ public class XPathDialogs {
 	
 	public static class XPathAttributeProposalProvider extends XPathProposalProvider {
 		private Text elementText;
-		public XPathAttributeProposalProvider(Text elementText) {
+		public XPathAttributeProposalProvider(XMLDocumentRepository repo, Text elementText) {
+			super(repo);
 			this.elementText = elementText;
 		}
 		public IContentProposal[] getProposals(String contents, int position) {
 			int type = getType(elementText.getText());
-			if( type == 4 ) {
+			if( type == IN_ELEMENT ) {
 				String[] strings = getAttributeNameProposalStrings(elementText.getText(), contents);
 				return convertProposals(strings);
 			}
 			return new IContentProposal[0];
 		}
+		
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
 			ArrayList names = new ArrayList();
-			XPathTreeItem2[] items = getXPath(parentPath);
+			XPathResultNode[] items = getXPath(parentPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
 				attributes = items[0].getElementAttributeNames();
@@ -691,69 +682,64 @@ public class XPathDialogs {
 	
 	public static class XPathProposalProvider implements IContentProposalProvider {
 		
-		private static final int NEW_ELEMENT = 1;
-		private static final int NEW_ATTRIBUTE = 2;
-		private static final int NEW_ATTRIBUTE_VALUE = 3;
-		private static final int IN_ELEMENT = 4;
-		private static final int IN_ATTRIBUTE = 5;
-		private static final int IN_ATTRIBUTE_VALUE = 6;
-		private static final int CLOSE_ATTRIBUTE = 7;
+		protected static final int NEW_ELEMENT = 1;
+		protected static final int NEW_ATTRIBUTE = 2;
+		protected static final int NEW_ATTRIBUTE_VALUE = 3;
+		protected static final int IN_ELEMENT = 4;
+		protected static final int IN_ATTRIBUTE = 5;
+		protected static final int IN_ATTRIBUTE_VALUE = 6;
+		protected static final int CLOSE_ATTRIBUTE = 7;
 		
 		
 		private IDeployableServer server;
-		private ServerDescriptorModel model;
-		
 		private HashMap xpathCache;
+		protected XMLDocumentRepository repository;
 		
-		public XPathProposalProvider() {
+		public XPathProposalProvider(XMLDocumentRepository repository) {
 			xpathCache = new HashMap();
+			this.repository = repository;
 		}
 		public void setServer(IDeployableServer server) {
 			this.server = server;
-			if( server != null ) {
-				String serverConfDir = server.getConfigDirectory();
-				model = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
-			} else {
-				model = null;
-			}
-			xpathCache = new HashMap();
 		}
 		public IContentProposal[] getProposals(String contents, int position) {
-			if( model == null ) return new IContentProposal[]{};
-			
 			if( contents.equals("") || contents.equals("/") || contents.equals(" ")) {
 				return new IContentProposal[] { new XPathContentProposal("/server/", "/server/".length(), null, null)};
 			}
 			
 			try {
-			int type = getType(contents);
-			if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
-			if( type == IN_ELEMENT ) return getElementProposals(contents);
-			if( type == NEW_ATTRIBUTE ) return getAttributeNameProposals(contents.substring(0, contents.length()-1), "");
-			if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
-			if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
-			if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
+				int type = getType(contents);
+				if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
+				if( type == IN_ELEMENT ) return getElementProposals(contents);
+				if( type == NEW_ATTRIBUTE ) return getAttributeNameProposals(contents.substring(0, contents.length()-1), "");
+				if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
+				if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
+				if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
 			} catch( Exception e) {e.printStackTrace();}
 			return new IContentProposal[]{};
 		}
 		
-		protected XPathTreeItem2[] getXPath(String xpath) {
+		protected XPathResultNode[] getXPath(String xpath) {
+			if( server == null ) 
+				return new XPathResultNode[0];
+			
 			if( xpathCache.containsKey(xpath)) {
 				ArrayList list = (ArrayList)xpathCache.get(xpath);
-				return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
+				return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
 			}
-				
+			XPathQuery tmp = new XPathQuery("", server.getConfigDirectory(), "**/*.xml", xpath, null);
+			tmp.setRepository(repository);
 			ArrayList list = new ArrayList();
-			XPathTreeItem[] items = model.getXPath(xpath);
+			XPathFileResult[] items = tmp.getResults();
 			for( int i = 0; i < items.length; i++ ) {
-				SimpleTreeItem[] children = items[i].getChildren();
+				XPathResultNode[] children = items[i].getChildren();
 				for( int j = 0; j < children.length; j++ ) {
-					XPathTreeItem2 i2 = (XPathTreeItem2)children[j];
+					XPathResultNode i2 = (XPathResultNode)children[j];
 					list.add(i2);
 				}
 			}
 			xpathCache.put(xpath, list);
-			return (XPathTreeItem2[]) list.toArray(new XPathTreeItem2[list.size()]);
+			return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
 		}
 		
 		public IContentProposal[] getElementProposals(String path) {
@@ -769,7 +755,7 @@ public class XPathDialogs {
 		
 		public String[] getElementProposalStrings(String parentPath, String elementPrefix) {
 			TreeSet set = new TreeSet();
-			XPathTreeItem2[] items = getXPath(parentPath + "*");
+			XPathResultNode[] items = getXPath(parentPath + "*");
 			for( int i = 0; i < items.length; i++ ) {
 				if( items[i].getElementName().startsWith(elementPrefix)) {
 					if( items[i].getElementName().equals(elementPrefix)) {
@@ -793,7 +779,7 @@ public class XPathDialogs {
 		}
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
 			ArrayList names = new ArrayList();
-			XPathTreeItem2[] items = getXPath(parentPath);
+			XPathResultNode[] items = getXPath(parentPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
 				attributes = items[0].getElementAttributeNames();
@@ -822,7 +808,7 @@ public class XPathDialogs {
 
 			if( remainder.startsWith("'")) remainder = remainder.substring(1);
 			ArrayList values = new ArrayList();
-			XPathTreeItem2[] items = getXPath(parentElementPath);
+			XPathResultNode[] items = getXPath(parentElementPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
 				attributes = items[i].getElementAttributeValues(attName);
@@ -900,19 +886,5 @@ public class XPathDialogs {
 				return label;
 			}
 		}
-		
-		public String[] getAllSuggegstions() {
-			HashMap possibilities = new HashMap();
-			XPathTreeItem[] items = model.getXPath("/server/mbean");
-			for( int i = 0; i < items.length; i++ ) {
-				SimpleTreeItem[] children = items[i].getChildren();
-				for( int j = 0; j < children.length; j++ ) {
-					XPathTreeItem2 i2 = (XPathTreeItem2)children[j];
-					possibilities.put(i2.getElementName(), i2.getElementName());
-				}
-			}
-			return (String[]) possibilities.keySet().toArray(new String[possibilities.size()]);
-		}
-		
 	}
 }
