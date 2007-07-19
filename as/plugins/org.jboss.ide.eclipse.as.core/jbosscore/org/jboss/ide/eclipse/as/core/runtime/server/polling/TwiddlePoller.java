@@ -41,10 +41,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.model.legacy.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
@@ -86,10 +85,12 @@ public class TwiddlePoller implements IServerStatePoller {
 			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
 			ClassLoader twiddleLoader = getClassLoader();
 			if( twiddleLoader != null ) {
-				String serverConfDir = ServerConverter.getJBossServer(server).getConfigDirectory(false);
-				ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
-				int port = descriptorModel.getJNDIPort();
-
+				// TODO: FIX ME
+//				String serverConfDir = ServerConverter.getJBossServer(server).getConfigDirectory(false);
+//				ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
+//				int port = descriptorModel.getJNDIPort();
+				int port = 1099;
+				
 				Thread.currentThread().setContextClassLoader(twiddleLoader);
 				Properties props = new Properties();
 		        props.put("java.naming.factory.initial", "org.jnp.interfaces.NamingContextFactory");
@@ -207,10 +208,6 @@ public class TwiddlePoller implements IServerStatePoller {
 	public class PollingSecurityException extends PollingException {
 		public PollingSecurityException(String msg) {super(msg);}
 	}
-	public class PollingNamingException extends PollingException {
-		public PollingNamingException(String msg) {super(msg);}
-	}
-	
 	
 	public boolean getState() throws PollingException  {
 		if( pollingException != null ) throw pollingException;

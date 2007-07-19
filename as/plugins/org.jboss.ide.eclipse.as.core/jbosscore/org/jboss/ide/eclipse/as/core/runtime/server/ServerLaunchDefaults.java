@@ -37,8 +37,6 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
@@ -116,14 +114,7 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 		workingCopy.setAttribute(vmArgsKey + STOP_SUFFIX,  getVMArgs());
 
 
-		int jndiPort;
-		try {
-			String serverConfDir = getJBServer().getConfigDirectory(false);
-			ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
-			jndiPort = descriptorModel.getJNDIPort();
-		} catch( Exception e ) {
-			jndiPort = 1099;
-		}
+		int jndiPort = getJBServer().getJNDIPort();
 		String host = server.getHost();
 		String twiddleArgs = "-s " + host + ":" + jndiPort +  " -a jmx/rmi/RMIAdaptor ";
 
@@ -156,7 +147,6 @@ public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 		IJBossServerRuntime rt = getRuntime();
 		if( rt != null ) {
 			return "--configuration=" + rt.getJBossConfiguration();
-					//+ " --host=" + server.getHost();
 		}
 		return "";
 	}

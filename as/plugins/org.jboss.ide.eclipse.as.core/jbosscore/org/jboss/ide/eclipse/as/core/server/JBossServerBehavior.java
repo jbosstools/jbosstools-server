@@ -48,7 +48,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
-		if( force || process.isTerminated() || state == IServer.STATE_STOPPED) {
+		if( force || process == null || process.isTerminated() || state == IServer.STATE_STOPPED) {
 			forceStop();
 			return;
 		}

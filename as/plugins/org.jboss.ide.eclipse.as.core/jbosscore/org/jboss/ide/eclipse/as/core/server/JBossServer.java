@@ -22,11 +22,12 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -42,10 +43,8 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem;
-import org.jboss.ide.eclipse.as.core.model.DescriptorModel.ServerDescriptorModel.XPathTreeItem2;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
@@ -122,20 +121,12 @@ public class JBossServer extends ServerDelegate
 		}
 		return new ServerAttributeHelper(getServer(), copy);
 	}
-
-	
-	
 	
 	public String getConfigDirectory() {
 		return getConfigDirectory(true);
 	}
 	public String getDeployDirectory() {
 		return getDeployDirectory(true);
-	}
-
-	public ServerDescriptorModel getDescriptorModel() {
-		String configPath = getConfigDirectory();
-		return DescriptorModel.getDefault().getServerModel(new Path(configPath));
 	}
 	
 	public String getConfigDirectory(boolean checkLaunchConfig) {
@@ -191,49 +182,52 @@ public class JBossServer extends ServerDelegate
 		return new Path(p).toOSString();
 	}
 	
+	private static final IPath JNDI_KEY = new Path("Ports").append("JNDI"); 
+	private static final int JNDI_DEFAULT_PORT = 1099;
+	public int getJNDIPort() {
+		int port = findPort(JNDI_KEY);
+		return port == -1 ? JNDI_DEFAULT_PORT : port;
+	}
+	
+	private static final IPath JBOSS_WEB_KEY = new Path("Ports").append("JBoss Web");
+	public static final int JBOSS_WEB_DEFAULT_PORT = 8080;
+	public int getJBossWebPort() {
+		int port = findPort(JBOSS_WEB_KEY);
+		return port == -1 ? JBOSS_WEB_DEFAULT_PORT : port;
+	}
+
+	protected int findPort(IPath path) {
+		XPathQuery query = XPathModel.getDefault().getQuery(this, path);
+		String result = query.getFirstResult();
+		if( result != null ) {
+			try {
+				return Integer.parseInt(result);
+			} catch( Exception e ) {}
+		}
+		return -1;
+	}
 	
 	
 	
 	public URL getModuleRootURL(IModule module) {
 
-		try {
-            if (module == null || module.loadAdapter(IWebModule.class,null)==null )
-				return null;
-            
-            IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
-            String host = getServer().getHost();
-			String url = "http://"+host; //$NON-NLS-1$
-			int port = -1;
-			
-			ServerDescriptorModel sdm = DescriptorModel.getDefault().getServerModel(new Path(getConfigDirectory()));
-			FileFilter filter = new FileFilter() {
-				public boolean accept(File pathname) {
-					return pathname.getAbsolutePath().endsWith("server.xml");
-				}
-			};
-			XPathTreeItem[] items = sdm.getXPath(
-					"//Server/Service[@name='jboss.web']/Connector[count(@sslProtocol) = 0 and (count(@protocol) = 0 or @protocol = 'HTTP/1.1')]", 
-					"port", filter, false);
-			if( items.length > 0 ) {
-				try {
-				port = Integer.parseInt(((XPathTreeItem2)items[0].getChildren()[0]).getAttributeValue());
-				} catch(Exception e) {}
-			}
-			if( port == -1 ) port = 8080;
-			//port =ServerUtil.getMonitoredPort(getServer(), port, "web"); //$NON-NLS-1$
-			if (port != 80)
-				url += ":" + port; //$NON-NLS-1$
-
-			url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
-
-			if (!url.endsWith("/")) //$NON-NLS-1$
-				url += "/"; //$NON-NLS-1$
-
-			return new URL(url);
-		} catch (Exception e) {
+        if (module == null || module.loadAdapter(IWebModule.class,null)==null )
 			return null;
-		}
-	}
+        
+        IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
+        String host = getServer().getHost();
+		String url = "http://"+host; //$NON-NLS-1$
+		int port = getJBossWebPort();
+		if (port != 80)
+			url += ":" + port; //$NON-NLS-1$
 
-	
+		url += "/"+webModule.getContextRoot(); //$NON-NLS-1$
+
+		if (!url.endsWith("/")) //$NON-NLS-1$
+			url += "/"; //$NON-NLS-1$
+
+		try {
+			return new URL(url);
+		} catch( MalformedURLException murle) { return null; }
+	}	
 }
