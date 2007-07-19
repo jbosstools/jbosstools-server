@@ -39,8 +39,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -63,7 +65,6 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtens
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
 
-// TODO FIX ME
 public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 
 	private XPathTreeContentProvider contentProvider;
@@ -90,24 +91,39 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		JBossServerView.getDefault().getExtensionFrame().getViewer().
 			addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
-					Object o = JBossServerView.getDefault().getExtensionFrame().getViewer().getSelectedElement();
-					if( o instanceof XPathCategory ) {
-						// show properties view
-						String propsId = "org.eclipse.ui.views.PropertySheet";
-						try {
-							IWorkbench work = PlatformUI.getWorkbench();
-							IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
-							window.getActivePage().showView(propsId);
-							if( propertyPage != null ) {
-								propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
-							}
-						} catch( PartInitException pie ) {
-						}
-					}
+					activatePropertiesView();
 				} 
-			});
+			});		
 	}
 	
+	protected void activatePropertiesView() {
+		Object o = JBossServerView.getDefault().getExtensionFrame().getViewer().getSelectedElement();
+		if( o instanceof XPathCategory ) {
+			// show properties view
+			String propsId = "org.eclipse.ui.views.PropertySheet";
+			try {
+				IWorkbench work = PlatformUI.getWorkbench();
+				IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
+				if( !isPropertiesOnTop()) {
+					window.getActivePage().showView(propsId);
+					if( propertyPage != null ) {
+						propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
+					}
+				}
+			} catch( PartInitException pie ) {
+			}
+		}
+	}
+	
+	protected boolean isPropertiesOnTop() {
+		String propsId = "org.eclipse.ui.views.PropertySheet";
+		IWorkbench work = PlatformUI.getWorkbench();
+		IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
+		IWorkbenchPage page = window.getActivePage();
+		IViewReference ref = window.getActivePage().findViewReference(propsId);
+		IWorkbenchPart part = ref.getPart(false);
+		return ( part != null && page.isPartVisible(part));
+	}
 	public void setActiveCategory(XPathCategory o) {
 		if( o != null && o != activeCategory) {
 			activeCategory = o;
