@@ -39,6 +39,9 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public void cancel(int type);    // cancel the polling
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
 	
+	public boolean supportsStartup();
+	public boolean supportsShutdown();
+	
 	public class PollingException extends Exception {
 		public PollingException(String message) {super(message);}
 	}

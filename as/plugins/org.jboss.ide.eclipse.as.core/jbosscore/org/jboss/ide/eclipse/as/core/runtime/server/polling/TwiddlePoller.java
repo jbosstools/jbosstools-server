@@ -85,11 +85,7 @@ public class TwiddlePoller implements IServerStatePoller {
 			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
 			ClassLoader twiddleLoader = getClassLoader();
 			if( twiddleLoader != null ) {
-				// TODO: FIX ME
-//				String serverConfDir = ServerConverter.getJBossServer(server).getConfigDirectory(false);
-//				ServerDescriptorModel descriptorModel = DescriptorModel.getDefault().getServerModel(new Path(serverConfDir));
-//				int port = descriptorModel.getJNDIPort();
-				int port = 1099;
+				int port = ServerConverter.getJBossServer(server).getJNDIPort();
 				
 				Thread.currentThread().setContextClassLoader(twiddleLoader);
 				Properties props = new Properties();
@@ -234,6 +230,14 @@ public class TwiddlePoller implements IServerStatePoller {
 			setProperty(STATUS, new Integer(status));
 			setProperty(DATE, new Long(new Date().getTime()));
 		}
+	}
+
+	public boolean supportsShutdown() {
+		return true;
+	}
+
+	public boolean supportsStartup() {
+		return true;
 	}
 	
 	

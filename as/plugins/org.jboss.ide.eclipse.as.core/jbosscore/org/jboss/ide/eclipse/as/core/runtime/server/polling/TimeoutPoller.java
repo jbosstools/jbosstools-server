@@ -24,24 +24,27 @@ package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
 
 // Wait 15 seconds, then say it's at it's expected state
 public class TimeoutPoller implements IServerStatePoller {
 
 	private boolean expectedState;
 	private long endTime;
+	private IServer server;
 	int timeout = -1;
 	
 	
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
 		this.expectedState = expectedState;
-		this.endTime = new Date().getTime() + getTimeout();
+		this.server = server;
+		this.endTime = new Date().getTime() + getTimeout() - 2000;
 	}
 
-	protected int getTimeout() {
-		return 15000;
-	}
 	public void cancel(int type) {
 	}
 
@@ -57,4 +60,28 @@ public class TimeoutPoller implements IServerStatePoller {
 
 	public void cleanup() {
 	}
+	
+	public int getTimeout() {
+		int timeout;
+		JBossServer jbs = ((JBossServer)server.loadAdapter(JBossServer.class, null));
+		ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
+		if( expectedState == IServerStatePoller.SERVER_UP) {
+			int def = ((ServerType)server.getServerType()).getStartTimeout();
+			timeout = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, def);
+		} else {
+			int def = ((ServerType)server.getServerType()).getStopTimeout();
+			timeout = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, def);
+		}
+		return timeout;
+	}
+
+	public boolean supportsShutdown() {
+		return true;
+	}
+
+	public boolean supportsStartup() {
+		return true;
+	}
+	
+
 }
