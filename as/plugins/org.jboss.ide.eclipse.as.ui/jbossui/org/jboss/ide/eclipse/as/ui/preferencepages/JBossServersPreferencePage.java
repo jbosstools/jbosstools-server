@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -48,7 +47,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -57,9 +58,13 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.part.PageBook;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
@@ -69,6 +74,16 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBossServersPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
+
+	// for the main section
+	private JBossServer currentServer;
+	private Table serverTable;
+	private TableViewer serverTableViewer;
+	private HashMap workingCoppies;	
+	private Group serverGroup, secondGroup;
+	private PageBook book;
+	private ServerPreferenceProvider[] groups;
+	int pageColumn = 55;
 
 	public JBossServersPreferencePage() {
 		super();
@@ -84,61 +99,26 @@ public class JBossServersPreferencePage extends PreferencePage implements
 
 	protected Control createContents(Composite parent) {
 		Composite main = new Composite(parent, SWT.BORDER);
-//		main.setLayout(new GridLayout(1, false));
 		main.setLayout(new FormLayout());
-		
 		createServerViewer(main);
-		createTimeoutGroup(main);
+		createSecondGroup(main);
 		addListeners();
-		
-		
-		// minimum width enforcer
-//		Label l = new Label(main, SWT.NONE);
-//		FormData lData = new FormData();
-//		lData.left = new FormAttachment(0,0);
-//		lData.right = new FormAttachment(0,600);
-//		lData.bottom = new FormAttachment(100,0);
-//		lData.top = new FormAttachment(100,0);
-//		l.setLayoutData(lData);
-//		main.layout();
-
-		
 		return main;
 	}
-	
-	private JBossServer currentServer;
-
-	private Group timeoutGroup;
-	private Table serverTable;
-	private TableViewer serverTableViewer;
-	private Spinner stopSpinner, startSpinner;
-	
-	private Button abortOnTimeout, ignoreOnTimeout;
-	
-	private HashMap workingCoppies;	
-	
-		
-	// where the page fold is
-	int pageColumn = 55;
-
-	private Group serverGroup;
 	
 	
 	protected void createServerViewer(Composite main) {
 		
 		serverGroup = new Group(main, SWT.NONE);
-		//		serverGroup.setLayout(new GridLayout(1, false));
 		FillLayout serverGroupLayout = new FillLayout();
 		serverGroupLayout.marginHeight = 5;
 		serverGroupLayout.marginWidth = 5;
 		serverGroup.setLayout(serverGroupLayout);
-//		serverGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		serverGroup.setText("Servers");
 		
 		workingCoppies = new HashMap();
 		
 		serverTable = new Table(serverGroup, SWT.BORDER);
-//		serverTable.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
 		FormData lData = new FormData();
 		lData.left = new FormAttachment(0,5);
 		lData.right = new FormAttachment(100,-5);
@@ -188,95 +168,28 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		
 	}
 
-	protected void createTimeoutGroup(Composite main) {
-		timeoutGroup = new Group(main, SWT.NONE);
-		timeoutGroup.setText(Messages.PreferencePageServerTimeouts);
-//		timeoutGroup.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
-		FormData groupData = new FormData();
+	protected void createSecondGroup(Composite main) {
+		secondGroup = new Group(main, SWT.NONE);
+		
+		FormData lData = new FormData();
+		lData.left = new FormAttachment(0,5);
+		lData.right = new FormAttachment(100,-5);
+		lData.top = new FormAttachment(serverGroup,5);
+		lData.bottom = new FormAttachment(100,-5);
+		secondGroup.setLayoutData(lData);
 
-		groupData.left = new FormAttachment(0, 5);
-		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(serverGroup,5);
-		timeoutGroup.setLayoutData(groupData);
-		
-		timeoutGroup.setLayout(new FormLayout());
-		
-		// add two textboxes, two labels
-		Label startTimeoutLabel, stopTimeoutLabel;
-		
-		startTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
-		stopTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
-		
-		stopSpinner = new Spinner(timeoutGroup, SWT.BORDER);
-		startSpinner = new Spinner(timeoutGroup, SWT.BORDER);
-		
-		FormData startTD = new FormData();
-		startTD.left = new FormAttachment(0,5);
-		startTD.top = new FormAttachment(0,5);
-		startTimeoutLabel.setLayoutData(startTD);
-		startTimeoutLabel.setText(Messages.PreferencePageStartTimeouts);
-		
-		FormData stopTD = new FormData();
-		stopTD.left = new FormAttachment(0,5);
-		stopTD.top = new FormAttachment(startSpinner,4);
-		stopTimeoutLabel.setLayoutData(stopTD);
-		stopTimeoutLabel.setText(Messages.PreferencePageStopTimeouts);
-		
-		timeoutGroup.layout();
-		int startWidth = startTimeoutLabel.getSize().x;
-		int stopWidth = stopTimeoutLabel.getSize().x;
-		
-		Label widest = startWidth > stopWidth ? startTimeoutLabel : stopTimeoutLabel;
-		
-		FormData startD = new FormData();
-		startD.left = new FormAttachment(0,widest.getSize().x + widest.getLocation().x + 5);
-		startD.right = new FormAttachment(100, -5);
-		startD.top = new FormAttachment(0,5);
-		startSpinner.setLayoutData(startD);
-		
-		FormData stopD = new FormData();
-		stopD.left = new FormAttachment(0,widest.getSize().x + widest.getLocation().x + 5);
-		stopD.right = new FormAttachment(100, -5);
-		stopD.top = new FormAttachment(startSpinner,5);
-		stopSpinner.setLayoutData(stopD);
 		
 		
-		stopSpinner.setMinimum(0);
-		startSpinner.setMinimum(0);
-		stopSpinner.setIncrement(1);
-		startSpinner.setIncrement(1);
-		stopSpinner.setEnabled(false);
-		startSpinner.setEnabled(false);
-		
-		Label uponTimeoutLabel = new Label(timeoutGroup, SWT.NONE);
-		abortOnTimeout = new Button(timeoutGroup, SWT.RADIO);
-		ignoreOnTimeout = new Button(timeoutGroup, SWT.RADIO);
-		
-		FormData utl = new FormData();
-		utl.left = new FormAttachment(0,5);
-		utl.right = new FormAttachment(100, -5);
-		utl.top = new FormAttachment(stopSpinner,5);
-		uponTimeoutLabel.setLayoutData(utl);
-
-		FormData b1D = new FormData();
-		b1D.left = new FormAttachment(0,15);
-		b1D.right = new FormAttachment(100, -5);
-		b1D.top = new FormAttachment(uponTimeoutLabel,5);
-		abortOnTimeout.setLayoutData(b1D);
-		
-		FormData b2D = new FormData();
-		b2D.left = new FormAttachment(0,15);
-		b2D.right = new FormAttachment(100, -5);
-		b2D.top = new FormAttachment(abortOnTimeout,5);
-		ignoreOnTimeout.setLayoutData(b2D);
-		
-		uponTimeoutLabel.setText(Messages.PreferencePageUponTimeout);
-		abortOnTimeout.setText(Messages.PreferencePageUponTimeoutAbort);
-		ignoreOnTimeout.setText(Messages.PreferencePageUponTimeoutIgnore);
-		abortOnTimeout.setEnabled(false);
-		ignoreOnTimeout.setEnabled(false);
-		
+		secondGroup.setLayout(new FillLayout());
+		book = new PageBook(secondGroup, SWT.NONE);
+		groups = new ServerPreferenceProvider[] { 
+				new TimeoutComposite(book)
+		};
+		book.showPage(groups[0]);
+		secondGroup.setText(groups[0].getName());
 	}
+	
+	
 	
 	private void addListeners() {
 		serverTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -285,75 +198,16 @@ public class JBossServersPreferencePage extends PreferencePage implements
 				serverSelected(sel.getFirstElement() == null ? null : (JBossServer)sel.getFirstElement());
 			}
 		});
-		
-		startSpinner.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setAttribute(IServerPollingAttributes.START_TIMEOUT, startSpinner.getSelection() * 1000);
-			} 
-		});
-		stopSpinner.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				getSelectedWC().setAttribute(IServerPollingAttributes.STOP_TIMEOUT, stopSpinner.getSelection() * 1000);
-			} 
-		});
-		
-		abortOnTimeout.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-			public void widgetSelected(SelectionEvent e) {
-				if( getSelectedWC() != null ) 
-					getSelectedWC().setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_ABORT);
-			} 
-		});
-		ignoreOnTimeout.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-			public void widgetSelected(SelectionEvent e) {
-				if( getSelectedWC() != null ) 
-					getSelectedWC().setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
-			} 
-		});
-				
 	}
-	
+
 	private void serverSelected(JBossServer server) {
 		currentServer = server;
 		ServerAttributeHelper wcHelper = getWCHelper(server);
-		
-		/* Handle spinners */
-		startSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStartTimeout() / 1000);
-		stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout() / 1000);
-		startSpinner.setSelection(getStartTimeout(wcHelper));
-		stopSpinner.setSelection(getStopTimeout(wcHelper));
-		
-		startSpinner.setEnabled(true);
-		stopSpinner.setEnabled(true);
-		abortOnTimeout.setEnabled(true);
-		ignoreOnTimeout.setEnabled(true);
-		
-		boolean currentVal = wcHelper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
-		if( currentVal == IServerPollingAttributes.TIMEOUT_ABORT) {
-			abortOnTimeout.setSelection(true);
-			ignoreOnTimeout.setSelection(false);
-		} else {
-			abortOnTimeout.setSelection(false);
-			ignoreOnTimeout.setSelection(true);
+		for( int i = 0; i < groups.length; i++ ) {
+			try {
+				groups[i].serverSelected(server, wcHelper);
+			} catch( Exception e ) {}
 		}
-	}
-	
-	public int getStartTimeout(ServerAttributeHelper helper) {
-		int prop = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, -1);
-		int max = ((ServerType)helper.getServer().getServerType()).getStartTimeout();
-		
-		if( prop <= 0 || prop > max ) return max / 1000;
-		return prop / 1000;
-	}
-	public int getStopTimeout(ServerAttributeHelper helper) {
-		int prop = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, -1);
-		int max = ((ServerType)helper.getServer().getServerType()).getStopTimeout();
-		
-		if( prop <= 0 || prop > max ) return max / 1000;
-		return prop / 1000;
 	}
 
 	
@@ -368,28 +222,12 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	}
 	
 	private ServerAttributeHelper getSelectedWC() {
-		IStructuredSelection sel = (IStructuredSelection)serverTableViewer.getSelection();
-		if( sel != null && sel.getFirstElement() != null ) {
-			return getWCHelper((JBossServer)sel.getFirstElement());
-		}
-		return null;
+		return currentServer == null ? null : getWCHelper(currentServer);
 	}
 	
 	public void init(IWorkbench workbench) {
 	}
-	
-	public Object getFirstSelected(Viewer viewer) {
-		ISelection sel = viewer.getSelection();
-		if( sel instanceof IStructuredSelection) {
-			Object o = ((IStructuredSelection)sel).getFirstElement();
-			return o;
-		}
-		return null;
-	}
-	
-
-	
-	
+		
     public boolean performOk() {
     	super.performOk();
     	saveDirtyWorkingCoppies();
@@ -417,7 +255,275 @@ public class JBossServersPreferencePage extends PreferencePage implements
     	}
 	}
 	
-    public boolean performCancel() {
-    	return super.performCancel();
+    public static abstract class ServerPreferenceProvider extends Composite {
+    	protected String name;
+    	public ServerPreferenceProvider(Composite parent, int style, 
+    					String name) {
+    		super(parent, style);
+    		this.name = name;
+    	}
+    	public String getName() { return name; }
+    	public abstract void serverSelected(JBossServer server, ServerAttributeHelper helper);
     }
+    
+	public static class TimeoutComposite extends ServerPreferenceProvider {
+
+		private Spinner stopSpinner, startSpinner;
+		private Button abortOnTimeout, ignoreOnTimeout;
+		private JBossServer server;
+		private ServerAttributeHelper helper;
+		private Composite durations, behavior, pollers;
+		
+		// polling
+		private Combo startPollerCombo, stopPollerCombo;
+		private String[] startupTypesStrings, shutdownTypesStrings;
+		ServerStatePollerType[] startupTypes, shutdownTypes;
+
+		public TimeoutComposite(Composite parent) {
+			super(parent, SWT.NONE, Messages.PreferencePageServerTimeouts);
+			
+			findPossiblePollers();
+			
+			setLayout(new FormLayout());
+			createTimeoutDurations();
+			createTimeoutBehavior();
+			createPollerChoices();
+			
+			durations.setLayoutData(createLayoutData(null));
+			behavior.setLayoutData(createLayoutData(durations));
+			pollers.setLayoutData(createLayoutData(behavior));
+			addTimeoutListeners();
+		}
+
+		protected void findPossiblePollers() {
+			startupTypes = ExtensionManager.getDefault().getStartupPollers();
+			shutdownTypes = ExtensionManager.getDefault().getShutdownPollers();
+			startupTypesStrings = new String[startupTypes.length];
+			shutdownTypesStrings = new String[shutdownTypes.length];
+			
+			for( int i = 0; i < startupTypes.length; i++ ) {
+				startupTypesStrings[i] = startupTypes[i].getName();
+			}
+			for( int i = 0; i < shutdownTypes.length; i++ ) {
+				shutdownTypesStrings[i] = shutdownTypes[i].getName();
+			}
+		}
+		
+		private FormData createLayoutData(Composite top) {
+			FormData data = new FormData();
+			if( top == null ) 	data.top = new FormAttachment(0,5);
+			else 				data.top = new FormAttachment(top, 5);
+			data.left = new FormAttachment(0,5);
+			data.right = new FormAttachment(100,-5);
+			return data;
+		}
+		public void serverSelected(JBossServer server,
+				ServerAttributeHelper helper) {
+			this.server = server;
+			this.helper = helper;
+			timeoutServerSelected();
+		}
+		
+		protected void createTimeoutDurations() {
+			durations = new Composite(this, SWT.NONE);
+			durations.setLayout(new FormLayout());
+			
+			// add two textboxes, two labels
+			Label startTimeoutLabel, stopTimeoutLabel;
+			
+			startTimeoutLabel = new Label(durations, SWT.NONE);
+			stopTimeoutLabel = new Label(durations, SWT.NONE);
+			
+			stopSpinner = new Spinner(durations, SWT.BORDER);
+			startSpinner = new Spinner(durations, SWT.BORDER);
+			
+			FormData startTD = new FormData();
+			startTD.left = new FormAttachment(0,5);
+			startTD.top = new FormAttachment(0,7);
+			startTimeoutLabel.setLayoutData(startTD);
+			startTimeoutLabel.setText(Messages.PreferencePageStartTimeouts);
+			
+			FormData stopTD = new FormData();
+			stopTD.left = new FormAttachment(0,5);
+			stopTD.top = new FormAttachment(startSpinner,7);
+			stopTimeoutLabel.setLayoutData(stopTD);
+			stopTimeoutLabel.setText(Messages.PreferencePageStopTimeouts);
+			
+			durations.layout();
+			int startWidth = startTimeoutLabel.getSize().x;
+			int stopWidth = stopTimeoutLabel.getSize().x;
+			
+			Label widest = startWidth > stopWidth ? startTimeoutLabel : stopTimeoutLabel;
+			
+			FormData startD = new FormData();
+			startD.left = new FormAttachment(0,widest.getSize().x + widest.getLocation().x + 5);
+			startD.right = new FormAttachment(100, -5);
+			startD.top = new FormAttachment(0,5);
+			startSpinner.setLayoutData(startD);
+			
+			FormData stopD = new FormData();
+			stopD.left = new FormAttachment(0,widest.getSize().x + widest.getLocation().x + 5);
+			stopD.right = new FormAttachment(100, -5);
+			stopD.top = new FormAttachment(startSpinner,5);
+			stopSpinner.setLayoutData(stopD);
+			
+			
+			stopSpinner.setMinimum(0);
+			startSpinner.setMinimum(0);
+			stopSpinner.setIncrement(1);
+			startSpinner.setIncrement(1);
+			stopSpinner.setEnabled(false);
+			startSpinner.setEnabled(false);
+			
+		}
+		
+		protected void createTimeoutBehavior() {
+			behavior = new Composite(this, SWT.NONE);
+			behavior.setLayout(new FormLayout());
+			
+			Label uponTimeoutLabel = new Label(behavior, SWT.NONE);
+			abortOnTimeout = new Button(behavior, SWT.RADIO);
+			ignoreOnTimeout = new Button(behavior, SWT.RADIO);
+			
+			FormData utl = new FormData();
+			utl.left = new FormAttachment(0,5);
+			utl.right = new FormAttachment(100, -5);
+			utl.top = new FormAttachment(0,5);
+			uponTimeoutLabel.setLayoutData(utl);
+	
+			FormData b1D = new FormData();
+			b1D.left = new FormAttachment(0,15);
+			b1D.right = new FormAttachment(100, -5);
+			b1D.top = new FormAttachment(uponTimeoutLabel,5);
+			abortOnTimeout.setLayoutData(b1D);
+			
+			FormData b2D = new FormData();
+			b2D.left = new FormAttachment(0,15);
+			b2D.right = new FormAttachment(100, -5);
+			b2D.top = new FormAttachment(abortOnTimeout,5);
+			ignoreOnTimeout.setLayoutData(b2D);
+			
+			uponTimeoutLabel.setText(Messages.PreferencePageUponTimeout);
+			abortOnTimeout.setText(Messages.PreferencePageUponTimeoutAbort);
+			ignoreOnTimeout.setText(Messages.PreferencePageUponTimeoutIgnore);
+			abortOnTimeout.setEnabled(false);
+			ignoreOnTimeout.setEnabled(false);
+			
+		}
+		
+		protected void createPollerChoices() {
+			pollers = new Composite(this, SWT.NONE);
+			pollers.setLayout(new GridLayout(2, false));
+			
+			// create widgets
+			Label start, stop;
+			start = new Label(pollers, SWT.NONE);
+			startPollerCombo = new Combo(pollers, SWT.READ_ONLY);
+			stop = new Label(pollers, SWT.NONE);
+			stopPollerCombo = new Combo(pollers, SWT.READ_ONLY);
+			
+			start.setText("Startup Poller");
+			stop.setText("Shutdown Poller");
+			
+			// set items
+			startPollerCombo.setItems(startupTypesStrings);
+			stopPollerCombo.setItems(shutdownTypesStrings);
+			
+			startPollerCombo.setEnabled(false);
+			stopPollerCombo.setEnabled(false);
+		}
+		
+		private void addTimeoutListeners() {
+			startSpinner.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					if( helper != null )
+						helper.setAttribute(IServerPollingAttributes.START_TIMEOUT, startSpinner.getSelection() * 1000);
+				} 
+			});
+			stopSpinner.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					if( helper != null )
+						helper.setAttribute(IServerPollingAttributes.STOP_TIMEOUT, stopSpinner.getSelection() * 1000);
+				} 
+			});
+			
+			abortOnTimeout.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( helper != null )
+						helper.setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_ABORT);
+				} 
+			});
+			ignoreOnTimeout.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( helper != null )
+						helper.setAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
+				} 
+			});
+			startPollerCombo.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( helper != null ) 
+						helper.setAttribute(IServerPollingAttributes.STARTUP_POLLER_KEY, startupTypes[startPollerCombo.getSelectionIndex()].getId());
+				} 
+			});
+			stopPollerCombo.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( helper != null ) 
+						helper.setAttribute(IServerPollingAttributes.SHUTDOWN_POLLER_KEY, shutdownTypes[stopPollerCombo.getSelectionIndex()].getId());
+				}
+			});
+		}
+			
+		private void timeoutServerSelected() {
+			// Handle spinners 
+			startSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStartTimeout() / 1000);
+			stopSpinner.setMaximum(((ServerType)server.getServer().getServerType()).getStopTimeout() / 1000);
+			startSpinner.setSelection(getStartTimeout(helper));
+			stopSpinner.setSelection(getStopTimeout(helper));
+			
+			startSpinner.setEnabled(true);
+			stopSpinner.setEnabled(true);
+			abortOnTimeout.setEnabled(true);
+			ignoreOnTimeout.setEnabled(true);
+			
+			boolean currentVal = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
+			if( currentVal == IServerPollingAttributes.TIMEOUT_ABORT) {
+				abortOnTimeout.setSelection(true);
+				ignoreOnTimeout.setSelection(false);
+			} else {
+				abortOnTimeout.setSelection(false);
+				ignoreOnTimeout.setSelection(true);
+			}
+			
+			// poller
+			stopPollerCombo.setEnabled(true);
+			startPollerCombo.setEnabled(true);
+			String currentStartId = helper.getAttribute(IServerPollingAttributes.STARTUP_POLLER_KEY, IServerPollingAttributes.DEFAULT_POLLER);
+			String currentStopId = helper.getAttribute(IServerPollingAttributes.SHUTDOWN_POLLER_KEY, IServerPollingAttributes.DEFAULT_POLLER);
+			startPollerCombo.select(startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName()));
+			stopPollerCombo.select(stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName()));
+		}
+		
+		public int getStartTimeout(ServerAttributeHelper helper) {
+			int prop = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, -1);
+			int max = ((ServerType)helper.getServer().getServerType()).getStartTimeout();
+			
+			if( prop <= 0 || prop > max ) return max / 1000;
+			return prop / 1000;
+		}
+		public int getStopTimeout(ServerAttributeHelper helper) {
+			int prop = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, -1);
+			int max = ((ServerType)helper.getServer().getServerType()).getStopTimeout();
+			
+			if( prop <= 0 || prop > max ) return max / 1000;
+			return prop / 1000;
+		}
+	}
 }

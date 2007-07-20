@@ -36,22 +36,18 @@ import javax.naming.InitialContext;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.model.legacy.DescriptorModel;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
-public class TwiddlePoller implements IServerStatePoller {
+public class JMXPoller implements IServerStatePoller {
 
 	public static final String STATUS = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.status";
 
@@ -76,11 +72,10 @@ public class TwiddlePoller implements IServerStatePoller {
 		this.done = false;
 		this.server = server;
 		event = pt.getActiveEvent();
-		launchTwiddlePoller();
+		launchJMXPoller();
 	}
 
 	private class PollerRunnable implements Runnable {
-		private TwiddleLauncher launcher;
 		public void run() {
 			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
 			ClassLoader twiddleLoader = getClassLoader();
@@ -128,7 +123,6 @@ public class TwiddlePoller implements IServerStatePoller {
 			}
 			
 			Thread.currentThread().setContextClassLoader(currentLoader);
-
 		}
 		
 		protected void setCredentials() {
@@ -172,28 +166,12 @@ public class TwiddlePoller implements IServerStatePoller {
 			}
 			return null;
 		}
-		public void setCanceled() {
-			if( launcher != null ) {
-				launcher.setCanceled();
-			}
-		}
 	}
-	public void eventTwiddleExecuted() {
-		TwiddlePollerEvent tpe = new TwiddlePollerEvent(event, TYPE_RESULT, started, expectedState);
-		EventLogModel.markChanged(event);
-	}
-	public void eventAllProcessesTerminated() {
-		TwiddlePollerEvent tpe = new TwiddlePollerEvent(event, TYPE_TERMINATED, started, expectedState);
-		EventLogModel.markChanged(event);
-	}
-	
-	private void launchTwiddlePoller() {
+	private void launchJMXPoller() {
 		PollerRunnable run = new PollerRunnable();
-		Thread t = new Thread(run, "Twiddle Poller");
+		Thread t = new Thread(run, "JMX Poller");
 		t.start();
 	}
-	
-	
 	public void cancel(int type) {
 		canceled = true;
 	}
@@ -222,24 +200,12 @@ public class TwiddlePoller implements IServerStatePoller {
 		return done;
 	}
 	
-	
-	public class TwiddlePollerEvent extends EventLogTreeItem {
-		public TwiddlePollerEvent(SimpleTreeItem parent, String type, int status, boolean expectedState) {
+	public class JMXPollerEvent extends EventLogTreeItem {
+		public JMXPollerEvent(SimpleTreeItem parent, String type, int status, boolean expectedState) {
 			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, type);
 			setProperty(PollThread.EXPECTED_STATE, new Boolean(expectedState));
 			setProperty(STATUS, new Integer(status));
 			setProperty(DATE, new Long(new Date().getTime()));
 		}
 	}
-
-	public boolean supportsShutdown() {
-		return true;
-	}
-
-	public boolean supportsStartup() {
-		return true;
-	}
-	
-	
-
 }

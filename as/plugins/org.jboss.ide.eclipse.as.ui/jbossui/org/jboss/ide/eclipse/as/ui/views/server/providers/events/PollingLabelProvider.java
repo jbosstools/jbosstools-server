@@ -37,7 +37,7 @@ import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread.PollThreadEvent;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
@@ -59,8 +59,8 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(PollThread.POLL_THREAD_TIMEOUT);
 		supported.add(PollThread.POLL_THREAD_EXCEPTION);
 		
-		supported.add(TwiddlePoller.TYPE_TERMINATED);
-		supported.add(TwiddlePoller.TYPE_RESULT);
+		supported.add(JMXPoller.TYPE_TERMINATED);
+		supported.add(JMXPoller.TYPE_RESULT);
 		
 		supported.add(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY);
 	}
@@ -84,15 +84,15 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 				return getErrorImage();
 		}
 		
-		if( element.getSpecificType().equals(TwiddlePoller.TYPE_TERMINATED)) return getErrorImage();
-		if( element.getSpecificType().equals(TwiddlePoller.TYPE_RESULT)) {
-			int state = ((Integer)element.getProperty(TwiddlePoller.STATUS)).intValue();
+		if( element.getSpecificType().equals(JMXPoller.TYPE_TERMINATED)) return getErrorImage();
+		if( element.getSpecificType().equals(JMXPoller.TYPE_RESULT)) {
+			int state = ((Integer)element.getProperty(JMXPoller.STATUS)).intValue();
 			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
-			if( state == TwiddlePoller.STATE_STOPPED) 
+			if( state == JMXPoller.STATE_STOPPED) 
 				return getStoppedImage();
-			if( state == TwiddlePoller.STATE_STARTED)
+			if( state == JMXPoller.STATE_STARTED)
 				return getStartedImage();
-			if( state == TwiddlePoller.STATE_TRANSITION) {
+			if( state == JMXPoller.STATE_TRANSITION) {
 				if( expectedState == IServerStatePoller.SERVER_UP ) 
 					return getStartingImage();
 				return getStoppingImage();
@@ -119,15 +119,15 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.FAILURE)) return expectedString + " failed";
 		}
 		
-		if( element.getSpecificType().equals(TwiddlePoller.TYPE_TERMINATED)) return "All processes have been terminated";
-		if( element.getSpecificType().equals(TwiddlePoller.TYPE_RESULT)) {
-			int state = ((Integer)element.getProperty(TwiddlePoller.STATUS)).intValue();
+		if( element.getSpecificType().equals(JMXPoller.TYPE_TERMINATED)) return "All processes have been terminated";
+		if( element.getSpecificType().equals(JMXPoller.TYPE_RESULT)) {
+			int state = ((Integer)element.getProperty(JMXPoller.STATUS)).intValue();
 			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
-			if( state == TwiddlePoller.STATE_STOPPED) 
+			if( state == JMXPoller.STATE_STOPPED) 
 				return "The server is down.";
-			if( state == TwiddlePoller.STATE_STARTED)
+			if( state == JMXPoller.STATE_STARTED)
 				return "The server is up.";
-			if( state == TwiddlePoller.STATE_TRANSITION) {
+			if( state == JMXPoller.STATE_TRANSITION) {
 				if( expectedState == IServerStatePoller.SERVER_UP ) 
 					return "The server is still starting";
 				return "The server is still stopping.";
@@ -168,13 +168,13 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 	protected void loadPropertyMap() {
 		// property names and their readable forms
 		propertyToMessageMap.put(EventLogTreeItem.DATE, "Time");
-		propertyToMessageMap.put(TwiddlePoller.STATUS, "Status");
+		propertyToMessageMap.put(JMXPoller.STATUS, "Status");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
 		
 		// now values and their readable forms
-		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + 0, "Server is Down");
-		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + 1, "Server is Up");
-		propertyToMessageMap.put(TwiddlePoller.STATUS + DELIMITER + -1, "Server is in transition");
+		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 0, "Server is Down");
+		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 1, "Server is Up");
+		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + -1, "Server is in transition");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "true", "Up");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "false", "Down");
 	}

@@ -290,11 +290,22 @@
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.runtime.server.polling.TimeoutPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
-            name="Timeout Poller"/>
+            name="Timeout Poller"
+            supportsStartup="true"
+            supportsShutdown="true"/>
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller"
-            id="org.jboss.ide.eclipse.as.core.runtime.server.twiddlepoller"
-            name="Twiddle Poller"/>
+            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
+            name="JMX Poller"
+            supportsStartup="true"
+            supportsShutdown="true"/>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.ProcessTerminatedPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
+            name="Process Terminated Poller"
+            supportsShutdown="true"
+            supportsStartup="false">
+      </serverPoller>
    </extension>
    
    

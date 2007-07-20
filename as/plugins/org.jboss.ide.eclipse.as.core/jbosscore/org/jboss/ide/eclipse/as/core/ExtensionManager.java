@@ -23,12 +23,15 @@ package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
+import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.ServerStatePollerType;
 
 /**
  *
@@ -70,6 +73,47 @@ public class ExtensionManager {
 				ce.printStackTrace();
 			}
 		}
+	}
+	
+	private HashMap pollers;
+	public void loadPollers() {
+		pollers = new HashMap();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers");
+		for( int i = 0; i < cf.length; i++ ) {
+			pollers.put(cf[i].getAttribute("id"), new ServerStatePollerType(cf[i]));
+		}
+	}
+	public ServerStatePollerType getPollerType(String id) {
+		if( pollers == null ) 
+			loadPollers();
+		return (ServerStatePollerType)pollers.get(id);
+	}
+	public ServerStatePollerType[] getStartupPollers() {
+		if( pollers == null ) 
+			loadPollers();
+		ArrayList list = new ArrayList();
+		Iterator i = pollers.values().iterator();
+		ServerStatePollerType type;
+		while(i.hasNext()) {
+			type = (ServerStatePollerType)i.next();
+			if( type.supportsStartup())
+				list.add(type);
+		}
+		return (ServerStatePollerType[]) list.toArray(new ServerStatePollerType[list.size()]);
+	}
+	public ServerStatePollerType[] getShutdownPollers() {
+		if( pollers == null ) 
+			loadPollers();
+		ArrayList list = new ArrayList();
+		Iterator i = pollers.values().iterator();
+		ServerStatePollerType type;
+		while(i.hasNext()) {
+			type = (ServerStatePollerType)i.next();
+			if( type.supportsShutdown() )
+				list.add(type);
+		}
+		return (ServerStatePollerType[]) list.toArray(new ServerStatePollerType[list.size()]);
 	}
 
 }

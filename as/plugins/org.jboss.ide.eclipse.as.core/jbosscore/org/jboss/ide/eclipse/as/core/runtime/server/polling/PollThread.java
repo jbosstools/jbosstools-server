@@ -24,7 +24,9 @@ package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.internal.ServerType;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
@@ -34,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 /**
@@ -63,13 +66,22 @@ public class PollThread extends Thread {
 	
 	private PollThreadEvent activeEvent;
 	
-	public PollThread(String name, IServerStatePoller poller, boolean expectedState, JBossServerBehavior behavior) {
+	public PollThread(String name, boolean expectedState, JBossServerBehavior behavior) {
 		super(name);
 		this.expectedState = expectedState;
-		this.poller = poller;
 		this.abort = false;
 		this.behavior = behavior;
 		eventRoot = EventLogModel.getModel(behavior.getServer()).getRoot();
+		
+		poller = discoverPoller(behavior, expectedState);
+	}
+	
+	protected IServerStatePoller discoverPoller(JBossServerBehavior behavior, boolean expectedState) {
+		JBossServer s = ServerConverter.getJBossServer(behavior.getServer());
+		ServerAttributeHelper helper = s.getAttributeHelper();
+		String key = expectedState == IServerStatePoller.SERVER_UP ? IServerPollingAttributes.STARTUP_POLLER_KEY : IServerPollingAttributes.SHUTDOWN_POLLER_KEY;
+		String pollerId = helper.getAttribute(key, IServerPollingAttributes.DEFAULT_POLLER);
+		return ExtensionManager.getDefault().getPollerType(pollerId).createPoller();
 	}
 	
 	public void cancel() {
@@ -155,8 +167,9 @@ public class PollThread extends Thread {
 			} else {
 				if( currentState == IServerStatePoller.SERVER_UP ) 
 					behavior.setServerStarted();
-				else
-					behavior.setServerStopped();
+				else {
+					behavior.stop(true);
+				}
 				if( finalAlert ) alertEventLogSuccess(currentState);
 			}
 		}

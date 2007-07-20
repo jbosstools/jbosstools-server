@@ -15,7 +15,6 @@
          <sequence>
             <element ref="serverPoller" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
-      
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -67,6 +66,20 @@
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.jboss.ide.eclipse.as.core.runtime.IServerStatePoller"/>
                </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="supportsStartup" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="supportsShutdown" type="boolean" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

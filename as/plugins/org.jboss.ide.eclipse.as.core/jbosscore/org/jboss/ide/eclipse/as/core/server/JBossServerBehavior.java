@@ -36,7 +36,7 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.TwiddlePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 public class JBossServerBehavior extends DeployableServerBehavior {
@@ -145,13 +145,15 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
+	public IProcess getProcess() {
+		return process;
+	}
 	
-
 	protected void pollServer(final boolean expectedState) {
 		if( this.pollThread != null ) {
 			pollThread.cancel();
 		}
-		this.pollThread = new PollThread("Server Poller", new TwiddlePoller(), expectedState, this);
+		this.pollThread = new PollThread("Server Poller", expectedState, this);
 		pollThread.start();
 	}
 	
