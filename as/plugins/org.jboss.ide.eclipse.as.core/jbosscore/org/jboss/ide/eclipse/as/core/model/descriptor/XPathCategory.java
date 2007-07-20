@@ -33,6 +33,7 @@ public class XPathCategory {
 	}
 
 	public XPathQuery getQuery(String name) {
+		getQueries();
 		return (XPathQuery)children.get(name);
 	}
 	public void addQuery(XPathQuery query) {
