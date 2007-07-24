@@ -167,9 +167,10 @@ public class WarArchiveType extends J2EEArchiveType {
 			// add lib folder so we can add libraries
 			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
 			IArchiveFolder lib = addFolder(project, webinf, LIB);
-			
-			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
+			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 
+			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
+			addClassesFileset(project, classes);
 			
 			// package each child and add to lib folder
 			IWebModule webModule = (IWebModule)mod.loadAdapter(IWebModule.class, monitor);

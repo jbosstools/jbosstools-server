@@ -112,12 +112,6 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			jar.setExploded(false);
 		}
 		jar.setName(packageName);
-			
-		IArchiveFileSet classes = ArchiveNodeFactory.createFileset();
-		classes.setIncludesPattern("**/*");
-		classes.setSourcePath(sourceContainer.getFullPath());
-		classes.setInWorkspace(true);
-		jar.addChild(classes);
 		return jar;
 	}
 
