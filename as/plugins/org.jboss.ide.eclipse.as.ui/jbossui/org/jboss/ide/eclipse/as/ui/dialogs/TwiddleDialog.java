@@ -1,14 +1,11 @@
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
-import java.net.URL;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -21,26 +18,21 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.browser.IWebBrowser;
-import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.events.IHyperlinkListener;
-import org.eclipse.ui.forms.widgets.Hyperlink;
+import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher.ProcessData;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
-public class TwiddleDialog extends Dialog {
+public class TwiddleDialog extends TrayDialog {
 
 	private static final int EXECUTE_ID = 2042;
 	private Text query, results;
 	private Label queryLabel;
 	private IServer server = null;
 	private Composite parentComposite;
-	private Hyperlink twiddleTutorialLink;
 	
 	
 	public TwiddleDialog(Shell parentShell, Object selection) {
@@ -128,41 +120,9 @@ public class TwiddleDialog extends Dialog {
 		queryLabelData.top = new FormAttachment(0,5);
 		queryLabel.setLayoutData(queryLabelData);
 
-		
-		twiddleTutorialLink = new Hyperlink(main, SWT.NONE);
-		twiddleTutorialLink.setText(Messages.TwiddleDialogTutorial);
-		twiddleTutorialLink.setForeground(new Color(null, 0, 0, 255));
-		twiddleTutorialLink.setUnderlined(true);
-		FormData twiddleTutorialData = new FormData();
-		twiddleTutorialData.right = new FormAttachment(100, -5);
-		twiddleTutorialData.top = new FormAttachment(0,5);
-		twiddleTutorialLink.setLayoutData(twiddleTutorialData);
+		Workbench.getInstance().getHelpSystem().setHelp(getShell(),
+				"org.jboss.ide.eclipse.as.ui.twiddle_usage_tutorial_help");
 
-		
-		twiddleTutorialLink.addHyperlinkListener(new IHyperlinkListener() {
-
-			public void linkActivated(HyperlinkEvent e) {
-				String url = "http://docs.jboss.org/jbossas/jboss4guide/r1/html/ch2.chapter.html#d0e4253";
-				IWorkbenchBrowserSupport browserSupport = ServerUIPlugin.getInstance().getWorkbench().getBrowserSupport();
-				try {
-					IWebBrowser browser = browserSupport.createBrowser(IWorkbenchBrowserSupport.LOCATION_BAR | IWorkbenchBrowserSupport.NAVIGATION_BAR, null, null, null);
-					browser.openURL(new URL(url));
-					close();
-				} catch( Exception ee ) {
-					
-				}
-			}
-
-			public void linkEntered(HyperlinkEvent e) {
-			}
-
-			public void linkExited(HyperlinkEvent e) {
-			} 
-			
-		} );
-		
-		
-		
 		query = new Text(main, SWT.BORDER);
 		FormData queryData = new FormData();
 		queryData.top = new FormAttachment(queryLabel, 5);

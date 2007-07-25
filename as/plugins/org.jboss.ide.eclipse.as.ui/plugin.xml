@@ -302,5 +302,11 @@
             id="org.jboss.ide.eclipse.packages.ui.newEARAction"
             label="EAR"/>
    </extension>
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="InlineDocs/Twiddle/twiddleContext.xml">
+      </contexts>
+   </extension>
 
 </plugin>
