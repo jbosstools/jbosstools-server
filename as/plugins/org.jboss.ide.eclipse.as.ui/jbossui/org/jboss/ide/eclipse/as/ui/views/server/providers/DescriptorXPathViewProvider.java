@@ -294,11 +294,14 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				try {
 					Object o = getPropertySelection();
 					Path p = null;
+					if( o instanceof XPathQuery && ((XPathQuery)o).getResults().length == 1 ) {
+						o = (XPathFileResult)   ((XPathQuery)o).getResults()[0];
+					}
 					if( o instanceof XPathFileResult ) {
 						p = new Path(((XPathFileResult)o).getFileLocation());
 					} else if( o instanceof XPathResultNode ) {
 						p = new Path(((XPathResultNode)o).getFileLocation());
-					}
+					} 
 					if( p != null ) {
 						
 
