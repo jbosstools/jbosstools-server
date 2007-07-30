@@ -84,13 +84,14 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 		ArrayList mods = (ArrayList)projectToModules.get(projectLoc);
 		IModule mod;
 		IArchive arc;
-		if (mods != null)
-		{
+		if (mods != null) {
 			for( Iterator i = mods.iterator(); i.hasNext();) {
 				mod = (IModule)i.next();
-				arc = ((PackagedModuleDelegate)moduleDelegates.get(mod)).getPackage();
-				packageToModule.remove(arc);
-				moduleDelegates.remove(mod);
+				if( moduleDelegates.get(mod) != null ) {
+					arc = ((PackagedModuleDelegate)moduleDelegates.get(mod)).getPackage();
+					packageToModule.remove(arc);
+					moduleDelegates.remove(mod);
+				}
 			}
 		}
 		createModules(findProject(projectLoc));
