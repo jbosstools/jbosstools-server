@@ -92,9 +92,10 @@ public class DescriptorXPathPropertySheetPage implements IPropertySheetPage {
 			menu.add(provider.editXPathAction);
 			menu.add(provider.deleteXPathAction);
 		}
-		if( selected != null && 
-				(selected instanceof XPathResultNode || selected instanceof XPathFileResult )) 
+		if( selected != null && (selected instanceof XPathResultNode || selected instanceof XPathFileResult ) || 
+			(selected instanceof XPathQuery && ((XPathQuery)selected).getResults().length == 1)) {
 			menu.add(provider.editFileAction);
+		}
 	}
 
 	
@@ -301,16 +302,8 @@ public class DescriptorXPathPropertySheetPage implements IPropertySheetPage {
 	
 	protected void createXPathComposite(Composite book) {
 		wrapper = new Composite(book, SWT.NONE);
+		wrapper.setLayout(new FillLayout());
 		int groupWidth = 500;
-		
-		FormData groupData = new FormData();
-		groupData.right = new FormAttachment(100, -5);
-		groupData.left = new FormAttachment(0, 5);
-		groupData.top = new FormAttachment(0,5);
-		groupData.bottom = new FormAttachment(100, -5);
-		wrapper.setLayoutData(groupData);
-		wrapper.setLayout(new FormLayout());
-		
 		final Tree xpathTree = new Tree(wrapper, SWT.BORDER | SWT.FULL_SELECTION);
 		this.xpathTree = xpathTree;
 
