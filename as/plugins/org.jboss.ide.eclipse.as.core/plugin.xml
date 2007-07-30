@@ -419,7 +419,7 @@
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
         runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40, org.jboss.ide.eclipse.as.runtime.42"
-        class="org.jboss.ide.eclipse.as.core.runtime.internal.ProjectRuntimeClasspathProvider"/>
+        class="org.jboss.ide.eclipse.as.core.runtime.internal.ClientAllRuntimeClasspathProvider"/>
    </extension>
    <extension
          point="org.eclipse.wst.server.core.moduleTypes">

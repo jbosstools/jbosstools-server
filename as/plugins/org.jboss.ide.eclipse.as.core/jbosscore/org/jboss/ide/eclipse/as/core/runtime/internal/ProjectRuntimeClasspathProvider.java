@@ -40,6 +40,10 @@ import org.jboss.ide.eclipse.as.core.runtime.internal.WebtoolsProjectJBossClassp
 public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 	private IRuntimeComponent rc;
 
+	public ProjectRuntimeClasspathProvider() {
+		
+	}
+	
 	public ProjectRuntimeClasspathProvider(final IRuntimeComponent rc) {
 		this.rc = rc;
 	}
