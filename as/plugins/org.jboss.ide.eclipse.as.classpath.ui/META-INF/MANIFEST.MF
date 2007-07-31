@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ui Plug-in
+Bundle-SymbolicName: org.jboss.ide.eclipse.as.classpath.ui;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.jboss.ide.eclipse.as.classpath.core,
+ org.jboss.ide.eclipse.as.core,
+ org.eclipse.wst.server.core,
+ org.eclipse.wst.server.ui,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core
+Eclipse-LazyStart: true

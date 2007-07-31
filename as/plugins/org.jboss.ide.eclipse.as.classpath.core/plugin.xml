@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"/>
+   </extension>
+</plugin>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.jdt.ui.classpathContainerPage">
+      <classpathContainerPage
+            class="org.jboss.ide.eclipse.as.classpath.ui.ejb3.JBossEJB3LibrariesPage"
+            id="org.jboss.ide.eclipse.as.classpath.ui.ejb3.containerPage"
+            name="JBoss EJB3 Libraries"/>
+   </extension>
+</plugin>
