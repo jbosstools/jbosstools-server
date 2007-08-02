@@ -83,10 +83,11 @@ public abstract class JBossServerViewExtension {
 			public void run() {
 				if( isEnabled() ) {
 					try {
-						if( o == null )
-							JBossServerView.getDefault().getServerFrame().getViewer().refresh(provider);
-						else
-							JBossServerView.getDefault().getServerFrame().getViewer().refresh(new ContentWrapper(o, provider));
+						if( o == null ) {
+							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(provider);
+						} else {
+							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(new ContentWrapper(o, provider));
+						}
 					} catch(Exception e) {
 					}
 				}
