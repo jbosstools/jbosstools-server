@@ -58,6 +58,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(PollThread.POLL_THREAD_ABORTED);
 		supported.add(PollThread.POLL_THREAD_TIMEOUT);
 		supported.add(PollThread.POLL_THREAD_EXCEPTION);
+		supported.add(PollThread.POLLER_NOT_FOUND);
 		
 		supported.add(JMXPoller.TYPE_TERMINATED);
 		supported.add(JMXPoller.TYPE_RESULT);
@@ -75,6 +76,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return getErrorImage();
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return getErrorImage();
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_EXCEPTION)) return getErrorImage();
+			if( element.getSpecificType().equals(PollThread.POLLER_NOT_FOUND)) return getErrorImage();
 			if( element.getSpecificType().equals(PollThread.SUCCESS)) {
 				if( expected == IServerStatePoller.SERVER_UP)
 					return getStartedImage();
@@ -117,6 +119,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_EXCEPTION)) return "Failure: " + element.getProperty(PollThread.POLL_THREAD_EXCEPTION_MESSAGE);
 			if( element.getSpecificType().equals(PollThread.SUCCESS)) return expectedString + " succeeded";
 			if( element.getSpecificType().equals(PollThread.FAILURE)) return expectedString + " failed";
+			if( element.getSpecificType().equals(PollThread.POLLER_NOT_FOUND)) return expectedString + " failed. Poller not found";
 		}
 		
 		if( element.getSpecificType().equals(JMXPoller.TYPE_TERMINATED)) return "All processes have been terminated";
