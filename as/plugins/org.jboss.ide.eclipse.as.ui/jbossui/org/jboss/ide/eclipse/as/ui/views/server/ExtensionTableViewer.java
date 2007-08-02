@@ -223,6 +223,7 @@ public class ExtensionTableViewer extends TreeViewer {
 		}
 
 		public boolean hasChildren(Object element) {
+			if( element instanceof ServerViewProvider ) return true;
 			return getChildren(element).length > 0 ? true : false;
 		}
 
