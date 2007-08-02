@@ -99,7 +99,8 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				DeployableServerBehavior behavior = (DeployableServerBehavior)
 					contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
-				behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+				if( behavior != null ) 
+					behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
 			}
 		};
 		publishModuleAction.setText(Messages.PublishModuleText);
