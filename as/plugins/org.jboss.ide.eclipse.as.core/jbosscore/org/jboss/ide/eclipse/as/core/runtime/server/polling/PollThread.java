@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
@@ -51,6 +52,7 @@ public class PollThread extends Thread {
 	public static final String SERVER_STOPPING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.stopping";
 	public static final String FAILURE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.failure";
 	public static final String SUCCESS = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.success";
+	public static final String POLLER_NOT_FOUND = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.pollerNotFound";
 	public static final String POLL_THREAD_ABORTED = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.aborted";
 	public static final String POLL_THREAD_TIMEOUT = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.timeout";
 	public static final String EXPECTED_STATE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThreadEvent.expectedState";
@@ -81,7 +83,8 @@ public class PollThread extends Thread {
 		ServerAttributeHelper helper = s.getAttributeHelper();
 		String key = expectedState == IServerStatePoller.SERVER_UP ? IServerPollingAttributes.STARTUP_POLLER_KEY : IServerPollingAttributes.SHUTDOWN_POLLER_KEY;
 		String pollerId = helper.getAttribute(key, IServerPollingAttributes.DEFAULT_POLLER);
-		return ExtensionManager.getDefault().getPollerType(pollerId).createPoller();
+		ServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
+		return type == null ? null : type.createPoller();
 	}
 	
 	public void cancel() {
@@ -106,12 +109,22 @@ public class PollThread extends Thread {
 	
 	
 	public void run() {
+		// Poller not found
+		if( poller == null ) {
+			alertEventLogStarting();
+			alertPollerNotFound();
+			alertBehavior(getTimeoutBehavior(), false);
+			return;
+		}
+		
 		int maxWait = getTimeout();
 		alertEventLogStarting();
 		
 		long startTime = new Date().getTime();
 		boolean done = false;
 		poller.beginPolling(getServer(), expectedState, this);
+		
+		// begin the loop; ask the poller every so often
 		while( !abort && !done && new Date().getTime() < startTime + maxWait ) {
 			try {
 				Thread.sleep(100);
@@ -129,7 +142,9 @@ public class PollThread extends Thread {
 				return;
 			}
 		}
+		
 		boolean currentState = !expectedState;
+		// we stopped. Did we abort?
 		if( abort ) {
 			poller.cancel(IServerStatePoller.CANCEL);
 			poller.cleanup();
@@ -159,22 +174,25 @@ public class PollThread extends Thread {
 				fireTimeoutEvent();
 				finalAlert = false;
 			}
-			
-			if( currentState != expectedState ) {
-				// it didnt work... cancel all processes! force stop
-				behavior.stop(true);
-				if( finalAlert ) alertEventLogFailure();
-			} else {
-				if( currentState == IServerStatePoller.SERVER_UP ) 
-					behavior.setServerStarted();
-				else {
-					behavior.stop(true);
-				}
-				if( finalAlert ) alertEventLogSuccess(currentState);
-			}
+			alertBehavior(currentState, finalAlert);
 		}
 	}
-	
+
+	protected void alertBehavior(boolean currentState, boolean finalAlert) {
+		if( currentState != expectedState ) {
+			// it didnt work... cancel all processes! force stop
+			behavior.stop(true);
+			if( finalAlert ) alertEventLogFailure();
+		} else {
+			if( currentState == IServerStatePoller.SERVER_UP ) 
+				behavior.setServerStarted();
+			else {
+				behavior.stop(true);
+			}
+			if( finalAlert ) alertEventLogSuccess(currentState);
+		}
+	}
+
 	protected boolean getTimeoutBehavior() {
 		// timeout has been reached, so let the user's preferences override
 		JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
@@ -236,6 +254,10 @@ public class PollThread extends Thread {
 	}
 	protected void alertEventLogSuccess(boolean currentState) {
 		PollThreadEvent event = new PollThreadEvent(activeEvent, SUCCESS, expectedState);
+		EventLogModel.markChanged(eventRoot);
+	}
+	protected void alertPollerNotFound() {
+		PollThreadEvent event = new PollThreadEvent(activeEvent, POLLER_NOT_FOUND, expectedState);
 		EventLogModel.markChanged(activeEvent);
 	}
 
