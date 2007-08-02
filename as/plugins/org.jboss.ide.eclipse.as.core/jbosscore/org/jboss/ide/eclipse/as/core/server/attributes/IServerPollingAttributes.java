@@ -28,7 +28,7 @@ public interface IServerPollingAttributes {
 	public static final String TIMEOUT_BEHAVIOR = "org.jboss.ide.eclipse.as.core.server.attributes.timeoutBehavior";
 	public static final String STARTUP_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.startupPollerKey";
 	public static final String SHUTDOWN_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.shutdownPollerKey";
-	public static final String DEFAULT_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.twiddlepoller";
+	public static final String DEFAULT_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller";
 	public static final boolean TIMEOUT_ABORT = true;
 	public static final boolean TIMEOUT_IGNORE = false;
 
