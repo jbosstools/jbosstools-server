@@ -82,7 +82,9 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		// just terminate the process.
 		try {
 			if( process != null ) 
-				process.terminate();
+				try {
+					process.terminate();
+				} catch( Exception e ) {}
 			process = null;
 			setServerStopped();
 			if( addEvent ) {
