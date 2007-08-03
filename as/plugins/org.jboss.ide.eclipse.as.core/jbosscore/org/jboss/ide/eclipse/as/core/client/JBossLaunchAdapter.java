@@ -83,7 +83,7 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 						path = path.substring(1);
 					url = new URL(url, path);
 				} else
-					url = new URL(url, "servlet/" + servlet.getServletClassName()); //$NON-NLS-1$
+					url = new URL(url, servlet.getName()); //$NON-NLS-1$
 			} else if (moduleObject instanceof WebResource) {
 				WebResource resource = (WebResource) moduleObject;
 				String path = resource.getPath().toString();
