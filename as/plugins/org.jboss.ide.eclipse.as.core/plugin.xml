@@ -82,7 +82,7 @@
             vendor="%providerName"
             class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss32ServerRuntime"
             description="%jboss.version.32.description"
-            name="JBoss 3.2 Server Adapter Runtime"
+            name="JBoss 3.2 Runtime"
             id="org.jboss.ide.eclipse.as.runtime.32"
             version="3.2">
           <moduleType
@@ -103,7 +103,7 @@
              vendor="%providerName"
              class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss40ServerRuntime"
              description="%jboss.version.40.description"
-             name="JBoss 4.0 Server Adapter Runtime"
+             name="JBoss 4.0 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.40"
              version="4.0">
           <moduleType
@@ -123,7 +123,7 @@
              vendor="%providerName"
              class="org.jboss.ide.eclipse.as.core.runtime.server.JBoss42ServerRuntime"
              description="%jboss.version.42.description"
-             name="JBoss 4.2 Server Adapter Runtime"
+             name="JBoss 4.2 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.42"
              version="4.2">
           <moduleType
@@ -146,7 +146,7 @@
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerRuntime"
             description="A runtime provided to allow a deploy-only server the ability to deploy certain project types."
             id="org.jboss.ide.eclipse.as.runtime.stripped"
-            name="JBoss Deploy-only Server Runtime"
+            name="JBoss Deploy-only"
             vendor="%providerName"
             version="1.0">
           <moduleType
