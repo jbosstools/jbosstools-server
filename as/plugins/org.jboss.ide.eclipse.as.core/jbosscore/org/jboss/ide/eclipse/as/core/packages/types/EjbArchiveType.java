@@ -40,8 +40,7 @@ public class EjbArchiveType extends J2EEArchiveType {
 		if( mod == null ) {
 			
 		} else {
-			if( mod.getModuleType().getId().equals("jst.ejb")
-					|| mod.getModuleType().getId().equals("jbide.ejb30")) {
+			if( mod.getModuleType().getId().equals("jst.ejb") ) {
 				try {
 					IJavaProject proj = JavaCore.create(project);
 					IPath outputLoc = proj.getOutputLocation();

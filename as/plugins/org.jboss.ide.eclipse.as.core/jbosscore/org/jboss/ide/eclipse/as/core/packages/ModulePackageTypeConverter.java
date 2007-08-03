@@ -39,8 +39,6 @@ public class ModulePackageTypeConverter {
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
 		} else if("jst.ear".equals(modType)) {
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID);
-		} else if("jbide.ejb30".equals(modType)) {
-			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
 		} else if("jst.ejb".equals(modType)) {
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
 		}

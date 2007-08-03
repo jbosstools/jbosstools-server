@@ -116,9 +116,6 @@
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
           <moduleType
-                types="jbide.ejb30"
-                versions="1.0"/>
-          <moduleType
                 types="jboss.package"
                 versions="1.0"/>
       </runtimeType>
@@ -138,9 +135,6 @@
           <moduleType
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4, 5.0"/>
-          <moduleType
-                types="jbide.ejb30"
-                versions="1.0"/>
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
@@ -164,9 +158,6 @@
           <moduleType
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
-          <moduleType
-                types="jbide.ejb30"
-                versions="1.0"/>
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
@@ -344,9 +335,6 @@
        <facet
              id="jst.appclient"
              version="1.2,1.3,1.4"/>
-       <facet
-             id="jbide.ejb30"
-             version="1.0"/>
      </supported>
 
       <supported>
@@ -371,9 +359,6 @@
        <facet
              id="jst.appclient"
              version="1.2,1.3,1.4"/>
-       <facet
-             id="jbide.ejb30"
-             version="1.0"/>
      </supported>
 
      <adapter>

@@ -100,8 +100,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	protected boolean isJstModule(IModule mod) {
 		String type = mod.getModuleType().getId();
 		if( type.equals("jst.ejb") || type.equals("jst.client") 
-				|| type.equals("jst.web") || type.equals("jst.ear")
-				|| type.equals("jbide.ejb30"))
+				|| type.equals("jst.web") || type.equals("jst.ear"))
 			return true;
 		return false;
 	}

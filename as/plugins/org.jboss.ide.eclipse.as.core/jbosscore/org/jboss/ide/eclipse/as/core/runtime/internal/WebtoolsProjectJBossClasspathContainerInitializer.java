@@ -47,7 +47,6 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 	private static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet("jst.web");
 	private static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet("jst.ejb");
 	private static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet("jst.ear");
-	private static final IProjectFacet JBOSS_EJB_FACET = ProjectFacetsManager.getProjectFacet("jbide.ejb30");
 	private static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet("jst.utility");
 	private static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet("jst.connector");
 	private static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet("jst.appclient");
@@ -144,8 +143,6 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		
 		protected boolean isEjb30(String facetId, String facetVersion) {
 			if( facetId.equals(EJB_FACET.getId()) && facetVersion.equals("3.0")) 
-				return true;
-			if( facetId.equals(JBOSS_EJB_FACET.getId())) 
 				return true;
 			return false;
 		}
