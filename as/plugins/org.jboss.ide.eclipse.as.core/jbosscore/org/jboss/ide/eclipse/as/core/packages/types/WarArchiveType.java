@@ -69,8 +69,6 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {	
 		IModule mod = getModule(project.getName());
-//		topLevel.setDestinationPath(new Path(project.getName()));
-//		topLevel.setInWorkspace(true);
 		IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
 		IArchiveFolder lib = addFolder(project, webinf, LIB);
 		IArchiveFolder classes = addFolder(project, webinf, CLASSES);
@@ -169,7 +167,8 @@ public class WarArchiveType extends J2EEArchiveType {
 			IArchiveFolder lib = addFolder(project, webinf, LIB);
 			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 
-			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
+//			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
+			addWebContentFileset(project, topLevel);
 			addClassesFileset(project, classes);
 			
 			// package each child and add to lib folder
