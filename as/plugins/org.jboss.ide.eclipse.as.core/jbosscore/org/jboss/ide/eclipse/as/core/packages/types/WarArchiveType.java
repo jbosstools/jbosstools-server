@@ -22,18 +22,23 @@
 package org.jboss.ide.eclipse.as.core.packages.types;
 
 import org.apache.tools.ant.DirectoryScanner;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.server.core.IWebModule;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
@@ -167,8 +172,10 @@ public class WarArchiveType extends J2EEArchiveType {
 			IArchiveFolder lib = addFolder(project, webinf, LIB);
 			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 
-//			addFileset(project, topLevel, new Path(project.getName()).append(WEBCONTENT).toOSString(), null);
-			addWebContentFileset(project, topLevel);
+			
+			IVirtualComponent vc = ComponentCore.createComponent(project);
+			IPath webContentPath = vc.getRootFolder().getUnderlyingFolder().getLocation();
+			addFileset(project, topLevel, webContentPath.toOSString(), "**/*");
 			addClassesFileset(project, classes);
 			
 			// package each child and add to lib folder
