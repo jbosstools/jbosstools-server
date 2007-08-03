@@ -160,6 +160,7 @@ public class JstPublisher extends PackagesPublisher {
     		IArchive topLevel = type.createDefaultConfiguration(module.getProject().getName(), monitor);
     		topLevel.setDestinationPath(new Path(deployDir));
     		topLevel.setInWorkspace(false);
+    		topLevel.setExploded(true);
     		return topLevel;
 		} 
 		return null;
