@@ -64,12 +64,13 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * @author Stryker
  */
-public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment {
+public class JBossRuntimeWizardFragment extends WizardFragment {
 	
 	private final static int NAME_CHANGED = 1;
 	private final static int HOME_CHANGED = 2;
@@ -127,6 +128,16 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		handle.setTitle(Messages.createRuntimeWizardTitle);
 		handle.setImageDescriptor(getImageDescriptor());
 		return main;
+	}
+	
+	protected ImageDescriptor getImageDescriptor() {
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String id = rt.getRuntimeType().getId();
+		String imageKey = "";
+		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
+		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 
 	private void fillWidgets() {
@@ -628,13 +639,9 @@ public abstract class AbstractJBossRuntimeWizardFragment extends WizardFragment 
 		return s == null ? true : false;
 	}
 
-	protected abstract ImageDescriptor getImageDescriptor();
-
 	public boolean hasComposite() {
 		return true;
 	}
-
-
 	
 	private IRuntime getRuntime(String runtimeName) {
 		if( runtimeName.equals(originalName)) return null; // name is same as original. No clash.

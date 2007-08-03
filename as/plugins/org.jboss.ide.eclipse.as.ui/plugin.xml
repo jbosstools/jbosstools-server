@@ -44,29 +44,14 @@
    <extension
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss32RuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32"
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42"
         	id="org.jboss.ide.eclipse.as.ui.jboss32RuntimeWizardFragmentragment"/>
+
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss40RuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.40"
-  			id="org.jboss.ide.eclipse.as.ui.jboss40RuntimeWizardFragmentWizardFragment"/>
-      <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss42RuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.42"
-  			id="org.jboss.ide.eclipse.as.ui.jboss42RuntimeWizardFragmentWizardFragment"/>
-      <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss32ServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32"/>
-       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss40ServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.40"/>
-       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.AbstractJBossServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss42ServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.42"/>
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42"/>
        <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"

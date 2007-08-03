@@ -32,6 +32,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -57,10 +58,13 @@ import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
-public class AbstractJBossServerWizardFragment extends WizardFragment {
+public class JBossServerWizardFragment extends WizardFragment {
 	//private final static int UNKNOWN_CHANGED = 0;
 	private final static int NAME_CHANGED = 1;
 	private final static int HOME_CHANGED = 2;
@@ -120,15 +124,24 @@ public class AbstractJBossServerWizardFragment extends WizardFragment {
 		createJREComposite(g);
 		createConfigurationComposite(g);
 
-		
-		
 		// make modifications to parent
 		handle.setTitle(Messages.createWizardTitle);
 		handle.setDescription(Messages.createWizardDescription);
-		//handle.setImageDescriptor (getImageDescriptor());
+		handle.setImageDescriptor (getImageDescriptor());
+		
 		return main;
 	}
 	
+	public ImageDescriptor getImageDescriptor() {
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String id = rt.getRuntimeType().getId();
+		String imageKey = "";
+		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
+		return JBossServerUISharedImages.getImageDescriptor(imageKey);
+	}
+
 	private void createExplanationLabel(Composite main) {
 		explanationLabel = new Label(main, SWT.NONE);
 		FormData data = new FormData();
