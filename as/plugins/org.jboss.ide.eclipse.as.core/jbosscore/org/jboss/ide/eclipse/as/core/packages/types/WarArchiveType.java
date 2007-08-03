@@ -174,7 +174,7 @@ public class WarArchiveType extends J2EEArchiveType {
 
 			
 			IVirtualComponent vc = ComponentCore.createComponent(project);
-			IPath webContentPath = vc.getRootFolder().getUnderlyingFolder().getLocation();
+			IPath webContentPath = vc.getRootFolder().getUnderlyingFolder().getFullPath();
 			addFileset(project, topLevel, webContentPath.toOSString(), "**/*");
 			addClassesFileset(project, classes);
 			
