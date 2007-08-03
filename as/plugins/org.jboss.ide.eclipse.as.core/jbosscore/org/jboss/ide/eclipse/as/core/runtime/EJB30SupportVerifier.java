@@ -14,7 +14,7 @@ public class EJB30SupportVerifier {
 		if( ajbsr == null ) return true;  
 
 		// one of ours. verify
-		IPath path = new Path("junk").append(rt.getId()).append("jbide.ejb30").append("1.0");
+		IPath path = new Path("junk").append(rt.getId()).append("jst.ejb").append("3.0");
 		WebtoolsProjectJBossClasspathContainer container =
 			new WebtoolsProjectJBossClasspathContainer(path);
 		IClasspathEntry[] entries = container.getClasspathEntries();
