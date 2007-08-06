@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.runtime.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -150,7 +151,16 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		protected IClasspathEntry getEntry(IPath path) {
 			return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
 		}
-		
+		protected IClasspathEntry[] getEntries(IPath folder) {
+			String[] files = folder.toFile().list();
+			ArrayList list = new ArrayList();
+			for( int i = 0; i < files.length; i++ ) {
+				if( files[i].endsWith(".jar")) {
+					list.add(getEntry(folder.append(files[i])));
+				}
+			}
+			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+		}
 		protected IClasspathEntry[] loadJREClasspathEntries(AbstractJBossServerRuntime jbsRuntime) {
 			IVMInstall vmInstall = jbsRuntime.getVM();
 			if (vmInstall != null) {
@@ -166,8 +176,11 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
 			if (facetId.equals(WEB_FACET.getId())) {
+				IPath jsfDir = configPath.append("deploy").append("jboss-web.deployer").append("jsf-libs");
 				list.add(getEntry(configPath.append("lib").append("jsp-api.jar")));
 				list.add(getEntry(homePath.append("client").append("servlet-api.jar")));
+				list.add(getEntry(jsfDir.append("jsf-api.jar")));
+				list.add(getEntry(jsfDir.append("jsf-impl.jar")));
 			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
 					list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( isEjb30(facetId, facetVersion)) {
@@ -204,8 +217,10 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IPath configPath = homePath.append("server").append(configName);
 			ArrayList list = new ArrayList();
 			if (facetId.equals(WEB_FACET.getId())) {
+				IPath jsfDir = configPath.append("deploy").append("jbossweb-tomcat55.sar").append("jsf-libs");
 				list.add(getEntry(configPath.append("lib").append("javax.servlet.jsp.jar")));
 				list.add(getEntry(homePath.append("client").append("javax.servlet.jar")));
+				list.addAll(Arrays.asList(getEntries(jsfDir)));
 			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
 				list.add(getEntry(homePath.append("client").append("jboss-j2ee.jar")));
 			} else if( isEjb30(facetId, facetVersion)) {
