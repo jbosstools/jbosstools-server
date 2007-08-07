@@ -25,9 +25,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
+import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
 import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
-import org.jboss.ide.eclipse.as.core.runtime.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClasspathContainerPage

@@ -1,10 +1,10 @@
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.ide.eclipse.as.classpath.core.ejb3;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.server.core.IRuntime;
-import org.jboss.ide.eclipse.as.core.runtime.internal.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
 import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
 
 public class EJB30SupportVerifier {
@@ -14,7 +14,9 @@ public class EJB30SupportVerifier {
 		if( ajbsr == null ) return true;  
 
 		// one of ours. verify
-		IPath path = new Path("junk").append(rt.getId()).append("jst.ejb").append("3.0");
+		IPath path = new Path("org.jboss.ide.eclipse.as.core.runtime.ProjectInitializer");
+		path = path.append(rt.getId()).append("jst.ejb").append("3.0");
+
 		WebtoolsProjectJBossClasspathContainer container =
 			new WebtoolsProjectJBossClasspathContainer(path);
 		IClasspathEntry[] entries = container.getClasspathEntries();

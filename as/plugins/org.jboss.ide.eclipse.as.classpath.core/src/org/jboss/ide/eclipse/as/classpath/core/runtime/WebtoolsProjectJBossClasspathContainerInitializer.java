@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime.internal;
+package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +65,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				new IJavaProject[] {project}, new IClasspathContainer[] {container}, null);
 	}
 	
-	
+	public IClasspathEntry[] getEntries(IPath path) {
+		return new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
+	}
 	
 	
 	

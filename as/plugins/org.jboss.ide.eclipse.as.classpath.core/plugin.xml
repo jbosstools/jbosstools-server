@@ -7,4 +7,54 @@
             class="org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainerInitializer"
             id="org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"/>
    </extension>
+   
+
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.32" version="3.2"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.40" version="4.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	
+     <adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component.42" version="4.2"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+   </extension>
+   
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectInitializer"/>
+   </extension>
+ 
+
+
+   <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
+     <runtimeClasspathProvider
+        id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
+        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40, org.jboss.ide.eclipse.as.runtime.42"
+        class="org.jboss.ide.eclipse.as.classpath.core.runtime.ClientAllRuntimeClasspathProvider"/>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$RuntimeClasspathContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer">
+      </classpathContainerInitializer>
+   </extension>
+   
 </plugin>
