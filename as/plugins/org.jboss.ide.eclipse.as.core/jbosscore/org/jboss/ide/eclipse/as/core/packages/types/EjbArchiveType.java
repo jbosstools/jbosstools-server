@@ -36,9 +36,8 @@ public class EjbArchiveType extends J2EEArchiveType {
 
 		IModule mod = getModule(project.getName());
 		
-		// TODO:  module artifact to adapt a jboss ejb 30 to a module is MIA. CREATE IT
 		if( mod == null ) {
-			
+			// TODO fix me
 		} else {
 			if( mod.getModuleType().getId().equals("jst.ejb") ) {
 				try {

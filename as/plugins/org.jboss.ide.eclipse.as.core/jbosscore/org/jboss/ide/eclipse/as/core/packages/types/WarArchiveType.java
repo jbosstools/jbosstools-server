@@ -109,7 +109,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			try {
 				IPath outputLoc = project.getWorkspace().getRoot().getLocation();
 				outputLoc = outputLoc.append(jp.getOutputLocation());
-				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*.class");
+				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*");
 			} catch( JavaModelException jme ) {
 			}
 		}
