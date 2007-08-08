@@ -148,5 +148,8 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			return Status.OK_STATUS;
 		}
 		
+		public IPath getGlobalSourcePath() {
+			return this.global;
+		}
 	}
 }
