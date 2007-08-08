@@ -105,12 +105,14 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	protected boolean addModule(IPath path) {
 		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-		if( resource.exists() ) {
+		if( resource != null && resource.exists() ) {
 			IModule module = createModule(path.toString(), path.toString(), MODULE_TYPE, VERSION, resource.getProject());
 			moduleIdToModule.put(path, module);
 			moduleToDelegate.put(module, new SingleDeployableModuleDelegate(path));
-		}
-		return resource.exists();
+			return true;
+		} else {
+			return false;
+		}		
 	}
 	
 	protected void removeModule(IPath path) {
