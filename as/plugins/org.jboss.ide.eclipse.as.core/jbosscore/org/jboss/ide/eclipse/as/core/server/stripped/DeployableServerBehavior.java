@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
+import org.jboss.ide.eclipse.as.core.singledeployable.SingleFilePublisher;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
@@ -82,6 +83,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 					publisher = new JstPublisher(getServer(), root);
 				} else if( isPackagesTypeModule(module[i]) ) {
 					publisher = new PackagesPublisher(getServer(), root);
+				} else if( module[i].getModuleType().equals("jboss.singlefile")){
+					publisher = new SingleFilePublisher();
 				} else {
 					publisher = new NullPublisher();
 				}
