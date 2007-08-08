@@ -199,6 +199,15 @@
                types="jboss.package"
                versions="1.0"/>
       </moduleFactory>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.singledeployable.SingleDeployableFactory"
+            id="org.jboss.ide.eclipse.as.core.singledeployablefactory"
+            projects="false">
+         <moduleType
+               types="jboss.singlefile"
+               versions="1.0">
+         </moduleType>
+      </moduleFactory>
    </extension>
    
    		
