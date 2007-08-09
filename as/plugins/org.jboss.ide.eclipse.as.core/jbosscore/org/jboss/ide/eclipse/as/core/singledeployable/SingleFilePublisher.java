@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.singledeployable.SingleDeployableFactory.SingleDeployableModuleDelegate;
@@ -30,15 +31,43 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			int modulePublishState, IModule module, IProgressMonitor monitor)
 			throws CoreException {
 		
+		
+		IStatus status = null;
+		if(ServerBehaviourDelegate.REMOVED == deltaKind){
+        	status = unpublish(server, module, kind, deltaKind, modulePublishState, monitor);
+        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
+        	// if there's no change, do nothing. Otherwise, on change or add, re-publish
+        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
+        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
+        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
+        }
+		return status;
+
+	}
+	
+	protected IStatus publish(IDeployableServer server, IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
 		// COPY THE FILE HERE!!!
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
-		IPath sourcePath = delegate.getGlobalSourcePath();
-		IPath destFolder = new Path(server.getDeployDirectory());
-		FileUtil.fileSafeCopy(sourcePath.toFile(), destFolder.append(sourcePath.lastSegment()).toFile());
+		if( delegate != null ) {
+			IPath sourcePath = delegate.getGlobalSourcePath();
+			IPath destFolder = new Path(server.getDeployDirectory());
+			FileUtil.fileSafeCopy(sourcePath.toFile(), destFolder.append(sourcePath.lastSegment()).toFile());
+		}
 		
 		return null;
 	}
 
+	protected IStatus unpublish(IDeployableServer server, IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
+		// delete file
+		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
+		if( delegate != null ) {
+			IPath sourcePath = delegate.getGlobalSourcePath();
+			IPath destFolder = new Path(server.getDeployDirectory());
+			FileUtil.safeDelete(destFolder.append(sourcePath.lastSegment()).toFile());
+		}
+		
+		return null;
+	}
 	public void setDelta(IModuleResourceDelta[] delta) {
 		// ignore delta
 	}
