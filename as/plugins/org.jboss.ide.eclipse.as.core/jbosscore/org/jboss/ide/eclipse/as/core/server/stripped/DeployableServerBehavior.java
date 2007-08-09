@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -168,12 +169,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			((Server)getServer()).getServerPublishInfo().clearCache();
 			((Server)getServer()).getServerPublishInfo().save();
 			
-			return null;
+			return Status.OK_STATUS;
 
 		} catch( Exception e ) {
 			
 		}
-		return null;
+		return Status.CANCEL_STATUS;
 	}
 	
 	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
