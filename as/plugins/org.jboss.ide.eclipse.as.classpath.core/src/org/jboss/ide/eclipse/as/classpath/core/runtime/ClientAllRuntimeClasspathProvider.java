@@ -34,7 +34,7 @@ public class ClientAllRuntimeClasspathProvider extends
 	
 	protected IClasspathEntry[] get32(IPath location, String config) {
 		ArrayList list = new ArrayList();
-		IPath configPath = location.append("server").append("config");
+		IPath configPath = location.append("server").append(config);
 		addEntries(location.append("client"), list);
 		addEntries(location.append("lib"), list);
 		addEntries(configPath.append("lib"), list);
@@ -43,8 +43,8 @@ public class ClientAllRuntimeClasspathProvider extends
 	
 	protected IClasspathEntry[] get40(IPath location, String config) {
 		ArrayList list = new ArrayList();
-		IPath configPath = location.append("server").append("config");
-		IPath deployPath = location.append("deploy");
+		IPath configPath = location.append("server").append(config);
+		IPath deployPath = configPath.append("deploy");
 		addEntries(location.append("client"), list);
 		addEntries(location.append("lib"), list);
 		addEntries(configPath.append("lib"), list);
@@ -56,8 +56,8 @@ public class ClientAllRuntimeClasspathProvider extends
 
 	protected IClasspathEntry[] get42(IPath location, String config) {
 		ArrayList list = new ArrayList();
-		IPath configPath = location.append("server").append("config");
-		IPath deployPath = location.append("deploy");
+		IPath configPath = location.append("server").append(config);
+		IPath deployPath = configPath.append("deploy");
 		addEntries(location.append("client"), list);
 		addEntries(location.append("lib"), list);
 		addEntries(configPath.append("lib"), list);
