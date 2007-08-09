@@ -63,7 +63,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			case ServerBehaviourDelegate.CHANGED: System.out.print("changed"); break;
 			case ServerBehaviourDelegate.REMOVED: System.out.print("removed"); break;
 		}
-		System.out.println(" to server " + getServer().getId());
+		System.out.println(" to server " + getServer().getName() + "(" + getServer().getId() + ")");
 	}
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
@@ -84,7 +84,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 					publisher = new JstPublisher(getServer(), root);
 				} else if( isPackagesTypeModule(module[i]) ) {
 					publisher = new PackagesPublisher(getServer(), root);
-				} else if( module[i].getModuleType().equals("jboss.singlefile")){
+				} else if( module[i].getModuleType().getId().equals("jboss.singlefile")){
 					publisher = new SingleFilePublisher(getServer());
 				} else {
 					publisher = new NullPublisher();
