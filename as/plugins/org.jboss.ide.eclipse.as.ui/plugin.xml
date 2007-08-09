@@ -79,16 +79,12 @@
          point="org.eclipse.wst.server.ui.serverImages">
       <image
             icon="icons/J2EEModule16.gif"
-            id="org.jboss.ide.eclipse.as.ui.archiveImage"
-            typeIds="jboss.archive"/>
-      <image
-            icon="icons/J2EEModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.packagedProject.image"
             typeIds="jboss.package"/>
       <image
-            icon="icons/xml.gif"
-            id="org.jboss.ide.eclipse.as.ui.xmlImage"
-            typeIds="jboss.xml"/>
+            icon="icons/file.gif"
+            id="org.jboss.ide.eclipse.as.ui.simplefile.image"
+            typeIds="jboss.singlefile"/>
    </extension>
 
    <extension
