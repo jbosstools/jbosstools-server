@@ -141,6 +141,15 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
+	
+	public String getVersion() {
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String id = rt.getRuntimeType().getId();
+		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) return "3.2";
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) return "4.0";
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) return "4.2";
+		return ""; // default
+	}
 
 	private void createExplanationLabel(Composite main) {
 		explanationLabel = new Label(main, SWT.NONE);
@@ -193,7 +202,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getDefaultNameText() {
-		String base = "JBoss-server";
+		String base = "JBoss " + getVersion() + " server";
 		if( findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerCore.findServer(base + " " + i) != null ) 
@@ -227,7 +236,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		homeDirLabel.setText(Messages.wizardFragmentHomeDirLabel);
 		
 		homeDirText = new Text(homeDirComposite, SWT.BORDER);
-		homeDirText.setEditable(false);
+		homeDirText.setEnabled(false);
 		
 		// Set Layout Data
 		FormData labelData = new FormData();
@@ -289,6 +298,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
 		cData.top = new FormAttachment(jreComposite, 5);
+		cData.bottom = new FormAttachment(100, -5);
 		configComposite.setLayoutData(cData);
 
 		configComposite.setLayout(new FormLayout());
@@ -299,7 +309,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configLabel.setText("Configuration");
 		
 		configText = new Text(configComposite, SWT.BORDER);
-		configText.setEditable(false);
+		configText.setEnabled(false);
 		
 		// Set Layout Data
 		FormData labelData = new FormData();

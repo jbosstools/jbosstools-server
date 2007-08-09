@@ -180,8 +180,18 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				"c:/program files/jboss-" + getRuntimeVersionId() + ".x" : 
 				"/usr/bin/jboss-" + getRuntimeVersionId() + ".x");
 	}
+	
+	public String getVersion() {
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String id = rt.getRuntimeType().getId();
+		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) return "3.2";
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) return "4.0";
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) return "4.2";
+		return ""; // default
+	}
+
 	private String generateNewRuntimeName() {
-		String base = "JBoss-runtime";
+		String base = "JBoss " + getVersion() + " runtime";
 		IRuntime rt = ServerCore.findRuntime(base);
 		if( rt == null ) return base;
 		
