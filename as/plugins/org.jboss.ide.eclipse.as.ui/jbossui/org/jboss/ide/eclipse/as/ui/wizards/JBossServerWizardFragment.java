@@ -475,7 +475,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		}
 		serverWC.setServerConfiguration(folder);
 		serverWC.setName(name);
-
+		serverWC.setRuntime(r);
 
 		server = (JBossServer) serverWC.getAdapter(JBossServer.class);
 		if( server == null ) {
