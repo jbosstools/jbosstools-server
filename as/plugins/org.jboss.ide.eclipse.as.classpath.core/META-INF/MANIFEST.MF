@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Core Plug-in
+Bundle-Name: JBoss AS Classpath Core Plug-in
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.classpath.core;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin
@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.classpath.core,
  org.jboss.ide.eclipse.as.classpath.core.ejb3
+Bundle-Vendor: JBoss, a division of Red Hat
