@@ -54,8 +54,6 @@ import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
@@ -75,7 +73,6 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					editXPathAction, deleteXPathAction, editFileAction;
 
 	private IServer server;
-	private JBossServer jbServer;
 	private XPathCategory activeCategory;
 	private Object selectedPropertyObject;
 	
@@ -121,6 +118,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
 		IWorkbenchPage page = window.getActivePage();
 		IViewReference ref = window.getActivePage().findViewReference(propsId);
+		if( ref == null ) return false; 
 		IWorkbenchPart part = ref.getPart(false);
 		return ( part != null && page.isPartVisible(part));
 	}
@@ -146,8 +144,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement instanceof ServerViewProvider ) {
-				if( jbServer == null ) return new Object[]{};
-				return XPathModel.getDefault().getCategories(jbServer);
+				if( server == null ) return new Object[]{};
+				return XPathModel.getDefault().getCategories(server);
 			}
 			return new Object[0];
 		}
@@ -165,7 +163,6 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			if( oldInput != newInput ) {
 				server = (IServer)newInput;
-				jbServer = server == null ? null : ServerConverter.getJBossServer(server);
 			}
 		}
 	}
@@ -199,11 +196,11 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	public void createActions() {
 		newXPathCategoryAction = new Action() {
 			public void run() {
-				XPathCategoryDialog d = new XPathDialogs.XPathCategoryDialog(
-							Display.getCurrent().getActiveShell(), jbServer);
+				XPathCategoryDialog d = new XPathCategoryDialog(
+							Display.getCurrent().getActiveShell(), server);
 				if( d.open() == Window.OK ) {
-					XPathModel.getDefault().addCategory(jbServer, d.getText());
-					XPathModel.getDefault().save(jbServer);
+					XPathModel.getDefault().addCategory(server, d.getText());
+					XPathModel.getDefault().save(server);
 					refreshViewer();
 				}
 			}
@@ -217,8 +214,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				messageBox.setText (Messages.DescriptorXPathRemoveCategory + "?");
 				messageBox.setMessage (Messages.DescriptorXPathRemoveCategoryDesc);
 				if( messageBox.open () == SWT.YES ) {
-					XPathModel.getDefault().removeCategory(jbServer, getActiveCategory().getName());
-					XPathModel.getDefault().save(jbServer);
+					XPathModel.getDefault().removeCategory(server, getActiveCategory().getName());
+					XPathModel.getDefault().save(server);
 					setActiveCategory(null);
 					refreshViewer();
 				}
@@ -232,18 +229,18 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				XPathCategory category = getActiveCategory();
 				if( category != null ) {
 					String categoryName = category.getName();
-					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), jbServer, categoryName);
+					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), server, categoryName);
 					if( d.open() == Window.OK ) {
-						XPathCategory[] categoryList = XPathModel.getDefault().getCategories(jbServer);
+						XPathCategory[] categoryList = XPathModel.getDefault().getCategories(server);
 						XPathCategory categoryItem = null;
 						for( int i = 0; i < categoryList.length; i++ ) {
 							if( categoryList[i].getName().equals(category.getName())) 
 								categoryItem = categoryList[i];
 						}
 						if( categoryItem != null ) {
-							XPathQuery query = new XPathQuery(d.getName(), jbServer.getConfigDirectory(), null, d.getXpath(), d.getAttribute());
+							XPathQuery query = new XPathQuery(d.getName(), XPathDialogs.getConfigFolder(server), null, d.getXpath(), d.getAttribute());
 							categoryItem.addQuery(query);
-							XPathModel.getDefault().save(jbServer);
+							XPathModel.getDefault().save(server);
 							refreshViewer();
 						}
 					}
@@ -260,7 +257,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					XPathCategory category = original.getCategory();
 					
 					XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(), 
-							jbServer, category.getName(), original.getName());
+							server, category.getName(), original.getName());
 					d.setAttribute(original.getAttribute());
 					d.setXpath(original.getXpathPattern());
 					
@@ -339,6 +336,10 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 				menu.add(new Separator());
 			} catch( Exception e ) { e.printStackTrace(); }
 		}
+	}
+
+	protected boolean supports(IServer server) {
+		return true;
 	}
 
 	// Property Sheet Page

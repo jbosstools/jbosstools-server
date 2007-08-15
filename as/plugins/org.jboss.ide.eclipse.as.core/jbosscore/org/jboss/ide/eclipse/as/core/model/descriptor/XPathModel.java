@@ -12,9 +12,9 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 
 public class XPathModel {
@@ -34,44 +34,38 @@ public class XPathModel {
 		return instance;
 	}
 	
-	protected HashMap serverToCategories;
+	protected HashMap<String, ArrayList<XPathCategory>> serverToCategories;
 	public XPathModel() {
-		serverToCategories = new HashMap();
+		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
 	}
 	
-	public XPathQuery getQuery(JBossServer jbs, IPath path) {
-		XPathCategory cat = getCategory(jbs, path.segment(0));
+	public XPathQuery getQuery(IServer server, IPath path) {
+		XPathCategory cat = getCategory(server, path.segment(0));
 		if( cat != null )
 			return cat.getQuery(path.segment(1));
 		return null;
 	}
 	
-	public ArrayList getCategoryCollection(JBossServer jbs) {
-		if( serverToCategories.get(jbs.getServer().getId()) == null ) {
-			ArrayList val = new ArrayList(Arrays.asList(load(jbs)));
-			if( val.size() == 0 ) {
-				val = loadDefaults(jbs);
-				serverToCategories.put(jbs.getServer().getId(), val);				
-				save(jbs);
-			} else {
-				serverToCategories.put(jbs.getServer().getId(), val);
-			}
+	public ArrayList<XPathCategory> getCategoryCollection(IServer server) {
+		if( serverToCategories.get(server.getId()) == null ) {
+			ArrayList<XPathCategory> val = new ArrayList<XPathCategory>(Arrays.asList(load(server)));
+			serverToCategories.put(server.getId(), val);
 		}
-		return (ArrayList)serverToCategories.get(jbs.getServer().getId());		
+		return (ArrayList<XPathCategory>)serverToCategories.get(server.getId());		
 	}
 
-	public XPathCategory[] getCategories(JBossServer jbs) {
-		ArrayList val = getCategoryCollection(jbs);
+	public XPathCategory[] getCategories(IServer jbs) {
+		ArrayList<XPathCategory> val = getCategoryCollection(jbs);
 		return (XPathCategory[]) val.toArray(new XPathCategory[val.size()]);
 	}
 	
-	public boolean containsCategory(JBossServer jbs, String name) {
+	public boolean containsCategory(IServer jbs, String name) {
 		return getCategory(jbs, name) == null ? false : true;
 	}
 	
-	public XPathCategory getCategory(JBossServer jbs, String name) {
-		ArrayList list = getCategoryCollection(jbs);
-		Iterator i = list.iterator();
+	public XPathCategory getCategory(IServer jbs, String name) {
+		ArrayList<XPathCategory> list = getCategoryCollection(jbs);
+		Iterator<XPathCategory> i = list.iterator();
 		XPathCategory c;
 		while(i.hasNext()) {
 			c = (XPathCategory)i.next();
@@ -81,7 +75,7 @@ public class XPathModel {
 		return null;
 	}
 
-	public XPathCategory addCategory(JBossServer jbs, String name) {
+	public XPathCategory addCategory(IServer jbs, String name) {
 		if( !containsCategory(jbs, name)) {
 			XPathCategory c = new XPathCategory(name, jbs);
 			getCategoryCollection(jbs).add(c);
@@ -90,15 +84,15 @@ public class XPathModel {
 		return getCategory(jbs, name);
 	}
 	
-	public void addCategory(JBossServer jbs, XPathCategory category) {
-		if( !containsCategory(jbs, category.getName())) {
-			getCategoryCollection(jbs).add(category);
+	public void addCategory(IServer server, XPathCategory category) {
+		if( !containsCategory(server, category.getName())) {
+			getCategoryCollection(server).add(category);
 		}
 	}
 	
-	public void removeCategory(JBossServer jbs, String name) {
-		ArrayList list = getCategoryCollection(jbs);
-		Iterator i = list.iterator();
+	public void removeCategory(IServer server, String name) {
+		ArrayList<XPathCategory> list = getCategoryCollection(server);
+		Iterator<XPathCategory> i = list.iterator();
 		while(i.hasNext()) {
 			XPathCategory cat = (XPathCategory)i.next();
 			if( cat.getName().equals(name)) {
@@ -111,38 +105,37 @@ public class XPathModel {
 	/*
 	 * Loading and saving is below
 	 */
-	private XPathCategory[] load(JBossServer jbs) {
-		ServerAttributeHelper helper = jbs.getAttributeHelper();
+	private XPathCategory[] load(IServer server) {
+		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
 		String list = helper.getAttribute(CATEGORY_LIST, (String)null);
-		System.out.println("load " + CATEGORY_LIST + ", got " + list);
 		if( list == null )
 			return new XPathCategory[] {};
 		String[] byName = list.split(DELIMITER);
 		XPathCategory[] cats = new XPathCategory[byName.length];
 		for( int i = 0; i < byName.length; i++ ) {
-			cats[i] = new XPathCategory(byName[i], jbs);
+			cats[i] = new XPathCategory(byName[i], server);
 		}
 		return cats;
 	}
 		
-	public void save(JBossServer jbs) {
-		if( !serverToCategories.containsKey(jbs.getServer().getId()))
+	public void save(IServer server) {
+		if( !serverToCategories.containsKey(server.getId()))
 			return;
 		
-		ServerAttributeHelper helper = jbs.getAttributeHelper();
-		XPathCategory[] categories = getCategories(jbs);
+		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
+		XPathCategory[] categories = getCategories(server);
 		String list = "";
 		for( int i = 0; i < categories.length; i++ ) {
 			if( i != 0 )
 				list += DELIMITER;
 			list += categories[i].getName();
-			saveCategory(categories[i], jbs, helper);
+			saveCategory(categories[i], server, helper);
 		}
 		helper.setAttribute(CATEGORY_LIST, list);
 		helper.save();
 	}
 
-	public void saveCategory(XPathCategory category, JBossServer jbs, ServerAttributeHelper helper) {
+	public void saveCategory(XPathCategory category, IServer server, ServerAttributeHelper helper) {
 		if( category.queriesLoaded()) {
 			XPathQuery[] queries = category.getQueries();
 			String val = "";
@@ -150,35 +143,31 @@ public class XPathModel {
 				if( i != 0 )
 					val += DELIMITER;
 				val += category.getName() + Path.SEPARATOR + queries[i].getName();
-				saveQuery(queries[i], category, jbs, helper);
+				saveQuery(queries[i], category, server, helper);
 			}
 			helper.setAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), val);
-			System.out.println("save " + QUERY_LIST + "." + category.getName() + " with " + val);
 		}
 	}
 	
-	private void saveQuery(XPathQuery query, XPathCategory category, JBossServer jbs, ServerAttributeHelper helper) {
-		ArrayList list = new ArrayList();
+	private void saveQuery(XPathQuery query, XPathCategory category, IServer server, ServerAttributeHelper helper) {
+		ArrayList<String> list = new ArrayList<String>();
 		list.add(query.getBaseDir());
 		list.add(query.getFilePattern() == null ? EMPTY_STRING : query.getFilePattern());
 		list.add(query.getXpathPattern() == null ? EMPTY_STRING : query.getXpathPattern());
 		list.add(query.getAttribute() == null ? EMPTY_STRING : query.getAttribute());
 		helper.setAttribute(QUERY + "." + category.getName().replace(' ', '_') + Path.SEPARATOR + query.getName().replace(' ', '_'), list);
-		System.out.println("saved " + QUERY + "." + category.getName() + Path.SEPARATOR + query.getName() + " with " + list);
 	}
 	
-	public XPathQuery[] loadQueries(XPathCategory category, JBossServer jbs) {
-		ServerAttributeHelper helper = jbs.getAttributeHelper();
+	public XPathQuery[] loadQueries(XPathCategory category, IServer server) {
+		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
 		String list = helper.getAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), (String)null);
-		System.out.println("load " + QUERY_LIST + "." + category.getName() + " gets " + list);
 		if( list == null )
 			return new XPathQuery[] {};
 		String[] queriesByName = list.split(DELIMITER);
-		List queryAsStringValues;
-		ArrayList returnList = new ArrayList();
+		List<String> queryAsStringValues;
+		ArrayList<XPathQuery> returnList = new ArrayList();
 		for( int i = 0; i < queriesByName.length; i++ ) {
 			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
-			System.out.println("load " + QUERY + "." + queriesByName[i]);
 			if( queryAsStringValues != null ) {
 				try {
 					XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
@@ -196,29 +185,28 @@ public class XPathModel {
 	 * Loading the defaults for the server
 	 * returns the category created
 	 */
-	private static HashMap rtToPortsFile;
+	private static HashMap<String, IPath> rtToPortsFile;
 	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";
 	private static final String FILE_SUFFIX = "_FILE";
 	static {
-		rtToPortsFile = new HashMap();
+		rtToPortsFile = new HashMap<String, IPath>();
 		rtToPortsFile.put("3.2", new Path("properties").append("jboss.32.default.ports.properties"));
 		rtToPortsFile.put("4.0", new Path("properties").append("jboss.40.default.ports.properties"));
 		rtToPortsFile.put("4.2", new Path("properties").append("jboss.42.default.ports.properties"));
 		rtToPortsFile.put("5.0", new Path("properties").append("jboss.50.default.ports.properties"));
 	}
 
-	protected ArrayList loadDefaults(JBossServer jbs) {
-		ArrayList retVal = new ArrayList();
-		String configFolder;
-		configFolder = jbs.getConfigDirectory(false); // do not check the launch config
+	public void loadDefaults(IServer server, String configFolder) {
+		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
 		AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime)
-			jbs.getServer().getRuntime().loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
+			server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
 		Path p = (Path)rtToPortsFile.get(ajbsr.getId());
+		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
 		Properties pr = new Properties();
 		try {
 			pr.load(url.openStream());
-			XPathCategory ports = new XPathCategory("Ports", jbs);
+			XPathCategory ports = new XPathCategory("Ports", server);
 			Iterator i = pr.keySet().iterator();
 			String name, xpath, attributeName, file;
 			XPathQuery query;
@@ -236,6 +224,8 @@ public class XPathModel {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
-		return retVal;
+		
+		serverToCategories.put(server.getId(), retVal);
+		//save(server);
 	}
 }

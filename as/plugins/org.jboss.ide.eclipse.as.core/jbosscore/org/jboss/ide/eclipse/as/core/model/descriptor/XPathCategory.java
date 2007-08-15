@@ -2,15 +2,15 @@ package org.jboss.ide.eclipse.as.core.model.descriptor;
 
 import java.util.HashMap;
 
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 
 public class XPathCategory {
 	protected String name; // cannot include delimiter from the model, comma
-	protected JBossServer server;
+	protected IServer server;
 	protected HashMap children;
 	
-	public XPathCategory(String name, JBossServer server) {
+	public XPathCategory(String name, IServer server) {
 		this.name = name;
 		this.server = server;
 	}
@@ -48,7 +48,7 @@ public class XPathCategory {
 	}
 	
 	public void save() {
-		ServerAttributeHelper helper = server.getAttributeHelper();
+		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
 		XPathModel.getDefault().saveCategory(this, server, helper); 
 		helper.save();
 	}

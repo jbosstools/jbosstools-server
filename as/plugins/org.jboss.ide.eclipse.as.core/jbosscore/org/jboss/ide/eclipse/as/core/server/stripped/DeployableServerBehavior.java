@@ -7,13 +7,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.IModuleVisitor;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
 import org.eclipse.wst.server.core.internal.Server;
@@ -135,7 +132,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	// 	Basically stolen from RunOnServerActionDelegate
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
-		addAndRemoveModules( module, deltaKind);
 		ArrayList moduleList = new ArrayList(); 
 		ArrayList deltaKindList = new ArrayList();
 		moduleList.add(module);
@@ -177,19 +173,19 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		return Status.CANCEL_STATUS;
 	}
 	
-	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
-		if( getServer() == null ) return;
-		boolean contains = ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor());
-		try {
-			if( !contains && (deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.CHANGED)) {
-				IServerWorkingCopy wc = getServer().createWorkingCopy();
-				ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());			
-				wc.save(false, new NullProgressMonitor());
-			} else if( contains && deltaKind == ServerBehaviourDelegate.REMOVED) {
-				IServerWorkingCopy wc = getServer().createWorkingCopy();
-				ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
-				wc.save(false, new NullProgressMonitor());
-			}
-		} catch( Exception e ) {} // swallowed
-	}
+//	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
+//		if( getServer() == null ) return;
+//		boolean contains = ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor());
+//		try {
+//			if( !contains && (deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.CHANGED)) {
+//				IServerWorkingCopy wc = getServer().createWorkingCopy();
+//				ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());			
+//				wc.save(false, new NullProgressMonitor());
+//			} else if( contains && deltaKind == ServerBehaviourDelegate.REMOVED) {
+//				IServerWorkingCopy wc = getServer().createWorkingCopy();
+//				ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
+//				wc.save(false, new NullProgressMonitor());
+//			}
+//		} catch( Exception e ) {} // swallowed
+//	}
 }

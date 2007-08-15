@@ -59,11 +59,8 @@ public class JBossServer extends ServerDelegate
 	public JBossServer() {
 	}
 
-	
 	protected void initialize() {
-		
 	}
-	
 	
 	public void setDefaults(IProgressMonitor monitor) {
 	}
@@ -77,12 +74,10 @@ public class JBossServer extends ServerDelegate
 	public void configurationChanged() {
 	}
 
-
 	public IJBossServerLaunchDefaults getLaunchDefaults() {
 		return new ServerLaunchDefaults(getServer());
 	}
 
-	
 	
 	/*
 	 * Abstracts to implement
@@ -198,7 +193,7 @@ public class JBossServer extends ServerDelegate
 
 	protected int findPort(IPath path) {
 		try {
-			XPathQuery query = XPathModel.getDefault().getQuery(this, path);
+			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), path);
 			String result = query.getFirstResult();
 			if( result != null ) {
 					return Integer.parseInt(result);

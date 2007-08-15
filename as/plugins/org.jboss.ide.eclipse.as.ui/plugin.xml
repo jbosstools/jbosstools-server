@@ -107,24 +107,6 @@
 
 
 
-   <extension
-         id="org.jboss.ide.eclipse.as.ui.actionSet"
-         name="JBoss AS"
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            id="org.jboss.ide.eclipse.as.ui.actionSet.workbenchMenu"
-            label="JBoss AS"
-            visible="true">
-         <action
-               class="org.jboss.ide.eclipse.as.ui.actions.ServerPulldownDelegate"
-               icon="icons/jboss.gif"
-               id="org.jboss.ide.eclipse.as.ui.actions.ServerPulldownShortcut"
-               label="JBoss AS Menu"
-               style="pulldown"
-               toolbarPath="Normal/additions"
-               tooltip="Start Server"/>
-      </actionSet>
-   </extension>
 
    
    

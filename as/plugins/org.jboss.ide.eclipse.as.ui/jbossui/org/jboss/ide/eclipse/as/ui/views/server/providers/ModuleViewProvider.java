@@ -33,8 +33,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
@@ -42,6 +40,7 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
@@ -57,14 +56,10 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 
 	private ModuleContentProvider contentProvider;
 	private ModuleLabelProvider labelProvider;
-	
-	private Action deleteModuleAction, publishModuleAction;
-	
+	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
 	private ModuleServer selection;
-	
 	private IServerLifecycleListener serverResourceListener;
 	private IServerListener serverListener;
-	
 	
 	public ModuleViewProvider() {
 		contentProvider = new ModuleContentProvider();
@@ -78,13 +73,16 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				if (MessageDialog.openConfirm(new Shell(), Messages.ServerDialogHeading, Messages.DeleteModuleConfirm)) {
 					try {
-						IServerWorkingCopy wc = selection.server.createWorkingCopy();
-						wc.modifyModules(null, selection.module , null);
-						wc.save(true, null);
-						// Re-publish in case the configuration change has not been published yet.
-						DeployableServerBehavior behavior = (DeployableServerBehavior)
-							contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
-						behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
+						IServerWorkingCopy server = selection.server.createWorkingCopy();
+						ServerUtil.modifyModules(server, null, selection.module, new NullProgressMonitor());
+						IServer server2 = server.save(true, null);
+						
+						if( ServerConverter.getDeployableServer(selection.server) != null ) {
+							ServerConverter.getDeployableServerBehavior(selection.server)
+								.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
+						} else {
+							server2.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+						}
 					} catch (Exception e) {
 						// ignore
 					}
@@ -95,24 +93,47 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		deleteModuleAction.setDescription(Messages.DeleteModuleDescription);
 		deleteModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.UNPUBLISH_IMAGE));
 		
-		publishModuleAction = new Action() {
+		fullPublishModuleAction = new Action() {
 			public void run() {
-				DeployableServerBehavior behavior = (DeployableServerBehavior)
-					contentProvider.getServer().loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
-				if( behavior != null ) 
-					behavior.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+				actionPublish(IServer.PUBLISH_FULL);
 			}
 		};
-		publishModuleAction.setText(Messages.PublishModuleText);
-		publishModuleAction.setDescription(Messages.PublishModuleDescription);
-		publishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
+		fullPublishModuleAction.setText(Messages.PublishModuleText);
+		fullPublishModuleAction.setDescription(Messages.PublishModuleDescription);
+		fullPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
+
+	
+		incrementalPublishModuleAction = new Action() {
+			public void run() {
+				actionPublish(IServer.PUBLISH_INCREMENTAL);
+			}
+		};
+		incrementalPublishModuleAction.setText("Incremental Publish");
+		incrementalPublishModuleAction.setDescription(Messages.PublishModuleDescription);
+		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
+}
+	
+	protected void actionPublish(int type) {
+		try {					
+			if( ServerConverter.getDeployableServer(selection.server) != null ) {
+				ServerConverter.getDeployableServerBehavior(selection.server)
+					.publishOneModule(type, selection.module, 
+							ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+			} else {
+				selection.server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+			}
+		} catch( Exception e ) {
+			// ignore
+		}
 	}
+
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
 		if( selection instanceof ModuleServer) {
 			this.selection = (ModuleServer)selection;
 			menu.add(deleteModuleAction);
-			menu.add(publishModuleAction);
+			menu.add(fullPublishModuleAction);
+			menu.add(incrementalPublishModuleAction);
 		}
 	}
 
@@ -269,7 +290,5 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				servers[i].getServer().addServerListener(serverListener);
 			}
 		}
-
-		
 	}
 }

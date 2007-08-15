@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -62,6 +63,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XMLDocumentRepository;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
@@ -69,7 +71,6 @@ import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.XPathPropertyLabelProvider;
@@ -83,15 +84,15 @@ public class XPathDialogs {
 
 		private String initialName;
 		private String currentText;
-		private JBossServer jbs;
+		private IServer server;
 		private Label errorLabel;
 		
-		public XPathCategoryDialog(Shell parentShell, JBossServer jbs) {
+		public XPathCategoryDialog(Shell parentShell, IServer server) {
 			super(parentShell);
-			this.jbs = jbs;
+			this.server = server;
 		}
-		public XPathCategoryDialog(Shell parentShell, JBossServer jbs, String initialName) {
-			this(parentShell, jbs);
+		public XPathCategoryDialog(Shell parentShell, IServer server, String initialName) {
+			this(parentShell, server);
 			this.initialName = initialName;
 		}
 		
@@ -142,7 +143,7 @@ public class XPathDialogs {
 		}
 		
 		private void verifyText(String text) {
-			boolean valid = !XPathModel.getDefault().containsCategory(jbs, text) || (initialName != null && initialName.equals(text));
+			boolean valid = !XPathModel.getDefault().containsCategory(server, text) || (initialName != null && initialName.equals(text));
 			if( valid ) {
 				errorLabel.setVisible(false);
 				currentText = text;
@@ -168,7 +169,7 @@ public class XPathDialogs {
 		
 		protected XPathProposalProvider proposalProvider;
 		
-		protected JBossServer server;
+		protected IServer server;
 		protected String name, xpath, attribute, category;
 		protected String originalName = null;
 		protected XPathQuery original = null;
@@ -183,14 +184,14 @@ public class XPathDialogs {
 		public XPathDialog(Shell parentShell) {
 			this(parentShell, null);
 		}
-		public XPathDialog(Shell parentShell, JBossServer server) {
+		public XPathDialog(Shell parentShell, IServer server) {
 			this(parentShell, server, null);
 		}
-		public XPathDialog(Shell parentShell, JBossServer server, String categoryName) {
+		public XPathDialog(Shell parentShell, IServer server, String categoryName) {
 			this(parentShell, server, categoryName, null);
 		}
 
-		public XPathDialog(Shell parentShell, JBossServer server, String categoryName, String originalName) {
+		public XPathDialog(Shell parentShell, IServer server, String categoryName, String originalName) {
 			super(parentShell);
 			setShellStyle(getShellStyle() | SWT.RESIZE);
 			this.category = categoryName;
@@ -233,21 +234,18 @@ public class XPathDialogs {
 			if( xpath != null ) xpathText.setText(xpath);
 			
 			proposalProvider = new XPathProposalProvider(repository);
-			proposalProvider.setServer(server);
+			proposalProvider.setPath(getConfigFolder(server));
 			ContentProposalAdapter adapter = new
 			ContentProposalAdapter(xpathText, new TextContentAdapter(),
 					proposalProvider, null, null);
-			                
 			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 			
-			
 			XPathAttributeProposalProvider provider2 = new XPathAttributeProposalProvider(repository, xpathText);
-			provider2.setServer(server);
+			provider2.setPath(getConfigFolder(server));
 			ContentProposalAdapter adapter2 = new
 			ContentProposalAdapter(attributeText, new TextContentAdapter(),
 					provider2, null, null);
 			adapter2.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-			
 			
 			return main;
 		} 
@@ -301,10 +299,10 @@ public class XPathDialogs {
 					public void widgetSelected(SelectionEvent e) {
 						int index = serverCombo.getSelectionIndex();
 						String val = serverCombo.getItem(index);
-						JBossServer[] serverList = ServerConverter.getAllJBossServers();
-						for( int i = 0; i < serverList.length; i++ ) {
-							if( serverList[i].getServer().getName().equals(val)) {
-								setServer(serverList[i]);
+						IServer[] list = ServerCore.getServers();
+						for( int i = 0; i < list.length; i++ ) {
+							if( list[i].getName().equals(val)) {
+								setServer(list[i]);
 								return;
 							}
 						}
@@ -380,7 +378,7 @@ public class XPathDialogs {
 				return Messages.XPathNameEmpty;
 			}
 			if( server == null ) return null;
-			XPathCategory[] categories = XPathModel.getDefault().getCategories((JBossServer)server);
+			XPathCategory[] categories = XPathModel.getDefault().getCategories(server);
 			XPathCategory category = null;
 			for( int i = 0; i < categories.length; i++ ) {
 				if( categories[i].getName().equals(this.category)) 
@@ -401,9 +399,9 @@ public class XPathDialogs {
 		}
 
 		
-		protected void setServer(JBossServer s) {
+		protected void setServer(IServer s) {
 			server = s;
-			proposalProvider.setServer(s);
+			proposalProvider.setPath(getConfigFolder(s));
 			refreshCategoryCombo();
 			checkErrors();
 		}
@@ -428,7 +426,7 @@ public class XPathDialogs {
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					final IProgressMonitor monitor2 = monitor;
-					XPathQuery tmp = new XPathQuery("", server.getConfigDirectory(), null, xpathText.getText(), attributeText.getText());
+					XPathQuery tmp = new XPathQuery("", getConfigFolder(server), null, xpathText.getText(), attributeText.getText());
 					tmp.setRepository(repository);
 					final ArrayList list = new ArrayList();
 					list.addAll(Arrays.asList(tmp.getResults()));
@@ -627,7 +625,7 @@ public class XPathDialogs {
 		public String getCategory() {
 			return category;
 		}
-		public JBossServer getServer() {
+		public IServer getServer() {
 			return server;
 		}
 
@@ -681,7 +679,7 @@ public class XPathDialogs {
 	}
 	
 	public static class XPathProposalProvider implements IContentProposalProvider {
-		
+
 		protected static final int NEW_ELEMENT = 1;
 		protected static final int NEW_ATTRIBUTE = 2;
 		protected static final int NEW_ATTRIBUTE_VALUE = 3;
@@ -690,8 +688,7 @@ public class XPathDialogs {
 		protected static final int IN_ATTRIBUTE_VALUE = 6;
 		protected static final int CLOSE_ATTRIBUTE = 7;
 		
-		
-		private IDeployableServer server;
+		private String path;
 		private HashMap xpathCache;
 		protected XMLDocumentRepository repository;
 		
@@ -699,9 +696,11 @@ public class XPathDialogs {
 			xpathCache = new HashMap();
 			this.repository = repository;
 		}
-		public void setServer(IDeployableServer server) {
-			this.server = server;
+		
+		public void setPath(String path) {
+			this.path = path;
 		}
+		
 		public IContentProposal[] getProposals(String contents, int position) {
 			if( contents.equals("") || contents.equals("/") || contents.equals(" ")) {
 				return new IContentProposal[] { new XPathContentProposal("/server/", "/server/".length(), null, null)};
@@ -720,14 +719,14 @@ public class XPathDialogs {
 		}
 		
 		protected XPathResultNode[] getXPath(String xpath) {
-			if( server == null ) 
+			if( path == null ) 
 				return new XPathResultNode[0];
 			
 			if( xpathCache.containsKey(xpath)) {
 				ArrayList list = (ArrayList)xpathCache.get(xpath);
 				return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
 			}
-			XPathQuery tmp = new XPathQuery("", server.getConfigDirectory(), "**/*.xml", xpath, null);
+			XPathQuery tmp = new XPathQuery("", path, "**/*.xml", xpath, null);
 			tmp.setRepository(repository);
 			ArrayList list = new ArrayList();
 			XPathFileResult[] items = tmp.getResults();
@@ -774,9 +773,11 @@ public class XPathDialogs {
 			String[] props = getAttributeNameProposalStrings(parent, path.substring(attName+1));
 			return convertProposals(props);
 		}
+		
 		public IContentProposal[] getAttributeNameProposals(String parentPath, String remainder) {
 			return convertProposals(getAttributeNameProposalStrings(parentPath, remainder));
 		}
+
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
 			ArrayList names = new ArrayList();
 			XPathResultNode[] items = getXPath(parentPath);
@@ -799,6 +800,7 @@ public class XPathDialogs {
 		public IContentProposal[] getAttributeValueProposals(String path) {
 			return getAttributeValueProposals(path.substring(0, path.lastIndexOf('=')), path.substring(path.lastIndexOf('=')+1));
 		}
+
 		public IContentProposal[] getAttributeValueProposals(String parentPath, String remainder) {
 			String parentElementPath = parentPath.substring(0, parentPath.lastIndexOf('['));
 			int brackIndex = parentPath.lastIndexOf('[');
@@ -886,5 +888,14 @@ public class XPathDialogs {
 				return label;
 			}
 		}
+	}
+	
+	public static String getConfigFolder(IServer server) {
+		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+		if( jbs != null ) {
+			return jbs.getConfigDirectory();
+		}
+		return server.getRuntime().getLocation().toOSString();
+		//return null;
 	}
 }

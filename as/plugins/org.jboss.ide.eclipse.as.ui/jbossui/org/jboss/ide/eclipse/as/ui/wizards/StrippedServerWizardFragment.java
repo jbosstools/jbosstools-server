@@ -2,11 +2,9 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -27,12 +25,12 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class StrippedServerWizardFragment extends WizardFragment {
@@ -43,6 +41,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	private Text deployText, nameText;
 	private Button browse;
 	private String name, deployLoc;
+
 	public StrippedServerWizardFragment() {
 	}
 	
@@ -50,17 +49,14 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		this.handle = handle;
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
-		
-
-		
-		
+				
 		nameLabel = new Label(main, SWT.NONE);
 		nameText = new Text(main, SWT.BORDER);
 		nameLabel.setText("Server Name");
 		
 		deployLabel = new Label(main, SWT.NONE);
 		deployText = new Text(main, SWT.BORDER);
-		Button browse = new Button(main, SWT.PUSH);
+		browse = new Button(main, SWT.PUSH);
 		deployLabel.setText(Messages.deployDirectory);
 		browse.setText(Messages.browse);
 		
@@ -85,11 +81,6 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		nametData.left = new FormAttachment(deployLabel,5);
 		nametData.right = new FormAttachment(100,-5);
 		nameText.setLayoutData(nametData);
-
-		
-		
-		
-		
 		
 		FormData bData = new FormData();
 		bData.right = new FormAttachment(100,-5);
@@ -114,13 +105,10 @@ public class StrippedServerWizardFragment extends WizardFragment {
 			} 
 		});
 
-		
 		deployText.addModifyListener(ml);
 		nameText.addModifyListener(ml);
-		
 		nameText.setText(getDefaultNameText());
-
-			
+		handle.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_DEPLOY_ONLY_LOGO));
 		return main;
 	}
 
@@ -184,24 +172,12 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		ServerWorkingCopy serverwc2 = (serverWC instanceof ServerWorkingCopy ? ((ServerWorkingCopy)serverWC) : null);
 		
-		IFolder folder = getJbossServerFolder(name);
-		if( !folder.exists()) {
-			folder.create(true,true, new NullProgressMonitor());
-		}
 		try {
-			serverwc2.setServerConfiguration(folder);
+			serverwc2.setServerConfiguration(null);
 			serverwc2.setName(name);
 			serverwc2.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
-			IServer saved = serverwc2.save(true, monitor);
-			getTaskModel().putObject(TaskModel.TASK_SERVER, saved);
+			getTaskModel().putObject(TaskModel.TASK_SERVER, serverwc2);
 		} catch( Exception ce ) {
-		}
-	}
-	private IFolder getJbossServerFolder(String serverName) {
-		try {
-			return ServerType.getServerProject().getFolder(serverName);
-		} catch( Exception e) {
-			return null;
 		}
 	}
 
@@ -212,19 +188,16 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	public boolean hasComposite() {
 		return true;
 	}
-
-	
-	
-	
 	
 	private String getDefaultNameText() {
 		String base = "JBoss deployer";
 		if( findServer(base) == null ) return base;
 		int i = 1;
-		while( ServerCore.findServer(base + " " + i) != null ) 
+		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
 			i++;
-		return base + " " + i;
+		return base + " (" + i + ")";
 	}
+	
 	private IServer findServer(String name) {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {

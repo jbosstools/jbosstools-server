@@ -46,12 +46,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMDocument;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 import org.w3c.dom.NamedNodeMap;
@@ -280,16 +280,16 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			ConvertNodeToXPathDialog d = new ConvertNodeToXPathDialog(new Shell(), node, attributeName);
 			int result = -1;
 			try {
-			result = d.open();
+				result = d.open();
 			} catch(Exception e) {e.printStackTrace(); }
 			if( result == Window.OK) {
-				JBossServer s = d.getServer();
+				IServer s = d.getServer();
 				String category = d.getCategory();
 				XPathCategory cat = XPathModel.getDefault().getCategory(s, category);
 				if( cat == null ) {
 					cat = XPathModel.getDefault().addCategory(s, category);
 				}
-				XPathQuery q = new XPathQuery(d.getName(), s.getConfigDirectory(), null, d.getXpath(), d.getAttribute());
+				XPathQuery q = new XPathQuery(d.getName(), XPathDialogs.getConfigFolder(s), null, d.getXpath(), d.getAttribute());
 				cat.addQuery(q);
 				cat.save();
 			}

@@ -42,6 +42,8 @@ public class JBossServerUISharedImages {
 	public static final String WIZBAN_JBOSS32_LOGO = "jboss32logo";
 	public static final String WIZBAN_JBOSS40_LOGO = "jboss40logo";
 	public static final String WIZBAN_JBOSS42_LOGO = "jboss42logo";
+	public static final String WIZBAN_DEPLOY_ONLY_LOGO = "jbossdeployerlogo";
+	
 	
 	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE";
 	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE";
@@ -54,8 +56,7 @@ public class JBossServerUISharedImages {
 	
 	private Hashtable images, descriptors;
 	
-	private JBossServerUISharedImages ()
-	{
+	private JBossServerUISharedImages () {
 		instance = this;
 		images = new Hashtable();
 		descriptors = new Hashtable();
@@ -67,7 +68,7 @@ public class JBossServerUISharedImages {
 		descriptors.put(WIZBAN_JBOSS32_LOGO, createImageDescriptor(pluginBundle, "/icons/logo32.gif"));
 		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif"));
 		descriptors.put(WIZBAN_JBOSS42_LOGO, createImageDescriptor(pluginBundle, "/icons/logo42.gif"));
-			
+		descriptors.put(WIZBAN_DEPLOY_ONLY_LOGO, createImageDescriptor(pluginBundle, "/icons/blank.gif"));
 		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
 		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
 		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
@@ -80,7 +81,6 @@ public class JBossServerUISharedImages {
 			ImageDescriptor descriptor = descriptor(key);
 			images.put(key,  descriptor.createImage());	
 		}
-		
 		
 		images.put(GENERIC_SERVER_IMAGE, ImageResource.getImageDescriptor(ImageResource.IMG_CTOOL_NEW_SERVER).createImage());
 		descriptors.put(GENERIC_SERVER_IMAGE, ImageDescriptor.createFromImage((Image)images.get(GENERIC_SERVER_IMAGE)));

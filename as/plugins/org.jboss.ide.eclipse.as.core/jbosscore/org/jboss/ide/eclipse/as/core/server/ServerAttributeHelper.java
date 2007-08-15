@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 
 /**
@@ -39,6 +40,16 @@ import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
  */
 public class ServerAttributeHelper {
 
+	public static ServerAttributeHelper createHelper(IServer iserver) {
+		if( iserver instanceof Server ) {
+			IServerWorkingCopy copy = ((Server)iserver).createWorkingCopy();
+			if( copy != null ) {
+				return new ServerAttributeHelper(iserver, copy);
+			}
+		}
+		return null;
+	}
+	
 	private ServerWorkingCopy wch;
 	private IServer server;
 	public ServerAttributeHelper(IServer server, IServerWorkingCopy copy) {

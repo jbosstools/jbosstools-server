@@ -25,12 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerPollerTimeoutListener;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerStatePollerType;
 
 /**
@@ -43,36 +40,6 @@ public class ExtensionManager {
 		if( instance == null ) 
 			instance = new ExtensionManager();
 		return instance;
-	}
-	
-	private HashMap pollerListeners = null;
-	public IServerPollerTimeoutListener[] getTimeoutListeners(String pollerClass) {
-		if( pollerListeners == null ) 
-			loadTimeoutListeners();
-		ArrayList list = (ArrayList)pollerListeners.get(pollerClass);
-		if( list != null ) {
-			return (IServerPollerTimeoutListener[]) list.toArray(new IServerPollerTimeoutListener[list.size()]);
-		}
-		return new IServerPollerTimeoutListener[0];
-	}
-	
-	protected void loadTimeoutListeners() {
-		pollerListeners = new HashMap();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerTimeoutListener");
-		for( int i = 0; i < cf.length; i++ ) {
-			try {
-				String poller = cf[i].getAttribute("pollerType");
-				Object listener = cf[i].createExecutableExtension("listener");
-				
-				ArrayList list = (ArrayList)pollerListeners.get(poller);
-				if( list == null ) list = new ArrayList();
-				list.add(listener);
-				pollerListeners.put(poller, list);
-			} catch( CoreException ce ) {
-				ce.printStackTrace();
-			}
-		}
 	}
 	
 	private HashMap pollers;
