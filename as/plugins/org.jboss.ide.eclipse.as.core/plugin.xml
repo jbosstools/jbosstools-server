@@ -97,7 +97,9 @@
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
-               
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>               
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -116,8 +118,17 @@
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4"/>
           <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
                 types="jboss.package"
                 versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>                
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -136,8 +147,17 @@
                 types="jst.ear"
                 versions="1.2, 1.3, 1.4, 5.0"/>
           <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
                 types="jboss.package"
                 versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
       </runtimeType>
 
 
@@ -157,11 +177,19 @@
                 versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
           <moduleType
                 types="jst.ear"
-                versions="1.2, 1.3, 1.4, 1.5"/>
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
           <moduleType
                 types="jboss.package"
                 versions="1.0"/>
-            
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
       </runtimeType>
    </extension>
 
@@ -305,22 +333,12 @@
         <runtime-component
          id="org.jboss.ide.eclipse.as.runtime.component.32"
          version="3.2"/>
-       <facet
-         id="jst.web"
-         version="2.2,2.3,2.4"/>
+       <facet id="jst.web" version="2.2,2.3,2.4"/>
        <facet id="jst.java" version="1.3,1.4,5.0"/>  
-       <facet
-         id="jst.utility"
-         version="1.0"/>
-       <facet
-             id="jst.ejb"
-             version="2.0,2.1"/>
-       <facet
-             id="jst.ear"
-             version="1.2,1.3,1.4"/>
-       <facet
-             id="jst.appclient"
-             version="1.2,1.3,1.4"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.ejb" version="2.0,2.1"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4"/>
      </supported>
 
 
@@ -332,8 +350,8 @@
        <facet id="jst.java" version="1.3,1.4,5.0"/>  
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
-       <facet id="jst.ear" version="1.2,1.3,1.4"/>
-       <facet id="jst.appclient" version="1.2,1.3,1.4"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
      </supported>
 
       <supported>
@@ -344,8 +362,8 @@
        <facet id="jst.java" version="1.3,1.4,5.0"/>  
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
-       <facet id="jst.ear" version="1.2,1.3,1.4"/>
-       <facet id="jst.appclient" version="1.2,1.3,1.4"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
      </supported>
    </extension>
    
@@ -356,6 +374,7 @@
             id="jboss.package"
             name="Project Package"/>  
    </extension>
+   
    <extension
          point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
