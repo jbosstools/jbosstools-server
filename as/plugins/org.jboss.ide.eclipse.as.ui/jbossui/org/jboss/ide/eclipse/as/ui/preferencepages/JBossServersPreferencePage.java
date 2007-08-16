@@ -505,8 +505,8 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			// poller
 			stopPollerCombo.setEnabled(true);
 			startPollerCombo.setEnabled(true);
-			String currentStartId = helper.getAttribute(IServerPollingAttributes.STARTUP_POLLER_KEY, IServerPollingAttributes.DEFAULT_POLLER);
-			String currentStopId = helper.getAttribute(IServerPollingAttributes.SHUTDOWN_POLLER_KEY, IServerPollingAttributes.DEFAULT_POLLER);
+			String currentStartId = helper.getAttribute(IServerPollingAttributes.STARTUP_POLLER_KEY, IServerPollingAttributes.DEFAULT_STARTUP_POLLER);
+			String currentStopId = helper.getAttribute(IServerPollingAttributes.SHUTDOWN_POLLER_KEY, IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER);
 			startPollerCombo.select(startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName()));
 			stopPollerCombo.select(stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName()));
 		}
