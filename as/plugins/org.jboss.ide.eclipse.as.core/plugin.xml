@@ -204,16 +204,25 @@
             modes="run,debug"
             name="JBoss Application Server"
             public="true"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
       <launchConfigurationType
             delegate="org.jboss.ide.eclipse.as.core.server.stripped.DeployableLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             modes="run,debug"
             name="Stripped Server Launch Configuration"
-            public="false"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"/>
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
    </extension>
 	
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="org.jboss.ide.eclipse.as.core.server.xpl.ServerSourcePathComputerDelegate"
+            id="org.jboss.ide.eclipse.as.core.serverSourcePathComputer">
+      </sourcePathComputer>
+   </extension>
 	
 	<!-- Module Factory Stuff -->
 
