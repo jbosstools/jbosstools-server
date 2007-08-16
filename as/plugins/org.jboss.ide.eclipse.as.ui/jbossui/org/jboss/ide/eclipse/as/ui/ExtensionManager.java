@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -59,11 +60,15 @@ public class ExtensionManager {
 		// Create the extensions from the registry
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] elements = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerViewExtension");
-		serverViewExtensions = new ServerViewProvider[elements.length];
+		ArrayList list = new ArrayList();
 		for( int i = 0; i < elements.length; i++ ) {
-			serverViewExtensions[i] = new ServerViewProvider(elements[i]);
-			//serverViewExtensions[i].setEnabled(true);
+			try {
+				list.add(new ServerViewProvider(elements[i]));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
+		serverViewExtensions = (ServerViewProvider[]) list.toArray(new ServerViewProvider[list.size()]);
 	}
 
 }
