@@ -24,7 +24,6 @@ package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
@@ -81,8 +80,13 @@ public class PollThread extends Thread {
 	protected IServerStatePoller discoverPoller(JBossServerBehavior behavior, boolean expectedState) {
 		JBossServer s = ServerConverter.getJBossServer(behavior.getServer());
 		ServerAttributeHelper helper = s.getAttributeHelper();
-		String key = expectedState == IServerStatePoller.SERVER_UP ? IServerPollingAttributes.STARTUP_POLLER_KEY : IServerPollingAttributes.SHUTDOWN_POLLER_KEY;
-		String pollerId = helper.getAttribute(key, IServerPollingAttributes.DEFAULT_POLLER);
+		String key = expectedState == IServerStatePoller.SERVER_UP ? 
+				IServerPollingAttributes.STARTUP_POLLER_KEY : 
+				IServerPollingAttributes.SHUTDOWN_POLLER_KEY;
+		String defaultPoller = expectedState == IServerStatePoller.SERVER_UP ? 
+				IServerPollingAttributes.DEFAULT_STARTUP_POLLER : 
+				IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER;
+		String pollerId = helper.getAttribute(key, defaultPoller);
 		ServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
 		return type == null ? null : type.createPoller();
 	}
