@@ -25,7 +25,6 @@ import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.ServerType;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;

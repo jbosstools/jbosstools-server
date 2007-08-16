@@ -34,7 +34,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;

@@ -2,7 +2,6 @@ package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
 
 /**

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.runtime.server;
+package org.jboss.ide.eclipse.as.core.runtime.server.polling;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 

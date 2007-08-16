@@ -35,7 +35,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.runtime.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.runtime.server.polling.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread.PollThreadEvent;
