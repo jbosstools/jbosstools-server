@@ -1,7 +1,11 @@
 package org.jboss.ide.eclipse.as.ui.views.server;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionManager;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
@@ -17,10 +21,27 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 
 public class JBossServerView extends ViewPart {
 
-	private static final String TAG_SASHFORM_HEIGHT = "sashformHeight"; 
+	private static final String TAG_SASHFORM_HEIGHT = "sashformHeight";
+	
 	public static JBossServerView instance;
+	private static ArrayList serverFrameListeners = new ArrayList();
+	private static ArrayList extensionFrameListeners = new ArrayList();
+
 	public static JBossServerView getDefault() {
 		return instance;
+	}
+	
+	public static void addServerFrameListener(ISelectionChangedListener listener) {
+		if( !serverFrameListeners.contains(listener))
+			serverFrameListeners.add(listener);
+		if( getDefault() != null )
+			getDefault().getServerFrame().getViewer().addSelectionChangedListener(listener);
+	}
+	public static void addExtensionFrameListener(ISelectionChangedListener listener) {
+		if( !extensionFrameListeners.contains(listener))
+			extensionFrameListeners.add(listener);
+		if( getDefault() != null )
+			getDefault().getExtensionFrame().getViewer().addSelectionChangedListener(listener);
 	}
 	
 	public static interface IServerViewFrame {
@@ -34,7 +55,6 @@ public class JBossServerView extends ViewPart {
 		instance = this;		
 	}
 
-	
 	private SashForm form;
 	private int[] sashRows;
 	private IMemento memento;
@@ -95,6 +115,14 @@ public class JBossServerView extends ViewPart {
 		}
 		
 		form.setWeights(sashRows);
+		
+		
+		// if the extensions have already been created, add those listeners now.
+		Iterator k;
+		for(k = serverFrameListeners.iterator(); k.hasNext();) 
+			serverFrame.getViewer().addSelectionChangedListener(((ISelectionChangedListener)k.next()));
+		for(k = extensionFrameListeners.iterator(); k.hasNext();) 
+			extensionFrame.getViewer().addSelectionChangedListener(((ISelectionChangedListener)k.next()));
 	}
 	
 	public void refreshAll() {

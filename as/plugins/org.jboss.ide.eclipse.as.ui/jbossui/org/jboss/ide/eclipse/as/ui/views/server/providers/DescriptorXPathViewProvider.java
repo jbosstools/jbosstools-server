@@ -85,12 +85,12 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 	}
 
 	protected void addListeners() {
-		JBossServerView.getDefault().getExtensionFrame().getViewer().
-			addSelectionChangedListener(new ISelectionChangedListener() {
+		JBossServerView.addExtensionFrameListener(
+			new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
 					activatePropertiesView();
-				} 
-			});		
+				}
+			});
 	}
 	
 	protected void activatePropertiesView() {
