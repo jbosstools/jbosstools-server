@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 
 public class XPathModel {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
+	public static final String PORTS_CATEGORY_NAME = "Ports";
 	private static final String DELIMITER = ",";
 	private static final String CATEGORY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	
@@ -206,7 +207,7 @@ public class XPathModel {
 		Properties pr = new Properties();
 		try {
 			pr.load(url.openStream());
-			XPathCategory ports = new XPathCategory("Ports", server);
+			XPathCategory ports = new XPathCategory(PORTS_CATEGORY_NAME, server);
 			Iterator i = pr.keySet().iterator();
 			String name, xpath, attributeName, file;
 			XPathQuery query;
