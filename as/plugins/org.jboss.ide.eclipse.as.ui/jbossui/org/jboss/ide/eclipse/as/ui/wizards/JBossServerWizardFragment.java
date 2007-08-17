@@ -175,7 +175,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	private void createRuntimeGroup(Composite main) {
-		g = new Group(main, SWT.BORDER);
+		g = new Group(main, SWT.NONE);
 		g.setText(Messages.runtimeInformation);
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
