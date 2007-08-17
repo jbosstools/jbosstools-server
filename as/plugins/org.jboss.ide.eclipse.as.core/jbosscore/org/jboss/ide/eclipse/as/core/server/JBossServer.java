@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.server;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -39,12 +40,16 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
+import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
@@ -95,6 +100,9 @@ public class JBossServer extends ServerDelegate
 		return new IModule[] { module };
 	}
 
+	public ServerPort[] getServerPorts() {
+		return new ServerPort[0];
+	}
 	
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
