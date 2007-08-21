@@ -60,7 +60,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private Label nameLabel, explanationLabel; 
+	private Label nameLabel, explanationLabel, explanationLabel2; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
 	private Label homeValLabel, jreValLabel, configValLabel;
 	private String runtimeLoc, configName;
@@ -175,12 +175,23 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	private void createRuntimeGroup(Composite main) {
+		// explanation 2
+		explanationLabel2 = new Label(main, SWT.NONE);
+		explanationLabel2.setText(Messages.serverWizardFragmentExplanation2);
+		FormData labelData = new FormData();
+		labelData.left = new FormAttachment(0,5);
+		labelData.right = new FormAttachment(100, -5);
+		labelData.top = new FormAttachment(nameComposite, 15);
+		explanationLabel2.setLayoutData(labelData);
+		
+
+		
 		g = new Group(main, SWT.NONE);
 		g.setText(Messages.runtimeInformation);
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
 		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(nameComposite, 5);
+		groupData.top = new FormAttachment(explanationLabel2, 5);
 		g.setLayoutData(groupData);
 
 		g.setLayout(new GridLayout(2, false));

@@ -35,6 +35,7 @@ public class Messages {
 	public static String wizardFragmentConfigLabel;
 	public static String runtimeWizardFragmentExplanation;
 	public static String serverWizardFragmentExplanation;
+	public static String serverWizardFragmentExplanation2;
 	public static String serverNameInUse;
 	public static String runtimeNameInUse;
 	public static String invalidDirectory;
