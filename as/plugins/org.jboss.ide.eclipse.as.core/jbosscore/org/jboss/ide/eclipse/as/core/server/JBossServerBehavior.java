@@ -75,10 +75,11 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		t.start();
 	}
 	
-	protected void forceStop() {
+	public void forceStop() {
 		forceStop(true);
 	}
-	protected void forceStop(boolean addEvent) {
+	
+	public void forceStop(boolean addEvent) {
 		// just terminate the process.
 		try {
 			if( process != null ) 
