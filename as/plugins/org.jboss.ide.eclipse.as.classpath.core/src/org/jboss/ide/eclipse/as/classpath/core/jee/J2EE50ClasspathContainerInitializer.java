@@ -18,7 +18,7 @@ public class J2EE50ClasspathContainerInitializer extends
 		return J2EE50ClasspathContainer.CLASSPATH_CONTAINER;
 	}
 
-	public class J2EE50ClasspathContainer extends AbstractClasspathContainer {
+	public static class J2EE50ClasspathContainer extends AbstractClasspathContainer {
 		public final static String SUFFIX = "javaee-5.0";//$NON-NLS-1$
 		public final static String CLASSPATH_CONTAINER = CLASSPATH_CONTAINER_PREFIX
 				+ "." + J2EE50ClasspathContainer.SUFFIX;//$NON-NLS-1$

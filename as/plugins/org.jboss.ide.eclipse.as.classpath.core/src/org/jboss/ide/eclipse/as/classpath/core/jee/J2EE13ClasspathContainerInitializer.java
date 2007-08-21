@@ -39,7 +39,7 @@ public class J2EE13ClasspathContainerInitializer extends
 		return J2EE13ClasspathContainer.CLASSPATH_CONTAINER;
 	}
 	
-	public class J2EE13ClasspathContainer extends AbstractClasspathContainer {
+	public static class J2EE13ClasspathContainer extends AbstractClasspathContainer {
 		public final static String SUFFIX = "j2ee-1.3";//$NON-NLS-1$
 		public final static String CLASSPATH_CONTAINER = CLASSPATH_CONTAINER_PREFIX
 				+ "." + J2EE13ClasspathContainer.SUFFIX;//$NON-NLS-1$
