@@ -28,6 +28,7 @@ import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
 import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
+import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClasspathContainerPage
@@ -37,6 +38,9 @@ public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClass
 
    public JBossEJB3LibrariesPage() {
       super();
+      setTitle(Messages.ejb3ClasspathPageTitle);
+      setDescription(Messages.ejb3ClasspathPageDescription);
+      
    }
 
    private boolean jbossServerHasEJB3(JBossServer jbossServer) {

@@ -21,7 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.classpath.ui.jee;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -30,13 +32,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 
-/**
- * Description of the Class
- * 
- * @author Laurent Etiemble
- * @version $Revision: 1420 $
- */
 public abstract class ClasspathContainerPage extends WizardPage implements
 		IClasspathContainerPage {
 	private final static String PAGE_NAME = ClasspathContainerPage.class
@@ -48,8 +45,8 @@ public abstract class ClasspathContainerPage extends WizardPage implements
 		super(PAGE_NAME);
 		this.containerId = id;
 		this.description = description;
-		this.setTitle("Title");//$NON-NLS-1$
-		this.setDescription(description);//$NON-NLS-1$
+		this.setTitle(Messages.jeeClasspathAdding + description);
+		this.setDescription(Messages.jeeClasspathDescription);
 		this.setImageDescriptor(JavaPluginImages.DESC_WIZBAN_ADD_LIBRARY);
 	}
 
@@ -65,9 +62,9 @@ public abstract class ClasspathContainerPage extends WizardPage implements
 		top.setLayout(layout);
 
 		Label lbl = new Label(top, SWT.NONE);
-		lbl
-				.setText("ClasspathContainerPage.text.start" + this.getClasspathEntryDescription() 
-						+ ("ClasspathContainerPage.text.end"));//$NON-NLS-1$ //$NON-NLS-2$
+		lbl.setText(Messages.jeeClasspathBody1 + 
+				this.getClasspathEntryDescription() + 
+				Messages.jeeClasspathBody2);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		lbl.setLayoutData(gd);
 
@@ -89,7 +86,7 @@ public abstract class ClasspathContainerPage extends WizardPage implements
 	 * @return The selection value
 	 */
 	public IClasspathEntry getSelection() {
-		return null;
+		return JavaCore.newContainerEntry(new Path(containerId), true);
 	}
 
 	/**

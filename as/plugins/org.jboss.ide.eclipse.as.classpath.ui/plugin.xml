@@ -12,14 +12,19 @@
    <extension
          point="org.eclipse.jdt.ui.classpathContainerPage">
       <classpathContainerPage
-            name="1.3 libs"
+            name="J2EE 1.3 libraries"
             class="org.jboss.ide.eclipse.as.classpath.ui.jee.J2EE13ClasspathContainerPage"
             id="org.jboss.ide.eclipse.as.classpath.core.j2ee-1.3">
       </classpathContainerPage>
       <classpathContainerPage
-            name="1.4 libs"
+            name="J2EE 1.4 libraries"
             class="org.jboss.ide.eclipse.as.classpath.ui.jee.J2EE14ClasspathContainerPage"
             id="org.jboss.ide.eclipse.as.classpath.core.j2ee-1.4">
+      </classpathContainerPage>
+      <classpathContainerPage
+            name="JEE 5.0 libraries"
+            class="org.jboss.ide.eclipse.as.classpath.ui.jee.JEE50ClasspathContainerPage"
+            id="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </classpathContainerPage>
    </extension>
    
