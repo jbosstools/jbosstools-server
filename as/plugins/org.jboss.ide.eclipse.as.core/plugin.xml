@@ -287,7 +287,7 @@
             id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
             name="JMX Poller"
             supportsStartup="true"
-            supportsShutdown="true"/>
+            supportsShutdown="false"/>
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.runtime.server.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"

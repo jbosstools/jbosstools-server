@@ -138,9 +138,8 @@ public class PollThread extends Thread {
 				// abort and put the message in event log
 				poller.cancel(IServerStatePoller.CANCEL);
 				poller.cleanup();
-				if( expectedState == IServerStatePoller.SERVER_UP) behavior.stop(true);
-				if( expectedState == IServerStatePoller.SERVER_DOWN) behavior.setServerStarted();
 				alertEventLogPollerException(e);
+				alertBehavior(IServerStatePoller.SERVER_DOWN, false);
 				return;
 			}
 		}
@@ -162,9 +161,8 @@ public class PollThread extends Thread {
 					// abort and put the message in event log
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
-					if( expectedState == IServerStatePoller.SERVER_UP) behavior.stop(true);
-					if( expectedState == IServerStatePoller.SERVER_DOWN) behavior.setServerStarted();
 					alertEventLogPollerException(pe);
+					alertBehavior(IServerStatePoller.SERVER_DOWN, false);
 					return;
 				}
 			} else {
@@ -183,13 +181,13 @@ public class PollThread extends Thread {
 	protected void alertBehavior(boolean currentState, boolean finalAlert) {
 		if( currentState != expectedState ) {
 			// it didnt work... cancel all processes! force stop
-			behavior.stop(true);
+			behavior.forceStop(false);
 			if( finalAlert ) alertEventLogFailure();
 		} else {
 			if( currentState == IServerStatePoller.SERVER_UP ) 
 				behavior.setServerStarted();
 			else {
-				behavior.stop(true);
+				behavior.forceStop(false);
 			}
 			if( finalAlert ) alertEventLogSuccess(currentState);
 		}

@@ -148,7 +148,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 	}
 
 	protected Image getErrorImage() {
-		return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+		return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 	}
 	public Image getStartedImage() {
 		return getStateImage(IServer.STATE_STARTED);
