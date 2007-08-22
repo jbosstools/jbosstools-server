@@ -169,10 +169,18 @@ public class JMXPoller implements IServerStatePoller {
 								IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS
 										+ JBossServerLaunchConfiguration.PRGM_ARGS_TWIDDLE_SUFFIX,
 								(String) null);
-				String user = ArgsUtil.getValue(twiddleArgs, "-u", "--user");
-				String password = ArgsUtil.getValue(twiddleArgs, "-p",
-						"--password");
-
+				
+				// get user from the IServer, but override with launch configuration
+				String user = ServerConverter.getJBossServer(server).getUsername();
+				String userLaunch = ArgsUtil.getValue(twiddleArgs, "-u", "--user");
+				user = userLaunch == null ? user : userLaunch;
+				
+				// get password from the IServer, but override with launch configuration
+				String pass = ServerConverter.getJBossServer(server).getPassword();
+				String passwordLaunch = ArgsUtil.getValue(twiddleArgs, "-p", "--password");
+				pass = passwordLaunch == null ? pass : passwordLaunch;
+				
+				
 				// get our methods
 				Class simplePrincipal = Thread.currentThread()
 						.getContextClassLoader().loadClass(
@@ -197,7 +205,7 @@ public class JMXPoller implements IServerStatePoller {
 				// set the credential
 				Method setCredentialMethod = securityAssoc.getMethod(
 						"setCredential", new Class[] { Object.class });
-				setCredentialMethod.invoke(null, new Object[] { password });
+				setCredentialMethod.invoke(null, new Object[] { pass });
 			} catch (CoreException e) {
 				temp = e;
 			} catch (ClassNotFoundException e) {

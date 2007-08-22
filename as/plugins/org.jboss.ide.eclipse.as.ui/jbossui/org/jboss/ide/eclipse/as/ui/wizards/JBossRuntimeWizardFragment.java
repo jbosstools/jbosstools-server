@@ -64,6 +64,7 @@ import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -438,7 +439,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				// No errors, clear the message and update the available
 				// configurations
 				configurations.setJBossHome(homeDirText.getText());
-				configurations.setDefaultConfiguration("default");
+				configurations.setDefaultConfiguration(IServerStartupParameters.DEFAULT_SERVER_NAME);
 
 				// update config variable
 				int index = configurations.getTable().getSelectionIndex();

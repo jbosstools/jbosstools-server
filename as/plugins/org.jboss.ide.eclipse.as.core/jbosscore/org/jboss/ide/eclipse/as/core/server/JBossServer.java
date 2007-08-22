@@ -230,5 +230,14 @@ public class JBossServer extends ServerDelegate
 		try {
 			return new URL(url);
 		} catch( MalformedURLException murle) { return null; }
-	}	
+	}
+	
+	
+	public String getUsername() {
+		return getAttributeHelper().getAttribute(SERVER_USERNAME, "");
+	}
+	
+	public String getPassword() {
+		return getAttributeHelper().getAttribute(SERVER_PASSWORD, "");
+	}
 }

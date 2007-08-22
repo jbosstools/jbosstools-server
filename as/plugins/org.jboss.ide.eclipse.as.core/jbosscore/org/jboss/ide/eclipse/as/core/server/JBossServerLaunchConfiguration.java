@@ -48,6 +48,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
 public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -142,12 +143,33 @@ public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurat
 			List classpath = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH + suffix, new ArrayList());
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, classpath);
 
+			if( STOP.equals(action) || TWIDDLE.equals(action))
+				addCredentials(workingCopy, getJBossServer(workingCopy));
+
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
 
 	}
 		
+
+	protected static void addCredentials(ILaunchConfigurationWorkingCopy configuration, JBossServer server) {
+		try {
+			String argsKey = IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS;
+			String args = configuration.getAttribute(argsKey, (String)null);
+			String user = ArgsUtil.getValue(args, "-u", "--user");
+			String pass = ArgsUtil.getValue(args, "-p", "--password");
+			if( user == null )
+				args = args + " -u " + server.getUsername();
+			if( pass == null ) 
+				args = args + " -p " + server.getPassword();
+			
+			configuration.setAttribute(argsKey, args);
+		} catch( CoreException ce ) {
+			ce.printStackTrace();
+		}
+	}
+
 
 	// Have the defaults been set for this launch config yet? ever?
 	public static boolean defaultsBeenSet(ILaunchConfiguration workingCopy, IServer server) {
