@@ -45,14 +45,14 @@ public class StrippedServerDeploySection extends ServerEditorSection {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		
 		Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE|ExpandableComposite.EXPANDED|ExpandableComposite.TITLE_BAR);
-		section.setText(Messages.deployDirectory);
+		section.setText(Messages.sswf_DeployDirectory);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 		
 		Composite composite = toolkit.createComposite(section);
 
 		composite.setLayout(new FormLayout());
 		
-		Label label = toolkit.createLabel(composite, Messages.deployDirectory);
+		Label label = toolkit.createLabel(composite, Messages.sswf_DeployDirectory);
 		final Text text = toolkit.createText(composite, getDeployDir(), SWT.BORDER);
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {

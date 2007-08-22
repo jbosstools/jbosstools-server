@@ -56,6 +56,8 @@ import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 public class JBossServer extends ServerDelegate 
 		implements IServerStartupParameters, IDeployableServer, IURLProvider {
 
+	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName";
+	public static final String SERVER_PASSWORD = "org.jboss.ide.eclipse.as.core.server.password";
 	
 	public JBossServer() {
 	}

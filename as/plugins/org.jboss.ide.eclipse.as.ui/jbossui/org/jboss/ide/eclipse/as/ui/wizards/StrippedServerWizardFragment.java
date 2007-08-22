@@ -52,12 +52,12 @@ public class StrippedServerWizardFragment extends WizardFragment {
 				
 		nameLabel = new Label(main, SWT.NONE);
 		nameText = new Text(main, SWT.BORDER);
-		nameLabel.setText("Server Name");
+		nameLabel.setText(Messages.serverName);
 		
 		deployLabel = new Label(main, SWT.NONE);
 		deployText = new Text(main, SWT.BORDER);
 		browse = new Button(main, SWT.PUSH);
-		deployLabel.setText(Messages.deployDirectory);
+		deployLabel.setText(Messages.sswf_DeployDirectory);
 		browse.setText(Messages.browse);
 		
 		FormData lData = new FormData();
@@ -136,7 +136,8 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	}
 	
 	public void enter() {
-		handle.setTitle("Create a new System Copy Server");
+		//handle.setTitle("Create a new System Copy Server");
+		handle.setTitle(Messages.sswf_Title);
 		IServer s = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		IServerWorkingCopy swc;
 		if( s instanceof IServerWorkingCopy)
@@ -190,7 +191,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getDefaultNameText() {
-		String base = "JBoss deployer";
+		String base = Messages.sswf_BaseName;
 		if( findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerCore.findServer(base + " (" + i + ")") != null ) 

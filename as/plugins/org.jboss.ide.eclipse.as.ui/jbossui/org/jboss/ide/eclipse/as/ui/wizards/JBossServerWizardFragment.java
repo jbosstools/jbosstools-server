@@ -1,5 +1,4 @@
 /*
- * JBoss, Home of Professional Open Source
  * Copyright 2006, JBoss Inc., and individual contributors as indicated
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -49,6 +48,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
@@ -60,15 +60,17 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private Label nameLabel, explanationLabel, explanationLabel2; 
+	private Label nameLabel, serverExplanationLabel, 
+					runtimeExplanationLabel, authenticationExplanationLabel; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
 	private Label homeValLabel, jreValLabel, configValLabel;
-	private String runtimeLoc, configName;
+	private Label usernameLabel, passLabel;
+	private String runtimeLoc, configName, authUser, authPass;
 	
 	private Composite nameComposite;
-	private Group g;
+	private Group runtimeGroup, authenticationGroup;
 	private String name;
-	private Text nameText;
+	private Text nameText, userText, passText;
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
@@ -79,10 +81,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 		createExplanationLabel(main);
 		createNameComposite(main);
 		createRuntimeGroup(main);
+		createAuthenticationGroup(main);
 
 		// make modifications to parent
-		handle.setTitle(Messages.createWizardTitle);
-		handle.setDescription(Messages.createWizardDescription);
+		handle.setTitle(Messages.swf_Title);
+		handle.setDescription(Messages.swf_Description);
 		handle.setImageDescriptor (getImageDescriptor());
 		
 		return main;
@@ -108,13 +111,13 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	private void createExplanationLabel(Composite main) {
-		explanationLabel = new Label(main, SWT.NONE);
+		serverExplanationLabel = new Label(main, SWT.NONE);
 		FormData data = new FormData();
 		data.top = new FormAttachment(0,5);
 		data.left = new FormAttachment(0,5);
 		data.right = new FormAttachment(100,-5);
-		explanationLabel.setLayoutData(data);
-		explanationLabel.setText(Messages.serverWizardFragmentExplanation);
+		serverExplanationLabel.setLayoutData(data);
+		serverExplanationLabel.setText(Messages.swf_Explanation);
 	}
 
 	private void createNameComposite(Composite main) {
@@ -124,7 +127,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		FormData cData = new FormData();
 		cData.left = new FormAttachment(0,5);
 		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(explanationLabel, 10);
+		cData.top = new FormAttachment(serverExplanationLabel, 10);
 		nameComposite.setLayoutData(cData);
 		
 		nameComposite.setLayout(new FormLayout());
@@ -132,7 +135,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 		// create internal widgets
 		nameLabel = new Label(nameComposite, SWT.None);
-		nameLabel.setText(Messages.wizardFragmentNameLabel);
+		nameLabel.setText(Messages.wf_NameLabel);
 		
 		nameText = new Text(nameComposite, SWT.BORDER);
 		name = getDefaultNameText();
@@ -157,7 +160,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getDefaultNameText() {
-		String base = "JBoss " + getVersion() + " server";
+		String base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, getVersion());
 		if( findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
@@ -175,45 +178,87 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	private void createRuntimeGroup(Composite main) {
-		// explanation 2
-		explanationLabel2 = new Label(main, SWT.NONE);
-		explanationLabel2.setText(Messages.serverWizardFragmentExplanation2);
-		FormData labelData = new FormData();
-		labelData.left = new FormAttachment(0,5);
-		labelData.right = new FormAttachment(100, -5);
-		labelData.top = new FormAttachment(nameComposite, 15);
-		explanationLabel2.setLayoutData(labelData);
 		
-
-		
-		g = new Group(main, SWT.NONE);
-		g.setText(Messages.runtimeInformation);
+		runtimeGroup = new Group(main, SWT.NONE);
+		runtimeGroup.setText(Messages.swf_RuntimeInformation);
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
 		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(explanationLabel2, 5);
-		g.setLayoutData(groupData);
+		groupData.top = new FormAttachment(nameComposite, 5);
+		runtimeGroup.setLayoutData(groupData);
 
-		g.setLayout(new GridLayout(2, false));
+		runtimeGroup.setLayout(new GridLayout(2, false));
 		GridData d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		
+		// explanation 2
+		runtimeExplanationLabel = new Label(runtimeGroup, SWT.NONE);
+		runtimeExplanationLabel.setText(Messages.swf_Explanation2);
+		GridData explanationData = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		explanationData.horizontalSpan = 2;
+		runtimeExplanationLabel.setLayoutData(explanationData);
+
 		// Create our composite
-		homeDirLabel = new Label(g, SWT.NONE);
-		homeDirLabel.setText(Messages.wizardFragmentHomeDirLabel);
-		homeValLabel = new Label(g, SWT.NONE);
+		homeDirLabel = new Label(runtimeGroup, SWT.NONE);
+		homeDirLabel.setText(Messages.wf_HomeDirLabel);
+		homeValLabel = new Label(runtimeGroup, SWT.NONE);
 		homeValLabel.setLayoutData(d);
 		
-		installedJRELabel = new Label(g, SWT.NONE);
-		installedJRELabel.setText(Messages.wizardFragmentJRELabel);
-		jreValLabel = new Label(g, SWT.NONE);
+		installedJRELabel = new Label(runtimeGroup, SWT.NONE);
+		installedJRELabel.setText(Messages.wf_JRELabel);
+		jreValLabel = new Label(runtimeGroup, SWT.NONE);
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		jreValLabel.setLayoutData(d);
 		
-		configLabel = new Label(g, SWT.NONE);
-		configLabel.setText("Configuration");
-		configValLabel = new Label(g, SWT.NONE);
+		configLabel = new Label(runtimeGroup, SWT.NONE);
+		configLabel.setText(Messages.wf_ConfigLabel);
+		configValLabel = new Label(runtimeGroup, SWT.NONE);
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		configValLabel.setLayoutData(d);
+	}
+	
+	protected void createAuthenticationGroup(Composite main) {
+		authenticationGroup = new Group(main, SWT.BORDER);
+		authenticationGroup.setText(Messages.swf_AuthenticationGroup);
+		FormData groupData = new FormData();
+		groupData.left = new FormAttachment(0,5);
+		groupData.right = new FormAttachment(100, -5);
+		groupData.top = new FormAttachment(runtimeGroup, 5);
+		authenticationGroup.setLayoutData(groupData);
+
+		authenticationGroup.setLayout(new GridLayout(2, false));
+		GridData d;
+
+		authenticationExplanationLabel = new Label(authenticationGroup, SWT.NONE);
+		authenticationExplanationLabel.setText("Authentication Explanation is long and its also very very long so there");
+		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		d.horizontalSpan = 2;
+		authenticationExplanationLabel.setLayoutData(d);
+		
+		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		d.minimumWidth = 200;
+		usernameLabel = new Label(authenticationGroup, SWT.NONE);
+		usernameLabel.setText(Messages.swf_Username);
+		userText = new Text(authenticationGroup, SWT.BORDER);
+		userText.setLayoutData(d);
+
+		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		d.minimumWidth = 200;
+		passLabel = new Label(authenticationGroup, SWT.NONE);
+		passLabel.setText(Messages.swf_Password);
+		passText = new Text(authenticationGroup, SWT.BORDER);
+		passText.setLayoutData(d);
+		
+		// listeners
+		passText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				authPass = passText.getText();
+			} 
+		});
+		userText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				authUser = userText.getText();
+			} 
+		});
 	}
 	
 	private void updateErrorMessage() {
@@ -227,7 +272,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	
 	private String getErrorString() {
 		if( findServer(name) != null ) 
-			return Messages.serverNameInUse;
+			return Messages.swf_NameInUse;
 
 		return null;
 	}
@@ -250,7 +295,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
 			runtimeLoc = homeValLabel.getText();
 			configName = configValLabel.getText();
-			g.layout();
+			runtimeGroup.layout();
 		}
 	}
 
@@ -262,7 +307,10 @@ public class JBossServerWizardFragment extends WizardFragment {
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
 		serverWC.setServerConfiguration(null);
-		//IServer s = serverWC.save(false, new NullProgressMonitor());
+		if( serverWC instanceof ServerWorkingCopy) {
+			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_USERNAME, authUser);
+			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_PASSWORD, authPass);
+		}
 		IPath configFolder = new Path(runtimeLoc).append("server").append(configName);
 		XPathModel.getDefault().loadDefaults((IServer)serverWC, configFolder.toOSString()); 
 	}

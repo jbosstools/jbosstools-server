@@ -80,6 +80,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private final static int SEVERITY_ALL = 1;
 	private final static int SEVERITY_MAJOR = 2;
 
+	public static final String LOCATION_TEXT = Platform.getOS().equals(Platform.WS_WIN32) 
+		? "c:/program files/jboss-" : "/usr/bin/jboss-";
+	
+	
 	private IWizardHandle handle;
 	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel,
 			explanationLabel;
@@ -125,7 +129,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		// initTaskModel();
 
 		// make modifications to parent
-		handle.setTitle(Messages.createRuntimeWizardTitle);
+		handle.setTitle(Messages.rwf_Title);
 		handle.setImageDescriptor(getImageDescriptor());
 		return main;
 	}
@@ -156,37 +160,29 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.setDefaultConfiguration(configSelected);
 
 			configurations.getTable().setVisible(false);
-			configLabel.setText(Messages.wizardFragmentConfigLabel + ":  "
+			configLabel.setText(Messages.wf_ConfigLabel + ":  "
 					+ configSelected);
 			homeDirText.setEditable(false);
 			homeDirButton.setEnabled(false);
 
-			try {
-				Object o = rwc.loadAdapter(IJBossServerRuntime.class,
-						new NullProgressMonitor());
-				if (o != null) {
-					IJBossServerRuntime jbsr = (IJBossServerRuntime) o;
-					IVMInstall install = jbsr.getVM();
-					String vmName = install.getName();
-					String[] jres = jreCombo.getItems();
-					for (int i = 0; i < jres.length; i++) {
-						if (vmName.equals(jres[i]))
-							jreCombo.select(i);
-					}
+			Object o = rwc.loadAdapter(IJBossServerRuntime.class,
+					new NullProgressMonitor());
+			if (o != null) {
+				IJBossServerRuntime jbsr = (IJBossServerRuntime) o;
+				IVMInstall install = jbsr.getVM();
+				String vmName = install.getName();
+				String[] jres = jreCombo.getItems();
+				for (int i = 0; i < jres.length; i++) {
+					if (vmName.equals(jres[i]))
+						jreCombo.select(i);
 				}
-			} catch (Exception e) {
-
 			}
-
 		}
 	}
 
 	private void setWidgetDefaults() {
 		nameText.setText(generateNewRuntimeName());
-		homeDirText
-				.setText(Platform.getOS().equals(Platform.WS_WIN32) ? "c:/program files/jboss-"
-						+ getRuntimeVersionId() + ".x"
-						: "/usr/bin/jboss-" + getRuntimeVersionId() + ".x");
+		homeDirText.setText(LOCATION_TEXT + getRuntimeVersionId() + ".x");
 	}
 
 	public String getVersion() {
@@ -203,7 +199,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	private String generateNewRuntimeName() {
-		String base = "JBoss " + getVersion() + " runtime";
+		String base = Messages.rwf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, getVersion());
 		IRuntime rt = ServerCore.findRuntime(base);
 		if (rt == null)
 			return base;
@@ -266,7 +262,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		data.right = new FormAttachment(100, -5);
 		explanationLabel.setLayoutData(data);
 
-		explanationLabel.setText(Messages.runtimeWizardFragmentExplanation);
+		explanationLabel.setText(Messages.rwf_Explanation);
 	}
 
 	private void createNameComposite(Composite main) {
@@ -283,7 +279,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		// create internal widgets
 		nameLabel = new Label(nameComposite, SWT.NONE);
-		nameLabel.setText(Messages.wizardFragmentNameLabel);
+		nameLabel.setText(Messages.wf_NameLabel);
 
 		nameText = new Text(nameComposite, SWT.BORDER);
 		nameText.addModifyListener(new ModifyListener() {
@@ -320,7 +316,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		// Create Internal Widgets
 		homeDirLabel = new Label(homeDirComposite, SWT.NONE);
-		homeDirLabel.setText(Messages.wizardFragmentHomeDirLabel);
+		homeDirLabel.setText(Messages.wf_HomeDirLabel);
 
 		homeDirText = new Text(homeDirComposite, SWT.BORDER);
 
@@ -377,14 +373,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		// Create Internal Widgets
 		installedJRELabel = new Label(jreComposite, SWT.NONE);
-		installedJRELabel.setText(Messages.wizardFragmentJRELabel);
+		installedJRELabel.setText(Messages.wf_JRELabel);
 
 		jreCombo = new Combo(jreComposite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		jreCombo.setItems(jreNames);
 		jreCombo.select(defaultVMIndex);
 
 		jreButton = new Button(jreComposite, SWT.NONE);
-		jreButton.setText(Messages.installedJREs);
+		jreButton.setText(Messages.wf_JRELabel);
 
 		// Add action listeners
 		jreButton.addSelectionListener(new SelectionAdapter() {
@@ -474,21 +470,21 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	private String getErrorString(int severity) {
 		if (getRuntime(nameText.getText()) != null) {
-			return Messages.runtimeNameInUse;
+			return Messages.rwf_NameInUse;
 		}
 
 		if (!isHomeValid())
-			return Messages.invalidDirectory;
+			return Messages.rwf_invalidDirectory;
 
 		if (severity == SEVERITY_MAJOR)
 			return null;
 
 		// now give minor warnings
 		if (nameText.getText().equals(""))
-			return Messages.nameTextBlank;
+			return Messages.rwf_nameTextBlank;
 
 		if (homeDirText.getText().equals(""))
-			return Messages.homeDirBlank;
+			return Messages.rwf_homeDirBlank;
 
 		return null;
 	}
@@ -621,7 +617,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configComposite.setLayout(new FormLayout());
 
 		configLabel = new Label(configComposite, SWT.NONE);
-		configLabel.setText(Messages.wizardFragmentConfigLabel);
+		configLabel.setText(Messages.wf_ConfigLabel);
 
 		configurations = new JBossConfigurationTableViewer(configComposite,
 				SWT.BORDER | SWT.SINGLE);

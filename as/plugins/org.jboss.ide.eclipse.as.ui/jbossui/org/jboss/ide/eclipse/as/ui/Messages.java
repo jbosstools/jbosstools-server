@@ -24,63 +24,73 @@ package org.jboss.ide.eclipse.as.ui;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
-	public static String createWizardTitle;
-	public static String runtimeInformation;
-	public static String createRuntimeWizardTitle;
-	public static String createWizardDescription;
-	public static String wizardFragmentNameLabel;
-	public static String wizardFragmentHomeDirLabel;
-	public static String wizardFragmentJRELabel;
-	public static String installedJREs;
-	public static String wizardFragmentConfigLabel;
-	public static String runtimeWizardFragmentExplanation;
-	public static String serverWizardFragmentExplanation;
-	public static String serverWizardFragmentExplanation2;
-	public static String serverNameInUse;
-	public static String runtimeNameInUse;
-	public static String invalidDirectory;
-	public static String nameTextBlank;
-	public static String homeDirBlank;
+	/* Standard and re-usable */
 	public static String browse;
-	public static String deployDirectory;
+	public static String serverName;
+
+	/* Server and Runtime Wizard Fragments */
+	public static String wf_BaseNameVersionReplacement;
+	public static String wf_NameLabel;
+	public static String wf_HomeDirLabel;
+	public static String wf_JRELabel;
+	public static String wf_ConfigLabel;
+	public static String rwf_Title;
+	public static String rwf_Explanation;
+	public static String rwf_BaseName;
+	public static String rwf_NameInUse;
+	public static String rwf_invalidDirectory;
+	public static String rwf_nameTextBlank;
+	public static String rwf_homeDirBlank;
+	public static String swf_Title;
+	public static String swf_Description;
+	public static String swf_RuntimeInformation;
+	public static String swf_AuthorizationDescription;
+	public static String swf_Explanation;
+	public static String swf_Explanation2;
+	public static String swf_AuthenticationGroup;
+	public static String swf_Username;
+	public static String swf_Password;
+	public static String swf_BaseName;
+	public static String swf_NameInUse;
+	public static String sswf_DeployDirectory;
+	public static String sswf_Title;
+	public static String sswf_BaseName;
+
 	public static String ServerDialogHeading;
-	
+
 	/* Module extension properties */
 	public static String ModulePropertyType;
 	public static String ModulePropertyProject;
 	public static String ModulePropertyModuleFactory;
-	
+
 	public static String RefreshViewerAction;
 	public static String DisableCategoryAction;
 	public static String EditLaunchConfigurationAction;
 	public static String TwiddleServerAction;
 	public static String CloneServerAction;
-	
+
 	/* Properties of view extenders (categories) */
 	public static String ExtensionID;
 	public static String ExtensionName;
 	public static String ExtensionDescription;
 	public static String ExtensionProviderClass;
-	
-	
+
 	/* Properties of JBoss Servers in the view Properties */
 	public static String ServerRuntimeVersion;
 	public static String ServerHome;
 	public static String ServerConfigurationName;
 	public static String ServerDeployDir;
-	
+
 	public static String property;
 	public static String value;
-	
-	
+
 	public static String DeleteModuleText;
 	public static String PublishModuleText;
 	public static String DeleteModuleDescription;
 	public static String PublishModuleDescription;
-	
+
 	public static String DeleteModuleConfirm;
-	
-	
+
 	/* Action Delegate */
 
 	public static String ActionDelegateStartServer;
@@ -89,21 +99,20 @@ public class Messages {
 	public static String ActionDelegateNew;
 	public static String ActionDelegateNewMBeanStubs;
 	public static String ActionDelegateNewServer;
-	
+
 	/* Launch Group */
 	public static String LaunchGroupStartArgs;
 	public static String LaunchGroupStopArgs;
 	public static String LaunchGroupTwiddleArgs;
 	public static String LaunchGroupConfigChanged;
-	
+
 	/* Twiddle Dialog */
 	public static String TwiddleDialog;
 	public static String TwiddleDialogExecute;
 	public static String TwiddleDialogDone;
 	public static String TwiddleDialogArguments;
 	public static String TwiddleDialogTutorial;
-	
-	
+
 	/* XPath Dialog */
 	public static String XPathNewCategory;
 	public static String XPathNewCategoryNameInUse;
@@ -118,9 +127,7 @@ public class Messages {
 	public static String XPathName;
 	public static String XPathPattern;
 	public static String XPathAttribute;
-	
 
-	
 	/* Preference Page */
 	public static String PreferencePageServerTimeouts;
 	public static String PreferencePageStartTimeouts;
@@ -128,8 +135,7 @@ public class Messages {
 	public static String PreferencePageUponTimeout;
 	public static String PreferencePageUponTimeoutAbort;
 	public static String PreferencePageUponTimeoutIgnore;
-	
-	
+
 	/* View Preference Page */
 	public static String ViewPreferencePageName;
 	public static String ViewPreferencePageEnabled;
@@ -137,7 +143,7 @@ public class Messages {
 	public static String ViewPreferencePageDescription;
 	public static String ViewExtensionEnablementDescription;
 	public static String ViewExtensionPreferenceDescription;
-	
+
 	/* Upgrade Wizard to 2.0.0 */
 	public static String UpgradeWizardTitle;
 	public static String UpgradeWizardDescription;
@@ -157,12 +163,10 @@ public class Messages {
 	public static String UpgradeWizardLaunchMonitorConverting;
 	public static String UpgradeWizardLaunchRuntimeNamesInUse;
 	public static String UpgradeWizardLaunchServerNamesInUse;
-	
-	
+
 	/* Inactive Categories */
 	public static String InactiveCategoriesReEnable;
-	
-	
+
 	public static String DescriptorXPathRemoveCategory;
 	public static String DescriptorXPathRemoveCategoryDesc;
 	public static String DescriptorXPathNewXPath;
@@ -173,14 +177,14 @@ public class Messages {
 	public static String DescriptorXPathAttributeKeyValue;
 	public static String DescriptorXPathDescriptorValues;
 	public static String DescriptorXPathNameLocation;
-	public static String DescriptorXPathServerName; 
-	public static String DescriptorXPathPortCategory; 
+	public static String DescriptorXPathServerName;
+	public static String DescriptorXPathPortCategory;
 	public static String DescriptorXPathSimple;
 	public static String DescriptorXPathComplex;
 	public static String DescriptorXPathMatch;
-	
-	
+
 	static {
-		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages", Messages.class);
+		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
+				Messages.class);
 	}
 }
