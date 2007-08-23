@@ -159,9 +159,9 @@ public class JBossServerLaunchConfiguration extends AbstractJavaLaunchConfigurat
 			String args = configuration.getAttribute(argsKey, (String)null);
 			String user = ArgsUtil.getValue(args, "-u", "--user");
 			String pass = ArgsUtil.getValue(args, "-p", "--password");
-			if( user == null )
+			if( user == null && server.getUsername() != null && !server.getUsername().equals(""))
 				args = args + " -u " + server.getUsername();
-			if( pass == null ) 
+			if( pass == null && server.getPassword() != null && !server.getPassword().equals("")) 
 				args = args + " -p " + server.getPassword();
 			
 			configuration.setAttribute(argsKey, args);
