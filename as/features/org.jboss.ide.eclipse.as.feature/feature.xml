@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.jboss.ide.eclipse.as.feature"
-      label="JBossIDE JBossAS Adapter Feature"
+      label="JBossAS Tools"
       version="1.0.0"
       provider-name="JBoss, Inc.">
 
-   <description url="http://www.jboss.com/products/jbosside">
-      JBossIDE&apos;s JBossAS Adapter Feature
+   <description url="http://www.jboss.org/tools">
+      JBossAS Tools Feature
    </description>
 
    <copyright>
