@@ -19,6 +19,8 @@ public class ClientAllRuntimeClasspathProvider extends
 	}
 
 	public IClasspathEntry[] resolveClasspathContainer(IProject project, IRuntime runtime) {
+		if( runtime == null ) return new IClasspathEntry[0];
+		
 		AbstractJBossServerRuntime ajbsrt = (AbstractJBossServerRuntime)runtime.loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
 		IPath loc = runtime.getLocation();
 		String config = ajbsrt.getJBossConfiguration();
