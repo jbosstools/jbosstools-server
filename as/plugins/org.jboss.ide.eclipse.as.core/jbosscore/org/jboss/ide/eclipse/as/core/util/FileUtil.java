@@ -41,8 +41,10 @@ public class FileUtil {
 	public static void safeDelete(File file, IFileUtilListener listener) {
 		if( file.isDirectory() ) {
 			File[] children = file.listFiles();
-			for( int i = 0; i < children.length; i++ ) {
-				safeDelete(children[i], listener);
+			if( children != null ) {
+				for( int i = 0; i < children.length; i++ ) {
+					safeDelete(children[i], listener);
+				}
 			}
 			try {
 				boolean tmp = file.delete();
