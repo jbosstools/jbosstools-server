@@ -4,7 +4,7 @@
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
-* This is free software; you can redistribute it and/or modify it
+ * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
@@ -21,195 +21,277 @@
  */
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.ModuleFile;
+import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
-import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
+import org.eclipse.wst.server.core.util.ProjectModule;
+import org.eclipse.wst.server.core.util.PublishUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.packages.ModulePackageTypeConverter;
-import org.jboss.ide.eclipse.as.core.packages.ProjectArchiveStorer;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
+import org.jboss.ide.eclipse.as.core.server.NestedPublishInfo;
+import org.jboss.ide.eclipse.as.core.server.NestedPublishInfo.OpenedModulePublishInfo;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 
 /**
- *  This class provides a default implementation for 
- *  packaging different types of flexible projects. It uses 
- *  the built-in heirarchy of the projects to do so. 
- *  
+ * This class provides a default implementation for packaging different types of
+ * flexible projects. It uses the built-in heirarchy of the projects to do so.
+ * 
  * @author rob.stryker@jboss.com
  */
 public class JstPublisher extends PackagesPublisher {
-	
-	private static HashMap moduleToArchiveMap = new HashMap();
-	
+
 	public static final int BUILD_FAILED_CODE = 100;
 	public static final int PACKAGE_UNDETERMINED_CODE = 101;
-	
+
 	protected IModuleResourceDelta[] delta;
 
 	public JstPublisher(IServer server, EventLogTreeItem context) {
 		super(server, context);
 	}
 
-
 	public void setDelta(IModuleResourceDelta[] delta) {
 		this.delta = delta;
 	}
 
-	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
-			IModule module, IProgressMonitor monitor) throws CoreException {
+	public IStatus publishModule(int kind, int deltaKind,
+			int modulePublishState, IModule module, IProgressMonitor monitor)
+			throws CoreException {
 		IStatus status = null;
-		if(ServerBehaviourDelegate.REMOVED == deltaKind){
-        	status = unpublish(server, module, kind, deltaKind, modulePublishState, monitor);
-        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
-        	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
-        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
-        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
-        }
+
+		IPath root = new Path(server.getDeployDirectory());
+		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
+			status = unpublish(server, module, monitor);
+		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
+			status = fullPublishPackIntoFolder(module, root, monitor);	
+		} else if (kind == IServer.PUBLISH_INCREMENTAL) {
+			status = incrementalPublish(new ArrayList(), root, module, monitor);
+		} 
 		return status;
 	}
-
-	protected IStatus publish(IDeployableServer jbServer, IModule module, int kind, 
-						int deltaKind, int modulePublishState, IProgressMonitor monitor) throws CoreException {
-		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		EventLogModel.markChanged(eventRoot);
-		boolean incremental = shouldPublishIncremental(module, kind, deltaKind, modulePublishState);
-
-		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), monitor);
-
 		
-		if( topLevel != null ) {
-			try {
-				if( !incremental ) 
-					new ArchiveBuildDelegate().fullArchiveBuild(topLevel);
-				else {
-					Set addedChanged = createDefaultTreeSet();
-					Set removed = createDefaultTreeSet();
-					fillDelta(delta, addedChanged, removed);
-					new ArchiveBuildDelegate().incrementalBuild(topLevel, addedChanged, removed);
-				}
-			} catch( Exception e ) {
-				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, BUILD_FAILED_CODE, "", e);
+	protected void fullWebPublish(IModule module, IPath root, IProgressMonitor monitor ) throws CoreException {
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		IModuleResource[] members = md.members();
+		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+		FileUtil.safeDelete(moduleDeployPath.toFile());
+		PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IModule[] childModules = webModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule module2 = childModules[i];
+			packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
+		}
+	}
+	protected void fullEarPublish(IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		IModuleResource[] members = md.members();
+		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
+		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
+		FileUtil.safeDelete(moduleDeployPath.toFile());
+		PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+		IModule[] childModules = earModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule module2 = childModules[i];
+			String uri = earModule.getURI(module2);
+			if(uri==null){
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,	"unable to assemble module null uri",null ); //$NON-NLS-1$
+				throw new CoreException(status);
 			}
-		} else {
-			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, PACKAGE_UNDETERMINED_CODE, "", null);
-		}
-		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IStatus.OK, "", null);
-	}
-
-	protected IStatus unpublish(IDeployableServer jbServer, IModule module, 
-						int kind, int deltaKind, int modulePublishKind, IProgressMonitor monitor) throws CoreException {
-		PublishEvent event = PublisherEventLogger.createSingleModuleTopEvent(eventRoot, module, kind, deltaKind);
-		
-		IArchive topLevel = getTopPackage(module, jbServer.getDeployDirectory(), monitor);
-		if( topLevel != null ) {
-			IPath path = topLevel.getArchiveFilePath();
-			FileUtil.safeDelete(path.toFile(), new PublisherFileUtilListener(event));
-		} else if( module.getProject() == null ){
-			// this is a problem. All I know is the module name, aka project name. Not it's suffix on the server.
-		} else {
-			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, PACKAGE_UNDETERMINED_CODE, "", null);
-		}
-		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IStatus.OK, "", null);
-	}
-
-
-	protected IArchive getTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
-		if( moduleToArchiveMap.containsKey(module.getId())) {
-			return (IArchive)moduleToArchiveMap.get(module.getId());
-		}
-		
-		IProject project = module.getProject();
-		IArchive top = ProjectArchiveStorer.getArchiveFor(project);
-		if( top == null ) {
-			top = createTopPackage(module, deployDir, monitor);
-			if( top != null ) {
-				ProjectArchiveStorer.storeArchive(project, top);
-				moduleToArchiveMap.put(module.getId(), top);
+			if( module2.getModuleType().getId().equals("jst.utility")) {
+				packModuleIntoJar(module2, uri, moduleDeployPath);
+			} else {
+				fullPublishPackIntoFolder(module2, moduleDeployPath, monitor);
 			}
 		}
-		return top;
 	}
 	
-	protected IArchive createTopPackage(IModule module, String deployDir, IProgressMonitor monitor) {
-		IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(module);
-		if( type != null && module.getProject() != null ) {
-    		IArchive topLevel = type.createDefaultConfiguration(module.getProject().getName(), monitor);
-    		topLevel.setDestinationPath(new Path(deployDir));
-    		topLevel.setInWorkspace(false);
-    		topLevel.setExploded(true);
-    		return topLevel;
-		} 
+	protected IStatus fullPublishPackIntoFolder(IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		if( module.getModuleType().getId().equals("jst.web")) {
+			fullWebPublish(module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.ear")) {
+			fullEarPublish(module, root, monitor);
+		} else {
+			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+			IModuleResource[] members = md.members();
+			IPath moduleDeployPath = root.append(module.getProject().getName() + ".jar");
+			FileUtil.safeDelete(moduleDeployPath.toFile());
+			PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+		}
 		return null;
 	}
+
+	private boolean hasDelta( IModule module, ArrayList moduleTree ) {
+        return getDelta(module, moduleTree).length > 0;
+    }
 	
-	protected void fillDelta(IModuleResourceDelta[] delta, Set addedChanged, Set removed) {
-		for( int i = 0; i < delta.length; i++ ) {
-			fillDelta(delta[i], addedChanged, removed);
+	public IModuleResourceDelta[] getDelta(IModule module, ArrayList moduleTree) {
+		IModuleResourceDelta[] deltas;
+		if( moduleTree.size() == 0 ) {
+	        final IModule[] modules ={module}; 
+	        deltas = ((Server)server.getServer()).getPublishedResourceDelta( modules );
+		} else {
+			deltas = NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getDelta(moduleTree, module);
 		}
+		return deltas;
 	}
-	protected void fillDelta(IModuleResourceDelta delta, Set addedChanged, Set removed) {
-		IModuleResourceDelta[] children = delta.getAffectedChildren();
-		if( children != null ) {
-			for( int i = 0; i < children.length; i++ ) {
-				fillDelta(children[i], addedChanged, removed);
+
+	
+	protected void packModuleIntoJar(IModule module, String deploymentUnitName, IPath destination)throws CoreException {
+		String dest = destination.append(deploymentUnitName).toString();
+		ModulePackager packager = null;
+		try {
+			packager = new ModulePackager(dest, false);
+			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
+			IModuleResource[] resources = pm.members();
+			for (int i = 0; i < resources.length; i++) {
+				doPackModule(resources[i], packager);
+			}
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,
+					"unable to assemble module", e); //$NON-NLS-1$
+			throw new CoreException(status);
+		}
+		finally{
+			try{
+				packager.finished();
+			}
+			catch(IOException e){
+				//unhandled
 			}
 		}
-		handleResource(delta.getKind(), delta.getModuleResource(), addedChanged, removed);
 	}
+
 	
-	protected void handleResource(int kind, IModuleResource resource, Set addedChanged, Set removed) {
-		if( resource instanceof ModuleFile ) {
-			ModuleFile mf = (ModuleFile)resource;
-			IFile f = (IFile)resource.getAdapter(IFile.class);
-			IPath p = null;
-			if( f == null ) {
-				IFile ifile = (IFile)resource.getAdapter(IFile.class);
-				if( ifile != null )
-					p = ifile.getLocation();
+	/* Add one file or folder to a jar */
+	private void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
+			if (resource instanceof IModuleFolder) {
+				IModuleFolder mFolder = (IModuleFolder)resource;
+				IModuleResource[] resources = mFolder.members();
+
+				packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
+
+				for (int i = 0; resources!= null && i < resources.length; i++) {
+					doPackModule(resources[i], packager);
+				}
 			} else {
-				p = f.getLocation();
-			}
-			
-			if( p != null ) {
-				if( kind == IModuleResourceDelta.ADDED || kind == IModuleResourceDelta.CHANGED) {
-					addedChanged.add(p);
-				} else if( kind == IModuleResourceDelta.REMOVED) {
-					removed.add(p);
+				String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
+				IFile file = (IFile) resource.getAdapter(IFile.class);
+				if (file != null)
+					packager.write(file, destination);
+				else {
+					File file2 = (File) resource.getAdapter(File.class);
+					packager.write(file2, destination);
 				}
 			}
+	}
+	
+
+	protected IStatus incrementalPublish(ArrayList moduleTree, IPath root, IModule module, IProgressMonitor monitor) throws CoreException {
+		if( module.getModuleType().getId().equals("jst.web")) {
+			incrementalWarPublish(moduleTree, module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.ear")) {
+			incrementalEarPublish(moduleTree, module, root, monitor);
+		} else {
+			// cannot incrementally publish something unknown 
+			// just package it
+			packModuleIntoJar(module, "blah" + module.getName().hashCode() + ".jar", root);
+		}
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
+				IStatus.OK, "", null);
+	}
+	
+	protected void incrementalWarPublish(ArrayList moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		ArrayList newTree = new ArrayList();
+		newTree.addAll(moduleTree); newTree.add(module);
+
+		IModule[] modules = new IModule[] {module};
+        IModuleResourceDelta[] deltas = getDelta(module, moduleTree);
+        //((Server)server.getServer()).getPublishedResourceDelta( modules );
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		IModuleResource[] members = md.members();
+		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
+		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IModule[] childModules = webModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule module2 = childModules[i];
+			// if a lib .jar needs to be repacked, repack the whole thing
+			if( hasDelta(module2, newTree))
+				packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
+		}
+		if( moduleTree.size() > 0 ) {
+			// published it
+			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(moduleTree, module).setResources(md.members());
 		}
 	}
-	protected TreeSet createDefaultTreeSet() {
-		return new TreeSet(new Comparator () {
-			public int compare(Object o1, Object o2) {
-				if (o1.equals(o2)) return 0;
-				else return -1;
+	
+	protected void incrementalEarPublish(ArrayList moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		ArrayList newTree = new ArrayList();
+		newTree.addAll(moduleTree); 
+		newTree.add(module);
+
+        IModuleResourceDelta[] deltas = getDelta(module, moduleTree); 
+        //((Server)server.getServer()).getPublishedResourceDelta( modules );
+		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
+		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
+        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
+		IModule[] childModules = earModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule childModule = childModules[i];
+			String uri = earModule.getURI(childModule);
+			if(uri==null){
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,	"unable to assemble module null uri",null ); //$NON-NLS-1$
+				throw new CoreException(status);
 			}
-		});		
+			
+			incrementalPublish(newTree, root, childModule, monitor);
+		}
+
+	}
+
+	protected IStatus unpublish(IDeployableServer jbServer, IModule module,
+			IProgressMonitor monitor) throws CoreException {
+
+		IPath root = new Path(jbServer.getDeployDirectory());
+		if( module.getModuleType().getId().equals("jst.web")) {
+			// copy the module first
+			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+			IModuleResource[] members = md.members();
+			IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+			IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+			FileUtil.completeDelete(moduleDeployPath.toFile());
+		} else if( module.getModuleType().getId().equals("jst.ear")) {
+			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+			IModuleResource[] members = md.members();
+			IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
+			IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
+			FileUtil.completeDelete(moduleDeployPath.toFile());
+		}
+
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
+				IStatus.OK, "", null);
 	}
 
 }
