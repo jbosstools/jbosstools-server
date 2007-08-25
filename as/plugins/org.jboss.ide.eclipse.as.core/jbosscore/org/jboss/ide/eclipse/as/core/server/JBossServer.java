@@ -198,13 +198,18 @@ public class JBossServer extends ServerDelegate
 	}
 
 	protected int findPort(IPath path) {
-		try {
+		
 			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), path);
-			String result = query.getFirstResult();
-			if( result != null ) {
-					return Integer.parseInt(result);
-			}
-		} catch( Exception e ) {}
+			if(query!=null) {
+				String result = query.getFirstResult();
+				if( result != null ) {
+					try {
+						return Integer.parseInt(result);
+					} catch(NumberFormatException nfe) {
+						return -1;
+					}
+				}
+			}		
 		return -1;
 	}
 	
