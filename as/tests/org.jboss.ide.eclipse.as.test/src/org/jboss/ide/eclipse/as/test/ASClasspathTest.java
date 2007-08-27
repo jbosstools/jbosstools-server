@@ -19,10 +19,6 @@ import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
@@ -30,6 +26,8 @@ import org.jboss.tools.common.test.util.TestProjectProvider;
 
 public class ASClasspathTest extends TestCase {
 	
+
+	private static final String ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42 = "org.jboss.ide.eclipse.as.runtime.42";
 
 	private static final String JBOSS_AS_HOME = System.getProperty("jbosstools.test.jboss.home", "/home/max/rhdevstudio/jboss-eap/jboss-as");
 	
@@ -45,27 +43,34 @@ public class ASClasspathTest extends TestCase {
 	
 	public void testDoubleCreate() throws CoreException {
 		
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.jboss.ide.eclipse.as.runtime.42");
-		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
+		createGenericRuntime("org.eclipse.jst.server.tomcat.runtime.55");
+		
+		createGenericRuntime(ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42);
+		
+		
+		
+	}
+
+	private IRuntime[] createGenericRuntime(String runtimeId) throws CoreException {
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, runtimeId);
+		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
 		
 		IRuntimeType runtimeType = runtimeTypes[0];
 		
-		IRuntimeWorkingCopy jbossRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
-		IRuntime savedRuntime = jbossRuntime.save(true, new NullProgressMonitor());
+		IRuntimeWorkingCopy firstRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
+		IRuntime savedRuntime = firstRuntime.save(true, new NullProgressMonitor());
 		
-		IRuntimeWorkingCopy secondJbossRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
-		IRuntime secondSavedRuntime = secondJbossRuntime.save(true, new NullProgressMonitor());
+		IRuntimeWorkingCopy secondRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
+		IRuntime secondSavedRuntime = secondRuntime.save(true, new NullProgressMonitor());
 		
 		assertEquals(savedRuntime.getName(), secondSavedRuntime.getName());
 		assertNotSame(savedRuntime, secondSavedRuntime);				
-		assertFalse("Why are two different runtimes created with the same ID ?!", savedRuntime.getId().equals(secondSavedRuntime.getId()));
-		
-		assertEquals(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length, 2);
-		
+		assertFalse("Why are two different runtimes " + runtimeId + " created with the same ID ?!", savedRuntime.getId().equals(secondSavedRuntime.getId()));
+		return new IRuntime[] { savedRuntime, secondSavedRuntime };
 	}
 	public void testCreateBrokenServer() throws CoreException {
 	
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.jboss.ide.eclipse.as.runtime.42");
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42);
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		
 		IRuntimeType runtimeType = runtimeTypes[0];
@@ -75,9 +80,9 @@ public class ASClasspathTest extends TestCase {
 		IRuntime savedRuntime = jbossRuntime.save(true, new NullProgressMonitor());
 		
 		System.out.println(savedRuntime.getName() + " " + savedRuntime.getId());
-		assertEquals("Neither vm install nor configuration is set - should not be able to validate",savedRuntime.validate(null).getCode(), Status.ERROR);				
+		assertEquals("Neither vm install nor configuration is set - should not be able to validate",savedRuntime.validate(null).getSeverity(), Status.ERROR);				
 		
-		assertEquals(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length, 1);
+		assertEquals(ServerUtil.getRuntimes(ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42, null).length, 1);
 	}
 	
 	public void testClasspathAvailable() throws CoreException {
@@ -86,18 +91,20 @@ public class ASClasspathTest extends TestCase {
 		IJavaProject javaProject = JavaCore.create(project);
 		assertTrue(javaProject.exists());
 		
-		IRuntime createdRuntime = createRuntime("cp-runtime");
+		String id = "cp-runtime";
+		IRuntime createdRuntime = createRuntime(id);
 		setTargetRuntime(createdRuntime, project);
 				
-		assertEquals(createdRuntime.getId(), "cp-runtime");
+		//assertEquals(createdRuntime.getId(), "cp-runtime");
 		
 		
-		System.out.println(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length);
+		
 		IClasspathEntry paths[] = javaProject.getRawClasspath();
 		boolean found = false;
 		for (int i = 0; i < paths.length; i++) {
 			IClasspathEntry classpathEntry = paths[i];
-			if(classpathEntry.getPath().toString().equals("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer/JBoss 4.2 Runtime")) {
+			
+			if(classpathEntry.getPath().toString().equals("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer/" + id)) {
 				found = true;
 			}
 		}
@@ -134,7 +141,7 @@ public class ASClasspathTest extends TestCase {
 	}
 
 	private IRuntime createRuntime(String runtimeName) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.jboss.ide.eclipse.as.runtime.42");
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42);
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		
 		IRuntimeType runtimeType = runtimeTypes[0];
