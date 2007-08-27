@@ -134,7 +134,7 @@ public class ASClasspathTest extends TestCase {
 	}
 
 	private IRuntime createRuntime(String runtimeName) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.eclipse.jst.server.tomcat.runtime.41" /*"org.jboss.ide.eclipse.as.runtime.42"*/);
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.jboss.ide.eclipse.as.runtime.42");
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		
 		IRuntimeType runtimeType = runtimeTypes[0];
