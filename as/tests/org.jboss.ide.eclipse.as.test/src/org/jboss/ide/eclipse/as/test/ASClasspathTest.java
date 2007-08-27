@@ -58,7 +58,9 @@ public class ASClasspathTest extends TestCase {
 		
 		assertEquals(savedRuntime.getName(), secondSavedRuntime.getName());
 		assertNotSame(savedRuntime, secondSavedRuntime);				
-		assertFalse("Why are two different runtimes created with the same ID ?!", savedRuntime.getId().equals(secondSavedRuntime.getId()));		
+		assertFalse("Why are two different runtimes created with the same ID ?!", savedRuntime.getId().equals(secondSavedRuntime.getId()));
+		
+		assertEquals(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length, 2);
 		
 	}
 	public void testCreateBrokenServer() throws CoreException {
@@ -75,16 +77,22 @@ public class ASClasspathTest extends TestCase {
 		System.out.println(savedRuntime.getName() + " " + savedRuntime.getId());
 		assertEquals("Neither vm install nor configuration is set - should not be able to validate",savedRuntime.validate(null).getCode(), Status.ERROR);				
 		
+		assertEquals(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length, 1);
 	}
 	
 	public void testClasspathAvailable() throws CoreException {
+		// Weirdness: If this method is the only to run everything works as expected.
 		
 		IJavaProject javaProject = JavaCore.create(project);
 		assertTrue(javaProject.exists());
 		
-		IServer createServer = createServer();
-		setTargetRuntime(createServer, project);
+		IRuntime createdRuntime = createRuntime("cp-runtime");
+		setTargetRuntime(createdRuntime, project);
 				
+		assertEquals(createdRuntime.getId(), "cp-runtime");
+		
+		
+		System.out.println(ServerUtil.getRuntimes("org.jboss.ide.eclipse.as.runtime.42", null).length);
 		IClasspathEntry paths[] = javaProject.getRawClasspath();
 		boolean found = false;
 		for (int i = 0; i < paths.length; i++) {
@@ -111,9 +119,9 @@ public class ASClasspathTest extends TestCase {
 		
 	}
 
-	private void setTargetRuntime(IServer createServer, IProject theProject) throws CoreException {
+	private void setTargetRuntime(IRuntime runtime, IProject theProject) throws CoreException {
 		
-		final org.eclipse.wst.common.project.facet.core.runtime.IRuntime facetRuntime = RuntimeManager.getRuntime(createServer.getRuntime().getId());
+		final org.eclipse.wst.common.project.facet.core.runtime.IRuntime facetRuntime = RuntimeManager.getRuntime(runtime.getId());
 		
 		assertNotNull("bridged facet runtime not found", facetRuntime); 
 		
@@ -125,13 +133,13 @@ public class ASClasspathTest extends TestCase {
 		
 	}
 
-	private IServer createServer() throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.jboss.ide.eclipse.as.runtime.42");
+	private IRuntime createRuntime(String runtimeName) throws CoreException {
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, "org.eclipse.jst.server.tomcat.runtime.41" /*"org.jboss.ide.eclipse.as.runtime.42"*/);
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		
 		IRuntimeType runtimeType = runtimeTypes[0];
 		
-		RuntimeWorkingCopy jbossRuntime = (RuntimeWorkingCopy)runtimeType.createRuntime(null, new NullProgressMonitor());
+		RuntimeWorkingCopy jbossRuntime = (RuntimeWorkingCopy)runtimeType.createRuntime(runtimeName, new NullProgressMonitor());
 		
 		jbossRuntime.setLocation(new Path(JBOSS_AS_HOME));
 		jbossRuntime.setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, "default");
@@ -140,17 +148,7 @@ public class ASClasspathTest extends TestCase {
 		System.out.println(savedRuntime.getName() + " " + savedRuntime.getId());
 		assertEquals(savedRuntime.validate(null).getCode(), Status.OK);
 		
-		
-		IServerType jboss42serverType = ServerCore.findServerType("org.jboss.ide.eclipse.as.42");
-		
-		assertNotNull(jboss42serverType);
-		
-		IServerWorkingCopy jboss42server = jboss42serverType.createServer(null, null, jbossRuntime, new NullProgressMonitor());
-		
-		assertNotNull(jboss42server);
-		
-		assertSame(jbossRuntime, jboss42server.getRuntime());
-		return jboss42server.save(true,  null);		
+		return savedRuntime;		
 	}
 
 }
