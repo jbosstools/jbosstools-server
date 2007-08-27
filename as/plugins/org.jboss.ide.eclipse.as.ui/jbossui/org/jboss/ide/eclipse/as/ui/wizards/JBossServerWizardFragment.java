@@ -229,7 +229,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		GridData d;
 
 		authenticationExplanationLabel = new Label(authenticationGroup, SWT.NONE);
-		authenticationExplanationLabel.setText("Authentication Explanation is long and its also very very long so there");
+		authenticationExplanationLabel.setText("JMX Console Access");
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		d.horizontalSpan = 2;
 		authenticationExplanationLabel.setLayoutData(d);
