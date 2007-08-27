@@ -23,14 +23,19 @@ package org.jboss.ide.eclipse.as.core.runtime.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
+import org.eclipse.wst.server.core.internal.Messages;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
 
 public abstract class AbstractJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
@@ -39,6 +44,16 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 		getRuntimeWorkingCopy().setLocation(new Path(""));
 	}
 
+	public IStatus validate() {
+		IStatus s = super.validate();
+		if( !s.isOK()) return s;
+		
+		if( getJBossConfiguration().equals(""))
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0, "Runtime Configuration Not Set", null);
+		
+		return Status.OK_STATUS;
+	}
+	
 	public void setVMInstall(IVMInstall selectedVM) {
 		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();
 		if( copy instanceof RuntimeWorkingCopy ) {
