@@ -121,7 +121,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 		}
 
 		public int getKind() {
-			return IClasspathEntry.CPE_CONTAINER;
+			return K_APPLICATION;
 		}
 
 		public IPath getPath() {

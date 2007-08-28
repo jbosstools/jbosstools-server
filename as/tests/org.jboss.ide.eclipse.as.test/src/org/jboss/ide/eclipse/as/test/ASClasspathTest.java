@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -41,7 +42,9 @@ public class ASClasspathTest extends TestCase {
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
 	
-	public void testDoubleCreate() throws CoreException {
+	
+	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=201340
+	public void testDoubleCreateEclipseBug201340() throws CoreException {
 		
 		createGenericRuntime("org.eclipse.jst.server.tomcat.runtime.55");
 		
@@ -78,11 +81,10 @@ public class ASClasspathTest extends TestCase {
 		IRuntimeWorkingCopy jbossRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());
 				
 		IRuntime savedRuntime = jbossRuntime.save(true, new NullProgressMonitor());
-		
-		System.out.println(savedRuntime.getName() + " " + savedRuntime.getId());
+				
 		assertEquals("Neither vm install nor configuration is set - should not be able to validate",savedRuntime.validate(null).getSeverity(), Status.ERROR);				
 		
-		assertEquals(ServerUtil.getRuntimes(ORG_JBOSS_IDE_ECLIPSE_AS_RUNTIME_42, null).length, 1);
+		
 	}
 	
 	public void testClasspathAvailable() throws CoreException {
@@ -105,6 +107,8 @@ public class ASClasspathTest extends TestCase {
 			IClasspathEntry classpathEntry = paths[i];
 			
 			if(classpathEntry.getPath().toString().equals("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer/" + id)) {
+				IClasspathContainer container = JavaCore.getClasspathContainer(classpathEntry.getPath(), javaProject);
+				assertEquals("container not returning userclasses!", container.getKind(), container.K_APPLICATION);
 				found = true;
 			}
 		}
@@ -116,10 +120,10 @@ public class ASClasspathTest extends TestCase {
 		for (int i = 0; i < resolvedClasspath.length; i++) {
 			IClasspathEntry classpathEntry = resolvedClasspath[i];
 			if(classpathEntry.getPath().toString().contains("jsf")) {
-				
+				System.out.println(classpathEntry);	
 				jsfFound = true;
 			}
-			System.out.println(classpathEntry);
+			
 		}
 		assertTrue("jsf lib not found!", jsfFound);
 		
@@ -135,8 +139,7 @@ public class ASClasspathTest extends TestCase {
 		IFacetedProject facetedProject = ProjectFacetsManager.create(theProject);
 		
 		facetedProject.setTargetedRuntimes(new HashSet<org.eclipse.wst.common.project.facet.core.runtime.IRuntime>() { { this.add(facetRuntime);}}, null); 
-		facetedProject.setPrimaryRuntime(facetRuntime, null);
-		
+		facetedProject.setPrimaryRuntime(facetRuntime, null);		
 		
 	}
 
@@ -151,8 +154,7 @@ public class ASClasspathTest extends TestCase {
 		jbossRuntime.setLocation(new Path(JBOSS_AS_HOME));
 		jbossRuntime.setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, "default");
 		IRuntime savedRuntime = jbossRuntime.save(true, new NullProgressMonitor());
-		
-		System.out.println(savedRuntime.getName() + " " + savedRuntime.getId());
+				
 		assertEquals(savedRuntime.validate(null).getCode(), Status.OK);
 		
 		return savedRuntime;		
