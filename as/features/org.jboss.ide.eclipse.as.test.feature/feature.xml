@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.ide.eclipes.as.test.feature"
+      id="org.jboss.ide.eclipse.as.test.feature"
       label="JBossTools Test Feature"
       version="1.0.0"
       provider-name="JBoss, a division of Red Hat">
