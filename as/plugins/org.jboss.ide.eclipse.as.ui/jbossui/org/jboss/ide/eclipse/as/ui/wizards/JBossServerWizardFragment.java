@@ -217,7 +217,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	protected void createAuthenticationGroup(Composite main) {
-		authenticationGroup = new Group(main, SWT.BORDER);
+		authenticationGroup = new Group(main, SWT.NONE);
 		authenticationGroup.setText(Messages.swf_AuthenticationGroup);
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
