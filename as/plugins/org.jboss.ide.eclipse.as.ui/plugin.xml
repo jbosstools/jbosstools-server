@@ -70,7 +70,7 @@
             class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup"
             description="%jbossLaunchconfigurationTabGroupDescription"
             id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
-            type="org.jboss.ide.eclipse.as.core.server.launchConfiguration"/>
+            type="org.jboss.ide.eclipse.as.core.server.startupConfiguration"/>
    </extension>
    
 

@@ -1,8 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -18,12 +16,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.server.TwiddleLauncher.ProcessData;
+import org.jboss.ide.eclipse.as.core.launch.TwiddleLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.launch.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.launch.TwiddleLauncher.ProcessData;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class TwiddleDialog extends TrayDialog {
@@ -142,12 +139,9 @@ public class TwiddleDialog extends TrayDialog {
 		results.setLayoutData(resultsData);
 		results.setFont(new Font(null, "Courier New", 8, SWT.NONE));
 		
-		
-		
 		// set the default text
 		try {
-			ILaunchConfiguration config = JBossServerLaunchConfiguration.setupLaunchConfiguration(server, JBossServerLaunchConfiguration.TWIDDLE);
-			String args = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
+			String args = TwiddleLaunchConfiguration.getDefaultArgs(server);
 			query.setText(args);
 			query.setFocus();
 			query.setSelection(args.length());
