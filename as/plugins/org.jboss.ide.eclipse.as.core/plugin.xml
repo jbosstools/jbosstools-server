@@ -14,7 +14,7 @@
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.32"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug"
             name="%jboss.version.32.name"
             runtime="true"
@@ -31,7 +31,7 @@
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.40"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug"
             name="%jboss.version.40.name"
             runtime="true"
@@ -48,7 +48,7 @@
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.42"
             initialState="stopped"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             launchModes="run,debug"
             name="%jboss.version.42.name"
             runtime="true"
@@ -199,21 +199,34 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration"
-            id="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             modes="run,debug"
-            name="JBoss Application Server"
+            name="JBoss Application Server Startup Configuration"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.server.stripped.DeployableLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.launch.DeployableLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             modes="run,debug"
             name="Stripped Server Launch Configuration"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.launch.TwiddleLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
+            modes="run"
+            name="Twiddle"
+            public="false">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.launch.StopLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
+            modes="run"
+            name="Stop Server">
+      </launchConfigurationType>
    </extension>
 	
    <extension

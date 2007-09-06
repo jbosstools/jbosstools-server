@@ -47,12 +47,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.server.JBossServerLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
@@ -164,22 +161,11 @@ public class JMXPoller implements IServerStatePoller {
 			try {
 				ILaunchConfiguration lc = server.getLaunchConfiguration(true,
 						new NullProgressMonitor());
-				String twiddleArgs = lc
-						.getAttribute(
-								IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS
-										+ JBossServerLaunchConfiguration.PRGM_ARGS_TWIDDLE_SUFFIX,
-								(String) null);
-				
 				// get user from the IServer, but override with launch configuration
 				String user = ServerConverter.getJBossServer(server).getUsername();
-				String userLaunch = ArgsUtil.getValue(twiddleArgs, "-u", "--user");
-				user = userLaunch == null ? user : userLaunch;
 				
 				// get password from the IServer, but override with launch configuration
 				String pass = ServerConverter.getJBossServer(server).getPassword();
-				String passwordLaunch = ArgsUtil.getValue(twiddleArgs, "-p", "--password");
-				pass = passwordLaunch == null ? pass : passwordLaunch;
-				
 				
 				// get our methods
 				Class simplePrincipal = Thread.currentThread()

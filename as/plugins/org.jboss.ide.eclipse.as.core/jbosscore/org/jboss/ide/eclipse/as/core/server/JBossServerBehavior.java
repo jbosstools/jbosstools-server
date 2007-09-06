@@ -23,20 +23,18 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 public class JBossServerBehavior extends DeployableServerBehavior {
@@ -61,18 +59,10 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			return;
 		}
 		
-		Thread t = new Thread() {
-			public void run() {
-				// Otherwise execute a shutdown attempt
-				try {
-					// Set up our launch configuration for a STOP call (to shutdown.jar)
-					ILaunchConfiguration wc = JBossServerLaunchConfiguration.setupLaunchConfiguration(getServer(), JBossServerLaunchConfiguration.STOP);
-					wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-				} catch( Exception e ) {
-				}
-			}
-		};
-		t.start();
+		new Thread() {public void run() {
+				serverStopping();
+				StopLaunchConfiguration.stop(getServer());
+			}}.start();
 	}
 	
 	public void forceStop() {
@@ -105,7 +95,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		JBossServerLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer(), JBossServerLaunchConfiguration.START);
+		JBossServerStartupLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer());
 	}
 
 	

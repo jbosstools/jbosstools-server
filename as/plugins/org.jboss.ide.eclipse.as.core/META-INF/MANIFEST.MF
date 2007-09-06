@@ -22,6 +22,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.ant
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.core,
+ org.jboss.ide.eclipse.as.core.client,
+ org.jboss.ide.eclipse.as.core.launch,
  org.jboss.ide.eclipse.as.core.model,
  org.jboss.ide.eclipse.as.core.model.descriptor,
  org.jboss.ide.eclipse.as.core.packages,
@@ -33,6 +35,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.server,
  org.jboss.ide.eclipse.as.core.server.attributes,
  org.jboss.ide.eclipse.as.core.server.stripped,
+ org.jboss.ide.eclipse.as.core.server.xpl,
  org.jboss.ide.eclipse.as.core.singledeployable,
  org.jboss.ide.eclipse.as.core.util
 Bundle-ClassPath: dom4j-1.6.1.jar,

@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime;
+package org.jboss.ide.eclipse.as.core.launch;
 
 import java.util.List;
 
@@ -38,11 +38,8 @@ public interface IJBossServerLaunchDefaults {
 	public List getRuntimeClasspath(String action);
 	public String getStartJar();
 	public String getShutdownJar();
-	public String getTwiddleJar();
 	public String getStartMainType();
 	public String getStopMainType();
-	public String getTwiddleMainType();
-
 	
 	public void fillDefaults(ILaunchConfigurationWorkingCopy wc) throws CoreException;
 }

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.server.stripped;
+package org.jboss.ide.eclipse.as.core.launch;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,6 +9,7 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 public class DeployableLaunchConfiguration implements
 		ILaunchConfigurationDelegate {

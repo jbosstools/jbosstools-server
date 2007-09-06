@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.core.launch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +53,8 @@ public class TwiddleLauncher {
 		ILaunchConfigurationWorkingCopy wc;
 		ArrayList list = new ArrayList();
 		for( int i = 0; i < twiddleArgs.length; i++ ) {
-			wc = createTwiddleLaunch(server, twiddleArgs[i], addPrefix);
+			String args2 = addPrefix ? TwiddleLaunchConfiguration.getDefaultArgs(server) + twiddleArgs[i] : twiddleArgs[i]; 
+			wc = TwiddleLaunchConfiguration.createLaunchConfiguration(server, args2);
 			ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), false, false);
 			list.addAll(Arrays.asList(toProcessDatas(launch.getProcesses())));
 		}
@@ -73,24 +74,6 @@ public class TwiddleLauncher {
 		return datas;
 	}
 	
-	public static ILaunchConfigurationWorkingCopy createTwiddleLaunch(IServer server, 
-			String args, boolean addPrefix) throws CoreException {
-		
-		ILaunchConfigurationWorkingCopy workingCopy =
-			JBossServerLaunchConfiguration.setupLaunchConfiguration(server, JBossServerLaunchConfiguration.TWIDDLE);
-		
-		// If we have to use the prefix from the launch config, throw it in front. 
-		if( addPrefix ) {
-			String a2 = workingCopy.getAttribute(
-					IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
-					+ JBossServerLaunchConfiguration.PRGM_ARGS_TWIDDLE_SUFFIX, "");
-			args = a2 + " " + args;
-		}
-		
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-		return workingCopy;
-	}
-
 	private boolean canceled = false;
 	private int delay = 500;
 	

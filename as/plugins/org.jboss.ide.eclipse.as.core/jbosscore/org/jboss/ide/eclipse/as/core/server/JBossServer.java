@@ -44,11 +44,12 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.launch.IJBossServerLaunchDefaults;
+import org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.launch.ServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
-import org.jboss.ide.eclipse.as.core.runtime.IJBossServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.runtime.server.ServerLaunchDefaults;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
@@ -76,11 +77,6 @@ public class JBossServer extends ServerDelegate
 
 	public void configurationChanged() {
 	}
-
-	public IJBossServerLaunchDefaults getLaunchDefaults() {
-		return new ServerLaunchDefaults(getServer());
-	}
-
 	
 	/*
 	 * Abstracts to implement
@@ -153,8 +149,10 @@ public class JBossServer extends ServerDelegate
 		try {
 			Server s = (Server)getServer();
 			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
-					+ JBossServerLaunchConfiguration.PRGM_ARGS_START_SUFFIX, (String)null);
+			// TODO FIX
+//			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
+//					+ JBossServerStartupLaunchConfiguration.PRGM_ARGS_START_SUFFIX, (String)null);
+			String startArgs = "";
 			Map map = ArgsUtil.getSystemProperties(startArgs);
 			
 			if( map.get(JBOSS_SERVER_HOME_DIR) != null ) 
