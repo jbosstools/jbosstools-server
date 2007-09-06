@@ -62,7 +62,7 @@
             behaviourClass="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.stripped.DeployableServer"
             description="A server which cannot be started, stopped, or debugged\nbut provides a deploy folder for publishing."
-            hasConfiguration="true"
+            hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
             initialState="stopped"
             launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
