@@ -36,6 +36,7 @@ import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
@@ -47,7 +48,6 @@ import org.eclipse.wst.server.core.util.PublishUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.server.NestedPublishInfo;
-import org.jboss.ide.eclipse.as.core.server.NestedPublishInfo.OpenedModulePublishInfo;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -104,6 +104,12 @@ public class JstPublisher extends PackagesPublisher {
 		}
 	}
 	protected void fullEarPublish(IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		if( module instanceof DeletedModule ) {
+			// TODO FIX ME
+			return;
+		} 
+		
+		
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
 		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
@@ -215,7 +221,7 @@ public class JstPublisher extends PackagesPublisher {
 		} else {
 			// cannot incrementally publish something unknown 
 			// just package it
-			packModuleIntoJar(module, "blah" + module.getName().hashCode() + ".jar", root);
+			packModuleIntoJar(module, module.getName() + ".jar", root);
 		}
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
 				IStatus.OK, "", null);
