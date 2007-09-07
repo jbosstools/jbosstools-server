@@ -49,56 +49,47 @@ import org.jboss.ide.eclipse.as.core.server.JBossServer;
  */
 public class ServerLaunchDefaults implements IJBossServerLaunchDefaults {
 
-	@Override
 	public void fillDefaults(ILaunchConfigurationWorkingCopy wc)
 			throws CoreException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public List getRuntimeClasspath(String action) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getShutdownJar() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getStartArgs() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getStartJar() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getStartMainType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getStopArgs() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getStopMainType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getVMArgs() {
 		// TODO Auto-generated method stub
 		return null;
