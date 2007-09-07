@@ -115,7 +115,7 @@ public class JstPublisher extends PackagesPublisher {
 		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
 		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
 		FileUtil.safeDelete(moduleDeployPath.toFile());
-		PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+		PublishUtil.publishFull(members, moduleDeployPath, monitor);
 		IModule[] childModules = earModule.getModules();
 		for (int i = 0; i < childModules.length; i++) {
 			IModule module2 = childModules[i];
