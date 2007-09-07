@@ -50,24 +50,21 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	}
 	
 	protected void createModules(IProject project) {
-		try {
-			if( ArchivesModelCore.getProjectPackages(project.getLocation(), null, true).length > 0 ) {
-				IModule module;
-				IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
-				boolean requiresSave = ensureArchivesHaveIDs(project, packages);
-				ArrayList mods = new ArrayList();
-				for( int i = 0; i < packages.length; i++ ) {
-					module = factory.createModule2(packages[i], project);
-					modules.add(module);
-					Object moduleDelegate = new PackagedModuleDelegate(packages[i]);
-					packageToModule.put(packages[i], module);
-					moduleDelegates.put(module, moduleDelegate);
-					mods.add(module);
-				}
-				projectToModules.put(project.getLocation(), mods);
+		IArchive[] packs = ArchivesModelCore.getProjectPackages(project.getLocation(), null, false);
+		if( packs != null && packs.length > 0 ) {
+			IModule module;
+			IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
+			boolean requiresSave = ensureArchivesHaveIDs(project, packages);
+			ArrayList mods = new ArrayList();
+			for( int i = 0; i < packages.length; i++ ) {
+				module = factory.createModule2(packages[i], project);
+				modules.add(module);
+				Object moduleDelegate = new PackagedModuleDelegate(packages[i]);
+				packageToModule.put(packages[i], module);
+				moduleDelegates.put(module, moduleDelegate);
+				mods.add(module);
 			}
-		} catch( Throwable t ) {
-			t.printStackTrace();
+			projectToModules.put(project.getLocation(), mods);
 		}
 	}
 	
