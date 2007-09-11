@@ -56,7 +56,7 @@ public class XPathFileResult {
 			this.node = node;
 			this.attribute = attribute;
 			this.index = index;
-			this.hasAttribute = attribute == null ? false : true;
+			this.hasAttribute = attribute == null || attribute.equals("") ? false : true;
 		}
 		
 		public int getIndex() {
