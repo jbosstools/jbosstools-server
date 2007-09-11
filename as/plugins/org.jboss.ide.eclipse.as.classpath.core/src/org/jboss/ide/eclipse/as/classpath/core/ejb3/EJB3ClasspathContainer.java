@@ -34,7 +34,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 /**
  * @author Marshall
