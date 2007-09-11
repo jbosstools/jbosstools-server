@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
-import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.AbstractJBossServerRuntime;
 
 public class ClientAllRuntimeClasspathProvider extends
 		RuntimeClasspathProviderDelegate {
