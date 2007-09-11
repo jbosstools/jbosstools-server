@@ -171,7 +171,6 @@ public class PollThread extends Thread {
 				currentState = getTimeoutBehavior();
 				poller.cleanup();
 				alertEventLogTimeout();
-				fireTimeoutEvent();
 				finalAlert = false;
 			}
 			alertBehavior(currentState, finalAlert);
@@ -204,15 +203,7 @@ public class PollThread extends Thread {
 
 		return expectedState;
 	}
-	
-	protected void fireTimeoutEvent() {
-//		IServerPollerTimeoutListener[] listeners = 
-//			JBossServerCore.getDefault().getTimeoutListeners(poller.getClass().getName());
-//		for( int i = 0; i < listeners.length; i++ ) {
-//			listeners[i].serverTimedOut(getServer(), expectedState);
-//		}
-	}
-	
+		
 	protected IServer getServer() {
 		 return behavior.getServer();
 	}
