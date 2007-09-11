@@ -15,7 +15,7 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
-import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
+import org.jboss.ide.eclipse.as.core.extensions.archives.WarArchiveType;
 
 public class NewWARAction extends ActionWithDelegate implements IViewActionDelegate {
 

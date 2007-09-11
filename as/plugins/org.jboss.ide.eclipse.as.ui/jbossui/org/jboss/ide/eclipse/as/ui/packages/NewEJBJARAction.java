@@ -15,7 +15,7 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
-import org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType;
+import org.jboss.ide.eclipse.as.core.extensions.archives.EjbArchiveType;
 
 public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDelegate {
 
