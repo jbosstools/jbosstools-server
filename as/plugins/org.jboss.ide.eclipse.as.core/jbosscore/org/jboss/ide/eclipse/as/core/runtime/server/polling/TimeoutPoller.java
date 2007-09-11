@@ -25,9 +25,9 @@ import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.ServerType;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 // Wait 15 seconds, then say it's at it's expected state
 public class TimeoutPoller implements IServerStatePoller {

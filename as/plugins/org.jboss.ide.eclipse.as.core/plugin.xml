@@ -7,8 +7,8 @@
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.32.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.32"
@@ -24,8 +24,8 @@
             supportsRemoteHosts="false"/>
               
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.40.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.40"
@@ -41,8 +41,8 @@
             supportsRemoteHosts="false"/>
             
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.JBossServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.JBossServer"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.42.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.42"
@@ -58,8 +58,8 @@
             supportsRemoteHosts="false"/>
             
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.DeployableServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.DeployableServer"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServer"
             description="A server which cannot be started, stopped, or debugged\nbut provides a deploy folder for publishing."
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
@@ -79,7 +79,7 @@
          point="org.eclipse.wst.server.core.runtimeTypes">
       <runtimeType
             vendor="%providerName"
-            class="org.jboss.ide.eclipse.as.core.server.JBoss32ServerRuntime"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBoss32ServerRuntime"
             description="%jboss.version.32.description"
             name="JBoss 3.2 Runtime"
             id="org.jboss.ide.eclipse.as.runtime.32"
@@ -102,7 +102,7 @@
       </runtimeType>
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.JBoss40ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss40ServerRuntime"
              description="%jboss.version.40.description"
              name="JBoss 4.0 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.40"
@@ -131,7 +131,7 @@
       </runtimeType>
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.JBoss42ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss42ServerRuntime"
              description="%jboss.version.42.description"
              name="JBoss 4.2 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.42"
@@ -162,7 +162,7 @@
 
 
       <runtimeType
-            class="org.jboss.ide.eclipse.as.core.server.DeployableServerRuntime"
+            class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerRuntime"
             description="A runtime provided to allow a deploy-only server the ability to deploy certain project types."
             id="org.jboss.ide.eclipse.as.runtime.stripped"
             name="JBoss Deploy-only"
@@ -281,7 +281,7 @@
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
-            class="org.jboss.ide.eclipse.as.core.server.JBossLaunchAdapter"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter"
             id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
    </extension>
 

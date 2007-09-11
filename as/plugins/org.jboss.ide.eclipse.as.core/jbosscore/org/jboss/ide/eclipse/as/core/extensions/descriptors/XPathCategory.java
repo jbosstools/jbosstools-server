@@ -3,7 +3,7 @@ package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 import java.util.HashMap;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 public class XPathCategory {
 	protected String name; // cannot include delimiter from the model, comma

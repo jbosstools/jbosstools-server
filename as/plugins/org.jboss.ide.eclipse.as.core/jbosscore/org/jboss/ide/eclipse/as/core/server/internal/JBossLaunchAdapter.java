@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.FileInputStream;
 import java.io.IOException;

@@ -22,7 +22,7 @@
 package org.jboss.ide.eclipse.as.core.server.attributes;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 /**
  *

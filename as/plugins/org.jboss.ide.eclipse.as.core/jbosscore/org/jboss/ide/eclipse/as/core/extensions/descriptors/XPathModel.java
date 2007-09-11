@@ -14,8 +14,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.AbstractJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 public class XPathModel {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
