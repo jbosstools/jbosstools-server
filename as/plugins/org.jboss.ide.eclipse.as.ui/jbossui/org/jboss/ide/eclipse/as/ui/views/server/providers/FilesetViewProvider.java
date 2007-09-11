@@ -56,8 +56,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 

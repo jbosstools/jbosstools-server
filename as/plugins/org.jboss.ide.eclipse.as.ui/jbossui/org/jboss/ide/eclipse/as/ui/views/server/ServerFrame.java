@@ -40,7 +40,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.PublishAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishCleanAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView.IServerViewFrame;

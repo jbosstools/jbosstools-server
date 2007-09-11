@@ -33,7 +33,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 public class JBossPortsEditorPage extends ServerEditorPart
 {
