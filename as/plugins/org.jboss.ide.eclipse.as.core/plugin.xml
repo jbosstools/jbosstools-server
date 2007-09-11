@@ -241,7 +241,7 @@
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory"
+            class="org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory"
             id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
             projects="true">
          <moduleType
@@ -249,7 +249,7 @@
                versions="1.0"/>
       </moduleFactory>
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.packages.SingleDeployableFactory"
+            class="org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory"
             id="org.jboss.ide.eclipse.as.core.singledeployablefactory"
             projects="false">
          <moduleType
@@ -266,7 +266,7 @@
    <extension
          point="org.eclipse.wst.server.core.moduleArtifactAdapters">
       <moduleArtifactAdapter
-            class="org.jboss.ide.eclipse.as.core.packages.PackagedArtifactAdapter"
+            class="org.jboss.ide.eclipse.as.core.modules.PackagedArtifactAdapter"
             id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
             priority="0">
          <enablement>

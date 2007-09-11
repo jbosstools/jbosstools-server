@@ -11,7 +11,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.ModulePackageTypeConverter;
+import org.jboss.ide.eclipse.as.core.modules.ModulePackageTypeConverter;
 
 public class EarArchiveType extends J2EEArchiveType {
 	public final static String ID = "org.jboss.ide.eclipse.as.core.packages.earPackageType";

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.packages;
+package org.jboss.ide.eclipse.as.core.modules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.IModuleContributor;
-import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.PackagedModuleDelegate;
+import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.IModuleContributor;
+import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.PackagedModuleDelegate;
 
 public class ArchivesModelModuleContributor implements IModuleContributor {
 

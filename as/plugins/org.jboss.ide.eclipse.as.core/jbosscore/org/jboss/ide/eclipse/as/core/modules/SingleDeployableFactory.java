@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.packages;
+package org.jboss.ide.eclipse.as.core.modules;
 
 import java.util.Collection;
 import java.util.HashMap;
