@@ -281,7 +281,7 @@
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
-            class="org.jboss.ide.eclipse.as.core.client.JBossLaunchAdapter"
+            class="org.jboss.ide.eclipse.as.core.server.JBossLaunchAdapter"
             id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
    </extension>
 

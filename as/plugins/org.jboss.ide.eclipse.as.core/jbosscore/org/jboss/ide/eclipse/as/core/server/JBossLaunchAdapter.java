@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.client;
+package org.jboss.ide.eclipse.as.core.server;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,7 +18,6 @@ import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.HttpLaunchable;
 import org.eclipse.wst.server.core.util.WebResource;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
 
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 
