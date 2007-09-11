@@ -6,9 +6,9 @@ import java.util.Arrays;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class XPathPropertyLabelProvider extends LabelProvider implements ITableLabelProvider {

@@ -2,10 +2,10 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathCategory;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 
 public class XPathPropertyContentProvider implements ITreeContentProvider {
