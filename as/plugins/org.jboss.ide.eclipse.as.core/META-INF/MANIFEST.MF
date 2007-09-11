@@ -23,7 +23,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
- org.jboss.ide.eclipse.as.core.model,
+ org.jboss.ide.eclipse.as.core.extensions.events,
  org.jboss.ide.eclipse.as.core.packages,
  org.jboss.ide.eclipse.as.core.packages.types,
  org.jboss.ide.eclipse.as.core.publishers,

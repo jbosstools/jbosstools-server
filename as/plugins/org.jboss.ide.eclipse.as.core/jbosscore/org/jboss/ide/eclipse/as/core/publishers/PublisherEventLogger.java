@@ -3,8 +3,8 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import java.io.File;
 
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 
