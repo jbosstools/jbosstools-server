@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.model.descriptor;
+package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.util.HashMap;
 

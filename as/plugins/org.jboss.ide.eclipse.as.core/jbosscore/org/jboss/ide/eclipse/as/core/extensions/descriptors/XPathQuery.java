@@ -1,11 +1,11 @@
-package org.jboss.ide.eclipse.as.core.model.descriptor;
+package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Path;
-import org.jboss.ide.eclipse.as.core.model.descriptor.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 
 /**
  * A simple value object to hold the XPath query data
