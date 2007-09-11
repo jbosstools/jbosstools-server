@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
@@ -43,6 +44,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
@@ -145,10 +147,7 @@ public class JBossServer extends ServerDelegate
 		try {
 			Server s = (Server)getServer();
 			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-			// TODO FIX
-//			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS 
-//					+ JBossServerStartupLaunchConfiguration.PRGM_ARGS_START_SUFFIX, (String)null);
-			String startArgs = "";
+			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
 			Map map = ArgsUtil.getSystemProperties(startArgs);
 			
 			if( map.get(JBOSS_SERVER_HOME_DIR) != null ) 
