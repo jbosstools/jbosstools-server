@@ -22,7 +22,7 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.tools.common.test.util.TestProjectProvider;
 
 public class ASClasspathTest extends TestCase {
