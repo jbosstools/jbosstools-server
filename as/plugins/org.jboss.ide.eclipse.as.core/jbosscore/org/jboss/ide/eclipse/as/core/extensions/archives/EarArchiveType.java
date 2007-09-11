@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.packages.types;
+package org.jboss.ide.eclipse.as.core.extensions.archives;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

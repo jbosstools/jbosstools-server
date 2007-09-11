@@ -24,9 +24,9 @@ package org.jboss.ide.eclipse.as.core.modules;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType;
-import org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType;
+import org.jboss.ide.eclipse.as.core.extensions.archives.EarArchiveType;
+import org.jboss.ide.eclipse.as.core.extensions.archives.EjbArchiveType;
+import org.jboss.ide.eclipse.as.core.extensions.archives.WarArchiveType;
 
 /**
  *

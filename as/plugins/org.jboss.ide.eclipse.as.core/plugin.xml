@@ -397,15 +397,15 @@
    <extension
          point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.types.WarArchiveType"
+            class="org.jboss.ide.eclipse.as.core.extensions.archives.WarArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.warArchive"
             label="WAR"/>
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.types.EjbArchiveType"
+            class="org.jboss.ide.eclipse.as.core.extensions.archives.EjbArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
             label="EJB JAR"/>
       <packageType
-            class="org.jboss.ide.eclipse.as.core.packages.types.EarArchiveType"
+            class="org.jboss.ide.eclipse.as.core.extensions.archives.EarArchiveType"
             id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
             label="EAR"/>
    </extension>
