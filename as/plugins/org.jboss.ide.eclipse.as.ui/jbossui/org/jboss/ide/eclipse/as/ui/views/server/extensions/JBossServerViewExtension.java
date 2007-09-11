@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;

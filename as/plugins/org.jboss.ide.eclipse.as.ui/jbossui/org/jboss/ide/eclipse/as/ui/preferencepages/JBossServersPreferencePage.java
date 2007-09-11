@@ -63,11 +63,11 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.ServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 

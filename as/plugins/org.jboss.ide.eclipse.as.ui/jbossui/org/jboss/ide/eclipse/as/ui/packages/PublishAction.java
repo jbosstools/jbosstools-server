@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
 import org.jboss.ide.eclipse.as.core.modules.ArchivesBuildListener;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class PublishAction implements INodeActionDelegate {

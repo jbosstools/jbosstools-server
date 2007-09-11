@@ -63,8 +63,8 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
