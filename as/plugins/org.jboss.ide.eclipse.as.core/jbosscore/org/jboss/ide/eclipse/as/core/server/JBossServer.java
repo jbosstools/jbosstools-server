@@ -44,7 +44,6 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathModel;
 import org.jboss.ide.eclipse.as.core.model.descriptor.XPathQuery;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
