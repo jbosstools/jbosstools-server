@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.publishers;
+package org.jboss.ide.eclipse.as.core.modules;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -10,9 +10,9 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.packages.SingleDeployableFactory;
+import org.jboss.ide.eclipse.as.core.packages.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.singledeployable.SingleDeployableFactory;
-import org.jboss.ide.eclipse.as.core.singledeployable.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 

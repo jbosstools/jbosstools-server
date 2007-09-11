@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.singledeployable;
+package org.jboss.ide.eclipse.as.core.packages;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory;
 
 public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.singledeployablefactory";

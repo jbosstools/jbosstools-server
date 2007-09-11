@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.publishers;
+package org.jboss.ide.eclipse.as.core.modules;
 
 import java.util.ArrayList;
 
@@ -36,11 +36,11 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.modules.PublisherEventLogger.PublishEvent;
+import org.jboss.ide.eclipse.as.core.modules.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory.PackagedModuleDelegate;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;

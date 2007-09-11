@@ -249,7 +249,7 @@
                versions="1.0"/>
       </moduleFactory>
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.singledeployable.SingleDeployableFactory"
+            class="org.jboss.ide.eclipse.as.core.packages.SingleDeployableFactory"
             id="org.jboss.ide.eclipse.as.core.singledeployablefactory"
             projects="false">
          <moduleType

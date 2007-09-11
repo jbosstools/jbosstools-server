@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.publishers;
+package org.jboss.ide.eclipse.as.core.modules;
 
 import java.io.File;
 
