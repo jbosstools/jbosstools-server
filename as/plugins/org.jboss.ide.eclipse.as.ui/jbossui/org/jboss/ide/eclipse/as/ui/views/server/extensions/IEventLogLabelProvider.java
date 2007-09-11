@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 
 /**
  *
