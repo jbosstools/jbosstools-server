@@ -29,7 +29,7 @@ import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
 import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
-import org.jboss.ide.eclipse.as.core.server.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClasspathContainerPage
 {
