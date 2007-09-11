@@ -19,13 +19,13 @@ import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.modules.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.modules.JstPublisher;
-import org.jboss.ide.eclipse.as.core.modules.NullPublisher;
-import org.jboss.ide.eclipse.as.core.modules.PackagesPublisher;
-import org.jboss.ide.eclipse.as.core.modules.PublisherEventLogger;
-import org.jboss.ide.eclipse.as.core.modules.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.packages.PackageModuleFactory;
+import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
+import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {

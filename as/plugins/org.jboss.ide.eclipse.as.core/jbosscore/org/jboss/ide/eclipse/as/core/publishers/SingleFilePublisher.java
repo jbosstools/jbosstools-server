@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.modules;
+package org.jboss.ide.eclipse.as.core.publishers;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
