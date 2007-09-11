@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.launch;
+package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

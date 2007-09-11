@@ -198,7 +198,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             modes="run,debug"
             name="JBoss Application Server Startup Configuration"
@@ -206,7 +206,7 @@
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.launch.DeployableLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             modes="run,debug"
             name="Stripped Server Launch Configuration"
@@ -214,14 +214,14 @@
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.launch.TwiddleLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
             modes="run"
             name="Twiddle"
             public="false">
       </launchConfigurationType>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.launch.StopLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
             name="Stop Server">

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.launch;
+package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
 import java.util.ArrayList;
