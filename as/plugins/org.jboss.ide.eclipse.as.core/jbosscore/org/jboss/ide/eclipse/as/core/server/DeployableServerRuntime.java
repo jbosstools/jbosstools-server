@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.server.stripped;
+package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 

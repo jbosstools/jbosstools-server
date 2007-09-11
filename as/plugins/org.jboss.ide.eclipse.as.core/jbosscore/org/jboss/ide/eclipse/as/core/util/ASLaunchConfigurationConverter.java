@@ -68,7 +68,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.AbstractJBossServerRuntime;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

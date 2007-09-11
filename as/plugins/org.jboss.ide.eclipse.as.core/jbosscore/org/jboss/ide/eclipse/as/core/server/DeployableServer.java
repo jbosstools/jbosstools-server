@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.core.server.stripped;
+package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -8,7 +8,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {

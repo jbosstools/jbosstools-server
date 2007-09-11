@@ -7,7 +7,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.DeployableServerBehavior;
 
 public class DeployableLaunchConfiguration implements
 		ILaunchConfigurationDelegate {

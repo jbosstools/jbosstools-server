@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.runtime.server.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.ServerAttributeHelper;
 
 public class XPathModel {

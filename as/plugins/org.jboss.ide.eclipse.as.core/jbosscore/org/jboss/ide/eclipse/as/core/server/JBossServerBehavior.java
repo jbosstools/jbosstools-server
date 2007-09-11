@@ -35,7 +35,6 @@ import org.jboss.ide.eclipse.as.core.model.EventLogModel;
 import org.jboss.ide.eclipse.as.core.model.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.runtime.server.polling.PollThread;
-import org.jboss.ide.eclipse.as.core.server.stripped.DeployableServerBehavior;
 
 public class JBossServerBehavior extends DeployableServerBehavior {
 	private PollThread pollThread = null;
