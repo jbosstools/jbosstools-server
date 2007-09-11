@@ -19,14 +19,16 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime.server.polling;
+package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.ServerType;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 // Wait 15 seconds, then say it's at it's expected state

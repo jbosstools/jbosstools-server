@@ -19,15 +19,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.server.attributes;
+package org.jboss.ide.eclipse.as.core.server;
 
-public interface IServerStartupParameters {
-	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir";
-	public static final String JBOSS_SERVER_BASE_DIR = "jboss.server.base.dir";
-	public static final String JBOSS_SERVER_NAME = "jboss.server.name";
-	public static final String JBOSS_HOME_DIR = "jboss.home.dir";
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+
+public interface IServerStatePoller extends IServerPollingAttributes {
 	
-	public static final String DEFAULT_SERVER_NAME = "default";
-	public static final String DEPLOY = "deploy";
-	public static final String SERVER = "server";
+	public static final boolean SERVER_UP = true;
+	public static final boolean SERVER_DOWN = false;
+	
+	public static final int CANCEL = 0;
+	public static final int TIMEOUT_REACHED = 1;
+	
+	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
+	public boolean isComplete() throws PollingException;
+	public boolean getState() throws PollingException; 
+	public void cancel(int type);    // cancel the polling
+	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
+	
+	public class PollingException extends Exception {
+		public PollingException(String message) {super(message);}
+	}
 }

@@ -28,7 +28,7 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.core.runtime.server.polling.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  *

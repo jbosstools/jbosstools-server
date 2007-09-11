@@ -1,6 +1,7 @@
-package org.jboss.ide.eclipse.as.core.runtime.server.polling;
+package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 
 public class ServerStatePollerType {
 	private IConfigurationElement el;

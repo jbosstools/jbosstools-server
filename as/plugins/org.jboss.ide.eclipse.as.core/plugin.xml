@@ -289,19 +289,19 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.pollers">
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.TimeoutPoller"
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.TimeoutPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
             name="Timeout Poller"
             supportsStartup="true"
             supportsShutdown="true"/>
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.JMXPoller"
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
             name="JMX Poller"
             supportsStartup="true"
             supportsShutdown="false"/>
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.runtime.server.polling.ProcessTerminatedPoller"
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
             name="Process Terminated Poller"
             supportsShutdown="true"

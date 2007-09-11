@@ -1,8 +1,10 @@
-package org.jboss.ide.eclipse.as.core.runtime.server.polling;
+package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 
 /**
  * Essentially does nothing because the process already has a listener

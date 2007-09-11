@@ -19,26 +19,18 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.core.runtime.server.polling;
+package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
-public interface IServerStatePoller extends IServerPollingAttributes {
-	
-	public static final boolean SERVER_UP = true;
-	public static final boolean SERVER_DOWN = false;
-	
-	public static final int CANCEL = 0;
-	public static final int TIMEOUT_REACHED = 1;
-	
-	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
-	public boolean isComplete() throws PollingException;
-	public boolean getState() throws PollingException; 
-	public void cancel(int type);    // cancel the polling
-	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
-	
-	public class PollingException extends Exception {
-		public PollingException(String message) {super(message);}
-	}
+/**
+ *
+ * @author rob.stryker@jboss.com
+ */
+public interface IDeployableServer {
+	public String getDeployDirectory();
+	public String getConfigDirectory();
+	public ServerAttributeHelper getAttributeHelper();
+	public IServer getServer();
 }

@@ -41,7 +41,7 @@ import org.jboss.ide.eclipse.archives.core.model.other.IArchiveBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.other.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.PackagedModuleDelegate;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 

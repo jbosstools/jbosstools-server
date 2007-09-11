@@ -20,12 +20,12 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory;
-import org.jboss.ide.eclipse.as.core.publishers.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
 import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {

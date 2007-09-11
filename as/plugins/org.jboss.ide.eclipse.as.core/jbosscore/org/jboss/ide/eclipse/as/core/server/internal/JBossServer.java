@@ -46,9 +46,9 @@ import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
-import org.jboss.ide.eclipse.as.core.runtime.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.attributes.IServerStartupParameters;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
 public class JBossServer extends ServerDelegate 
