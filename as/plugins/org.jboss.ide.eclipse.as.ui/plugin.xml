@@ -105,7 +105,7 @@
 
   <extension point="org.eclipse.wst.common.project.facet.core.runtimes">  
     <adapter>
-      <runtime-component id="org.jboss.ide.eclipse.as.runtime.component.42"/>
+      <runtime-component id="org.jboss.ide.eclipse.as.runtime.component"/>
       <factory class="org.eclipse.jst.server.ui.internal.RuntimeLabelProvider$Factory"/>
       <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
     </adapter>
