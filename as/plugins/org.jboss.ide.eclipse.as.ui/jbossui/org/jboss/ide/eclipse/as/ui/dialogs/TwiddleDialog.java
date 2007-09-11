@@ -18,9 +18,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.launch.TwiddleLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.launch.TwiddleLauncher;
-import org.jboss.ide.eclipse.as.core.launch.TwiddleLauncher.ProcessData;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher.ProcessData;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class TwiddleDialog extends TrayDialog {
