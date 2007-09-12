@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -69,19 +70,17 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	public void forceStop(boolean addEvent) {
 		// just terminate the process.
-		try {
-			if( process != null ) 
-				try {
-					process.terminate();
-				} catch( Exception e ) {}
-			process = null;
-			setServerStopped();
-			if( addEvent ) {
-				EventLogTreeItem tpe = new ForceShutdownEvent();
-				EventLogModel.markChanged(tpe.getEventRoot());
+		if( process != null ) 
+			try {
+				process.terminate();
+			} catch( DebugException e ) {
+				e.printStackTrace();
 			}
-		} catch( Throwable t ) {
-			t.printStackTrace();
+		process = null;
+		setServerStopped();
+		if( addEvent ) {
+			EventLogTreeItem tpe = new ForceShutdownEvent();
+			EventLogModel.markChanged(tpe.getEventRoot());
 		}
 	}
 
