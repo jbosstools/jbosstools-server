@@ -11,6 +11,14 @@ import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 
+/**
+ * This class uses the "throw everything you can find" strategy
+ * in providing additions to the classpath.  Given a server runtime, 
+ * it will try to add whatever could possibly ever be used.
+ * 
+ * @author Rob Stryker
+ *
+ */
 public class ClientAllRuntimeClasspathProvider extends
 		RuntimeClasspathProviderDelegate {
 

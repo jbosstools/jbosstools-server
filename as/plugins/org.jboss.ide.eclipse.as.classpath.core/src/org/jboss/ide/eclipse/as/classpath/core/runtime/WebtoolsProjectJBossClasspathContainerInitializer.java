@@ -40,7 +40,18 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 
-
+/**
+ * This is a class that would ultimately try to respond to different facets
+ * by providing different jars to the classpath, jars specific to the added
+ * facet. 
+ * 
+ * It is currently only used by the EJB30SupportVerifier, or by 
+ * the ProjectRuntimeClasspathProvider (front) when the added facet
+ * is jst.java. 
+ * 
+ * @author Rob Stryker
+ *
+ */
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer {
 	
