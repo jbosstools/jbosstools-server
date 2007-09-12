@@ -47,7 +47,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(STOP_LAUNCH_TYPE);
 		
-		String launchName = TwiddleLaunchConfiguration.class.getName();
+		String launchName = StopLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
 		wc.setAttribute(SERVER_ID, server.getId());
