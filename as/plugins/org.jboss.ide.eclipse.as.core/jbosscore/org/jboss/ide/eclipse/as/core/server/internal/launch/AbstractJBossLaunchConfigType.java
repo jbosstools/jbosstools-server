@@ -33,6 +33,11 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
 	protected static final String SERVER_ID = "server-id";
 
+	// we have no need to do anything in pre-launch check
+	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+		return true;
+	}
+
 	protected void preLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) {
 		// override me
