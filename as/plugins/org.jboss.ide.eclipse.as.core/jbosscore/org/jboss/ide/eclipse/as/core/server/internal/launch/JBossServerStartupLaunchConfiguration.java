@@ -95,14 +95,22 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
 
-	
+	protected void preLaunch(ILaunchConfiguration configuration, 
+			String mode, ILaunch launch, IProgressMonitor monitor) {
+		try {
+			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+			jbsBehavior.serverStarting();
+		} catch( CoreException ce ) {
+			// report it
+		}
+	}
+
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) {
 		try {
 			IProcess[] processes = launch.getProcesses(); 
 			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
 			jbsBehavior.setProcess(processes[0]);
-			jbsBehavior.serverStarting();
 		} catch( CoreException ce ) {
 			// report
 		}
