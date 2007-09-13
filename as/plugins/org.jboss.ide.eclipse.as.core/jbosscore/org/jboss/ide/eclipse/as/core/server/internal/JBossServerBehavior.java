@@ -38,7 +38,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
 
 public class JBossServerBehavior extends DeployableServerBehavior {
 	private PollThread pollThread = null;
-	protected transient IProcess process;
+	protected IProcess process;
 	public JBossServerBehavior() {
 		super();
 	}
