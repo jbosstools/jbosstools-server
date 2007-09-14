@@ -50,7 +50,6 @@ public abstract class JBossServerViewExtension {
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
 	}
-
 	
 	public ITreeContentProvider getContentProvider() {
 		return null;
@@ -71,6 +70,10 @@ public abstract class JBossServerViewExtension {
 		return null;
 	}
 	
+	public void refreshModel(Object object) {
+		// override me
+	}
+
 	protected void suppressingRefresh(Runnable runnable) {
 		JBossServerView.getDefault().getExtensionFrame().getViewer().suppressingRefresh(runnable);
 	}
