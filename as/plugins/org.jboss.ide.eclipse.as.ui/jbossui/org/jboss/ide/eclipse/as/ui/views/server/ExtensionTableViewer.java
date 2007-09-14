@@ -38,7 +38,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.
 public class ExtensionTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
-	protected Action disableCategoryAction, refreshAction, refreshFullAction;
+	protected Action disableCategoryAction, refreshAction;
 	protected boolean suppressingRefresh = false;
 	public ExtensionTableViewer(Tree tree) {
 		super(tree);
@@ -85,6 +85,13 @@ public class ExtensionTableViewer extends TreeViewer {
 		disableCategoryAction.setText(Messages.DisableCategoryAction);
 		refreshAction = new Action() { 
 			public void run() {
+				Object o1 = ((IStructuredSelection)getSelection()).getFirstElement();
+				if( o1 != null ) {
+					// tell the delegate to refresh its model for the selected item, before we refresh the viewer
+					ServerViewProvider provider = o1 instanceof ServerViewProvider ? (ServerViewProvider)o1 : ((ContentWrapper)o1).getProvider();
+					if( provider != null )
+						provider.getDelegate().refreshModel(o1);
+				}
 				Object el = getSelectedElement();
 				if( el instanceof ServerViewProvider ) 
 					refresh(el);
@@ -93,13 +100,6 @@ public class ExtensionTableViewer extends TreeViewer {
 			}
 		};
 		refreshAction.setText("Refresh Item");
-		
-		refreshFullAction = new Action() {
-			public void run() {
-				refresh(null);
-			}
-		};
-		refreshFullAction.setText("Refresh Full Tree");
 	}
 	
 	public static class ContentWrapper {
@@ -223,7 +223,12 @@ public class ExtensionTableViewer extends TreeViewer {
 		}
 
 		public boolean hasChildren(Object element) {
-			if( element instanceof ServerViewProvider ) return true;
+			if( element instanceof ServerViewProvider ) 
+				return ((ServerViewProvider)element).getDelegate().getContentProvider().hasChildren(element);
+			if( element instanceof ContentWrapper ) {
+				ContentWrapper parentWrapper = (ContentWrapper)element;
+				return parentWrapper.getProvider().getDelegate().getContentProvider().hasChildren(parentWrapper.getElement());
+			}
 			return getChildren(element).length > 0 ? true : false;
 		}
 
@@ -289,12 +294,10 @@ public class ExtensionTableViewer extends TreeViewer {
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
 		Object selected = getSelectedElement();
 		menu.add(refreshAction);
-		menu.add(refreshFullAction);
 		if( selected instanceof ServerViewProvider ) {
 			menu.add(disableCategoryAction);
 		}
 		
-		//menu.add(new TempAction());
 		menu.add(new Separator());
 	}
 
@@ -305,7 +308,7 @@ public class ExtensionTableViewer extends TreeViewer {
 	public class TableViewerPropertySheet implements IPropertySheetPage {
 
 		private PageBook book;
-		private ArrayList addedControls = new ArrayList();
+		private ArrayList<ServerViewProvider> addedControls = new ArrayList<ServerViewProvider>();
 		private SimplePropertiesPropertySheetPage topLevelPropertiesPage;
 		
 		public void createControl(Composite parent) {
