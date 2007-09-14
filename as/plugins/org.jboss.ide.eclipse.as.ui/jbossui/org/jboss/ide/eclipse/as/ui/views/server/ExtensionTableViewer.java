@@ -335,18 +335,17 @@ public class ExtensionTableViewer extends TreeViewer {
 				
 				IPropertySheetPage page = null;
 				if( selected instanceof ContentWrapper ) {
-					page = getDelegatePage((ContentWrapper)selected);
-				}
-				
-				if( page == null ) {
+					page = getDelegatePage(((ContentWrapper)selected).getProvider());
+				} else if( selected instanceof ServerViewProvider ) {
+					page = getDelegatePage((ServerViewProvider)selected);
+				} else if( page == null ) {
 					page = topLevelPropertiesPage;
 				}
 				page.selectionChanged(part, sel);
 				book.showPage(page.getControl());
 			}
 		}
-		private IPropertySheetPage getDelegatePage(ContentWrapper wrapper) {
-			ServerViewProvider provider = wrapper.getProvider();
+		private IPropertySheetPage getDelegatePage(ServerViewProvider provider) {
 			IPropertySheetPage returnSheet = null;
 			returnSheet = provider.getDelegate().getPropertySheetPage();
 			if( !addedControls.contains(provider) && returnSheet != null) {
