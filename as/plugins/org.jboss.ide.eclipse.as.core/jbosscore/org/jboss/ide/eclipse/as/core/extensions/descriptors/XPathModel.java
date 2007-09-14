@@ -13,9 +13,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerLifecycleListener;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class XPathModel {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
@@ -28,7 +31,7 @@ public class XPathModel {
 	private static final String QUERY = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
 
-	public static XPathModel instance;
+	private static XPathModel instance;
 	public static XPathModel getDefault() {
 		if( instance == null )
 			instance = new XPathModel();
@@ -38,6 +41,20 @@ public class XPathModel {
 	protected HashMap<String, ArrayList<XPathCategory>> serverToCategories;
 	public XPathModel() {
 		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
+		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
+			public void serverAdded(IServer server) {
+				AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime) 
+					server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
+				IPath loc = server.getRuntime().getLocation();
+				IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
+				loadDefaults(server, configFolder.toOSString());
+				save(server);
+			}
+			public void serverChanged(IServer server) {
+			}
+			public void serverRemoved(IServer server) {
+			}
+		});
 	}
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
