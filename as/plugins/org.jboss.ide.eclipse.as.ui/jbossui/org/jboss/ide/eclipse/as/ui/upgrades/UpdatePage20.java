@@ -24,29 +24,30 @@ package org.jboss.ide.eclipse.as.ui.upgrades;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Composite;
-import org.jboss.ide.eclipse.firstrun.wizard.pages.AbstractFirstRunPage;
 
-public class UpdatePage20 extends AbstractFirstRunPage {
+/*
+ * This class is non-functional right now. I'm leaving it in case I get
+ * time to fix it, but with all the changes to the server, this isn't
+ * working. 
+ */
+public class UpdatePage20 { //extends AbstractFirstRunPage {
 
 	protected UpdatePage20(String pageName, String title,
 			ImageDescriptor titleImage) {
-		super(pageName, title, titleImage);
+//		super(pageName, title, titleImage);
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
 	public void createControl(Composite parent) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void initialize() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void performFinishWithProgress(IProgressMonitor monitor) {
 		// TODO Auto-generated method stub
 		
