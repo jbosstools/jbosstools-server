@@ -311,8 +311,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_USERNAME, authUser);
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_PASSWORD, authPass);
 		}
-		IPath configFolder = new Path(runtimeLoc).append("server").append(configName);
-		XPathModel.getDefault().loadDefaults((IServer)serverWC, configFolder.toOSString()); 
 	}
 
 	public boolean isComplete() {
