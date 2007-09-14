@@ -62,6 +62,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
+import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
 
 public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 
@@ -88,40 +89,11 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		JBossServerView.addExtensionFrameListener(
 			new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
-					activatePropertiesView();
+					ViewUtilityMethods.activatePropertiesView(propertyPage);
 				}
 			});
 	}
 	
-	protected void activatePropertiesView() {
-		Object o = JBossServerView.getDefault().getExtensionFrame().getViewer().getSelectedElement();
-		if( o instanceof XPathCategory ) {
-			// show properties view
-			String propsId = "org.eclipse.ui.views.PropertySheet";
-			try {
-				IWorkbench work = PlatformUI.getWorkbench();
-				IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
-				if( !isPropertiesOnTop()) {
-					window.getActivePage().showView(propsId);
-					if( propertyPage != null ) {
-						propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
-					}
-				}
-			} catch( PartInitException pie ) {
-			}
-		}
-	}
-	
-	protected boolean isPropertiesOnTop() {
-		String propsId = "org.eclipse.ui.views.PropertySheet";
-		IWorkbench work = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
-		IWorkbenchPage page = window.getActivePage();
-		IViewReference ref = window.getActivePage().findViewReference(propsId);
-		if( ref == null ) return false; 
-		IWorkbenchPart part = ref.getPart(false);
-		return ( part != null && page.isPartVisible(part));
-	}
 	public void setActiveCategory(XPathCategory o) {
 		if( o != null && o != activeCategory) {
 			activeCategory = o;
