@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.Principal;
 import java.util.Date;
 import java.util.Properties;
@@ -38,18 +35,20 @@ import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.OperationsException;
 import javax.management.ReflectionException;
 import javax.naming.CommunicationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil.CredentialException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -85,22 +84,14 @@ public class JMXPoller implements IServerStatePoller {
 
 	private class PollerRunnable implements Runnable {
 		public void run() {
-			ClassLoader currentLoader = Thread.currentThread()
-					.getContextClassLoader();
-			ClassLoader twiddleLoader = getClassLoader();
+			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
+			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader twiddleLoader = JMXClassLoaderRepository.getDefault().getClassLoader(server);
 			if( pollingException != null ) {done = true; return;}
 			if (twiddleLoader != null) {
-				int port = ServerConverter.getJBossServer(server).getJNDIPort();
 
 				Thread.currentThread().setContextClassLoader(twiddleLoader);
-				Properties props = new Properties();
-				props.put("java.naming.factory.initial",
-						"org.jnp.interfaces.NamingContextFactory");
-				props.put("java.naming.factory.url.pkgs",
-						"org.jboss.naming:org.jnp.interfaces");
-				props.put("java.naming.provider.url", "jnp://"
-						+ server.getHost() + ":" + port);
-
+				Properties props = JMXUtil.getDefaultProperties(server);
 				setCredentials();
 				if( pollingException != null ) {done = true; return;}
 
@@ -128,11 +119,7 @@ public class JMXPoller implements IServerStatePoller {
 						started = STATE_STOPPED;
 					} catch (NamingException nnfe) {
 						started = STATE_STOPPED;
-					} catch (AttributeNotFoundException e) {
-						failingException = e;
-					} catch (InstanceNotFoundException e) {
-						failingException = e;
-					} catch (MalformedObjectNameException e) {
+					} catch( OperationsException e ) {
 						failingException = e;
 					} catch (MBeanException e) {
 						failingException = e;
@@ -143,6 +130,7 @@ public class JMXPoller implements IServerStatePoller {
 					} catch (IOException e) {
 						failingException = e;
 					}
+					
 					if( failingException != null ) {
 						pollingException = new PollingException(failingException.getMessage());
 						done = true;
@@ -156,81 +144,15 @@ public class JMXPoller implements IServerStatePoller {
 			}
 
 			Thread.currentThread().setContextClassLoader(currentLoader);
+			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 		}
 
 		protected void setCredentials() {
-			Exception temp = null;
 			try {
-				ILaunchConfiguration lc = server.getLaunchConfiguration(true,
-						new NullProgressMonitor());
-				// get user from the IServer, but override with launch configuration
-				String user = ServerConverter.getJBossServer(server).getUsername();
-				
-				// get password from the IServer, but override with launch configuration
-				String pass = ServerConverter.getJBossServer(server).getPassword();
-				
-				// get our methods
-				Class simplePrincipal = Thread.currentThread()
-						.getContextClassLoader().loadClass(
-								"org.jboss.security.SimplePrincipal");
-				Class securityAssoc = Thread.currentThread()
-						.getContextClassLoader().loadClass(
-								"org.jboss.security.SecurityAssociation");
-				securityAssoc.getMethods(); // force-init the methods since the
-				// class hasn't been initialized yet.
-
-				Constructor newSimplePrincipal = simplePrincipal
-						.getConstructor(new Class[] { String.class });
-				Object newPrincipalInstance = newSimplePrincipal
-						.newInstance(new Object[] { user });
-
-				// set the principal
-				Method setPrincipalMethod = securityAssoc.getMethod(
-						"setPrincipal", new Class[] { Principal.class });
-				setPrincipalMethod.invoke(null,
-						new Object[] { newPrincipalInstance });
-
-				// set the credential
-				Method setCredentialMethod = securityAssoc.getMethod(
-						"setCredential", new Class[] { Object.class });
-				setCredentialMethod.invoke(null, new Object[] { pass });
-			} catch (CoreException e) {
-				temp = e;
-			} catch (ClassNotFoundException e) {
-				temp = e;
-			} catch (SecurityException e) {
-				temp = e;
-			} catch (NoSuchMethodException e) {
-				temp = e;
-			} catch (IllegalArgumentException e) {
-				temp = e;
-			} catch (InstantiationException e) {
-				temp = e;
-			} catch (IllegalAccessException e) {
-				temp = e;
-			} catch (InvocationTargetException e) {
-				temp = e;
+				JMXUtil.setCredentials(server);
+			} catch( CredentialException ce ) {
+				pollingException = new PollingException(ce.getWrapped().getMessage());
 			}
-			if( temp != null ) {
-				pollingException = new PollingException(temp.getMessage());
-			}
-		}
-
-		protected ClassLoader getClassLoader() {
-			try {
-				IRuntime rt = server.getRuntime();
-				IPath loc = rt.getLocation();
-				URL url = loc.append("client").append("jbossall-client.jar")
-						.toFile().toURI().toURL();
-				URL url2 = loc.append("bin").append("twiddle.jar").toFile()
-						.toURI().toURL();
-				URLClassLoader loader = new URLClassLoader(new URL[] { url,
-						url2 }, Thread.currentThread().getContextClassLoader());
-				return loader;
-			} catch (MalformedURLException murle) {
-				pollingException = new PollingException(murle.getMessage());
-			}
-			return null;
 		}
 	}
 
