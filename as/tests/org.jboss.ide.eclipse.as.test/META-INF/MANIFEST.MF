@@ -14,6 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.server.core,
  org.eclipse.jst.common.project.facet.core,
  org.eclipse.wst.common.project.facet.core,
- org.eclipse.wst.common.project.facet.ui
+ org.eclipse.wst.common.project.facet.ui,
+ org.eclipse.debug.core,
+ org.eclipse.jdt.launching
 Eclipse-LazyStart: true
 Bundle-ClassPath: archivestest.jar
