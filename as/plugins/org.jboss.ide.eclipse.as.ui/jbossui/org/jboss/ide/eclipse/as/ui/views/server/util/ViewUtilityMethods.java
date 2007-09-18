@@ -8,28 +8,24 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 
 public class ViewUtilityMethods {
 
 
 	public static void activatePropertiesView(IPropertySheetPage propertyPage) {
-		Object o = JBossServerView.getDefault().getExtensionFrame().getViewer().getSelectedElement();
-		if( o instanceof XPathCategory ) {
-			// show properties view
-			String propsId = "org.eclipse.ui.views.PropertySheet";
-			try {
-				IWorkbench work = PlatformUI.getWorkbench();
-				IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
-				if( !isPropertiesOnTop()) {
-					window.getActivePage().showView(propsId);
-					if( propertyPage != null ) {
-						propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
-					}
+		// show properties view
+		String propsId = "org.eclipse.ui.views.PropertySheet";
+		try {
+			IWorkbench work = PlatformUI.getWorkbench();
+			IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
+			if( !isPropertiesOnTop()) {
+				window.getActivePage().showView(propsId);
+				if( propertyPage != null ) {
+					propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
 				}
-			} catch( PartInitException pie ) {
 			}
+		} catch( PartInitException pie ) {
 		}
 	}
 	
