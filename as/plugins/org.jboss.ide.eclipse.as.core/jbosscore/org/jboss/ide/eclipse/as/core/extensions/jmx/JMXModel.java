@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.extensions.jmx;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
@@ -22,9 +23,17 @@ import javax.naming.InitialContext;
 import org.eclipse.wst.server.core.IServer;
 
 public class JMXModel {
+	protected static JMXModel instance;
+	public static JMXModel getDefault() {
+		if( instance == null )
+			instance = new JMXModel();
+		return instance;
+	}
+	
+	
 	protected HashMap<String, JMXModelRoot> root;
 
-	public JMXModel() {
+	protected JMXModel() {
 		root = new HashMap<String, JMXModelRoot>();
 	}
 
@@ -138,6 +147,9 @@ public class JMXModel {
 		protected String clazz;
 		protected IServer server;
 		protected MBeanInfo info;
+		protected WrappedMBeanOperationInfo[] operations;
+		protected WrappedMBeanAttributeInfo[] attributes;
+		
 		protected JMXException exception;
 
 		public JMXBean(IServer server, ObjectInstance instance) {
@@ -169,19 +181,12 @@ public class JMXModel {
 		}
 		
 		public WrappedMBeanOperationInfo[] getOperations() {
-			if (info == null)
-				return null;
-			MBeanOperationInfo[] ops = info.getOperations();
-			WrappedMBeanOperationInfo[] wrappedOps = new WrappedMBeanOperationInfo[ops.length];
-			for (int i = 0; i < ops.length; i++) {
-				wrappedOps[i] = new WrappedMBeanOperationInfo(server, this,
-						ops[i]);
-			}
-			return wrappedOps;
+			return operations;
 		}
+		
 
-		public MBeanAttributeInfo[] getAttributes() {
-			return info == null ? null : info.getAttributes();
+		public WrappedMBeanAttributeInfo[] getAttributes() {
+			return attributes;
 		}
 
 		public JMXException getException() {
@@ -195,6 +200,8 @@ public class JMXModel {
 					Exception tmp = null;
 					try {
 						info = connection.getMBeanInfo(new ObjectName(name));
+						loadAttributes(connection);
+						loadOperations(connection);
 					} catch (InstanceNotFoundException e) {
 						tmp = e;
 					} catch (IntrospectionException e) {
@@ -217,6 +224,38 @@ public class JMXModel {
 			};
 			JMXSafeRunner.run(server, run);
 		}
+		
+
+		protected void loadOperations(MBeanServerConnection connection) {
+			if (info == null)
+				return;
+			MBeanOperationInfo[] ops = info.getOperations();
+			WrappedMBeanOperationInfo[] wrappedOps = new WrappedMBeanOperationInfo[ops.length];
+			for (int i = 0; i < ops.length; i++) {
+				wrappedOps[i] = new WrappedMBeanOperationInfo(server, this,
+						ops[i]);
+			}
+			operations = wrappedOps;
+		}
+
+		protected void loadAttributes(MBeanServerConnection connection) {
+			if (info == null)
+				return;
+			MBeanAttributeInfo[] atts = info.getAttributes();
+			ArrayList wrapped = new ArrayList();
+			WrappedMBeanAttributeInfo tmp;
+			for (int i = 0; i < atts.length; i++) {
+				try {
+					tmp = new WrappedMBeanAttributeInfo(server, this, atts[i]);
+					tmp.loadValue(connection);
+					wrapped.add(tmp);
+				} catch( Exception e ) {
+				}
+			}
+			attributes = (WrappedMBeanAttributeInfo[]) wrapped.toArray(new WrappedMBeanAttributeInfo[wrapped.size()]);
+		}
+
+
 
 	}
 
@@ -239,6 +278,35 @@ public class JMXModel {
 		}
 	}
 
+	
+	public static class WrappedMBeanAttributeInfo {
+		protected IServer server;
+		protected JMXBean bean;
+		protected MBeanAttributeInfo info;
+		protected Object value;
+		
+		public WrappedMBeanAttributeInfo(IServer server, JMXBean bean,
+				MBeanAttributeInfo info) {
+			this.server = server;
+			this.bean = bean;
+			this.info = info;
+		}
+		public MBeanAttributeInfo getInfo() {
+			return info;
+		}
+		public JMXBean getBean() {
+			return bean;
+		}
+		public void loadValue(MBeanServerConnection connection) throws Exception {
+			value = connection.getAttribute(
+					new ObjectName(bean.getName()), info.getName());
+		}
+		public Object getValue() {
+			return value;
+		}
+	}
+
+	
 	public static class JMXException extends Exception {
 		private static final long serialVersionUID = 1L;
 		private Exception exception;
@@ -252,7 +320,7 @@ public class JMXModel {
 		}
 	}
 
-	protected interface JMXRunnable {
+	public interface JMXRunnable {
 		public void run(MBeanServerConnection connection);
 	}
 
