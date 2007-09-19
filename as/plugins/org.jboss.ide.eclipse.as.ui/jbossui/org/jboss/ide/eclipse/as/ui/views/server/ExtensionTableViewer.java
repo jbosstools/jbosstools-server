@@ -339,9 +339,9 @@ public class ExtensionTableViewer extends TreeViewer {
 				IPropertySheetPage page = null;
 				if( selected instanceof ContentWrapper ) {
 					page = getDelegatePage(((ContentWrapper)selected).getProvider());
-				} else if( selected instanceof ServerViewProvider ) {
+				} else /*if( selected instanceof ServerViewProvider ) {
 					page = getDelegatePage((ServerViewProvider)selected);
-				} else if( page == null ) {
+				} else if( page == null ) */ { 
 					page = topLevelPropertiesPage;
 				}
 				page.selectionChanged(part, sel);

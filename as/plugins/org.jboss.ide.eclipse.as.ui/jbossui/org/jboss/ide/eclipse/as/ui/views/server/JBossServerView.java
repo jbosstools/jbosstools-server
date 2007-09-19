@@ -43,7 +43,20 @@ public class JBossServerView extends ViewPart {
 		if( getDefault() != null )
 			getDefault().getExtensionFrame().getViewer().addSelectionChangedListener(listener);
 	}
-	
+
+	public static void removeServerFrameListener(ISelectionChangedListener listener) {
+		if( serverFrameListeners.contains(listener))
+			serverFrameListeners.remove(listener);
+		if( getDefault() != null )
+			getDefault().getServerFrame().getViewer().removeSelectionChangedListener(listener);
+	}
+	public static void removeExtensionFrameListener(ISelectionChangedListener listener) {
+		if( extensionFrameListeners.contains(listener))
+			extensionFrameListeners.remove(listener);
+		if( getDefault() != null )
+			getDefault().getExtensionFrame().getViewer().removeSelectionChangedListener(listener);
+	}
+
 	public static interface IServerViewFrame {
 		public IAction[] getActionBarActions();
 		public int getDefaultSize();
