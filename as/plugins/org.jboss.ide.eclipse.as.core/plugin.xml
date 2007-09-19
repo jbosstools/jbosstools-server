@@ -210,7 +210,7 @@
             id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             modes="run,debug"
             name="Stripped Server Launch Configuration"
-            public="true"
+            public="false"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.jboss.ide.eclipse.as.core.serverSourcePathComputer"/>
       <launchConfigurationType
@@ -224,7 +224,8 @@
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
-            name="Stop Server">
+            name="Stop Server"
+            public="false">
       </launchConfigurationType>
    </extension>
 	
