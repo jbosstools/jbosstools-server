@@ -272,7 +272,7 @@ public class JstPublisher extends PackagesPublisher {
 				throw new CoreException(status);
 			}
 			
-			incrementalPublish(newTree, root, childModule, monitor);
+			incrementalPublish(newTree, moduleDeployPath, childModule, monitor);
 		}
 
 	}
