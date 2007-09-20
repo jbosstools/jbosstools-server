@@ -39,19 +39,19 @@ public class ServerSourcePathComputerDelegate implements ISourcePathComputerDele
 	public ISourceContainer[] computeSourceContainers(ILaunchConfiguration configuration, IProgressMonitor monitor) throws CoreException {
 		
 		IRuntimeClasspathEntry[] unresolvedEntries = JavaRuntime.computeUnresolvedSourceLookupPath(configuration);
-		List sourcefolderList = new ArrayList();
+		List<FolderSourceContainer> sourcefolderList = new ArrayList<FolderSourceContainer>();
 		
 		IServer server =  ServerUtil.getServer(configuration);
 		IModule[] modules = server.getModules();
 		
-		List javaProjectList = new ArrayList();
+		List<IJavaProject> javaProjectList = new ArrayList<IJavaProject>();
 		
 		processModules(sourcefolderList, modules, javaProjectList, server,monitor);
 
 
 		IRuntimeClasspathEntry[] projectEntries = new IRuntimeClasspathEntry[javaProjectList.size()];
 		for (int i = 0; i < javaProjectList.size(); i++) {
-			projectEntries[i] = JavaRuntime.newProjectRuntimeClasspathEntry((IJavaProject)javaProjectList.get(i)); 
+			projectEntries[i] = JavaRuntime.newProjectRuntimeClasspathEntry(javaProjectList.get(i)); 
 		}
 		IRuntimeClasspathEntry[] entries =  new IRuntimeClasspathEntry[projectEntries.length+unresolvedEntries.length]; 
 		System.arraycopy(unresolvedEntries,0,entries,0,unresolvedEntries.length);
@@ -71,7 +71,7 @@ public class ServerSourcePathComputerDelegate implements ISourcePathComputerDele
 		
 	}
 
-	private void processModules(List sourcefolderList, IModule[] modules, List javaProjectList, IServer server, IProgressMonitor monitor) {
+	private void processModules(List<FolderSourceContainer> sourcefolderList, IModule[] modules, List<IJavaProject> javaProjectList, IServer server, IProgressMonitor monitor) {
 		for (int i = 0; i < modules.length; i++) {
 			IProject project = modules[i].getProject();
 			IModule[] pModule = new IModule[1];
