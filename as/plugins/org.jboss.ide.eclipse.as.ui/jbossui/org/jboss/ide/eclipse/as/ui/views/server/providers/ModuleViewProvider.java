@@ -72,20 +72,22 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		deleteModuleAction = new Action() {
 			public void run() {
 				if (MessageDialog.openConfirm(new Shell(), Messages.ServerDialogHeading, Messages.DeleteModuleConfirm)) {
-					try {
-						IServerWorkingCopy server = selection.server.createWorkingCopy();
-						ServerUtil.modifyModules(server, null, selection.module, new NullProgressMonitor());
-						IServer server2 = server.save(true, null);
-						
-						if( ServerConverter.getDeployableServer(selection.server) != null ) {
-							ServerConverter.getDeployableServerBehavior(selection.server)
-								.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
-						} else {
-							server2.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+					Thread t = new Thread() { public void run() { 
+						try {
+							IServerWorkingCopy server = selection.server.createWorkingCopy();
+							IServer server2 = server.save(true, null);
+							
+							if( ServerConverter.getDeployableServer(selection.server) != null ) {
+								ServerConverter.getDeployableServerBehavior(selection.server)
+									.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
+							} else {
+								server2.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+							}
+						} catch (Exception e) {
+							// ignore
 						}
-					} catch (Exception e) {
-						// ignore
-					}
+					}};
+					t.start();
 				}
 			}
 		};
@@ -171,7 +173,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 					}
 					return ms2;
 				} catch (Exception e) {
-					return null;
+					return new Object[]{};
 				}
 			}
 
@@ -186,7 +188,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				}
 				return ms;
 			}
-			return null;
+			return new Object[] {};
 		}
 
 		public Object getParent(Object element) {
