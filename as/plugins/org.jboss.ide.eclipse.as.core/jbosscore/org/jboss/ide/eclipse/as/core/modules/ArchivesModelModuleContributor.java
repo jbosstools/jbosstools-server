@@ -26,10 +26,10 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	}
 	
 	private PackageModuleFactory factory;
-	protected ArrayList modules = null;
-	protected HashMap projectToModules = new HashMap(5); //IPath to IModule
-	protected HashMap moduleDelegates = new HashMap(5);
-	protected HashMap packageToModule = new HashMap(5);	
+	protected ArrayList<IModule> modules = null;
+	protected HashMap<IPath, ArrayList<IModule>> projectToModules = new HashMap<IPath, ArrayList<IModule>>(5); //IPath to IModule
+	protected HashMap<IModule, Object> moduleDelegates = new HashMap<IModule, Object>(5);
+	protected HashMap<IArchive, IModule> packageToModule = new HashMap<IArchive, IModule>(5);	
 	
 	private ArchivesModelModuleContributor(PackageModuleFactory factory) {
 		this.factory = factory;
@@ -37,7 +37,7 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	
 	public IModule[] getModules() {
 		if( modules == null ) {
-			modules = new ArrayList();
+			modules = new ArrayList<IModule>();
 			IProject[] projects2 = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 			int size = projects2.length;
 			for (int i = 0; i < size; i++) {
@@ -46,7 +46,7 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 				}
 			}
 		}
-		return (IModule[]) modules.toArray(new IModule[modules.size()]);
+		return modules.toArray(new IModule[modules.size()]);
 	}
 	
 	protected void createModules(IProject project) {
@@ -54,8 +54,9 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 		if( packs != null && packs.length > 0 ) {
 			IModule module;
 			IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
-			boolean requiresSave = ensureArchivesHaveIDs(project, packages);
-			ArrayList mods = new ArrayList();
+			/*boolean requiresSave = */
+			ensureArchivesHaveIDs(project, packages);
+			ArrayList<IModule> mods = new ArrayList<IModule>();
 			for( int i = 0; i < packages.length; i++ ) {
 				module = factory.createModule2(packages[i], project);
 				modules.add(module);
@@ -78,11 +79,11 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	
 	public void refreshProject(IPath projectLoc) {
 		// remove old mods
-		ArrayList mods = (ArrayList)projectToModules.get(projectLoc);
+		ArrayList<IModule> mods = projectToModules.get(projectLoc);
 		IModule mod;
 		IArchive arc;
 		if (mods != null) {
-			for( Iterator i = mods.iterator(); i.hasNext();) {
+			for( Iterator<IModule> i = mods.iterator(); i.hasNext();) {
 				mod = (IModule)i.next();
 				if( moduleDelegates.get(mod) != null ) {
 					arc = ((PackagedModuleDelegate)moduleDelegates.get(mod)).getPackage();
@@ -92,7 +93,6 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 			}
 		}
 		createModules(findProject(projectLoc));
-		factory.clearModuleCache();
 	}
 
 	protected IProject findProject(IPath projectLoc) {

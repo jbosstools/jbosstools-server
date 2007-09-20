@@ -76,11 +76,11 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	
 	
-	private HashMap moduleIdToModule;
-	private HashMap moduleToDelegate;
+	private HashMap<IPath, IModule> moduleIdToModule;
+	private HashMap<IModule, SingleDeployableModuleDelegate> moduleToDelegate;
 	public SingleDeployableFactory() {
-		moduleIdToModule = new HashMap();
-		moduleToDelegate = new HashMap();
+		moduleIdToModule = new HashMap<IPath, IModule>();
+		moduleToDelegate = new HashMap<IModule, SingleDeployableModuleDelegate>();
 		String files = JBossServerCorePlugin.getDefault().getPluginPreferences().getString(PREFERENCE_KEY);
 		if( files.equals("")) return;
 		String[] files2 = files.split(DELIM);
@@ -90,13 +90,13 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	}
 	
 	public IModule getModule(IPath path) {
-		return (IModule)moduleIdToModule.get(path);
+		return moduleIdToModule.get(path);
 	}
 	public void saveDeployableList() {
-		Iterator i = moduleIdToModule.keySet().iterator();
+		Iterator<IPath> i = moduleIdToModule.keySet().iterator();
 		String val = "";
 		while(i.hasNext()) {
-			val += ((IPath)i.next()).toString() + DELIM;
+			val += i.next().toString() + DELIM;
 		}
 		JBossServerCorePlugin.getDefault().getPluginPreferences().setValue(PREFERENCE_KEY, val);
 		JBossServerCorePlugin.getDefault().savePluginPreferences();
@@ -115,18 +115,18 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	}
 	
 	protected void removeModule(IPath path) {
-		IModule mod = (IModule)moduleIdToModule.get(path);
+		IModule mod = moduleIdToModule.get(path);
 		moduleIdToModule.remove(path);
 		moduleToDelegate.remove(mod);
 	}
 
 	public IModule[] getModules() {
-		Collection c = moduleIdToModule.values();
-		return (IModule[]) c.toArray(new IModule[c.size()]);
+		Collection<IModule> c = moduleIdToModule.values();
+		return c.toArray(new IModule[c.size()]);
 	}
 
 	public ModuleDelegate getModuleDelegate(IModule module) {
-		return (ModuleDelegate)moduleToDelegate.get(module);
+		return moduleToDelegate.get(module);
 	}
 
 	public class SingleDeployableModuleDelegate extends ModuleDelegate {

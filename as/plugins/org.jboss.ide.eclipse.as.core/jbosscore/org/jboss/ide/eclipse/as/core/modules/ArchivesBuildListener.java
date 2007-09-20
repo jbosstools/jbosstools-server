@@ -116,7 +116,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 	public static DeployableServerBehavior[] getServers(String servers) {
 		if( servers == null || "".equals(servers))
 			return null;
-		ArrayList list = new ArrayList();
+		ArrayList<DeployableServerBehavior> list = new ArrayList<DeployableServerBehavior>();
 		String[] byId = servers.split(",");
 		for( int i = 0; i < byId.length; i++ ) {
 			IServer server = ServerCore.findServer(byId[i]);
@@ -127,7 +127,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 				}
 			}
 		}
-		return (DeployableServerBehavior[]) list.toArray(new DeployableServerBehavior[list.size()]);
+		return list.toArray(new DeployableServerBehavior[list.size()]);
 	}
 
 	/*

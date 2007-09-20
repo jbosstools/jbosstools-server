@@ -171,11 +171,11 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	
 	
 	public IModule[] getModules() {
-		ArrayList list = new ArrayList();
+		ArrayList<IModule> list = new ArrayList<IModule>();
 		for( int i = 0; i < moduleContributors.length; i++ ) {
 			list.addAll(Arrays.asList(moduleContributors[i].getModules()));
 		}
-		return (IModule[]) list.toArray(new IModule[list.size()]);
+		return list.toArray(new IModule[list.size()]);
 	}
 	
 	public ModuleDelegate getModuleDelegate(IModule module) {
@@ -202,15 +202,15 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	public static class DelegateInitVisitor implements IArchiveNodeVisitor {
 
 		private IArchive pack;
-		private HashMap members;  // node -> imoduleresource
-		private HashMap pathToNode; // path -> node
+		private HashMap<IArchiveNode, ArchiveContainerResource> members;  // node -> imoduleresource
+		private HashMap<IPath, IArchiveNode> pathToNode; // path -> node
 		public DelegateInitVisitor(IArchive pack) {
 			this.pack = pack;
 			reset();
 		}
 		public void reset() {
-			members = new HashMap();
-			pathToNode = new HashMap();
+			members = new HashMap<IArchiveNode, ArchiveContainerResource>();
+			pathToNode = new HashMap<IPath, IArchiveNode>();
 		}
 		public boolean visit(IArchiveNode node) {
 			int type = node.getNodeType();
@@ -222,13 +222,13 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				String name = type == IArchiveNode.TYPE_ARCHIVE ? ((IArchive)node).getName() : ((IArchiveFolder)node).getName();
 				// if we're any other archive or a folder, create us and add to parent
 				IArchiveNode parent = node.getParent();
-				ArchiveContainerResource parentAsResource = (ArchiveContainerResource)members.get(parent);
+				ArchiveContainerResource parentAsResource = members.get(parent);
 				IPath rel = node.getRootArchiveRelativePath();
 				members.put(node, new ArchiveContainerResource(name, node, rel));					
 				pathToNode.put(rel, node);
-				parentAsResource.addChild((IModuleResource)members.get(node));
+				parentAsResource.addChild(members.get(node));
 			} else if( type == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
-				ArchiveContainerResource parentAsResource = (ArchiveContainerResource)members.get(node.getParent());
+				ArchiveContainerResource parentAsResource = members.get(node.getParent());
 				parentAsResource.addFilesetAsChild((IArchiveFileSet)node);
 			}
 
@@ -236,11 +236,11 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		
 		public IModuleResource getRootResource() {
-			return (IModuleResource)members.get(pack);
+			return members.get(pack);
 		}
 		
 		public IModuleResource getResourceForNode(IArchiveNode node) {
-			return (IModuleResource)members.get(node);
+			return members.get(node);
 		}
 	}
 	
@@ -249,7 +249,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		protected IPath moduleRelativePath;
 		protected IArchiveNode node;
 		protected String name;
-		private HashMap members;
+		private HashMap<IPath, IModuleResource> members;
 				
 		// represents source folder on disk. only used if node is fileset
 		private IPath folderGlobalPath = null;
@@ -257,7 +257,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			this.name = name;
 			this.node = node;
 			this.moduleRelativePath = moduleRelativePath;
-			members = new HashMap();
+			members = new HashMap<IPath, IModuleResource>();
 			if( node instanceof IArchiveFileSet) {
 				IPath tmp = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
 				folderGlobalPath = ((IArchiveFileSet)node).getGlobalSourcePath().append(tmp);
@@ -284,7 +284,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			members.remove(moduleRelativePath);
 		}
 		public IModuleResource getChild(IPath path) {
-			return (IModuleResource)members.get(path);
+			return members.get(path);
 		}
 		
 		public void addFilesetAsChild(IArchiveFileSet fs) {
@@ -331,8 +331,8 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		
 		public IModuleResource[] members() {
-			Collection c = members.values();
-			return (IModuleResource[]) c.toArray(new IModuleResource[c.size()]);
+			Collection<IModuleResource> c = members.values();
+			return c.toArray(new IModuleResource[c.size()]);
 		}
 
 		public IPath getModuleRelativePath() {
