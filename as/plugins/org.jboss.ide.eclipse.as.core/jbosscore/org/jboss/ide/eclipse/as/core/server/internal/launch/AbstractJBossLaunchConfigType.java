@@ -121,11 +121,11 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return jbrt;
 	}
 	
-	protected static void addCPEntry(ArrayList list, JBossServer jbs, String relative) {
+	protected static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
 		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(getServerHome(jbs)).append(relative)));
 	}
 	
-	protected static ArrayList convertClasspath(ArrayList cp, IVMInstall vmInstall) {
+	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
@@ -148,10 +148,10 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 			}
 		}
 
-		Iterator cpi = cp.iterator();
-		ArrayList list = new ArrayList();
+		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
+		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
-			IRuntimeClasspathEntry entry = (IRuntimeClasspathEntry) cpi.next();
+			IRuntimeClasspathEntry entry = cpi.next();
 			try {
 				list.add(entry.getMemento());
 			} catch (Exception e) {
@@ -163,7 +163,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return list;
 	}
 
-	protected static void addDirectory(String serverHome, ArrayList classpath,
+	protected static void addDirectory(String serverHome, ArrayList<IRuntimeClasspathEntry> classpath,
 			String dirName) {
 		String libPath = serverHome + File.separator + dirName;
 		File libDir = new File(libPath);

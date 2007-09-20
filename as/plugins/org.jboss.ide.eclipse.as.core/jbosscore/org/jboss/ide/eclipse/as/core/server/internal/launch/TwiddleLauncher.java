@@ -51,7 +51,7 @@ public class TwiddleLauncher {
 	 */
 	public static ProcessData[] launchTwiddles(String[] twiddleArgs, IServer server, boolean addPrefix) throws CoreException {
 		ILaunchConfigurationWorkingCopy wc;
-		ArrayList list = new ArrayList();
+		ArrayList<ProcessData> list = new ArrayList<ProcessData>();
 		for( int i = 0; i < twiddleArgs.length; i++ ) {
 			String args2 = addPrefix ? TwiddleLaunchConfiguration.getDefaultArgs(server) + twiddleArgs[i] : twiddleArgs[i]; 
 			wc = TwiddleLaunchConfiguration.createLaunchConfiguration(server, args2);

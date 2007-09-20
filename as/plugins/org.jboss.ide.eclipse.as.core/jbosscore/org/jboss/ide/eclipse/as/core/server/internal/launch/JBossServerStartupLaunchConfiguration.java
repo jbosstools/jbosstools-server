@@ -36,6 +36,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerType;
@@ -71,15 +72,12 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			IJBossServerRuntime jbrt = findJBossServerRuntime(server);
 			String serverHome = getServerHome(jbs);
 			
-			ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-			ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(LAUNCH_TYPE);
-			
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-			ArrayList classpath = new ArrayList();
+			ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 			addCPEntry(classpath, jbs, START_JAR_LOC);
-			ArrayList runtimeClassPaths = convertClasspath(classpath, jbrt.getVM());
+			ArrayList<String> runtimeClassPaths = convertClasspath(classpath, jbrt.getVM());
 			String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
 			wc.setAttribute(cpKey, runtimeClassPaths);
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
