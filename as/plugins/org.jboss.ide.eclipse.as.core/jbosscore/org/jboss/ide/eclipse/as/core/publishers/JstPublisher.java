@@ -82,33 +82,48 @@ public class JstPublisher extends PackagesPublisher {
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			status = unpublish(server, module, monitor);
 		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
-			status = fullPublishPackIntoFolder(module, root, monitor);	
+			status = fullPublishPackIntoFolder(new ArrayList<IModule>(), root, module, monitor);	
 		} else if (kind == IServer.PUBLISH_INCREMENTAL) {
-			status = incrementalPublish(new ArrayList(), root, module, monitor);
+			status = incrementalPublish(new ArrayList<IModule>(), root, module, monitor);
 		} 
 		return status;
 	}
 		
-	protected void fullWebPublish(IModule module, IPath root, IProgressMonitor monitor ) throws CoreException {
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-		IModuleResource[] members = md.members();
-		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
-		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
-		FileUtil.safeDelete(moduleDeployPath.toFile());
-		PublishUtil.publishSmart(members, moduleDeployPath, monitor);
-		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
-		IModule[] childModules = webModule.getModules();
-		for (int i = 0; i < childModules.length; i++) {
-			IModule module2 = childModules[i];
-			packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
+	
+	protected IStatus fullPublishPackIntoFolder(ArrayList<IModule> moduleTree, IPath root, IModule module, IProgressMonitor monitor) throws CoreException {
+		if( module.getModuleType().getId().equals("jst.ear")) {
+			fullEarPublish(moduleTree, module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.web")) {
+			fullWebPublish(moduleTree, module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.ejb")) {
+			// This should be an ejb. Utility projects should not be published in a folder
+			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+			IModuleResource[] members = md.members();
+			IPath moduleDeployPath = root.append(module.getProject().getName() + ".jar");
+			FileUtil.safeDelete(moduleDeployPath.toFile());
+			PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+			
+			// if we're nested, save our resources
+			if( moduleTree.size() > 1 ) 
+				NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(moduleTree, module).setResources(md.members());
+			
+			// can ejb jars have children? I don't know
+			// TODO: FIND OUT!
 		}
+		return null;
 	}
-	protected void fullEarPublish(IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+
+	
+	
+	/*
+	 * Full publish methods are here
+	 */
+	
+	protected void fullEarPublish(ArrayList<IModule> moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
 		if( module instanceof DeletedModule ) {
 			// TODO FIX ME
 			return;
 		} 
-		
 		
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
@@ -116,6 +131,20 @@ public class JstPublisher extends PackagesPublisher {
 		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
 		FileUtil.safeDelete(moduleDeployPath.toFile());
 		PublishUtil.publishFull(members, moduleDeployPath, monitor);
+		
+		// Add this module to the tree, so that when we get to the war or ejb
+		// child, it knows it is the child of an ear and not a root deployment
+		ArrayList<IModule> newTree = new ArrayList<IModule>();
+		newTree.addAll(moduleTree); 
+		newTree.add(module);
+
+		// if we're not the root (unlikely), save our resources
+		boolean isRoot = moduleTree.size() == 1;
+		if( !isRoot ) {
+			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(newTree, module).setResources(md.members());
+		}
+		
+		// now lets fully publish the children
 		IModule[] childModules = earModule.getModules();
 		for (int i = 0; i < childModules.length; i++) {
 			IModule module2 = childModules[i];
@@ -125,35 +154,156 @@ public class JstPublisher extends PackagesPublisher {
 				throw new CoreException(status);
 			}
 			if( module2.getModuleType().getId().equals("jst.utility")) {
+				// utility gets packed into a jar
 				packModuleIntoJar(module2, uri, moduleDeployPath);
 			} else {
-				fullPublishPackIntoFolder(module2, moduleDeployPath, monitor);
+				// otherwise it's an ejb, a war, etc, and gets sent exploded
+				fullPublishPackIntoFolder(newTree, moduleDeployPath, module2, monitor);
 			}
 		}
 	}
+
 	
-	protected IStatus fullPublishPackIntoFolder(IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
-		if( module.getModuleType().getId().equals("jst.web")) {
-			fullWebPublish(module, root, monitor);
-		} else if( module.getModuleType().getId().equals("jst.ear")) {
-			fullEarPublish(module, root, monitor);
-		} else {
-			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-			IModuleResource[] members = md.members();
-			IPath moduleDeployPath = root.append(module.getProject().getName() + ".jar");
-			FileUtil.safeDelete(moduleDeployPath.toFile());
-			PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+	
+	protected void fullWebPublish(ArrayList<IModule> moduleTree, IModule module, IPath root, IProgressMonitor monitor ) throws CoreException {
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		IModuleResource[] members = md.members();
+		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+		FileUtil.safeDelete(moduleDeployPath.toFile());
+		PublishUtil.publishSmart(members, moduleDeployPath, monitor);
+		
+		// save our resources if we're not a top level deployment
+		if( moduleTree.size() != 1 ) 
+			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(moduleTree, module).setResources(md.members());
+
+		
+		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IModule[] childModules = webModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule module2 = childModules[i];
+			packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
 		}
-		return null;
 	}
 
-	private boolean hasDelta( IModule module, ArrayList moduleTree ) {
+	
+	/*
+	 * Entry point for incremental publishing
+	 */
+	
+	protected IStatus incrementalPublish(ArrayList<IModule> moduleTree, IPath root, IModule module, IProgressMonitor monitor) throws CoreException {
+		if( module.getModuleType().getId().equals("jst.ear")) {
+			incrementalEarPublish(moduleTree, module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.web")) {
+			incrementalWarPublish(moduleTree, module, root, monitor);
+		} else if( module.getModuleType().getId().equals("jst.ejb")){
+			ArrayList newTree = new ArrayList(); newTree.addAll(moduleTree); newTree.add(module);
+	        IModuleResourceDelta[] deltas = getDelta(module, newTree);
+			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+			IPath moduleDeployPath = root.append(module.getProject().getName() + ".jar");
+	        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
+	        
+			if( moduleTree.size() > 1 ) {
+				NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(newTree, module).setResources(md.members());
+			}
+			
+			// Can ears have libs in them? DO NOT KNOW
+			// TODO: FIGURE IT OUT
+		} else {
+			// cannot incrementally publish something unknown 
+			// just package it normal
+			packModuleIntoJar(module, module.getName() + ".jar", root);
+		}
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
+				IStatus.OK, "", null);
+	}
+	
+	protected void incrementalEarPublish(ArrayList<IModule> moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		ArrayList<IModule> newTree = new ArrayList<IModule>();
+		newTree.addAll(moduleTree); 
+		newTree.add(module);
+
+        IModuleResourceDelta[] deltas = getDelta(module, newTree); 
+		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
+		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
+        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
+        
+        // if not root, save child data
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		if( moduleTree.size() > 1 ) 
+			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(newTree, module).setResources(md.members());
+        
+		IModule[] childModules = earModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule childModule = childModules[i];
+			String uri = earModule.getURI(childModule);
+			if(uri==null){
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,	"unable to assemble module null uri",null ); //$NON-NLS-1$
+				throw new CoreException(status);
+			}
+			
+			incrementalPublish(newTree, moduleDeployPath, childModule, monitor);
+		}
+
+	}
+	
+	protected void incrementalWarPublish(ArrayList<IModule> moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
+		ArrayList<IModule> newTree = new ArrayList<IModule>();
+		newTree.addAll(moduleTree); newTree.add(module);
+
+        IModuleResourceDelta[] deltas = getDelta(module, newTree);
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
+		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
+        
+		if( moduleTree.size() > 1 ) 
+			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(newTree, module).setResources(md.members());
+
+        
+		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+		IModule[] childModules = webModule.getModules();
+		for (int i = 0; i < childModules.length; i++) {
+			IModule module2 = childModules[i];
+			// if a lib .jar needs to be repacked, repack the whole thing
+			if( hasDelta(module2, newTree))
+				packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
+		}
+	}
+
+	protected IStatus unpublish(IDeployableServer jbServer, IModule module,
+			IProgressMonitor monitor) throws CoreException {
+
+		IPath root = new Path(jbServer.getDeployDirectory());
+		if( module.getModuleType().getId().equals("jst.web")) {
+			// copy the module first
+			IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
+			IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
+			FileUtil.completeDelete(moduleDeployPath.toFile());
+		} else if( module.getModuleType().getId().equals("jst.ear")) {
+			IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
+			FileUtil.completeDelete(moduleDeployPath.toFile());
+		}
+
+		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
+				IStatus.OK, "", null);
+	}
+
+	
+	/*
+	 * 
+	 *  Utility Methods
+	 * 
+	 * 
+	 */
+	
+	private boolean hasDelta( IModule module, ArrayList<IModule> moduleTree ) {
         return getDelta(module, moduleTree).length > 0;
     }
 	
-	public IModuleResourceDelta[] getDelta(IModule module, ArrayList moduleTree) {
+	public IModuleResourceDelta[] getDelta(IModule module, ArrayList<IModule> moduleTree) {
 		IModuleResourceDelta[] deltas;
-		if( moduleTree.size() == 0 ) {
+		if( moduleTree.size() == 1 ) {
 	        final IModule[] modules ={module}; 
 	        deltas = ((Server)server.getServer()).getPublishedResourceDelta( modules );
 		} else {
@@ -161,8 +311,11 @@ public class JstPublisher extends PackagesPublisher {
 		}
 		return deltas;
 	}
-
 	
+	
+	/*
+	 * Just package into a jar raw.  Don't think about it, just do it
+	 */
 	protected void packModuleIntoJar(IModule module, String deploymentUnitName, IPath destination)throws CoreException {
 		String dest = destination.append(deploymentUnitName).toString();
 		ModulePackager packager = null;
@@ -212,92 +365,5 @@ public class JstPublisher extends PackagesPublisher {
 			}
 	}
 	
-
-	protected IStatus incrementalPublish(ArrayList moduleTree, IPath root, IModule module, IProgressMonitor monitor) throws CoreException {
-		if( module.getModuleType().getId().equals("jst.web")) {
-			incrementalWarPublish(moduleTree, module, root, monitor);
-		} else if( module.getModuleType().getId().equals("jst.ear")) {
-			incrementalEarPublish(moduleTree, module, root, monitor);
-		} else {
-			// cannot incrementally publish something unknown 
-			// just package it
-			packModuleIntoJar(module, module.getName() + ".jar", root);
-		}
-		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
-				IStatus.OK, "", null);
-	}
-	
-	protected void incrementalWarPublish(ArrayList moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
-		ArrayList newTree = new ArrayList();
-		newTree.addAll(moduleTree); newTree.add(module);
-
-		IModule[] modules = new IModule[] {module};
-        IModuleResourceDelta[] deltas = getDelta(module, moduleTree);
-        //((Server)server.getServer()).getPublishedResourceDelta( modules );
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-		IModuleResource[] members = md.members();
-		IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
-		IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
-        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
-		IWebModule webModule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
-		IModule[] childModules = webModule.getModules();
-		for (int i = 0; i < childModules.length; i++) {
-			IModule module2 = childModules[i];
-			// if a lib .jar needs to be repacked, repack the whole thing
-			if( hasDelta(module2, newTree))
-				packModuleIntoJar(module, webModule.getURI(module2), moduleDeployPath);
-		}
-		if( moduleTree.size() > 0 ) {
-			// published it
-			NestedPublishInfo.getDefault().getServerPublishInfo(server.getServer()).getPublishInfo(moduleTree, module).setResources(md.members());
-		}
-	}
-	
-	protected void incrementalEarPublish(ArrayList moduleTree, IModule module, IPath root, IProgressMonitor monitor) throws CoreException {
-		ArrayList newTree = new ArrayList();
-		newTree.addAll(moduleTree); 
-		newTree.add(module);
-
-        IModuleResourceDelta[] deltas = getDelta(module, moduleTree); 
-        //((Server)server.getServer()).getPublishedResourceDelta( modules );
-		IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
-		IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
-        PublishUtil.publishDelta(deltas, moduleDeployPath, monitor);
-		IModule[] childModules = earModule.getModules();
-		for (int i = 0; i < childModules.length; i++) {
-			IModule childModule = childModules[i];
-			String uri = earModule.getURI(childModule);
-			if(uri==null){
-				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,	"unable to assemble module null uri",null ); //$NON-NLS-1$
-				throw new CoreException(status);
-			}
-			
-			incrementalPublish(newTree, moduleDeployPath, childModule, monitor);
-		}
-
-	}
-
-	protected IStatus unpublish(IDeployableServer jbServer, IModule module,
-			IProgressMonitor monitor) throws CoreException {
-
-		IPath root = new Path(jbServer.getDeployDirectory());
-		if( module.getModuleType().getId().equals("jst.web")) {
-			// copy the module first
-			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-			IModuleResource[] members = md.members();
-			IWebModule webmodule = (IWebModule)module.loadAdapter(IWebModule.class, monitor);
-			IPath moduleDeployPath = root.append(webmodule.getContextRoot() + ".war");
-			FileUtil.completeDelete(moduleDeployPath.toFile());
-		} else if( module.getModuleType().getId().equals("jst.ear")) {
-			ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-			IModuleResource[] members = md.members();
-			IEnterpriseApplication earModule = (IEnterpriseApplication)module.loadAdapter(IEnterpriseApplication.class, monitor);
-			IPath moduleDeployPath = root.append(module.getProject().getName() + ".ear");
-			FileUtil.completeDelete(moduleDeployPath.toFile());
-		}
-
-		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
-				IStatus.OK, "", null);
-	}
 
 }
