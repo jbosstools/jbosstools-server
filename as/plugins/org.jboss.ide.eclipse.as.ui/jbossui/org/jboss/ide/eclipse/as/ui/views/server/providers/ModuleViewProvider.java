@@ -252,8 +252,10 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		Properties props = new Properties();
 		if( selected != null && selected instanceof ModuleServer) {
 			IModule mod = ((ModuleServer)selected).module[0];
-			props.setProperty(Messages.ModulePropertyType, mod.getModuleType().getId());
-			props.setProperty(Messages.ModulePropertyProject, mod.getProject().getName());
+			if( mod != null && mod.getProject() != null ) {
+				props.setProperty(Messages.ModulePropertyType, mod.getModuleType().getId());
+				props.setProperty(Messages.ModulePropertyProject, mod.getProject().getName());
+			}
 		}
 		return props;
 	}
