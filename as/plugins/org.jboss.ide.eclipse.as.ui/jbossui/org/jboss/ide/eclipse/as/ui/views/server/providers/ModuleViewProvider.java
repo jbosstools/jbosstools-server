@@ -24,7 +24,11 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.util.Properties;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -41,10 +45,10 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -77,8 +81,10 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 							IServerWorkingCopy server = selection.server.createWorkingCopy();
 							
 							if( ServerConverter.getDeployableServer(selection.server) != null ) {
+								ServerUtil.modifyModules(server, new IModule[0], selection.module, new NullProgressMonitor());
+								IServer server2 = server.save(true, null);
 								ServerConverter.getDeployableServerBehavior(selection.server)
-									.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
+									.publishOneModule(IServer.PUBLISH_INCREMENTAL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
 							} else {
 								ServerUtil.modifyModules(server, new IModule[0], selection.module, new NullProgressMonitor());
 								IServer server2 = server.save(true, null);
@@ -116,14 +122,20 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 }
 	
-	protected void actionPublish(int type) {
-		try {					
+	protected void actionPublish(final int type) {
+		try {
 			if( ServerConverter.getDeployableServer(selection.server) != null ) {
-				ServerConverter.getDeployableServerBehavior(selection.server)
-					.publishOneModule(type, selection.module, 
-							ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+				new Job("Publish One Module To Server") {
+					protected IStatus run(IProgressMonitor monitor) {
+						ServerConverter.getDeployableServerBehavior(selection.server)
+						.publishOneModule(type, selection.module, 
+								ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+						return Status.OK_STATUS;
+					} 
+				}.schedule();
 			} else {
-				selection.server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+				// can't do anything special here, sadly
+				new PublishServerJob(selection.server, type, true).schedule();
 			}
 		} catch( Exception e ) {
 			// ignore
@@ -134,7 +146,8 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
 		if( selection instanceof ModuleServer) {
 			this.selection = (ModuleServer)selection;
-			menu.add(deleteModuleAction);
+			if( this.selection.module.length == 1 )
+				menu.add(deleteModuleAction);
 			menu.add(fullPublishModuleAction);
 			menu.add(incrementalPublishModuleAction);
 		}

@@ -58,12 +58,14 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		
 		String type = item.getSpecificType();
 		if( type.equals(PublisherEventLogger.MULTIPLE_MODULE_TOP_EVENT) || type.equals(PublisherEventLogger.SINGLE_MODULE_TOP_EVENT)) {
-			int deltaKind = ((Integer)item.getProperty(PublisherEventLogger.DELTA_KIND)).intValue();
-			Image unpubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
-			Image pubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
-			if( deltaKind  == ServerBehaviourDelegate.REMOVED ) 
-				return unpubIcon;
-			return pubIcon;
+			try {
+				int deltaKind = ((Integer)item.getProperty(PublisherEventLogger.DELTA_KIND)).intValue();
+				Image unpubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
+				Image pubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+				if( deltaKind  == ServerBehaviourDelegate.REMOVED ) 
+					return unpubIcon;
+				return pubIcon;
+			} catch( NullPointerException npe ) { return null; }
 		}
 		if( type.equals(PublisherEventLogger.FILE_COPPIED_EVENT))
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
