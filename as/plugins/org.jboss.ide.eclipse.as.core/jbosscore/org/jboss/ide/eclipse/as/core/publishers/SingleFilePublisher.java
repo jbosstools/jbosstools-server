@@ -29,18 +29,19 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 	}
 
 	public IStatus publishModule(int kind, int deltaKind,
-			int modulePublishState, IModule module, IProgressMonitor monitor)
+			int modulePublishState, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
 		
+		IModule module2 = module[0];
 		
 		IStatus status = null;
 		if(ServerBehaviourDelegate.REMOVED == deltaKind){
-        	status = unpublish(server, module, kind, deltaKind, modulePublishState, monitor);
+        	status = unpublish(server, module2, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
+        	status = publish(server, module2, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
-        	status = publish(server, module, kind, deltaKind, modulePublishState, monitor);
+        	status = publish(server, module2, kind, deltaKind, modulePublishState, monitor);
         }
 		return status;
 

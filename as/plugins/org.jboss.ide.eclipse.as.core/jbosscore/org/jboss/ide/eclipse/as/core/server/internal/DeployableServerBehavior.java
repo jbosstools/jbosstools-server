@@ -43,14 +43,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
 		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
-
-
 	
-//	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
-//		return ((Server)getServer()).getPublishedResourceDelta(module);
-//	}
-	
-	private void print(int kind, int deltaKind, String name) {
+	private void print(int kind, int deltaKind, IModule[] module) {
+		String name = "";
+		for( int i = 0; i < module.length; i++ ) 
+			name += module[i].getName();
+		
 		System.out.print("publishing module (" + name + "): ");
 		switch( kind ) {
 			case IServer.PUBLISH_INCREMENTAL: System.out.print("incremental, "); break;
@@ -66,12 +64,21 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		}
 		System.out.println(" to server " + getServer().getName() + "(" + getServer().getId() + ")");
 	}
+	
+	/*
+	 * The module is a list of module trail points, from parent to child
+	 * Thus: 
+	 *    {ear, war} for the war portion,  {ear, ejb} for the ejb portion
+	 * 
+	 * (non-Javadoc)
+	 * @see org.eclipse.wst.server.core.model.ServerBehaviourDelegate#publishModule(int, int, org.eclipse.wst.server.core.IModule[], org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
-		print(kind, deltaKind, module[0].getName());
+		print(kind, deltaKind, module);
 		int modulePublishState = getServer().getModulePublishState(module) + 0;
 		
 		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
@@ -79,22 +86,24 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			root = PublisherEventLogger.createMultipleModuleTopLevelEvent(root, module.length);
 		}
 		
-		for( int i = 0; i < module.length; i++ ) {
+		if( module.length > 0 ) {
+			IModule lastMod = module[module.length -1];
 			try {
-				if( isJstModule(module[i]) ) {
+				if( isJstModule(lastMod) ) {
 					publisher = new JstPublisher(getServer(), root);
-				} else if( isPackagesTypeModule(module[i]) ) {
+				} else if( isPackagesTypeModule(lastMod) ) {
 					publisher = new PackagesPublisher(getServer(), root);
-				} else if( module[i].getModuleType().getId().equals("jboss.singlefile")){
+				} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
 					publisher = new SingleFilePublisher(getServer());
 				} else {
 					publisher = new NullPublisher();
 				}
 				publisher.setDelta(getPublishedResourceDelta(module));
-				publisher.publishModule(kind, deltaKind, modulePublishState, module[0], monitor);
+				publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
 				setModulePublishState(module, publisher.getPublishState());
+			} catch( Throwable e ) {
+				e.printStackTrace();
 			}
-			catch( Throwable e ) {e.printStackTrace();}
 		}
 	}
 
@@ -104,8 +113,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	// TODO: Change to if it is a flex project. Don't know how to do that yet. 
 	protected boolean isJstModule(IModule mod) {
 		String type = mod.getModuleType().getId();
-		if( type.equals("jst.ejb") || type.equals("jst.client") 
-				|| type.equals("jst.web") || type.equals("jst.ear"))
+		if( type.equals("jst.ejb") || type.equals("jst.web") || 
+				type.equals("jst.ear") || type.equals("jst.utility"))
 			return true;
 		return false;
 	}

@@ -73,16 +73,17 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 
     public IStatus publishModule(int kind, int deltaKind, int modulePublishState, 
-    		IModule module, IProgressMonitor monitor) throws CoreException {
+    		IModule[] module, IProgressMonitor monitor) throws CoreException {
 		try {
+			IModule module2 = module[0];
 	    	// if it's being removed
 	    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
-	    		removeModule(module, kind, deltaKind, monitor);
+	    		removeModule(module2, kind, deltaKind, monitor);
 	    		return null;
 	    	}
 	    	
 	    	if( deltaKind == ServerBehaviourDelegate.ADDED || deltaKind == ServerBehaviourDelegate.CHANGED) {
-	    		publishModule(module, kind, deltaKind,  modulePublishState, monitor);
+	    		publishModule(module2, kind, deltaKind,  modulePublishState, monitor);
 	    		return null;
 	    	}
 		}catch(Exception e) {
