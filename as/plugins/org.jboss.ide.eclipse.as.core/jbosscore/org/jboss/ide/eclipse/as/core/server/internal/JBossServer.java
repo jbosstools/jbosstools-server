@@ -85,25 +85,24 @@ public class JBossServer extends ServerDelegate
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
-		if (module[0] != null && module[0].getModuleType() != null) {
-			if (module.length == 1) {
-				IModuleType moduleType = module[0].getModuleType();
-				if (moduleType != null && "jst.ear".equals(moduleType.getId())) { //$NON-NLS-1$
-					IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
-							.loadAdapter(IEnterpriseApplication.class, null);
-					if (enterpriseApplication != null) {
-						IModule[] earModules = enterpriseApplication.getModules(); 
-						if ( earModules != null) {
-							return earModules;
-						}
+		int last = module.length-1;
+		if (module[last] != null && module[last].getModuleType() != null) {
+			IModuleType moduleType = module[last].getModuleType();
+			if("jst.ear".equals(moduleType.getId())) { //$NON-NLS-1$
+				IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
+						.loadAdapter(IEnterpriseApplication.class, null);
+				if (enterpriseApplication != null) {
+					IModule[] earModules = enterpriseApplication.getModules(); 
+					if ( earModules != null) {
+						return earModules;
 					}
 				}
-				else if (moduleType != null && "jst.web".equals(moduleType.getId())) { //$NON-NLS-1$
-					IWebModule webModule = (IWebModule) module[0].loadAdapter(IWebModule.class, null);
-					if (webModule != null) {
-						IModule[] modules = webModule.getModules();
-						return modules;
-					}
+			}
+			else if ("jst.web".equals(moduleType.getId())) { //$NON-NLS-1$
+				IWebModule webModule = (IWebModule) module[last].loadAdapter(IWebModule.class, null);
+				if (webModule != null) {
+					IModule[] modules = webModule.getModules();
+					return modules;
 				}
 			}
 		}
