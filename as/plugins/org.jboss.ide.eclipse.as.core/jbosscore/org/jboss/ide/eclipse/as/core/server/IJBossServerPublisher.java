@@ -29,7 +29,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 
 public interface IJBossServerPublisher {
 	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
-			IModule module, IProgressMonitor monitor) 
+			IModule[] module, IProgressMonitor monitor) 
 								throws CoreException;
 	public int getPublishState();
 	public void setDelta(IModuleResourceDelta[] delta);
