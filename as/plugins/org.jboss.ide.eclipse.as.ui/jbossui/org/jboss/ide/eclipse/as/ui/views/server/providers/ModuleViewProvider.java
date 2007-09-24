@@ -75,12 +75,13 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 					Thread t = new Thread() { public void run() { 
 						try {
 							IServerWorkingCopy server = selection.server.createWorkingCopy();
-							IServer server2 = server.save(true, null);
 							
 							if( ServerConverter.getDeployableServer(selection.server) != null ) {
 								ServerConverter.getDeployableServerBehavior(selection.server)
 									.publishOneModule(IServer.PUBLISH_FULL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
 							} else {
+								ServerUtil.modifyModules(server, new IModule[0], selection.module, new NullProgressMonitor());
+								IServer server2 = server.save(true, null);
 								server2.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 							}
 						} catch (Exception e) {
