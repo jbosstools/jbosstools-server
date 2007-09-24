@@ -1,6 +1,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -145,14 +146,21 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	// 	Basically stolen from RunOnServerActionDelegate
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
+		return publishOneModule(module, kind, deltaKind, true, monitor);
+	}
+	
+	/*
+	 * hack for eclipse bug 169570
+	 */
+	public IStatus publishOneModule(IModule[] module, int kind, int deltaKind, boolean recurse, IProgressMonitor monitor) {
+	
 		// add it to the server first
-		addAndRemoveModules(module, deltaKind);
+		if( module.length == 1 ) 
+			addAndRemoveModules(module, deltaKind);
 
 		ArrayList moduleList = new ArrayList(); 
 		ArrayList deltaKindList = new ArrayList();
-		moduleList.add(module);
-		deltaKindList.add(new Integer(deltaKind));
-		
+		fillPublishOneModuleLists(module, moduleList, deltaKindList, deltaKind, recurse);
 
 		try {
 			((Server)getServer()).getServerPublishInfo().startCaching();
@@ -187,6 +195,20 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			
 		}
 		return Status.CANCEL_STATUS;
+	}
+	
+	protected void fillPublishOneModuleLists(IModule[] module, ArrayList moduleList, ArrayList deltaKindList, int deltaKind, boolean recurse) {
+		if( recurse ) {
+			ArrayList tmp = new ArrayList();
+			IModule[] children = getServer().getChildModules(module, new NullProgressMonitor());
+			for( int i = 0; i < children.length; i++ ) {
+				tmp.addAll(Arrays.asList(module));
+				tmp.add(children[i]);
+				fillPublishOneModuleLists((IModule[]) tmp.toArray(new IModule[tmp.size()]), moduleList, deltaKindList, deltaKind, recurse);
+			}
+		}
+		moduleList.add(module);
+		deltaKindList.add(new Integer(deltaKind));
 	}
 	
 	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
