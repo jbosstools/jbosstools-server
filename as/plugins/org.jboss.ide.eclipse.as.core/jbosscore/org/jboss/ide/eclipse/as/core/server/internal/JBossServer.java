@@ -35,8 +35,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
@@ -83,7 +85,29 @@ public class JBossServer extends ServerDelegate
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
-		return null;
+		if (module[0] != null && module[0].getModuleType() != null) {
+			if (module.length == 1) {
+				IModuleType moduleType = module[0].getModuleType();
+				if (moduleType != null && "jst.ear".equals(moduleType.getId())) { //$NON-NLS-1$
+					IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
+							.loadAdapter(IEnterpriseApplication.class, null);
+					if (enterpriseApplication != null) {
+						IModule[] earModules = enterpriseApplication.getModules(); 
+						if ( earModules != null) {
+							return earModules;
+						}
+					}
+				}
+				else if (moduleType != null && "jst.web".equals(moduleType.getId())) { //$NON-NLS-1$
+					IWebModule webModule = (IWebModule) module[0].loadAdapter(IWebModule.class, null);
+					if (webModule != null) {
+						IModule[] modules = webModule.getModules();
+						return modules;
+					}
+				}
+			}
+		}
+		return new IModule[0];
 	}
 
 	// As of now none of my modules are implementing the parent / child nonesense
