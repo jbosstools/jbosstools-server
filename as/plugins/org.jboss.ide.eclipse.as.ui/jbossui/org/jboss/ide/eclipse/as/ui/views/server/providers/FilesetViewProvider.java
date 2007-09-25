@@ -52,6 +52,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.internal.util.SWTResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
@@ -153,14 +154,20 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					IWorkbench wb = PlatformUI.getWorkbench();
 					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 					IWorkbenchPage page = win.getActivePage();
-//					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
+					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
 					if( eclipseFile != null ) {
 						IEditorInput input = new FileEditorInput(eclipseFile);
 						IEditorDescriptor desc = PlatformUI.getWorkbench().
 							getEditorRegistry().getDefaultEditor(file.getName());
 						if( desc != null ) 
 							page.openEditor(input, desc.getId());
-					} 
+					} else if( fileStore != null ){
+						IEditorInput input = new FileStoreEditorInput(fileStore);
+						IEditorDescriptor desc = PlatformUI.getWorkbench().
+								getEditorRegistry().getDefaultEditor(file.getName());
+						if( desc != null ) 
+							page.openEditor(input, desc.getId());
+					}
 				} catch( Exception e ) {
 					e.printStackTrace();
 				}
@@ -478,6 +485,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				IEditorInput input = new FileEditorInput(eclipseFile);
 				IEditorDescriptor desc = PlatformUI.getWorkbench().
 					getEditorRegistry().getDefaultEditor(file.getName());
+				if( input != null && desc != null ) 
+					editable = true;
+			} else if( fileStore != null ){
+				IEditorInput input = new FileStoreEditorInput(fileStore);
+				IEditorDescriptor desc = PlatformUI.getWorkbench().
+						getEditorRegistry().getDefaultEditor(file.getName());
 				if( input != null && desc != null ) 
 					editable = true;
 			}
