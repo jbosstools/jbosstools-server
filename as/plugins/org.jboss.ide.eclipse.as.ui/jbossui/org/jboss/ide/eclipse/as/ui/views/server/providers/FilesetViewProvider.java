@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.tools.ant.BuildException;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
@@ -58,6 +59,7 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -134,7 +136,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				try {
 					PathWrapper wrapper = (PathWrapper)selection;
 					File file = wrapper.getPath().toFile();
-					file.delete();
+					FileUtil.safeDelete(file);
 					refreshViewer();
 				} catch( Exception e ) {
 				}
@@ -235,9 +237,14 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				return filesets == null ? new Object[]{} : filesets;
 			} else if( parentElement instanceof Fileset ) {
 				Fileset fs = (Fileset)parentElement;
-				IPath[] paths = ArchivesModelCore.findMatchingPaths(
-						new Path(fs.getFolder()), fs.getIncludesPattern(), fs.getExcludesPattern());
-
+				IPath[] paths = null;
+				try {
+					paths = ArchivesModelCore.findMatchingPaths(
+							new Path(fs.getFolder()), fs.getIncludesPattern(), fs.getExcludesPattern());
+				} catch( BuildException be ) {
+					return new Object[]{};
+				}
+					
 				HashMap folders = new HashMap();
 				ArrayList wrappers = new ArrayList();
 				for( int i = 0; i < paths.length; i++ ) {
@@ -475,7 +482,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					editable = true;
 			}
 			editFileAction.setEnabled(editable);
-			deleteFileAction.setEnabled(file.isFile());
+			deleteFileAction.setEnabled(file.exists());
 			menu.add(editFileAction);
 			menu.add(deleteFileAction);
 		}
