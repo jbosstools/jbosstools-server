@@ -13,9 +13,11 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.content.IContentTypeMatcher;
@@ -61,6 +63,8 @@ import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -81,25 +85,34 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		createActions();
 	}
 	
+	protected boolean supports(IServer server) {
+		return isJBossDeployable(server) || server.getRuntime() != null;
+	}
+
 	protected void createActions() {
 		createFilter =  new Action() { 
 			public void run() {
 				IDeployableServer server = (IDeployableServer)contentProvider.server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-				if( server != null ) {
-					FilesetDialog d = new FilesetDialog(new Shell(), server);
+				String location = null;
+				if( server != null ) 
+					location = server.getDeployDirectory();
+				else 
+					location = contentProvider.server.getRuntime().getLocation().toOSString();
+
+				if( location != null ) {
+					FilesetDialog d = new FilesetDialog(new Shell(), location);
 					if( d.open() == Window.OK ) {
 						Fileset fs = d.getFileset();
 						Fileset[] filesetsNew = new Fileset[filesets.length + 1];
 						System.arraycopy(filesets, 0, filesetsNew, 0, filesets.length);
 						filesetsNew[filesetsNew.length-1] = fs;
 						filesets = filesetsNew;
-						saveFilesets(true);
-						refreshViewer();
+						saveFilesets();
 					}
 				}
 			}
 		};
-		createFilter.setText("Create Filter");
+		createFilter.setText(Messages.FilesetsCreateFilter);
 		deleteFilter =  new Action() { 
 			public void run() {
 				if( selection instanceof Fileset ) {
@@ -107,15 +120,14 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 						ArrayList asList = new ArrayList(Arrays.asList(filesets));
 						asList.remove(selection);
 						filesets = (Fileset[]) asList.toArray(new Fileset[asList.size()]);
-						saveFilesets(true);
-						removeElement(selection);
+						saveFilesets();
 					} catch( Exception e ) {
 						e.printStackTrace();
 					}
 				}
 			}
 		};
-		deleteFilter.setText("Delete Filter");
+		deleteFilter.setText(Messages.FilesetsDeleteFilter);
 		editFilter =  new Action() { 
 			public void run() {
 				Fileset sel = (Fileset)selection;
@@ -126,12 +138,11 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					sel.setFolder(ret.getFolder());
 					sel.setIncludesPattern(ret.getIncludesPattern());
 					sel.setExcludesPattern(ret.getExcludesPattern());
-					saveFilesets(true);
-					refreshViewer(sel);
+					saveFilesets();
 				}
 			}
 		};
-		editFilter.setText("Edit Filter");
+		editFilter.setText(Messages.FilesetsEditFilter);
 		deleteFileAction =  new Action() { 
 			public void run() {
 				try {
@@ -143,7 +154,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				}
 			}
 		};
-		deleteFileAction.setText("Delete File");
+		deleteFileAction.setText(Messages.FilesetsDeleteFile);
 		editFileAction =  new Action() { 
 			public void run() {
 				try {
@@ -169,11 +180,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 							page.openEditor(input, desc.getId());
 					}
 				} catch( Exception e ) {
-					e.printStackTrace();
+					IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Cannot open file", e);
+					JBossServerUIPlugin.getDefault().getLog().log(status);
 				}
 			}
 		};
-		editFileAction.setText("Edit File");
+		editFileAction.setText(Messages.FilesetsEditFile);
 	}
 	
 	public static class PathWrapper {
@@ -294,40 +306,26 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	public void loadFilesets() {
 		IServer server = contentProvider.server;
 		if( server != null ) {
-			IDeployableServer jbs = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-			if( jbs != null ) {
-				ServerAttributeHelper helper = jbs.getAttributeHelper();
-				List tmp = helper.getAttribute(FILESET_KEY, new ArrayList());
-				String[] asStrings = (String[]) tmp.toArray(new String[tmp.size()]);
-				filesets = new Fileset[asStrings.length];
-				for( int i = 0; i < asStrings.length; i++ ) {
-					filesets[i] = new Fileset(asStrings[i]);
-				}
+			ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
+			List tmp = helper.getAttribute(FILESET_KEY, new ArrayList());
+			String[] asStrings = (String[]) tmp.toArray(new String[tmp.size()]);
+			filesets = new Fileset[asStrings.length];
+			for( int i = 0; i < asStrings.length; i++ ) {
+				filesets[i] = new Fileset(asStrings[i]);
 			}
 		}
 	}
 	
-	public void saveFilesets(boolean suppressRefresh) {
-		Runnable r = new Runnable() {
-			public void run() {
-				IServer server = contentProvider.server;
-				if( server != null ) {
-					ArrayList list = new ArrayList();
-					for( int i = 0; i < filesets.length; i++ ) {
-						list.add(filesets[i].toString());
-					}
-					IDeployableServer jbs = (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
-					ServerAttributeHelper helper = jbs.getAttributeHelper();
-					helper.setAttribute(FILESET_KEY, list);
-					helper.save();
-				}
+	public void saveFilesets() {
+		IServer server = contentProvider.server;
+		if( server != null ) {
+			ArrayList list = new ArrayList();
+			for( int i = 0; i < filesets.length; i++ ) {
+				list.add(filesets[i].toString());
 			}
-		};
-
-		if( suppressRefresh ) {
-			suppressingRefresh(r);
-		} else {
-			r.run();
+			ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
+			helper.setAttribute(FILESET_KEY, list);
+			helper.save();
 		}
 	}
 
@@ -464,11 +462,6 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
 	}
 	
-	public Image createIcon() {
-		return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
-	}
-
-	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
 		this.selection = selection;
 		if( selection instanceof ServerViewProvider ) {
@@ -517,19 +510,17 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		return null;
 	}
 	
-	
-	
 	protected class FilesetDialog extends Dialog {
-		Fileset fileset;
+		protected Fileset fileset;
 		private String name, dir, includes, excludes;
 		private Button browse;
 		private Text includesText, excludesText, folderText, nameText;
 		private Composite main;
 		private FilesetPreviewComposite preview;
-		protected FilesetDialog(Shell parentShell, IDeployableServer server) {
+		protected FilesetDialog(Shell parentShell, String defaultLocation) {
 			super(parentShell);
 			this.fileset = new Fileset();
-			this.fileset.setFolder(server.getDeployDirectory());
+			this.fileset.setFolder(defaultLocation);
 		}
 		protected FilesetDialog(Shell parentShell, Fileset fileset) {
 			super(parentShell);
@@ -546,7 +537,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText("New Fileset");
+			shell.setText(Messages.FilesetsNewFileset);
 		}
 		
 		protected Control createDialogArea(Composite parent) {
@@ -602,34 +593,34 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		protected void fillArea(Composite main) {
 			Label nameLabel = new Label(main, SWT.NONE);
-			nameLabel.setText("Name: ");
+			nameLabel.setText(Messages.FilesetsNewName);
 			
 			nameText = new Text(main, SWT.BORDER);
 			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Label folderLabel = new Label(main, SWT.NONE);
-			folderLabel.setText("Root Directory: ");
+			folderLabel.setText(Messages.FilesetsNewRootDir);
 			
 			folderText = new Text(main, SWT.BORDER);
 			folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 			browse = new Button(main, SWT.PUSH);
-			browse.setText("Browse...");
+			browse.setText(Messages.FilesetsNewBrowse);
 			
 			Label includesLabel = new Label(main, SWT.NONE);
-			includesLabel.setText("Includes: ");
+			includesLabel.setText(Messages.FilesetsNewIncludes);
 			
 			includesText = new Text(main, SWT.BORDER);
 			includesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Label excludeLabel= new Label(main, SWT.NONE);
-			excludeLabel.setText("Excludes: ");
+			excludeLabel.setText(Messages.FilesetsNewExcludes);
 			
 			excludesText = new Text(main, SWT.BORDER);
 			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Group previewWrapper = new Group(main, SWT.NONE);
 			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 3));
-			previewWrapper.setText("Preview");
+			previewWrapper.setText(Messages.FilesetsNewPreview);
 			
 			previewWrapper.setLayout(new FillLayout());
 			preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);

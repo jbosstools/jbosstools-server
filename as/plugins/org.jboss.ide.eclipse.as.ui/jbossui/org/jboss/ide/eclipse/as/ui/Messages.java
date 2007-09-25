@@ -183,6 +183,21 @@ public class Messages {
 	public static String DescriptorXPathComplex;
 	public static String DescriptorXPathMatch;
 
+	
+	/* Filesets addition */
+	public static String FilesetsCreateFilter;
+	public static String FilesetsDeleteFilter;
+	public static String FilesetsEditFilter;
+	public static String FilesetsDeleteFile;
+	public static String FilesetsEditFile;
+	public static String FilesetsNewFileset;
+	public static String FilesetsNewName;
+	public static String FilesetsNewRootDir;
+	public static String FilesetsNewBrowse;
+	public static String FilesetsNewIncludes; 
+	public static String FilesetsNewExcludes; 
+	public static String FilesetsNewPreview;
+	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
 				Messages.class);
