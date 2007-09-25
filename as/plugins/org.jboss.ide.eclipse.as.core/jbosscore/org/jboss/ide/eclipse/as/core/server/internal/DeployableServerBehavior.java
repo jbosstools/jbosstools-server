@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -161,7 +162,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		ArrayList moduleList = new ArrayList(); 
 		ArrayList deltaKindList = new ArrayList();
 		fillPublishOneModuleLists(module, moduleList, deltaKindList, deltaKind, recurse);
-
+				
 		try {
 			((Server)getServer()).getServerPublishInfo().startCaching();
 			
@@ -198,6 +199,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	protected void fillPublishOneModuleLists(IModule[] module, ArrayList moduleList, ArrayList deltaKindList, int deltaKind, boolean recurse) {
+		moduleList.add(module);
+		deltaKindList.add(new Integer(deltaKind));
 		if( recurse ) {
 			ArrayList tmp = new ArrayList();
 			IModule[] children = getServer().getChildModules(module, new NullProgressMonitor());
@@ -207,8 +210,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				fillPublishOneModuleLists((IModule[]) tmp.toArray(new IModule[tmp.size()]), moduleList, deltaKindList, deltaKind, recurse);
 			}
 		}
-		moduleList.add(module);
-		deltaKindList.add(new Integer(deltaKind));
+		
+		// if removing, we must remove child first
+		if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
+			Collections.reverse(moduleList);
+			Collections.reverse(deltaKindList);
+		}
 	}
 	
 	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
