@@ -22,18 +22,11 @@
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.OperationsException;
 import javax.management.ReflectionException;
@@ -41,9 +34,6 @@ import javax.naming.CommunicationException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
@@ -51,16 +41,16 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil.CredentialException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 public class JMXPoller implements IServerStatePoller {
 
-	public static final String STATUS = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.status";
-
-	public static final String TYPE_TERMINATED = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_TERMINATED";
-	public static final String TYPE_RESULT = "org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller.TYPE_RESULT";
-
+	public static final String STARTED_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.STARTED_PROPERTY";
+	public static final String EXCEPTION_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.EXCEPTION_PROPERTY";
+	public static final String EVENT_TYPE_STARTING = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.STARTING";
+	public static final String EVENT_TYPE_EXCEPTION = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.EXCEPTION";
+	
+	
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_STOPPED = 0;
 	public static final int STATE_TRANSITION = -1;
@@ -110,6 +100,7 @@ public class JMXPoller implements IServerStatePoller {
 							boolean b = ((Boolean) attInfo).booleanValue();
 							started = b ? STATE_STARTED : STATE_TRANSITION;
 							done = b;
+							new JMXEvent(event, b);
 						}
 					} catch (SecurityException se) {
 						pollingException = new PollingSecurityException(
@@ -117,8 +108,10 @@ public class JMXPoller implements IServerStatePoller {
 						done = true;
 					} catch (CommunicationException ce) {
 						started = STATE_STOPPED;
+						new JMXEvent(event, ce);
 					} catch (NamingException nnfe) {
 						started = STATE_STOPPED;
+						new JMXEvent(event, nnfe);
 					} catch( OperationsException e ) {
 						failingException = e;
 					} catch (MBeanException e) {
@@ -146,7 +139,7 @@ public class JMXPoller implements IServerStatePoller {
 			Thread.currentThread().setContextClassLoader(currentLoader);
 			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 		}
-
+		
 		protected void setCredentials() {
 			try {
 				JMXUtil.setCredentials(server);
@@ -170,6 +163,7 @@ public class JMXPoller implements IServerStatePoller {
 	}
 
 	public class PollingSecurityException extends PollingException {
+		private static final long serialVersionUID = 1L;
 		public PollingSecurityException(String msg) {
 			super(msg);
 		}
@@ -195,13 +189,15 @@ public class JMXPoller implements IServerStatePoller {
 		return done;
 	}
 
-	public class JMXPollerEvent extends EventLogTreeItem {
-		public JMXPollerEvent(SimpleTreeItem parent, String type, int status,
-				boolean expectedState) {
-			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, type);
-			setProperty(PollThread.EXPECTED_STATE, new Boolean(expectedState));
-			setProperty(STATUS, new Integer(status));
-			setProperty(DATE, new Long(new Date().getTime()));
+	public class JMXEvent extends EventLogTreeItem {
+		public JMXEvent(SimpleTreeItem parent, boolean started) {
+			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, EVENT_TYPE_STARTING );
+			setProperty(STARTED_PROPERTY, new Boolean(started));
+		}
+		
+		public JMXEvent(SimpleTreeItem parent, Exception e) {
+			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, EVENT_TYPE_EXCEPTION );
+			setProperty(EXCEPTION_PROPERTY, e.getMessage());
 		}
 	}
 }
