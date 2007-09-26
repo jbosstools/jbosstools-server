@@ -18,8 +18,8 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 
 	protected void addSupportedTypes() {
 		supported = new ArrayList();
-		supported.add(PublisherEventLogger.SINGLE_MODULE_TOP_EVENT);
-		supported.add(PublisherEventLogger.MULTIPLE_MODULE_TOP_EVENT);
+		supported.add(PublisherEventLogger.ROOT_EVENT);
+		supported.add(PublisherEventLogger.MODULE_ROOT_EVENT);
 		supported.add(PublisherEventLogger.FILE_COPPIED_EVENT);
 		supported.add(PublisherEventLogger.FILE_DELETED_EVENT);
 		supported.add(PublisherEventLogger.FOLDER_DELETED_EVENT);
@@ -53,20 +53,21 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 	}
 
 	public Image getImage(EventLogTreeItem item) {
+		String type = item.getSpecificType();
+
+		if( type.equals(PublisherEventLogger.ROOT_EVENT)) {
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+		}
+		if( type.equals(PublisherEventLogger.MODULE_ROOT_EVENT)) {
+			int deltaKind = ((Integer)item.getProperty(PublisherEventLogger.DELTA_KIND)).intValue();
+			if( deltaKind == ServerBehaviourDelegate.REMOVED)
+				return JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
+		}
+
 		if( item.getProperty(PublisherEventLogger.EXCEPTION_MESSAGE) != null ) 
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 		
-		String type = item.getSpecificType();
-		if( type.equals(PublisherEventLogger.MULTIPLE_MODULE_TOP_EVENT) || type.equals(PublisherEventLogger.SINGLE_MODULE_TOP_EVENT)) {
-			try {
-				int deltaKind = ((Integer)item.getProperty(PublisherEventLogger.DELTA_KIND)).intValue();
-				Image unpubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.UNPUBLISH_IMAGE);
-				Image pubIcon = JBossServerUISharedImages.getImage(JBossServerUISharedImages.PUBLISH_IMAGE);
-				if( deltaKind  == ServerBehaviourDelegate.REMOVED ) 
-					return unpubIcon;
-				return pubIcon;
-			} catch( NullPointerException npe ) { return null; }
-		}
 		if( type.equals(PublisherEventLogger.FILE_COPPIED_EVENT))
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
 		if( type.equals(PublisherEventLogger.FILE_DELETED_EVENT) || type.equals(PublisherEventLogger.FOLDER_DELETED_EVENT))
@@ -87,6 +88,8 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 			default: r += "Unknown, ";
 		}
 		switch( deltaKind ) {
+		
+			case ServerBehaviourDelegate.NO_CHANGE: r += "No Change]"; break;
 			case ServerBehaviourDelegate.ADDED: r += "Added]"; break;
 			case ServerBehaviourDelegate.CHANGED: r += "Changed]"; break;
 			case ServerBehaviourDelegate.REMOVED: r += "Removed]"; break;
@@ -97,7 +100,10 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 	public String getText(EventLogTreeItem item) {
 		String type = item.getSpecificType();
 		
-		if( type.equals(PublisherEventLogger.SINGLE_MODULE_TOP_EVENT)) {
+		if( type.equals(PublisherEventLogger.ROOT_EVENT)) {
+			return "Publishing to server";
+		}
+		if( type.equals(PublisherEventLogger.MODULE_ROOT_EVENT)) {
 			return getKindDeltaKind(item) + " " + item.getProperty(PublisherEventLogger.MODULE_NAME);
 		}
 		if( type.equals(PublisherEventLogger.FILE_COPPIED_EVENT)) {
