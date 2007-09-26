@@ -121,7 +121,12 @@ public class DescriptorXPathPropertySheetPage implements IPropertySheetPage {
 		if( element != null //)&& element != provider.getActiveCategory()
 				&& element instanceof XPathCategory) {
 			// show loading
-			book.showPage(loading);
+			Display.getDefault().asyncExec(new Runnable() { 
+				public void run() {
+					book.showPage(loading);
+				}
+			});
+
 			final XPathCategory cat = (XPathCategory)element;
 			new Thread() {
 				public void run() {

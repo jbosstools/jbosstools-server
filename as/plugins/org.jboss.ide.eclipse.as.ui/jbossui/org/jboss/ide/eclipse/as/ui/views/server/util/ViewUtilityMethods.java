@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.views.server.util;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -13,20 +14,23 @@ import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 public class ViewUtilityMethods {
 
 
-	public static void activatePropertiesView(IPropertySheetPage propertyPage) {
+	public static void activatePropertiesView(final IPropertySheetPage propertyPage) {
 		// show properties view
-		String propsId = "org.eclipse.ui.views.PropertySheet";
-		try {
-			IWorkbench work = PlatformUI.getWorkbench();
-			IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
-			if( !isPropertiesOnTop()) {
-				window.getActivePage().showView(propsId);
-				if( propertyPage != null ) {
-					propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
+		Runnable run = new Runnable() { public void run() {
+			String propsId = "org.eclipse.ui.views.PropertySheet";
+			try {
+				IWorkbench work = PlatformUI.getWorkbench();
+				IWorkbenchWindow window = work.getActiveWorkbenchWindow(); 
+				if( !isPropertiesOnTop()) {
+					window.getActivePage().showView(propsId);
+					if( propertyPage != null ) {
+						propertyPage.selectionChanged(JBossServerView.getDefault().getViewSite().getPart(), JBossServerView.getDefault().getExtensionFrame().getViewer().getSelection());
+					}
 				}
+			} catch( PartInitException pie ) {
 			}
-		} catch( PartInitException pie ) {
-		}
+		}};
+		Display.getDefault().asyncExec(run);
 	}
 	
 	protected static boolean isPropertiesOnTop() {
