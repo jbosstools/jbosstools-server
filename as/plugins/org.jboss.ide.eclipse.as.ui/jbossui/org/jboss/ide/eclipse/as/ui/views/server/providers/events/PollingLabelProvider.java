@@ -22,13 +22,8 @@
 package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
 
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -60,8 +55,8 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(PollThread.POLL_THREAD_EXCEPTION);
 		supported.add(PollThread.POLLER_NOT_FOUND);
 		
-		supported.add(JMXPoller.TYPE_TERMINATED);
-		supported.add(JMXPoller.TYPE_RESULT);
+		supported.add(JMXPoller.EVENT_TYPE_EXCEPTION);
+		supported.add(JMXPoller.EVENT_TYPE_STARTING);
 		
 		supported.add(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY);
 	}
@@ -86,19 +81,13 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 				return getErrorImage();
 		}
 		
-		if( element.getSpecificType().equals(JMXPoller.TYPE_TERMINATED)) return getErrorImage();
-		if( element.getSpecificType().equals(JMXPoller.TYPE_RESULT)) {
-			int state = ((Integer)element.getProperty(JMXPoller.STATUS)).intValue();
-			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
-			if( state == JMXPoller.STATE_STOPPED) 
-				return getStoppedImage();
-			if( state == JMXPoller.STATE_STARTED)
-				return getStartedImage();
-			if( state == JMXPoller.STATE_TRANSITION) {
-				if( expectedState == IServerStatePoller.SERVER_UP ) 
-					return getStartingImage();
-				return getStoppingImage();
-			}
+		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION)) 
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_STARTING)) {
+			boolean started = ((Boolean)element.getProperty(JMXPoller.STARTED_PROPERTY)).booleanValue();
+			if( !started ) 
+				return getStartingImage();
+			return getStartedImage();
 		}
 		
 		
@@ -122,21 +111,14 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.POLLER_NOT_FOUND)) return expectedString + " failed. Poller not found";
 		}
 		
-		if( element.getSpecificType().equals(JMXPoller.TYPE_TERMINATED)) return "All processes have been terminated";
-		if( element.getSpecificType().equals(JMXPoller.TYPE_RESULT)) {
-			int state = ((Integer)element.getProperty(JMXPoller.STATUS)).intValue();
-			boolean expectedState = ((Boolean)element.getProperty(PollThread.EXPECTED_STATE)).booleanValue();
-			if( state == JMXPoller.STATE_STOPPED) 
-				return "The server is down.";
-			if( state == JMXPoller.STATE_STARTED)
-				return "The server is up.";
-			if( state == JMXPoller.STATE_TRANSITION) {
-				if( expectedState == IServerStatePoller.SERVER_UP ) 
-					return "The server is still starting";
-				return "The server is still stopping.";
-			}
+		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION)) 
+			return (String)element.getProperty(JMXPoller.EXCEPTION_PROPERTY);
+		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_STARTING)) {
+			boolean started = ((Boolean)element.getProperty(JMXPoller.STARTED_PROPERTY)).booleanValue();
+			if( !started ) 
+				return "Server is still starting";
+			return "Server has completed startup";
 		}
-		
 		
 		if( element.getSpecificType().equals(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY)) 
 			return "The server was shutdown forcefully. All processes terminated.";
@@ -171,13 +153,14 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 	protected void loadPropertyMap() {
 		// property names and their readable forms
 		propertyToMessageMap.put(EventLogTreeItem.DATE, "Time");
-		propertyToMessageMap.put(JMXPoller.STATUS, "Status");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
+		propertyToMessageMap.put(JMXPoller.EXCEPTION_PROPERTY, "Exception");
+		propertyToMessageMap.put(JMXPoller.STARTED_PROPERTY, "Server Started");
 		
 		// now values and their readable forms
-		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 0, "Server is Down");
-		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 1, "Server is Up");
-		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + -1, "Server is in transition");
+//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 0, "Server is Down");
+//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 1, "Server is Up");
+//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + -1, "Server is in transition");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "true", "Up");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "false", "Down");
 	}
