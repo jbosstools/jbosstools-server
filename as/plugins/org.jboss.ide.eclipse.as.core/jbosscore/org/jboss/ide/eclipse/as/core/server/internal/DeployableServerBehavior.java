@@ -76,6 +76,16 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		publishEvent = null;
+		
+        IModule[] modules = this.getServer().getModules();
+        boolean allpublished= true;
+        for (int i = 0; i < modules.length; i++) {
+        	if(this.getServer().getModulePublishState(new IModule[]{modules[i]})!=IServer.PUBLISH_STATE_NONE)
+                allpublished=false;
+        }
+        if(allpublished)
+            setServerPublishState(IServer.PUBLISH_STATE_NONE);
+
 	}
 
 	
