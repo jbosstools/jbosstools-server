@@ -155,7 +155,7 @@
             description="A front end to open, edit, or view files in your server&apos;s directories."
             icon="icons/multiple_files.gif"
             id="org.jboss.ide.eclipse.as.ui.FilesetViewProvider"
-            name="Filesets"
+            name="File Filters"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider"/>
       <ViewProvider
             description="Lists inactive categories and allows you to turn them back on."
