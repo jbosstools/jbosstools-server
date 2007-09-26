@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
 import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 
@@ -67,6 +68,17 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		System.out.println(" to server " + getServer().getName() + "(" + getServer().getId() + ")");
 	}
 	
+	protected PublishEvent publishEvent;
+	protected void publishStart(IProgressMonitor monitor) throws CoreException {
+		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
+		publishEvent = PublisherEventLogger.createTopEvent(root);
+	}
+
+	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
+		publishEvent = null;
+	}
+
+	
 	/*
 	 * The module is a list of module trail points, from parent to child
 	 * Thus: 
@@ -82,34 +94,24 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		IJBossServerPublisher publisher;
 		print(kind, deltaKind, module);
 		int modulePublishState = getServer().getModulePublishState(module) + 0;
-		
-		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
-		if( module.length > 1 ) {
-			root = PublisherEventLogger.createMultipleModuleTopLevelEvent(root, module.length);
-		}
-		
+		PublishEvent root = PublisherEventLogger.createModuleRootEvent(publishEvent, module, kind, deltaKind);
+
 		if( module.length > 0 ) {
 			IModule lastMod = module[module.length -1];
-			try {
-				if( isJstModule(lastMod) ) {
-					publisher = new JstPublisher(getServer(), root);
-				} else if( isPackagesTypeModule(lastMod) ) {
-					publisher = new PackagesPublisher(getServer(), root);
-				} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
-					publisher = new SingleFilePublisher(getServer());
-				} else {
-					publisher = new NullPublisher();
-				}
-				publisher.setDelta(getPublishedResourceDelta(module));
-				publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
-				setModulePublishState(module, publisher.getPublishState());
-			} catch( Throwable e ) {
-				e.printStackTrace();
+			if( isJstModule(lastMod) ) {
+				publisher = new JstPublisher(getServer(), root);
+			} else if( isPackagesTypeModule(lastMod) ) {
+				publisher = new PackagesPublisher(getServer(), root);
+			} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
+				publisher = new SingleFilePublisher(getServer());
+			} else {
+				publisher = new NullPublisher();
 			}
+			publisher.setDelta(getPublishedResourceDelta(module));
+			publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
+			setModulePublishState(module, publisher.getPublishState());
 		}
 	}
-
-	
 	
 	/* Temporary and will need to be fixed */
 	// TODO: Change to if it is a flex project. Don't know how to do that yet. 

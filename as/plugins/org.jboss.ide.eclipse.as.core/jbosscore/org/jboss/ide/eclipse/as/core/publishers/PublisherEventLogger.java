@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
@@ -21,30 +22,26 @@ public class PublisherEventLogger {
 			setProperty(MODULE_NAME, module.getName());
 		}
 	}
-
-	// type
-	public static final String MULTIPLE_MODULE_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MULTIPLE_MODULE_TOP_EVENT";
 	
-	// properties
-	public static final String MULTIPLE_MODULE_MODULE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MULTIPLE_MODULE_MODULE_COUNT";
-
-	public static PublishEvent createMultipleModuleTopLevelEvent(EventLogTreeItem parent, int numMods) {
-		PublishEvent event = new PublishEvent(parent, MULTIPLE_MODULE_TOP_EVENT );
-		event.setProperty(MULTIPLE_MODULE_MODULE_COUNT, new Integer(numMods));
-		EventLogModel.markChanged(parent);
-		return event;
+	public static PublishEvent createTopEvent(EventLogTreeItem parent) {
+		return new PublishEvent(parent, ROOT_EVENT);
 	}
 	
 	// type
-	public static final String SINGLE_MODULE_TOP_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.SINGLE_MODULE_TOP_EVENT";
+	public static final String ROOT_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.ROOT_EVENT";
+	public static final String MODULE_ROOT_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_ROOT_EVENT";
 	// properties
 	public static final String MODULE_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_KIND"; 
 	public static final String DELTA_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DELTA_KIND"; 
-	public static PublishEvent createSingleModuleTopEvent(EventLogTreeItem parent, IModule module, int kind, int deltaKind) {
-		PublishEvent event = new PublishEvent(parent, SINGLE_MODULE_TOP_EVENT);
+	public static PublishEvent createModuleRootEvent(EventLogTreeItem parent, IModule[] module, int kind, int deltaKind) {
+		PublishEvent event = new PublishEvent(parent, MODULE_ROOT_EVENT);
+		String name = "";
+		for( int i = 0; i < module.length; i++ ) {
+			name += module[i].getName() + Path.SEPARATOR;
+		}
 		event.setProperty(MODULE_KIND, new Integer(kind));
 		event.setProperty(DELTA_KIND, new Integer(deltaKind));
-		event.setProperty(MODULE_NAME, module.getName());
+		event.setProperty(MODULE_NAME, name);
 		EventLogModel.markChanged(parent);
 		return event;
 	}
