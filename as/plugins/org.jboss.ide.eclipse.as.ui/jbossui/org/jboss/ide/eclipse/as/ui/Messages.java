@@ -85,7 +85,8 @@ public class Messages {
 	public static String value;
 
 	public static String DeleteModuleText;
-	public static String PublishModuleText;
+	public static String IncrementalPublishModuleText;
+	public static String FullPublishModuleText;
 	public static String DeleteModuleDescription;
 	public static String PublishModuleDescription;
 

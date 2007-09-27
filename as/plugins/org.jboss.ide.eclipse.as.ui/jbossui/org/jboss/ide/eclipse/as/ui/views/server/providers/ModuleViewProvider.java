@@ -107,7 +107,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				actionPublish(IServer.PUBLISH_FULL);
 			}
 		};
-		fullPublishModuleAction.setText(Messages.PublishModuleText);
+		fullPublishModuleAction.setText(Messages.FullPublishModuleText);
 		fullPublishModuleAction.setDescription(Messages.PublishModuleDescription);
 		fullPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 
@@ -117,7 +117,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				actionPublish(IServer.PUBLISH_INCREMENTAL);
 			}
 		};
-		incrementalPublishModuleAction.setText("Incremental Publish");
+		incrementalPublishModuleAction.setText(Messages.IncrementalPublishModuleText);
 		incrementalPublishModuleAction.setDescription(Messages.PublishModuleDescription);
 		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 }
