@@ -24,11 +24,10 @@ package org.jboss.ide.eclipse.as.ui.mbeans;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
-	
+
 	/* XML service editor */
 	public static String ServiceXMLAddAttributeTags;
-	
-	
+
 	/* MBean Wizard */
 
 	public static String NewMBeanInterface;
@@ -38,9 +37,21 @@ public class Messages {
 	public static String NewMBeanClass;
 	public static String MBeanClassDescription;
 	public static String MBeanServiceXML;
-	
-	
+
+	public static String NewSessionBeanWizardTitle;
+	public static String NewSessionBeanWizardBeanTypeLabel;
+	public static String NewSessionBeanWizardStatefulButtonLabel;
+	public static String NewSessionBeanWizardStatelessButtonLabel;
+	public static String NewSessionBeanWizardBeanPackageLabel;
+	public static String NewSessionBeanWizardBeanNameLabel;
+	public static String NewSessionBeanWizardBeanClassNameLabel;
+	public static String NewSessionBeanWizardUseCustomInterfacePackageButtonLabel;
+	public static String NewSessionBeanWizardRemoteInterfaceNameLabel;
+	public static String NewSessionBeanWizardMessage;
+	public static String NewSessionBeanWizardDescription;
+
 	static {
-		NLS.initializeMessages(Activator.PLUGIN_ID + ".Messages", Messages.class);
+		NLS.initializeMessages(Activator.PLUGIN_ID + ".Messages",
+				Messages.class);
 	}
 }

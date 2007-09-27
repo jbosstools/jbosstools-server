@@ -68,7 +68,7 @@
          <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
       </extension>
 
-   <extension
+<!--   <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
             id="org.jboss.ide.eclipse.packages.ui.jbossContribution"
@@ -81,6 +81,26 @@
                menubarPath="additions"
                style="push"/>
       </viewerContribution>
+   </extension>-->
+   
+   
+   
+   
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard
+            icon="icons/ctool16/newclass_wiz.gif"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewSessionBeanWizard"
+            category="org.eclipse.jst.ejb.ui"
+            name="EJB3 Session Bean"
+            id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard"/>
+      <wizard
+            icon="icons/ctool16/newclass_wiz.gif"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMessageDrivenBeanWizard"
+            category="org.eclipse.jst.ejb.ui"
+            name="EJB3 Message Driven Bean"
+            id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard"/>
    </extension>
+   
+   
 
 </plugin>
