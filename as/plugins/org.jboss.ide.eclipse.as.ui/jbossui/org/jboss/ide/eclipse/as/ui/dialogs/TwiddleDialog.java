@@ -21,6 +21,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher.ProcessData;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class TwiddleDialog extends TrayDialog {
@@ -40,10 +41,11 @@ public class TwiddleDialog extends TrayDialog {
 		}
 
 	}
+	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(Messages.TwiddleDialog);
-		//newShell.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE));
+		newShell.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.TWIDDLE_IMAGE));
 	}
 	   
 	protected Point getInitialSize() {
