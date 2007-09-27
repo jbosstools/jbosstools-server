@@ -39,6 +39,7 @@ public class PublisherEventLogger {
 		for( int i = 0; i < module.length; i++ ) {
 			name += module[i].getName() + Path.SEPARATOR;
 		}
+		name = name.substring(0, name.length()-1);
 		event.setProperty(MODULE_KIND, new Integer(kind));
 		event.setProperty(DELTA_KIND, new Integer(deltaKind));
 		event.setProperty(MODULE_NAME, name);

@@ -158,6 +158,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	
 	// 	Basically stolen from RunOnServerActionDelegate
+	@Deprecated
 	public IStatus publishOneModule(int kind, IModule[] module, int deltaKind, IProgressMonitor monitor) {
 		return publishOneModule(module, kind, deltaKind, true, monitor);
 	}
