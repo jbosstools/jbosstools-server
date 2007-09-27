@@ -13,6 +13,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
+import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
@@ -89,7 +90,12 @@ public abstract class JBossServerViewExtension {
 						if( o == null || o == provider ) {
 							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(provider);
 						} else {
-							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(new ContentWrapper(o, provider));
+							ExtensionTableViewer viewer = JBossServerView.getDefault().getExtensionFrame().getViewer();
+							ContentWrapper wrapped = new ContentWrapper(o, provider);
+							if( viewer.elementInTree(wrapped))
+								viewer.refresh(new ContentWrapper(o, provider));
+							else
+								viewer.refresh(provider);
 						}
 					} catch(Exception e) {
 					}

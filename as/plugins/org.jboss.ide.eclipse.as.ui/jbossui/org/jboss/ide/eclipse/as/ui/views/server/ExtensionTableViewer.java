@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.PageBook;
@@ -437,5 +438,10 @@ public class ExtensionTableViewer extends TreeViewer {
 		} 
 	}
 	
+	public boolean elementInTree(Object element) {
+		Widget[] w = super.findItems(element);
+		return w != null && w.length > 0;
+	}
+
 
 }
