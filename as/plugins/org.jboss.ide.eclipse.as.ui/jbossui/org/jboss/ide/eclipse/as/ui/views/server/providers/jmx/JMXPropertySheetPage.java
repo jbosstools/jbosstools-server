@@ -25,7 +25,6 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXDomain;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationInfo;
 import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.JMXViewProvider.ErrorGroup;
-import org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.JMXViewProvider.OperationGroup;
 
 public class JMXPropertySheetPage implements IPropertySheetPage {
 
@@ -35,7 +34,7 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 	protected WrappedMBeanOperationInfo[] operations;
 
 	// ui pieces
-	protected Composite main;
+	protected Composite main, domainGroup;
 	protected Combo pulldown;
 	protected Label beanLabel;
 	protected PageBook book;
@@ -95,8 +94,9 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 		book.setLayoutData(bookData);
 
 		errorGroup = new ErrorGroup(book, SWT.NONE);
-		operationGroup = new OperationGroup(book, SWT.NONE);
+		operationGroup = new OperationGroup(book, SWT.NONE, this);
 		attributeGroup = new AttributeGroup(book, SWT.NONE, this);
+		domainGroup = new Composite(book, SWT.NONE);
 	}
 
 	public void dispose() {
@@ -222,7 +222,7 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 	}
 
 	protected void showDomainComposite(JMXDomain domain) {
-		// nothing
+		book.showPage(domainGroup);
 	}
 
 	protected void showErrorComposite() {
@@ -240,8 +240,17 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 				String selected = pulldown
 						.getItem(pulldown.getSelectionIndex());
 				book.showPage(operationGroup);
+				operationGroup.setOperation(findOperation(bean, selected));
 			}
 		}
+	}
+	protected WrappedMBeanOperationInfo findOperation(JMXBean bean, String selected) {
+		WrappedMBeanOperationInfo[] opInfos = bean.getOperations();
+		for( int i = 0; i < opInfos.length; i++ ) {
+			if( getStringForOperation(opInfos[i]).equals(selected))
+				return opInfos[i];
+		}
+		return null;
 	}
 
 }

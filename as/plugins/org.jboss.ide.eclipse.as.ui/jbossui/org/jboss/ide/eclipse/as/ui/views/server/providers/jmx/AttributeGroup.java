@@ -38,7 +38,6 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class AttributeGroup extends Composite {
 
-	protected Group group;
 	protected Tree tree;
 	protected TreeColumn nameColumn, typeColumn, accessColumn, valueColumn,
 			descriptionColumn;
@@ -49,9 +48,6 @@ public class AttributeGroup extends Composite {
 		super(parent, style);
 		this.page = page;
 		setLayout(new FillLayout());
-//		group = new Group(this, SWT.NONE);
-//		group.setText("Attributes");
-//		group.setLayout(new FillLayout());
 
 		tree = new Tree(this, SWT.BORDER | SWT.FULL_SELECTION);
 

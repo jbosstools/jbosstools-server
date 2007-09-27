@@ -171,16 +171,4 @@ public class JMXViewProvider extends JBossServerViewExtension {
 			group.setText("Error");
 		}
 	}
-
-	protected static class OperationGroup extends Composite {
-		protected Group group;
-		public OperationGroup(Composite parent, int style) {
-			super(parent, style);
-			setLayout(new FillLayout());
-			group = new Group(this, SWT.NONE);
-			group.setText("Operation");
-		}
-	}
-
-
 }
