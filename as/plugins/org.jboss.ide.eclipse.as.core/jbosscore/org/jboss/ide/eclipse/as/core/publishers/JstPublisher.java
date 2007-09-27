@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
@@ -80,6 +81,11 @@ public class JstPublisher implements IJBossServerPublisher {
 			throws CoreException {
 		IStatus status = null;
 
+		for( int i = 0; i < module.length; i++ ) {
+			if( module[i] instanceof DeletedModule )
+				return null;
+		}
+		
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			status = unpublish(server, module, monitor);
 		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
@@ -117,7 +123,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
 		IPath path = getDeployPath(module);
-		FileUtil.completeDelete(path.toFile());
+		FileUtil.safeDelete(path.toFile());
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,
 				IStatus.OK, "", null);
 	}
@@ -179,25 +185,25 @@ public class JstPublisher implements IJBossServerPublisher {
 	
 	/* Add one file or folder to a jar */
 	private void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
-			if (resource instanceof IModuleFolder) {
-				IModuleFolder mFolder = (IModuleFolder)resource;
-				IModuleResource[] resources = mFolder.members();
+		if (resource instanceof IModuleFolder) {
+			IModuleFolder mFolder = (IModuleFolder)resource;
+			IModuleResource[] resources = mFolder.members();
 
-				packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
+			packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
 
-				for (int i = 0; resources!= null && i < resources.length; i++) {
-					doPackModule(resources[i], packager);
-				}
-			} else {
-				String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
-				IFile file = (IFile) resource.getAdapter(IFile.class);
-				if (file != null)
-					packager.write(file, destination);
-				else {
-					File file2 = (File) resource.getAdapter(File.class);
-					packager.write(file2, destination);
-				}
+			for (int i = 0; resources!= null && i < resources.length; i++) {
+				doPackModule(resources[i], packager);
 			}
+		} else {
+			String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
+			IFile file = (IFile) resource.getAdapter(IFile.class);
+			if (file != null)
+				packager.write(file, destination);
+			else {
+				File file2 = (File) resource.getAdapter(File.class);
+				packager.write(file2, destination);
+			}
+		}
 	}
 	
 
