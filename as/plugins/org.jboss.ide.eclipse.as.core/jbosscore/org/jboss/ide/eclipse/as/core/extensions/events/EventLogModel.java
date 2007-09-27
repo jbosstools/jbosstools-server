@@ -99,6 +99,7 @@ public class EventLogModel {
 	}
 	
 	public static void markChanged(EventLogTreeItem item) {
+		if( item == null ) return;
 		SimpleTreeItem root = item.getRoot();
 		if( root != null && root instanceof EventLogRoot ) {
 			String serverId = ((EventLogRoot)root).getServerId();
