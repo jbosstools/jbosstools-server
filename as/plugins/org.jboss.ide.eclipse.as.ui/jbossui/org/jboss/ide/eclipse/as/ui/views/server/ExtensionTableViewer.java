@@ -28,6 +28,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.ServerUICore;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -47,14 +49,8 @@ public class ExtensionTableViewer extends TreeViewer {
 		setLabelProvider(new LabelProviderDelegator());
 		propertySheet = new TableViewerPropertySheet();
 		createActions();
-		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
-
-			public void serverAdded(IServer server) {
-			}
-
-			public void serverChanged(IServer server) {
-			}
-
+		
+		UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() { 
 			public void serverRemoved(IServer server) {
 				final IServer server2 = server;
 				Display.getDefault().asyncExec(new Runnable() {

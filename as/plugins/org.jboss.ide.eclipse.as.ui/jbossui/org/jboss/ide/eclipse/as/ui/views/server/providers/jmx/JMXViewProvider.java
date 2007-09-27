@@ -9,17 +9,15 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerLifecycleListener;
-import org.eclipse.wst.server.core.IServerListener;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXBean;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXDomain;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
@@ -34,7 +32,6 @@ public class JMXViewProvider extends JBossServerViewExtension {
 	public static final Object CLASSLOADING_TOKEN = new Object();
 	
 	protected JMXPropertySheetPage propertyPage;
-	protected JMXServerLifecycleListener lcListener;
 	protected JMXServerListener serverListener;
 	protected ISelectionChangedListener jbossServerViewSelectionListener;
 	protected JMXTreeContentProvider contentProvider;
@@ -78,45 +75,25 @@ public class JMXViewProvider extends JBossServerViewExtension {
 
 		// make sure we know about server events
 		serverListener = new JMXServerListener();
-		lcListener = new JMXServerLifecycleListener();
-		ServerCore.addServerLifecycleListener(lcListener);
-		IServer[] servers = ServerCore.getServers();
-		for (int i = 0; i < servers.length; i++) {
-			servers[i].addServerListener(serverListener);
-			if( servers[i].getServerState() == IServer.STATE_STARTED ) 
-				JMXClassLoaderRepository.getDefault().addConcerned(
-						servers[i], CLASSLOADING_TOKEN);
-		}
+		UnitedServerListenerManager.getDefault().addListener(serverListener);
 	}
 	
 	protected void removeListeners() {
-		ServerCore.removeServerLifecycleListener(lcListener);
-		IServer[] servers = ServerCore.getServers();
-		for (int i = 0; i < servers.length; i++) {
-			servers[i].removeServerListener(serverListener);
-			JMXClassLoaderRepository.getDefault().removeConcerned(
-					servers[i], CLASSLOADING_TOKEN);
-		}
+		UnitedServerListenerManager.getDefault().removeListener(serverListener);
 		JBossServerView.removeExtensionFrameListener(jbossServerViewSelectionListener);
 	}
 
-	protected class JMXServerLifecycleListener implements
-			IServerLifecycleListener {
-		public void serverAdded(IServer server) {
-			server.addServerListener(serverListener);
+	protected class JMXServerListener extends UnitedServerListener {
+		public void init(IServer server) {
+			if( server.getServerState() == IServer.STATE_STARTED ) 
+				JMXClassLoaderRepository.getDefault().addConcerned(
+						server, CLASSLOADING_TOKEN);
+			
 		}
-
-		public void serverChanged(IServer server) {
-		}
-
 		public void serverRemoved(IServer server) {
-			server.removeServerListener(serverListener);
 			JMXClassLoaderRepository.getDefault()
 					.removeConcerned(server, JMXModel.getDefault());
 		}
-	}
-
-	protected class JMXServerListener implements IServerListener {
 		public void serverChanged(ServerEvent event) {
 			if ((event.getKind() & ServerEvent.SERVER_CHANGE) != 0) {
 				if ((event.getKind() & ServerEvent.STATE_CHANGE) != 0) {
@@ -129,6 +106,10 @@ public class JMXViewProvider extends JBossServerViewExtension {
 					}
 				}
 			}
+		}
+		public void cleanUp(IServer server) {
+			JMXClassLoaderRepository.getDefault().removeConcerned(
+					server, CLASSLOADING_TOKEN);
 		}
 	}
 

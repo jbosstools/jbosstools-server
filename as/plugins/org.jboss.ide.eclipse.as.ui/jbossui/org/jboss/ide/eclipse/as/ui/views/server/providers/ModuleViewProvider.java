@@ -42,14 +42,14 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -275,21 +275,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	}
 
 	private void addListeners() {
-		serverResourceListener = new IServerLifecycleListener() {
-			public void serverAdded(IServer server) {
-				if( ServerConverter.getJBossServer(server) != null ) 
-					server.addServerListener(serverListener);
-			}
-			public void serverChanged(IServer server) {
-			}
-			public void serverRemoved(IServer server) {
-				if( ServerConverter.getJBossServer(server) != null ) 
-					server.removeServerListener(serverListener);
-			}
-		};
-		ServerCore.addServerLifecycleListener(serverResourceListener);
-		
-		serverListener = new IServerListener() { 
+		UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() {
 			public void serverChanged(ServerEvent event) {
 				int eventKind = event.getKind();
 				if ((eventKind & ServerEvent.MODULE_CHANGE) != 0) {
@@ -298,15 +284,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 						refreshViewer();
 					} 
 				}
-			}
-		};
-		// add listeners to servers
-		JBossServer[] servers = ServerConverter.getAllJBossServers();
-		if (servers != null) {
-			int size = servers.length;
-			for (int i = 0; i < size; i++) {
-				servers[i].getServer().addServerListener(serverListener);
-			}
-		}
+			}			
+		});
 	}
 }
