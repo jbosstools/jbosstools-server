@@ -22,8 +22,10 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Date;
 
 public class FileUtil {
 
@@ -123,5 +125,16 @@ public class FileUtil {
 		}
 	}
 
-	
+	public static void touch(FileFilter filter, File root, boolean recurse) {
+		if( filter.accept(root)) 
+			root.setLastModified(new Date().getTime());
+		if( recurse && root.isDirectory() ) {
+			File[] children = root.listFiles();
+			if( children != null ) {
+				for( int i = 0; i < children.length; i++ ) {
+					touch(filter, children[i], recurse);
+				}
+			}
+		}
+	}
 }

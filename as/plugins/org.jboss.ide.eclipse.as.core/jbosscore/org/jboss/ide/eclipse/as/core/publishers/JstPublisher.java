@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -106,7 +107,15 @@ public class JstPublisher implements IJBossServerPublisher {
 			PublishUtil.publishFull(members, deployPath, monitor);
 		else
 			packModuleIntoJar(moduleTree[moduleTree.length-1], getDeployPath(moduleTree));
-			
+		
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File pathname) {
+				if( pathname.getAbsolutePath().toLowerCase().endsWith(".xml"))
+					return true;
+				return false;
+			}
+		};
+		FileUtil.touch(filter, deployPath.toFile(), true);
 		return null;
 	}
 
