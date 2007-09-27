@@ -161,8 +161,10 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected IModuleContributor[] moduleContributors;
 	public PackageModuleFactory() {
 		super();
+	}
+	
+	public void initialize() {
 		moduleContributors = new IModuleContributor[] { ArchivesModelModuleContributor.getInstance() };
-		
 	}
 
 	protected IModule createModule2(IArchive pack, IProject project) {

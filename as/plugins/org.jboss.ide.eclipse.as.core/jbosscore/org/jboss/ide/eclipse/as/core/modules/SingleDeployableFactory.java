@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ModuleFile;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
@@ -20,6 +22,8 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 
 public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.singledeployablefactory";
@@ -79,13 +83,45 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	private HashMap<IPath, IModule> moduleIdToModule;
 	private HashMap<IModule, SingleDeployableModuleDelegate> moduleToDelegate;
 	public SingleDeployableFactory() {
+	}
+	
+	public void initialize() {
 		moduleIdToModule = new HashMap<IPath, IModule>();
 		moduleToDelegate = new HashMap<IModule, SingleDeployableModuleDelegate>();
+		registerListener();
 		String files = JBossServerCorePlugin.getDefault().getPluginPreferences().getString(PREFERENCE_KEY);
 		if( files.equals("")) return;
 		String[] files2 = files.split(DELIM);
 		for( int i = 0; i < files2.length; i++ ) {
 			addModule(new Path(files2[i]));
+		}
+	}
+	
+	protected void registerListener() {
+		UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() { 
+			public void publishFinished(IServer server, IStatus status) {
+				cleanUnusedModules();
+			}
+		});
+	}
+	
+	protected void cleanUnusedModules() {
+		IModule[] mods = getModules();
+		IServer[] servers = ServerCore.getServers();
+		for( int i = 0; i < mods.length; i++ ) {
+			boolean used = false;
+			for( int j = 0; j < servers.length && !used; j++ ) {
+				IModule[] modsInner = servers[i].getModules();
+				for( int k = 0; k < modsInner.length && !used; k++ ) {
+					if( mods[i].equals(modsInner[k]))
+						used = true;
+				}
+			}
+			if( !used ) {
+				SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)
+					mods[i].loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
+				unmakeDeployable(delegate.getWorkspaceRelativePath());
+			}
 		}
 	}
 	
@@ -131,7 +167,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 
 	public class SingleDeployableModuleDelegate extends ModuleDelegate {
 		private IPath global;
+		private IPath workspaceRelative;
 		public SingleDeployableModuleDelegate(IPath workspaceRelative) {
+			this.workspaceRelative = workspaceRelative;
 			global = ResourcesPlugin.getWorkspace().getRoot().getLocation().append(workspaceRelative);
 		}
 		public IModule[] getChildModules() {
@@ -151,6 +189,10 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		
 		public IPath getGlobalSourcePath() {
 			return this.global;
+		}
+		
+		public IPath getWorkspaceRelativePath() {
+			return workspaceRelative;
 		}
 	}
 }
