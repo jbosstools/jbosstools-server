@@ -422,4 +422,13 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 		}
 		return "";
 	}
+	
+	public void enable() {
+		EventLogModel.enableLogging();
+	}
+	public void disable() {
+		EventLogModel.disableLogging();
+	}
+
+
 }
