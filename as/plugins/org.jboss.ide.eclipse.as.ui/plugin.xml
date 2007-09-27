@@ -294,5 +294,23 @@
             file="InlineDocs/Twiddle/twiddleContext.xml">
       </contexts>
    </extension>
+   
+   
+   <extension point="org.eclipse.ui.popupMenus"> 
+	<objectContribution
+       adaptable="true"
+       id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.contrib"
+       nameFilter="*"
+       objectClass="org.eclipse.core.resources.IFile">
+      <action
+         id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action" 
+         label="Deploy To Server"
+         icon="icons/publish.gif"
+         menubarPath="additions" 
+      class="org.jboss.ide.eclipse.as.ui.actions.DeployAction"> 
+      </action> 
+   </objectContribution> 
+</extension>
+   
 
 </plugin>
