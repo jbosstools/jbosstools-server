@@ -86,7 +86,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	}
 	
 	protected boolean supports(IServer server) {
-		return isJBossDeployable(server) || server.getRuntime() != null;
+		return server != null && (isJBossDeployable(server) || server.getRuntime() != null);
 	}
 
 	protected void createActions() {
