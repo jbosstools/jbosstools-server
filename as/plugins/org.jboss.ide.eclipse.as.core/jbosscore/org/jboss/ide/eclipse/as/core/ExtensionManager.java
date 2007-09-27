@@ -42,9 +42,9 @@ public class ExtensionManager {
 		return instance;
 	}
 	
-	private HashMap pollers;
+	private HashMap<String, ServerStatePollerType> pollers;
 	public void loadPollers() {
-		pollers = new HashMap();
+		pollers = new HashMap<String, ServerStatePollerType>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers");
 		for( int i = 0; i < cf.length; i++ ) {
@@ -54,33 +54,33 @@ public class ExtensionManager {
 	public ServerStatePollerType getPollerType(String id) {
 		if( pollers == null ) 
 			loadPollers();
-		return (ServerStatePollerType)pollers.get(id);
+		return pollers.get(id);
 	}
 	public ServerStatePollerType[] getStartupPollers() {
 		if( pollers == null ) 
 			loadPollers();
-		ArrayList list = new ArrayList();
-		Iterator i = pollers.values().iterator();
+		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
+		Iterator<ServerStatePollerType> i = pollers.values().iterator();
 		ServerStatePollerType type;
 		while(i.hasNext()) {
-			type = (ServerStatePollerType)i.next();
+			type = i.next();
 			if( type.supportsStartup())
 				list.add(type);
 		}
-		return (ServerStatePollerType[]) list.toArray(new ServerStatePollerType[list.size()]);
+		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
 	public ServerStatePollerType[] getShutdownPollers() {
 		if( pollers == null ) 
 			loadPollers();
-		ArrayList list = new ArrayList();
-		Iterator i = pollers.values().iterator();
+		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
+		Iterator<ServerStatePollerType> i = pollers.values().iterator();
 		ServerStatePollerType type;
 		while(i.hasNext()) {
-			type = (ServerStatePollerType)i.next();
+			type = i.next();
 			if( type.supportsShutdown() )
 				list.add(type);
 		}
-		return (ServerStatePollerType[]) list.toArray(new ServerStatePollerType[list.size()]);
+		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
 
 }
