@@ -13,6 +13,7 @@ import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
+import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
@@ -263,6 +264,7 @@ public class JMXModel {
 		protected IServer server;
 		protected JMXBean bean;
 		protected MBeanOperationInfo info;
+		protected WrappedMBeanOperationParameter[] params;
 
 		public WrappedMBeanOperationInfo(IServer server, JMXBean bean,
 				MBeanOperationInfo info) {
@@ -276,8 +278,42 @@ public class JMXModel {
 		public JMXBean getBean() {
 			return bean;
 		}
+		
+		public WrappedMBeanOperationParameter[] getParameters() {
+			if( params == null ) {
+				MBeanParameterInfo[] paramInfo = info.getSignature();
+				params = new WrappedMBeanOperationParameter[paramInfo.length];
+				for( int i = 0; i < paramInfo.length; i++ ) {
+					params[i] = new WrappedMBeanOperationParameter(this, paramInfo[i]);
+				}
+			}
+			return params;
+		}
+		
+		public void clearParamValues() {
+			if( params != null ) {
+				for( int i = 0; i < params.length; i++ ) 
+					params[i].setValue(null);
+			}
+		}
 	}
 
+	public static class WrappedMBeanOperationParameter {
+		protected WrappedMBeanOperationInfo operation;
+		protected MBeanParameterInfo parameterInfo;
+		protected Object value;
+		
+		public WrappedMBeanOperationParameter(WrappedMBeanOperationInfo operation, MBeanParameterInfo param) {
+			this.parameterInfo = param;
+			this.operation = operation;
+		}
+		
+		public IServer getServer() { return operation.server; }
+		public JMXBean getBean() { return operation.bean; }
+
+		public Object getValue() { return value; }
+		public void setValue(Object o) { this.value = o; }
+	}
 	
 	public static class WrappedMBeanAttributeInfo {
 		protected IServer server;
