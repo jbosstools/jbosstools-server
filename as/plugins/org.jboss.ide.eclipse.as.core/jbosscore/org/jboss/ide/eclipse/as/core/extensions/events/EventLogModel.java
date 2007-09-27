@@ -41,13 +41,15 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class EventLogModel {
 	public static final String ENABLE_LOGGING_PREFERENCE = "org.jboss.ide.eclipse.as.core.extensions.events.enableLogging";
-	public static boolean loggingEnabled = true;
-		
-
 	
+	public static void enableLogging(boolean enabled) {
+		if( enabled )
+			enableLogging();
+		else
+			disableLogging();
+	}
 	
 	public static void enableLogging() {
-		loggingEnabled = true;
 		IEclipsePreferences prefs = new DefaultScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
 		prefs.putBoolean(ENABLE_LOGGING_PREFERENCE, true);
 		try {
@@ -58,7 +60,6 @@ public class EventLogModel {
 	}
 	
 	public static void disableLogging() {
-		loggingEnabled = false;
 		IEclipsePreferences prefs = new DefaultScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
 		prefs.putBoolean(ENABLE_LOGGING_PREFERENCE, false);
 		try {
@@ -70,6 +71,11 @@ public class EventLogModel {
 		for( int i = 0; i < models.length; i++ ) {
 			models[i].clearEvents();
 		}
+	}
+	
+	public static boolean isLoggingEnabled() {
+		IEclipsePreferences prefs = new DefaultScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+		return prefs.getBoolean(ENABLE_LOGGING_PREFERENCE, false);
 	}
 	
 	public static final String JBOSS_EVENT_ROOT_TYPE = "jboss.event.root";
@@ -193,17 +199,17 @@ public class EventLogModel {
 		}
 		
 		public void addChild(SimpleTreeItem item) {
-			if( loggingEnabled ) 
+			if( isLoggingEnabled() ) 
 				super.addChild(item);
 		}
 		
 		public void addChild(int loc, SimpleTreeItem item) {
-			if( loggingEnabled ) 
+			if( isLoggingEnabled() ) 
 				super.addChild(loc, item);
 		}
 			
 		public void addChildren(SimpleTreeItem[] kids) {
-			if( loggingEnabled ) 
+			if( isLoggingEnabled() ) 
 				super.addChildren(kids);
 		}
 
