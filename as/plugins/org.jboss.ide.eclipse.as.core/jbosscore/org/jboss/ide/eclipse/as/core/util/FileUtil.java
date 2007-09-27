@@ -80,7 +80,7 @@ public class FileUtil {
 				boolean tmp = file.delete();
 				if( listener != null ) listener.folderDeleted(file, tmp, null);
 			} catch( SecurityException sex ) {
-				listener.folderDeleted(file, false, sex);
+				if( listener != null ) listener.folderDeleted(file, false, sex);
 			}
 		}
 	}
