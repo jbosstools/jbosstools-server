@@ -111,7 +111,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			return true;
 		} else {
 			return false;
-		}		
+		}
 	}
 	
 	protected void removeModule(IPath path) {

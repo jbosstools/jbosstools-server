@@ -22,17 +22,56 @@
 package org.jboss.ide.eclipse.as.core.extensions.events;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
 public class EventLogModel {
+	public static final String ENABLE_LOGGING_PREFERENCE = "org.jboss.ide.eclipse.as.core.extensions.events.enableLogging";
+	public static boolean loggingEnabled = true;
+		
+
+	
+	
+	public static void enableLogging() {
+		loggingEnabled = true;
+		IEclipsePreferences prefs = new DefaultScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+		prefs.putBoolean(ENABLE_LOGGING_PREFERENCE, true);
+		try {
+			prefs.flush();
+		} catch (BackingStoreException e) {	
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Saving preferences failed", e));
+		}
+	}
+	
+	public static void disableLogging() {
+		loggingEnabled = false;
+		IEclipsePreferences prefs = new DefaultScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+		prefs.putBoolean(ENABLE_LOGGING_PREFERENCE, false);
+		try {
+			prefs.flush();
+		} catch (BackingStoreException e) {	
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Saving preferences failed", e));
+		}
+		ServerEventModel[] models = getModels();
+		for( int i = 0; i < models.length; i++ ) {
+			models[i].clearEvents();
+		}
+	}
+	
 	public static final String JBOSS_EVENT_ROOT_TYPE = "jboss.event.root";
 	private static EventLogModel instance;
 	public static EventLogModel getDefault() {
@@ -47,6 +86,10 @@ public class EventLogModel {
 	
 	public static ServerEventModel getModel(String serverId) {
 		return getDefault().getEventModel(serverId);
+	}
+	
+	public static ServerEventModel[] getModels() {
+		return getDefault().getEventModels();
 	}
 	
 	public static void markChanged(EventLogTreeItem item) {
@@ -89,6 +132,10 @@ public class EventLogModel {
 		return m;
 	}
 	
+	public ServerEventModel[] getEventModels() {
+		Collection c = serverToModel.values();
+		return (ServerEventModel[]) c.toArray(new ServerEventModel[c.size()]);
+	}
 	
 	public static class ServerEventModel {
 		private String id;
@@ -144,5 +191,21 @@ public class EventLogModel {
 		public String getServerId() {
 			return model.getId();
 		}
+		
+		public void addChild(SimpleTreeItem item) {
+			if( loggingEnabled ) 
+				super.addChild(item);
+		}
+		
+		public void addChild(int loc, SimpleTreeItem item) {
+			if( loggingEnabled ) 
+				super.addChild(loc, item);
+		}
+			
+		public void addChildren(SimpleTreeItem[] kids) {
+			if( loggingEnabled ) 
+				super.addChildren(kids);
+		}
+
 	}
 }

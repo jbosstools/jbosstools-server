@@ -61,6 +61,12 @@ public class SimpleTreeItem {
 		children.add(loc, item);
 	}
 		
+	public void addChildren(SimpleTreeItem[] kids) {
+		for( int i = 0; i < kids.length; i++ ) {
+			addChild(kids[i]);
+		}
+	}
+
 	public void deleteChildren() {
 		children.clear();
 	}
@@ -93,13 +99,7 @@ public class SimpleTreeItem {
 	public void setData(Object data) {
 		this.data = data;
 	}
-	
-	public void addChildren(SimpleTreeItem[] kids) {
-		for( int i = 0; i < kids.length; i++ ) {
-			addChild(kids[i]);
-		}
-	}
-	
+		
 	public SimpleTreeItem getRoot() {
 		SimpleTreeItem item = this;
 		while(item.getParent() != null)
