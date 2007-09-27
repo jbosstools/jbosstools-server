@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.UndoEdit;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 
 /**
  * @author Marshall
@@ -61,6 +62,8 @@ public class NewMessageDrivenBeanWizardPage extends NewTypeWizardPage
    public NewMessageDrivenBeanWizardPage()
    {
       super(true, "New Message Driven Bean Page");
+      setTitle(Messages.NewMessageBeanWizardMessage);
+      setDescription(Messages.NewMessageBeanWizardDescription);
    }
 
    public void createControl(Composite parent)

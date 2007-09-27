@@ -49,6 +49,9 @@ public class Messages {
 	public static String NewSessionBeanWizardRemoteInterfaceNameLabel;
 	public static String NewSessionBeanWizardMessage;
 	public static String NewSessionBeanWizardDescription;
+	public static String NewMessageBeanWizardMessage;
+	public static String NewMessageBeanWizardDescription;
+	
 
 	static {
 		NLS.initializeMessages(Activator.PLUGIN_ID + ".Messages",
