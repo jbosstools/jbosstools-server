@@ -68,7 +68,7 @@ public abstract class ComplexEventLogLabelProvider
 			if( key.equals(EventLogTreeItem.DATE)) {
 				keyString = propertyToMessageMap.get(key) == null ? (String)key : propertyToMessageMap.get(key).toString();
 				valueString = getDateAsString(((Long)map.get(key)).longValue());
-				p.put(keyString, valueString);
+				p.put("Occurred", valueString);
 			} else {
 				keyString = propertyToMessageMap.get(key) == null ? (String)key : propertyToMessageMap.get(key).toString();
 				valueStringKey = key + DELIMITER + toString2(map.get(key));
