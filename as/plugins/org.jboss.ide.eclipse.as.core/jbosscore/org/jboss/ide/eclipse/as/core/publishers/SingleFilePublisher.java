@@ -1,5 +1,8 @@
 package org.jboss.ide.eclipse.as.core.publishers;
 
+import java.io.File;
+import java.util.Date;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,7 +13,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -39,21 +41,29 @@ public class SingleFilePublisher implements IJBossServerPublisher {
         	status = unpublish(server, module2, kind, deltaKind, modulePublishState, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	status = publish(server, module2, kind, deltaKind, modulePublishState, monitor);
+        	status = publish(server, module2, kind, deltaKind, modulePublishState, true, monitor);
         } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
-        	status = publish(server, module2, kind, deltaKind, modulePublishState, monitor);
+        	status = publish(server, module2, kind, deltaKind, modulePublishState, false, monitor);
         }
 		return status;
 
 	}
 	
-	protected IStatus publish(IDeployableServer server, IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
-		// COPY THE FILE HERE!!!
+	protected IStatus publish(IDeployableServer server, IModule module, int kind, int deltaKind, 
+								int modulePublishState, boolean updateTimestamp, IProgressMonitor monitor) {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
 			IPath destFolder = new Path(server.getDeployDirectory());
-			FileUtil.fileSafeCopy(sourcePath.toFile(), destFolder.append(sourcePath.lastSegment()).toFile());
+			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
+			FileUtil.fileSafeCopy(sourcePath.toFile(), destFile);
+			if( updateTimestamp )
+				destFile.setLastModified(new Date().getTime());
+		} else {
+			// deleted module. o noes. 
+			IPath destFolder = new Path(server.getDeployDirectory());
+			IPath destFile = destFolder.append(new Path(module.getName()).lastSegment());
+			destFile.toFile().delete();
 		}
 		
 		return null;
