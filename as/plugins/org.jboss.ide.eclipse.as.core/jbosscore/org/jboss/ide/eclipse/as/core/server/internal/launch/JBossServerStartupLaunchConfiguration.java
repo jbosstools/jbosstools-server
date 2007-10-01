@@ -67,7 +67,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	}
 
 	public static void ensureDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
-		if( wc.getAttribute(DEFAULTS_SET, false ) ) {
+		if(!wc.getAttributes().containsKey(DEFAULTS_SET)) {
 			JBossServer jbs = findJBossServer(server.getId());
 			IJBossServerRuntime jbrt = findJBossServerRuntime(server);
 			String serverHome = getServerHome(jbs);
