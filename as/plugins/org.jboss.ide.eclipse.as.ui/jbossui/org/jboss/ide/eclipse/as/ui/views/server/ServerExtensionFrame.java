@@ -14,6 +14,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView.IServerViewFrame;
 
@@ -71,7 +74,9 @@ public class ServerExtensionFrame extends Composite implements IServerViewFrame 
 
 					if( selection == null ) return;
 					if( server != jbViewer.getInput()) {
-						jbViewer.setInput(server); 
+						// find the newest copy of the server
+						IServer tmp = ServerCore.findServer(((IServer)server).getId());
+						jbViewer.setInput(tmp); 
 					} else {
 						jbViewer.refresh();
 					}
