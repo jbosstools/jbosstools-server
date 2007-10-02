@@ -1,5 +1,7 @@
 package org.jboss.ide.eclipse.as.core.modules;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -108,21 +110,33 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	protected void cleanUnusedModules() {
 		IModule[] mods = getModules();
 		IServer[] servers = ServerCore.getServers();
-		for( int i = 0; i < mods.length; i++ ) {
-			boolean used = false;
-			for( int j = 0; j < servers.length && !used; j++ ) {
-				IModule[] modsInner = servers[i].getModules();
-				for( int k = 0; k < modsInner.length && !used; k++ ) {
-					if( mods[i].equals(modsInner[k]))
-						used = true;
+		ArrayList<IModule> usedMods = new ArrayList<IModule>();
+		for( int i = 0; i < servers.length; i++ ) {
+			IModule[] modsInner = servers[i].getModules();
+			for( int j = 0; j < modsInner.length; j++ ) {
+				if( modsInner[j].getModuleType().getId().equals(MODULE_TYPE)) {
+					if( !usedMods.contains(modsInner[j]))
+						usedMods.add(modsInner[j]);
 				}
 			}
-			if( !used ) {
+		}
+		
+		for( int i = 0; i < mods.length; i++ ) {
+			if( !usedMods.contains(mods[i])) {
 				SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)
 					mods[i].loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 				unmakeDeployable(delegate.getWorkspaceRelativePath());
+			} else {
+				usedMods.remove(mods[i]);
 			}
 		}
+		
+		IModule tmp;
+		for( Iterator<IModule> i = usedMods.iterator(); i.hasNext(); ) {
+			tmp = i.next();
+			makeDeployable(new Path(tmp.getName()));
+		}
+		
 	}
 	
 	public IModule getModule(IPath path) {
