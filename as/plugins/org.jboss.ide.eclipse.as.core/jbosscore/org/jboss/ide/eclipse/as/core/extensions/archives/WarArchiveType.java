@@ -22,13 +22,11 @@
 package org.jboss.ide.eclipse.as.core.extensions.archives;
 
 import org.apache.tools.ant.DirectoryScanner;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -38,9 +36,9 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
@@ -100,7 +98,9 @@ public class WarArchiveType extends J2EEArchiveType {
 			IPath path = new Path(files[0]);
 			path = path.removeLastSegments(2); // remove the file name
 			path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-			addFileset(project, packageRoot, path.toOSString(), "**/*");			
+			IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*");
+			//If we have separate file set for libraries, we do not need to duplicate jars.
+			fs.setExcludesPattern("**/WEB-INF/lib/*.jar");
 		}
 	}
 	protected void addClassesFileset(IProject project, IArchiveFolder folder) {
@@ -130,7 +130,25 @@ public class WarArchiveType extends J2EEArchiveType {
 	
 	// Lib support
 	protected void addLibFileset(IProject project, IArchiveFolder folder, boolean includeTopLevelJars) {
-		addFileset(project, folder, project.getName(), "**/*.jar");  // add default jars
+		// Let us find /WEB-INF/lib directory and set it as source for the file set.
+		String sourcePath = null;
+		
+		IPath projectPath = project.getLocation();
+		DirectoryScanner scanner = 
+			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
+		String[] files = scanner.getIncludedFiles();
+		
+		if(files != null && files.length > 0) {
+			IPath path = new Path(files[0]);
+			path = path.removeLastSegments(1).append("lib");
+			sourcePath = project.getFullPath().append(path).toString();
+		}
+		
+		if(sourcePath == null) {
+			//having failed to find 'lib' directory, let us make source of the project itself
+			sourcePath = project.getName();
+		}
+		addFileset(project, folder, sourcePath, "**/*.jar");  // add default jars
 	}
 	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
