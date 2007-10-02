@@ -217,11 +217,13 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		if( recurse ) {
 			ArrayList tmp = new ArrayList();
 			IModule[] children = getServer().getChildModules(module, new NullProgressMonitor());
-			for( int i = 0; i < children.length; i++ ) {
-				tmp = new ArrayList();
-				tmp.addAll(Arrays.asList(module));
-				tmp.add(children[i]);
-				fillPublishOneModuleLists((IModule[]) tmp.toArray(new IModule[tmp.size()]), moduleList, deltaKindList, deltaKind, recurse);
+			if( children != null ) {
+				for( int i = 0; i < children.length; i++ ) {
+					tmp = new ArrayList();
+					tmp.addAll(Arrays.asList(module));
+					tmp.add(children[i]);
+					fillPublishOneModuleLists((IModule[]) tmp.toArray(new IModule[tmp.size()]), moduleList, deltaKindList, deltaKind, recurse);
+				}
 			}
 		}
 		
