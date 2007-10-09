@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -42,6 +43,7 @@ import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -109,9 +111,29 @@ public class JBossServer extends ServerDelegate
 		return new IModule[0];
 	}
 
-	// As of now none of my modules are implementing the parent / child nonesense
-	public IModule[] getRootModules(IModule module) throws CoreException {
-		return new IModule[] { module };
+    public IModule[] getRootModules(IModule module) throws CoreException {
+        IStatus status = canModifyModules(new IModule[] { module }, null);
+        if (status != null && !status.isOK())
+            throw  new CoreException(status);;
+        IModule[] parents = doGetParentModules(module);
+        if(parents.length>0)
+        	return parents;
+        return new IModule[] { module };
+    }
+
+
+	private IModule[] doGetParentModules(IModule module) {
+		IModule[] ears = ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
+		ArrayList list = new ArrayList();
+		for (int i = 0; i < ears.length; i++) {
+			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
+			IModule[] childs = ear.getModules();
+			for (int j = 0; j < childs.length; j++) {
+				if(childs[j].equals(module))
+					list.add(ears[i]);
+			}
+		}
+		return (IModule[])list.toArray(new IModule[list.size()]);
 	}
 
 	public ServerPort[] getServerPorts() {
