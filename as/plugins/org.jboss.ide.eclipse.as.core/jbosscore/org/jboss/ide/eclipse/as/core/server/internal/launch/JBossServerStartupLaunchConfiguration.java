@@ -97,6 +97,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			String mode, ILaunch launch, IProgressMonitor monitor) {
 		try {
 			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
 		} catch( CoreException ce ) {
 			// report it

@@ -124,6 +124,9 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	
+	public void setRunMode(String mode) {
+		setMode(mode);
+	}
 	
 	public void serverStarting() {
 		setServerStarting();
