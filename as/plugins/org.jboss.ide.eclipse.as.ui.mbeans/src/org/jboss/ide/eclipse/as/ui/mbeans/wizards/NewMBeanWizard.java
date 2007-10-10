@@ -75,6 +75,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 	private static String INTERFACE_NAME = "__INTERFACE_NAME__";
 	
 	public NewMBeanWizard() {
+	   setWindowTitle("New MBean Wizard");
 	}
 
     public void createPageControls(Composite pageContainer) {
