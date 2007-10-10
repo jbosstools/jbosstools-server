@@ -43,21 +43,6 @@
 		<adapterFactoryDescription
 				class="org.jboss.ide.eclipse.as.ui.mbeans.editors.AdaptorFactoryProviderForServiceXML"/>
    </extension>
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <category
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            name="MBean Components"
-            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
-      <wizard
-            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
-            icon="icons/mbean16.gif"
-            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
-            name="MBean Stubs"
-            project="false"/>
-   </extension>
-
 
       <extension
             point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">
@@ -85,6 +70,21 @@
    
    
    
+      <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            name="MBean Components"
+            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
+      <wizard
+            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
+            icon="icons/mbean16.gif"
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            name="MBean Stubs"
+            project="false"/>
+   </extension>
+   
    
    <extension point="org.eclipse.ui.newWizards">
       <wizard
@@ -100,7 +100,5 @@
             name="EJB3 Message Driven Bean"
             id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard"/>
    </extension>
-   
-   
 
 </plugin>
