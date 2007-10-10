@@ -91,17 +91,19 @@ public class ASPerspective implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IProgressConstants.PROGRESS_VIEW_ID);
 				
 		// new actions - Java project creation wizard
+		
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewPackageCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.jboss.ide.eclipse.as.ui.MBeanComponents");
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewClassCreationWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewInterfaceCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewEnumCreationWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewAnnotationCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewSourceFolderCreationWizard");	 //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewSnippetFileCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.ui.editors.wizards.UntitledTextFileWizard");//$NON-NLS-1$
+		
+		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.project.facet.WebProjectWizard");
+		layout.addNewWizardShortcut("org.jboss.tools.seam.ui.wizards.SeamProjectWizard");
+		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.internal.wizard.AddServletWizard");
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard");
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard");
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.as.ui.MBeanComponents");
+		
 		
 		
 		// perspectives
