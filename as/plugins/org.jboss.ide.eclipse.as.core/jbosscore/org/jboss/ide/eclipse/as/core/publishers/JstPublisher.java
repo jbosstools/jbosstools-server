@@ -156,6 +156,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	
 	protected boolean deployPackaged(IModule[] moduleTree) {
 		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.utility")) return true;
+		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.appclient")) return true;
 		return false;
 	}
 	
