@@ -4,11 +4,14 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 
 /**
@@ -27,9 +30,17 @@ public class ClientAllRuntimeClasspathProvider extends
 	}
 
 	public IClasspathEntry[] resolveClasspathContainer(IProject project, IRuntime runtime) {
-		if( runtime == null ) return new IClasspathEntry[0];
-		
+		if( runtime == null ) 
+			return null;
+
 		AbstractJBossServerRuntime ajbsrt = (AbstractJBossServerRuntime)runtime.loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
+		if( ajbsrt == null ) {
+			// log error
+			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, "Runtime " + runtime.getName() + "is not of the proper type");
+			ClasspathCorePlugin.getDefault().getLog().log(status);
+			return null;
+		}
+		
 		IPath loc = runtime.getLocation();
 		String config = ajbsrt.getJBossConfiguration();
 		if( runtime.getRuntimeType().getId().endsWith("32")) {
@@ -38,7 +49,7 @@ public class ClientAllRuntimeClasspathProvider extends
 			return get40(loc, config);
 		} else if( runtime.getRuntimeType().getId().endsWith("42")) {
 			return get42(loc, config);
-		} 
+		}
 		return null;
 	}
 	
