@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
@@ -72,6 +73,16 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FILE);
 		if( type.equals(PublisherEventLogger.FILE_DELETED_EVENT) || type.equals(PublisherEventLogger.FOLDER_DELETED_EVENT))
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE);
+		if( type.equals(PublisherEventLogger.PUBLISH_UTIL_STATUS_WRAPPER_TYPE)) {
+			Object data = item.getData();
+			if( data != null && data instanceof IStatus ) {
+				int sev = ((IStatus)data).getSeverity();
+				switch (sev) {
+				case IStatus.ERROR: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+				case IStatus.WARNING: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+				}
+			}
+		}
 		return null;
 	}
 
@@ -106,13 +117,29 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		if( type.equals(PublisherEventLogger.MODULE_ROOT_EVENT)) {
 			return getKindDeltaKind(item) + " " + item.getProperty(PublisherEventLogger.MODULE_NAME);
 		}
+		
+		Boolean b = (Boolean)item.getProperty(PublisherEventLogger.SUCCESS_PROPERTY);
+		String fail = "Failed to ";
 		if( type.equals(PublisherEventLogger.FILE_COPPIED_EVENT)) {
-			return "File Copy: " + new Path((String)item.getProperty(PublisherEventLogger.SOURCE_PROPERTY)).lastSegment();
+			return (!b.booleanValue() ? fail : "") +  
+				"Copy File: " + new Path((String)item.getProperty(PublisherEventLogger.SOURCE_PROPERTY)).lastSegment();
 		}
 		if( type.equals(PublisherEventLogger.FILE_DELETED_EVENT)) {
-			return "File Delete: " + new Path((String)item.getProperty(PublisherEventLogger.DEST_PROPERTY)).lastSegment();
+			return (!b.booleanValue() ? fail : "") +  
+				"Delete File: " + new Path((String)item.getProperty(PublisherEventLogger.DEST_PROPERTY)).lastSegment();
 		}
-		
+		if( type.equals(PublisherEventLogger.FOLDER_DELETED_EVENT)) {
+			return (!b.booleanValue() ? fail : "") +  
+				"Delete Folder: " + new Path((String)item.getProperty(PublisherEventLogger.DEST_PROPERTY)).lastSegment();
+		}
+		if( type.equals(PublisherEventLogger.PUBLISH_UTIL_STATUS_WRAPPER_TYPE)) {
+			Object data = item.getData();
+			if( data != null && data instanceof IStatus ) {
+				IStatus s = (IStatus)data;
+				return s.getMessage();
+			}
+			return data == null ? "null" : data.toString();
+		}
 		return item.getSpecificType();
 	}
 
