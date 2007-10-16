@@ -48,20 +48,25 @@ public class FileUtil {
 					safeDelete(children[i], listener);
 				}
 			}
-			try {
-				boolean tmp = file.delete();
-				if( listener != null ) listener.folderDeleted(file, tmp, null);
-			} catch( SecurityException sex) {
-				if( listener != null ) listener.folderDeleted(file, false, sex);
+			
+			if( file.exists()) {
+				try {
+					boolean tmp = file.delete();
+					if( listener != null ) listener.folderDeleted(file, tmp, null);
+				} catch( SecurityException sex) {
+					if( listener != null ) listener.folderDeleted(file, false, sex);
+				}
 			}
 		}
 		
 		// files only
-		try {
-			boolean tmp = file.delete();
-			if( listener != null ) listener.fileDeleted(file, tmp, null);
-		} catch( SecurityException sex) {
-			if( listener != null ) listener.fileDeleted(file, false, sex);
+		if( file.exists() ) {
+			try {
+				boolean tmp = file.delete();
+				if( listener != null ) listener.fileDeleted(file, tmp, null);
+			} catch( SecurityException sex) {
+				if( listener != null ) listener.fileDeleted(file, false, sex);
+			}
 		}
 	}
 	

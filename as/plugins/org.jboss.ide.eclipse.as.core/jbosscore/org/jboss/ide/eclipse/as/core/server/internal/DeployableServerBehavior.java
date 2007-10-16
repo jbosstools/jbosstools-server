@@ -118,8 +118,13 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				publisher = new NullPublisher();
 			}
 			publisher.setDelta(getPublishedResourceDelta(module));
-			publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
-			setModulePublishState(module, publisher.getPublishState());
+			try {
+				publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
+			} catch( CoreException ce ) {
+				throw ce;
+			} finally {
+				setModulePublishState(module, publisher.getPublishState());
+			}
 		}
 	}
 	

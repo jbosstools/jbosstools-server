@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
@@ -100,4 +101,11 @@ public class PublisherEventLogger {
 		}
 	}
 	
+	public static final String PUBLISH_UTIL_STATUS_WRAPPER_TYPE = "org.jboss.ide.eclipse.as.core.publishers.Events.publishUtilStatusWrapperType";
+	public static class PublishUtilStatusWrapper extends EventLogTreeItem {
+		public PublishUtilStatusWrapper(EventLogTreeItem parent, IStatus status) {
+			super(parent, PUBLISH_MAJOR_TYPE, PUBLISH_UTIL_STATUS_WRAPPER_TYPE);
+			setData(status);
+		}
+	}
 }
