@@ -48,6 +48,7 @@ public class Messages {
 	public static String swf_Explanation;
 	public static String swf_Explanation2;
 	public static String swf_AuthenticationGroup;
+	public static String swf_DeployGroup;
 	public static String swf_Username;
 	public static String swf_Password;
 	public static String swf_BaseName;
