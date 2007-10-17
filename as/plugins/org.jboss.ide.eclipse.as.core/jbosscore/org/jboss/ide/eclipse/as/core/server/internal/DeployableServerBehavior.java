@@ -113,7 +113,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			} else if( isPackagesTypeModule(lastMod) ) {
 				publisher = new PackagesPublisher(getServer(), root);
 			} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
-				publisher = new SingleFilePublisher(getServer());
+				publisher = new SingleFilePublisher(getServer(), root);
 			} else {
 				publisher = new NullPublisher();
 			}
