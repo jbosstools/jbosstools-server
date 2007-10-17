@@ -26,11 +26,14 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
  * This class just opens up the get and set attributes for a server,
@@ -113,7 +116,11 @@ public class ServerAttributeHelper {
 	public IServer save() {
 		try {
 			return save(false, new NullProgressMonitor());
-		} catch( Exception e ) {}
+		} catch( Exception e ) {
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					"Unexpected Exception while saving server metadata: ", e);
+			JBossServerCorePlugin.getDefault().getLog().log(s);
+		}
 		return null;
 	}	
 }

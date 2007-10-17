@@ -90,17 +90,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		return plugin;
 	}
 
-	
-	public static String getResourceString (String key) {
-		try {
-			String value = Platform.getResourceString(getDefault().getBundle(), key);
-			return value;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return key;
-		}
-	}
-	
 	/**
 	 * Returns the plugin's resource bundle,
 	 */

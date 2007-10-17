@@ -27,7 +27,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -41,6 +43,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
  *
@@ -111,6 +114,7 @@ public class WarArchiveType extends J2EEArchiveType {
 				outputLoc = outputLoc.append(jp.getOutputLocation());
 				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*");
 			} catch( JavaModelException jme ) {
+				// no logging
 			}
 		}
 	}
@@ -165,7 +169,7 @@ public class WarArchiveType extends J2EEArchiveType {
 					}
 				}
 			} catch( JavaModelException jme ) {
-				jme.printStackTrace();
+				// no logging
 			}
 		}
 	}
@@ -205,7 +209,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			}
 			return topLevel;
 		} catch( Exception e ) {
-			e.printStackTrace();
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unexpected Exception", e));
 		}
 		return null;
 	}

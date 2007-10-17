@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -92,8 +93,8 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 					url = new URL(url, path);
 			} 
 			return new HttpLaunchable(url);
-		} catch (Exception e) {
-			return null;
+		} catch (MalformedURLException e) {
+			return null; // no launchable available.
 		}
     }
 

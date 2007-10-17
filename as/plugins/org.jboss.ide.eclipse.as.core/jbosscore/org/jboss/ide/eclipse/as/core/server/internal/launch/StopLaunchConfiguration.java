@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -15,6 +17,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
@@ -31,6 +34,9 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 		} catch( CoreException ce ) {
 			// report it from here
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					"Unexpected Exception launching stop server command: ", ce);
+			JBossServerCorePlugin.getDefault().getLog().log(s);
 		}
 	}
 	

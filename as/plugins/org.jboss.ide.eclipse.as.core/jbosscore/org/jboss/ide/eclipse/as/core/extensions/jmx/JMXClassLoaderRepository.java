@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
  * A repository for classloaders that relate to servers, 
@@ -99,6 +102,9 @@ public class JMXClassLoaderRepository {
 					Thread.currentThread().getContextClassLoader());
 			idToLoader.put(s.getId(), loader);
 		} catch (MalformedURLException murle) {
+			JBossServerCorePlugin.getDefault().getLog().log(
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							"Cannot load JMX classes for server: " + s.getName(), murle));
 		}
 	}
 

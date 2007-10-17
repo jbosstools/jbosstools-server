@@ -1,5 +1,7 @@
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +12,10 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
@@ -187,11 +191,9 @@ public class XPathModel {
 		for( int i = 0; i < queriesByName.length; i++ ) {
 			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
 			if( queryAsStringValues != null ) {
-				try {
-					XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
-					q.setCategory(category);
-					returnList.add(q);
-				} catch( Exception e ) {e.printStackTrace(); }
+				XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
+				q.setCategory(category);
+				returnList.add(q);
 			}
 		}
 		return (XPathQuery[]) returnList.toArray(new XPathQuery[returnList.size()]);
@@ -239,11 +241,12 @@ public class XPathModel {
 				}
 			}
 			retVal.add(ports);
-		} catch( Exception e ) {
-			e.printStackTrace();
+		} catch (IOException e) {
+			JBossServerCorePlugin.getDefault().getLog().log(
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							"Error loading default xpaths", e));
 		}
 		
 		serverToCategories.put(server.getId(), retVal);
-		//save(server);
 	}
 }

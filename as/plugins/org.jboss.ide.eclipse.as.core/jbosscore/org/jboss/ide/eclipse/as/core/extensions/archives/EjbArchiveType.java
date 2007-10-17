@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 
@@ -44,7 +45,8 @@ public class EjbArchiveType extends J2EEArchiveType {
 					IJavaProject proj = JavaCore.create(project);
 					IPath outputLoc = proj.getOutputLocation();
 					addFileset(project, topLevel, outputLoc.toOSString(), null);
-				} catch( Exception e ) {
+				} catch( JavaModelException jmde) {
+					// ignore. No reporting necessary here
 				}
 			}
 		}

@@ -22,6 +22,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.PublishOperation;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory;
@@ -172,16 +173,16 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	 * hack for eclipse bug 169570
 	 */
 	public IStatus publishOneModule(IModule[] module, int kind, int deltaKind, boolean recurse, IProgressMonitor monitor) {
-	
-		// add it to the server first
-		if( module.length == 1 ) 
-			addAndRemoveModules(module, deltaKind);
-
-		ArrayList moduleList = new ArrayList(); 
-		ArrayList deltaKindList = new ArrayList();
-		fillPublishOneModuleLists(module, moduleList, deltaKindList, deltaKind, recurse);
-				
 		try {
+	
+			// add it to the server first
+			if( module.length == 1 ) 
+				addAndRemoveModules(module, deltaKind);
+
+			ArrayList moduleList = new ArrayList(); 
+			ArrayList deltaKindList = new ArrayList();
+			fillPublishOneModuleLists(module, moduleList, deltaKindList, deltaKind, recurse);
+				
 			((Server)getServer()).getServerPublishInfo().startCaching();
 			
 			
@@ -210,10 +211,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			
 			return Status.OK_STATUS;
 
-		} catch( Exception e ) {
-			
+		} catch( CoreException e ) {
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					"Unexpected Exception publishing one module: ", e);
+			JBossServerCorePlugin.getDefault().getLog().log(s);
+			return s;
 		}
-		return Status.CANCEL_STATUS;
 	}
 	
 	protected void fillPublishOneModuleLists(IModule[] module, ArrayList moduleList, ArrayList deltaKindList, int deltaKind, boolean recurse) {
@@ -239,19 +242,18 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		}
 	}
 	
-	protected void addAndRemoveModules(IModule[] module, int deltaKind) {
+	protected void addAndRemoveModules(IModule[] module, int deltaKind) throws CoreException {
 		if( getServer() == null ) return;
 		boolean contains = ServerUtil.containsModule(getServer(), module[0], new NullProgressMonitor());
-		try {
-			if( !contains && (deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.CHANGED)) {
-				IServerWorkingCopy wc = getServer().createWorkingCopy();
-				ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());			
-				wc.save(false, new NullProgressMonitor());
-			} else if( contains && deltaKind == ServerBehaviourDelegate.REMOVED) {
-				IServerWorkingCopy wc = getServer().createWorkingCopy();
-				ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
-				wc.save(false, new NullProgressMonitor());
-			}
-		} catch( Exception e ) {} // swallowed
+
+		if( !contains && (deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.CHANGED)) {
+			IServerWorkingCopy wc = getServer().createWorkingCopy();
+			ServerUtil.modifyModules(wc, module, new IModule[0], new NullProgressMonitor());			
+			wc.save(false, new NullProgressMonitor());
+		} else if( contains && deltaKind == ServerBehaviourDelegate.REMOVED) {
+			IServerWorkingCopy wc = getServer().createWorkingCopy();
+			ServerUtil.modifyModules(wc, new IModule[0], module, new NullProgressMonitor());
+			wc.save(false, new NullProgressMonitor());
+		}
 	}
 }

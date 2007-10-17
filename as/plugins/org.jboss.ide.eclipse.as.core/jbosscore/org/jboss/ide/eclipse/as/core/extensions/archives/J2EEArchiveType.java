@@ -27,7 +27,9 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -40,6 +42,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
  *
@@ -82,7 +85,6 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			try {
 				sourcePath = javaProject.getOutputLocation();
 			} catch (JavaModelException e) {
-				e.printStackTrace();
 				return null;
 			}
 			sourcePath = sourcePath.removeFirstSegments(1);
@@ -93,7 +95,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 				sourcePathContainer = project.getFolder(sourcePath);
 			return createGenericIArchive(project, deployDirectory, packageName, sourcePathContainer);
 		} catch( Exception e ) {
-			e.printStackTrace();
+			JBossServerCorePlugin.getDefault().getLog().log(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unexpected Exception", e));
 		}
 		return null;
 	} 

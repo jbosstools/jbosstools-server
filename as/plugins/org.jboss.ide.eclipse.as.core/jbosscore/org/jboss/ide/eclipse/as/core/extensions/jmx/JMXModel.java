@@ -21,7 +21,10 @@ import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.naming.InitialContext;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 public class JMXModel {
 	protected static JMXModel instance;
@@ -251,6 +254,8 @@ public class JMXModel {
 					tmp.loadValue(connection);
 					wrapped.add(tmp);
 				} catch( Exception e ) {
+					// some attributes may not load because the result is not serializable.
+					// no need to report every error
 				}
 			}
 			attributes = (WrappedMBeanAttributeInfo[]) wrapped.toArray(new WrappedMBeanAttributeInfo[wrapped.size()]);
@@ -379,7 +384,9 @@ public class JMXModel {
 					r.run(connection);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				JBossServerCorePlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+								"Error while running JMX-safe code", e));
 			}
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}

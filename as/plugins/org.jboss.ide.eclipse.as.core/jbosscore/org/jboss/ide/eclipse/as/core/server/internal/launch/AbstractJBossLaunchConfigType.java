@@ -127,15 +127,17 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
-			try {
-				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
-					new Path(JavaRuntime.JRE_CONTAINER).append(
-						"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")
-							.append(vmInstall.getName()),
-						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
-			} catch (Exception e) {
-				// ignore
-			}
+				try {
+					cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
+						new Path(JavaRuntime.JRE_CONTAINER).append(
+							"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")
+								.append(vmInstall.getName()),
+							IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
+				} catch (CoreException e) {
+					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							"Unexpected Exception converting launch classpath: ", e);
+					JBossServerCorePlugin.getDefault().getLog().log(s);
+				}
 
 			IPath jrePath = new Path(vmInstall.getInstallLocation()
 					.getAbsolutePath());
