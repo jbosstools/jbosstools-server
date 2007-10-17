@@ -26,6 +26,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -85,18 +86,21 @@ public class JstPublisher implements IJBossServerPublisher {
 			int modulePublishState, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
 		IStatus status = null;
-
+		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
 			if( module[i] instanceof DeletedModule )
-				// TODO FIX ME
-				return null;
+				deleted = true;
 		}
 		
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			status = unpublish(server, module, monitor);
 		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
+			if( deleted ) 
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located"));
 			status = fullPublish(module, module[module.length-1], monitor);	
 		} else if (kind == IServer.PUBLISH_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
+			if( deleted ) 
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located"));
 			status = incrementalPublish(module, module[module.length-1], monitor);
 		} 
 		return status;
@@ -160,17 +164,20 @@ public class JstPublisher implements IJBossServerPublisher {
 
 	protected IPath getDeployPath(IModule[] moduleTree) {
 		IPath root = new Path( server.getDeployDirectory() );
-		String type;
+		String type, name;
+		IProject project;
 		for( int i = 0; i < moduleTree.length; i++ ) {
 			type = moduleTree[i].getModuleType().getId();
+			project = moduleTree[i].getProject();
+			name = project == null ? moduleTree[i].getName() : project.getName();
 			if( "jst.ear".equals(type)) 
-				root = root.append(moduleTree[i].getProject().getName() + ".ear");
+				root = root.append(name + ".ear");
 			else if( "jst.web".equals(type)) 
-				root = root.append(moduleTree[i].getProject().getName() + ".war");
+				root = root.append(name + ".war");
 			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId())) 
-				root = root.append("WEB-INF").append("lib").append(moduleTree[i].getProject().getName() + ".jar");			
+				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
 			else
-				root = root.append(moduleTree[i].getProject().getName() + ".jar");
+				root = root.append(name + ".jar");
 		}
 		return root;
 	}
