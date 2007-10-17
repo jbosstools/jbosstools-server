@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -73,6 +74,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			String serverHome = getServerHome(jbs);
 			
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
+			
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
 			ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
@@ -92,6 +95,13 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		}
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
+	
+	public static String getDefaultVMArgs(JBossServer jbs) throws CoreException {
+		if( Platform.getOS().equals(Platform.OS_LINUX))
+			return "-Djava.net.preferIPv4Stack=true";
+		return "";
+	}
+
 
 	protected void preLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) {
