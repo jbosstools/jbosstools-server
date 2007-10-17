@@ -164,9 +164,6 @@ public class JBossServer extends ServerDelegate
 	public String getConfigDirectory() {
 		return getConfigDirectory(true);
 	}
-	public String getDeployDirectory() {
-		return getDeployDirectory(true);
-	}
 	
 	public String getConfigDirectory(boolean checkLaunchConfig) {
 		if( !checkLaunchConfig ) 
@@ -181,6 +178,11 @@ public class JBossServer extends ServerDelegate
 			return getRuntimeConfigDirectory();
 
 		return new Path(configDir).toOSString();
+	}
+	
+	public String getDeployDirectory() {
+		String folder = getAttributeHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
+		return folder != null ? folder : getDeployDirectory(true);
 	}
 	
 	public String getDeployDirectory(boolean checkLaunchConfig) {

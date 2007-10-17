@@ -29,6 +29,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  * @author rob.stryker@jboss.com
  */
 public interface IDeployableServer {
+	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory";
+	
 	public String getDeployDirectory();
 	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();

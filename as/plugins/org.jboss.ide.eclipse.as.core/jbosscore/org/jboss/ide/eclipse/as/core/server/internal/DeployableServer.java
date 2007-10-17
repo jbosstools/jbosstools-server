@@ -12,8 +12,6 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
-	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.stripped.deploy_directory";
-	
 	public DeployableServer() {
 	}
 
