@@ -176,7 +176,7 @@ public class XPathDialogs {
 		protected int previewId = 48879;
 		
 		protected Tree previewTree;
-		protected TreeColumn column, column2, column3;
+		protected TreeColumn column, column2;
 		protected TreeViewer previewTreeViewer;
 		protected Composite main;
 		protected XMLDocumentRepository repository;
@@ -437,7 +437,9 @@ public class XPathDialogs {
 								errorImage.setVisible(true);
 								errorLabel.setText("No XML elements matched your search.");
 								errorLabel.setVisible(true);
+								previewTreeViewer.getTree().setEnabled(false);
 							} else {
+								previewTreeViewer.getTree().setEnabled(true);
 								checkErrors();
 							}
 							main.layout();
@@ -472,15 +474,12 @@ public class XPathDialogs {
 			previewTree.setLinesVisible(true);
 			column = new TreeColumn(previewTree, SWT.NONE);
 			column2 = new TreeColumn(previewTree, SWT.NONE);
-			column3 = new TreeColumn(previewTree, SWT.NONE);
 			
 			column.setText(Messages.XPathColumnLocation);
 			column2.setText(Messages.XPathColumnAttributeVals);
-			column3.setText(Messages.XPathColumnRawXML);
 
-			column.setWidth(100);
-			column2.setWidth(100);
-			column3.setWidth(100);
+			column.setWidth(150);
+			column2.setWidth(150);
 
 			previewTreeViewer = new TreeViewer(previewTree);
 
@@ -655,12 +654,8 @@ public class XPathDialogs {
 			this.elementText = elementText;
 		}
 		public IContentProposal[] getProposals(String contents, int position) {
-			int type = getType(elementText.getText());
-			if( type == IN_ELEMENT ) {
-				String[] strings = getAttributeNameProposalStrings(elementText.getText(), contents);
-				return convertProposals(strings);
-			}
-			return new IContentProposal[0];
+			String[] strings = getAttributeNameProposalStrings(elementText.getText(), contents.trim());
+			return convertProposals(strings);
 		}
 		
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
