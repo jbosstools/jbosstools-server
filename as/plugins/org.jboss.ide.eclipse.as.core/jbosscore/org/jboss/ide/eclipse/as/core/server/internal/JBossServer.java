@@ -55,6 +55,11 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStartupParameters;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
+/**
+ * 
+ * @author Rob Stryker rob.stryker@jboss.com
+ *
+ */
 public class JBossServer extends ServerDelegate 
 		implements IServerStartupParameters, IDeployableServer, IURLProvider {
 

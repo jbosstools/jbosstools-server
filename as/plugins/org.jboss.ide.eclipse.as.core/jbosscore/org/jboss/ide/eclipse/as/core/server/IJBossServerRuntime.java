@@ -23,6 +23,10 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.jdt.launching.IVMInstall;
 
+/**
+ * 
+ * @author Rob Stryker
+ */
 public interface IJBossServerRuntime {
 	public static String PROPERTY_VM_ID = "PROPERTY_VM_ID";
 	public static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID";

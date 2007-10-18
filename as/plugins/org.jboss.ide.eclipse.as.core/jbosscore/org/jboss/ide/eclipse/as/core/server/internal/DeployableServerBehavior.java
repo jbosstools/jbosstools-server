@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.ArrayList;
@@ -48,25 +69,27 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
 	
-	private void print(int kind, int deltaKind, IModule[] module) {
+	private String print(int kind, int deltaKind, IModule[] module) {
+		String ret = "";
 		String name = "";
 		for( int i = 0; i < module.length; i++ ) 
 			name += module[i].getName();
 		
-		System.out.print("publishing module (" + name + "): ");
+		ret += "publishing module (" + name + "): ";
 		switch( kind ) {
-			case IServer.PUBLISH_INCREMENTAL: System.out.print("incremental, "); break;
-			case IServer.PUBLISH_FULL: System.out.print("full, "); break;
-			case IServer.PUBLISH_AUTO: System.out.print("auto, "); break;
-			case IServer.PUBLISH_CLEAN: System.out.print("clean, "); break;
+			case IServer.PUBLISH_INCREMENTAL: ret += "incremental, "; break;
+			case IServer.PUBLISH_FULL: ret += "full, "; break;
+			case IServer.PUBLISH_AUTO: ret += "auto, "; break;
+			case IServer.PUBLISH_CLEAN: ret += "clean, "; break;
 		}
 		switch( deltaKind ) {
-			case ServerBehaviourDelegate.NO_CHANGE: System.out.print("no change"); break;
-			case ServerBehaviourDelegate.ADDED: System.out.print("added"); break;
-			case ServerBehaviourDelegate.CHANGED: System.out.print("changed"); break;
-			case ServerBehaviourDelegate.REMOVED: System.out.print("removed"); break;
+			case ServerBehaviourDelegate.NO_CHANGE: ret += "no change"; break;
+			case ServerBehaviourDelegate.ADDED: ret += "added"; break;
+			case ServerBehaviourDelegate.CHANGED: ret += "changed"; break;
+			case ServerBehaviourDelegate.REMOVED: ret += "removed"; break;
 		}
-		System.out.println(" to server " + getServer().getName() + "(" + getServer().getId() + ")");
+		ret += " to server " + getServer().getName() + "(" + getServer().getId() + ")";
+		return ret;
 	}
 	
 	protected PublishEvent publishEvent;
@@ -103,7 +126,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
-		print(kind, deltaKind, module);
 		int modulePublishState = getServer().getModulePublishState(module) + 0;
 		PublishEvent root = PublisherEventLogger.createModuleRootEvent(publishEvent, module, kind, deltaKind);
 

@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.util.ArrayList;
@@ -10,14 +31,19 @@ import org.dom4j.Node;
 import org.dom4j.tree.DefaultAttribute;
 import org.dom4j.tree.DefaultElement;
 
-
+/**
+ * A class representing an xpath file result.
+ * It's children may be individual element results
+ * @author rob.stryker@redhat.com
+ *
+ */
 public class XPathFileResult {
 	protected XPathQuery query;
-	protected List nodeList;
+	protected List<Node> nodeList;
 	protected String fileLoc;
 	
 	protected XPathResultNode[] children;
-	public XPathFileResult(XPathQuery query, String fileLoc, List nodeList) {
+	public XPathFileResult(XPathQuery query, String fileLoc, List<Node> nodeList) {
 		this.query = query;
 		this.fileLoc = fileLoc;
 		this.nodeList = nodeList;
@@ -31,20 +57,21 @@ public class XPathFileResult {
 		return query;
 	}
 	
+	/* Lazily load the children */
 	public XPathResultNode[] getChildren() {
 		if( children == null ) {
-			ArrayList childList = new ArrayList();
-			Iterator i = nodeList.iterator();
+			ArrayList<XPathResultNode> childList = new ArrayList<XPathResultNode>();
+			Iterator<Node> i = nodeList.iterator();
 			int z = 0;
 			while(i.hasNext()) {
-				Node o = (Node)i.next();
-				childList.add(new XPathResultNode(o, query.getAttribute(), z++));
+				childList.add(new XPathResultNode(i.next(), query.getAttribute(), z++));
 			}
-			children = (XPathResultNode[]) childList.toArray(new XPathResultNode[childList.size()]);
+			children = childList.toArray(new XPathResultNode[childList.size()]);
 		}
 		return children;
 	}
 	
+	/* A class representing an actual result node / element in the document */
 	public class XPathResultNode {
 		protected Node node;
 		protected String attribute;
@@ -121,27 +148,27 @@ public class XPathFileResult {
 		
 		public String[] getElementChildrenNames() {
 			DefaultElement element = ((DefaultElement)node);
-			List l = element.elements();
+			List<DefaultElement> l = element.elements();
 			DefaultElement child;
-			ArrayList names = new ArrayList();
-			for( Iterator i = l.iterator();i.hasNext();) {
-				child = (DefaultElement)i.next();
+			ArrayList<String> names = new ArrayList<String>();
+			for( Iterator<DefaultElement> i = l.iterator();i.hasNext();) {
+				child = i.next();
 				if( !names.contains(child.getName()))
 					names.add(child.getName());
 			}
-			return (String[]) names.toArray(new String[names.size()]);
+			return names.toArray(new String[names.size()]);
 		}
 		public String[] getElementAttributeNames() {
 			DefaultElement element = ((DefaultElement)node);
 			List l = element.attributes();
 			DefaultAttribute child;
-			ArrayList names = new ArrayList();
+			ArrayList<String> names = new ArrayList<String>();
 			for( Iterator i = l.iterator();i.hasNext();) {
 				child = (DefaultAttribute)i.next();
 				if( !names.contains(child.getName()))
 					names.add(child.getName());
 			}
-			return (String[]) names.toArray(new String[names.size()]);
+			return names.toArray(new String[names.size()]);
 		}
 		public String[] getElementAttributeValues(String attName) {
 			DefaultElement element = ((DefaultElement)node);

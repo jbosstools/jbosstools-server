@@ -1,7 +1,27 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +42,13 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * The class representing the model for all xpath storage and searching
+ * Also API entrance point.
+ * @author rob.stryker@redhat.com
+ *
+ */
 public class XPathModel {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
 	public static final String PORTS_CATEGORY_NAME = "Ports";
@@ -35,6 +60,7 @@ public class XPathModel {
 	private static final String QUERY = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
 
+	/* Singleton */
 	private static XPathModel instance;
 	public static XPathModel getDefault() {
 		if( instance == null )
@@ -43,6 +69,10 @@ public class XPathModel {
 	}
 	
 	protected HashMap<String, ArrayList<XPathCategory>> serverToCategories;
+	
+	/* Constructor. Adds lifecycle listener to know when there's a new server and 
+	 * properly add the default XPaths to that server object. 
+	 */
 	public XPathModel() {
 		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
 		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
@@ -68,7 +98,7 @@ public class XPathModel {
 		return null;
 	}
 	
-	public ArrayList<XPathCategory> getCategoryCollection(IServer server) {
+	protected ArrayList<XPathCategory> getCategoryCollection(IServer server) {
 		if( serverToCategories.get(server.getId()) == null ) {
 			ArrayList<XPathCategory> val = new ArrayList<XPathCategory>(Arrays.asList(load(server)));
 			serverToCategories.put(server.getId(), val);

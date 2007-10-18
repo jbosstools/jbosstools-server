@@ -24,6 +24,11 @@ package org.jboss.ide.eclipse.as.core.server;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 
+/**
+ * 
+ * @author Rob Stryker
+ *
+ */
 public interface IServerStatePoller extends IServerPollingAttributes {
 	
 	public static final boolean SERVER_UP = true;

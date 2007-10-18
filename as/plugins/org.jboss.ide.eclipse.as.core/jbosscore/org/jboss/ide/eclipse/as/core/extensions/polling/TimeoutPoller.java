@@ -31,7 +31,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
-// Wait 15 seconds, then say it's at it's expected state
+/**
+ * Wait 15 seconds, then say it's at it's expected state
+ * @author Rob
+ *
+ */
 public class TimeoutPoller implements IServerStatePoller {
 
 	private boolean expectedState;

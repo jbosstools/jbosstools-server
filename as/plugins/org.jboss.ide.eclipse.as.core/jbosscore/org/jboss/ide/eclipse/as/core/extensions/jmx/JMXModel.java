@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.extensions.jmx;
 
 import java.io.IOException;
@@ -26,7 +47,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
+/**
+ * Model and objects related to JMX
+ * @author rob.stryker@redhat.com
+ *
+ */
 public class JMXModel {
+	/* Singleton */
 	protected static JMXModel instance;
 	public static JMXModel getDefault() {
 		if( instance == null )
@@ -36,11 +63,16 @@ public class JMXModel {
 	
 	
 	protected HashMap<String, JMXModelRoot> root;
-
+	/* constructor */
 	protected JMXModel() {
 		root = new HashMap<String, JMXModelRoot>();
 	}
 
+	/**
+	 * Get the Model Root for one particular server
+	 * @param server
+	 * @return that server's model
+	 */
 	public JMXModelRoot getModel(IServer server) {
 		if (root.get(server.getId()) == null) {
 			JMXModelRoot serverRoot = new JMXModelRoot(server);
@@ -49,11 +81,17 @@ public class JMXModel {
 		return root.get(server.getId());
 	}
 
+	/**
+	 * Clear the server's model
+	 * @param server
+	 */
 	public void clearModel(IServer server) {
 		root.remove(server.getId());
 	}
 
-	
+	/**
+	 * The model for one server
+	 */
 	public static class JMXModelRoot {
 		protected IServer server;
 		protected JMXDomain[] domains = null;
@@ -71,6 +109,9 @@ public class JMXModel {
 			return exception;
 		}
 
+		/**
+		 * Lazily load the domains
+		 */
 		public void loadDomains() {
 			exception = null;
 			JMXRunnable run = new JMXRunnable() {
@@ -91,6 +132,9 @@ public class JMXModel {
 		}
 	}
 
+	/**
+	 * A JMX Domain
+	 */
 	public static class JMXDomain {
 		protected String name;
 		protected IServer server;
@@ -119,6 +163,9 @@ public class JMXModel {
 			exception = null;
 		}
 		
+		/**
+		 * Lazily load the beans for this domain
+		 */
 		public void loadBeans() {
 			exception = null;
 			JMXRunnable run = new JMXRunnable() {
@@ -145,6 +192,9 @@ public class JMXModel {
 		}
 	}
 
+	/**
+	 * The JMX Bean Object
+	 */
 	public static class JMXBean {
 		protected String domain;
 		protected String name;
@@ -197,6 +247,9 @@ public class JMXModel {
 			return this.exception;
 		}
 
+		/**
+		 * Load the child operations and attributes
+		 */
 		public void loadInfo() {
 			exception = null;
 			JMXRunnable run = new JMXRunnable() {

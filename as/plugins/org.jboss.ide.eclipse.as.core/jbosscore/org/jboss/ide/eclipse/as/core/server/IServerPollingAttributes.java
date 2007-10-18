@@ -21,6 +21,10 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+/**
+ * 
+ * @author Rob Stryker
+ */
 public interface IServerPollingAttributes {
 	public static final String START_TIMEOUT = "org.jboss.ide.eclipse.as.core.server.attributes.startTimeout";
 	public static final String STOP_TIMEOUT = "org.jboss.ide.eclipse.as.core.server.attributes.stopTimeout";

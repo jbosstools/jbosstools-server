@@ -43,6 +43,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
+/**
+ * A poller dedicated to server startup, checks via JMX
+ * @author Rob rob.stryker@redhat.com
+ *
+ */
 public class JMXPoller implements IServerStatePoller {
 
 	public static final String STARTED_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.STARTED_PROPERTY";

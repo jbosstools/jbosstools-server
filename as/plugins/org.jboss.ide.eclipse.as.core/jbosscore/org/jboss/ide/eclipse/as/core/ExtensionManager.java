@@ -31,18 +31,25 @@ import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
- *
+ * Manages the extensions for this plugin
  * @author rob.stryker@jboss.com
  */
 public class ExtensionManager {
+	
+	/** Singleton instance of the manager */
 	private static ExtensionManager instance;
+	
+	/** Singleton getter */
 	public static ExtensionManager getDefault() {
 		if( instance == null ) 
 			instance = new ExtensionManager();
 		return instance;
 	}
 	
+	/** The map of pollerID -> PollerObject */
 	private HashMap<String, ServerStatePollerType> pollers;
+	
+	/** The method used to load / instantiate the pollers */
 	public void loadPollers() {
 		pollers = new HashMap<String, ServerStatePollerType>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -51,11 +58,19 @@ public class ExtensionManager {
 			pollers.put(cf[i].getAttribute("id"), new ServerStatePollerType(cf[i]));
 		}
 	}
+	
+	/**
+	 * Get a poller with the specified ID
+	 * @param id the id
+	 * @return the poller
+	 */
 	public ServerStatePollerType getPollerType(String id) {
 		if( pollers == null ) 
 			loadPollers();
 		return pollers.get(id);
 	}
+	
+	/** Get only the pollers that can poll for startups */
 	public ServerStatePollerType[] getStartupPollers() {
 		if( pollers == null ) 
 			loadPollers();
@@ -69,6 +84,8 @@ public class ExtensionManager {
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
+	
+	/** Get only the pollers that can poll for shutdowns */
 	public ServerStatePollerType[] getShutdownPollers() {
 		if( pollers == null ) 
 			loadPollers();

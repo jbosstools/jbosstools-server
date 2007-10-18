@@ -71,6 +71,8 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		// Start the array of models that need to be started
 		ArchivesBuildListener.getInstance();
 		XPathModel.getDefault();
 		UnitedServerListenerManager.getDefault();

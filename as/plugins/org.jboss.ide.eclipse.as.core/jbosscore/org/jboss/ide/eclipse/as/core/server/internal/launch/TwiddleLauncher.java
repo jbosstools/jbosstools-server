@@ -25,7 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -34,6 +37,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 public class TwiddleLauncher {
 	
@@ -93,12 +97,6 @@ public class TwiddleLauncher {
 		// stop listening 
 		for( int i = 0; i < processes.length; i++ ) {
 			processes[i].stopListening();
-			if( canceled ) {
-				try {
-					// if canceled, terminate all twiddle processes
-					processes[i].getProcess().terminate();
-				} catch( Exception e ) {}
-			}	
 		}	
 		
 		return processes;
@@ -114,6 +112,16 @@ public class TwiddleLauncher {
 				}
 			}
 			if( !allTerminated ) {
+				if( canceled ) {
+					try {
+						// if canceled, terminate all twiddle processes
+						for( int i = 0; i < processes.length; i++ )
+							processes[i].getProcess().terminate();
+					} catch( DebugException e ) {
+						IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Cannot terminate twiddle process", e);
+						JBossServerCorePlugin.getDefault().getLog().log(s);
+					}
+				}	
 				// sleep
 				try {
 					Thread.sleep(delay);

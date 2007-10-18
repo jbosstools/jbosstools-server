@@ -26,41 +26,71 @@ import org.xml.sax.SAXException;
 /**
  * Parses and potentially stores descriptor files.
  * 
- * @author rstryker
+ * @author rstryker@redhat.com
  * 
  */
 public class XMLDocumentRepository {
+	/** singleton instance */
 	private static XMLDocumentRepository instance = null;
 
+	/** singleton getter */
 	public static XMLDocumentRepository getDefault() {
 		if (instance == null)
 			instance = new XMLDocumentRepository();
 		return instance;
 	}
 
+	/** maps a path to its actual document object */
 	private HashMap pathToDocument;
+	
+	/** maps a path to the last time that path's file was changed */
 	private HashMap pathToTimestamp;
+	
+	/** a link to a parent repository which may already contain the document 
+	 * and may prevent a costly reparse. */
 	private XMLDocumentRepository parent;
 
+	/** package-private constructor */
 	XMLDocumentRepository() {
 		pathToDocument = new HashMap();
 		pathToTimestamp = new HashMap();
 	}
 
+	/** public constructor with a parent repository
+	 * @param parent The parent repository
+	 */
 	public XMLDocumentRepository(XMLDocumentRepository parent) {
 		pathToDocument = new HashMap();
 		pathToTimestamp = new HashMap();
 		this.parent = parent;
 	}
 
+	/**
+	 * get the document for a full path
+	 * @param fullPath
+	 * @return the document
+	 */
 	public Document getDocument(String fullPath) {
 		return getDocument(fullPath, true);
 	}
 
+	/**
+	 * get the document for a full path.
+	 * @param fullPath  The path of the file
+	 * @param load      Whether to load if the document has not already been loaded
+	 * @return the document
+	 */
 	public Document getDocument(String fullPath, boolean load) {
 		return getDocument(fullPath, load, true);
 	}
 
+	/**
+	 * get the document for a full path
+	 * @param fullPath the path of the file
+	 * @param load whether to load the document if not already loaded
+	 * @param save whether to save this document in the repository or just return it
+	 * @return the document
+	 */
 	public Document getDocument(String fullPath, boolean load, boolean save) {
 		Document d = (Document) pathToDocument.get(fullPath);
 		if (d == null && load) {
@@ -74,6 +104,11 @@ public class XMLDocumentRepository {
 		return d;
 	}
 
+	/**
+	 * refresh the document for a given file 
+	 * @param fullPath the path to the file
+	 * @return whether the document was re-read
+	 */
 	public boolean refresh(String fullPath) {
 		if (new File(fullPath).lastModified() != ((Long) pathToTimestamp
 				.get(fullPath)).longValue()) {
@@ -85,6 +120,10 @@ public class XMLDocumentRepository {
 		return false;
 	}
 
+	/*
+	 * Load the document for some path and return it. 
+	 * Upon exception, log the exception and return null
+	 */
 	private Document loadDocument(String fullpath) {
 		Exception ex = null;
 		try {
@@ -121,6 +160,10 @@ public class XMLDocumentRepository {
 		return null;
 	}
 
+	/*
+	 * Save some document "doc" to some full file path
+	 * Upon error, log it
+	 */
 	public static void saveDocument(Document doc, String fullPath) {
 		Exception ex = null;
 		try {

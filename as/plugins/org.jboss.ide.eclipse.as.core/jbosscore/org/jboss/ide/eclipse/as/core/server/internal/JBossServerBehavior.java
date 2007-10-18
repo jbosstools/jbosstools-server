@@ -36,6 +36,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 
+/**
+ * 
+ * @author Rob Stryker
+ *
+ */
 public class JBossServerBehavior extends DeployableServerBehavior {
 	private PollThread pollThread = null;
 	protected IProcess process;

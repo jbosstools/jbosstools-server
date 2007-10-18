@@ -1,9 +1,31 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dom4j.Node;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 
@@ -80,15 +102,15 @@ public class XPathQuery implements Serializable {
 	protected void loadResults() {
 		String[] files = getFilter().getIncludedFiles();
 		String fileLoc;
-		ArrayList resultList = new ArrayList();
-		List nodeList;
+		ArrayList<XPathFileResult> resultList = new ArrayList<XPathFileResult>();
+		List<Node> nodeList;
 		for( int i = 0; i < files.length; i++ ) {
 			fileLoc = new Path(baseDir).append(files[i]).toOSString();
 			nodeList = getRepository().getDocument(fileLoc).selectNodes(xpathPattern);
 			if( nodeList.size() > 0 ) 
 				resultList.add(new XPathFileResult(this, fileLoc, nodeList));
 		}
-		results = (XPathFileResult[]) resultList.toArray(new XPathFileResult[resultList.size()]);
+		results = resultList.toArray(new XPathFileResult[resultList.size()]);
 	}
 	
 	public String getFirstResult() {
