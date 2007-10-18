@@ -82,9 +82,20 @@ public class JstPublisher implements IJBossServerPublisher {
 		this.delta = delta;
 	}
 
+	protected String getModulePath(IModule[] module ) {
+		String modulePath = "";
+		for( int i = 0; i < module.length; i++ ) {
+			modulePath += module[i].getName() + Path.SEPARATOR;
+		}
+		modulePath = modulePath.substring(0, modulePath.length()-1);
+		return modulePath;
+	}
+	
 	public IStatus publishModule(int kind, int deltaKind,
 			int modulePublishState, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
+		String modulePath = getModulePath(module);
+
 		IStatus status = null;
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
@@ -96,11 +107,11 @@ public class JstPublisher implements IJBossServerPublisher {
 			status = unpublish(server, module, monitor);
 		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
 			if( deleted ) 
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located"));
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
 			status = fullPublish(module, module[module.length-1], monitor);	
 		} else if (kind == IServer.PUBLISH_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
 			if( deleted ) 
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located"));
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
 			status = incrementalPublish(module, module[module.length-1], monitor);
 		} 
 		return status;
@@ -157,7 +168,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		boolean error = localSafeDelete(getDeployPath(module), eventRoot);
 		if( error ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server.", new Exception("Some files were not removed from the server")));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server. (" + getModulePath(module) + ")", new Exception("Some files were not removed from the server")));
 		}
 		return null;
 	}
