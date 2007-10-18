@@ -26,15 +26,15 @@ import java.util.HashMap;
 
 public class SimpleTreeItem {
 	
-	protected ArrayList children;
-	protected HashMap properties;
+	protected ArrayList<SimpleTreeItem> children;
+	protected HashMap<Object, Object> properties;
 	protected SimpleTreeItem parent;
 	
 	protected Object data;
 	
 	public SimpleTreeItem(SimpleTreeItem parent, Object data) {
-		children = new ArrayList();
-		properties = new HashMap();
+		children = new ArrayList<SimpleTreeItem>();
+		properties = new HashMap<Object, Object>();
 		this.data = data;
 		this.parent = parent;
 		if( parent != null ) parent.addChild(this);
@@ -84,7 +84,7 @@ public class SimpleTreeItem {
 		return properties.get(key);
 	}
 	
-	public HashMap getProperties() {
+	public HashMap<Object, Object> getProperties() {
 		return properties;
 	}
 
