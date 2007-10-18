@@ -1,6 +1,29 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
@@ -21,9 +44,15 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher.ProcessData;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class TwiddleDialog extends TrayDialog {
 
 	private static final int EXECUTE_ID = 2042;
@@ -95,7 +124,8 @@ public class TwiddleDialog extends TrayDialog {
 						} );
 					}
 				} catch( Exception e ) {
-					e.printStackTrace();
+					IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unexpected error in TwiddleDialog", e);
+					JBossServerUIPlugin.getDefault().getLog().log(status);
 				}
 				
 			}
@@ -148,6 +178,8 @@ public class TwiddleDialog extends TrayDialog {
 			query.setFocus();
 			query.setSelection(args.length());
 		} catch( CoreException ce ) {
+			// server probably not found. 
+			
 		}
 		return c;
 	}

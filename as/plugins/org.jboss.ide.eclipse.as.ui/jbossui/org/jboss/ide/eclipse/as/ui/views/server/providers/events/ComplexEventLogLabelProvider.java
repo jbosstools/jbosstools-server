@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Properties;
 
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.graphics.Image;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
@@ -40,11 +39,11 @@ public abstract class ComplexEventLogLabelProvider
 		extends LabelProvider implements IEventLogLabelProvider {
 	protected static String DELIMITER = "::";
 	
-	protected ArrayList supported;
-	protected HashMap propertyToMessageMap;
+	protected ArrayList<String> supported;
+	protected HashMap<String, String> propertyToMessageMap;
 	public ComplexEventLogLabelProvider() {
-		supported = new ArrayList();
-		propertyToMessageMap = new HashMap();
+		supported = new ArrayList<String>();
+		propertyToMessageMap = new HashMap<String, String>();
 		addSupportedTypes();
 		loadPropertyMap();
 	}
@@ -59,10 +58,10 @@ public abstract class ComplexEventLogLabelProvider
 	public Properties getProperties(EventLogTreeItem item) {
 		loadPropertyMap();
 		Properties p = new Properties();
-		HashMap map = item.getProperties();
+		HashMap<Object, Object> map = item.getProperties();
 		Object key = null;
 		String keyString, valueStringKey, valueString;
-		for( Iterator i = map.keySet().iterator(); i.hasNext();) {
+		for( Iterator<Object> i = map.keySet().iterator(); i.hasNext();) {
 			try {
 			key = i.next();
 			if( key.equals(EventLogTreeItem.DATE)) {

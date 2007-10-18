@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.util.Properties;
@@ -51,11 +50,17 @@ import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ModuleViewProvider extends SimplePropertiesViewExtension {
 
 	private ModuleContentProvider contentProvider;
@@ -139,6 +144,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 			}
 		} catch( Exception e ) {
 			// ignore
+			JBossServerUIPlugin.log("Error running publish action", e);
 		}
 	}
 

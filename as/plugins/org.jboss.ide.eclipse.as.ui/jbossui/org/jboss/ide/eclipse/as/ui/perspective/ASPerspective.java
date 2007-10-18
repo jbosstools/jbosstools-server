@@ -30,17 +30,14 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ASPerspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
-		// TODO Auto-generated method stub
-		
-//		PerspectiveLayoutInheritor inheritor = new PerspectiveLayoutInheritor(layout);
-//		String javaPerspectiveId = "org.eclipse.jdt.ui.JavaPerspective";
-//		inheritor.inheritInitialLayout(javaPerspectiveId);
-//		inheritor.inheritExtensions(javaPerspectiveId, PerspectiveLayoutInheritor.VIEWS);
-
-		
  		String editorArea = layout.getEditorArea();
 		
 		IFolderLayout folder= layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$

@@ -63,6 +63,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
 	private String name, authUser, authPass, deployVal;

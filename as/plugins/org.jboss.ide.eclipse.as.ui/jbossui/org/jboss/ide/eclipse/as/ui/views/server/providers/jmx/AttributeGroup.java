@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 
 import javax.management.Attribute;
@@ -36,6 +57,11 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanAttributeInfo;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class AttributeGroup extends Composite {
 
 	protected Tree tree;
@@ -222,13 +248,12 @@ public class AttributeGroup extends Composite {
 		String type = attInfo.getInfo().getType();
 		Object val = null;
 		
-		try {
+		if( type != null ) {
 			if( type.equals("java.lang.String")) val = text;
 			else if( type.equals("boolean")) val = new Boolean(text);
 			else if( type.equals("int")) val = new Integer(text);
 			else if( type.equals("long")) val = new Long(text);
-		} catch( Exception e ) {}
-		
+		}
 		return val == null ? null :  
 			new Attribute(attInfo.getInfo().getName(), val);
 	}
@@ -286,7 +311,6 @@ public class AttributeGroup extends Composite {
 					ret += element2.getInfo().isWritable() ? "W" : "";
 					return ret;
 				}
-
 			}
 			return null;
 		}

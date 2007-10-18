@@ -78,6 +78,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.XPathPrope
 
 /**
  * A class with some XPath-related dialogs
+ * @author Rob Stryker
  */
 public class XPathDialogs {
 	public static class XPathCategoryDialog extends Dialog {
@@ -216,11 +217,7 @@ public class XPathDialogs {
 			previewButton = createButton(parent, previewId, "Preview", true);
 			if( name == null ) getButton(IDialogConstants.OK_ID).setEnabled(false);
 			addListeners();
-			try {
-				checkErrors();
-			} catch( Exception e ) {
-				e.printStackTrace();
-			}
+			checkErrors();
 		}
 
 		
@@ -330,19 +327,19 @@ public class XPathDialogs {
 		
 		
 		protected void checkErrors() {
-			ArrayList errorList = getErrors();
+			ArrayList<String> errorList = getErrors();
 			if( errorList.size() == 0 ) { 
 				setError(null); 
 				getButton(IDialogConstants.OK_ID).setEnabled(true);
 				return; 
 			}
-			setError((String)errorList.get(0));
+			setError(errorList.get(0));
 			if( getButton(IDialogConstants.OK_ID) != null ) 
 				 getButton(IDialogConstants.OK_ID).setEnabled(false);
 			return;
 		}
-		protected ArrayList getErrors() {
-			ArrayList list = new ArrayList();
+		protected ArrayList<String> getErrors() {
+			ArrayList<String> list = new ArrayList<String>();
 			String serverError = getServerError(); if( serverError != null ) list.add(serverError);
 			String nameError = getNameError(); if( nameError != null ) list.add(nameError);
 			String categoryError = getCategoryError(); if( categoryError != null ) list.add(categoryError);
@@ -428,7 +425,7 @@ public class XPathDialogs {
 					final IProgressMonitor monitor2 = monitor;
 					XPathQuery tmp = new XPathQuery("", getConfigFolder(server), null, xpathText.getText(), attributeText.getText());
 					tmp.setRepository(repository);
-					final ArrayList list = new ArrayList();
+					final ArrayList<XPathFileResult> list = new ArrayList<XPathFileResult>();
 					list.addAll(Arrays.asList(tmp.getResults()));
 					Display.getDefault().asyncExec(new Runnable() { 
 						public void run() {
@@ -449,8 +446,8 @@ public class XPathDialogs {
 			};
 			try {
 				new ProgressMonitorDialog(new Shell()).run(false, true, op);
-			} catch( Exception e) {
-				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+			} catch (InterruptedException e) {
 			}
 		}
 		protected void layoutWidgets(Composite c) {
@@ -659,7 +656,7 @@ public class XPathDialogs {
 		}
 		
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
-			ArrayList names = new ArrayList();
+			ArrayList<String> names = new ArrayList<String>();
 			XPathResultNode[] items = getXPath(parentPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
@@ -669,7 +666,7 @@ public class XPathDialogs {
 						names.add(attributes[j]);
 				}
 			}
-			return (String[]) names.toArray(new String[names.size()]);
+			return names.toArray(new String[names.size()]);
 		}
 	}
 	
@@ -684,11 +681,11 @@ public class XPathDialogs {
 		protected static final int CLOSE_ATTRIBUTE = 7;
 		
 		private String path;
-		private HashMap xpathCache;
+		private HashMap<String, ArrayList<XPathResultNode>> xpathCache;
 		protected XMLDocumentRepository repository;
 		
 		public XPathProposalProvider(XMLDocumentRepository repository) {
-			xpathCache = new HashMap();
+			xpathCache = new HashMap<String, ArrayList<XPathResultNode>>();
 			this.repository = repository;
 		}
 		
@@ -701,15 +698,13 @@ public class XPathDialogs {
 				return new IContentProposal[] { new XPathContentProposal("/server/", "/server/".length(), null, null)};
 			}
 			
-			try {
-				int type = getType(contents);
-				if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
-				if( type == IN_ELEMENT ) return getElementProposals(contents);
-				if( type == NEW_ATTRIBUTE ) return getAttributeNameProposals(contents.substring(0, contents.length()-1), "");
-				if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
-				if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
-				if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
-			} catch( Exception e) {e.printStackTrace();}
+			int type = getType(contents);
+			if( type == NEW_ELEMENT ) return getElementProposals(contents, "");
+			if( type == IN_ELEMENT ) return getElementProposals(contents);
+			if( type == NEW_ATTRIBUTE ) return getAttributeNameProposals(contents.substring(0, contents.length()-1), "");
+			if( type == IN_ATTRIBUTE ) return getAttributeNameProposals(contents);
+			if( type == NEW_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents, "");
+			if( type == IN_ATTRIBUTE_VALUE ) return getAttributeValueProposals(contents);
 			return new IContentProposal[]{};
 		}
 		
@@ -718,12 +713,12 @@ public class XPathDialogs {
 				return new XPathResultNode[0];
 			
 			if( xpathCache.containsKey(xpath)) {
-				ArrayList list = (ArrayList)xpathCache.get(xpath);
+				ArrayList list = xpathCache.get(xpath);
 				return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
 			}
 			XPathQuery tmp = new XPathQuery("", path, "**/*.xml", xpath, null);
 			tmp.setRepository(repository);
-			ArrayList list = new ArrayList();
+			ArrayList<XPathResultNode> list = new ArrayList<XPathResultNode>();
 			XPathFileResult[] items = tmp.getResults();
 			for( int i = 0; i < items.length; i++ ) {
 				XPathResultNode[] children = items[i].getChildren();
@@ -733,7 +728,7 @@ public class XPathDialogs {
 				}
 			}
 			xpathCache.put(xpath, list);
-			return (XPathResultNode[]) list.toArray(new XPathResultNode[list.size()]);
+			return list.toArray(new XPathResultNode[list.size()]);
 		}
 		
 		public IContentProposal[] getElementProposals(String path) {
@@ -748,7 +743,7 @@ public class XPathDialogs {
 		}
 		
 		public String[] getElementProposalStrings(String parentPath, String elementPrefix) {
-			TreeSet set = new TreeSet();
+			TreeSet<String> set = new TreeSet<String>();
 			XPathResultNode[] items = getXPath(parentPath + "*");
 			for( int i = 0; i < items.length; i++ ) {
 				if( items[i].getElementName().startsWith(elementPrefix)) {
@@ -759,7 +754,7 @@ public class XPathDialogs {
 					}
 				}
 			}
-			return (String[]) set.toArray(new String[set.size()]);
+			return set.toArray(new String[set.size()]);
 		}
 		
 		public IContentProposal[] getAttributeNameProposals(String path) {
@@ -774,7 +769,7 @@ public class XPathDialogs {
 		}
 
 		public String[] getAttributeNameProposalStrings(String parentPath, String remainder) {
-			ArrayList names = new ArrayList();
+			ArrayList<String> names = new ArrayList<String>();
 			XPathResultNode[] items = getXPath(parentPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
@@ -804,7 +799,7 @@ public class XPathDialogs {
 			String attName = parentPath.substring(brackIndex+2, eqIndex);
 
 			if( remainder.startsWith("'")) remainder = remainder.substring(1);
-			ArrayList values = new ArrayList();
+			ArrayList<String> values = new ArrayList<String>();
 			XPathResultNode[] items = getXPath(parentElementPath);
 			String[] attributes;
 			for( int i = 0; i < items.length; i++ ) {
@@ -851,11 +846,11 @@ public class XPathDialogs {
 		}
 		
 		public IContentProposal[] convertProposals(String[] strings) {
-			ArrayList list = new ArrayList();
+			ArrayList<XPathContentProposal> list = new ArrayList<XPathContentProposal>();
 			for( int i = 0; i < strings.length; i++ ) {
 				list.add(new XPathContentProposal(strings[i], strings[i].length(), null, null));
 			}
-			return (IContentProposal[]) list.toArray(new IContentProposal[list.size()]);
+			return list.toArray(new IContentProposal[list.size()]);
 		}
 		
 		public class XPathContentProposal implements IContentProposal {

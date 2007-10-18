@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
 import java.io.File;
@@ -68,6 +89,11 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey";
@@ -117,9 +143,9 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				if( selection instanceof Fileset ) {
 					try {
-						ArrayList asList = new ArrayList(Arrays.asList(filesets));
+						ArrayList<Fileset> asList = new ArrayList<Fileset>(Arrays.asList(filesets));
 						asList.remove(selection);
-						filesets = (Fileset[]) asList.toArray(new Fileset[asList.size()]);
+						filesets = asList.toArray(new Fileset[asList.size()]);
 						saveFilesets();
 					} catch( Exception e ) {
 						e.printStackTrace();
@@ -214,12 +240,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	}
 	
 	public static class FolderWrapper extends PathWrapper {
-		private HashMap childrenFolders;
-		private ArrayList children;
+		private HashMap<String, FolderWrapper> childrenFolders;
+		private ArrayList<PathWrapper> children;
 		public FolderWrapper(IPath path, IPath folder) {
 			super(path, folder);
-			children = new ArrayList();
-			childrenFolders = new HashMap();
+			children = new ArrayList<PathWrapper>();
+			childrenFolders = new HashMap<String, FolderWrapper>();
 		}
 		public void addChild(IPath path) {
 			if( path.segmentCount() == 1 ) {
@@ -229,11 +255,11 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		}
 		public Object[] getChildren() {
-			return (Object[]) children.toArray(new Object[children.size()]);
+			return children.toArray(new Object[children.size()]);
 		}
 	}
 	
-	private static void addPath(ArrayList children, HashMap folders, IPath path, IPath folder) {
+	private static void addPath(ArrayList<PathWrapper> children, HashMap<String, FolderWrapper> folders, IPath path, IPath folder) {
 		try {
 		FolderWrapper fw = null;
 		if( !folders.containsKey(path.segment(0))) {
@@ -241,7 +267,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			folders.put(path.segment(0), fw);
 			children.add(fw);
 		} else {
-			fw = (FolderWrapper)folders.get( path.segment(0));
+			fw = folders.get( path.segment(0));
 		}
 		fw.addChild(path.removeFirstSegments(1));
 		} catch( Exception e ) {
@@ -264,8 +290,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					return new Object[]{};
 				}
 					
-				HashMap folders = new HashMap();
-				ArrayList wrappers = new ArrayList();
+				HashMap<String, FolderWrapper> folders = new HashMap<String, FolderWrapper>();
+				ArrayList<PathWrapper> wrappers = new ArrayList<PathWrapper>();
 				for( int i = 0; i < paths.length; i++ ) {
 					if( paths[i].segmentCount() == 1 ) {
 						wrappers.add(new PathWrapper(paths[i], new Path(fs.getFolder())));
@@ -273,7 +299,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 						addPath(wrappers, folders, paths[i], new Path(fs.getFolder()));
 					}
 				}
-				return (Object[]) wrappers.toArray(new Object[wrappers.size()]);
+				return wrappers.toArray(new Object[wrappers.size()]);
 			} else if( parentElement instanceof FolderWrapper ) {
 				return ((FolderWrapper)parentElement).getChildren();
 			}
@@ -319,7 +345,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	public void saveFilesets() {
 		IServer server = contentProvider.server;
 		if( server != null ) {
-			ArrayList list = new ArrayList();
+			ArrayList<String> list = new ArrayList<String>();
 			for( int i = 0; i < filesets.length; i++ ) {
 				list.add(filesets[i].toString());
 			}
@@ -444,7 +470,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			    	descriptor = PlatformUI.getWorkbench().getSharedImages()
 			                .getImageDescriptor(ISharedImages.IMG_OBJ_FILE);
 				}
-		        Image image = (Image) SWTResourceUtil.getImageTable().get(descriptor);
+		        Image image = (Image)SWTResourceUtil.getImageTable().get(descriptor);
 		        if (image == null) {
 		            image = descriptor.createImage();
 		            SWTResourceUtil.getImageTable().put(descriptor, image);

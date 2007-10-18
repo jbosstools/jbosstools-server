@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.IServer;
@@ -78,20 +79,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) {
-		try {
-			String value = Platform.getResourceString(getDefault().getBundle(), key);
-			return value;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return key;
-		}
-	}
-
-	/**
 	 * Returns the plugin's resource bundle,
 	 */
 	public ResourceBundle getResourceBundle() {
@@ -119,6 +106,9 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		return ExtensionManager.getDefault().getAllServerViewProviders();
 	}
 	
-	
+	public static void log(String message, Exception e) {
+		IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, message, e);
+		JBossServerUIPlugin.getDefault().getLog().log(status);
+	}
 	
 }

@@ -65,6 +65,11 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class EventLogViewProvider extends JBossServerViewExtension implements IEventLogListener, ISimplePropertiesHolder {
 	
 	public static final String SHOW_TIMESTAMP = "org.jboss.ide.eclipse.as.ui.views.server.providers.EventLogViewProvider.showTimestamp";
@@ -253,7 +258,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 				try {
 					labelProviderDelegates[i] = (IEventLogLabelProvider)elements[i].createExecutableExtension("class");
 				} catch( CoreException ce ) {
-					ce.printStackTrace();
+					JBossServerUIPlugin.log("Error loading Event Log Label Provider Delegate", ce);
 				}
 			}
 	    }

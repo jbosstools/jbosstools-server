@@ -27,7 +27,9 @@ import java.util.Comparator;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 
 /**
@@ -65,7 +67,9 @@ public class ExtensionManager {
 			try {
 				list.add(new ServerViewProvider(elements[i]));
 			} catch(Exception e) {
-				e.printStackTrace();
+				String msg = "Server View Provider (" + elements[i].getAttribute(ServerViewProvider.ID_LABEL) + ") failed to load";
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg, e);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 		}
 		serverViewExtensions = (ServerViewProvider[]) list.toArray(new ServerViewProvider[list.size()]);

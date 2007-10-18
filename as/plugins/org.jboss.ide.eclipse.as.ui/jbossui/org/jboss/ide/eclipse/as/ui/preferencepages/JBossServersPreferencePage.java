@@ -59,19 +59,21 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.part.PageBook;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerType;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
-
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class JBossServersPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
@@ -79,7 +81,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 	private JBossServer currentServer;
 	private Table serverTable;
 	private TableViewer serverTableViewer;
-	private HashMap workingCoppies;	
+	private HashMap<JBossServer, ServerAttributeHelper> workingCoppies;	
 	private Group serverGroup, secondGroup;
 	private PageBook book;
 	private ServerPreferenceProvider[] groups;
@@ -116,7 +118,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 		serverGroup.setLayout(serverGroupLayout);
 		serverGroup.setText("Servers");
 		
-		workingCoppies = new HashMap();
+		workingCoppies = new HashMap<JBossServer, ServerAttributeHelper>();
 		
 		serverTable = new Table(serverGroup, SWT.BORDER);
 		FormData lData = new FormData();
@@ -218,7 +220,7 @@ public class JBossServersPreferencePage extends PreferencePage implements
 			return ret;
 		}
 		
-		return (ServerAttributeHelper)workingCoppies.get(server);
+		return workingCoppies.get(server);
 	}
 	
 	private ServerAttributeHelper getSelectedWC() {
@@ -236,10 +238,9 @@ public class JBossServersPreferencePage extends PreferencePage implements
     
     /* Saves the actual ServerWorkingCopy changes into the IServer it relates to. */
 	private void saveDirtyWorkingCoppies() {
-    	Collection c = workingCoppies.values();
-    	Iterator i = c.iterator();
+    	Collection<ServerAttributeHelper> c = workingCoppies.values();
+    	Iterator<ServerAttributeHelper> i = c.iterator();
     	Object o;
-    	IServerWorkingCopy copy;
     	while(i.hasNext()) {
     		o = i.next();
     		if( o instanceof ServerAttributeHelper) {

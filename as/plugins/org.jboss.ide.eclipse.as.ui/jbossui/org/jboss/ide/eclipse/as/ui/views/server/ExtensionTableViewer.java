@@ -1,3 +1,24 @@
+/**
+ * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.ui.views.server;
 
 import java.util.ArrayList;
@@ -38,6 +59,11 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.SimplePropertiesPropertySheetPage;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ExtensionTableViewer extends TreeViewer {
 
 	protected TableViewerPropertySheet propertySheet;
@@ -190,27 +216,24 @@ public class ExtensionTableViewer extends TreeViewer {
 		}
 
 		public Object[] getChildren(Object parentElement) {
-			try {
-				if( parentElement == null ) return new Object[0];
+			if( parentElement == null ) return new Object[0];
 
-				if( parentElement instanceof ServerViewProvider) {
-					Object[] ret = ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
-					return wrap(ret, ((ServerViewProvider)parentElement));
+			if( parentElement instanceof ServerViewProvider) {
+				Object[] ret = ((ServerViewProvider)parentElement).getDelegate().getContentProvider().getChildren(parentElement);
+				return wrap(ret, ((ServerViewProvider)parentElement));
+			}
+			
+			if( parentElement instanceof ContentWrapper ) {
+				ContentWrapper parentWrapper = (ContentWrapper)parentElement;
+				Object[] o = null;
+				try {
+					o = parentWrapper.getProvider().getDelegate().getContentProvider().getChildren(parentWrapper.getElement());
+				} catch( Exception e) {
+					JBossServerUIPlugin.log("Error finding children of " + parentElement, e);
 				}
-				
-				if( parentElement instanceof ContentWrapper ) {
-					ContentWrapper parentWrapper = (ContentWrapper)parentElement;
-					Object[] o = null;
-					try {
-						o = parentWrapper.getProvider().getDelegate().getContentProvider().getChildren(parentWrapper.getElement());
-					} catch( Exception e) {
-					}
-					if( o == null ) 
-						return new Object[0];
-					return wrap(o, parentWrapper.getProvider());
-				}
-			} catch( Exception e ) { 
-				//e.printStackTrace(); 
+				if( o == null ) 
+					return new Object[0];
+				return wrap(o, parentWrapper.getProvider());
 			}
 			return new Object[0];
 		}
@@ -239,6 +262,7 @@ public class ExtensionTableViewer extends TreeViewer {
 				try {
 					providers[i].getDelegate().getContentProvider().inputChanged(viewer, oldInput, newInput);
 				} catch( Exception e) {
+					JBossServerUIPlugin.log("Error changing input to  " + newInput, e);
 				}
 			}
 		}
@@ -429,7 +453,7 @@ public class ExtensionTableViewer extends TreeViewer {
 			try {
 				super.refresh(element);
 			} catch( Exception e ) {
-				e.printStackTrace();
+				JBossServerUIPlugin.log("Error refreshing view. ", e);
 			}
 		} 
 	}

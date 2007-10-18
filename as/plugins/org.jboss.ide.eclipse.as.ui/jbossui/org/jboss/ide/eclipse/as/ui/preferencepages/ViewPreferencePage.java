@@ -53,6 +53,11 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ViewPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
@@ -62,8 +67,8 @@ public class ViewPreferencePage extends PreferencePage implements
 	
 	private Label mainDescriptionLabel, preferenceCompositeDescriptionLabel;
 	
-	private HashMap providerToGroup;
-	private ArrayList preferenceComposites, enabledButtons;
+	private HashMap<ServerViewProvider, Group> providerToGroup;
+	private ArrayList<Control> preferenceComposites, enabledButtons;
 	private PageBook book;
 	private Composite mainComposite;
 	private ServerViewProvider[] providers;
@@ -71,8 +76,8 @@ public class ViewPreferencePage extends PreferencePage implements
 	private Button moveUp, moveDown;
 	
 	public ViewPreferencePage() {
-		providerToGroup = new HashMap();
-		preferenceComposites = new ArrayList();
+		providerToGroup = new HashMap<ServerViewProvider, Group>();
+		preferenceComposites = new ArrayList<Control>();
 	}
 
 	public ViewPreferencePage(String title) {
@@ -130,7 +135,7 @@ public class ViewPreferencePage extends PreferencePage implements
     
     
 	protected Control createContents(Composite p) {
-		providerToGroup = new HashMap();
+		providerToGroup = new HashMap<ServerViewProvider, Group>();
 		mainComposite = new Composite(p, SWT.NONE); 
 		mainComposite.setLayout(new FormLayout());
 		
@@ -152,7 +157,7 @@ public class ViewPreferencePage extends PreferencePage implements
 					TableItem item = (table.getSelection())[0];
 					Object o = item.getData();
 					if( o != null && o instanceof ServerViewProvider) {
-						Group g = (Group)providerToGroup.get(((ServerViewProvider)o));
+						Group g = providerToGroup.get(((ServerViewProvider)o));
 						book.showPage(g);
 					}
 				} catch( Exception ex ) {
@@ -205,7 +210,7 @@ public class ViewPreferencePage extends PreferencePage implements
         providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
         int minWidth = 0;
         
-        enabledButtons = new ArrayList();
+        enabledButtons = new ArrayList<Control>();
         for (int i = 0; i < providers.length; i++) {
                 final TableItem item = new TableItem(table, SWT.NONE);
                 

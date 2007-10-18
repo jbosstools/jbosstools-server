@@ -9,6 +9,11 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.osgi.framework.Bundle;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServerViewProvider {
 	public static final String EXTENSION_ENABLED = "EXTENSION_ENABLED_";
 	public static final String EXTENSION_WEIGHT = "EXTENSION_WEIGHT_";
@@ -43,13 +48,8 @@ public class ServerViewProvider {
 		setWeight( prefs.contains(weightKey) ? prefs.getInt(weightKey) : 0 );
 		
 		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
-		try {
-			iconDescriptor = 
-				ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
-		} catch( Exception e ) {
-		}
-		
-		
+		iconDescriptor = 
+			ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
 	}
 	
 	public String getId() {

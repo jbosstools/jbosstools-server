@@ -38,7 +38,11 @@ import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 
-
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 
 	private ITreeContentProvider contentProvider;
@@ -54,7 +58,7 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement == provider ) {
 				ServerViewProvider[] allExtensions = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
-				ArrayList list = new ArrayList();
+				ArrayList<ServerViewProvider> list = new ArrayList<ServerViewProvider>();
 				for( int i = 0; i < allExtensions.length; i++ ) {
 					if( !allExtensions[i].isEnabled()) {
 						list.add(allExtensions[i]);

@@ -54,6 +54,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
@@ -64,6 +65,11 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 
 	private XPathTreeContentProvider contentProvider;
@@ -287,6 +293,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 						}
 					}
 				} catch( Exception exc ) {
+					JBossServerUIPlugin.log("Error running edit file action", exc);
 				}
 			}
 		};
@@ -301,12 +308,10 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		}
 		
 		if( selection instanceof XPathCategory ) {
-			try {
-				setActiveCategory((XPathCategory)selection);
-				menu.add(this.newXPathAction);
-				menu.add(this.deleteXPathCategoryAction);
-				menu.add(new Separator());
-			} catch( Exception e ) { e.printStackTrace(); }
+			setActiveCategory((XPathCategory)selection);
+			menu.add(this.newXPathAction);
+			menu.add(this.deleteXPathCategoryAction);
+			menu.add(new Separator());
 		}
 	}
 
@@ -330,6 +335,7 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 					propertyPage.getViewer().refresh();
 				}
 			} catch(Exception e) {
+				JBossServerUIPlugin.log("Error refreshing view (descriptorXPathViewProvider)", e);
 			}
 		}
 	}

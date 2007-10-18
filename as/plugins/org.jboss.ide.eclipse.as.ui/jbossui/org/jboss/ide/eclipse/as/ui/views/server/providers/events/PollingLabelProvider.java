@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.events;
 
-import java.util.ArrayList;
-
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
@@ -45,7 +43,6 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 
 	
 	protected void addSupportedTypes() {
-		supported = new ArrayList();
 		supported.add(PollThread.SERVER_STARTING);
 		supported.add(PollThread.SERVER_STOPPING);
 		supported.add(PollThread.FAILURE);

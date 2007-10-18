@@ -31,6 +31,11 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.SimplePropertiesPropertySheetPage;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public abstract class SimplePropertiesViewExtension 
 	extends JBossServerViewExtension implements ISimplePropertiesHolder {
 
