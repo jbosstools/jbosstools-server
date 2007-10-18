@@ -410,4 +410,10 @@
             id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
             label="EAR"/>
    </extension>
+   <extension
+         point="org.eclipse.jst.j2ee.classpathdep">
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer">
+      </filteredClasspathContainer>
+   </extension>
 </plugin>
