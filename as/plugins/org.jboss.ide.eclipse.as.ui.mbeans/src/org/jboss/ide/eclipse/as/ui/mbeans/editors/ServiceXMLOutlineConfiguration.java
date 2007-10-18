@@ -49,6 +49,11 @@ import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineAc
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServiceXMLOutlineConfiguration extends
 		XMLContentOutlineConfiguration {
 
@@ -99,7 +104,6 @@ public class ServiceXMLOutlineConfiguration extends
 	    	try {
 	    		return delegate.getText(element);
 	    	} catch( Exception e ) {
-	    		e.printStackTrace();
 	    		return null;
 	    	}
 	    }
@@ -191,7 +195,6 @@ public class ServiceXMLOutlineConfiguration extends
 					try {
 						list.add(new OutlineMenuProvider(cf[i]));
 					} catch( CoreException ce ) {
-						ce.printStackTrace();
 					}
 				}
 				menuProviders = (OutlineMenuProvider[]) list.toArray(new OutlineMenuProvider[list.size()]);

@@ -72,6 +72,11 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServiceXMLEditorConfiguration extends
 		StructuredTextViewerConfigurationXML {
 
@@ -95,13 +100,13 @@ public class ServiceXMLEditorConfiguration extends
 
 	
 	public class ServiceXMLContentAssistProcessor extends XMLContentAssistProcessor {
-		private HashMap children;
-		private HashMap attributes;
+		private HashMap<String, ArrayList<ChildOccurances>> children;
+		private HashMap<String, List> attributes;
 		
 		public ServiceXMLContentAssistProcessor() {
 			super();
-			children = new HashMap();
-			attributes = new HashMap();
+			children = new HashMap<String, ArrayList<ChildOccurances>>();
+			attributes = new HashMap<String, List>();
 			fillChildren();
 			fillAttributes();
 		}
@@ -153,22 +158,22 @@ public class ServiceXMLEditorConfiguration extends
 		}
 		
 		private void fillChildren() {
-			ArrayList list = new ArrayList();
+			ArrayList<ChildOccurances> list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("loader-repository", ChildOccurances.ZERO_OR_ONE));
 			list.add(new ChildOccurances("local-directory", ChildOccurances.ZERO_TO_INFINITY));
 			list.add(new ChildOccurances("classpath", ChildOccurances.ZERO_TO_INFINITY));
 			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("server", list);
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("loader-repository-config", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("loader-repository", list);
 			
-			children.put("loader-repository-config", new ArrayList());
-			children.put("local-directory", new ArrayList());
-			children.put("classpath", new ArrayList());
+			children.put("loader-repository-config", new ArrayList<ChildOccurances>());
+			children.put("local-directory", new ArrayList<ChildOccurances>());
+			children.put("classpath", new ArrayList<ChildOccurances>());
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("constructor", ChildOccurances.ZERO_OR_ONE));
 			list.add(new ChildOccurances("xmbean", ChildOccurances.ZERO_OR_ONE));
 			list.add(new ChildOccurances("attribute", ChildOccurances.ZERO_TO_INFINITY));
@@ -176,25 +181,25 @@ public class ServiceXMLEditorConfiguration extends
 			list.add(new ChildOccurances("depends-list", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("mbean", list);
 			
-			children.put("xmbean", new ArrayList());
+			children.put("xmbean", new ArrayList<ChildOccurances>());
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("arg", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("constructor", list);
 			
-			children.put("arg", new ArrayList());
-			children.put("attribute", new ArrayList());
-			children.put("property", new ArrayList());
+			children.put("arg", new ArrayList<ChildOccurances>());
+			children.put("attribute", new ArrayList<ChildOccurances>());
+			children.put("property", new ArrayList<ChildOccurances>());
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("depends", list);
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("depends-list-element", ChildOccurances.ONE_TO_INFINITY));
 			children.put("depends-list", list);
 			
-			list = new ArrayList();
+			list = new ArrayList<ChildOccurances>();
 			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
 			children.put("depends-list-element", list);
 			
@@ -355,7 +360,7 @@ public class ServiceXMLEditorConfiguration extends
 			String thisNode = contentAssistRequest.getNode().getNodeName();
 			if( thisNode.equals("#text")) thisNode = "";
 			
-			ArrayList possibleNodes = (ArrayList)children.get(parentElement);
+			ArrayList possibleNodes = children.get(parentElement);
 			ChildOccurances occ;
 			for( int i = 0; i < possibleNodes.size(); i++ ) {
 				occ = (ChildOccurances)possibleNodes.get(i);
@@ -370,13 +375,13 @@ public class ServiceXMLEditorConfiguration extends
 			super.addTagInsertionProposals(contentAssistRequest, childPosition);
 			List superProps = contentAssistRequest.getProposals();
 			ICompletionProposal[] proposals = (ICompletionProposal[]) superProps.toArray(new ICompletionProposal[superProps.size()]);
-			ArrayList alreadyAddedStrings = new ArrayList();
+			ArrayList<String> alreadyAddedStrings = new ArrayList<String>();
 			for( int i = 0; i < proposals.length; i++ ) {
 				alreadyAddedStrings.add(proposals[i].getDisplayString());
 			}
 
 			String parentElement = contentAssistRequest.getParent().getNodeName();
-			ArrayList possibleNodes = (ArrayList)children.get(parentElement);
+			ArrayList possibleNodes = children.get(parentElement);
 
 			if( possibleNodes == null ) return;
 	
@@ -423,7 +428,7 @@ public class ServiceXMLEditorConfiguration extends
 			
 			
 			if( attributes.containsKey(occ.name) ) {
-				List l = (List)attributes.get(occ.name);
+				List l = attributes.get(occ.name);
 				Iterator i = l.iterator();
 				cursorLoc = -1;
 				String attributes = "";
@@ -462,7 +467,7 @@ public class ServiceXMLEditorConfiguration extends
 			super.addAttributeNameProposals(contentAssistRequest);
 			List superProps = contentAssistRequest.getProposals();
 			ICompletionProposal[] proposals = (ICompletionProposal[]) superProps.toArray(new ICompletionProposal[superProps.size()]);
-			ArrayList alreadyAddedStrings = new ArrayList();
+			ArrayList<String> alreadyAddedStrings = new ArrayList<String>();
 			for( int i = 0; i < proposals.length; i++ ) {
 				alreadyAddedStrings.add(proposals[i].getDisplayString());
 			}
@@ -470,7 +475,7 @@ public class ServiceXMLEditorConfiguration extends
 			
 			Image attImage = XMLEditorPluginImageHelper.getInstance().getImage(XMLEditorPluginImages.IMG_OBJ_ATTRIBUTE);
 
-			ArrayList activeAttributes = new ArrayList();
+			ArrayList<String> activeAttributes = new ArrayList<String>();
 			NamedNodeMap nnl = contentAssistRequest.getNode().getAttributes();
 			for( int i = 0; i < nnl.getLength(); i++ ) {
 				activeAttributes.add(nnl.item(i).getNodeName());
@@ -479,7 +484,7 @@ public class ServiceXMLEditorConfiguration extends
 			
 			String elementName = contentAssistRequest.getNode().getNodeName();
 			String match = contentAssistRequest.getMatchString();
-			List list = (List)attributes.get(elementName);
+			List list = attributes.get(elementName);
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
@@ -545,7 +550,7 @@ public class ServiceXMLEditorConfiguration extends
 						}
 					}
 					} catch( JavaModelException jme ) {
-						
+						// do nothing  
 					}
 					return false;
 				}
@@ -645,7 +650,7 @@ public class ServiceXMLEditorConfiguration extends
 									getHyperlinkRegion(attr)) };
 				}
 				} catch( Exception ce ) {
-					ce.printStackTrace();
+					// do nothing
 				}
 			}
 			return null;
@@ -678,18 +683,15 @@ public class ServiceXMLEditorConfiguration extends
 					}
 				} catch (JavaModelException e) {
 					// ignore...TODO?	
-					e.printStackTrace();
 				} catch (PartInitException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 			
 		}
 		protected class LocalSearchRequestor extends SearchRequestor {
-			private ArrayList list;
+			private ArrayList<Object> list;
 			public LocalSearchRequestor() {
-				list = new ArrayList();
+				list = new ArrayList<Object>();
 			}
 			public void acceptSearchMatch(SearchMatch match) throws CoreException {
 				list.add(match.getElement());

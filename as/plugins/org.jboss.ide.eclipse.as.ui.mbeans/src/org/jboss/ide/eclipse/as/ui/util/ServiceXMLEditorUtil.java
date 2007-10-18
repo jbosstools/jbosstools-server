@@ -29,6 +29,11 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher.ResultFilter;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServiceXMLEditorUtil {
 	public static IType findType(String codeClass ) {
 		final String codeClass2 = codeClass;

@@ -58,6 +58,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantProviderXML {
 	public static IServiceXMLQuickFixProposalProvider[] providers;
 	
@@ -70,7 +75,7 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 				try {
 					list.add((IServiceXMLQuickFixProposalProvider)cf[i].createExecutableExtension("class"));
 				} catch( CoreException ce ) {
-					ce.printStackTrace();
+					// don't even log
 				}
 			}
 			providers = (IServiceXMLQuickFixProposalProvider[])

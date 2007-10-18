@@ -29,7 +29,11 @@ import org.eclipse.wst.sse.core.internal.provisional.IModelLoader;
 import org.eclipse.wst.xml.core.internal.encoding.XMLDocumentCharsetDetector;
 import org.eclipse.wst.xml.core.internal.encoding.XMLDocumentLoader;
 import org.eclipse.wst.xml.core.internal.modelhandler.XMLModelLoader;
-
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class ServicexmlModelHandler extends AbstractModelHandler implements IModelHandler{
 
 	final static String CONTENTTYPE_ID = "org.jboss.ide.eclipse.as.ui.mbeans.servicexml"; //$NON-NLS-1$
