@@ -28,6 +28,11 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public abstract class AbstractClasspathContainerInitializer extends ClasspathContainerInitializer {
    public AbstractClasspathContainerInitializer() {
    }

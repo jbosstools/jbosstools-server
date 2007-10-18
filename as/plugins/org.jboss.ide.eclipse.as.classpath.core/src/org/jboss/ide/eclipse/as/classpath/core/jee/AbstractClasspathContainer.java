@@ -29,12 +29,19 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public abstract class AbstractClasspathContainer implements IClasspathContainer {
 
 	public static final String LIB_FOLDER = "lib";
@@ -128,6 +135,8 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 			return installURL.getFile().toString();
 		} catch (IOException ioe) {
 			// LOG THE ERROR (one day)
+			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, "Error loading classpath container", ioe);
+			ClasspathCorePlugin.getDefault().getLog().log(status);
 		}
 		return null;
 	}

@@ -3,6 +3,11 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class J2EE14ClasspathContainerInitializer extends
 		AbstractClasspathContainerInitializer {
 

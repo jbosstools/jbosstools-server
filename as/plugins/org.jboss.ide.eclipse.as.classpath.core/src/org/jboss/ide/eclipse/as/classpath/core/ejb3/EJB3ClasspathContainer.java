@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 /**
  * @author Marshall
+ * @author Rob Stryker 
  */
 public class EJB3ClasspathContainer implements IClasspathContainer {
    public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer";

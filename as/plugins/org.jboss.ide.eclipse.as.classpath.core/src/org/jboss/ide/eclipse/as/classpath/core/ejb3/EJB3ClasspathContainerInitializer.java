@@ -30,9 +30,7 @@ import org.eclipse.jdt.core.JavaCore;
 
 /**
  * @author Marshall
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Rob Stryker
  */
 public class EJB3ClasspathContainerInitializer extends ClasspathContainerInitializer {
 
