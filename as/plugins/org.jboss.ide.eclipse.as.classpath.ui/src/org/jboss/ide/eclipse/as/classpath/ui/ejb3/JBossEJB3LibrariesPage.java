@@ -31,6 +31,11 @@ import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClasspathContainerPage
 {
 

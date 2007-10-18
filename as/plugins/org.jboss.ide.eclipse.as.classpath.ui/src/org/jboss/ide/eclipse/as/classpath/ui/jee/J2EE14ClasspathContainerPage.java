@@ -23,6 +23,11 @@ package org.jboss.ide.eclipse.as.classpath.ui.jee;
 
 import org.jboss.ide.eclipse.as.classpath.core.jee.J2EE14ClasspathContainerInitializer.J2EE14ClasspathContainer;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class J2EE14ClasspathContainerPage extends ClasspathContainerPage {
    public J2EE14ClasspathContainerPage() {
 	   super(J2EE14ClasspathContainer.CLASSPATH_CONTAINER, J2EE14ClasspathContainer.DESCRIPTION);

@@ -44,6 +44,11 @@ import org.eclipse.wst.server.ui.internal.actions.NewServerAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public class JBossSelectionPage extends WizardPage {
 
    protected TableViewer servers;

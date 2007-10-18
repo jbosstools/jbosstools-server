@@ -34,6 +34,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 
+/**
+ * 
+ * @author Rob Stryker <rob.stryker@redhat.com>
+ *
+ */
 public abstract class ClasspathContainerPage extends WizardPage implements
 		IClasspathContainerPage {
 	private final static String PAGE_NAME = ClasspathContainerPage.class
