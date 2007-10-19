@@ -42,7 +42,6 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
-import org.eclipse.wst.server.core.util.PublishUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
@@ -50,6 +49,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DeletedEven
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
@@ -125,7 +125,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		localSafeDelete(deployPath, eventRoot);
 		IStatus[] results = new IStatus[0];
 		if( !deployPackaged(moduleTree))
-			results = PublishUtil.publishFull(members, deployPath, monitor);
+			results = new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor);
 		else
 			results = packModuleIntoJar(moduleTree[moduleTree.length-1], getDeployPath(moduleTree));
 		
@@ -150,7 +150,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		IStatus[] results = new IStatus[] {};
 		if( !deployPackaged(moduleTree))
-			results = PublishUtil.publishDelta(delta, getDeployPath(moduleTree), monitor);
+			results = new PublishUtil(server.getServer()).publishDelta(delta, getDeployPath(moduleTree), monitor);
 		else if( delta.length > 0 )
 			results = packModuleIntoJar(moduleTree[moduleTree.length-1], getDeployPath(moduleTree));
 		
