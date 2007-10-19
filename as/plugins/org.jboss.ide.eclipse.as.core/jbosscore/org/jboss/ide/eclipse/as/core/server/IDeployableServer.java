@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  */
 public interface IDeployableServer {
 	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory";
+	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory";
 	
 	public String getDeployDirectory();
 	public String getConfigDirectory();
