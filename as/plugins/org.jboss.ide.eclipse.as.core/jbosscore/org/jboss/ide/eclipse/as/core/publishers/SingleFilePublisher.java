@@ -70,10 +70,14 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destFile, l);
 			if( updateTimestamp )
 				destFile.setLastModified(new Date().getTime());
-			if( l.errorFound ) publishState = IServer.PUBLISH_STATE_FULL;
+			if( l.errorFound ) {
+				publishState = IServer.PUBLISH_STATE_FULL;				
+			}
 		} else {
 			// deleted module. o noes. Ignore it. We can't re-publish it, so just ignore it.
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located"));
+			publishState = IServer.PUBLISH_STATE_UNKNOWN;
+			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + module.getName() + ")");			
+			throw new CoreException(status);			
 		}
 		
 		return null;

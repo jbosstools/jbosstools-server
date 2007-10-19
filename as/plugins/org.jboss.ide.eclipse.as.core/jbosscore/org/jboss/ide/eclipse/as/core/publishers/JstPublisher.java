@@ -106,12 +106,16 @@ public class JstPublisher implements IJBossServerPublisher {
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			status = unpublish(server, module, monitor);
 		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
-			if( deleted ) 
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
+			if( deleted ) {
+				publishState = IServer.PUBLISH_STATE_UNKNOWN;
+				throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
+			}
 			status = fullPublish(module, module[module.length-1], monitor);	
 		} else if (kind == IServer.PUBLISH_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
-			if( deleted ) 
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
+			if( deleted ) {
+				publishState = IServer.PUBLISH_STATE_UNKNOWN;
+				throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + modulePath + ")"));
+			}
 			status = incrementalPublish(module, module[module.length-1], monitor);
 		} 
 		return status;
