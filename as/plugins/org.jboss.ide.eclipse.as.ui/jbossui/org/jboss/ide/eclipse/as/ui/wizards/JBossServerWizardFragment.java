@@ -284,7 +284,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		deployGroup.setLayout(new GridLayout(3, false));
 		deployLabel = new Label(deployGroup, SWT.NONE);
 		deployText = new Text(deployGroup, SWT.BORDER);
-		deployLabel.setText(Messages.sswf_DeployDirectory);
+		deployLabel.setText(Messages.swf_DeployDirectory);
 		
 		deployBrowseButton = new Button(deployGroup, SWT.PUSH);
 		deployBrowseButton.setText(Messages.browse);
@@ -307,11 +307,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			}
 		});
 		
-		deployText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				deployVal = deployText.getText();
-			} 
-		});
+		deployText.setEditable(false);
 	}
 	
 	protected File getDirectory(File startingDirectory, Shell shell) {

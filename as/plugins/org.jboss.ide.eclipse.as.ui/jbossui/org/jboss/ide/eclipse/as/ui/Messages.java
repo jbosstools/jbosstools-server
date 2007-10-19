@@ -53,7 +53,10 @@ public class Messages {
 	public static String swf_Password;
 	public static String swf_BaseName;
 	public static String swf_NameInUse;
-	public static String sswf_DeployDirectory;
+	public static String swf_DeployEditorHeading;
+	public static String swf_DeploymentDescription;
+	public static String swf_DeployDirectory;
+	public static String swf_TempDeployDirectory;
 	public static String sswf_Title;
 	public static String sswf_BaseName;
 

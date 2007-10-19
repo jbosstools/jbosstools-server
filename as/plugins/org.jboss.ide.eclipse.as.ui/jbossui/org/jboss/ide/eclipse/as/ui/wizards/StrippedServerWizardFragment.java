@@ -83,7 +83,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		deployLabel = new Label(main, SWT.NONE);
 		deployText = new Text(main, SWT.BORDER);
 		browse = new Button(main, SWT.PUSH);
-		deployLabel.setText(Messages.sswf_DeployDirectory);
+		deployLabel.setText(Messages.swf_DeployDirectory);
 		browse.setText(Messages.browse);
 		
 		FormData lData = new FormData();

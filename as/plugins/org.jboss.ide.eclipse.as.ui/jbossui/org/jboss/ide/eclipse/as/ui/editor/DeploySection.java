@@ -35,7 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -43,9 +42,11 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -71,14 +72,16 @@ public class DeploySection extends ServerEditorSection {
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		
 		Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE|ExpandableComposite.EXPANDED|ExpandableComposite.TITLE_BAR);
-		section.setText(Messages.sswf_DeployDirectory);
+		section.setText(Messages.swf_DeployEditorHeading);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 		
 		Composite composite = toolkit.createComposite(section);
 
 		composite.setLayout(new FormLayout());
 		
-		Label label = toolkit.createLabel(composite, Messages.sswf_DeployDirectory);
+		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
+		
+		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
 		final Text text = toolkit.createText(composite, getDeployDir(), SWT.BORDER);
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -98,23 +101,72 @@ public class DeploySection extends ServerEditorSection {
 					text.setText(x);
 			} 
 		});
+		
+		Label tempDeployLabel = toolkit.createLabel(composite, Messages.swf_TempDeployDirectory);
+		final Text tempDeployText = toolkit.createText(composite, getTempDeployDir(), SWT.BORDER);
+		tempDeployText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				execute(new SetTempDeployDirCommand(server, tempDeployText, tempDeployText.getText()));
+			}
+		});
+
+		Button tempDeployButton = toolkit.createButton(composite, Messages.browse, SWT.PUSH);
+		tempDeployButton.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				DirectoryDialog d = new DirectoryDialog(new Shell());
+				d.setFilterPath(tempDeployText.getText());
+				String x = d.open();
+				if( x != null ) 
+					tempDeployText.setText(x);
+			} 
+		});
 
 		
+		FormData descriptionLabelData = new FormData();
+		descriptionLabelData.left = new FormAttachment(0,5);
+		descriptionLabelData.top = new FormAttachment(0,5);
+		descriptionLabel.setLayoutData(descriptionLabelData);
+
+		// first row
 		FormData labelData = new FormData();
 		labelData.left = new FormAttachment(0,5);
-		labelData.top = new FormAttachment(0,5);
+		labelData.top = new FormAttachment(descriptionLabel,5);
 		label.setLayoutData(labelData);
 		
 		FormData textData = new FormData();
 		textData.left = new FormAttachment(label, 5);
-		textData.top = new FormAttachment(0,5);
-		textData.right = new FormAttachment(button,-5);
+		textData.top = new FormAttachment(descriptionLabel,5);
+		textData.right = new FormAttachment(0,300);
 		text.setLayoutData(textData);
 		
 		FormData buttonData = new FormData();
 		buttonData.right = new FormAttachment(100,-5);
-		buttonData.top = new FormAttachment(0,5);
+		buttonData.top = new FormAttachment(descriptionLabel,5);
 		button.setLayoutData(buttonData);
+		
+		// second row
+		FormData tempLabelData = new FormData();
+		tempLabelData.left = new FormAttachment(0,5);
+		tempLabelData.top = new FormAttachment(text,5);
+		tempDeployLabel.setLayoutData(tempLabelData);
+		
+		FormData tempTextData = new FormData();
+		tempTextData.left = new FormAttachment(tempDeployLabel, 5);
+		tempTextData.top = new FormAttachment(text,5);
+		tempTextData.right = new FormAttachment(0, 300);
+		tempDeployText.setLayoutData(tempTextData);
+		
+		FormData tempButtonData = new FormData();
+		tempButtonData.right = new FormAttachment(100,-5);
+		tempButtonData.top = new FormAttachment(text,5);
+		tempDeployButton.setLayoutData(tempButtonData);
+		
+		
+
+		text.setEditable(false);
+		tempDeployText.setEditable(false);
 
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
@@ -122,10 +174,18 @@ public class DeploySection extends ServerEditorSection {
 	
 	private String getDeployDir() {
 		if( server instanceof ServerWorkingCopy ) {
-			return ((ServerWorkingCopy)server).getAttribute(DeployableServer.DEPLOY_DIRECTORY, "");
+			return ((ServerWorkingCopy)server).getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
 		}
 		return "";
 	}
+	private String getTempDeployDir() {
+		if( server instanceof ServerWorkingCopy ) {
+			return ((ServerWorkingCopy)server).getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
+					ServerPlugin.getInstance().getStateLocation().toFile().getAbsolutePath());
+		}
+		return "";
+	}
+	
 
 	
 	public static class SetDeployDirCommand extends ServerCommand {
@@ -150,7 +210,30 @@ public class DeploySection extends ServerEditorSection {
 			text.setText(oldDir);
 		}
 	}
-	
+
+	public static class SetTempDeployDirCommand extends ServerCommand {
+		private String oldDir;
+		private String newDir;
+		private Text text;
+		public SetTempDeployDirCommand(IServerWorkingCopy wc, Text text, String newDir) {
+			super(wc, "SetDeployDirCommand");
+			this.text = text;
+			this.newDir = newDir;
+			if( wc instanceof ServerWorkingCopy ) {
+				this.oldDir = ((ServerWorkingCopy)wc).getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, "");
+			}
+		}
+		public void execute() {
+			if( server instanceof ServerWorkingCopy ) 
+				((ServerWorkingCopy)server).setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
+		}
+		public void undo() {
+			if( server instanceof ServerWorkingCopy ) 
+				((ServerWorkingCopy)server).setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
+			text.setText(oldDir);
+		}
+	}
+
 	public void dispose() {
 		// ignore
 	}
