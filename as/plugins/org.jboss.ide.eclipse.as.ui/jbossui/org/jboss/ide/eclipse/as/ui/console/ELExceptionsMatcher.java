@@ -102,6 +102,12 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 			lineNum = matcher.group(2);
 			columnNum = matcher.group(3);
             columnEnd = matcher.end(3);
+            
+            int space = resource.lastIndexOf(' ');
+			if(space!=-1) {
+            	resource = resource.substring(space).trim();
+            	resourceStart = resourceEnd - resource.length();
+            }
 			CustomFileLink customFileLink = new CustomFileLink(console,
 					resource, lineNum);
 			try {
