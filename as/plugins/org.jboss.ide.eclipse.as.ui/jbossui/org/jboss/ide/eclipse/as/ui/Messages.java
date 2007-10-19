@@ -66,6 +66,7 @@ public class Messages {
 	public static String ModulePropertyType;
 	public static String ModulePropertyProject;
 	public static String ModulePropertyModuleFactory;
+	public static String ModulePropertyName;
 
 	public static String RefreshViewerAction;
 	public static String DisableCategoryAction;

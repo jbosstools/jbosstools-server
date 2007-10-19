@@ -265,16 +265,18 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 
 
 	public String[] getPropertyKeys(Object selected) {
-		return new String[] { Messages.ModulePropertyType, Messages.ModulePropertyProject };
+		return new String[] { Messages.ModulePropertyType, Messages.ModulePropertyProject, Messages.ModulePropertyName };
 	}
 	
 	public Properties getProperties(Object selected) {
 		Properties props = new Properties();
 		if( selected != null && selected instanceof ModuleServer) {
-			IModule mod = ((ModuleServer)selected).module[0];
+			ModuleServer moduleServer = ((ModuleServer)selected);
+			IModule mod = moduleServer.module[moduleServer.module.length-1];
 			if( mod != null && mod.getProject() != null ) {
 				props.setProperty(Messages.ModulePropertyType, mod.getModuleType().getId());
 				props.setProperty(Messages.ModulePropertyProject, mod.getProject().getName());
+				props.setProperty(Messages.ModulePropertyProject, mod.getName());
 			}
 		}
 		return props;
