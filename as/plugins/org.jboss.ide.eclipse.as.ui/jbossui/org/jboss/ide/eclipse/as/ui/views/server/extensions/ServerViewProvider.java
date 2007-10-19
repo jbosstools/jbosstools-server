@@ -48,8 +48,11 @@ public class ServerViewProvider {
 		setWeight( prefs.contains(weightKey) ? prefs.getInt(weightKey) : 0 );
 		
 		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
-		iconDescriptor = 
-			ImageDescriptor.createFromURL(pluginBundle.getEntry(getIconLocation()));
+		String iconLoc = getIconLocation();
+		if( iconLoc != null ) {
+			iconDescriptor = 
+				ImageDescriptor.createFromURL(pluginBundle.getEntry(iconLoc));
+		}
 	}
 	
 	public String getId() {
