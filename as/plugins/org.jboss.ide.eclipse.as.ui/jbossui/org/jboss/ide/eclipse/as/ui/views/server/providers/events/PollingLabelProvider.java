@@ -99,8 +99,11 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		
 		if( element instanceof PollThreadEvent ) {
 			boolean expected = ((PollThreadEvent)element).getExpectedState();
-			String expectedString = expected == IServerStatePoller.SERVER_UP ? "startup" : "shutdown";
-			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) return expectedString + " aborted";
+			String expectedString = expected == IServerStatePoller.SERVER_UP ? "Startup" : "Shutdown";
+			if( element.getSpecificType().equals(PollThread.POLL_THREAD_ABORTED)) {
+				Object cause = element.getProperty(PollThread.POLL_THREAD_ABORTED_CAUSE); 
+				return expectedString + " aborted" + (cause != null ? ": " + cause.toString() : "");
+			}
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_TIMEOUT)) return expectedString + " timed out";
 			if( element.getSpecificType().equals(PollThread.POLL_THREAD_EXCEPTION)) return "Failure: " + element.getProperty(PollThread.POLL_THREAD_EXCEPTION_MESSAGE);
 			if( element.getSpecificType().equals(PollThread.SUCCESS)) return expectedString + " succeeded";
@@ -108,8 +111,8 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.POLLER_NOT_FOUND)) return expectedString + " failed. Poller not found";
 		}
 		
-		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION)) 
-			return (String)element.getProperty(JMXPoller.EXCEPTION_PROPERTY);
+		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION))
+			return "JMXException: " + (String)element.getProperty(JMXPoller.EXCEPTION_PROPERTY);
 		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_STARTING)) {
 			boolean started = ((Boolean)element.getProperty(JMXPoller.STARTED_PROPERTY)).booleanValue();
 			if( !started ) 
@@ -153,11 +156,8 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
 		propertyToMessageMap.put(JMXPoller.EXCEPTION_PROPERTY, "Exception");
 		propertyToMessageMap.put(JMXPoller.STARTED_PROPERTY, "Server Started");
-		
+		propertyToMessageMap.put(PollThread.POLL_THREAD_ABORTED_CAUSE, "Abort Cause");
 		// now values and their readable forms
-//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 0, "Server is Down");
-//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + 1, "Server is Up");
-//		propertyToMessageMap.put(JMXPoller.STATUS + DELIMITER + -1, "Server is in transition");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "true", "Up");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE + DELIMITER + "false", "Down");
 	}
