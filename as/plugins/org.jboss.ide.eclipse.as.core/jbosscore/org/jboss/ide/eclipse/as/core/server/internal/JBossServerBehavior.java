@@ -23,6 +23,8 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -30,6 +32,7 @@ import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -42,15 +45,18 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
  *
  */
 public class JBossServerBehavior extends DeployableServerBehavior {
+	private static final String STOP_FAILED_MESSAGE = 
+		"Command to stop server failed. The next attempt will forcefully terminate the process.";
 	private PollThread pollThread = null;
 	protected IProcess process;
+	protected boolean nextStopRequiresForce = false;
 	public JBossServerBehavior() {
 		super();
 	}
 
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
-		if( force || process == null || process.isTerminated() || state == IServer.STATE_STOPPED) {
+		if( force || process == null || process.isTerminated() || state == IServer.STATE_STOPPED || nextStopRequiresForce) {
 			forceStop();
 			return;
 		}
@@ -64,9 +70,21 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		}
 		
 		new Thread() {public void run() {
-				serverStopping();
-				StopLaunchConfiguration.stop(getServer());
-			}}.start();
+			serverStopping();
+			boolean success = StopLaunchConfiguration.stop(getServer());
+			if( !success ) {
+				if( !process.isTerminated() ) { 
+					setServerStarted();
+					
+					// report it to error log
+					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							"", null);
+					JBossServerCorePlugin.getDefault().getLog().log(s);
+					pollThread.cancel(STOP_FAILED_MESSAGE);
+					nextStopRequiresForce = true;
+				}
+			}
+		}}.start();
 	}
 	
 	public void forceStop() {
@@ -134,6 +152,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	public void serverStarting() {
+		nextStopRequiresForce = false;
 		setServerStarting();
 		pollServer(IServerStatePoller.SERVER_UP);
 	}

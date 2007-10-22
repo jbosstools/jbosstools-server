@@ -49,6 +49,7 @@ public class PollThread extends Thread {
 	public static final String SUCCESS = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.success";
 	public static final String POLLER_NOT_FOUND = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.pollerNotFound";
 	public static final String POLL_THREAD_ABORTED = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.aborted";
+	public static final String POLL_THREAD_ABORTED_CAUSE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.aborted.cause";
 	public static final String POLL_THREAD_TIMEOUT = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.timeout";
 	public static final String EXPECTED_STATE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThreadEvent.expectedState";
 	public static final String POLL_THREAD_EXCEPTION = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.exception";
@@ -58,6 +59,7 @@ public class PollThread extends Thread {
 	private boolean expectedState;
 	private IServerStatePoller poller;
 	private boolean abort;
+	private String abortMessage;
 	private JBossServerBehavior behavior;
 	private EventLogRoot eventRoot;
 	
@@ -67,10 +69,10 @@ public class PollThread extends Thread {
 		super(name);
 		this.expectedState = expectedState;
 		this.abort = false;
+		this.abortMessage = null;
 		this.behavior = behavior;
-		eventRoot = EventLogModel.getModel(behavior.getServer()).getRoot();
-		
-		poller = discoverPoller(behavior, expectedState);
+		this.eventRoot = EventLogModel.getModel(behavior.getServer()).getRoot();
+		this.poller = discoverPoller(behavior, expectedState);
 	}
 	
 	protected IServerStatePoller discoverPoller(JBossServerBehavior behavior, boolean expectedState) {
@@ -88,7 +90,11 @@ public class PollThread extends Thread {
 	}
 	
 	public void cancel() {
+		cancel(null);
+	}
+	public void cancel(String message) {
 		abort = true;
+		abortMessage = message;
 	}
 
 	
@@ -231,6 +237,7 @@ public class PollThread extends Thread {
 	
 	protected void alertEventLogAbort() {
 		PollThreadEvent event = new PollThreadEvent(activeEvent, POLL_THREAD_ABORTED, expectedState);
+		event.setProperty(POLL_THREAD_ABORTED_CAUSE, abortMessage);
 		EventLogModel.markChanged(activeEvent);
 	}
 	protected void alertEventLogTimeout() {
@@ -250,6 +257,7 @@ public class PollThread extends Thread {
 		EventLogModel.markChanged(activeEvent);
 	}
 
+	
 	public class PollThreadEvent extends EventLogTreeItem {
 		public PollThreadEvent(SimpleTreeItem parent, String type, boolean expectedState) {
 			super(parent, SERVER_STATE_MAJOR_TYPE, type);

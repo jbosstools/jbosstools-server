@@ -36,6 +36,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -49,15 +50,20 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	public static final String STOP_MAIN_TYPE = "org.jboss.Shutdown";
 	public static final String STOP_JAR_LOC = "bin" + File.separator + "shutdown.jar";
 	
-	public static void stop(IServer server) {
+	/* Returns whether termination was normal */
+	public static boolean stop(IServer server) {
 		try {
 			ILaunchConfigurationWorkingCopy wc = createLaunchConfiguration(server);
-			wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
+			ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
+			IProcess stopProcess = launch.getProcesses()[0];
+			while( !stopProcess.isTerminated()) {}
+			return stopProcess.getExitValue() == 0 ? true : false;
 		} catch( CoreException ce ) {
 			// report it from here
 			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					"Unexpected Exception launching stop server command: ", ce);
 			JBossServerCorePlugin.getDefault().getLog().log(s);
+			return false;
 		}
 	}
 	
