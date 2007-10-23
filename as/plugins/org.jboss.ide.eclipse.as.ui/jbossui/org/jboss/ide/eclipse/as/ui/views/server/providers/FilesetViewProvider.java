@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorDescriptor;
@@ -86,6 +87,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -172,10 +174,16 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		deleteFileAction =  new Action() { 
 			public void run() {
 				try {
+					Shell shell = JBossServerView.getDefault().getSite().getShell();
 					PathWrapper wrapper = (PathWrapper)selection;
 					File file = wrapper.getPath().toFile();
-					FileUtil.safeDelete(file);
-					refreshViewer();
+					MessageBox mb = new MessageBox(shell,SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
+					mb.setText("Delete File?");
+					mb.setMessage("Are you sure you want to delete " + file.getName() + "?");
+					if( mb.open() == SWT.OK) {
+						FileUtil.safeDelete(file);
+						refreshViewer();
+					}
 				} catch( Exception e ) {
 				}
 			}
