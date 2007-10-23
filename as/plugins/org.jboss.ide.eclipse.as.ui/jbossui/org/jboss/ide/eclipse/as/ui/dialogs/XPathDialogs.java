@@ -231,14 +231,16 @@ public class XPathDialogs {
 			if( xpath != null ) xpathText.setText(xpath);
 			
 			proposalProvider = new XPathProposalProvider(repository);
-			proposalProvider.setPath(getConfigFolder(server));
+			if( server != null ) 
+				proposalProvider.setPath(getConfigFolder(server));
 			ContentProposalAdapter adapter = new
 			ContentProposalAdapter(xpathText, new TextContentAdapter(),
 					proposalProvider, null, null);
 			adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 			
 			XPathAttributeProposalProvider provider2 = new XPathAttributeProposalProvider(repository, xpathText);
-			provider2.setPath(getConfigFolder(server));
+			if( server != null )
+				provider2.setPath(getConfigFolder(server));
 			ContentProposalAdapter adapter2 = new
 			ContentProposalAdapter(attributeText, new TextContentAdapter(),
 					provider2, null, null);
