@@ -97,9 +97,10 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	}
 	
 	public static String getDefaultVMArgs(JBossServer jbs) throws CoreException {
+		String ret = "-Xms256m -Xmx512m -XX:MaxPermSize=256m ";
 		if( Platform.getOS().equals(Platform.OS_LINUX))
-			return "-Djava.net.preferIPv4Stack=true";
-		return "";
+			ret += "-Djava.net.preferIPv4Stack=true";
+		return ret;
 	}
 
 
