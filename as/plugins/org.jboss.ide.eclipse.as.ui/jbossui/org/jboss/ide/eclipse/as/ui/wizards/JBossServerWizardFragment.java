@@ -361,6 +361,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			runtimeGroup.layout();
 			String p = rwc.getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
 			deployText.setText(p);
+			deployVal = p;
 			deployGroup.layout();
 		}
 	}
