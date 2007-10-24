@@ -52,14 +52,14 @@ public class ClientAllRuntimeClasspathProvider extends
 
 	public IClasspathEntry[] resolveClasspathContainer(IProject project, IRuntime runtime) {
 		if( runtime == null ) 
-			return null;
+			return new IClasspathEntry[0];
 
 		AbstractJBossServerRuntime ajbsrt = (AbstractJBossServerRuntime)runtime.loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
 		if( ajbsrt == null ) {
 			// log error
 			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, "Runtime " + runtime.getName() + "is not of the proper type");
 			ClasspathCorePlugin.getDefault().getLog().log(status);
-			return null;
+			return new IClasspathEntry[0];
 		}
 		
 		IPath loc = runtime.getLocation();
