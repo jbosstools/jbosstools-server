@@ -170,7 +170,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		boolean error = localSafeDelete(getDeployPath(module), eventRoot);
 		if( error ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server. (" + getModulePath(module) + ")", new Exception("Some files were not removed from the server")));
+			throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server. (" + getModulePath(module) + ")", new Exception("Some files were not removed from the server")));
 		}
 		return null;
 	}

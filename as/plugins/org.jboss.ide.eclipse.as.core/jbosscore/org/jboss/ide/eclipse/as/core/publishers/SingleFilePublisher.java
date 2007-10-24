@@ -93,7 +93,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			FileUtil.safeDelete(destFolder.append(sourcePath.lastSegment()).toFile(), l);
 			if( l.errorFound ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
-				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server.", new Exception("Some files were not removed from the server")));
+				throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server.", new Exception("Some files were not removed from the server")));
 			}
 		}
 		
