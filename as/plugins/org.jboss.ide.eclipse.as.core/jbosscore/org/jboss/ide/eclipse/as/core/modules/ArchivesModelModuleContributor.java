@@ -104,6 +104,10 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	}
 	
 	public void refreshProject(IPath projectLoc) {
+		// prime, make sure all are found
+		if( modules == null ) 
+			getModules();
+		
 		// remove old mods
 		ArrayList<IModule> mods = projectToModules.get(projectLoc);
 		IModule mod;
@@ -115,6 +119,7 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 					arc = ((PackagedModuleDelegate)moduleDelegates.get(mod)).getPackage();
 					packageToModule.remove(arc);
 					moduleDelegates.remove(mod);
+					modules.remove(mod);
 				}
 			}
 		}
