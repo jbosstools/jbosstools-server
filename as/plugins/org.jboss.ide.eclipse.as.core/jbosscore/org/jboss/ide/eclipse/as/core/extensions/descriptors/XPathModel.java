@@ -79,10 +79,12 @@ public class XPathModel {
 			public void serverAdded(IServer server) {
 				AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime) 
 					server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
-				IPath loc = server.getRuntime().getLocation();
-				IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
-				loadDefaults(server, configFolder.toOSString());
-				save(server);
+				if(ajbsr != null ) {
+					IPath loc = server.getRuntime().getLocation();
+					IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
+					loadDefaults(server, configFolder.toOSString());
+					save(server);
+				}
 			}
 			public void serverChanged(IServer server) {
 			}
