@@ -143,6 +143,7 @@ public class DeploySection extends ServerEditorSection {
 		
 		FormData buttonData = new FormData();
 		buttonData.right = new FormAttachment(100,-5);
+		buttonData.left = new FormAttachment(text, 5);
 		buttonData.top = new FormAttachment(descriptionLabel,5);
 		button.setLayoutData(buttonData);
 		
@@ -160,6 +161,7 @@ public class DeploySection extends ServerEditorSection {
 		
 		FormData tempButtonData = new FormData();
 		tempButtonData.right = new FormAttachment(100,-5);
+		tempButtonData.left = new FormAttachment(tempDeployText,5);
 		tempButtonData.top = new FormAttachment(text,5);
 		tempDeployButton.setLayoutData(tempButtonData);
 		
