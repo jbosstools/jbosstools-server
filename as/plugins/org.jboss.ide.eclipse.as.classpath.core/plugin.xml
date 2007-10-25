@@ -75,5 +75,16 @@
             id="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </classpathContainerInitializer>
    </extension>
+   <!--
+   
+   Cannot be enabled before resource change listening is implemented.(max)
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainerInitializer"
+            id="org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainer">
+      </classpathContainerInitializer>
+   </extension>
+   -->
    
 </plugin>

@@ -7,6 +7,13 @@
             class="org.jboss.ide.eclipse.as.classpath.ui.ejb3.JBossEJB3LibrariesPage"
             id="org.jboss.ide.eclipse.as.classpath.ui.ejb3.containerPage"
             name="JBoss EJB3 Libraries"/>
+            <!-- Cannot be enabled before resource change listening is implementd (max)
+      <classpathContainerPage
+            class="org.jboss.ide.eclipse.as.classpath.ui.DirectoryLibraryPage"
+            id="org.jboss.ide.eclipse.as.classpath.ui.libraryDirectoryPage"
+            name="Directory with libraries">
+      </classpathContainerPage>
+      -->
    </extension>
    
    <extension
