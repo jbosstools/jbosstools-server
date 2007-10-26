@@ -38,6 +38,7 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -92,20 +93,26 @@ public class WarArchiveType extends J2EEArchiveType {
 	
 	// For modules only
 	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) {
-		IPath projectPath = project.getLocation();
-		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
-		String[] files = scanner.getIncludedFiles();
-		// just take the first
-		if( files.length > 0 ) {
-			IPath path = new Path(files[0]);
-			path = path.removeLastSegments(2); // remove the file name
-			path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-			IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*");
-			//If we have separate file set for libraries, we do not need to duplicate jars.
-			fs.setExcludesPattern("**/WEB-INF/lib/*.jar");
+		try {
+			IPath projectPath = project.getLocation();
+			DirectoryScanner scanner = 
+				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
+			String[] files = scanner.getIncludedFiles();
+			// just take the first
+			if( files.length > 0 ) {
+				IPath path = new Path(files[0]);
+				path = path.removeLastSegments(2); // remove the file name
+				path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
+				IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*");
+				//If we have separate file set for libraries, we do not need to duplicate jars.
+				fs.setExcludesPattern("**/WEB-INF/lib/*.jar");
+			}
+		} catch( IllegalStateException ise ) {
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Directory could not be scanned", ise);
+			JBossServerCorePlugin.getDefault().getLog().log(status);
 		}
 	}
+
 	protected void addClassesFileset(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
@@ -119,16 +126,21 @@ public class WarArchiveType extends J2EEArchiveType {
 		}
 	}
 	protected void addWebinfFileset(IProject project, IArchiveFolder folder) {
-		IPath projectPath = project.getLocation();
-		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null, true);
-		String[] files = scanner.getIncludedFiles();
-		// just take the first
-		if( files.length > 0 ) {
-			IPath path = new Path(files[0]);
-			path = path.removeLastSegments(1); // remove the file name
-			path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-			addFileset(project, folder, path.toOSString(), "**/*");			
+		try {
+			IPath projectPath = project.getLocation();
+			DirectoryScanner scanner = 
+				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null, true);
+			String[] files = scanner.getIncludedFiles();
+			// just take the first
+			if( files.length > 0 ) {
+				IPath path = new Path(files[0]);
+				path = path.removeLastSegments(1); // remove the file name
+				path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
+				addFileset(project, folder, path.toOSString(), "**/*");			
+			}
+		} catch( IllegalStateException ise ) {
+			IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID, "Directory could not be scanned", ise);
+			ArchivesCorePlugin.getDefault().getLog().log(status);
 		}
 	}
 	
