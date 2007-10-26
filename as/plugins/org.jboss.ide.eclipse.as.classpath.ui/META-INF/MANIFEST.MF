@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.server.core,
  org.eclipse.wst.server.ui,
  org.eclipse.jdt.ui,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ org.eclipse.core.resources
 Eclipse-LazyStart: true
 Bundle-Vendor: JBoss, a division of Red Hat
