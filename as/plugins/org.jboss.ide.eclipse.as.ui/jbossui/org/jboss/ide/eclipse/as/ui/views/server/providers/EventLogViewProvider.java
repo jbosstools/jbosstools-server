@@ -90,7 +90,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	private IServer input;
 	private Action clearLogAction;
 	
-	private static HashMap majorTypeToName = new HashMap();
+	private static HashMap<String, String> majorTypeToName = new HashMap<String, String>();
 	static {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "EventLogMajorType");
@@ -130,7 +130,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 					return getRootCategories();
 				Object[] ret = EventLogModel.getModel(input).getRoot().getChildren();
 				if( getSortOrder()) {
-					List l = Arrays.asList(ret); 
+					List<Object> l = Arrays.asList(ret); 
 					Collections.reverse(l);
 					return l.toArray();
 				}
@@ -140,7 +140,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			if( parentElement instanceof String ) {
 				// get children only of this type
 				SimpleTreeItem[] children = EventLogModel.getModel(input).getRoot().getChildren();
-				ArrayList items = new ArrayList();
+				ArrayList<SimpleTreeItem> items = new ArrayList<SimpleTreeItem>();
 				for( int i = 0; i < children.length; i++ ) {
 					if( children[i] instanceof EventLogTreeItem ) {
 						String type = ((EventLogTreeItem)children[i]).getEventClass();
@@ -151,7 +151,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 				
 				if( getSortOrder() ) Collections.reverse(items);
 				
-				return (Object[]) items.toArray(new Object[items.size()]);
+				return items.toArray(new Object[items.size()]);
 			}
 			
 			// just return the object's kids
@@ -163,7 +163,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 
 		protected Object[] getRootCategories() {
 			EventLogRoot root = EventLogModel.getModel(input).getRoot();
-			ArrayList majorTypes = new ArrayList();
+			ArrayList<String> majorTypes = new ArrayList<String>();
 			SimpleTreeItem[] children = root.getChildren();
 			for( int i = 0; i < children.length; i++ ) {
 				if( children[i] instanceof EventLogTreeItem ) {
@@ -172,7 +172,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 						majorTypes.add(type);
 				}
 			}
-			return (String[]) majorTypes.toArray(new String[majorTypes.size()]);
+			return majorTypes.toArray(new String[majorTypes.size()]);
 		}
 		
 		public Object getParent(Object element) {
@@ -232,7 +232,7 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 
 	    	if( !(element instanceof EventLogTreeItem)) {
 		    	if( element instanceof String ) {
-		    		String val = (String)majorTypeToName.get(element);
+		    		String val = majorTypeToName.get(element);
 		    		if( val != null ) return val;
 		    	}
 	    		return element.toString();
@@ -264,8 +264,9 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	    }
 	}
 	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		menu.add(clearLogAction);
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection[]) {
+		if( selection.length == 1 && selection[0] == this.provider)
+			menu.add(clearLogAction);
 	}
 
 	public ITreeContentProvider getContentProvider() {

@@ -21,13 +21,11 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,13 +42,13 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
@@ -66,7 +64,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	private ModuleContentProvider contentProvider;
 	private ModuleLabelProvider labelProvider;
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
-	private ModuleServer selection;
+	private ModuleServer[] selection;
 	private IServerLifecycleListener serverResourceListener;
 	private IServerListener serverListener;
 	
@@ -83,19 +81,22 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				if (MessageDialog.openConfirm(new Shell(), Messages.ServerDialogHeading, Messages.DeleteModuleConfirm)) {
 					Thread t = new Thread() { public void run() { 
 						try {
-							IServerWorkingCopy server = selection.server.createWorkingCopy();
-							
-							if( ServerConverter.getDeployableServer(selection.server) != null ) {
-								ServerUtil.modifyModules(server, new IModule[0], selection.module, new NullProgressMonitor());
-								IServer server2 = server.save(true, null);
-								ServerConverter.getDeployableServerBehavior(selection.server)
-									.publishOneModule(IServer.PUBLISH_INCREMENTAL, selection.module, ServerBehaviourDelegate.REMOVED, new NullProgressMonitor());
-							} else {
-								ServerUtil.modifyModules(server, new IModule[0], selection.module, new NullProgressMonitor());
-								IServer server2 = server.save(true, null);
-								server2.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+							if( selection.length > 0 && selection[0].server != null ) {
+								IServer server = selection[0].server;
+								ArrayList topModsToRemove = new ArrayList();
+								IModule topModTmp;
+								for( int i = 0; i < selection.length; i++ ) {
+									if( !topModsToRemove.contains(selection[i].module[0]))
+										topModsToRemove.add(selection[i].module[0]);
+								}
+								IServerWorkingCopy serverWC = server.createWorkingCopy();
+								IModule[] modsToRemove = 
+									(IModule[]) topModsToRemove.toArray(new IModule[topModsToRemove.size()]);
+								ServerUtil.modifyModules(serverWC, new IModule[0], modsToRemove, new NullProgressMonitor());
+								IServer server2 = serverWC.save(true, null);
+								new PublishServerJob(server2, IServer.PUBLISH_INCREMENTAL, true).schedule();
 							}
-						} catch (Exception e) {
+						} catch (CoreException e) {
 							// ignore
 						}
 					}};
@@ -109,7 +110,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		
 		fullPublishModuleAction = new Action() {
 			public void run() {
-				actionPublish(IServer.PUBLISH_FULL);
+				actionPublish(IServer.PUBLISH_STATE_FULL);
 			}
 		};
 		fullPublishModuleAction.setText(Messages.FullPublishModuleText);
@@ -119,7 +120,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 	
 		incrementalPublishModuleAction = new Action() {
 			public void run() {
-				actionPublish(IServer.PUBLISH_INCREMENTAL);
+				actionPublish(IServer.PUBLISH_STATE_INCREMENTAL);
 			}
 		};
 		incrementalPublishModuleAction.setText(Messages.IncrementalPublishModuleText);
@@ -127,33 +128,25 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 }
 	
-	protected void actionPublish(final int type) {
-		try {
-			if( ServerConverter.getDeployableServer(selection.server) != null ) {
-				new Job("Publish One Module To Server") {
-					protected IStatus run(IProgressMonitor monitor) {
-						ServerConverter.getDeployableServerBehavior(selection.server)
-						.publishOneModule(type, selection.module, 
-								ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
-						return Status.OK_STATUS;
-					} 
-				}.schedule();
-			} else {
-				// can't do anything special here, sadly
-				new PublishServerJob(selection.server, type, true).schedule();
+	protected void actionPublish(int type) {
+		// Assumption: Anything selected is already on the server, or it wouldnt be in the view.
+		if( selection != null && selection.length > 0 ) {
+			Server s = ((Server)selection[0].server);
+			for( int i = 0; i < selection.length; i++ ) {
+				s.setModulePublishState(selection[i].module, type);
 			}
-		} catch( Exception e ) {
-			// ignore
-			JBossServerUIPlugin.log("Error running publish action", e);
+			new PublishServerJob(s, IServer.PUBLISH_INCREMENTAL, true).schedule();
 		}
 	}
 
 	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		if( selection instanceof ModuleServer) {
-			this.selection = (ModuleServer)selection;
-			if( this.selection.module.length == 1 )
-				menu.add(deleteModuleAction);
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection) {
+		if( allAre(selection, ModuleServer.class)) {
+			ModuleServer[] ms = new ModuleServer[selection.length];
+			for( int i = 0; i < selection.length; i++ ) 
+				ms[i] = (ModuleServer)selection[i];
+			this.selection = ms;
+			menu.add(deleteModuleAction);
 			menu.add(fullPublishModuleAction);
 			menu.add(incrementalPublishModuleAction);
 		}
@@ -250,7 +243,7 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 				return ms.module[size - 1].getName();
 			}
 
-			return "garbage";
+			return "unknown";
 		}
 		public Image getImage(Object obj) {
 			if( obj instanceof ModuleServer ) {

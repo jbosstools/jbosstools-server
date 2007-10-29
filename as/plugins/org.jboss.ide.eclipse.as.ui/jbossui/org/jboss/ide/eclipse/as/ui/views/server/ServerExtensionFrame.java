@@ -55,7 +55,7 @@ public class ServerExtensionFrame extends Composite implements IServerViewFrame 
 			super(parent, SWT.NONE);
 			this.view = view;
 			setLayout(new FillLayout());
-			jbTreeTable = new Tree(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+			jbTreeTable = new Tree(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 			jbViewer = new ExtensionTableViewer(jbTreeTable);
 			view.getSite().setSelectionProvider(jbViewer);
 			addListeners();

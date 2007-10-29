@@ -76,7 +76,7 @@ public abstract class JBossServerViewExtension {
 	}
 	
 	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selected) {
 	}
 	
 	public ITreeContentProvider getContentProvider() {
@@ -156,5 +156,12 @@ public abstract class JBossServerViewExtension {
 	// show only for full jboss servers
 	protected boolean isJBossServer(IServer server) {
 		return (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor()) != null;
+	}
+	
+	protected boolean allAre(Object[] list, Class clazz) {
+		for( int i = 0; i < list.length; i++ )
+			if( list[i].getClass() != clazz )
+				return false;
+		return true;
 	}
 }

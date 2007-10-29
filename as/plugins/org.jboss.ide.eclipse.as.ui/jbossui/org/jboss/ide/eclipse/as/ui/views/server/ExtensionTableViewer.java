@@ -274,6 +274,17 @@ public class ExtensionTableViewer extends TreeViewer {
 			return ((ContentWrapper)o).getElement();
 		return o;
 	}
+
+	public Object[] getRawElements(IStructuredSelection selection) {
+		ArrayList<Object> tmp = new ArrayList<Object>();
+		Object[] obj = selection.toArray();
+		Object tmp2;
+		for( int i = 0; i < obj.length; i++ ) {
+			tmp2 = getRawElement(obj[i]);
+			if( tmp2 != null ) tmp.add(tmp2);
+		}
+		return (Object[]) tmp.toArray(new Object[tmp.size()]);
+	}
 	
 	public ServerViewProvider getParentViewProvider(Object o) {
 		if( o instanceof ContentWrapper ) 
@@ -295,22 +306,32 @@ public class ExtensionTableViewer extends TreeViewer {
 
 	protected void fillSelectedContextMenu(Shell shell, IMenuManager mgr) {
 		ISelection sel = getSelection();
-		if( sel instanceof IStructuredSelection ) {
-			Object selected = ((IStructuredSelection)sel).getFirstElement();
-			if( selected != null ) {
-				ServerViewProvider provider;
-				if( selected instanceof ServerViewProvider ) {
-					provider = (ServerViewProvider)selected;
-				} else {
-					provider = getParentViewProvider(selected);
-				}
-				if( provider != null ) 
-					provider.getDelegate().fillContextMenu(shell, mgr, getRawElement(selected));
+		if (sel instanceof IStructuredSelection) {
+			ServerViewProvider provider = findProvider((IStructuredSelection)sel);
+			if (provider != null) {
+				Object[] selected = getRawElements((IStructuredSelection)sel);
+				provider.getDelegate().fillContextMenu(shell, mgr, selected);
 			}
 		}
-
 	}
 
+	protected ServerViewProvider findProvider(IStructuredSelection sel) {
+		Object[] selected = sel.toArray();
+		ServerViewProvider provider = null;
+		ServerViewProvider tmpProvider;
+		for( int i = 0; i < selected.length; i++ ) {
+			if( selected[i] instanceof ServerViewProvider ) {
+				tmpProvider = (ServerViewProvider)selected[i];
+			} else {
+				tmpProvider = getParentViewProvider(selected[i]);
+			}
+			if( provider == null ) 
+				provider = tmpProvider;
+			else if( tmpProvider != provider )
+				return null;
+		}
+		return provider;
+	}
 	
 	protected void fillJBContextMenu(Shell shell, IMenuManager menu) {
 		Object selected = getSelectedElement();
@@ -365,8 +386,10 @@ public class ExtensionTableViewer extends TreeViewer {
 				} else if( page == null ) */ { 
 					page = topLevelPropertiesPage;
 				}
-				page.selectionChanged(part, sel);
-				book.showPage(page.getControl());
+				if( page != null ) {
+					page.selectionChanged(part, sel);
+					book.showPage(page.getControl());
+				}
 			}
 		}
 		private IPropertySheetPage getDelegatePage(ServerViewProvider provider) {

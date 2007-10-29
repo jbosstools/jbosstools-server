@@ -110,30 +110,35 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 
 	}
 	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		final Object selected = selection;
-		if( selection instanceof ServerViewProvider && selection != this.provider) {
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection) {
+		final Object[] selected = selection;
+		boolean allProviders = true;
+		for( int i = 0; i < selected.length; i++ ) 
+			allProviders = allProviders && selected[i] instanceof ServerViewProvider 
+				&& selected[i] != this.provider;
+		
+		if( allProviders) {
 			Action act = new Action() {
 				public void run() {
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							if( selected instanceof ServerViewProvider) {
-								((ServerViewProvider)selected).setEnabled(true);
-								((ServerViewProvider)selected).getDelegate().getContentProvider().
+							for( int i = 0; i < selected.length; i++ ) {
+								((ServerViewProvider)selected[i]).setEnabled(true);
+								((ServerViewProvider)selected[i]).getDelegate().getContentProvider().
 									inputChanged(JBossServerView.getDefault().getServerFrame().getViewer(), null, JBossServerView.getDefault().getSelectedServer());
-								
-								try {
-									JBossServerView.getDefault().getServerFrame().getViewer().refresh();
-								} catch(Exception e) {
-								}
 							}
-						} 
+							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh();
+						}
 					} );
 				}
 			};
 			act.setText(Messages.InactiveCategoriesReEnable);
 			menu.add(act);
 		}
+	}
+	
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+		fillContextMenu(shell, menu, new Object[] { selection });
 	}
 
 	public ITreeContentProvider getContentProvider() {

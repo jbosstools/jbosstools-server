@@ -45,7 +45,7 @@ public abstract class SimplePropertiesViewExtension
 	}
 	
 	
-	public abstract void fillContextMenu(Shell shell, IMenuManager menu, Object selection);
+	public abstract void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection);
 	public abstract ITreeContentProvider getContentProvider();
 	public abstract LabelProvider getLabelProvider();
 

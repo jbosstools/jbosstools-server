@@ -300,15 +300,15 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		editFileAction.setText("Edit File");
 	}
 
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
-		if( selection instanceof ServerViewProvider ) {
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection) {
+		if( selection[0] instanceof ServerViewProvider ) {
 			menu.add(this.newXPathCategoryAction);
 			menu.add(new Separator());
 			return;
 		}
 		
-		if( selection instanceof XPathCategory ) {
-			setActiveCategory((XPathCategory)selection);
+		if( selection[0] instanceof XPathCategory ) {
+			setActiveCategory((XPathCategory)selection[0]);
 			menu.add(this.newXPathAction);
 			menu.add(this.deleteXPathCategoryAction);
 			menu.add(new Separator());

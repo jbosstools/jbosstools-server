@@ -105,7 +105,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	private FilesetContentProvider contentProvider;
 	private LabelProvider labelProvider;
 	private Fileset[] filesets;
-	private Object selection;
+	private Object[] selection;
 
 	public FilesetViewProvider() {
 		contentProvider = new FilesetContentProvider();
@@ -143,10 +143,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		createFilter.setText(Messages.FilesetsCreateFilter);
 		deleteFilter =  new Action() { 
 			public void run() {
-				if( selection instanceof Fileset ) {
+				if( selection.length == 1 && selection[0] instanceof Fileset ) {
 					try {
 						ArrayList<Fileset> asList = new ArrayList<Fileset>(Arrays.asList(filesets));
-						asList.remove(selection);
+						asList.remove(selection[0]);
 						filesets = asList.toArray(new Fileset[asList.size()]);
 						saveFilesets();
 					} catch( Exception e ) {
@@ -158,7 +158,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		deleteFilter.setText(Messages.FilesetsDeleteFilter);
 		editFilter =  new Action() { 
 			public void run() {
-				Fileset sel = (Fileset)selection;
+				Fileset sel = selection.length == 1 && selection[0] instanceof Fileset ? (Fileset)selection[0] : null;
+				if( sel == null ) return;
 				FilesetDialog d = new FilesetDialog(new Shell(), sel);
 				if( d.open() == Window.OK ) {
 					Fileset ret = d.getFileset();
@@ -175,13 +176,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			public void run() {
 				try {
 					Shell shell = JBossServerView.getDefault().getSite().getShell();
-					PathWrapper wrapper = (PathWrapper)selection;
-					File file = wrapper.getPath().toFile();
+					File[] files = getSelectedFiles();
 					MessageBox mb = new MessageBox(shell,SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-					mb.setText("Delete File?");
-					mb.setMessage("Are you sure you want to delete " + file.getName() + "?");
+					mb.setText("Delete Files?");
+					mb.setMessage("Are you sure you want to delete the selected files?");
 					if( mb.open() == SWT.OK) {
-						FileUtil.safeDelete(file);
+						for( int i = 0; i < files.length; i++ )
+							FileUtil.safeDelete(files[i]);
 						refreshViewer();
 					}
 				} catch( Exception e ) {
@@ -191,35 +192,43 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		deleteFileAction.setText(Messages.FilesetsDeleteFile);
 		editFileAction =  new Action() { 
 			public void run() {
-				try {
-					PathWrapper wrapper = (PathWrapper)selection;
-					File file = wrapper.getPath().toFile();
-					IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
-					
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-					IWorkbenchPage page = win.getActivePage();
-					IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
-					if( eclipseFile != null ) {
-						IEditorInput input = new FileEditorInput(eclipseFile);
-						IEditorDescriptor desc = PlatformUI.getWorkbench().
-							getEditorRegistry().getDefaultEditor(file.getName());
-						if( desc != null ) 
-							page.openEditor(input, desc.getId());
-					} else if( fileStore != null ){
-						IEditorInput input = new FileStoreEditorInput(fileStore);
-						IEditorDescriptor desc = PlatformUI.getWorkbench().
-								getEditorRegistry().getDefaultEditor(file.getName());
-						if( desc != null ) 
-							page.openEditor(input, desc.getId());
+				File[] files = getSelectedFiles();
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				IWorkbenchPage page = win.getActivePage();
+				for( int i = 0; i < files.length; i++ ) {
+					try {
+						IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(files[i].getAbsolutePath()));
+						IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(files[i]);
+						if( eclipseFile != null ) {
+							IEditorInput input = new FileEditorInput(eclipseFile);
+							IEditorDescriptor desc = PlatformUI.getWorkbench().
+								getEditorRegistry().getDefaultEditor(files[i].getName());
+							if( desc != null ) 
+								page.openEditor(input, desc.getId());
+						} else if( fileStore != null ){
+							IEditorInput input = new FileStoreEditorInput(fileStore);
+							IEditorDescriptor desc = PlatformUI.getWorkbench().
+									getEditorRegistry().getDefaultEditor(files[i].getName());
+							if( desc != null ) 
+								page.openEditor(input, desc.getId());
+						}
+					} catch( Exception e ) {
+						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Cannot open file", e);
+						JBossServerUIPlugin.getDefault().getLog().log(status);
 					}
-				} catch( Exception e ) {
-					IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Cannot open file", e);
-					JBossServerUIPlugin.getDefault().getLog().log(status);
 				}
 			}
 		};
 		editFileAction.setText(Messages.FilesetsEditFile);
+	}
+	
+	protected File[] getSelectedFiles() {
+		ArrayList<File> tmp = new ArrayList<File>();
+		for( int i = 0; i < selection.length; i++ ) {
+			tmp.add(((PathWrapper)selection[i]).getPath().toFile());
+		}
+		return (File[]) tmp.toArray(new File[tmp.size()]);
 	}
 	
 	public static class PathWrapper {
@@ -496,36 +505,60 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
 	}
 	
-	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection) {
+	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection) {
 		this.selection = selection;
-		if( selection instanceof ServerViewProvider ) {
+		if( selection.length == 1 && selection[0] instanceof ServerViewProvider ) {
 			menu.add(createFilter);
-		} else if( selection instanceof Fileset ) {
+		} else if( selection.length == 1 && selection[0] instanceof Fileset ) {
 			menu.add(editFilter);
 			menu.add(deleteFilter);
-		} else if( selection instanceof PathWrapper ) {
-			File file = ((PathWrapper)selection).getPath().toFile();
-			IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
-			IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
-			boolean editable = false;
-			if( eclipseFile != null ) {
-				IEditorInput input = new FileEditorInput(eclipseFile);
-				IEditorDescriptor desc = PlatformUI.getWorkbench().
-					getEditorRegistry().getDefaultEditor(file.getName());
-				if( input != null && desc != null ) 
-					editable = true;
-			} else if( fileStore != null ){
-				IEditorInput input = new FileStoreEditorInput(fileStore);
-				IEditorDescriptor desc = PlatformUI.getWorkbench().
-						getEditorRegistry().getDefaultEditor(file.getName());
-				if( input != null && desc != null ) 
-					editable = true;
-			}
-			editFileAction.setEnabled(editable);
-			deleteFileAction.setEnabled(file.exists());
+		} else if( allPathWrappers(selection) ) {
+			editFileAction.setEnabled(canEdit(selection));
+			deleteFileAction.setEnabled(canDelete(selection));
 			menu.add(editFileAction);
 			menu.add(deleteFileAction);
 		}
+	}
+	
+	protected boolean allPathWrappers(Object[] list) {
+		boolean result = true;
+		for( int i = 0; i < list.length; i++ )
+			result &= list[i] instanceof PathWrapper;
+		return result;
+	}
+	
+	protected boolean canDelete(Object[] list ) {
+		boolean result = true;
+		for( int i = 0; i < list.length; i++ ) 
+			result &= ((PathWrapper)selection[i]).getPath().toFile().exists();
+		return result;
+	}
+	
+	protected boolean canEdit(Object[] list) {
+		for( int i = 0; i < list.length; i++ )
+			if( canEdit(((PathWrapper)selection[i]).getPath().toFile()))
+				return true;
+		return false;
+	}
+	
+	protected boolean canEdit(File file) {
+		IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
+		IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
+		boolean editable = false;
+		if( eclipseFile != null ) {
+			IEditorInput input = new FileEditorInput(eclipseFile);
+			IEditorDescriptor desc = PlatformUI.getWorkbench().
+				getEditorRegistry().getDefaultEditor(file.getName());
+			if( input != null && desc != null ) 
+				editable = true;
+		} else if( fileStore != null ){
+			IEditorInput input = new FileStoreEditorInput(fileStore);
+			IEditorDescriptor desc = PlatformUI.getWorkbench().
+					getEditorRegistry().getDefaultEditor(file.getName());
+			if( input != null && desc != null ) 
+				editable = true;
+		}
+		return editable;
 	}
 
 	public ITreeContentProvider getContentProvider() {
