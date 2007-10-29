@@ -105,12 +105,12 @@ public class JstPublisher implements IJBossServerPublisher {
 		
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			status = unpublish(server, module, monitor);
-		} else if (kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN) {
+		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {
 			if( deleted ) 
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			else
 				status = fullPublish(module, module[module.length-1], monitor);	
-		} else if (kind == IServer.PUBLISH_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
+		} else if (kind == IServer.PUBLISH_INCREMENTAL || modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
 			if( deleted ) 
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			else 
