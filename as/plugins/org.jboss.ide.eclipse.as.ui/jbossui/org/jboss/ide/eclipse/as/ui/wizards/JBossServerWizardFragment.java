@@ -57,6 +57,7 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -70,7 +71,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private String name, authUser, authPass, deployVal;
+	private String name, authUser, authPass, deployVal, deployTmpFolderVal;
 	private Label nameLabel, serverExplanationLabel, 
 					runtimeExplanationLabel, authenticationExplanationLabel; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
@@ -360,6 +361,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
 			runtimeGroup.layout();
 			String p = rwc.getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
+			deployTmpFolderVal = rwc.getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("rhdsTemp").toOSString();
 			deployText.setText(p);
 			deployVal = p;
 			deployGroup.layout();
@@ -378,6 +380,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_USERNAME, authUser);
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_PASSWORD, authPass);
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.DEPLOY_DIRECTORY, deployVal);
+			((ServerWorkingCopy)serverWC).setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, deployTmpFolderVal);
+			new File(deployTmpFolderVal).mkdirs();
 		}
 	}
 
