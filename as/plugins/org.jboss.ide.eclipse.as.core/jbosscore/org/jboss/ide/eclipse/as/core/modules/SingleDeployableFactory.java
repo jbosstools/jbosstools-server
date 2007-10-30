@@ -26,20 +26,30 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ModuleFile;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
@@ -110,7 +120,10 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	private HashMap<IPath, IModule> moduleIdToModule;
 	private HashMap<IModule, SingleDeployableModuleDelegate> moduleToDelegate;
+	private IResourceChangeListener resourceListener;
 	public SingleDeployableFactory() {
+		resourceListener = new FileDeletionListener();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 	}
 	
 	public void initialize() {
@@ -168,6 +181,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public IModule getModule(IPath path) {
 		return moduleIdToModule.get(path);
 	}
+	
 	public void saveDeployableList() {
 		Iterator<IPath> i = moduleIdToModule.keySet().iterator();
 		String val = "";
@@ -235,4 +249,70 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			return workspaceRelative;
 		}
 	}
+	
+	public class FileDeletionListener implements IResourceChangeListener, IResourceDeltaVisitor {
+		public ArrayList<IPath> list = new ArrayList<IPath>();
+		public void resourceChanged(IResourceChangeEvent event) {
+			try {
+				event.getDelta().accept(this);
+				ArrayList<IPath> clone;
+				if( list.size() > 0 ) {
+					synchronized(this) {
+						clone = new ArrayList<IPath>();
+						clone.addAll(list);
+						list.clear();
+					}
+
+					UndeployFromServerJob job = new UndeployFromServerJob(clone);
+					job.schedule();
+				}
+			} catch( CoreException ce ) {
+			}
+		}
+
+		public boolean visit(IResourceDelta delta) throws CoreException {
+			if( ((delta.getKind() & IResourceDelta.REMOVED) != 0) && delta.getResource() != null && delta.getResource().getFullPath() != null ) {
+				IModule module = getModule(delta.getResource().getFullPath());
+				if( getModule(delta.getResource().getFullPath()) != null && !list.contains(delta.getResource().getFullPath())) {
+					list.add(delta.getResource().getFullPath());
+				}
+			}
+			return true;
+		}
+	}
+	
+	public class UndeployFromServerJob extends Job {
+		private ArrayList<IPath> paths;
+		public UndeployFromServerJob(ArrayList<IPath> paths) {
+			super("Undeploy Single Files From Server");
+			this.paths = paths;
+		}
+
+		protected IStatus run(IProgressMonitor monitor) {
+			IPath next;
+			IModule mod;
+			IServer[] allServers = ServerCore.getServers();
+			for( Iterator i = paths.iterator(); i.hasNext(); ) {
+				next = (IPath)i.next();
+				mod = getModule(next);
+				if( mod != null ) {
+					for( int j = 0; j < allServers.length; j++ ) {
+						List l = Arrays.asList(allServers[j].getModules());
+						if( l.contains(mod)) {
+							try {
+								IServerWorkingCopy copy = allServers[j].createWorkingCopy();
+								ServerUtil.modifyModules(copy, new IModule[] {}, new IModule[]{mod}, new NullProgressMonitor());
+								IServer s = copy.save(false, new NullProgressMonitor());
+								new PublishServerJob(s).schedule();
+							} catch( CoreException ce ) {
+							}
+						}
+					}
+				}
+			}
+			return Status.OK_STATUS;
+		}
+		
+	}
+
 }
