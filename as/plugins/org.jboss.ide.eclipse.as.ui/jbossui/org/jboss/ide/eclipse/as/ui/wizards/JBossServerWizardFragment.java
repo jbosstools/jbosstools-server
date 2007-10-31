@@ -361,7 +361,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
 			runtimeGroup.layout();
 			String p = rwc.getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
-			deployTmpFolderVal = rwc.getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("rhdsTemp").toOSString();
+			deployTmpFolderVal = rwc.getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("jbosstoolsTemp").toOSString();
 			deployText.setText(p);
 			deployVal = p;
 			deployGroup.layout();
