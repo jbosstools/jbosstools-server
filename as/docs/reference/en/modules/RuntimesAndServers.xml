@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="RuntimesAndServers" xreflabel="RuntimesAndServers">
+    <?dbhtml filename="RuntimesAndServers.html"?>
+  <chapterinfo>
+    <keywordset>
+      <keyword>Red Hat Developer Studio</keyword>
+      <keyword>Eclipse</keyword>
+      <keyword>Deploy</keyword>
+      <keyword>Deployment</keyword>
+      <keyword>JBoss</keyword>
+    </keywordset>
+  </chapterinfo>
+    <title>Runtimes and Servers in the JBoss AS plugin</title>
+    
+ </chapter>
