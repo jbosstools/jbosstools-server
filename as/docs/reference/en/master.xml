@@ -4,7 +4,8 @@
 
 [<!ENTITY RuntimesAndServers SYSTEM "modules/RuntimesAndServers.xml">
 <!ENTITY JBossASPerspective SYSTEM "modules/JBossASPerspective.xml">
-
+<!ENTITY WebToolsprojects SYSTEM "modules/WebToolsprojects.xml">
+<!ENTITY DeployingModules SYSTEM "modules/DeployingModules.xml">
 
 ]>
 
@@ -25,5 +26,6 @@
     <toc/>  
     &RuntimesAndServers;
     &JBossASPerspective;
-   
+    &WebToolsprojects;
+    &DeployingModules;
 </book>    
