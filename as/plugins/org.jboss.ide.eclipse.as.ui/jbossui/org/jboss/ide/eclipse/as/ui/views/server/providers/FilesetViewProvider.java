@@ -45,6 +45,7 @@ import org.eclipse.core.runtime.content.IContentTypeMatcher;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -577,7 +578,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		return null;
 	}
 	
-	protected class FilesetDialog extends Dialog {
+	protected class FilesetDialog extends TitleAreaDialog {
 		protected Fileset fileset;
 		private String name, dir, includes, excludes;
 		private Button browse;
@@ -588,6 +589,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			super(parentShell);
 			this.fileset = new Fileset();
 			this.fileset.setFolder(defaultLocation);
+			
 		}
 		protected FilesetDialog(Shell parentShell, Fileset fileset) {
 			super(parentShell);
@@ -608,6 +610,9 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		
 		protected Control createDialogArea(Composite parent) {
+			setTitle("File filter");
+			setMessage("Creates a new file filter");
+			
 			Composite sup = (Composite) super.createDialogArea(parent);
 			main = new Composite(sup, SWT.NONE);
 			main.setLayout(new GridLayout(3, false));
@@ -686,7 +691,19 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			
 			Group previewWrapper = new Group(main, SWT.NONE);
-			previewWrapper.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 3, 3));
+			
+			previewWrapper.setLayout(new GridLayout());
+			GridLayout gridLayout = new GridLayout();
+			//gridLayout.numColumns = 3;
+			//gridLayout.verticalSpacing = 9;		
+			
+			GridData data = new GridData(GridData.FILL_BOTH);
+			data.grabExcessHorizontalSpace = true;
+			data.grabExcessVerticalSpace = true;
+			data.horizontalSpan = 3;
+			data.minimumHeight = 200;
+			
+			previewWrapper.setLayoutData(data);
 			previewWrapper.setText(Messages.FilesetsNewPreview);
 			
 			previewWrapper.setLayout(new FillLayout());
