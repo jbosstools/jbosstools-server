@@ -254,17 +254,19 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		public ArrayList<IPath> list = new ArrayList<IPath>();
 		public void resourceChanged(IResourceChangeEvent event) {
 			try {
-				event.getDelta().accept(this);
-				ArrayList<IPath> clone;
-				if( list.size() > 0 ) {
-					synchronized(this) {
-						clone = new ArrayList<IPath>();
-						clone.addAll(list);
-						list.clear();
+				if(event.getDelta()!=null) {
+					event.getDelta().accept(this);
+					ArrayList<IPath> clone;
+					if( list.size() > 0 ) {
+						synchronized(this) {
+							clone = new ArrayList<IPath>();
+							clone.addAll(list);
+							list.clear();
+						}
+	
+						UndeployFromServerJob job = new UndeployFromServerJob(clone);
+						job.schedule();
 					}
-
-					UndeployFromServerJob job = new UndeployFromServerJob(clone);
-					job.schedule();
 				}
 			} catch( CoreException ce ) {
 			}
