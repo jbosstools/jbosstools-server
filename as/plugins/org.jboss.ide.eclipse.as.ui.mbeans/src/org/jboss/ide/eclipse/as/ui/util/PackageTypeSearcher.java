@@ -127,6 +127,11 @@ public class PackageTypeSearcher {
 		    		  results.add(match.getElement());
 		      }
 
+		      @Override
+		    public void beginReporting() {
+		    	// TODO Auto-generated method stub
+		    	super.beginReporting();
+		    }
 		      public void endReporting() {
 		      }
 
@@ -151,7 +156,7 @@ public class PackageTypeSearcher {
 	         {SearchEngine.getDefaultSearchParticipant()}, scope, requestor, new NullProgressMonitor());
 
 	         ArrayList results = requestor.getResults();
-	         if (results.size() != 1)
+	         if (results.size() != 1) // TODO: there can be multiple packagefragments for the same name in a workspace
 	            return null;
 
 	         return (IPackageFragment) results.get(0);

@@ -37,7 +37,7 @@ import org.eclipse.wst.xml.core.internal.modelhandler.XMLModelLoader;
 public class ServicexmlModelHandler extends AbstractModelHandler implements IModelHandler{
 
 	final static String CONTENTTYPE_ID = "org.jboss.ide.eclipse.as.ui.mbeans.servicexml"; //$NON-NLS-1$
-	final private static String MODELHANDLER_ID = "org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"; //$NON-NLS-1$
+	final static String MODELHANDLER_ID = "org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"; //$NON-NLS-1$
 
 	public ServicexmlModelHandler() {
 		super();

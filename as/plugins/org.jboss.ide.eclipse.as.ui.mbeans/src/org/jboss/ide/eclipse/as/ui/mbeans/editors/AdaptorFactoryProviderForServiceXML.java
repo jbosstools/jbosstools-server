@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.ui.mbeans.editors;
 import org.eclipse.wst.sse.core.internal.ltk.modelhandler.IDocumentTypeHandler;
 import org.eclipse.wst.xml.ui.internal.registry.AdapterFactoryProviderForXML;
 
+
 /**
  * 
  * @author Rob Stryker <rob.stryker@redhat.com>
@@ -33,8 +34,11 @@ public class AdaptorFactoryProviderForServiceXML extends
 		AdapterFactoryProviderForXML {
 	
 	public boolean isFor(IDocumentTypeHandler contentTypeDescription) {
-		//return (contentTypeDescription instanceof ServicexmlModelHandler);
-		return true;
+		if(contentTypeDescription.getId().equals(ServicexmlModelHandler.MODELHANDLER_ID)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
