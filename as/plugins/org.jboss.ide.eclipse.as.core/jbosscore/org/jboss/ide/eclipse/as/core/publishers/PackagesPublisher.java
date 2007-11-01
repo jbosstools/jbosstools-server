@@ -78,7 +78,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			IModule module2 = module[0];
 	    	// if it's being removed
 	    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
-	    		removeModule(module2, kind, deltaKind, monitor);
+	    		removeModule(module2, kind, deltaKind, modulePublishState, monitor);
 	    		return null;
 	    	}
 	    	
@@ -92,10 +92,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		return null;
 	}
 
-	protected void removeModule(IModule module, int kind, int deltaKind, IProgressMonitor monitor) {
+	protected void removeModule(IModule module, int kind, int deltaKind, int publishState, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		// remove all of the deployed items
-		PublishEvent event = PublisherEventLogger.createModuleRootEvent(eventRoot, new IModule[]{module}, kind, deltaKind);
+		PublishEvent event = PublisherEventLogger.createModuleRootEvent(
+				eventRoot, new IModule[]{module}, kind, deltaKind, publishState);
 		if( pack != null ) {
 			IPath sourcePath = pack.getArchiveFilePath();
 			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
@@ -108,7 +109,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	
 	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
-		PublishEvent event = PublisherEventLogger.createModuleRootEvent(eventRoot, new IModule[]{module}, kind, deltaKind);
+		PublishEvent event = PublisherEventLogger.createModuleRootEvent(
+				eventRoot, new IModule[]{module}, kind, deltaKind, modulePublishState);
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPathRoot = new Path(server.getDeployDirectory());

@@ -126,8 +126,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return;
 		IJBossServerPublisher publisher;
-		int modulePublishState = getServer().getModulePublishState(module) + 0;
-		PublishEvent root = PublisherEventLogger.createModuleRootEvent(publishEvent, module, kind, deltaKind);
+		int modulePublishState = getServer().getModulePublishState(module);
+		PublishEvent root = PublisherEventLogger.createModuleRootEvent(publishEvent, module, kind, deltaKind, modulePublishState);
 
 		if( module.length > 0 ) {
 			IModule lastMod = module[module.length -1];

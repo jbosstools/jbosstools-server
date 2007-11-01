@@ -34,7 +34,9 @@ public class PublisherEventLogger {
 	// properties
 	public static final String MODULE_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_KIND"; 
 	public static final String DELTA_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DELTA_KIND"; 
-	public static PublishEvent createModuleRootEvent(EventLogTreeItem parent, IModule[] module, int kind, int deltaKind) {
+	public static final String MODULE_PUBLISH_STATE = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_PUBLISH_STATE"; 
+	public static PublishEvent createModuleRootEvent(EventLogTreeItem parent, IModule[] module, 
+			int kind, int deltaKind, int moduleStateKind) {
 		PublishEvent event = new PublishEvent(parent, MODULE_ROOT_EVENT);
 		String name = "";
 		for( int i = 0; i < module.length; i++ ) {
@@ -43,6 +45,7 @@ public class PublisherEventLogger {
 		name = name.substring(0, name.length()-1);
 		event.setProperty(MODULE_KIND, new Integer(kind));
 		event.setProperty(DELTA_KIND, new Integer(deltaKind));
+		event.setProperty(MODULE_PUBLISH_STATE, new Integer(moduleStateKind));
 		event.setProperty(MODULE_NAME, name);
 		EventLogModel.markChanged(parent);
 		return event;

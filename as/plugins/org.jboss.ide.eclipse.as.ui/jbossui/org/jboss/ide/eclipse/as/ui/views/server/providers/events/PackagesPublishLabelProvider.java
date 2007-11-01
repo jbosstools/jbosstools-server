@@ -56,14 +56,20 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		propertyToMessageMap.put(PublisherEventLogger.EXCEPTION_MESSAGE, "Exception");
 		propertyToMessageMap.put(PublisherEventLogger.SUCCESS_PROPERTY, "Action Succeeded");
 		propertyToMessageMap.put(PublisherEventLogger.MODULE_NAME, "Module Name");
-		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND, "Change Type");
-		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND, "Publish Type");
+		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND, "Module's Change Type");
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND, "Server's Publish Type");
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_PUBLISH_STATE, "Module's Publish Type");
 		
 		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND + DELIMITER + IServer.PUBLISH_AUTO, "Auto");
 		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND + DELIMITER + IServer.PUBLISH_CLEAN, "Clean");
 		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND + DELIMITER + IServer.PUBLISH_FULL, "Full");
 		propertyToMessageMap.put(PublisherEventLogger.MODULE_KIND + DELIMITER + IServer.PUBLISH_INCREMENTAL, "Incremental");
-		
+
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_PUBLISH_STATE + DELIMITER + IServer.PUBLISH_STATE_FULL, "Full");
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_PUBLISH_STATE + DELIMITER + IServer.PUBLISH_STATE_INCREMENTAL, "Incremental");
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_PUBLISH_STATE + DELIMITER + IServer.PUBLISH_STATE_NONE, "None");
+		propertyToMessageMap.put(PublisherEventLogger.MODULE_PUBLISH_STATE + DELIMITER + IServer.PUBLISH_STATE_UNKNOWN, "Unknown");
+
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.ADDED, "Added");
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.CHANGED, "Changed");
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.REMOVED, "Removed");
@@ -114,13 +120,18 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 	protected String getKindDeltaKind(EventLogTreeItem item) {
 		int kind = ((Integer)item.getProperty(PublisherEventLogger.MODULE_KIND)).intValue();
 		int deltaKind = ((Integer)item.getProperty(PublisherEventLogger.DELTA_KIND)).intValue();
-		
+		int modPublishState = ((Integer)item.getProperty(PublisherEventLogger.MODULE_PUBLISH_STATE)).intValue();
 		String r = "[";
 		switch(kind) {
-			case IServer.PUBLISH_AUTO: r += "Auto, "; break;
 			case IServer.PUBLISH_CLEAN: r += "Clean, "; break;
 			case IServer.PUBLISH_FULL: r += "Full, "; break;
-			case IServer.PUBLISH_INCREMENTAL: r += "Incremental, "; break;
+			case IServer.PUBLISH_AUTO: 
+			case IServer.PUBLISH_INCREMENTAL: 
+				if( modPublishState == IServer.PUBLISH_STATE_FULL || modPublishState == IServer.PUBLISH_STATE_UNKNOWN)
+					r += "Full, ";
+				else
+					r += "Incremental, ";
+				break;
 			default: r += "Unknown, ";
 		}
 		switch( deltaKind ) {
