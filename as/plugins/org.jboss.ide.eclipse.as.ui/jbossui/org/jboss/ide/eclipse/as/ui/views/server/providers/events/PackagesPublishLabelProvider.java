@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishUtilStatusWrapper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 
@@ -47,6 +48,7 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		supported.add(PublisherEventLogger.FILE_COPPIED_EVENT);
 		supported.add(PublisherEventLogger.FILE_DELETED_EVENT);
 		supported.add(PublisherEventLogger.FOLDER_DELETED_EVENT);
+		supported.add(PublisherEventLogger.PUBLISH_UTIL_STATUS_WRAPPER_TYPE);
 	}
 	protected void loadPropertyMap() {
 		propertyToMessageMap.put(PublisherEventLogger.SOURCE_PROPERTY, "Source");
@@ -133,6 +135,13 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 	}
 	public String getText(EventLogTreeItem item) {
 		String type = item.getSpecificType();
+		
+		if( type.equals(PublisherEventLogger.PUBLISH_UTIL_STATUS_WRAPPER_TYPE)) {
+			Object o = item.getData();
+			if( o == null || !(o instanceof IStatus ))
+				return "Unknown Status Event: " + o;
+			return ((IStatus)o).getMessage();
+		}
 		
 		if( type.equals(PublisherEventLogger.ROOT_EVENT)) {
 			return "Publishing to server";
