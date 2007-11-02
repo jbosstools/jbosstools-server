@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
@@ -40,27 +39,26 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		return publishState;
 	}
 
-	public IStatus publishModule(int kind, int deltaKind,
-			int modulePublishState, IModule[] module, IProgressMonitor monitor)
+	public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor)
 			throws CoreException {
 		
 		IModule module2 = module[0];
 		
 		IStatus status = null;
-		if(ServerBehaviourDelegate.REMOVED == deltaKind){
-        	status = unpublish(server, module2, kind, deltaKind, modulePublishState, monitor);
-        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind || kind == IServer.PUBLISH_FULL || kind == IServer.PUBLISH_CLEAN ){
+		if(publishType == REMOVE_PUBLISH){
+        	status = unpublish(server, module2, monitor);
+        } else if( publishType == FULL_PUBLISH ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	status = publish(server, module2, kind, deltaKind, modulePublishState, true, monitor);
-        } else if( ServerBehaviourDelegate.NO_CHANGE != deltaKind && kind == IServer.PUBLISH_INCREMENTAL ){
-        	status = publish(server, module2, kind, deltaKind, modulePublishState, false, monitor);
+        	status = publish(server, module2, true, monitor);
+        } else if( publishType == INCREMENTAL_PUBLISH ) {
+        	status = publish(server, module2, false, monitor);
         }
+		root.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, new Integer(1));
 		return status;
 
 	}
 	
-	protected IStatus publish(IDeployableServer server, IModule module, int kind, int deltaKind, 
-								int modulePublishState, boolean updateTimestamp, IProgressMonitor monitor) throws CoreException {
+	protected IStatus publish(IDeployableServer server, IModule module, boolean updateTimestamp, IProgressMonitor monitor) throws CoreException {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
@@ -83,7 +81,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		return null;
 	}
 
-	protected IStatus unpublish(IDeployableServer server, IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) throws CoreException {
+	protected IStatus unpublish(IDeployableServer server, IModule module, IProgressMonitor monitor) throws CoreException {
 		// delete file
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {

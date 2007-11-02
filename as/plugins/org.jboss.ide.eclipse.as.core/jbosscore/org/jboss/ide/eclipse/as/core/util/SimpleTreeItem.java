@@ -56,10 +56,6 @@ public class SimpleTreeItem {
 			item.setParent(this);
 		}
 	}
-	
-	public void addChild(int loc, SimpleTreeItem item) {
-		children.add(loc, item);
-	}
 		
 	public void addChildren(SimpleTreeItem[] kids) {
 		for( int i = 0; i < kids.length; i++ ) {

@@ -203,11 +203,6 @@ public class EventLogModel {
 			if( isLoggingEnabled() ) 
 				super.addChild(item);
 		}
-		
-		public void addChild(int loc, SimpleTreeItem item) {
-			if( isLoggingEnabled() ) 
-				super.addChild(loc, item);
-		}
 			
 		public void addChildren(SimpleTreeItem[] kids) {
 			if( isLoggingEnabled() ) 

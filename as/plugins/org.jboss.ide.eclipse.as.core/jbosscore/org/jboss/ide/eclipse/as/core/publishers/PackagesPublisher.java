@@ -29,12 +29,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.IExtendedModuleResource;
@@ -43,6 +45,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEven
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -72,45 +75,39 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
-    public IStatus publishModule(int kind, int deltaKind, int modulePublishState, 
-    		IModule[] module, IProgressMonitor monitor) throws CoreException {
+    public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor) throws CoreException {
 		try {
 			IModule module2 = module[0];
 	    	// if it's being removed
-	    	if( deltaKind == ServerBehaviourDelegate.REMOVED ) {
-	    		removeModule(module2, kind, deltaKind, modulePublishState, monitor);
-	    		return null;
-	    	}
-	    	
-	    	if( deltaKind == ServerBehaviourDelegate.ADDED || deltaKind == ServerBehaviourDelegate.CHANGED) {
-	    		publishModule(module2, kind, deltaKind,  modulePublishState, monitor);
-	    		return null;
+	    	if( publishType == REMOVE_PUBLISH ) {
+	    		removeModule(module2, monitor);
+	    	} else if( publishType == FULL_PUBLISH ) {
+	    		publishModule(module2, true, monitor);
+	    	} else if( publishType == INCREMENTAL_PUBLISH ) {
+	    		publishModule(module2, false, monitor);
 	    	}
 		}catch(Exception e) {
-			e.printStackTrace();
+			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error during publish", e);
+			JBossServerCorePlugin.getDefault().getLog().log(status);
 		}
 		return null;
 	}
 
-	protected void removeModule(IModule module, int kind, int deltaKind, int publishState, IProgressMonitor monitor) {
+	protected void removeModule(IModule module, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		// remove all of the deployed items
-		PublishEvent event = PublisherEventLogger.createModuleRootEvent(
-				eventRoot, new IModule[]{module}, kind, deltaKind, publishState);
 		if( pack != null ) {
 			IPath sourcePath = pack.getArchiveFilePath();
 			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
 			// remove the entire file or folder
-			PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
+			PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
 			FileUtil.safeDelete(destPath.toFile(), listener);
 		}
 	}
 	
 
 	
-	protected void publishModule(IModule module, int kind, int deltaKind, int modulePublishState, IProgressMonitor monitor) {
-		PublishEvent event = PublisherEventLogger.createModuleRootEvent(
-				eventRoot, new IModule[]{module}, kind, deltaKind, modulePublishState);
+	protected void publishModule(IModule module, boolean incremental, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPathRoot = new Path(server.getDeployDirectory());
@@ -121,20 +118,15 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			return;
 		}
 
-		PublisherFileUtilListener listener = new PublisherFileUtilListener(event);
-
-		if( shouldPublishIncremental(module, kind, deltaKind, modulePublishState) ) {
+		PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
+		if( incremental ) {
 			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta, listener);
 		} else {
 			// full publish, copy whole folder or file
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
 		}
 	}
-	protected boolean shouldPublishIncremental(IModule module, int kind, int deltaKind, int modulePublishState) {
-		if(modulePublishState == IServer.PUBLISH_STATE_FULL || kind == IServer.PUBLISH_FULL) 
-			return false;
-		return true;
-	}
+
 	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix, 
 								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
 		ArrayList changedFiles = new ArrayList();

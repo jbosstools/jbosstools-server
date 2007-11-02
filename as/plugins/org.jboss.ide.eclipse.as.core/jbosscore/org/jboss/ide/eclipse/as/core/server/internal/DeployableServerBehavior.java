@@ -69,38 +69,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
 	
-	private String print(int kind, int deltaKind, IModule[] module) {
-		String ret = "";
-		String name = "";
-		for( int i = 0; i < module.length; i++ ) 
-			name += module[i].getName();
-		
-		ret += "publishing module (" + name + "): ";
-		switch( kind ) {
-			case IServer.PUBLISH_INCREMENTAL: ret += "incremental, "; break;
-			case IServer.PUBLISH_FULL: ret += "full, "; break;
-			case IServer.PUBLISH_AUTO: ret += "auto, "; break;
-			case IServer.PUBLISH_CLEAN: ret += "clean, "; break;
-		}
-		switch( deltaKind ) {
-			case ServerBehaviourDelegate.NO_CHANGE: ret += "no change"; break;
-			case ServerBehaviourDelegate.ADDED: ret += "added"; break;
-			case ServerBehaviourDelegate.CHANGED: ret += "changed"; break;
-			case ServerBehaviourDelegate.REMOVED: ret += "removed"; break;
-		}
-		ret += " to server " + getServer().getName() + "(" + getServer().getId() + ")";
-		return ret;
-	}
-	
-	protected PublishEvent publishEvent;
+	protected PublishEvent publishRootEvent;
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
-		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
-		publishEvent = PublisherEventLogger.createTopEvent(root);
+		publishRootEvent = new PublishEvent(null, PublisherEventLogger.ROOT_EVENT);
 	}
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-		publishEvent = null;
-		
         IModule[] modules = this.getServer().getModules();
         boolean allpublished= true;
         for (int i = 0; i < modules.length; i++) {
@@ -109,7 +83,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
         }
         if(allpublished)
             setServerPublishState(IServer.PUBLISH_STATE_NONE);
-
+        
+        if( publishRootEvent.getChildren().length != 0 ) {
+    		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
+    		root.addChild(publishRootEvent);
+        }
+		publishRootEvent = null;
 	}
 
 	
@@ -125,30 +104,56 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		// kind = [incremental, full, auto, clean] = [1,2,3,4]
 		// delta = [no_change, added, changed, removed] = [0,1,2,3]
 		if( module.length == 0 ) return;
-		IJBossServerPublisher publisher;
 		int modulePublishState = getServer().getModulePublishState(module);
-		PublishEvent root = PublisherEventLogger.createModuleRootEvent(publishEvent, module, kind, deltaKind, modulePublishState);
+		int publishType = getPublishType(kind, deltaKind, modulePublishState);
+		IJBossServerPublisher publisher;
+		
 
-		if( module.length > 0 ) {
+		if( module.length > 0 && publishType != IJBossServerPublisher.NO_PUBLISH) {
+			Integer i,j;
+			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_MODULE_COUNT);
+			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_MODULE_COUNT, new Integer(i == null ? 1 : i.intValue()+1));
+			PublishEvent modulePublishEvent = PublisherEventLogger.createModuleRootEvent(publishRootEvent, module, kind, deltaKind, modulePublishState);
+			
 			IModule lastMod = module[module.length -1];
 			if( isJstModule(lastMod) ) {
-				publisher = new JstPublisher(getServer(), root);
+				publisher = new JstPublisher(getServer(), modulePublishEvent);
 			} else if( isPackagesTypeModule(lastMod) ) {
-				publisher = new PackagesPublisher(getServer(), root);
+				publisher = new PackagesPublisher(getServer(), modulePublishEvent);
 			} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
-				publisher = new SingleFilePublisher(getServer(), root);
+				publisher = new SingleFilePublisher(getServer(), modulePublishEvent);
 			} else {
 				publisher = new NullPublisher();
 			}
 			publisher.setDelta(getPublishedResourceDelta(module));
 			try {
-				publisher.publishModule(kind, deltaKind, modulePublishState, module, monitor);
+				publisher.publishModule(module, publishType, monitor);
 			} catch( CoreException ce ) {
 				throw ce;
 			} finally {
 				setModulePublishState(module, publisher.getPublishState());
 			}
+			
+			// add file changed count to top level element
+			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_FILE_COUNT);
+			j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_FILE_COUNT);
+			j = j == null ? new Integer(0) : j;
+			int count = (i == null ? 0 : i.intValue()) + j.intValue();
+			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, count);
 		}
+	}
+	
+	
+	protected int getPublishType(int kind, int deltaKind, int modulePublishState) {
+		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
+			return IJBossServerPublisher.REMOVE_PUBLISH;
+		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {
+			return IJBossServerPublisher.FULL_PUBLISH;
+		} else if (kind == IServer.PUBLISH_INCREMENTAL || modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
+			if( ServerBehaviourDelegate.CHANGED == deltaKind ) 
+				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
+		} 
+		return IJBossServerPublisher.NO_PUBLISH;
 	}
 	
 	/* Temporary and will need to be fixed */

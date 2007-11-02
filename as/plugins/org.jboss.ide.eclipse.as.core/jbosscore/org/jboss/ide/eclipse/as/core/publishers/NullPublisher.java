@@ -39,8 +39,7 @@ public class NullPublisher implements IJBossServerPublisher {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
-    public IStatus publishModule(int kind, int deltaKind, int modulePublishState, 
-    		IModule[] module, IProgressMonitor monitor) throws CoreException {
+    public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor) throws CoreException {
     	return null;
 	}
 

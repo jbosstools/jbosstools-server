@@ -33,10 +33,13 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
  *
  */
 public interface IJBossServerPublisher {
-	public IStatus publishModule(int kind, int deltaKind, int modulePublishState,
-			IModule[] module, IProgressMonitor monitor) 
-								throws CoreException;
+	public static final int NO_PUBLISH = 0;
+	public static final int INCREMENTAL_PUBLISH = 1;
+	public static final int FULL_PUBLISH = 2;
+	public static final int REMOVE_PUBLISH = 3;
+
+	public IStatus publishModule(IModule[] module, int publishType, 
+			IProgressMonitor monitor) throws CoreException;
 	public int getPublishState();
 	public void setDelta(IModuleResourceDelta[] delta);
-
 }

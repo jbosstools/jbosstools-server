@@ -31,16 +31,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
@@ -91,11 +92,8 @@ public class JstPublisher implements IJBossServerPublisher {
 		return modulePath;
 	}
 	
-	public IStatus publishModule(int kind, int deltaKind,
-			int modulePublishState, IModule[] module, IProgressMonitor monitor)
+	public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor)
 			throws CoreException {
-		String modulePath = getModulePath(module);
-
 		IStatus status = null;
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
@@ -103,24 +101,25 @@ public class JstPublisher implements IJBossServerPublisher {
 				deleted = true;
 		}
 		
-		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
+		if (publishType == REMOVE_PUBLISH ) {
 			status = unpublish(server, module, monitor);
-		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {
-			if( deleted ) 
+		} else {
+			if( deleted ) {
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
-			else
-				status = fullPublish(module, module[module.length-1], monitor);	
-		} else if (kind == IServer.PUBLISH_INCREMENTAL || modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
-			if( deleted ) 
-				publishState = IServer.PUBLISH_STATE_UNKNOWN;
-			else 
-				status = incrementalPublish(module, module[module.length-1], monitor);
-		} 
+			} else {
+				if (publishType == FULL_PUBLISH ) {
+					status = fullPublish(module, module[module.length-1], monitor);	
+				} else if (publishType == INCREMENTAL_PUBLISH) {
+					status = incrementalPublish(module, module[module.length-1], monitor);
+				} 
+			}
+		}
 		return status;
 	}
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countMembers(module));
 		IPath deployPath = getDeployPath(moduleTree);
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
@@ -135,7 +134,6 @@ public class JstPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < length; i++ ) {
 			new PublisherEventLogger.PublishUtilStatusWrapper(eventRoot, results[i]);
 		}
-		if( length != 0 ) EventLogModel.markChanged(eventRoot);
 		
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {
@@ -150,6 +148,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	}
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countChanges(delta));
 		IStatus[] results = new IStatus[] {};
 		if( !deployPackaged(moduleTree))
 			results = new PublishUtil(server.getServer()).publishDelta(delta, getDeployPath(moduleTree), monitor);
@@ -160,13 +159,13 @@ public class JstPublisher implements IJBossServerPublisher {
 		for( int i = 0; i < length; i++ ) {
 			new PublisherEventLogger.PublishUtilStatusWrapper(eventRoot, results[i]);
 		}
-		if( length != 0 ) EventLogModel.markChanged(eventRoot);
-
+		
 		return null;
 	}
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countMembers(module[module.length-1]));
 		boolean error = localSafeDelete(getDeployPath(module), eventRoot);
 		if( error ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
@@ -286,5 +285,36 @@ public class JstPublisher implements IJBossServerPublisher {
 				packager.write(file2, destination);
 			}
 		}
+	}
+	
+	protected int countChanges(IModuleResourceDelta[] deltas) {
+		IModuleResource res;
+		int count = 0;
+		for( int i = 0; i < deltas.length; i++ ) {
+			res = deltas[i].getModuleResource();
+			if( res != null && res instanceof IModuleFile)
+				count++;
+			count += countChanges(deltas[i].getAffectedChildren());
+		}
+		return count;
+	}
+
+	protected int countMembers(IModule module) {
+		try {
+			ModuleDelegate delegate = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+			return delegate == null ? 0 : countMembers(delegate.members());
+		} catch( CoreException ce ) {}
+		return 0;
+	}
+	protected int countMembers(IModuleResource[] resources) {
+		int count = 0;
+		for( int i = 0; i < resources.length; i++ ) {
+			if( resources[i] instanceof IModuleFile ) {
+				count++;
+			} else if( resources[i] instanceof IModuleFolder ) {
+				count += countMembers(((IModuleFolder)resources[i]).members());
+			}
+		}
+		return count;
 	}
 }

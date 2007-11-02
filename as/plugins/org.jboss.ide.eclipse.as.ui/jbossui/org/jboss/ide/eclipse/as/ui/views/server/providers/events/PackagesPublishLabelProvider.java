@@ -75,6 +75,8 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.REMOVED, "Removed");
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.NO_CHANGE, "No Change");
 		
+		propertyToMessageMap.put(PublisherEventLogger.CHANGED_FILE_COUNT, "Changed Files");
+		propertyToMessageMap.put(PublisherEventLogger.CHANGED_MODULE_COUNT, "Changed Modules");
 		
 //		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
 //		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherRemoveEvent.PACKAGE_NAME, "Package Name");
@@ -155,8 +157,15 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		}
 		
 		if( type.equals(PublisherEventLogger.ROOT_EVENT)) {
-			return "Publishing to server";
+			Integer tmp;
+			int files, mods;
+			tmp = (Integer)item.getProperty(PublisherEventLogger.CHANGED_FILE_COUNT);
+			files = tmp == null ? 0 : tmp.intValue();
+			tmp = (Integer)item.getProperty(PublisherEventLogger.CHANGED_MODULE_COUNT);
+			mods = tmp == null ? 0 : tmp.intValue();
+			return "Publishing [" + mods + " modules, " + files + " files changed]";
 		}
+		
 		if( type.equals(PublisherEventLogger.MODULE_ROOT_EVENT)) {
 			return getKindDeltaKind(item) + " " + item.getProperty(PublisherEventLogger.MODULE_NAME);
 		}

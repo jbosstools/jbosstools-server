@@ -23,11 +23,7 @@ public class PublisherEventLogger {
 			setProperty(MODULE_NAME, module.getName());
 		}
 	}
-	
-	public static PublishEvent createTopEvent(EventLogTreeItem parent) {
-		return new PublishEvent(parent, ROOT_EVENT);
-	}
-	
+		
 	// type
 	public static final String ROOT_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.ROOT_EVENT";
 	public static final String MODULE_ROOT_EVENT = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_ROOT_EVENT";
@@ -35,6 +31,7 @@ public class PublisherEventLogger {
 	public static final String MODULE_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_KIND"; 
 	public static final String DELTA_KIND = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DELTA_KIND"; 
 	public static final String MODULE_PUBLISH_STATE = "org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.MODULE_PUBLISH_STATE"; 
+
 	public static PublishEvent createModuleRootEvent(EventLogTreeItem parent, IModule[] module, 
 			int kind, int deltaKind, int moduleStateKind) {
 		PublishEvent event = new PublishEvent(parent, MODULE_ROOT_EVENT);
@@ -83,6 +80,10 @@ public class PublisherEventLogger {
 	public static final String SOURCE_PROPERTY = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.SOURCE_PROPERTY";
 	public static final String DEST_PROPERTY = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.DEST_PROPERTY";
 	public static final String EXCEPTION_MESSAGE = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.EXCEPTION_PROPERTY";
+	public static final String CHANGED_MODULE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.CHANGED_MODULE_COUNT_PROPERTY";
+	public static final String CHANGED_FILE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.CHANGED_FILE_COUNT_PROPERTY";
+	
+	
 	public static class DeletedEvent extends EventLogTreeItem {
 		public DeletedEvent(EventLogTreeItem parent, File file, boolean result, Exception e) {
 			super(parent, FILE_EVENT_MAJOR_TYPE, file.isDirectory() ? FOLDER_DELETED_EVENT : FILE_DELETED_EVENT);
