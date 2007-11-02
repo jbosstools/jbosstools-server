@@ -290,6 +290,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected int countChanges(IModuleResourceDelta[] deltas) {
 		IModuleResource res;
 		int count = 0;
+		if( deltas == null ) return 0;
 		for( int i = 0; i < deltas.length; i++ ) {
 			res = deltas[i].getModuleResource();
 			if( res != null && res instanceof IModuleFile)
@@ -308,6 +309,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	}
 	protected int countMembers(IModuleResource[] resources) {
 		int count = 0;
+		if( resources == null ) return 0;
 		for( int i = 0; i < resources.length; i++ ) {
 			if( resources[i] instanceof IModuleFile ) {
 				count++;
