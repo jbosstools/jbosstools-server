@@ -43,12 +43,11 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
@@ -133,7 +132,12 @@ public class ModuleViewProvider extends SimplePropertiesViewExtension {
 		if( selection != null && selection.length > 0 ) {
 			Server s = ((Server)selection[0].server);
 			for( int i = 0; i < selection.length; i++ ) {
-				s.setModulePublishState(selection[i].module, type);
+				IModule[] mod = selection[i].module;
+				s.setModulePublishState(mod, type);
+				ArrayList<IModule[]> allChildren = ModuleUtil.getDeepChildren(s, mod);
+				for( int j = 0; j < allChildren.size(); j++ ) {
+					s.setModulePublishState((IModule[])allChildren.get(j), type);
+				}
 			}
 			new PublishServerJob(s, IServer.PUBLISH_INCREMENTAL, true).schedule();
 		}
