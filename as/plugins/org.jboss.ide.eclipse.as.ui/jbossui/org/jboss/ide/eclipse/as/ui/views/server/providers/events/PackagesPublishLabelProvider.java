@@ -75,8 +75,8 @@ public class PackagesPublishLabelProvider extends ComplexEventLogLabelProvider i
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.REMOVED, "Removed");
 		propertyToMessageMap.put(PublisherEventLogger.DELTA_KIND + DELIMITER + ServerBehaviourDelegate.NO_CHANGE, "No Change");
 		
-		propertyToMessageMap.put(PublisherEventLogger.CHANGED_FILE_COUNT, "Changed Files");
-		propertyToMessageMap.put(PublisherEventLogger.CHANGED_MODULE_COUNT, "Changed Modules");
+		propertyToMessageMap.put(PublisherEventLogger.CHANGED_FILE_COUNT, "Changed File(s)");
+		propertyToMessageMap.put(PublisherEventLogger.CHANGED_MODULE_COUNT, "Changed Module(s)");
 		
 //		propertyToMessageMap.put(IJBossServerPublisher.MODULE_NAME, "Module Name");
 //		propertyToMessageMap.put(PackagesPublisher.PackagesPublisherRemoveEvent.PACKAGE_NAME, "Package Name");
