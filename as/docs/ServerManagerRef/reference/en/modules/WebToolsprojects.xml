@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="webtoolsProjects">
+  <title>Webtools Projects (out of date!)</title>
+  <section><title>Description</title>
+  <para>
+	  Webtools provides what are called "faceted" projects, 
+	  Their most popular such projects are their J2EE projects,
+	  such as their Dynamic Web Project, their EJB Project, 
+	  or their EAR project. </para>
+  <para>
+	  The idea behind faceted projects is that each project 
+	  can accept units of functionality, or facets, which can be 
+	  added or removed by the user. Some examples of these facets
+	  are adding a webdoclet facet to a web project, or an 
+	  ejbdoclet to an EJB Project. </para>
+  <para>
+	  Most often, these "facets" either add to the project's classpath, 
+	  enable a builder, or watch the project in some other fashion. </para>
+  <para>
+	  WTP projects have undergone some criticism as being 
+	  <emphasis>over-engineered</emphasis> or too restrictive in their
+	  design. WTP projects are set up in a tree-relationship to each other,
+	  where one project can be a child of another. For example, an EAR
+	  project may have a Web Project child, an EJB project child, 
+	  or other types. </para>
+  <para>
+	  The benefit of this is that the structure of your projects is
+	  then known, and packaging it up *should* be trivial. However,
+	  if your project is non-standard, or you feel too confined by
+	  such rigid structural requirements, you can still choose to 
+	  package your project using the Archives plugin as described
+	  in the last chapter</para>
+
+  </section>
+  <section><title>Faceted Project Wizards</title>
+    <figure id="faceted1"> <title>Faceted Project Wizard: First Page</title>
+    <mediaobject>
+	<alt>Faceted Project Wizard: First Page</alt>
+	<imageobject>
+		<imagedata width="5in" scalefit="0" 
+			fileref="..\..\..\..\reference\en\images\projects\wizard1.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+   <para>
+	   The first page of most WTP projects allows you to target a specific runtime,
+	   representing a server's library location. It will also provide you the ability to 
+	   add this project to an EAR project, and select a pre-selected default set of facets,
+	   called a configuration, rather than manually select each facet you might want.</para>
+   <para>
+	   Selecting the runtime, again, allows the project to install the proper
+	   classpaths to the project so it knows what code to compile against.</para>
+    <figure id="faceted2"> <title>Faceted Project Wizard: Second Page</title>
+    <mediaobject>
+	<alt>Faceted Project Wizard: Second Page</alt>
+	<imageobject>
+		<imagedata width="5in" scalefit="0" 
+			fileref="..\..\..\..\reference\en\images\projects\wizard2.jpg"/>
+	</imageobject>
+   </mediaobject>
+   </figure>
+   <para>
+	   The second page of the wizard allows you to enable or disable specific facets, as
+	   described above. Some facets may require others, and some may conflict with others, 
+	   but on the whole this page allows you to add any number of facets that don't conflict
+	   with each other. </para>
+   <para>
+	   Further pages are specific to either hte project type, or the facets selected.</para>
+   </section>
+</chapter>	
