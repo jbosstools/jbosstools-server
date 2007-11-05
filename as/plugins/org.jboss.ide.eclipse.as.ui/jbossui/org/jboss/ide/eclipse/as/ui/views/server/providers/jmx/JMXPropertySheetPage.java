@@ -153,6 +153,7 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 	protected void setInputObject(Object obj) {
 		if (obj instanceof JMXDomain) {
 			showDomainComposite((JMXDomain) obj);
+			setBean(null);
 		} else if (obj instanceof JMXBean) {
 			setBean((JMXBean) obj);
 		} else if (obj instanceof JMXAttributesWrapper
@@ -168,9 +169,6 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 					&& bean.getException() == null;
 			boolean hasError = bean.getOperations() == null
 					&& bean.getException() != null;
-			boolean currentBeanLoading = bean == this.bean
-					&& pulldown.getItems().length == 1
-					&& pulldown.getItems()[0].equals(JMXViewProvider.LOADING_STRING_ARRAY[0]);
 			boolean finishedLoading = bean.getOperations() != null;
 
 			this.bean = bean;
@@ -193,6 +191,10 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 						+ bean.getAttributes().length + " attributes)");
 			}
 			main.layout();
+		} else {
+			beanLabel.setText("Please select an mbean from the JBoss Servers View");
+			pulldown.setItems(JMXViewProvider.SELECT_MBEAN_ARRAY);
+			pulldown.select(0); // select Loading...
 		}
 	}
 

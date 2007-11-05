@@ -53,6 +53,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
 public class JMXViewProvider extends JBossServerViewExtension {
 	public static final Object LOADING = new Object();
 	public static final String[] LOADING_STRING_ARRAY = new String[] { "Loading..." };
+	public static final String[] SELECT_MBEAN_ARRAY = new String[] { "Please select an MBean from the JBoss Server's View"};
 	public static final String ATTRIBUTES_STRING = "Attributes...";
 
 	public static final Object CLASSLOADING_TOKEN = new Object();

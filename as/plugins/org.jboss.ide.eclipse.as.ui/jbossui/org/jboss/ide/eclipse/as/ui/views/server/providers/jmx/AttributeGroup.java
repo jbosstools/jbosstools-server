@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 
+import java.util.ArrayList;
+
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -43,7 +45,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -134,6 +135,14 @@ public class AttributeGroup extends Composite {
 			final WrappedMBeanAttributeInfo attInfo = (WrappedMBeanAttributeInfo) item
 					.getData();
 
+			// If we can't create one of these objects via a string, 
+			// handle it through a wizard instead.
+			if( !isSimpleType(attInfo.getInfo().getType())) {
+				handleComplexType(attInfo);
+				return;
+			}
+			
+			
 			final int column = 3;
 			boolean isCarbon = SWT.getPlatform().equals("carbon");
 			final Composite composite = new Composite(tree, SWT.NONE);
@@ -200,22 +209,32 @@ public class AttributeGroup extends Composite {
 
 		}
 	}
-
-	protected void saveAttributeChange(final WrappedMBeanAttributeInfo attInfo, Text text) {
-		if (text.isDisposed())
-			return;
-		final String text2 = text.getText();
-		final Attribute att = createAttribute(attInfo, text2);
-		final Boolean[] errorBool = new Boolean[1];
+	
+	protected void saveAttributeChange(WrappedMBeanAttributeInfo attInfo, Text text) {
+		if (!text.isDisposed()) {
+			Attribute att = createAttribute(attInfo, text.getText());
+			if( att == null ) {
+				// throw up a message box and say no can do, for now
+				MessageBox messageBox = new MessageBox (new Shell(), SWT.OK);
+				messageBox.setText ("Cannot update bean");
+				messageBox.setMessage ("Bean update cannot proceed. Plug-in cannot convert " + text.getText() + " into " + attInfo.getInfo().getType());
+				messageBox.open();
+				return;
+			}
+			saveAttributeChange(attInfo, att);
+		}
+	}
+	
+	protected void saveAttributeChange(final WrappedMBeanAttributeInfo attInfo, final Attribute att) {
 		if( att == null ) {
 			// throw up a message box and say no can do, for now
 			MessageBox messageBox = new MessageBox (new Shell(), SWT.OK);
 			messageBox.setText ("Cannot update bean");
-			messageBox.setMessage ("Bean update cannot proceed. Plug-in cannot convert " + text2 + " into " + attInfo.getInfo().getType());
+			messageBox.setMessage ("Bean update cannot proceed. Plug-in cannot convert " + att.getValue().toString() + " into " + attInfo.getInfo().getType());
 			messageBox.open();
 			return;
 		}
-		
+		final Boolean[] errorBool = new Boolean[1];
 		final JMXRunnable run = new JMXRunnable() {
 			public void run(MBeanServerConnection connection) {
 				try {
@@ -249,14 +268,38 @@ public class AttributeGroup extends Composite {
 		Object val = null;
 		
 		if( type != null ) {
-			if( type.equals("java.lang.String")) val = text;
-			else if( type.equals("boolean")) val = new Boolean(text);
-			else if( type.equals("int")) val = new Integer(text);
-			else if( type.equals("long")) val = new Long(text);
+			try {
+				if( type.equals("java.lang.String")) val = text;
+				else if( type.equals("boolean")) val = new Boolean(text);
+				else if( type.equals("int")) val = new Integer(text);
+				else if( type.equals("long")) val = new Long(text);
+			} catch( Exception e ) {}
 		}
 		return val == null ? null :  
 			new Attribute(attInfo.getInfo().getName(), val);
 	}
+	
+	protected ArrayList<String> simpleTypeList = null;
+	protected boolean isSimpleType(String fullClassName) {
+		if( simpleTypeList == null ) {
+			simpleTypeList = new ArrayList<String>();
+			simpleTypeList.add("java.lang.String");
+			simpleTypeList.add("boolean");
+			simpleTypeList.add("int");
+			simpleTypeList.add("long");
+		}
+		return simpleTypeList.contains(fullClassName);
+	}
+	
+	protected void handleComplexType(WrappedMBeanAttributeInfo info) {
+		// throw up a message box and say no can do, for now
+		MessageBox messageBox = new MessageBox (new Shell(), SWT.OK);
+		messageBox.setText ("Cannot update bean");
+		messageBox.setMessage ("Bean update cannot proceed. Plug-in cannot create instances of " + info.getInfo().getType() + " at this time.");
+		messageBox.open();
+		return;
+	}
+	
 	
 	protected class AttributeViewerContentProvider implements
 			ITreeContentProvider {
