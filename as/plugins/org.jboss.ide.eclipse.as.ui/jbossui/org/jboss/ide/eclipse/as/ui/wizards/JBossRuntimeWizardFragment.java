@@ -470,6 +470,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	private String getErrorString(int severity) {
+		if(nameText==null) { // We haven't yet been created so don't know any errors yet.			
+			return null;
+		}
 		if (getRuntime(nameText.getText()) != null) {
 			return Messages.rwf_NameInUse;
 		}
