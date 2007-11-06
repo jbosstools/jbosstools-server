@@ -371,6 +371,7 @@ public class JMXModel {
 
 		public Object getValue() { return value; }
 		public void setValue(Object o) { this.value = o; }
+		public MBeanParameterInfo getInfo() { return this.parameterInfo; }
 	}
 	
 	public static class WrappedMBeanAttributeInfo {
