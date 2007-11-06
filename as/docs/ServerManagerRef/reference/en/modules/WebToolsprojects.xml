@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="webtoolsProjects">
-  <title>Webtools Projects (out of date!)</title>
+  <title>Webtools Projects</title>
   <section><title>Description</title>
   <para>
-	  Webtools provides what are called "faceted" projects, 
+	  Webtools provides what are called "faceted" projects. 
 	  Their most popular such projects are their J2EE projects,
-	  such as their Dynamic Web Project, their EJB Project, 
+	  such as their <property>Dynamic Web Project</property>, their EJB Project, 
 	  or their EAR project. </para>
   <para>
 	  The idea behind faceted projects is that each project 
@@ -28,20 +28,30 @@
 	  then known, and packaging it up *should* be trivial. However,
 	  if your project is non-standard, or you feel too confined by
 	  such rigid structural requirements, you can still choose to 
-	  package your project using the Archives plugin as described
-	  in the last chapter</para>
+	  package your project using the Archives plugin</para>
 
   </section>
+  
+	
   <section><title>Faceted Project Wizards</title>
-    <figure id="faceted1"> <title>Faceted Project Wizard: First Page</title>
-    <mediaobject>
-	<alt>Faceted Project Wizard: First Page</alt>
-	<imageobject>
-		<imagedata width="5in" scalefit="0" 
-			fileref="..\..\..\..\reference\en\images\projects\wizard1.jpg"/>
-	</imageobject>
-   </mediaobject>
-   </figure>
+  	<para>To create a new <property>Dynamic Web Project</property> select <emphasis><property>File &gt; New &gt; Other...</property></emphasis> then <emphasis><property>Web &gt; Dynamic Web Project</property></emphasis></para>
+  	<figure>
+  		<title>New Dynamic Web Project</title>
+  		<mediaobject> 
+  			<imageobject>
+  				<imagedata fileref="images/projects/newDynWeb.png"/>
+  			</imageobject>
+  		</mediaobject>
+  	</figure>
+  	<para>Click <emphasis><property>Next</property></emphasis> and you will see Dynamic Web Project page</para>
+  	<figure>
+  		<title>Faceted Project Wizard: First Page</title>
+  		<mediaobject> 
+  			<imageobject>
+  				<imagedata fileref="images/projects/wizard1.png"/>
+  			</imageobject>
+  		</mediaobject>
+  	</figure>
    <para>
 	   The first page of most WTP projects allows you to target a specific runtime,
 	   representing a server's library location. It will also provide you the ability to 
@@ -50,21 +60,20 @@
    <para>
 	   Selecting the runtime, again, allows the project to install the proper
 	   classpaths to the project so it knows what code to compile against.</para>
-    <figure id="faceted2"> <title>Faceted Project Wizard: Second Page</title>
-    <mediaobject>
-	<alt>Faceted Project Wizard: Second Page</alt>
-	<imageobject>
-		<imagedata width="5in" scalefit="0" 
-			fileref="..\..\..\..\reference\en\images\projects\wizard2.jpg"/>
-	</imageobject>
-   </mediaobject>
-   </figure>
+  	<figure>
+  		<title>Faceted Project Wizard: Second Page</title>
+  		<mediaobject> 
+  			<imageobject>
+  				<imagedata fileref="images/projects/wizard2.png"/>
+  			</imageobject>
+  		</mediaobject>
+  	</figure>
    <para>
 	   The second page of the wizard allows you to enable or disable specific facets, as
 	   described above. Some facets may require others, and some may conflict with others, 
 	   but on the whole this page allows you to add any number of facets that don't conflict
 	   with each other. </para>
    <para>
-	   Further pages are specific to either hte project type, or the facets selected.</para>
+	   Further pages are specific to either the project type, or the facets selected.</para>
    </section>
 </chapter>	
