@@ -128,7 +128,6 @@ public class Messages {
 	public static String XPathNameInUse;
 	public static String XPathColumnLocation;
 	public static String XPathColumnAttributeVals;
-	public static String XPathColumnRawXML;
 
 	public static String XPathName;
 	public static String XPathPattern;
