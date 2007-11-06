@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 
+import java.util.HashMap;
+
 import javax.management.MBeanParameterInfo;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -29,6 +31,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -38,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationInfo;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationParameter;
 
 /**
  * 
@@ -51,6 +56,7 @@ public class OperationGroup extends Composite {
 	protected TreeViewer treeViewer;
 	protected JMXPropertySheetPage page;
 	protected Button executeButton;
+	protected WrappedMBeanOperationInfo selectedOperation;
 
 	public OperationGroup(Composite parent, int style, JMXPropertySheetPage page) {
 		super(parent, style);
@@ -100,6 +106,17 @@ public class OperationGroup extends Composite {
 //		JMXAttributePropertySelListener selListener = new JMXOperationPropertySelListener();
 //		tree.addListener(SWT.MouseDoubleClick, selListener);
 
+		executeButton.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				executePressed();
+			} 
+		});
+	}
+	
+	protected void executePressed() {
 	}
 	
 	protected class OperationViewerContentProvider implements
@@ -141,7 +158,7 @@ public class OperationGroup extends Composite {
 				MBeanParameterInfo info = (MBeanParameterInfo)element;
 				if( columnIndex == 0 ) return info.getName();
 				if( columnIndex == 1 ) return info.getType();
-				if( columnIndex == 2 ) return "";
+				if( columnIndex == 2 ) return opParams.get(element) == null ? "null" : opParams.get(element).toString();
 				if( columnIndex == 3 ) return info.getDescription();
 			}
 			return "";
@@ -149,7 +166,14 @@ public class OperationGroup extends Composite {
 		
 	}
 	
+	protected HashMap<MBeanParameterInfo, Object> opParams;
 	public void setOperation(WrappedMBeanOperationInfo op) {
+		opParams = new HashMap<MBeanParameterInfo, Object>();
+		WrappedMBeanOperationParameter[] params = op.getParameters();
+		for( int i = 0; i < params.length; i++ ) {
+			opParams.put(params[i].getInfo(), null);
+		}
+		selectedOperation = op;
 		treeViewer.setInput(op);
 	}
 
