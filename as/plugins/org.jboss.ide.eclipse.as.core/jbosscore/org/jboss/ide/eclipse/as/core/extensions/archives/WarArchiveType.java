@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.extensions.archives;
 
+import java.util.ArrayList;
+
 import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -158,13 +160,23 @@ public class WarArchiveType extends J2EEArchiveType {
 			IPath path = new Path(files[0]);
 			path = path.removeLastSegments(1).append("lib");
 			sourcePath = project.getFullPath().append(path).toString();
-		}
-		
-		if(sourcePath == null) {
+			addFileset(project, folder, sourcePath, "*.jar");  // add default jars
+		} else {
 			//having failed to find 'lib' directory, let us make source of the project itself
 			sourcePath = project.getName();
+			DirectoryScanner scanner2 = 
+				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/*.jar", null, true);
+			String[] files2 = scanner2.getIncludedFiles();
+			IPath p;
+			ArrayList list = new ArrayList();
+			for( int i = 0; i < files2.length; i++ ) {
+				p = project.getFullPath().append(files2[i]).removeLastSegments(1);
+				if( !list.contains(p)) {
+					list.add(p);
+					addFileset(project, folder, p.toString(), "*.jar");  // add default jars
+				}
+			}
 		}
-		addFileset(project, folder, sourcePath, "**/*.jar");  // add default jars
 	}
 	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) {
 		IJavaProject jp = JavaCore.create(project);
