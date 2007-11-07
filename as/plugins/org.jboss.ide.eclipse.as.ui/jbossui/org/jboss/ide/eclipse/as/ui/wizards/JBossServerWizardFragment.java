@@ -345,6 +345,10 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 	// WST API methods
 	public void enter() {
+		if(homeValLabel==null) {
+			return;
+		}
+		
 		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		IRuntimeWorkingCopy wc;
 		if( r instanceof IRuntimeWorkingCopy ) 
