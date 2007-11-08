@@ -163,12 +163,13 @@
             id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
             name="Inactive Categories"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
-<!--      <ViewProvider
+      <ViewProvider
             description="A clone of the JMX view in the web browser"
+            icon="icons/jmxIcon.JPG"
             id="org.jboss.ide.eclipse.as.ui.JMXProvider"
             name="JMX Console"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.JMXViewProvider">
-      </ViewProvider>-->
+            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.JMXViewProvider">
+      </ViewProvider>
    </extension>
    <!--
       <extension

@@ -24,7 +24,11 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 import java.util.HashMap;
 
 import javax.management.MBeanParameterInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -39,10 +43,14 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationInfo;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationParameter;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 /**
  * 
@@ -117,6 +125,34 @@ public class OperationGroup extends Composite {
 	}
 	
 	protected void executePressed() {
+		final Boolean[] errorBool = new Boolean[1];
+		final JMXRunnable run = new JMXRunnable() {
+			public void run(MBeanServerConnection connection) {
+				try {
+					ObjectName on = selectedOperation.getBean().getObjectName();
+					String opName = selectedOperation.getInfo().getName();
+					connection.invoke(on, opName, getParams(), getSignatures());
+				} catch (final Exception e) {
+					Display.getDefault().asyncExec(new Runnable() { public void run() {
+						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, e.getMessage(), e);
+						JBossServerUIPlugin.getDefault().getLog().log(status);
+						errorBool[0] = new Boolean(true);
+					}});
+				}
+			}
+		};
+		
+		new Thread() { public void run() { 
+			JMXSafeRunner.run(selectedOperation.getBean().getServer(), run);
+			if( errorBool[0] == null ) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						// display error
+					}
+				});
+			}
+		}}.start();
+
 	}
 	
 	protected class OperationViewerContentProvider implements
@@ -177,4 +213,21 @@ public class OperationGroup extends Composite {
 		treeViewer.setInput(op);
 	}
 
+	protected Object[] getParams() {
+		WrappedMBeanOperationParameter[] params = selectedOperation.getParameters();
+		Object[] paramVals = new Object[params.length];
+		for( int i = 0; i < paramVals.length; i++ ) {
+			paramVals[i] = opParams.get(params[i].getInfo());
+		}
+		return paramVals;
+	}
+	
+	protected String[] getSignatures() {
+		WrappedMBeanOperationParameter[] params = selectedOperation.getParameters();
+		String[] signatures = new String[selectedOperation.getParameters().length];
+		for( int i = 0; i < signatures.length; i++ ) {
+			signatures[i] = params[i].getInfo().getType();
+		}
+		return signatures;
+	}
 }
