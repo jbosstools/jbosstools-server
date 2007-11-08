@@ -44,6 +44,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -67,30 +68,35 @@ public class OperationGroup extends Composite {
 	protected TreeViewer treeViewer;
 	protected JMXPropertySheetPage page;
 	protected Button executeButton;
+	protected Label returnValueLabel;
 	protected WrappedMBeanOperationInfo selectedOperation;
 
 	public OperationGroup(Composite parent, int style, JMXPropertySheetPage page) {
 		super(parent, style);
 		this.page = page;
 		setLayout(new FormLayout());
-		
-		executeButton = new Button(this, SWT.PUSH);
-		executeButton.setText("execute");
-		FormData executeData = new FormData();
-		executeData.right = new FormAttachment(100,0);
-		executeData.top = new FormAttachment(0,0);
-		executeData.bottom = new FormAttachment(100,0);
-		executeButton.setLayoutData(executeData);
-		
-		
+
 		tree = new Tree(this, SWT.BORDER | SWT.FULL_SELECTION);
 		FormData treeData = new FormData();
 		treeData.left = new FormAttachment(0,0);
-		treeData.right = new FormAttachment(executeButton, 0);
+		treeData.right = new FormAttachment(85, 0);
 		treeData.top = new FormAttachment(0,0);
 		treeData.bottom = new FormAttachment(100,0);
 		tree.setLayoutData(treeData);
 		
+		executeButton = new Button(this, SWT.PUSH);
+		FormData executeData = new FormData();
+		executeData.top = new FormAttachment(0,0);
+		executeData.left = new FormAttachment(tree, 5);
+		executeButton.setLayoutData(executeData);
+
+		returnValueLabel = new Label(this, SWT.WRAP);
+		FormData returnData = new FormData();
+		returnData.left = new FormAttachment(tree, 5);
+		returnData.right = new FormAttachment(100,0);
+		returnData.top = new FormAttachment(executeButton, 5);
+		returnData.bottom = new FormAttachment(100,0);
+		returnValueLabel.setLayoutData(returnData);
 		
 		nameColumn = new TreeColumn(tree, SWT.NONE);
 		typeColumn = new TreeColumn(tree, SWT.NONE);
@@ -100,7 +106,7 @@ public class OperationGroup extends Composite {
 		nameColumn.setWidth(100);
 		typeColumn.setWidth(150);
 		valueColumn.setWidth(200);
-		descriptionColumn.setWidth(300);
+		descriptionColumn.setWidth(150);
 		
 		nameColumn.setText("Name");
 		typeColumn.setText("Type");
@@ -158,9 +164,13 @@ public class OperationGroup extends Composite {
 				try {
 					ObjectName on = selectedOperation.getBean().getObjectName();
 					String opName = selectedOperation.getInfo().getName();
-					Object ret = connection.invoke(on, opName, getParams(), getSignatures());
+					final Object ret = connection.invoke(on, opName, getParams(), getSignatures());
+					Display.getDefault().asyncExec(new Runnable() { public void run() {
+						returnValueLabel.setText("The method executed with " + (ret == null ? "no return value" : "a return value of " + ret.toString()));
+					}});
 				} catch (final Exception e) {
 					Display.getDefault().asyncExec(new Runnable() { public void run() {
+						returnValueLabel.setText("The method terminated via exception. Please check the error log.");
 						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, e.getMessage(), e);
 						JBossServerUIPlugin.getDefault().getLog().log(status);
 						errorBool[0] = new Boolean(true);
@@ -231,13 +241,19 @@ public class OperationGroup extends Composite {
 	
 	protected HashMap<MBeanParameterInfo, Object> opParams;
 	public void setOperation(WrappedMBeanOperationInfo op) {
+		if( op == selectedOperation ) return;
+		
 		opParams = new HashMap<MBeanParameterInfo, Object>();
 		WrappedMBeanOperationParameter[] params = op.getParameters();
 		for( int i = 0; i < params.length; i++ ) {
 			opParams.put(params[i].getInfo(), null);
 		}
 		selectedOperation = op;
+		executeButton.setText("Execute " + op.getInfo().getName());
+		returnValueLabel.setText("");
+		layout();
 		treeViewer.setInput(op);
+		
 	}
 
 	protected Object[] getParams() {
