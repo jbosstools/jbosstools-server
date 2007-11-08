@@ -89,7 +89,7 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 		this.viewSite = view.getViewSite();
 		
 		
-		int cols[] = new int[] {150, 50, 50};
+		int cols[] = new int[] {150, 100, 50};
 		
 		treeTable = new Tree(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NONE);
 		treeTable.setHeaderVisible(true);
