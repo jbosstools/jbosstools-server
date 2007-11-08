@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 
-import java.util.ArrayList;
-
 import javax.management.Attribute;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
@@ -35,17 +33,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TreeEditor;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -57,6 +48,7 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanAttributeInfo;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.TreeEditorSelectionListener.SelectionCallbackHandler;
 
 /**
  * 
@@ -103,7 +95,29 @@ public class AttributeGroup extends Composite {
 		treeViewer.setContentProvider(new AttributeViewerContentProvider());
 		treeViewer.setLabelProvider(new AttributeViewerLabelProvider());
 
-		JMXAttributePropertySelListener selListener = new JMXAttributePropertySelListener();
+		SelectionCallbackHandler callback = new SelectionCallbackHandler() {
+			public WrappedMBeanAttributeInfo getWrapped(TreeItem item) {
+				if (!(item.getData() instanceof WrappedMBeanAttributeInfo))
+					return null;
+				return (WrappedMBeanAttributeInfo) item.getData();
+			}
+			public boolean canModify(TreeItem item) {
+				WrappedMBeanAttributeInfo info = getWrapped(item);
+				if (!info.getInfo().isWritable()) return false;
+				if( !JMXPropertySheetPage.isSimpleType(info.getInfo().getType())) return false;
+				return true;
+			}
+			public void cannotModify(TreeItem item) {
+				WrappedMBeanAttributeInfo info = getWrapped(item);
+				if (!info.getInfo().isWritable()) return;
+				if( !JMXPropertySheetPage.isSimpleType(info.getInfo().getType())) return;
+					handleComplexType(info);
+			}
+			public void handleChange(TreeItem item, Text text) {
+				saveAttributeChange(getWrapped(item), text);
+			}
+		};
+		TreeEditorSelectionListener selListener = new TreeEditorSelectionListener(tree, 3, callback);
 		tree.addListener(SWT.MouseDoubleClick, selListener);
 	}
 
@@ -111,105 +125,6 @@ public class AttributeGroup extends Composite {
 		treeViewer.setInput(bean);
 	}
 
-	protected class JMXAttributePropertySelListener implements Listener {
-		private final Color black;
-		private final TreeEditor editor;
-
-		public JMXAttributePropertySelListener() {
-			black = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
-			editor = new TreeEditor(tree);
-		}
-
-		public void handleEvent(Event event) {
-			TreeItem[] selectedItems = tree.getSelection();
-			if (selectedItems.length != 1)
-				return;
-			final TreeItem item = selectedItems[0];
-
-			if (!(item.getData() instanceof WrappedMBeanAttributeInfo))
-				return;
-			if (!((WrappedMBeanAttributeInfo) item.getData()).getInfo()
-					.isWritable())
-				return;
-
-			final WrappedMBeanAttributeInfo attInfo = (WrappedMBeanAttributeInfo) item
-					.getData();
-
-			// If we can't create one of these objects via a string, 
-			// handle it through a wizard instead.
-			if( !isSimpleType(attInfo.getInfo().getType())) {
-				handleComplexType(attInfo);
-				return;
-			}
-			
-			
-			final int column = 3;
-			boolean isCarbon = SWT.getPlatform().equals("carbon");
-			final Composite composite = new Composite(tree, SWT.NONE);
-			if (!isCarbon)
-				composite.setBackground(black);
-			final Text text = new Text(composite, SWT.NONE);
-			final int inset = isCarbon ? 0 : 1;
-			composite.addListener(SWT.Resize, new Listener() {
-				public void handleEvent(Event e) {
-					Rectangle rect = composite.getClientArea();
-					text.setBounds(rect.x + inset, rect.y + inset, rect.width
-							- inset * 2, rect.height - inset * 2);
-				}
-			});
-			Listener textListener = new Listener() {
-				public void handleEvent(final Event e) {
-					switch (e.type) {
-					case SWT.FocusOut:
-						composite.dispose();
-						break;
-					case SWT.Verify:
-						String newText = text.getText();
-						String leftText = newText.substring(0, e.start);
-						String rightText = newText.substring(e.end, newText
-								.length());
-						GC gc = new GC(text);
-						Point size = gc.textExtent(leftText + e.text
-								+ rightText);
-						gc.dispose();
-						size = text.computeSize(size.x, SWT.DEFAULT);
-						editor.horizontalAlignment = SWT.LEFT;
-						Rectangle itemRect = item.getBounds(),
-						rect = tree.getClientArea();
-						editor.minimumWidth = Math.max(size.x, itemRect.width)
-								+ inset * 2;
-						int left = itemRect.x,
-						right = rect.x + rect.width;
-						editor.minimumWidth = Math.min(editor.minimumWidth,
-								right - left);
-						editor.minimumHeight = size.y + inset * 2;
-						editor.setColumn(column);
-						editor.layout();
-						break;
-					case SWT.Traverse:
-						switch (e.detail) {
-						case SWT.TRAVERSE_RETURN:
-							saveAttributeChange(attInfo, text);
-							// FALL THROUGH
-						case SWT.TRAVERSE_ESCAPE:
-							composite.dispose();
-							e.doit = false;
-						}
-						break;
-					}
-				}
-			};
-			text.addListener(SWT.FocusOut, textListener);
-			text.addListener(SWT.Traverse, textListener);
-			text.addListener(SWT.Verify, textListener);
-			editor.setEditor(composite, item);
-			text.setText(item.getText(column));
-			text.selectAll();
-			text.setFocus();
-
-		}
-	}
-	
 	protected void saveAttributeChange(WrappedMBeanAttributeInfo attInfo, Text text) {
 		if (!text.isDisposed()) {
 			Attribute att = createAttribute(attInfo, text.getText());
@@ -266,31 +181,13 @@ public class AttributeGroup extends Composite {
 	protected Attribute createAttribute(WrappedMBeanAttributeInfo attInfo, String text) {
 		String type = attInfo.getInfo().getType();
 		Object val = null;
-		
 		if( type != null ) {
-			try {
-				if( type.equals("java.lang.String")) val = text;
-				else if( type.equals("boolean")) val = new Boolean(text);
-				else if( type.equals("int")) val = new Integer(text);
-				else if( type.equals("long")) val = new Long(text);
-			} catch( Exception e ) {}
+			val = JMXPropertySheetPage.box(type, text);
 		}
 		return val == null ? null :  
 			new Attribute(attInfo.getInfo().getName(), val);
 	}
-	
-	protected ArrayList<String> simpleTypeList = null;
-	protected boolean isSimpleType(String fullClassName) {
-		if( simpleTypeList == null ) {
-			simpleTypeList = new ArrayList<String>();
-			simpleTypeList.add("java.lang.String");
-			simpleTypeList.add("boolean");
-			simpleTypeList.add("int");
-			simpleTypeList.add("long");
-		}
-		return simpleTypeList.contains(fullClassName);
-	}
-	
+		
 	protected void handleComplexType(WrappedMBeanAttributeInfo info) {
 		// throw up a message box and say no can do, for now
 		MessageBox messageBox = new MessageBox (new Shell(), SWT.OK);
