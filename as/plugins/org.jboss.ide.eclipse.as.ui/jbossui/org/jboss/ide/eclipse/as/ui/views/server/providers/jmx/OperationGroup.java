@@ -44,13 +44,16 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationInfo;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationParameter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.TreeEditorSelectionListener.SelectionCallbackHandler;
 
 /**
  * 
@@ -122,6 +125,30 @@ public class OperationGroup extends Composite {
 				executePressed();
 			} 
 		});
+		
+		SelectionCallbackHandler handler = new SelectionCallbackHandler() {
+			public boolean canModify(TreeItem item) {
+				return true;
+			}
+			public void cannotModify(TreeItem item) {
+			}
+			public void handleChange(TreeItem item, Text text) {
+				saveParam(item, text);
+			}
+		};
+		TreeEditorSelectionListener listener = new TreeEditorSelectionListener(tree, 2, handler);
+		tree.addListener(SWT.MouseDoubleClick, listener);
+	}
+	
+	protected void saveParam(TreeItem item, Text text) {
+		Object o = item.getData();
+		if( o instanceof MBeanParameterInfo ) {
+			MBeanParameterInfo o2 = (MBeanParameterInfo)o;
+			opParams.put((MBeanParameterInfo)o, 
+					JMXPropertySheetPage.box(o2.getType(), text.getText()));
+			treeViewer.refresh();
+		}
+		System.out.println(text.getText());
 	}
 	
 	protected void executePressed() {
@@ -131,7 +158,7 @@ public class OperationGroup extends Composite {
 				try {
 					ObjectName on = selectedOperation.getBean().getObjectName();
 					String opName = selectedOperation.getInfo().getName();
-					connection.invoke(on, opName, getParams(), getSignatures());
+					Object ret = connection.invoke(on, opName, getParams(), getSignatures());
 				} catch (final Exception e) {
 					Display.getDefault().asyncExec(new Runnable() { public void run() {
 						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, e.getMessage(), e);

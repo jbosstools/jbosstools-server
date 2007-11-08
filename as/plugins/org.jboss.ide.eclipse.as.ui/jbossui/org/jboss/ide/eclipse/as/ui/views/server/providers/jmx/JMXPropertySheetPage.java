@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 
+import java.util.ArrayList;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -279,6 +281,30 @@ public class JMXPropertySheetPage implements IPropertySheetPage {
 				return opInfos[i];
 		}
 		return null;
+	}
+
+	
+	public static Object box(String type, String text) {
+		Object val = null;
+		try {
+			if( type.equals("java.lang.String")) val = text;
+			else if( type.equals("boolean")) val = new Boolean(text);
+			else if( type.equals("int")) val = new Integer(text);
+			else if( type.equals("long")) val = new Long(text);
+		} catch( Exception e ) {}
+		return val;
+	}
+	
+	protected static ArrayList<String> simpleTypeList = null;
+	public static boolean isSimpleType(String fullClassName) {
+		if( simpleTypeList == null ) {
+			simpleTypeList = new ArrayList<String>();
+			simpleTypeList.add("java.lang.String");
+			simpleTypeList.add("boolean");
+			simpleTypeList.add("int");
+			simpleTypeList.add("long");
+		}
+		return simpleTypeList.contains(fullClassName);
 	}
 
 }
