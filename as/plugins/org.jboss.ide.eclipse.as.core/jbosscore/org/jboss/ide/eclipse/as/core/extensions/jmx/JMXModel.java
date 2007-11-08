@@ -200,6 +200,7 @@ public class JMXModel {
 		protected String name;
 		protected String clazz;
 		protected IServer server;
+		protected ObjectName objectName;
 		protected MBeanInfo info;
 		protected WrappedMBeanOperationInfo[] operations;
 		protected WrappedMBeanAttributeInfo[] attributes;
@@ -210,6 +211,7 @@ public class JMXModel {
 			this.server = server;
 			this.domain = instance.getObjectName().getDomain();
 			this.clazz = instance.getClassName();
+			this.objectName = instance.getObjectName();
 			this.name = instance.getObjectName().getCanonicalName();
 		}
 
@@ -312,6 +314,10 @@ public class JMXModel {
 				}
 			}
 			attributes = (WrappedMBeanAttributeInfo[]) wrapped.toArray(new WrappedMBeanAttributeInfo[wrapped.size()]);
+		}
+
+		public ObjectName getObjectName() {
+			return objectName;
 		}
 
 
