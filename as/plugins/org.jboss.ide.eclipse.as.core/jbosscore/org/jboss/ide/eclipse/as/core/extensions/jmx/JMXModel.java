@@ -427,6 +427,9 @@ public class JMXModel {
 
 	public static class JMXSafeRunner {
 		public static void run(IServer s, JMXRunnable r) {
+			// do nothing if the server is down.
+			if( s.getServerState() != IServer.STATE_STARTED ) return;
+			
 			ClassLoader currentLoader = Thread.currentThread()
 					.getContextClassLoader();
 			ClassLoader newLoader = JMXClassLoaderRepository.getDefault()
@@ -444,9 +447,13 @@ public class JMXModel {
 					r.run(connection);
 				}
 			} catch (Exception e) {
-				JBossServerCorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-								"Error while running JMX-safe code", e));
+				// if the server isn't started (or began shutting 
+				// down during the op), don't log the error. 
+				if( s.getServerState() != IServer.STATE_STARTED ) {
+					JBossServerCorePlugin.getDefault().getLog().log(
+							new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+									"Error while running JMX-safe code", e));
+				}
 			}
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}
