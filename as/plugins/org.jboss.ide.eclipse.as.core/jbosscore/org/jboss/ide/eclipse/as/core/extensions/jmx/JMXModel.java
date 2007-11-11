@@ -447,9 +447,8 @@ public class JMXModel {
 					r.run(connection);
 				}
 			} catch (Exception e) {
-				// if the server isn't started (or began shutting 
-				// down during the op),don't log the error. 
-				if( s.getServerState() != IServer.STATE_STARTED ) {
+				// only if the server *IS* started should we log the error  
+				if( s.getServerState() == IServer.STATE_STARTED ) {
 					JBossServerCorePlugin.getDefault().getLog().log(
 							new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 									"Error while running JMX-safe code", e));
