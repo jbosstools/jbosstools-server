@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="JBossASPerspective" xreflabel="JBossASPerspective">
-    <?dbhtml filename="JBossASPerspective.html"?>
+<chapter id="perspective" xreflabel="perspective">
+    <?dbhtml filename="perspective.html"?>
   <chapterinfo>
     <keywordset>
       <keyword>Red Hat Developer Studio</keyword>
@@ -25,7 +25,7 @@
                 <title>The JBoss Servers View</title>
                 <mediaobject> 
                     <imageobject>
-                        <imagedata fileref="images/JBossASPerspective/jbossserverview.png"/>
+                        <imagedata fileref="images/perspective/perspective_1.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -38,7 +38,7 @@
         <title>View Preferences</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/JBossASPerspective/Enableprefer.png"/>
+                <imagedata fileref="images/perspective/perspective_2.png"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -50,7 +50,7 @@
         <title>View Extensions</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/JBossASPerspective/JBVExtensions.png"/>
+                <imagedata fileref="images/perspective/perspective_3.png"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -61,7 +61,7 @@
     <title>Modules Action</title>
     <mediaobject> 
         <imageobject>
-            <imagedata fileref="images/JBossASPerspective/JBVModulesactions.png"/>
+            <imagedata fileref="images/perspective/perspective_4.png"/>
         </imageobject>
     </mediaobject>
     </figure>
@@ -73,7 +73,7 @@
         <title>Event Log Actions</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/JBossASPerspective/JBVEventlogactions.png"/>
+                <imagedata fileref="images/perspective/perspective_5.png"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -81,7 +81,7 @@
         <title>Stopping the Server</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/JBossASPerspective/JBVServerisstopped.png"/>
+                <imagedata fileref="images/perspective/perspective_6.png"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -92,7 +92,7 @@
         <title>XML Configuration and Properties View</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/JBossASPerspective/JBVxmlconfigandprop.png"/>
+                <imagedata fileref="images/perspective/perspective_7.png"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -102,7 +102,7 @@
               <title>Adding New Category</title>
               <mediaobject> 
                   <imageobject>
-                      <imagedata fileref="images/JBossASPerspective/JBSVaddingcategory.png"/>
+                      <imagedata fileref="images/perspective/perspective_8.png"/>
                   </imageobject>
               </mediaobject>
           </figure>
@@ -111,7 +111,7 @@
               <title>Adding New XPath</title>
               <mediaobject> 
                   <imageobject>
-                      <imagedata fileref="images/JBossASPerspective/JBSVAddxpath.png"/>
+                      <imagedata fileref="images/perspective/perspective_9.png"/>
                   </imageobject>
               </mediaobject>
           </figure>
@@ -120,7 +120,7 @@
               <title>Adding New XPath</title>
               <mediaobject> 
                   <imageobject>
-                      <imagedata fileref="images/JBossASPerspective/JBSVAddinganxpath.png"/>
+                      <imagedata fileref="images/perspective/perspective_10.png"/>
                   </imageobject>
               </mediaobject>
           </figure>
@@ -135,7 +135,7 @@
              <title>XPath Preview</title>
               <mediaobject> 
                   <imageobject>
-                      <imagedata fileref="images/JBossASPerspective/JBSVxpathpreview.png"/>
+                      <imagedata fileref="images/perspective/perspective_11.png"/>
                   </imageobject>
               </mediaobject>
           </figure>
@@ -159,7 +159,7 @@
                         <title>Create an Archive</title>
                         <mediaobject> 
                             <imageobject>
-                                <imagedata fileref="images/JBossASPerspective/archives1.png"/>
+                                <imagedata fileref="images/perspective/perspective_12.png"/>
                             </imageobject>
                         </mediaobject>
                     </figure>
@@ -173,7 +173,7 @@
                         <title>New JAR Wizard</title>
                         <mediaobject> 
                             <imageobject>
-                                <imagedata fileref="images/JBossASPerspective/archives2.png"/>
+                                <imagedata fileref="images/perspective/perspective_13.png"/>
                             </imageobject>
                         </mediaobject>
                     </figure>
@@ -204,7 +204,7 @@
                         <title>Context Menu on the Item</title>
                         <mediaobject> 
                             <imageobject>
-                                <imagedata fileref="images/JBossASPerspective/archives3.png"/>
+                                <imagedata fileref="images/perspective/perspective_14.png"/>
                             </imageobject>
                         </mediaobject>
                     </figure>
@@ -219,7 +219,7 @@
                         <title>Context Menu on the Item</title>
                         <mediaobject> 
                             <imageobject>
-                                <imagedata fileref="images/JBossASPerspective/archives4.png"/>
+                                <imagedata fileref="images/perspective/perspective_15.png"/>
                             </imageobject>
                         </mediaobject>
                     </figure>
@@ -241,7 +241,7 @@
             <title>Deploy to Sever</title>
             <mediaobject> 
                 <imageobject>
-                    <imagedata fileref="images/JBossASPerspective/deploytoserver.png"/>
+                    <imagedata fileref="images/perspective/perspective_16.png"/>
                 </imageobject>
             </mediaobject>
         </figure>

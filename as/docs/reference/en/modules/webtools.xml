@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="webtoolsProjects">
+<chapter id="webtools">
   <title>Webtools Projects</title>
   <section><title>Description</title>
   <para>
@@ -39,7 +39,7 @@
   		<title>New Dynamic Web Project</title>
   		<mediaobject> 
   			<imageobject>
-  				<imagedata fileref="images/projects/newDynWeb.png"/>
+  				<imagedata fileref="images/webtools/webtools_1.png"/>
   			</imageobject>
   		</mediaobject>
   	</figure>
@@ -48,7 +48,7 @@
   		<title>Faceted Project Wizard: First Page</title>
   		<mediaobject> 
   			<imageobject>
-  				<imagedata fileref="images/projects/wizard1.png"/>
+  				<imagedata fileref="images/webtools/webtools_2.png"/>
   			</imageobject>
   		</mediaobject>
   	</figure>
@@ -64,7 +64,7 @@
   		<title>Faceted Project Wizard: Second Page</title>
   		<mediaobject> 
   			<imageobject>
-  				<imagedata fileref="images/projects/wizard2.png"/>
+  				<imagedata fileref="images/webtools/webtools_3.png"/>
   			</imageobject>
   		</mediaobject>
   	</figure>

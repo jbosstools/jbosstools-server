@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="RuntimesAndServers" xreflabel="RuntimesAndServers">
-    <?dbhtml filename="RuntimesAndServers.html"?>
+<chapter id="runtimes_servers" xreflabel="runtimes_servers">
+    <?dbhtml filename="runtimes_servers.html"?>
   <chapterinfo>
     <keywordset>
       <keyword>Red Hat Developer Studio</keyword>
@@ -33,7 +33,7 @@
         <title>Installed Runtimes</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/serverRuntimes/installedRuntimes.png"/>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_1.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -45,7 +45,7 @@
         <title>Adding a Runtime</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/serverRuntimes/newRuntime.png"/>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_2.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -57,7 +57,7 @@
         <title>Adding a JBoss 4.2 Runtime</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/serverRuntimes/new4.0Runtime.png"/>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_3.png"/>
           </imageobject>
         </mediaobject>
       </figure>
@@ -96,7 +96,7 @@
        <title>Adding a JBoss Server</title>
        <mediaobject>
          <imageobject>
-           <imagedata fileref="images/serverRuntimes/newServer.png"/>
+           <imagedata fileref="images/runtimes_servers/runtimes_servers_4.png"/>
          </imageobject>
        </mediaobject>
      </figure>
@@ -111,7 +111,7 @@
        <title>Installed Server Runtime Environments</title>
        <mediaobject>
          <imageobject>
-           <imagedata fileref="images/serverRuntimes/installedRuntimeEnv.png"/>
+           <imagedata fileref="images/runtimes_servers/runtimes_servers_5.png"/>
          </imageobject>
        </mediaobject>
      </figure>

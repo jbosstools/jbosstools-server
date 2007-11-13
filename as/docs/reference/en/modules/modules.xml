@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="deploy">
+<chapter id="modules">
   <title>Deploying Modules (out of date!)</title>
 
   <para>
@@ -11,7 +11,7 @@
 	  <para>
 		  The first WTP method is to right-click on a webtools project,
 		  such as a dynamic web project, ejb project, or ear project.
-		  and then selecting <emphasis> Run As &gt; Run on server</emphasis>.
+		  and then selecting <emphasis>run on server...</emphasis>.
 		  The resulting dialog allows you to select which supporting
 		  server the project can be published to. </para>
 	  <para>
