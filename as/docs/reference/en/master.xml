@@ -2,10 +2,10 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
 "../../resources/support/docbook-dtd/docbookx.dtd"
 
-[<!ENTITY RuntimesAndServers SYSTEM "modules/RuntimesAndServers.xml">
-<!ENTITY JBossASPerspective SYSTEM "modules/JBossASPerspective.xml">
-<!ENTITY WebToolsprojects SYSTEM "modules/WebToolsprojects.xml">
-<!ENTITY DeployingModules SYSTEM "modules/DeployingModules.xml">
+[<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
+<!ENTITY perspective SYSTEM "modules/perspective.xml">
+<!ENTITY webtools SYSTEM "modules/webtools.xml">
+<!ENTITY modules SYSTEM "modules/modules.xml">
 
 ]>
 
@@ -24,8 +24,8 @@
 	
     
     <toc/>  
-    &RuntimesAndServers;
-    &JBossASPerspective;
-    &WebToolsprojects;
-    &DeployingModules;
+    &runtimes_servers;
+    &perspective;
+    &webtools;
+    &modules;
 </book>    
