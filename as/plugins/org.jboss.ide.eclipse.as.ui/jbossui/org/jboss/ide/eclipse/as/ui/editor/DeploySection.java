@@ -138,13 +138,13 @@ public class DeploySection extends ServerEditorSection {
 		FormData textData = new FormData();
 		textData.left = new FormAttachment(label, 5);
 		textData.top = new FormAttachment(descriptionLabel,5);
-		textData.right = new FormAttachment(0,300);
+		textData.right = new FormAttachment(button, -5);
 		text.setLayoutData(textData);
 		
 		FormData buttonData = new FormData();
 		buttonData.right = new FormAttachment(100,-5);
-		buttonData.left = new FormAttachment(text, 5);
-		buttonData.top = new FormAttachment(descriptionLabel,5);
+		buttonData.left = new FormAttachment(100, -100);
+		buttonData.top = new FormAttachment(descriptionLabel,2);
 		button.setLayoutData(buttonData);
 		
 		// second row
@@ -156,12 +156,12 @@ public class DeploySection extends ServerEditorSection {
 		FormData tempTextData = new FormData();
 		tempTextData.left = new FormAttachment(tempDeployLabel, 5);
 		tempTextData.top = new FormAttachment(text,5);
-		tempTextData.right = new FormAttachment(0, 300);
+		tempTextData.right = new FormAttachment(tempDeployButton, -5);
 		tempDeployText.setLayoutData(tempTextData);
 		
 		FormData tempButtonData = new FormData();
 		tempButtonData.right = new FormAttachment(100,-5);
-		tempButtonData.left = new FormAttachment(tempDeployText,5);
+		tempButtonData.left = new FormAttachment(100,-100);
 		tempButtonData.top = new FormAttachment(text,5);
 		tempDeployButton.setLayoutData(tempButtonData);
 		
