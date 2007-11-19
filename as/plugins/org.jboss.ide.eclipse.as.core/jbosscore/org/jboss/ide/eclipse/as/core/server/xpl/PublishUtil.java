@@ -775,6 +775,9 @@ public final class PublishUtil {
 		String path = 
 			ServerAttributeHelper.createHelper(server)
 				.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, tempDir.getAbsolutePath());
+		File f = new File(path);
+		if( !f.exists() )
+			f.mkdirs();
 		return new File(path);
 	}
 }
