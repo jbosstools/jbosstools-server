@@ -10,11 +10,28 @@
 	  <section><title>Run On Server</title>
 	  <para>
 		  The first WTP method is to right-click on a webtools project,
-		  such as a dynamic web project, ejb project, or ear project.
-		  and then selecting <emphasis>run on server...</emphasis>.
+		  such as a dynamic web project, ejb project, or ear project
+		  and then selecting <emphasis><property>Run As &gt; Run on Server</property></emphasis>.
 		  The resulting dialog allows you to select which supporting
 		  server the project can be published to. </para>
-	  <para>
+	  	<figure>
+	  		<title>Define a New Server</title>
+	  		<mediaobject> 
+	  			<imageobject>
+	  				<imagedata fileref="images/modules/modules_1.png"/>
+	  			</imageobject>
+	  		</mediaobject>
+	  	</figure>
+	  	<para>Click <emphasis><propery>Next</propery></emphasis> button to see add or remove projects page where you can choose propjects to configure them on server.</para>
+	  	<figure>
+	  		<title>Add or Remove Projects</title>
+	  		<mediaobject> 
+	  			<imageobject>
+	  				<imagedata fileref="images/modules/modules_2.png"/>
+	  			</imageobject>
+	  		</mediaobject>
+	  	</figure>
+	  	<para>
 		  For the JBoss AS Server Adapters, publishing using this method
 		  will force a default, best-guess, packaging configuration 
 		  for your project. This best-guess does <emphasis>not</emphasis>
