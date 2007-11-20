@@ -32,10 +32,12 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
@@ -50,6 +52,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  *
  */
 public class XPathModel {
+	
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
 	public static final String PORTS_CATEGORY_NAME = "Ports";
 	private static final String DELIMITER = ",";
@@ -59,6 +62,7 @@ public class XPathModel {
 		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
 	private static final String QUERY = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
+	private static final String DEFAULTS_SET = "org.jboss.ide.eclipse.as.core.model.descriptor.DefaultsSet";
 
 	/* Singleton */
 	private static XPathModel instance;
@@ -77,18 +81,33 @@ public class XPathModel {
 		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
 		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
 			public void serverAdded(IServer server) {
-				AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime) 
-					server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
-				if(ajbsr != null ) {
-					IPath loc = server.getRuntime().getLocation();
-					IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
-					loadDefaults(server, configFolder.toOSString());
-					save(server);
+				System.out.println("server added");
+				final ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
+				if( !helper.getAttribute(DEFAULTS_SET, false)) {
+					final IServer server2 = server;
+					new Job("Add Server XPath Details") {
+						protected IStatus run(IProgressMonitor monitor) {
+							AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime) 
+							server2.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
+							if(ajbsr != null ) {
+								IPath loc = server2.getRuntime().getLocation();
+								IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
+								loadDefaults(server2, configFolder.toOSString());
+								helper.setAttribute(DEFAULTS_SET, true);
+								helper.save();
+								save(server2);
+							}
+							return Status.OK_STATUS;
+						}
+						
+					}.schedule();
 				}
 			}
 			public void serverChanged(IServer server) {
+				System.out.println("server changed");
 			}
 			public void serverRemoved(IServer server) {
+				System.out.println("server removed");
 			}
 		});
 	}
