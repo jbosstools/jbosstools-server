@@ -81,7 +81,6 @@ public class XPathModel {
 		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
 		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
 			public void serverAdded(IServer server) {
-				System.out.println("server added");
 				final ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
 				if( !helper.getAttribute(DEFAULTS_SET, false)) {
 					final IServer server2 = server;
@@ -104,10 +103,8 @@ public class XPathModel {
 				}
 			}
 			public void serverChanged(IServer server) {
-				System.out.println("server changed");
 			}
 			public void serverRemoved(IServer server) {
-				System.out.println("server removed");
 			}
 		});
 	}
