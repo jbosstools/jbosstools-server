@@ -38,6 +38,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -87,7 +88,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, STOP_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-		ArrayList classpath = new ArrayList();
+		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		addCPEntry(classpath, jbs, STOP_JAR_LOC);
 		ArrayList runtimeClassPaths = convertClasspath(classpath, jbrt.getVM());
 		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
@@ -99,6 +100,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		String args = "-S ";
+		args += "-s " + jbs.getServer().getHost() + ":" + jbs.getJNDIPort();
 		if( jbs.getUsername() != null && !jbs.getUsername().equals("")) 
 			args += "-u " + jbs.getUsername() + " ";
 		if( jbs.getPassword() != null && !jbs.getUsername().equals("")) 
