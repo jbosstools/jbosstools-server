@@ -66,7 +66,7 @@
             initialState="stopped"
             launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             launchModes="run,debug"
-            name="JBoss System Copy Server"
+            name="JBoss Deploy-Only Server"
             runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
             startBeforePublish="false"
