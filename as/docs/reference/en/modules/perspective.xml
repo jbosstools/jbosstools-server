@@ -15,8 +15,8 @@
        <para>The <property>JBoss AS</property> Perspective is similar to the Java perspective, but it contains a few additional views. Two of the additional views are standard views, specifically the <property>Console </property> view and the <property>Properties</property> view. 
                 The other two views that are added are the <property>Project archives</property> view  and the <property>JBoss Servers View</property>.</para>
       
-      <section id="JBossServersView">
-            <?dbhtml filename="JBossServerView.html"?>
+    <section id="JBossServersView">
+          <?dbhtml filename="JBossServerView.html"?>
             <title>The JBoss Servers View</title>
           <para>This chapter will focus on the the JBoss Server's View. The JBoss Servers View is based on the Webtool's view, Servers View. The top half of the JBoss Servers View essentially embeds the original Servers View directly into it, making slight changes to the context menu.
             A second half was added to provide additional information about the server selected in the top half. In the image provided, categories in the second half include which modules are currently deployed.</para>
@@ -140,7 +140,27 @@
               </mediaobject>
           </figure>
       </section>
-            <section id="Project_archivesView">
+    <para>As part of the JBoss Server view there is a <emphasis><property>JMX Console</property></emphasis> section which allows you to browse and use the JMX exposed beans on the server.</para>
+    <figure>
+        <title>JMX Console</title>
+        <mediaobject> 
+            <imageobject>
+                <imagedata fileref="images/perspective/perspective_17.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    <para>Also you can see the server's publish status in the JBoss Servers view that allows you to see if changes are awaiting (Republish), are being updated (Publishing...) or are in-sync (Synchronized).</para>
+    <figure>
+        <title>Server's Publish Status</title>
+        <mediaobject> 
+            <imageobject>
+                <imagedata fileref="images/perspective/perspective_18.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    <para></para>
+    
+    <section id="Project_archivesView">
                 <title>Project archives View</title>
                 <para>Every application, whether plain old Java, J2EE, or some other language altogether, needs to be packaged in some way. In Java-related projects, 
                     many people use ANT. Red Hat Developer Studio comes with our own archives tool with a bit easier and less-verbose XML and a handy user interface.</para>
@@ -248,4 +268,5 @@
         <para>The deployed files are listed side-by-side with other modules that are deployed to the server.</para>
 
 </section>
+
 </chapter>
