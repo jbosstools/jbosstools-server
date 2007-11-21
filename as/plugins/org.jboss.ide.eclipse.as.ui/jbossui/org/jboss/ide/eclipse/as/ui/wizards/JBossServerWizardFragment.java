@@ -383,7 +383,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		if( serverWC instanceof ServerWorkingCopy) {
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_USERNAME, authUser);
 			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_PASSWORD, authPass);
-			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.DEPLOY_DIRECTORY, deployVal);
+			((ServerWorkingCopy)serverWC).setAttribute(IDeployableServer.DEPLOY_DIRECTORY, deployVal);
 			((ServerWorkingCopy)serverWC).setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, deployTmpFolderVal);
 			new File(deployTmpFolderVal).mkdirs();
 		}
