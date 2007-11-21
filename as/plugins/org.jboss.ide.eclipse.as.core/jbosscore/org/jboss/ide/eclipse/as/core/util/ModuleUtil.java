@@ -12,7 +12,8 @@ public class ModuleUtil {
 		ArrayList<IModule[]> list = new ArrayList<IModule[]>();
 		IModule[] children = server.getChildModules(root, new NullProgressMonitor());
 		// children is { aWar, bWar, cWar } projects
-		for( int i = 0; i < children.length; i++ ) {
+		int length = children == null ? 0 : children.length;
+		for( int i = 0; i < length; i++ ) {
 			ArrayList<IModule> inner = new ArrayList<IModule>();
 			inner.addAll(Arrays.asList(root));
 			inner.add(children[i]);

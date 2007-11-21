@@ -54,6 +54,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
@@ -224,7 +225,8 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		private IPath workspaceRelative;
 		public SingleDeployableModuleDelegate(IPath workspaceRelative) {
 			this.workspaceRelative = workspaceRelative;
-			global = ResourcesPlugin.getWorkspace().getRoot().getLocation().append(workspaceRelative);
+			String projectName = workspaceRelative.segment(0);
+			global = ArchivesCore.getInstance().getVariables().getProjectPath(projectName);
 		}
 		public IModule[] getChildModules() {
 			return new IModule[0];
