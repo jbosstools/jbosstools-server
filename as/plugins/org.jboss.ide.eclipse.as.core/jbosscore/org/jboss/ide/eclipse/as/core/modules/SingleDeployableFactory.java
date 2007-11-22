@@ -226,7 +226,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		public SingleDeployableModuleDelegate(IPath workspaceRelative) {
 			this.workspaceRelative = workspaceRelative;
 			String projectName = workspaceRelative.segment(0);
-			global = ArchivesCore.getInstance().getVariables().getProjectPath(projectName);
+			//global = ArchivesCore.getInstance().getVariables().getProjectPath(projectName);
+			global = ResourcesPlugin.getWorkspace().getRoot().findMember(workspaceRelative).getLocation();
+			global = ArchivesCore.getInstance().getVariables().getProjectPath(projectName).append(workspaceRelative.removeFirstSegments(1));
 		}
 		public IModule[] getChildModules() {
 			return new IModule[0];
