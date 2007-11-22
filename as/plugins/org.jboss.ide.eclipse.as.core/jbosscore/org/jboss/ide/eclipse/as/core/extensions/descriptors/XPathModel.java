@@ -86,7 +86,12 @@ public class XPathModel {
 					final IServer server2 = server;
 					new Job("Add Server XPath Details") {
 						protected IStatus run(IProgressMonitor monitor) {
-							AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime) 
+							
+							if(server2==null || server2.getRuntime()==null) {
+								return Status.OK_STATUS; // server has no runtime so we can't set this up.
+							}
+							
+							AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime)
 							server2.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
 							if(ajbsr != null ) {
 								IPath loc = server2.getRuntime().getLocation();

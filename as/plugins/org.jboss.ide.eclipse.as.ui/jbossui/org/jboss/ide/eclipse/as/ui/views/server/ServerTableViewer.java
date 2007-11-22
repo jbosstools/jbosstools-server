@@ -92,11 +92,9 @@ public class ServerTableViewer extends TreeViewer {
 	protected class ServerTableLabelProvider2 extends ServerTableLabelProvider {
 		private int myCount = 0;
 		protected Image getStateImage(IServerType serverType, int state, String mode) {
-			if( serverType.getId().equals("org.jboss.ide.eclipse.as.systemCopyServer")) return null;
 			return UIDecoratorManager.getUIDecorator(serverType).getStateImage(state, mode, myCount);
 		}
 		protected String getStateLabel(IServerType serverType, int state, String mode) {
-			if( serverType.getId().equals("org.jboss.ide.eclipse.as.systemCopyServer")) return "N/A";
 			return UIDecoratorManager.getUIDecorator(serverType).getStateLabel(state, mode, myCount);
 		}
 		protected void animate() {

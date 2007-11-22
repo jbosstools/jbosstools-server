@@ -21,16 +21,23 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 
+// TODO: share the logic for modules with normal deployable server!
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
 	public DeployableServer() {
@@ -44,23 +51,55 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.server.core.model.ServerDelegate#getChildModules(org.eclipse.wst.server.core.IModule[])
-	 */
 	public IModule[] getChildModules(IModule[] module) {
-		// TODO Auto-generated method stub
-		return null;
+		int last = module.length-1;
+		if (module[last] != null && module[last].getModuleType() != null) {
+			IModuleType moduleType = module[last].getModuleType();
+			if("jst.ear".equals(moduleType.getId())) { //$NON-NLS-1$
+				IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
+						.loadAdapter(IEnterpriseApplication.class, null);
+				if (enterpriseApplication != null) {
+					IModule[] earModules = enterpriseApplication.getModules(); 
+					if ( earModules != null) {
+						return earModules;
+					}
+				}
+			}
+			else if ("jst.web".equals(moduleType.getId())) { //$NON-NLS-1$
+				IWebModule webModule = (IWebModule) module[last].loadAdapter(IWebModule.class, null);
+				if (webModule != null) {
+					IModule[] modules = webModule.getModules();
+					return modules;
+				}
+			}
+		}
+		return new IModule[0];
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.server.core.model.ServerDelegate#getRootModules(org.eclipse.wst.server.core.IModule)
-	 */
-	public IModule[] getRootModules(IModule module) throws CoreException {
-		return new IModule[] { module };
-	}
+    public IModule[] getRootModules(IModule module) throws CoreException {
+        IStatus status = canModifyModules(new IModule[] { module }, null);
+        if (status != null && !status.isOK())
+            throw  new CoreException(status);;
+        IModule[] parents = doGetParentModules(module);
+        if(parents.length>0)
+        	return parents;
+        return new IModule[] { module };
+    }
 
+
+	private IModule[] doGetParentModules(IModule module) {
+		IModule[] ears = ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
+		ArrayList list = new ArrayList();
+		for (int i = 0; i < ears.length; i++) {
+			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
+			IModule[] childs = ear.getModules();
+			for (int j = 0; j < childs.length; j++) {
+				if(childs[j].equals(module))
+					list.add(ears[i]);
+			}
+		}
+		return (IModule[])list.toArray(new IModule[list.size()]);
+	}
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.wst.server.core.model.ServerDelegate#modifyModules(org.eclipse.wst.server.core.IModule[], org.eclipse.wst.server.core.IModule[], org.eclipse.core.runtime.IProgressMonitor)
