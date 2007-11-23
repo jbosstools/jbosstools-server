@@ -183,6 +183,20 @@
         By starting the server in debug mode, eclipse will allow you to set breakpoints on code in your workspace and step through the code.</para>
     <para>The publish icon, on the extreme right, will republish any modules where it has determined the workspace is out of sync with the server. 
         It will attempt to do an incremental publish if it turns out that the module in question is capable of doing one.</para>
+    <para>Because the JBoss servers have few properties to edit in the editor, a shortcut to the launch configuration has been provided in the context menu when right-clicking on a server. 
+        This menu also provides the functionality of starting the server in run or debug mode, stopping it, or synching the publish information between the server and workspace.</para>
+    <figure>
+        <title>Launch Configuration</title>
+        <mediaobject> 
+            <imageobject>
+                <imagedata fileref="images/perspective/perspective_21.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    <para>Near the bottom you'll also see the Add and Remove Projects... item, which allows you to publish a new project to the server (if its type is supported). 
+    The last menu item is the one labeled Twiddle Server.</para>
+    <para>The Twiddle Server item will open a dialog and allow you to run Twiddle commands against it. 
+        Twiddle is a JMX library that comes with JBoss, and you can use it to access any variables that exposed via the JBoss JMX interfaces.</para>
     
     <section id="Project_archivesView">
                 <title>Project archives View</title>

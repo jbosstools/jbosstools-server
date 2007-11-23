@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="modules">
-  <title>Deploying Modules (out of date!)</title>
+  <title>Deploying Modules</title>
 
   <para>
 	  Deploying to a server is mostly painless.
@@ -42,38 +42,53 @@
 		  archives using the <emphasis>Project Archives</emphasis>
 		  view and customize packaging yourself.</para>
   	  </section>
-	  <section><title>Add / Remove Projects</title>
+	  <section><title>Add and Remove Projects</title>
 	  <para>
 	  Another method is in either the Servers View, or the JBoss
 	  Servers View, to right click on a server and select
-	  the <emphasis>Add or Remove Projects</emphasis> menu item.
+	  the <emphasis><property>Add and Remove Projects</property></emphasis> menu item.
 	  This will bring up a dialog allowing you to either publish
-	  projects / modules to a server, or remove them from the server.</para>
+	  projects or modules to a server, or remove them from the server.</para>
+	  	<figure>
+	  		<title>Add and Remove Projects</title>
+	  		<mediaobject> 
+	  			<imageobject>
+	  				<imagedata fileref="images/modules/modules_3.png"/>
+	  			</imageobject>
+	  		</mediaobject>
+	  	</figure>
 
 	  <para>
 		  If the selected module is a webtools project, 
 		  it will be published as in the <emphasis>Run on Server</emphasis>
 		  option, with a best-guess full package. If, however, the selected
 		  element is an archive from the <emphasis>Project Archives View</emphasis>,
-		  it will be published according to the rules of that module type, which
-		  are explained below.</para>
+		  it will be published according to the rules of that module type.</para>
           </section>
 	  <section><title>JBoss Servers View, Publish</title>
 		  <para>
 			  In the JBoss Server's View, in the bottom section, is a 
-			  category called <emphasis>Modules</emphasis> which should
+			  category called <emphasis><property>Modules</property></emphasis> which should
 			  display all currently-published modules on the server.
 			  By right-clicking on the desired module and selecting
-			  <emphasis>Publish</emphasis>, it will force a full
+			  <emphasis><property>Full Publish</property></emphasis>, it will force a full
 			  rebuild of the entire module. </para>
+	  	<figure>
+	  		<title>Full Publish</title>
+	  		<mediaobject> 
+	  			<imageobject>
+	  				<imagedata fileref="images/modules/modules_4.png"/>
+	  			</imageobject>
+	  		</mediaobject>
+	  	</figure>
 	  </section>
 	  <section><title>Project Archives View</title>
 		  <para>In the Project Archives View, you can 
 			  right-click on any declared archive and select the 
-			  <emphasis>Publish To Server</emphasis> element, as described in
-			  the last chapter. </para>
+			  <emphasis><property>Publish To Server</property></emphasis> element, as described in
+		  	the JBoss AS Perspective chapter. </para>
 		  <para>
-			  The ONLY WAY to ensure an <emphasis>Incremental Build</emphasis>, 
+			  The only way to ensure an <emphasis>Incremental Build</emphasis>, 
 			  such as changes to one jsp, html, or .class file, is to 
 			  enable the builder for that project. This is done by either changing
 			  the global preferences for the Archives View, or in enabling
