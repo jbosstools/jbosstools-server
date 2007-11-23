@@ -149,6 +149,7 @@
             </imageobject>
         </mediaobject>
     </figure>
+    
     <para>Also you can see the server's publish status in the JBoss Servers view that allows you to see if changes are awaiting (Republish), are being updated (Publishing...) or are in-sync (Synchronized).</para>
     <figure>
         <title>Server's Publish Status</title>
@@ -158,7 +159,30 @@
             </imageobject>
         </mediaobject>
     </figure>
-    <para></para>
+    <para>The Server section of the view lists all declared servers and their current states, that is, whether they are started or stopped. By Double-clicking on each server, an editor window will appear allowing you to edit parts of that server. 
+    The editor will also link you to modify that server's launch configuration, set command line arguments, and other things that are relevent to launching the server.</para>
+    <para>A username/password is available in the UI when configuring the server. If you get an SecurityException when trying to launch the server it is most likely because your server is protected and hence you need to fill the username/password fields with apropriate values.</para>
+    <figure>
+        <title></title>
+        <mediaobject> 
+            <imageobject>
+                <imagedata fileref="images/perspective/perspective_20.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    <para>The view's toolbar shown below provides quick access to starting a server (in debug mode, run mode, or profile mode), restarting the server, stopping the server, or publishing to the server.</para>
+    <figure>
+        <title>The JBoss Server View Toolbar</title>
+        <mediaobject> 
+            <imageobject>
+                <imagedata fileref="images/perspective/perspective_19.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    <para>In order to debug your applications or EJB's that are deployed to the server, you must start the server in debug mode. 
+        By starting the server in debug mode, eclipse will allow you to set breakpoints on code in your workspace and step through the code.</para>
+    <para>The publish icon, on the extreme right, will republish any modules where it has determined the workspace is out of sync with the server. 
+        It will attempt to do an incremental publish if it turns out that the module in question is capable of doing one.</para>
     
     <section id="Project_archivesView">
                 <title>Project archives View</title>
