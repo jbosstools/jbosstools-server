@@ -60,7 +60,7 @@
 
 	  <para>
 		  If the selected module is a webtools project, 
-		  it will be published as in the <emphasis>Run on Server</emphasis>
+		  it will be published as in the <emphasis><property>Run on Server</property></emphasis>
 		  option, with a best-guess full package. If, however, the selected
 		  element is an archive from the <emphasis>Project Archives View</emphasis>,
 		  it will be published according to the rules of that module type.</para>
@@ -86,7 +86,15 @@
 		  <para>In the Project Archives View, you can 
 			  right-click on any declared archive and select the 
 			  <emphasis><property>Publish To Server</property></emphasis> element, as described in
-		  	the JBoss AS Perspective chapter. </para>
+			  the JBoss AS Perspective chapter. </para>
+	  	<figure>
+	  		<title>Publish to Server</title>
+	  		<mediaobject> 
+	  			<imageobject>
+	  				<imagedata fileref="images/modules/modules_5.png"/>
+	  			</imageobject>
+	  		</mediaobject>
+	  	</figure>
 		  <para>
 			  The only way to ensure an <emphasis>Incremental Build</emphasis>, 
 			  such as changes to one jsp, html, or .class file, is to 
