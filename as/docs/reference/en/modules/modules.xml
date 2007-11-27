@@ -5,7 +5,7 @@
   <para>
 	  Deploying to a server is mostly painless.
 	  There are several ways to do it provided by Webtools, 
-	  and some additional methods provided by RHDS. </para>
+	  and some additional methods provided by JBDS. </para>
   <section><title>WTP Projects</title>
 	  <section><title>Run On Server</title>
 	  <para>
