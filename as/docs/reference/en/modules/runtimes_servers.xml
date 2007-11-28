@@ -76,11 +76,7 @@
         It will do no good to try to remember if "JBoss-runtime 5" is the 4.0 install with ejb3? Or the 4.2 install's custom configuration you decided to create.</para>
       <para>After pressing finish, you'll see that your new runtime has been added to the list and can now be targeted by webtools type projects or servers, both of which we'll get to later.</para>
     </section>
-    
-    <section><title>Deleting a  Runtime</title>
-      <para></para>
-    </section>
-    
+   
   </section>
   
   <section>
