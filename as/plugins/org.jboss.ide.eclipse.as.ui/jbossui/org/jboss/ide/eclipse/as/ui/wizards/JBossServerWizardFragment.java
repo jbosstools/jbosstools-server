@@ -339,7 +339,15 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private String getErrorString() {
 		if( findServer(name) != null ) 
 			return Messages.swf_NameInUse;
+		
+		if(deployVal==null || deployVal.trim().length()==0) {
+			return "Deploy folder not specified";
+		}
 
+		if(deployTmpFolderVal==null || deployTmpFolderVal.trim().length()==0) {
+			return "Temporary deploy folder not specified";
+		}
+				
 		return null;
 	}
 		
