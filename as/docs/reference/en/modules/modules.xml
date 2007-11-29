@@ -5,7 +5,7 @@
   <para>
 	  Deploying to a server is mostly painless.
 	  There are several ways to do it provided by Webtools, 
-	  and some additional methods provided by JBDS. </para>
+	  and some additional methods provided by JBoss Tools. </para>
   <section><title>WTP Projects</title>
 	  <section><title>Run On Server</title>
 	  <para>
@@ -37,7 +37,7 @@
 		  for your project. This best-guess does <emphasis>not</emphasis>
 		  publish incrementally, but instead repackages your entire
 		  project into a .war, .jar, or .ear as appropriate, and 
-		  then coppies that file into the proper deploy directory.
+		  then copies that file into the proper deploy directory.
 		  For quicker smarter deployment, you will need to create
 		  archives using the <emphasis>Project Archives</emphasis>
 		  view and customize packaging yourself.</para>

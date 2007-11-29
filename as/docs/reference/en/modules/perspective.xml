@@ -42,7 +42,7 @@
             </imageobject>
         </mediaobject>
     </figure>
-    <para>Extender is meant to provide additional functionality relevent to the server selected in the top half of the view. If a standard server element is selected from above, some
+    <para>Extender is meant to provide additional functionality relevant to the server selected in the top half of the view. If a standard server element is selected from above, some
         of the extensions may still provide the additional information. Others may not. 
        
         So, let's look at the currently available extensions to the JBoss Server's View.</para>
@@ -65,7 +65,7 @@
         </imageobject>
     </mediaobject>
     </figure>
-          <para>The <property>Event Log</property> will show relevent information to your server's startup, shutdown, and publish processes. This allows
+          <para>The <property>Event Log</property> will show relevant information to your server's startup, shutdown, and publish processes. This allows
         you to keep an eye on what's going on (such as automatic incremental deployment if you have it enabled).
         The only action available is to clear the event log. However if the properties view is opened, you can receive further
         information on each event log item (when available).</para>
@@ -160,8 +160,8 @@
         </mediaobject>
     </figure>
     <para>The Server section of the view lists all declared servers and their current states, that is, whether they are started or stopped. By Double-clicking on each server, an editor window will appear allowing you to edit parts of that server. 
-    The editor will also link you to modify that server's launch configuration, set command line arguments, and other things that are relevent to launching the server.</para>
-    <para>A username/password is available in the UI when configuring the server. If you get an SecurityException when trying to launch the server it is most likely because your server is protected and hence you need to fill the username/password fields with apropriate values.</para>
+    The editor will also link you to modify that server's launch configuration, set command line arguments, and other things that are relevant to launching the server.</para>
+    <para>A username/password is available in the UI when configuring the server. If you get an SecurityException when trying to launch the server it is most likely because your server is protected and hence you need to fill the username/password fields with appropriate values.</para>
     <figure>
         <title></title>
         <mediaobject> 
@@ -204,7 +204,7 @@
                     many people use ANT. JBoss Developer Studio comes with our own archives tool with a bit easier and less-verbose XML and a handy user interface.</para>
                 <para>The Project Archives plugin consists primarily of a view to set up each packaging configuration. Each project can enable or disable its builder, or depend on the global setting.</para>
                 <para>The packaging configuration for each project is stored in that project's root folder, and is in a file named <property>.packages</property>, which has a fairly simple XML
-                    structure. Modifying the file by hand is neither required nor reccommended, and using the UI is the official way of modifying your packaging structure.</para>
+                    structure. Modifying the file by hand is neither required nor recommended, and using the UI is the official way of modifying your packaging structure.</para>
                 <para>Aside from the builder, the other preferences for the plugin are mostly cosmetic, allowing you to show full or truncated paths, show the project at the
                     root, etc. None of these have any effect on the functionality of the packaging plugin.</para>
                 
