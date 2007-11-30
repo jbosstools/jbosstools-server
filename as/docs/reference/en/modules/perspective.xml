@@ -12,7 +12,9 @@
   </chapterinfo>
     <title>JBoss AS Perspective</title>
          
-       <para>The <property>JBoss AS</property> Perspective is similar to the Java perspective, but it contains a few additional views. Two of the additional views are standard views, specifically the <property>Console </property> view and the <property>Properties</property> view. 
+       <para>This chapter tells how to manage installed JBoss AS servers via JBoss AS Perspective</para>
+
+	   <para>The <property>JBoss AS</property> Perspective is similar to the Java perspective, but it contains a few additional views. Two of the additional views are standard views, specifically the <property>Console </property> view and the <property>Properties</property> view. 
                 The other two views that are added are the <property>Project archives</property> view  and the <property>JBoss Servers View</property>.</para>
       
     <section id="JBossServersView">

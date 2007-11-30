@@ -2,6 +2,7 @@
 <chapter id="modules">
   <title>Deploying Modules</title>
 
+<para>In this chapter it will be described how to deploy modules onto the server</para>
   <para>
 	  Deploying to a server is mostly painless.
 	  There are several ways to do it provided by Webtools, 
