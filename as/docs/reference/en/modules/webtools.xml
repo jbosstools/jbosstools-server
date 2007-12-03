@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="webtools">
-  <title>Webtools Projects</title>
+  <title>WTP Projects</title>
   <para>This chapter covers how to select installed runtime/server in your web project</para>
 
   <section><title>Description</title>
   <para>
-	  Webtools provides what are called "faceted" projects. 
+	  WTP provides what are called "faceted" projects. 
 	  Their most popular of these projects are their J2EE projects,
 	  such as their <property>Dynamic Web Project</property>, their EJB Project, 
-	  or their EAR project. Web projects of JBoss Tools are: Stuts, JSF and Seam projects.</para>
+	  or their EAR project. Web projects of JBoss Tools are Stuts, JSF and Seam projects.</para>
   <para>
 	  The idea behind faceted projects is that each project 
 	  can accept units of functionality, or facets, which can be 

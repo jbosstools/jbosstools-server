@@ -203,12 +203,12 @@
     <section id="Project_archivesView">
                 <title>Project archives View</title>
                 <para>Every application, whether plain old Java, J2EE, or some other language altogether, needs to be packaged in some way. In Java-related projects, 
-                    many people use ANT. JBoss Developer Studio comes with our own archives tool with a bit easier and less-verbose XML and a handy user interface.</para>
+                    many people use ANT. JBoss Tools comes with our own archives tool with a bit easier and less-verbose XML and a handy user interface.</para>
                 <para>The Project Archives plugin consists primarily of a view to set up each packaging configuration. Each project can enable or disable its builder, or depend on the global setting.</para>
                 <para>The packaging configuration for each project is stored in that project's root folder, and is in a file named <property>.packages</property>, which has a fairly simple XML
                     structure. Modifying the file by hand is neither required nor recommended, and using the UI is the official way of modifying your packaging structure.</para>
                 <para>Aside from the builder, the other preferences for the plugin are mostly cosmetic, allowing you to show full or truncated paths, show the project at the
-                    root, etc. None of these have any effect on the functionality of the packaging plugin.</para>
+                    root, etc. None of these has any effect on the functionality of the packaging plugin.</para>
                 
                 <section id="Creating an archive">
                     <title>Creating an Archive</title>

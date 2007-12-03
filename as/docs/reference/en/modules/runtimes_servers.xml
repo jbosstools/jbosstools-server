@@ -18,18 +18,18 @@
 
   <!-- The Eclipse Web Tools Platform (WTP) project extends the Eclipse platform with tools for developing Web and Java EE applications. It includes source and graphical editors for a variety of languages, wizards and built-in applications to simplify development, and tools and APIs to support deploying, running, and testing apps.  -->
 
-  <para>The JBoss AS plugin makes use of Webtools. This includes starting and stopping servers in run or debug mode. It also includes
-    targeting webtools projects, such as dynamic web projects, to certain server runtimes in order to ensure that the proper jars
+  <para>The JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or debug mode. It also includes
+    targeting WTP projects, such as dynamic web projects, to certain server runtimes in order to ensure that the proper jars
     from a specific server are added to the project's classpath properly.</para>
   <para>In order to get started creating, running, and debugging J2EE applications, we must start with creating our <property>runtime</property> and 
     <property>server</property> instances.</para>
   
   <section>
-    <title>Webtools Runtimes</title>
+    <title>WTP Runtimes</title>
      <para>In JBoss Tools, the main purpose of Server Runtimes is to point to a server installation somewhere on disk. 
         In our case, this will be a JBoss installation, and it can than be used for two primary purposes:</para> 
         <itemizedlist>
-        <listitem><para>it provides classpath additions to webtools projects that require them.</para></listitem>
+        <listitem><para>it provides classpath additions to WTP projects that require them.</para></listitem>
 		<listitem><para>For JBoss server at least, it provides information necessary for the starting and stopping of the server, it tells which jars to run and which configuration to use.</para></listitem>
         </itemizedlist>
           
@@ -47,7 +47,7 @@
       <para>From this preference page you can see what runtimes are declared, and what type they are. In the image shown above, there are two declared
         runtimes, including a JBoss 4.2 instance.</para>
       <para>To create a JBoss runtime, we begin by clicking the <emphasis><property>Add</property></emphasis> button. This will open another dialog that allows us to choose what type 
-        of runtime we want to create. Most of the runtime options are provided by webtools, but those provided by JBoss Tools are the ones we will focus on.</para>
+        of runtime we want to create. Most of the runtime options are provided by WTP, but those provided by JBoss Tools are the ones we will focus on.</para>
       <figure>
         <title>Adding a Runtime</title>
         <mediaobject>
@@ -56,9 +56,9 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>As seen above, there appear to be two JBoss categories. The first is contributed by webtools, and is a generic adapter that is not upkept very well.
-        For this reason, JBoss Tools provides updated and supported adapters of our own. There is one for each of JBoss 3.2, 4.0, amd 4.2. You'll also note a deploy-only
-        runtime type. This type provides no classpath for webtools projects. It is used solely by it's server type for the purpose of setting up a deploy directory
+      <para>As seen above, there appear to be two JBoss categories. The first is contributed by WTP, and is a generic adapter that is not upkept very well.
+        For this reason, JBoss Tools provides updated and supported adapters of our own. There is one for each of JBoss 3.2, 4.0, and 4.2. You'll also note a deploy-only
+        runtime type. This type provides no classpath for WTP projects. It is used solely by it's server type for the purpose of setting up a deploy directory
         for users who don't wish to make use of starting, stopping, or debugging their projects inside eclipse.</para>
       <figure>
         <title>Adding a JBoss 4.2 Runtime</title>
@@ -81,14 +81,14 @@
       <para>As a result of having each runtime represent a specific configuration rather than the server installation as a whole, it is very likely you'll create several different runtimes 
         to test each of your configurations. It becomes important to ensure your runtimes, and later your servers, are given descriptive names that help you remember which is which.
         It will do no good to try to remember if "JBoss-runtime 5" is the 4.0 install with ejb3? Or the 4.2 install's custom configuration you decided to create.</para>
-      <para>After pressing finish, you'll see that your new runtime has been added to the list and can now be targeted by webtools type projects or servers, both of which we'll get to later.</para>
+      <para>After pressing finish, you'll see that your new runtime has been added to the list and can now be targeted by WTP type projects or servers, both of which we'll get to later.</para>
     </section>
    
   </section>
   
   <section>
-    <title>Webtools Servers</title>
-      <para>Webtools servers are eclipse-representations of a backing server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of what modules (jars, wars, etc) 
+    <title>WTP Servers</title>
+      <para>WTP servers are eclipse-representations of a backing server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of what modules (jars, wars, etc) 
         you deploy to the server and also allow you to undeploy those modules. </para>
       <para>Servers can be started or stopped with different command-line arguments. They are often backed by a runtime object representing that server's location.</para>
    <section>

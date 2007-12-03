@@ -2,17 +2,17 @@
 <chapter id="modules">
   <title>Deploying Modules</title>
 
-<para>In this chapter it will be described how to deploy modules onto the server</para>
+<para>In this chapter it will be described how to deploy modules onto the server.</para>
   <para>
-	  Deploying to a server is mostly painless.
-	  There are several ways to do it provided by Webtools, 
-	  and some additional methods provided by JBoss Tools. </para>
+	  First of all it is necessary to say that deploying to a server is mostly painless.
+	  There are several ways to do it provided by WTP, 
+	  and some additional methods provided by JBoss Tools. These methods are discribed further in this chapter</para>
   <section><title>WTP Projects</title>
 	  <section><title>Run On Server</title>
 	  <para>
-		  The first WTP method is to right-click on a webtools project,
+		  The first WTP method is to right-click on a WTP project,
 		  such as a dynamic web project, ejb project, or ear project
-		  and then selecting <emphasis><property>Run As &gt; Run on Server</property></emphasis>.
+		  and then select <emphasis><property>Run As &gt; Run on Server</property></emphasis>.
 		  The resulting dialog allows you to select which supporting
 		  server the project can be published to. </para>
 	  	<figure>
@@ -23,7 +23,7 @@
 	  			</imageobject>
 	  		</mediaobject>
 	  	</figure>
-	  	<para>Click <emphasis><property>Next</property></emphasis> button to see add or remove projects page where you can choose propjects to configure them on server.</para>
+	  	<para>Click <emphasis><property>Next</property></emphasis> button to see add or remove projects page where you can choose projects to configure them on server.</para>
 	  	<figure>
 	  		<title>Add or Remove Projects</title>
 	  		<mediaobject> 
@@ -60,7 +60,7 @@
 	  	</figure>
 
 	  <para>
-		  If the selected module is a webtools project, 
+		  If the selected module is a WTP project, 
 		  it will be published as in the <emphasis><property>Run on Server</property></emphasis>
 		  option, with a best-guess full package. If, however, the selected
 		  element is an archive from the <emphasis>Project Archives View</emphasis>,
