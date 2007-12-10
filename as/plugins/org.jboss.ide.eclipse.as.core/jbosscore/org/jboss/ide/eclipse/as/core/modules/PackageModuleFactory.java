@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.modules;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
@@ -58,9 +59,6 @@ import org.osgi.service.prefs.BackingStoreException;
  * @author rob.stryker@jboss.com
  */
 public class PackageModuleFactory extends ModuleFactoryDelegate {
-	
-	private static int nextArchiveId = -1;
-	private static final String NEXT_ARCHIVE_KEY = "org.jboss.ide.eclipse.as.core.PackageModuleFactory.nextId";
 	
 	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";
 	public static final String MODULE_TYPE = "jboss.package";
@@ -114,21 +112,8 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected static String getID(IArchive pack, boolean create) {
 		String propVal = pack.getProperty(MODULE_ID_PROPERTY_KEY);
 		if( propVal == null && create ) {
-			if( nextArchiveId == -1 ) {
-				nextArchiveId = 
-					new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID).getInt(NEXT_ARCHIVE_KEY, 0);
-			}
-			nextArchiveId++;
-			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
-			prefs.putInt(NEXT_ARCHIVE_KEY, nextArchiveId);
-			try {
-				prefs.flush();
-			} catch( BackingStoreException bse ) {
-			}
-			return "" + nextArchiveId;
-		} else if( propVal == null ) {
-			return null;
-		} 
+			return "" + new Date().getTime();
+		}
 		return propVal;
 	}
 	
