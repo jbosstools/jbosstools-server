@@ -82,7 +82,11 @@
             icon="icons/mbean16.gif"
             id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
             name="MBean Stubs"
-            project="false"/>
+            project="false">
+		<description>
+            	Create an MBean Stubs
+        </description>
+      </wizard>          
    </extension>
    
    
