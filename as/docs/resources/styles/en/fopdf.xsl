@@ -112,7 +112,7 @@
         <xsl:variable name="Version">
             <xsl:choose>
                 <xsl:when test="//releaseinfo">
-                    <xsl:text>JBoss </xsl:text>
+                    <xsl:text></xsl:text>
                     <xsl:value-of select="//releaseinfo"/>
                 </xsl:when>
                 <xsl:otherwise>
@@ -215,7 +215,7 @@
 
     <xsl:param name="tablecolumns.extension">0</xsl:param>
     <!-- FOP provide only PDF Bookmarks at the moment -->
-    <xsl:param name="fop.extensions">1</xsl:param>
+    <xsl:param name="fop1.extensions">1</xsl:param>
     
     
     
@@ -225,8 +225,8 @@
     <!-- Generate the TOCs for named components only -->
     <xsl:param name="generate.toc"> book toc,title</xsl:param>
     <!-- ,figure,table,equation -->
-    <!-- Show only Sections up to level 3 in the TOCs -->
-    <xsl:param name="toc.section.depth">3</xsl:param>
+    <!-- Show only Sections up to level 5 in the TOCs -->
+    <xsl:param name="toc.section.depth">5</xsl:param>
     <!-- Dot and Whitespace as separator in TOC between Label and Title-->
     <xsl:param name="autotoc.label.separator" select="'.  '"/>
     

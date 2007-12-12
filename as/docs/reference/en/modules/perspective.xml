@@ -40,7 +40,7 @@
         <title>View Preferences</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/perspective/perspective_2.png"/>
+                <imagedata fileref="images/perspective/perspective_2.png" scale="75"/>
             </imageobject>
         </mediaobject>
     </figure>
@@ -147,7 +147,7 @@
         <title>JMX Console</title>
         <mediaobject> 
             <imageobject>
-                <imagedata fileref="images/perspective/perspective_17.png"/>
+                <imagedata fileref="images/perspective/perspective_17.png" scale="75"/>
             </imageobject>
         </mediaobject>
     </figure>
