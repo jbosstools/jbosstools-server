@@ -20,7 +20,7 @@
     <section id="JBossServersView">
           <?dbhtml filename="JBossServerView.html"?>
             <title>The JBoss Servers View</title>
-          <para>This chapter will focus on the the JBoss Server's View. The JBoss Servers View is based on the Webtool's view, Servers View. The top half of the JBoss Servers View essentially embeds the original Servers View directly into it, making slight changes to the context menu.
+          <para>This chapter will focus on the the JBoss Server's View. The JBoss Servers View is based on the WTP view, Servers View. The top half of the JBoss Servers View essentially embeds the original Servers View directly into it, making slight changes to the context menu.
             A second half was added to provide additional information about the server selected in the top half. In the image provided, categories in the second half include which modules are currently deployed.</para>
             
             <figure>
