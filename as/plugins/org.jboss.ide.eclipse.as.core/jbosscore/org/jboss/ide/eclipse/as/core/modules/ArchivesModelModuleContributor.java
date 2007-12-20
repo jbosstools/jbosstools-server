@@ -80,8 +80,7 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 		if( packs != null && packs.length > 0 ) {
 			IModule module;
 			IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
-			/*boolean requiresSave = */
-			ensureArchivesHaveIDs(project, packages);
+			boolean requiresSave = ensureArchivesHaveIDs(project, packages);
 			ArrayList<IModule> mods = new ArrayList<IModule>();
 			for( int i = 0; i < packages.length; i++ ) {
 				module = factory.createModule2(packages[i], project);
@@ -92,6 +91,9 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 				mods.add(module);
 			}
 			projectToModules.put(project.getLocation(), mods);
+			if( requiresSave )
+				ArchivesModel.instance().saveModel(project.getLocation(), 
+						new NullProgressMonitor());
 		}
 	}
 	
@@ -111,15 +113,16 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 		// remove old mods
 		ArrayList<IModule> mods = projectToModules.get(projectLoc);
 		IModule mod;
-		IArchive arc;
+		PackagedModuleDelegate delegate;
 		if (mods != null) {
 			for( Iterator<IModule> i = mods.iterator(); i.hasNext();) {
 				mod = (IModule)i.next();
-				if( moduleDelegates.get(mod) != null ) {
-					arc = ((PackagedModuleDelegate)moduleDelegates.get(mod)).getPackage();
-					packageToModule.remove(arc);
+				if( modules.contains(mod)) {
+					delegate = ((PackagedModuleDelegate)moduleDelegates.get(mod));
 					moduleDelegates.remove(mod);
 					modules.remove(mod);
+					if( delegate != null ) 
+						packageToModule.remove(delegate.getPackage());
 				}
 			}
 		}
@@ -151,10 +154,6 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 				archives[i].setProperty(PackageModuleFactory.MODULE_ID_PROPERTY_KEY, 
 										PackageModuleFactory.getID(archives[i], true));
 			}
-		}
-		if( requiresSave ) {
-			// save
-			ArchivesModel.instance().saveModel(project.getLocation(), new NullProgressMonitor());
 		}
 		return requiresSave;
 	}
