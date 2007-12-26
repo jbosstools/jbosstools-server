@@ -2,7 +2,8 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
 "../../resources/support/docbook-dtd/docbookx.dtd"
 
-[<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
+[<!ENTITY quick_start SYSTEM "modules/quick_start.xml">
+<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
 <!ENTITY perspective SYSTEM "modules/perspective.xml">
 <!ENTITY webtools SYSTEM "modules/webtools.xml">
 <!ENTITY modules SYSTEM "modules/modules.xml">
@@ -23,7 +24,8 @@
     </bookinfo>
 	
     
-    <toc/>  
+    <toc/> 
+    &quick_start;
     &runtimes_servers;
     &perspective;
     &webtools;
