@@ -268,10 +268,60 @@
                             </imageobject>
                         </mediaobject>
                     </figure>
-                    <para>The context menu on the items in the view is extendable, but there are several that come standard. The first is the <property>Build Archive</property> action, enabled
-                        only on top-level archives, which initiates a full build on that archive. Editing and deleting nodes are also standard actions, with deletion not needing
-                        an explanation. The edit action brings up the wizard associated with that particular node type and allows the details to be changed. The final action
-                        contribution here is the ability to publish to a declared server.</para>
+                    <para>The context menu on the items in the view is extendable, but there are several that come standard.</para>
+                    
+                    <table>
+                        <title>Context Menu on the Item</title>
+                    <tgroup cols="2">
+                        <colspec colnum="1" colwidth="1*"/>
+                        <colspec colnum="2" colwidth="3*"/>
+                        
+                        
+                        <thead>
+                            <row>
+                                <entry align="center">
+                                    <para>Name</para>
+                                </entry>
+                                
+                                <entry align="center">
+                                    <para>Description</para>
+                                </entry>
+                                </row>
+                        </thead>
+                        
+                        <tbody>
+                           
+                           <row>
+                               <entry><para>Build Archive (Full)</para></entry>
+                               
+                               <entry><para>The action enabled only on top-level archives, which initiates a full build on that archive</para></entry>
+                           </row>
+                           
+                            <row>
+                                <entry><para>Edit Archive</para></entry>
+                                
+                                <entry><para>Standard action that brings up the wizard associated with that particular node type and allows the details to be changed</para></entry>
+                            </row>
+                           
+                            <row>
+                                <entry><para>Delete Archive</para></entry>
+                                
+                                <entry><para>Deleting node is standard action with deletion not needing an explanation</para></entry>
+                            </row>
+                            
+                            <row>
+                                <entry><para>Publish To Server</para></entry>
+                                
+                                <entry><para>The action means the ability to publish to a declared server</para></entry>
+                            </row>
+                           
+                        </tbody>
+                    </tgroup>
+                    </table>
+                    
+                    
+                    
+                    
                 </section>
                 <section id="PublishToServer">
                     <title>Publish to Server</title>
