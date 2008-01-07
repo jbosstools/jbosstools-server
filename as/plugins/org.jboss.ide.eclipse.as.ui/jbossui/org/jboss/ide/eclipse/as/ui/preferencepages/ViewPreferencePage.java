@@ -117,8 +117,10 @@ public class ViewPreferencePage extends PreferencePage implements
 			retval = retval && comp.performOk();
 		}
     	
-		// refresh the viewer
-		JBossServerView.getDefault().refreshAll();
+		// refresh the viewer if it is opened
+		if (JBossServerView.getDefault() != null) {
+			JBossServerView.getDefault().refreshAll();
+		}
 		
         return retval;
     }
