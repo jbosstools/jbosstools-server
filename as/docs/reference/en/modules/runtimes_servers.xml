@@ -26,7 +26,7 @@
     with creating our <property>runtime</property> and <property>server</property> instances.</para>
 
   <section>
-    <title>WTP Runtimes</title>
+    <title>Runtimes</title>
     <para>In JBoss Tools, the main purpose of Server Runtimes is to point to a server installation
       somewhere on disk. In our case, this will be a JBoss installation, and it can than be used for
       two primary purposes:</para>
@@ -55,10 +55,8 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>From this preference page you can see declared runtimes and their types as well. In the
-        image shown above, there are two declared runtimes, including a JBoss 4.2 instance.</para>
-
-      <para>Here, it&apos;s possible to edit or remove existing runtimes as well as add a new
+      <para>From this preference page you can see all declared runtimes and their types as well.
+        Figure above shows two declared runtimes that include a JBoss 4.2 instance. Here, it&apos;s possible to edit or remove existing runtimes as well as add a new
         one.</para>
 
       <para>To create a JBoss runtime click <emphasis>
@@ -94,10 +92,79 @@
         </mediaobject>
       </figure>
 
-      <para>All you need here is to name chosen runtime (or you can leave offered name), browse to
+      <para>The following table describe all the available options of the wizard.</para>
+      <table>
+        <title>Server Runtime Wizard Parameters</title>
+        <tgroup cols="2">
+          <colspec colnum="1" colwidth="1*"/>
+          <colspec colnum="2" colwidth="3*"/>
+
+          <thead>
+            <row>
+              <entry align="center">
+                <para>Name</para>
+              </entry>
+
+              <entry align="center">
+                <para>Description</para>
+              </entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>
+                <para>Name</para>
+              </entry>
+              <entry>
+                <para>The name of a new Runtime for chosen server. We suggest that you
+                  don&apos;t leave a default value. It&apos;s better to give descriptive
+                  names that will help to distinguish one runtime from another.</para>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <para>Home directory</para>
+              </entry>
+              <entry>
+                <para>The path to a directory where the runtime is installed.</para>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <para>jRE</para>
+              </entry>
+              <entry>
+                <para>The proper Java Runtime Environment. Because of the open-source nature of
+                  JBoss, a user is likely to want to modify and repackage some of the
+                  configuration-specific jboss jars and create their own configuration. Thus, ruthe
+                  than forcing the user to copy his entire JBoss installation, the structure of the
+                  wizard allows to create only a new configuration instead.</para>
+              </entry>
+            </row>
+
+            <row>
+              <entry>
+                <para>Configuration</para>
+              </entry>
+              <entry>
+                <para>The lists of configurations that is updated as soon as you browse to a valid
+                  runtime installation folder. After the runtime is created the configuration
+                  becomes an unchanging property of that runtime.</para>
+              </entry>
+            </row>
+
+          </tbody>
+        </tgroup>
+      </table>
+
+
+      <!--para>All you need here is to name chosen runtime, browse to
         its install directory and select a Java Runtime Environment. As you browse to a valid
         installation folder, the list of configurations will update allowing you to select the
-        configuration of your choice.</para>
+        configuration of your choice.</para-->
 
 
 
@@ -109,15 +176,10 @@
         compile against a different configuration's jars, you will need to create a new runtime from
         that configuration.</para>
 
-
-      <!--para>The user is likely to want to modify some of the configuration-specific
-        jboss jars. In this case it's possible to create your own new configuration.</para-->
-
-
-      <para>Also, because of the open-source nature of JBoss, it is likely that a user may want to
+      <!--para>Also, because of the open-source nature of JBoss, it is likely that a user may want to
         modify and repackage some of the configuration-specific jboss jars and create their own
         configuration using those modified jars. Rather than forcing the user to copy his entire
-        JBoss installation, this structure allows them to create only a new configuration instead.</para>
+        JBoss installation, this structure allows them to create only a new configuration instead.</para-->
 
       <para>As a result of having each runtime represent a specific configuration rather than the
         server installation as a whole, it is very likely you'll create several different runtimes
@@ -125,6 +187,7 @@
         your servers, are given descriptive names that help you remember which is which. It will do
         no good to try to remember if "JBoss-runtime 5" is the 4.0 install with ejb3? Or the 4.2
         install's custom configuration you decided to create.</para>
+
       <para>Press <emphasis>
           <property>Finish</property>
         </emphasis> to see your new runtime in the list.</para>
@@ -144,10 +207,9 @@
       <title>Creating a New Server</title>
       <para>There are many ways to get to the new server wizard. One way is to use the old standard <emphasis>
           <property>File &gt; New &gt; Other... </property>
-        </emphasis>wizard, and type in <emphasis>
+        </emphasis> and then <emphasis>
           <property>Server</property>
-        </emphasis>. This should show the screen below, which does not look that different from the
-        initial screen when creating a new runtime. </para>
+        </emphasis>. This should show the wizard like below.</para>
       <figure>
         <title>Adding a JBoss Server</title>
         <mediaobject>
@@ -156,18 +218,22 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Because the server object is what keeps track of things like command line arguments when
-        starting or stopping, and runtimes keep track of the location of the installation, each
-        server instance must be backed by an appropriate runtime. </para>
-      <para>Because there may be many runtimes of each type declared, the wizard allows you to
+      <para>A server object is that keeps track of things like command line arguments when starting
+        or stopping, and runtimes keep track of the location of the installation. Thus, each server
+        instance must be backed by an appropriate runtime. </para>
+
+      <para>The combo box below the view lets you select which runtime to use from the list of
+        already declared. If there is no runtime that match your needs just press <emphasis>
+          <property>Installed Runtimes... </property>
+        </emphasis> to bring up the familiar <link linkend="InstNewRuntime">preference page</link>.
+        Here, it becomes possible to edit already existing runtime or add a new one with necessary
+        configuration.</para>
+
+      <!--para>Because there may be many runtimes of each type declared, the wizard allows you to
         select which runtime you want your server to be backed by. The combo box below the view lets
         you select which declared runtime to use. For example, if there were already multiple JBoss
-        4.2 runtimes declared, the combo box would list all of the 4.2 runtimes available. </para>
-      <para>If none of the runtimes declared are one you want to use, for example if you declared a
-        default and a minimal runtime before but now want your server to be backed by the ALL
-        configuration, then you can click on the <emphasis>
-          <property>Installed Runtimes... </property>
-        </emphasis> button to bring up the preference page shown at the beginning of this chapter.</para>
+        4.2 runtimes declared, the combo box would list all of the 4.2 runtimes available. </para-->
+      
       <figure>
         <title>Installed Server Runtime Environments</title>
         <mediaobject>
