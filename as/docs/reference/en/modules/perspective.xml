@@ -19,12 +19,13 @@
         contains a few additional views. Two of the additional views are standard views,
         specifically the <property>Console </property> view and the <property>Properties</property>
         view. The other two views that are added are the <property>Project archives</property> view
-        and the <property>JBoss Servers View</property>.</para>
+        and the <property>JBoss Servers View</property>. </para>
 
     <section id="JBossServerView">
         <?dbhtml filename="JBossServerView.html"?>
         <title>The JBoss Servers View</title>
-        <para>This chapter will focus on the the JBoss Server's View. The JBoss Servers View is
+        <para>This chapter will focus on the the JBoss Server's View. </para>
+            <para>The JBoss Servers View is
             based on the WTP view, Servers View. The top half of the JBoss Servers View essentially
             embeds the original Servers View directly into it, making slight changes to the context
             menu. A second half was added to provide additional information about the server
@@ -265,7 +266,7 @@
                         <para>Delete</para>
                     </entry>
                     <entry>
-                        <para>Standard option that allows to delete any existing server.</para>
+                        <para>Standard option that allows to delete the chosen server.</para>
                     </entry>
                 </row>
 

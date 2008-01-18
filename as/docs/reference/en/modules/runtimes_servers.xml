@@ -56,8 +56,8 @@
         </mediaobject>
       </figure>
       <para>From this preference page you can see all declared runtimes and their types as well.
-        Figure above shows two declared runtimes that include a JBoss 4.2 instance. Here, it&apos;s possible to edit or remove existing runtimes as well as add a new
-        one.</para>
+        Figure above shows two declared runtimes that include a JBoss 4.2 instance. Here,
+        it&apos;s possible to edit or remove existing runtimes as well as add a new one.</para>
 
       <para>To create a JBoss runtime click <emphasis>
           <property>Add</property>
@@ -83,7 +83,7 @@
         directory for users who don't wish to make use of starting, stopping, or debugging their
         projects inside eclipse.</para>
 
-      <figure>
+      <figure id="add_runtime_figure">
         <title>Adding a JBoss 4.2 Runtime</title>
         <mediaobject>
           <imageobject>
@@ -92,7 +92,7 @@
         </mediaobject>
       </figure>
 
-      <para>The following table describe all the available options of the wizard.</para>
+      <para>The following table describes all the available options of the wizard.</para>
       <table>
         <title>Server Runtime Wizard Parameters</title>
         <tgroup cols="2">
@@ -139,7 +139,7 @@
               <entry>
                 <para>The proper Java Runtime Environment. Because of the open-source nature of
                   JBoss, a user is likely to want to modify and repackage some of the
-                  configuration-specific jboss jars and create their own configuration. Thus, ruthe
+                  configuration-specific jboss jars and create their own configuration. Thus, rather
                   than forcing the user to copy his entire JBoss installation, the structure of the
                   wizard allows to create only a new configuration instead.</para>
               </entry>
@@ -196,7 +196,7 @@
   </section>
 
   <section>
-    <title>WTP Servers</title>
+    <title>Servers</title>
     <para>WTP servers are eclipse-representations of a backing server installation. They are used to
       start or stop servers, deploy to servers, or debug code that will run on the server. They keep
       track of the modules (jars, wars, etc) you deploy to the server and also allow you to undeploy
@@ -222,18 +222,19 @@
         or stopping, and runtimes keep track of the location of the installation. Thus, each server
         instance must be backed by an appropriate runtime. </para>
 
-      <para>The combo box below the view lets you select which runtime to use from the list of
-        already declared. If there is no runtime that match your needs just press <emphasis>
+      <para>From the list of already declared runtimes in the combo box below the view it&apos;s
+        possible to select which runtime you want your server to be backed by. If there is no
+        runtime that matches your needs just press <emphasis>
           <property>Installed Runtimes... </property>
-        </emphasis> to bring up the familiar <link linkend="InstNewRuntime">preference page</link>.
-        Here, it becomes possible to edit already existing runtime or add a new one with necessary
-        configuration.</para>
+        </emphasis> to bring up the familiar preference page like in <link linkend="InstNewRuntime">
+          the previous section</link>. Here, it becomes possible to edit already existing runtime or
+        add a new one with necessary configuration.</para>
 
       <!--para>Because there may be many runtimes of each type declared, the wizard allows you to
         select which runtime you want your server to be backed by. The combo box below the view lets
         you select which declared runtime to use. For example, if there were already multiple JBoss
         4.2 runtimes declared, the combo box would list all of the 4.2 runtimes available. </para-->
-      
+
       <figure>
         <title>Installed Server Runtime Environments</title>
         <mediaobject>
@@ -242,12 +243,26 @@
           </imageobject>
         </mediaobject>
       </figure>
+
       <para>If the server you want to create doesn't have any installed runtime yet, the combo box
-        and button will disappear, and the next page in the wizard will force you to create the
-        associated runtime first. </para>
+        and button will disappear. The next page in the wizard which has the same form as in <link
+          linkend="add_runtime_figure">the previous section</link> will ask you to create the
+        associated runtime.</para>
       <para>Either way, after targeting your server to a runtime, the final screen in this wizard is
         largely confirmational, giving the user a chance to verify that he's selected the
         appropriate runtime. It also allows the user to name the server appropriately. </para>
+
+      <figure>
+        <title>Installed Server Runtime Environments</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_6.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>Now, having JBoss server and runtime installed, we can dwell on all services and tools that
+        JBoss Application Server provides.</para>
     </section>
 
   </section>
