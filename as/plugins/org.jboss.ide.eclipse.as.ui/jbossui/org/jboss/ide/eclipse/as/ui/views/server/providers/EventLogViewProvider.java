@@ -58,6 +58,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTre
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.IEventLogListener;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.dialogs.ShowStackTraceDialog;
 import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
@@ -82,13 +83,13 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	
 	private ITreeContentProvider contentProvider;
 	private LabelProvider labelProvider;
-	
 	private IEventLogLabelProvider[] labelProviderDelegates = null;
-	
 	private IPropertySheetPage propertyPage = null;
+	private Object[] selection;
 
 	private IServer input;
 	private Action clearLogAction;
+	private Action showStackTraceAction;
 	
 	private static HashMap<String, String> majorTypeToName = new HashMap<String, String>();
 	static {
@@ -119,7 +120,15 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			}
 		};
 		clearLogAction.setText("Clear Event Log");
-		//clearLogAction.setImageDescriptor(newImage)
+		
+		showStackTraceAction = new Action() {
+			public void run() {
+				EventLogTreeItem item = (EventLogTreeItem)selection[0];
+				ShowStackTraceDialog dialog = new ShowStackTraceDialog(new Shell(), item);
+				dialog.open();
+			}
+		};
+		showStackTraceAction.setText("See Exception Details");
 	}
 	
 	public class EventLogContentProvider implements ITreeContentProvider {
@@ -265,8 +274,14 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	}
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection[]) {
+		this.selection = selection;
 		if( selection.length == 1 && selection[0] == this.provider)
 			menu.add(clearLogAction);
+		if( selection.length == 1 && selection[0] instanceof EventLogTreeItem && 
+				(((EventLogTreeItem)selection[0]).getEventClass().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) ||
+				((EventLogTreeItem)selection[0]).getSpecificType().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) {
+			menu.add(showStackTraceAction);
+		}
 	}
 
 	public ITreeContentProvider getContentProvider() {

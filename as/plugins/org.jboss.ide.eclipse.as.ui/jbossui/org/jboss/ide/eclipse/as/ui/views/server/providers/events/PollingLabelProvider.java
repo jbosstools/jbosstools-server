@@ -27,6 +27,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -52,7 +53,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		supported.add(PollThread.POLL_THREAD_EXCEPTION);
 		supported.add(PollThread.POLLER_NOT_FOUND);
 		
-		supported.add(JMXPoller.EVENT_TYPE_EXCEPTION);
+		supported.add(EventLogModel.EVENT_TYPE_EXCEPTION);
 		supported.add(JMXPoller.EVENT_TYPE_STARTING);
 		
 		supported.add(JBossServerBehavior.FORCE_SHUTDOWN_EVENT_KEY);
@@ -78,7 +79,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 				return getErrorImage();
 		}
 		
-		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION)) 
+		if( element.getSpecificType().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) 
 			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_STARTING)) {
 			boolean started = ((Boolean)element.getProperty(JMXPoller.STARTED_PROPERTY)).booleanValue();
@@ -111,8 +112,11 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 			if( element.getSpecificType().equals(PollThread.POLLER_NOT_FOUND)) return expectedString + " failed. Poller not found";
 		}
 		
-		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_EXCEPTION))
-			return "JMXException: " + (String)element.getProperty(JMXPoller.EXCEPTION_PROPERTY);
+		if( element.getSpecificType().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) {
+			Object o = element.getProperty(EventLogModel.EXCEPTION_PROPERTY);
+			return "JMXException: " + ( o == null ? "null" : ((Exception)o).getMessage());
+		}
+		
 		if( element.getSpecificType().equals(JMXPoller.EVENT_TYPE_STARTING)) {
 			boolean started = ((Boolean)element.getProperty(JMXPoller.STARTED_PROPERTY)).booleanValue();
 			if( !started ) 
@@ -154,7 +158,7 @@ public class PollingLabelProvider extends ComplexEventLogLabelProvider implement
 		// property names and their readable forms
 		propertyToMessageMap.put(EventLogTreeItem.DATE, "Time");
 		propertyToMessageMap.put(PollThread.EXPECTED_STATE, "Expected State");
-		propertyToMessageMap.put(JMXPoller.EXCEPTION_PROPERTY, "Exception");
+		propertyToMessageMap.put(EventLogModel.EXCEPTION_PROPERTY, "Exception");
 		propertyToMessageMap.put(JMXPoller.STARTED_PROPERTY, "Server Started");
 		propertyToMessageMap.put(PollThread.POLL_THREAD_ABORTED_CAUSE, "Abort Cause");
 		// now values and their readable forms

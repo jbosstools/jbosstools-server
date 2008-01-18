@@ -41,7 +41,9 @@ import org.osgi.service.prefs.BackingStoreException;
  */
 public class EventLogModel {
 	public static final String ENABLE_LOGGING_PREFERENCE = "org.jboss.ide.eclipse.as.core.extensions.events.enableLogging";
-	
+	public static final String EVENT_TYPE_EXCEPTION = "org.jboss.ide.eclipse.as.core.extensions.events.EXCEPTION";
+	public static final String EXCEPTION_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.events.EXCEPTION_PROPERTY";
+
 	public static void enableLogging(boolean enabled) {
 		if( enabled )
 			enableLogging();

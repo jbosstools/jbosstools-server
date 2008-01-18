@@ -22,7 +22,6 @@
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Properties;
 
 import javax.management.MBeanException;
@@ -35,6 +34,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil;
@@ -51,9 +51,7 @@ import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 public class JMXPoller implements IServerStatePoller {
 
 	public static final String STARTED_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.STARTED_PROPERTY";
-	public static final String EXCEPTION_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.EXCEPTION_PROPERTY";
 	public static final String EVENT_TYPE_STARTING = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.STARTING";
-	public static final String EVENT_TYPE_EXCEPTION = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.EXCEPTION";
 	
 	
 	public static final int STATE_STARTED = 1;
@@ -201,8 +199,8 @@ public class JMXPoller implements IServerStatePoller {
 		}
 		
 		public JMXEvent(SimpleTreeItem parent, Exception e) {
-			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, EVENT_TYPE_EXCEPTION );
-			setProperty(EXCEPTION_PROPERTY, e.getMessage());
+			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, EventLogModel.EVENT_TYPE_EXCEPTION );
+			setProperty(EventLogModel.EXCEPTION_PROPERTY, e);
 		}
 	}
 }
