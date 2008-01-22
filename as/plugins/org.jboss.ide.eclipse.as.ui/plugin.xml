@@ -121,6 +121,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
+            allowMultiple="false"
             category="org.eclipse.wst.server.ui"
             class="org.jboss.ide.eclipse.as.ui.views.server.JBossServerView"
             icon="icons/jboss.gif"
