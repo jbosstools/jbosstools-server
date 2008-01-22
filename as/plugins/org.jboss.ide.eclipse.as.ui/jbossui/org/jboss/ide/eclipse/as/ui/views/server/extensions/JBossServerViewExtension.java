@@ -125,7 +125,7 @@ public abstract class JBossServerViewExtension {
 								viewer.refresh(provider);
 						}
 					} catch(Exception e) {
-						JBossServerUIPlugin.log("Error refreshing viewer (object=" + o + ")", e);
+						// non-critical error, ignore
 					}
 				}
 			}
