@@ -358,7 +358,7 @@
 
     <section id="Project_archivesView">
         <title>Project archives View</title>
-        <para>Every application, whether plain old Java, J2EE, or some other language altogether,
+        <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
             Tools comes with our own archives tool with a bit easier and less-verbose XML and a
             handy user interface.</para>
@@ -546,7 +546,7 @@
 
     </section>
 
-    <section id="Deploy to Server">
+    <!--section id="Deploy to Server">
         <?dbhtml filename="DeployToServer.html"?>
         <title>Deploy to Server</title>
         <para>In the context menu of files there is a <property>Deploy To Server</property> option
@@ -565,6 +565,6 @@
         <para>The deployed files are listed side-by-side with other modules that are deployed to the
             server.</para>
 
-    </section>
+    </section-->
 
 </chapter>

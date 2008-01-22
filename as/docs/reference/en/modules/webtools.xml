@@ -3,27 +3,29 @@
 	<title>Projects</title>
 	<para>The most popular of the projects we deal with are the J2EE projects, such as
 			<property>Dynamic Web Project</property>, EJB Project, or EAR project. Web projects of
-		JBoss Tools are Stuts, JSF and Seam projects. In this chapter we are going to tell you about
-		facets the main benefit of which to provide proper structuring and packaging for any type of
-		project.</para>
+		JBoss Tools are Stuts, JSF and Seam projects. Thus, in this chapter we are going to tell you
+		about facets the main benefit of which to provide proper structuring and packaging for any
+		type of project to deploy on a server afterwards.</para>
 
 	<section>
 		<title>Description</title>
 		<para>The idea behind faceted projects is that each project can accept units of
-			functionality, or facets, which can be added or removed by the user. Some examples of
-			these facets are adding a webdoclet facet to a web project, or an ejbdoclet to an EJB
-			Project. </para>
-		<para> Most often, these "facets" either add to the project's classpath, enable a builder,
-			or watch the project in some other fashion. </para>
+			functionality, or facets, which can be added or removed by the user. Most often, these
+			facets either add to the project's classpath, enable a builder, or watch the project in
+			some other fashion. Generally, every project concerned has at least one facet when
+			it&apos;s created. As an example, a Web project has a WebDoclet facet, or an EJB
+			Project has an EJB Module facet as prerequisites.</para>
+
 		<para> WTP projects have undergone some criticism as being
 			<emphasis>over-engineered</emphasis> or too restrictive in their design. WTP projects
 			are set up in a tree-relationship to each other, where one project can be a child of
 			another. For example, an EAR project may have a Web Project child, an EJB project child,
-			or other types. </para>
+			or other types.</para>
+
 		<para> The benefit of this is that the structure of your projects is then known, and
 			packaging it up *should* be trivial. However, if your project is non-standard, or you
 			feel too confined by such rigid structural requirements, you can still choose to package
-			your project using the Archives plugin.</para>
+			your project <link linkend="Project_archivesView">using the Archives plugin</link>.</para>
 
 	</section>
 
@@ -42,10 +44,11 @@
 				<property>Modify Project...</property>
 			</emphasis> button.</para>
 
-		<para>The other way is adding necessary facets while organizing a new project. To demonstrate
-			it let&apos;s create a new <property>Dynamic Web Project</property> selecting as usual <emphasis>
+		<para>The other way is adding necessary facets while organizing a new project. To
+			demonstrate it let&apos;s create a new <property>Dynamic Web Project</property>
+			selecting as usual <emphasis>
 				<property>File &gt; New &gt; Other...</property>
-			</emphasis> and  then <emphasis>
+			</emphasis> and then <emphasis>
 				<property>Web &gt; Dynamic Web Project.</property>
 			</emphasis></para>
 		<figure>
