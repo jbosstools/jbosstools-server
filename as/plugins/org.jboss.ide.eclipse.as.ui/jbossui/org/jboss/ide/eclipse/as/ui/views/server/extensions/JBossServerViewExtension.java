@@ -130,6 +130,9 @@ public abstract class JBossServerViewExtension {
 				}
 			}
 		};
+		
+		if( JBossServerView.getDefault() == null ) return;
+		
 		if( Display.getCurrent() == null ) 
 			Display.getDefault().asyncExec(r);
 		else
