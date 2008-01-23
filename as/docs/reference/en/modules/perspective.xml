@@ -17,36 +17,266 @@
 
     <para>The <property>JBoss AS</property> Perspective is similar to the Java perspective, but it
         contains a few additional views. Two of the additional views are standard views,
-        specifically the <property>Console </property> view and the <property>Properties</property>
-        view. The other two views that are added are the <property>Project archives</property> view
-        and the <property>JBoss Servers View</property>. </para>
+        specifically the <property>Console view</property> and the <property>Properties
+            view</property>. The other two views that are added are the <property>Project Archives view</property>
+        and the <property>JBoss Server view</property>.</para>
 
     <section id="JBossServerView">
         <?dbhtml filename="JBossServerView.html"?>
-        <title>The JBoss Servers View</title>
-        <para>This chapter will focus on the the JBoss Server's View. </para>
-        <para>The JBoss Servers View is based on the WTP view, Servers View. The top half of the
-            JBoss Servers View essentially embeds the original Servers View directly into it, making
-            slight changes to the context menu. A second half was added to provide additional
-            information about the server selected in the top half. In the image provided, categories
-            in the second half include which modules are currently deployed.</para>
+        <title>The JBoss Server View</title>
+        <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect in details all parts it consist of.
+        </para>
 
+        <para>The <property>JBoss Server View</property> is based on the WTP view, Server
+            View. The top part of the <property>JBoss Servers View</property> essentially embeds
+            the original Server View directly into it, making slight changes to the context
+            menu. A second part was added to provide additional information about the server
+            selected in the top part. In the image provided, categories in the second part
+            include which modules are currently deployed.</para>
+        
         <figure>
-            <title>The JBoss Servers View</title>
+            <title>The JBoss Server View</title>
             <mediaobject>
                 <imageobject>
                     <imagedata fileref="images/perspective/perspective_1.png"/>
                 </imageobject>
             </mediaobject>
         </figure>
+        <para>Now, let&apos;s get to know with each of them.</para>
+    <section>
+            <title>Top Part of JBoss Server View</title>
+        <para>In the top part of the <property>JBoss Server view</property> all
+            declared servers are represented as well as their current states, that is, whether they
+            are started or stopped. </para>
+        <figure>
+            <title>Server Publish Status</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_18.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>It also shows the server's publish status. The fallowing table lists each of them.</para>
+        
+        <table>
+            <title>Server Publish Status</title>
+            <tgroup cols="2">
+                <colspec colnum="1" colwidth="1*"/>
+                <colspec colnum="2" colwidth="3*"/>
+           
+            
+            <thead>
+                <row>
+                    <entry align="center">Status</entry>
+                    
+                    <entry align="center">Description</entry>
+                 </row>
+            </thead>
+            
+            <tbody>
+                <row>
+                    <entry align="center"><para>Republish</para></entry>
+                    
+                    <entry align="center"><para>The status which allows you to see
+                        if changes are awaiting.</para></entry>
+                </row>
+                <row>
+                    <entry align="center"><para>Publishing...</para></entry>
+                    
+                    <entry align="center"><para>The status which shows
+                        if changes are being updated.</para></entry>
+                </row>
+                <row>
+                    <entry align="center"><para>Synchronized</para></entry>
+                    
+                    <entry align="center"><para>The status which allows you to see
+                        if changes are in-sync.</para></entry>
+                </row>
+            </tbody>
+          </tgroup>
+         </table>
+        
+        <para>By double-clicking on any server an editor window
+            will appear allowing you to edit parts of that server. The editor will also link you to
+            modify that server's launch configuration, set command line arguments, and other things
+            that are relevant to launching the server.</para>
+        
+        <figure>
+            <title>Preferences Page for the Chosen Server</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_20.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>At the figure above you can see that a username/password is available in the UI when
+            configuring the server. If you get an SecurityException when trying to launch the server, 
+            it is most likely because your server is protected and hence you need to fill the
+            username/password fields with appropriate values.</para>
+        
+        <para>The view's toolbar shown below provides quick access to starting a server (in debug
+            mode, run mode, or profile mode), restarting the server, stopping the server, or
+            publishing to the server.</para>
+        <figure>
+            <title>The JBoss Server View Toolbar</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_19.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>In order to debug your applications or EJB's that are deployed to the server, you must
+            start the server in debug mode. By starting the server in debug mode, eclipse will allow
+            you to set breakpoints on code in your workspace and step through the code.</para>
+        <para>The publish icon on the extreme right will republish any modules where it has
+            determined the workspace is out of sync with the server. It will attempt to do an
+            incremental publish if it turns out that the module in question is capable of doing one.</para>
+        <para>As the JBoss servers have few properties to edit in the editor, a shortcut to the
+            launch configuration has been provided in the context menu when right-clicking on a
+            server.</para>
+        <figure>
+            <title>Launch Configuration</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_21.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>The following table describes all those additional properties.</para>
+        <table>
+            <title>Server Properties through the Context Menu</title>
+            <tgroup cols="2">
+                <colspec colnum="1" colwidth="1*"/>
+                <colspec colnum="2" colwidth="3*"/>
+                
+                <thead>
+                    <row>
+                        <entry align="center">
+                            <para>Name</para>
+                        </entry>
+                        
+                        <entry align="center">
+                            <para>Description</para>
+                        </entry>
+                    </row>
+                </thead>
+                
+                <tbody>
+                    <row>
+                        <entry>
+                            <para>New Server</para>
+                        </entry>
+                        <entry>
+                            <para>The option allows to define a new server.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Delete</para>
+                        </entry>
+                        <entry>
+                            <para>Standard option that allows to delete the chosen server.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Start</para>
+                        </entry>
+                        <entry>
+                            <para>The action for stating a server in a run mode.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Debug</para>
+                        </entry>
+                        <entry>
+                            <para>The action for stating a server in a debug mode.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Stop</para>
+                        </entry>
+                        <entry>
+                            <para>The action for stopping a declared server.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Publish</para>
+                        </entry>
+                        <entry>
+                            <para>The action for synching the publish information between the server
+                                and workspace.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Clean</para>
+                        </entry>
+                        <entry>
+                            <para>The option for complete redeploying.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Twiddle Server</para>
+                        </entry>
+                        <entry>
+                            <para>The option provides a dialog for running Twiddle commands against
+                                the Twiddle Server.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Edit Launch Configuration</para>
+                        </entry>
+                        <entry>
+                            <para>The option that provides an editor for editing launch
+                                configuration properties of the proper server.</para>
+                        </entry>
+                    </row>
+                    
+                    <row>
+                        <entry>
+                            <para>Add and Remove Projects</para>
+                        </entry>
+                        <entry>
+                            <para>The option allows to publish a new project to the server (if its
+                                type is supported).</para>
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        
+        <para>Mentioned above Twiddle is a JMX library that comes with JBoss, and you can use it to
+            access any variables that exposed via the JBoss JMX interfaces.</para>
+    </section>
 
-
+    <section>
+        <title>Bottom Part of JBoss Server View</title>
+        
         <para>In order to access the view's preferences, you should access <emphasis>
-                <property>Window &gt; Preferences &gt; JBoss Tools &gt; JBoss Servers
-                    &gt; View</property>
-            </emphasis>. This preference page allows you to select which view extensions you want on
-            or off, the order they appear in the view, as well as any other extension-specific
-            preferences that may be available.</para>
+            <property>Window &gt; Preferences &gt; JBoss Tools &gt; JBoss
+                Servers &gt; View</property>
+        </emphasis>. This preference page allows you to select which view extensions you
+            want on or off, the order they appear in the view, as well as any other
+            extension-specific preferences that may be available.</para>
+        
         <figure>
             <title>View Preferences</title>
             <mediaobject>
@@ -55,10 +285,13 @@
                 </imageobject>
             </mediaobject>
         </figure>
-        <para>Extender is meant to provide additional functionality relevant to the server selected
-            in the top half of the view. If a standard server element is selected from above, some
-            of the extensions may still provide the additional information. Others may not. So,
-            let's look at the currently available extensions to the JBoss Server's View.</para>
+        
+        <para>Extender is meant to provide additional functionality relevant to the server
+            selected in the top part of the view. If a standard server element is selected from
+            above, some of the extensions may still provide the additional information. Others
+            may not. So, let&apos;s look at the currently available extensions to the
+            <property>JBoss Server View</property>.</para>
+        
         <figure>
             <title>View Extensions</title>
             <mediaobject>
@@ -67,10 +300,13 @@
                 </imageobject>
             </mediaobject>
         </figure>
-        <para>The <property>Modules</property> section shows what modules are currently deployed to
-            the server, and allows you to remove them from the server, or force a full republish
-            upon them. It only shows which modules have been deployed through Eclipse, not any and
-            all modules that happen to be in the deploy directory.</para>
+        
+        <para>The <emphasis>
+            <property>Modules</property></emphasis> section shows what modules are currently deployed
+            to the server, and allows you to remove them from the server, or force a full
+            republish upon them. It only shows which modules have been deployed through Eclipse, not any and all
+            modules that happen to be in the deploy directory.</para>
+        
         <figure>
             <title>Modules Action</title>
             <mediaobject>
@@ -79,11 +315,18 @@
                 </imageobject>
             </mediaobject>
         </figure>
-        <para>The <property>Event Log</property> will show relevant information to your server's
-            startup, shutdown, and publish processes. This allows you to keep an eye on what's going
-            on (such as automatic incremental deployment if you have it enabled). The only action
-            available is to clear the event log. However if the properties view is opened, you can
-            receive further information on each event log item (when available).</para>
+        
+        <para>The <emphasis>
+            <property>Event Log</property></emphasis> will show relevant information to your
+            server&apos;s startup, shutdown, and publish processes. This allows you to keep
+            an eye on what&apos;s going on (such as automatic incremental deployment if you
+            have it enabled). The only action available is to clear the <emphasis>
+                <property>Event
+                Log</property></emphasis>. However, if the <property>Properties view</property> is opened, you
+            can receive further information on each <emphasis>
+                <property>Event Log</property></emphasis> item (when
+            available).</para>
+        
         <figure>
             <title>Event Log Actions</title>
             <mediaobject>
@@ -92,6 +335,7 @@
                 </imageobject>
             </mediaobject>
         </figure>
+        
         <figure>
             <title>Stopping the Server</title>
             <mediaobject>
@@ -100,10 +344,15 @@
                 </imageobject>
             </mediaobject>
         </figure>
-        <para>The <property>XML Configuration</property> category allows you to quickly browse to
-            descriptor files in your server's deploy directory and check or change the values. Its
-            use requires the Properties view. Basically, XML Configuration are XML XPaths where a
-            xpath is a path used to access some specific part of an xml document.</para>
+        
+        <para>The <emphasis>
+            <property>XML Configuration</property></emphasis> category allows you to quickly browse
+            to descriptor files in your server's deploy directory and check or change the
+            values. Basically, <emphasis>
+                <property>XML Configuration</property></emphasis> includes XML XPaths where
+            a XPath is a path used to access some specific part of an xml document. Besides, its
+            use requires the <property>Properties view</property>. </para>
+        
         <figure>
             <title>XML Configuration and Properties View</title>
             <mediaobject>
@@ -112,10 +361,13 @@
                 </imageobject>
             </mediaobject>
         </figure>
-        <para>The view itself contains only a list of categories. By right-clicking on <emphasis>
-                <property>XML Configuration</property>
-            </emphasis>, you can create a new category. Ports are provided by default and is filled
-            with many of the most commonly used ports in the JBoss Server.</para>
+        
+        <para>The category itself contains only a list of categories. By right-clicking on <emphasis>
+            <property>XML Configuration</property>
+        </emphasis>, you can create a new category. Ports are provided by default and is
+            filled with many of the most commonly used ports in the <property>JBoss
+                Server</property>.</para>
+        
         <figure>
             <title>Adding New Category</title>
             <mediaobject>
@@ -124,9 +376,11 @@
                 </imageobject>
             </mediaobject>
         </figure>
+        
         <para>By right-clicking on <emphasis>
-                <property>Ports</property>
-            </emphasis>, you can create a new XPaths.</para>
+            <property>Ports</property>
+        </emphasis>, you can create a new XPaths.</para>
+        
         <figure>
             <title>Adding New XPath</title>
             <mediaobject>
@@ -135,7 +389,9 @@
                 </imageobject>
             </mediaobject>
         </figure>
+        
         <para>After that, the dialog shown below will appear.</para>
+        
         <figure>
             <title>Adding New XPath</title>
             <mediaobject>
@@ -144,15 +400,17 @@
                 </imageobject>
             </mediaobject>
         </figure>
+        
         <para>As you type, the fields autocomplete to help you locate exactly what xpath you're
-            looking for. The goal here is to get an end result where the xpath matches up with an
-            easily changed property. With that in mind, if the property you want to change is the
-            text of an element, then the final field Attribute Name should be left blank and your
-            xpath should end with port. If, on the other hand, your desired field is the port
-            attribute of &lt;fieldName port="35"&gt;, then your xpath will end with
+            looking for. The goal here is to get an end result where the xpath matches up with
+            an easily changed property. With that in mind, if the property you want to change is
+            the text of an element, then the final field Attribute Name should be left blank and
+            your xpath should end with port. If, on the other hand, your desired field is the
+            port attribute of &lt;fieldName port="35"&gt;, then your xpath will end with
             fieldName and your Attribute Name will be "port". When finished, you can click <emphasis>
                 <property>Preview</property>
-            </emphasis> to see how many matches you have for that particular xpath, as shown below.</para>
+            </emphasis> to see how many matches you have for that particular xpath, as shown
+            below.</para>
         <figure>
             <title>XPath Preview</title>
             <mediaobject>
@@ -161,203 +419,25 @@
                 </imageobject>
             </mediaobject>
         </figure>
-    </section>
-    <para>As part of the JBoss Server view there is a <emphasis>
+        
+        <para>As part of the JBoss Server view there is a <emphasis>
             <property>JMX Console</property>
-        </emphasis> section which allows you to browse and use the JMX exposed beans on the server.</para>
-    <figure>
-        <title>JMX Console</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="images/perspective/perspective_17.png" scale="75"/>
-            </imageobject>
-        </mediaobject>
-    </figure>
-
-    <para>Now, let&apos;s return to the first part of the JBoss Servers view where all declared
-        servers are represented as well as their current states, that is, whether they are started
-        or stopped. It also shows the server's publish status that allows you to see if changes are
-        awaiting (Republish), are being updated (Publishing...) or are in-sync (Synchronized).</para>
-    <figure>
-        <title>Server's Publish Status</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="images/perspective/perspective_18.png"/>
-            </imageobject>
-        </mediaobject>
-    </figure>
-
-    <para>By double-clicking on any server in the Server section of the view, an editor window will
-        appear allowing you to edit parts of that server. The editor will also link you to modify
-        that server's launch configuration, set command line arguments, and other things that are
-        relevant to launching the server.</para>
-
-    <figure>
-        <title>Preferences Page for the Chosen Server</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="images/perspective/perspective_20.png"/>
-            </imageobject>
-        </mediaobject>
-    </figure>
-
-    <para>At the figure above you can see that a username/password is available in the UI when
-        configuring the server. If you get an SecurityException when trying to launch the server it
-        is most likely because your server is protected and hence you need to fill the
-        username/password fields with appropriate values.</para>
-
-    <para>The view's toolbar shown below provides quick access to starting a server (in debug mode,
-        run mode, or profile mode), restarting the server, stopping the server, or publishing to the
-        server.</para>
-    <figure>
-        <title>The JBoss Server View Toolbar</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="images/perspective/perspective_19.png"/>
-            </imageobject>
-        </mediaobject>
-    </figure>
+        </emphasis> section which allows you to browse and use the JMX exposed beans on the
+            server.</para>
+        <figure>
+            <title>JMX Console</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_17.png" scale="75"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
     
-    <para>In order to debug your applications or EJB's that are deployed to the server, you must
-        start the server in debug mode. By starting the server in debug mode, eclipse will allow you
-        to set breakpoints on code in your workspace and step through the code.</para>
-    <para>The publish icon on the extreme right will republish any modules where it has determined
-        the workspace is out of sync with the server. It will attempt to do an incremental publish
-        if it turns out that the module in question is capable of doing one.</para>
-    <para>As the JBoss servers have few properties to edit in the editor, a shortcut to the
-        launch configuration has been provided in the context menu when right-clicking on a server.</para>
-    <figure>
-        <title>Launch Configuration</title>
-        <mediaobject>
-            <imageobject>
-                <imagedata fileref="images/perspective/perspective_21.png"/>
-            </imageobject>
-        </mediaobject>
-    </figure>
-
-    <para>The following table describes all those additional properties.</para>
-    <table>
-        <title>Server Properties through the Context Menu</title>
-        <tgroup cols="2">
-            <colspec colnum="1" colwidth="1*"/>
-            <colspec colnum="2" colwidth="3*"/>
-
-            <thead>
-                <row>
-                    <entry align="center">
-                        <para>Name</para>
-                    </entry>
-
-                    <entry align="center">
-                        <para>Description</para>
-                    </entry>
-                </row>
-            </thead>
-
-            <tbody>
-                <row>
-                    <entry>
-                        <para>New Server</para>
-                    </entry>
-                    <entry>
-                        <para>The option allows to define a new server.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Delete</para>
-                    </entry>
-                    <entry>
-                        <para>Standard option that allows to delete the chosen server.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Start</para>
-                    </entry>
-                    <entry>
-                        <para>The action for stating a server in a run mode.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Debug</para>
-                    </entry>
-                    <entry>
-                        <para>The action for stating a server in a debug mode.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Stop</para>
-                    </entry>
-                    <entry>
-                        <para>The action for stopping a declared server.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Publish</para>
-                    </entry>
-                    <entry>
-                        <para>The action for synching the publish information between the server and
-                            workspace.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Clean</para>
-                    </entry>
-                    <entry>
-                        <para>The option for complete redeploying.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Twiddle Server</para>
-                    </entry>
-                    <entry>
-                        <para>The option provides a dialog for running Twiddle commands against the
-                            Twiddle Server.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Edit Launch Configuration</para>
-                    </entry>
-                    <entry>
-                        <para>The option that provides an editor for editing launch configuration
-                            properties of the proper server.</para>
-                    </entry>
-                </row>
-
-                <row>
-                    <entry>
-                        <para>Add and Remove Projects</para>
-                    </entry>
-                    <entry>
-                        <para>The option allows to publish a new project to the server (if its type
-                            is supported).</para>
-                    </entry>
-                </row>
-            </tbody>
-        </tgroup>
-    </table>
-
-    <para>Mentioned above Twiddle is a JMX library that comes with JBoss, and you can use it to
-        access any variables that exposed via the JBoss JMX interfaces.</para>
-
-
+    </section>
+    </section>
+    
     <section id="Project_archivesView">
-        <title>Project archives View</title>
+        <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
             Tools comes with our own archives tool with a bit easier and less-verbose XML and a
@@ -523,7 +603,7 @@
 
         </section>
         <section id="PublishToServer">
-            <title>Publish to Server</title>
+            <title>Publishing to Server</title>
             <figure>
                 <title>Context Menu on the Item</title>
                 <mediaobject>

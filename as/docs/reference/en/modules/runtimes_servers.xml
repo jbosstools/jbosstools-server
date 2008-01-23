@@ -14,10 +14,6 @@
 
   <para>In this chapter we will discuss how to install runtimes and servers.</para>
 
-  <!-- <para>First of all it's necessary to say a few words about WTP </para> -->
-
-  <!-- The Eclipse Web Tools Platform (WTP) project extends the Eclipse platform with tools for developing Web and Java EE applications. It includes source and graphical editors for a variety of languages, wizards and built-in applications to simplify development, and tools and APIs to support deploying, running, and testing apps.  -->
-
   <para>The JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or
     debug mode. It also includes targeting WTP projects, such as dynamic web projects, to certain
     server runtimes in order to ensure that the proper jars from a specific server are added to the
@@ -261,8 +257,8 @@
         </mediaobject>
       </figure>
 
-      <para>Now, having JBoss server and runtime installed, we can dwell on all services and tools that
-        JBoss Application Server provides.</para>
+      <para>Now, having JBoss server and runtime installed, we can dwell on all services and tools
+        that JBoss Server Manager provides.</para>
     </section>
 
   </section>

@@ -58,6 +58,38 @@
     <para>Learn more about the JBoss Server View <link linkend="JBossServerView">here</link>.</para>
   </section>
   
+  <section id="archiving">
+    
+    <title>Project Archiving</title>
+    
+    <para>JBoss Tools comes with our own archives tool. The Project Archives plugin consists primarily of a view to set up each packaging configuration 
+      (<emphasis><property>Window > Show View > Other > JBoss Tools > Project archives</property></emphasis>).</para>
+    <para>Right clicking in the Project archives view you can create War, EJB War or EAR archive.</para>
+    
+    <figure>
+      <title>Archive Creating</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/quick_start/quick_start7.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    
+    <para>Using the context menu on the item you can initiate a full <property>build</property> on archive, <property>edit</property>, 
+      <property>delete</property> or <property>publish</property> it.</para>
+    
+    <figure>
+      <title>Context Menu on the Item</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/quick_start/quick_start8.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    
+    <para>Learn more about the <property>Project archives View</property> <link linkend="Project_archivesView">here</link>.</para>
+    
+  </section>
   <section id="deployment">
     <title>Deploying an Application to a Server</title>
     
@@ -104,41 +136,6 @@
     </figure>
     
     
-  </section>
-  
-  <section id="archiving">
-    
-    <title>Project Archiving</title>
-    
-    <para>JBoss Tools comes with our own archives tool. The Project Archives plugin consists primarily of a view to set up each packaging configuration 
-      (<emphasis><property>Window > Show View > Other > JBoss Tools > Project archives</property></emphasis>).</para>
-    <para>Right clicking in the Project archives view you can create War, EJB War or EAR archive.</para>
-    
-    <figure>
-      <title>Archive Creating</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="images/quick_start/quick_start7.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    
-    <para>Using the context menu on the item you can initiate a full <property>build</property> on archive, <property>edit</property>, 
-      <property>delete</property> or <property>publish</property> it.</para>
-    
-    <figure>
-      <title>Context Menu on the Item</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="images/quick_start/quick_start8.png"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    
-    <para>Learn more about the <property>Project archives View</property> <link linkend="Project_archivesView">here</link>.</para>
-    
-  </section>
-  
-    
+  </section>  
     
 </chapter>	
