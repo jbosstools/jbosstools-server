@@ -21,6 +21,11 @@
  */
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.util.ArrayList;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -46,6 +51,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -57,6 +63,9 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class DeploySection extends ServerEditorSection {
 
+	private Text text;
+	private Text tempDeployText;
+	
 	public DeploySection() {
 		// TODO Auto-generated constructor stub
 	}
@@ -82,10 +91,11 @@ public class DeploySection extends ServerEditorSection {
 		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
 		
 		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
-		final Text text = toolkit.createText(composite, getDeployDir(), SWT.BORDER);
+		text = toolkit.createText(composite, getDeployDir(), SWT.BORDER);
 		text.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				execute(new SetDeployDirCommand(server, text, text.getText()));
+				getSaveStatus();
 			}
 		});
 
@@ -103,10 +113,11 @@ public class DeploySection extends ServerEditorSection {
 		});
 		
 		Label tempDeployLabel = toolkit.createLabel(composite, Messages.swf_TempDeployDirectory);
-		final Text tempDeployText = toolkit.createText(composite, getTempDeployDir(), SWT.BORDER);
+		tempDeployText = toolkit.createText(composite, getTempDeployDir(), SWT.BORDER);
 		tempDeployText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				execute(new SetTempDeployDirCommand(server, tempDeployText, tempDeployText.getText()));
+				getSaveStatus();
 			}
 		});
 
@@ -167,9 +178,6 @@ public class DeploySection extends ServerEditorSection {
 		tempButtonData.top = new FormAttachment(text,5);
 		tempDeployButton.setLayoutData(tempButtonData);
 		
-		text.setEditable(false);
-		tempDeployText.setEditable(false);
-
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
@@ -188,6 +196,24 @@ public class DeploySection extends ServerEditorSection {
 		return "";
 	}
 	
+	public IStatus[] getSaveStatus() {
+		String error = "";
+		ArrayList status = new ArrayList();
+		if(!new Path(text.getText()).toFile().exists()) {
+			String msg = "The path \"" + text.getText() + "\" does not exist.";
+			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
+			error = msg + "\n"; 
+		}
+		if(!new Path(tempDeployText.getText()).toFile().exists()) {
+			String msg = "The path \"" + tempDeployText.getText() + "\" does not exist.";
+			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
+			error = error + msg + "\n";
+		}
+		
+		setErrorMessage(error.equals("") ? null : error);
+		return status.size() == 0 ? null : (IStatus[]) status.toArray(new IStatus[status.size()]);
+	}
+
 
 	
 	public static class SetDeployDirCommand extends ServerCommand {
