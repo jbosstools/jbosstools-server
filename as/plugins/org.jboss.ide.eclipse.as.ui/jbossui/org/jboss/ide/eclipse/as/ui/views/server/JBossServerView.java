@@ -174,6 +174,7 @@ public class JBossServerView extends ViewPart {
 	public ServerExtensionFrame getExtensionFrame() { return this.extensionFrame; }
 	
 	public void setFocus() {
+		getExtensionFrame().getViewer().getTree().setFocus();
 	}
 	
 	public IServer getSelectedServer() {
