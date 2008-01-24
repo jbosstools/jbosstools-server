@@ -330,7 +330,6 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	protected class EventLogPreferenceComposite extends ViewProviderPreferenceComposite {
 		private Button newestFirst, oldestFirst, showTime, sort;
 		private Group firstGroup;
-		private Label newestFirstLabel, oldestFirstLabel, showTimeLabel, sortLabel;
 		public EventLogPreferenceComposite(Composite parent) {
 			super(parent, SWT.NONE);
 			setLayout(new FormLayout());
@@ -339,7 +338,6 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			fillWidgetsWithValues();
 		}
 		protected void fillWidgetsWithValues() {
-			Preferences store = JBossServerUIPlugin.getDefault().getPluginPreferences();
 			boolean showTimestamp = getShowTimestamp();
 			boolean categorize = getCategorize();
 			boolean onTop = getSortOrder();
@@ -381,17 +379,12 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			d.left = new FormAttachment(0, 5);
 			d.top = new FormAttachment(showTime, 5);
 			sort.setLayoutData(d);
-			
-//			d = new FormData();
-//			d.left = new FormAttachment(sort, 5);
-//			d.top = new FormAttachment(showTime, 5);
-//			sortLabel.setLayoutData(d);
 		}
 		public boolean isValid() {
 			return true;
 		}
 		public boolean performCancel() {
-			return false;
+			return true;
 		}
 		public boolean performOk() {
 			Preferences store = JBossServerUIPlugin.getDefault().getPluginPreferences();
@@ -399,6 +392,12 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 			store.setValue(GROUP_BY_CATEGORY, sort.getSelection() ? _TRUE_ : _FALSE_);
 			store.setValue(EVENT_ON_TOP, newestFirst.getSelection() ? NEWEST_ON_TOP : OLDEST_ON_TOP);
 			return true;
+		}
+		public void performDefaults() {
+			showTime.setSelection(false);
+			newestFirst.setSelection(true);
+			oldestFirst.setSelection(false);
+			sort.setSelection(false);
 		}
 	}
 
