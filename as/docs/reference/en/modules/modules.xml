@@ -5,8 +5,7 @@
 	<para>In this chapter it will be described how to deploy modules onto the server.</para>
 	<para> First of all it is necessary to say that deploying to a server is mostly painless. There
 		are several ways to do it provided by WTP, and some additional methods provided by JBoss
-		Tools. These methods are discribed further in this chapter.</para>
-
+		Tools. These methods are described further in this chapter.</para>
 	<section>
 		<title>Deploying with Run On Server wizard</title>
 		<para> The first WTP method is to right-click on a project, such as a Dynamic Web project,
@@ -74,6 +73,7 @@
 					view</link>, it will be published according to the rules of that module
 			type.</para>
 		</section>
+	
 		<section>
 			<title>Bottom part of JBoss Server View</title>
 			<para>In the bottom part of <emphasis>
