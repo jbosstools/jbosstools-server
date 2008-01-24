@@ -126,6 +126,23 @@ public class ViewPreferencePage extends PreferencePage implements
     }
 
 
+    protected void performDefaults() {
+    	for( int i = 0; i < enabledButtons.size(); i++ ) {
+    		((Button)enabledButtons.get(i)).setSelection(true);
+    	}
+    	TableItem[] items = table.getItems();
+    	for( int i = 0; i < items.length; i++ ) {
+			items[i].setData(ENABLED, new Boolean(true));
+    	}
+		ViewProviderPreferenceComposite comp;
+		for( int i = 0; i < preferenceComposites.size(); i++ ) {
+			comp = (ViewProviderPreferenceComposite)preferenceComposites.get(i);
+			comp.performDefaults();
+		}
+
+    	updateApplyButton();
+    }
+
     public void dispose() {
     	super.dispose();
 		ViewProviderPreferenceComposite comp;

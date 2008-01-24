@@ -32,7 +32,8 @@ public abstract class ViewProviderPreferenceComposite extends Composite {
 	public ViewProviderPreferenceComposite(Composite parent, int style) {
 		super(parent, style);
 	}
-	public abstract boolean isValid();
-	public abstract boolean performOk();
-	public abstract boolean performCancel();
+	public boolean isValid(){ return true; };
+	public boolean performOk(){ return true; };
+	public boolean performCancel(){ return true; };
+	public void performDefaults() {};
 }
