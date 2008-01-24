@@ -277,7 +277,6 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 		this.selection = selection;
 		if( selection.length == 1 && selection[0] == this.provider) {
 			menu.add(clearLogAction);
-			System.out.println("clear");
 		}
 		if( selection.length == 1 && selection[0] instanceof EventLogTreeItem && 
 				(((EventLogTreeItem)selection[0]).getEventClass().equals(EventLogModel.EVENT_TYPE_EXCEPTION) ||
