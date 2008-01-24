@@ -113,25 +113,22 @@ public abstract class JBossServerViewExtension {
 		Runnable r = new Runnable() { 
 			public void run() {
 				if( isEnabled() ) {
-					try {
-						if( o == null || o == provider ) {
-							JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(provider);
-						} else {
-							ExtensionTableViewer viewer = JBossServerView.getDefault().getExtensionFrame().getViewer();
-							ContentWrapper wrapped = new ContentWrapper(o, provider);
-							if( viewer.elementInTree(wrapped))
-								viewer.refresh(new ContentWrapper(o, provider));
-							else
-								viewer.refresh(provider);
-						}
-					} catch(Exception e) {
-						// non-critical error, ignore
+					if( o == null || o == provider ) {
+						JBossServerView.getDefault().getExtensionFrame().getViewer().refresh(provider);
+					} else {
+						ExtensionTableViewer viewer = JBossServerView.getDefault().getExtensionFrame().getViewer();
+						ContentWrapper wrapped = new ContentWrapper(o, provider);
+						if( viewer.elementInTree(wrapped))
+							viewer.refresh(new ContentWrapper(o, provider));
+						else
+							viewer.refresh(provider);
 					}
 				}
 			}
 		};
 		
-		if( JBossServerView.getDefault() == null ) return;
+		if( JBossServerView.getDefault() == null ) 
+			return;
 		
 		if( Display.getCurrent() == null ) 
 			Display.getDefault().asyncExec(r);
