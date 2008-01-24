@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -198,14 +199,15 @@ public class DeploySection extends ServerEditorSection {
 	
 	public IStatus[] getSaveStatus() {
 		String error = "";
-		ArrayList status = new ArrayList();
+		List status = new ArrayList();
 		if(!new Path(text.getText()).toFile().exists()) {
-			String msg = "The path \"" + text.getText() + "\" does not exist.";
+			String msg = "The deploy directory \"" + text.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = msg + "\n"; 
 		}
+		
 		if(!new Path(tempDeployText.getText()).toFile().exists()) {
-			String msg = "The path \"" + tempDeployText.getText() + "\" does not exist.";
+			String msg = "The temporary deploy directory \"" + tempDeployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n";
 		}
