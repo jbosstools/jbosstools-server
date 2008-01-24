@@ -275,11 +275,13 @@ public class EventLogViewProvider extends JBossServerViewExtension implements IE
 	
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object selection[]) {
 		this.selection = selection;
-		if( selection.length == 1 && selection[0] == this.provider)
+		if( selection.length == 1 && selection[0] == this.provider) {
 			menu.add(clearLogAction);
+			System.out.println("clear");
+		}
 		if( selection.length == 1 && selection[0] instanceof EventLogTreeItem && 
-				(((EventLogTreeItem)selection[0]).getEventClass().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) ||
-				((EventLogTreeItem)selection[0]).getSpecificType().equals(EventLogModel.EVENT_TYPE_EXCEPTION)) {
+				(((EventLogTreeItem)selection[0]).getEventClass().equals(EventLogModel.EVENT_TYPE_EXCEPTION) ||
+				((EventLogTreeItem)selection[0]).getSpecificType().equals(EventLogModel.EVENT_TYPE_EXCEPTION))) {
 			menu.add(showStackTraceAction);
 		}
 	}
