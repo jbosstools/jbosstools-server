@@ -5,7 +5,7 @@
          point="org.eclipse.jdt.ui.classpathContainerPage">
       <classpathContainerPage
             class="org.jboss.ide.eclipse.as.classpath.ui.ejb3.JBossEJB3LibrariesPage"
-            id="org.jboss.ide.eclipse.as.classpath.ui.ejb3.containerPage"
+            id="org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"
             name="JBoss EJB3 Libraries"/>
             <!-- Cannot be enabled before resource change listening is implementd (max)
       <classpathContainerPage
