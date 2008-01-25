@@ -35,7 +35,10 @@
 		</figure>
 		<para> For the JBoss AS Server Adapters, publishing using this method will force a default,
 			best-guess, packaging configuration for your project. This best-guess does not publish
-			incrementally, but instead repackages your entire project into a .war, .jar, or .ear as
+			incrementally, but instead repackages your entire project into a <emphasis>
+				<property>.war</property></emphasis>, <emphasis>
+					<property>.jar</property></emphasis>, or <emphasis>
+						<property>.ear</property></emphasis> as
 			appropriate, and then copies that file into the proper deploy directory. For quicker
 			smarter deployment, you will need to create archives using the <link
 				linkend="Project_archivesView">Project Archives view</link> and customize packaging
@@ -51,8 +54,8 @@
 			we suggest two more ways to deploy resources onto the server.</para>
 		<section>
 			<title>Top part of JBoss Server View</title>
-			<para>In the top part of the JBoss Servers View like in the Servers View you should right
-				click on a server and select the <emphasis>
+			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers View you should
+				right click on a server and select the <emphasis>
 					<property>Add and Remove Projects</property>
 				</emphasis> menu item. This will bring up a dialog allowing you to either publish
 				projects or modules to a server, or remove them from the server.</para>
@@ -73,12 +76,12 @@
 					view</link>, it will be published according to the rules of that module
 			type.</para>
 		</section>
-	
+
 		<section>
 			<title>Bottom part of JBoss Server View</title>
 			<para>In the bottom part of <emphasis>
-				<property>JBoss Server View</property>
-			</emphasis> there is a category called <emphasis>
+					<property>JBoss Server View</property>
+				</emphasis> there is a category called <emphasis>
 					<property>Modules</property>
 				</emphasis> which should display all currently-published modules on the server.
 				Right-clicking on the desired module and selecting <emphasis>
@@ -92,15 +95,20 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
+			
+			<para>Here, <emphasis>
+				<property>Incremental Publish</property>
+			</emphasis> is meant to enable publishing of only those parts where changes have been made.</para>
 		</section>
 	</section>
 	<section>
 		<title>Deploying with Project Archives View</title>
-		<para>In the Project Archives View you can right-click on any declared archive and select
+		<para>In the <property>Project Archives View</property> you can right-click on any declared archive and select
 			the <emphasis>
 				<property>Publish To Server</property>
-			</emphasis> element, as described in the <link linkend="Project_archivesView">Project
-				Archives view</link> section of the Perspective chapter.</para>
+			</emphasis> element. For more on this subject, see <link
+				linkend="PublishToServer">Publishing to Server</link> in the Project Archives
+			View section.</para>
 		<figure>
 			<title>Publish to Server</title>
 			<mediaobject>
@@ -111,10 +119,15 @@
 		</figure>
 		<para> The only way to ensure an <emphasis>
 				<property>Incremental Build</property>
-			</emphasis>, such as changes to one jsp, html, or .class file, is to enable the builder
-			for that project. This is done by either changing the global preferences for the
-				<property>Archives View</property>, or by enabling project-specific preferences and
-			ensuring the builder is on.</para>
+			</emphasis>, such as changes to one <emphasis>
+				<property>.jsp</property>
+			</emphasis>, <emphasis>
+				<property>.html</property>
+			</emphasis>, or <emphasis>
+				<property>.class</property>
+			</emphasis> file, is to enable the builder for that project. This is done by either
+			changing the global preferences for the <property>Archives View</property>, or by
+			enabling project-specific preferences and ensuring the builder is on.</para>
 	</section>
 
 

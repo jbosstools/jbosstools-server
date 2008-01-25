@@ -32,8 +32,7 @@
         <para>The <property>JBoss Server View</property> is based on the WTP view, Server View. The
             top part of the <property>JBoss Servers View</property> essentially embeds the original
             Server View directly into it, making slight changes to the context menu. A second part
-            was added to provide additional information about the server selected in the top part.
-         </para>
+            was added to provide additional information about the server selected in the top part. </para>
 
         <figure>
             <title>The JBoss Server View</title>
@@ -60,7 +59,7 @@
         <para>In order to debug your applications or EJB's that are deployed to the server, you must
             start the server in debug mode. By starting the server in debug mode, eclipse will allow
             you to set breakpoints on code in your workspace and step through the code.</para>
-        
+
         <para>The publish icon on the extreme right will republish any modules where it has
             determined the workspace is out of sync with the server. It will attempt to do an
             incremental publish if it turns out that the module in question is capable of doing one.</para>
@@ -325,10 +324,10 @@
 
             <para>The first view extension is <emphasis>
                     <property>Modules</property>
-                </emphasis> section. It shows which modules are currently deployed to the server, and
-                allows you to remove them from the server, or force a full republish upon them. It
-                only shows which modules have been deployed through Eclipse, not any and all modules
-                that happen to be in the deploy directory.</para>
+                </emphasis> section. It shows which modules are currently deployed to the server,
+                and allows you to remove them from the server, or force a full republish upon them.
+                It only shows which modules have been deployed through Eclipse, not any and all
+                modules that happen to be in the deploy directory.</para>
 
             <figure>
                 <title>Modules Action</title>
@@ -372,11 +371,11 @@
             <para>The <emphasis>
                     <property>XML Configuration</property>
                 </emphasis> category allows you to quickly browse to descriptor files in your
-                server's deploy directory and check or change the values. Basically, <emphasis>
+                server's deploy directory and check or change the values. Its use requires the
+                    <property>Properties view</property>. Basically, <emphasis>
                     <property>XML Configuration</property>
-                </emphasis> includes XML XPaths where a XPath is a path used to access some specific
-                part of an xml document. Besides, its use requires the <property>Properties
-                view</property>. </para>
+                </emphasis> includes XML XPaths where a xpath is a path used to access some specific
+                part of an xml document. </para>
 
             <figure>
                 <title>XML Configuration and Properties View</title>
@@ -387,11 +386,20 @@
                 </mediaobject>
             </figure>
 
-            <para>The category itself contains only a list of categories. By right-clicking on <emphasis>
+            <para>The <emphasis>
                     <property>XML Configuration</property>
-                </emphasis>, you can create a new category. Ports are provided by default and is
-                filled with many of the most commonly used ports in the <property>JBoss
-                Server</property>.</para>
+                </emphasis> category itself contains only a list of categories. <emphasis>
+                    <property>Ports</property>
+                </emphasis> are provided by default and is filled with many of the most commonly
+                used ports in the <property>JBoss Server</property>. In the <property>Properties
+                    view</property> you can see an identifier and nested files underneath in which
+                that xpath can be found as well as its current value. The details of the xpath are
+                hidden as all you need to see is only which file you&apos;re referring to and
+                what its current value is.</para>
+
+            <para> By right-clicking on <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis>, you can create a new category. </para>
 
             <figure>
                 <title>Adding New Category</title>
@@ -404,7 +412,9 @@
 
             <para>By right-clicking on <emphasis>
                     <property>Ports</property>
-                </emphasis>, you can create a new XPaths.</para>
+                </emphasis> or any other category in <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis>, you can create a new xpath.</para>
 
             <figure>
                 <title>Adding New XPath</title>
@@ -426,16 +436,46 @@
                 </mediaobject>
             </figure>
 
-            <para>As you type, the fields autocomplete to help you locate exactly what XPath you're
-                looking for. The goal here is to get an end result where the XPath matches up with
-                an easily changed property. With that in mind, if the property you want to change is
-                the text of an element, then the final field Attribute Name should be left blank and
-                your XPath should end with port. If, on the other hand, your desired field is the
-                port attribute of &lt;fieldName port="35"&gt;, then your XPath will end with
-                fieldName and your Attribute Name will be "port". When finished, you can click <emphasis>
-                    <property>Preview</property>
-                </emphasis> to see how many matches you have for that particular XPath, as shown
-                below.</para>
+            <!--para>As you can see on the figure above, when you type the fields autocomplete to help
+                you locate exactly what xpath you&apos;re looking for. </para-->
+
+            <para>The goal here is to get an end result where the XPath matches up with a necessary
+                property. With that in mind, let&apos;s look how it works. If the property you
+                want to reach is the text of an element, for example, number 35 for
+                    <emphasis>&lt;port&gt;35&lt;/port&gt;</emphasis> element, than
+                your <emphasis>
+                    <property>XPath Patten</property>
+                </emphasis> should end with <emphasis> port </emphasis> and <emphasis>
+                    <property>Attribute Name</property>
+                </emphasis> field should be left blank. If, on the other hand, your desired field is
+                the value of the port attribute in the element <emphasis>&lt;fieldName
+                    port="35"&gt;</emphasis>, then your <emphasis>
+                    <property>XPath Patten</property>
+                </emphasis> will end with <emphasis>
+                    <property>fieldName</property>
+                </emphasis> and your <emphasis>
+                    <property>Attribute Name</property>
+                </emphasis> should be <emphasis> port</emphasis>.</para>
+
+            <para>Thus, in our case let&apos;s reach the text of
+                <emphasis>description</emphasis> element on the patton bellow.</para>
+   <para>         
+ <programlisting role="XML"><![CDATA[...
+<server>
+...
+<mbean code="org.jboss.ejb.EJBDeployer" name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
+  
+ <!-- Inline XMBean Descriptor BEGIN -->
+ <xmbean>
+ <description>The EJBDeployer responsible for ejb jar deployment</description> 
+...
+]]></programlisting></para>
+                
+                
+            <para>So, in the <emphasis>
+                <property>XPath Patten</property>
+            </emphasis> field you should put the xpath like on the figure below.</para>
+
             <figure>
                 <title>XPath Preview</title>
                 <mediaobject>
@@ -444,7 +484,11 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-
+            
+            <para>When finished, click <emphasis>
+                    <property>Preview</property>
+                </emphasis> to see how many matches you have for that particular XPath.</para>
+           
             <para>As part of the <property>JBoss Server View</property> there is a <emphasis>
                     <property>JMX Console</property>
                 </emphasis> section which allows you to browse and use the JMX exposed beans on the
@@ -465,25 +509,31 @@
         <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
-            Tools comes with our own archives tool with a bit easier and less-verbose XML and a
+            Tools comes with our own Archives tool with a bit easier and less-verbose XML and a
             handy user interface.</para>
-        <para>The Project Archives plugin consists primarily of a view to set up each packaging
-            configuration. Each project can enable or disable its builder, or depend on the global
-            setting.</para>
+        <para>The Project Archives plugin consists primarily of a view, that is <property>Project
+                Archives View</property>, to set up each packaging configuration. Each project can
+            enable or disable its own builder, or depend on the global setting.</para>
         <para>The packaging configuration for each project is stored in that project's root folder,
-            and is in a file named <property>.packages</property>, which has a fairly simple XML
-            structure. Modifying the file by hand is neither required nor recommended, and using the
-            UI is the official way of modifying your packaging structure.</para>
+            and is in a file named <emphasis>
+                <property>.packages</property>
+            </emphasis>, which has a fairly simple XML structure. Modifying the file by hand is
+            neither required nor recommended, and using the UI is the official way of modifying your
+            packaging structure.</para>
         <para>Aside from the builder, the other preferences for the plugin are mostly cosmetic,
             allowing you to show full or truncated paths, show the project at the root, etc. None of
             these has any effect on the functionality of the packaging plugin.</para>
 
+        <para>Further, let&apos;s look through all the possibilities that the <property>Project
+                Archives View</property> provides.</para>
+
         <section id="Creating an archive">
             <title>Creating an Archive</title>
             <para>When creating a new archive, you have some different options at your disposal. If
-                the project has no <property>.packages</property> file, your options will be
-                presented to you all at once to choose from (as above). Otherwise you will
-                right-click inside the view and select <emphasis>
+                the project has no <emphasis>
+                    <property>.packages</property>
+                </emphasis> file, your options will be presented to you all at once to choose from
+                (as above). Otherwise you will right-click inside the view and select <emphasis>
                     <property>New Archive</property>
                 </emphasis> to see your archive type options.</para>
             <figure>
@@ -521,8 +571,10 @@
                 workspace, inside some other archive, or inside a folder declared inside an archive.
                 You can browse to workspace or filesystem destinations by clicking on their
                 respective buttons. To select a destination inside some other archive, you'll need
-                to press the <property>Workspace...</property> button. At the bottom of the list,
-                you'll see archives that have been declared in the workspace.</para>
+                to press the <emphasis>
+                    <property>Workspace...</property>
+                </emphasis> button. At the bottom of the list, you'll see archives that have been
+                declared in the workspace.</para>
             <section id="CreatingaFolder">
                 <title>Creating a Folder</title>
                 <para>Creating a folder is much easier. You simply right-click on an archive or
@@ -532,10 +584,12 @@
             <section id="CreatingaFileSet">
                 <title>Creating a FileSet</title>
                 <para>To create a new fileset, you click on an available target location such as an
-                    archive, a nested archive, or a folder within an archive, and select New
-                    Fileset. The New Fileset Wizard requires a destination (where the files will
-                    go), and a root directory (or where the files are coming from). The source can
-                    be anywhere in the workspace or from the filesystem at large.</para>
+                    archive, a nested archive, or a folder within an archive, and select <emphasis>
+                        <property>New Fileset</property>
+                    </emphasis>. The <property>New Fileset Wizard</property> requires a destination
+                    (where the files will go), and a root directory (or where the files are coming
+                    from). The source can be anywhere in the workspace or from the filesystem at
+                    large.</para>
                 <para>Below that, the fileset requires only an includes pattern and an excludes
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
@@ -637,11 +691,14 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>The dialog above appears after selecting <property>Publish To Server</property>.
-                To simply publish once, you just select the server(s) that you want, and finish. If
-                you want the Publish to Server action on that particular Archive to always publish
-                to that set of servers, then check the appropriate checkbox. And finally, to enable
-                automatic publishing upon build events, check the last checkbox.</para>
+            <para>The dialog above appears after selecting <emphasis>
+                    <property>Publish To Server</property>
+                </emphasis>. To simply publish once, you just select the server(s) that you want,
+                and finish. If you want the <emphasis>
+                    <property>Publish to Server</property>
+                </emphasis> action on that particular Archive to publish always to that set of
+                servers, then check the appropriate checkbox. And finally, to enable automatic
+                publishing upon build events, check the last checkbox.</para>
             <para>The automatic publishing feature is nice if, for example, your package's
                 destination (where it is built) is a temporary folder and you want the archive
                 published to several servers. If you only really want your archive published to one
