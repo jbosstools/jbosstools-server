@@ -73,7 +73,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			return Arrays.asList(entries);
 		} else {
 			String id = rc.getProperty("id");
-			IPath containerPath = new Path("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer");
+			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget");
 			path = containerPath.append(id);
 		}
 
