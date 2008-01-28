@@ -2,10 +2,10 @@
 <chapter id="webtools">
 	<title>Projects</title>
 	<para>The most popular of the projects we deal with are the J2EE projects, such as
-			<property>Dynamic Web Project</property>, EJB Project, or EAR project. Web projects of
-		JBoss Tools are Stuts, JSF and Seam projects. Thus, in this chapter we are going to tell you
+			Dynamic Web Project, EJB Project, or EAR project. Web projects of
+		JBoss Tools are Struts, JSF and Seam projects. Thus, in this chapter we are going to tell you
 		about facets the main benefit of which to provide proper structuring and packaging for any
-		type of project to deploy on a server afterwards.</para>
+		type of project.</para>
 
 	<section>
 		<title>Description</title>
@@ -22,11 +22,10 @@
 			another. For example, an EAR project may have a Web Project child, an EJB project child,
 			or other types.</para>
 
-		<para> The benefit of this is that the structure of your projects is then known, and
-			packaging it up *should* be trivial. However, if your project is non-standard, or you
+		<para> However, the benefit of this is that the structure of your projects is then known, and
+			packaging it up *should* be trivial. Apparently, if your project is non-standard, or you
 			feel too confined by such rigid structural requirements, you can still choose to package
 			your project <link linkend="Project_archivesView">using the Archives plugin</link>.</para>
-
 	</section>
 
 

@@ -27,7 +27,7 @@
         <title>The JBoss Server View</title>
 
         <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect
-            in details all parts it consist of. </para>
+            in details all parts it consists of. </para>
 
         <para>The <property>JBoss Server View</property> is based on the WTP view, Server View. The
             top part of the <property>JBoss Servers View</property> essentially embeds the original
@@ -67,7 +67,7 @@
         <para>Now, let&apos;s get to know with both of the <property>JBoss Server
             View</property> parts.</para>
         <section>
-            <title>Top Part of JBoss Server View</title>
+            <title>Top Part of the JBoss Server View</title>
             <para>In the top part of the <property>JBoss Server View</property> all declared servers
                 are represented as well as their current states, that is, whether they are started
                 or stopped. </para>
@@ -287,7 +287,7 @@
         </section>
 
         <section>
-            <title>Bottom Part of JBoss Server View</title>
+            <title>Bottom Part of the JBoss Server View</title>
 
             <para>Here, we dwell on the bottom part of the <property>JBoss Server View</property>.</para>
             <para>First, we should say that the bottom part is meant to provide additional
@@ -372,11 +372,11 @@
                     <property>XML Configuration</property>
                 </emphasis> category allows you to quickly browse to descriptor files in your
                 server's deploy directory and check or change the values. Its use requires the
-                    <property>Properties view</property>. Basically, <emphasis>
+                <property>Properties view</property>. Basically, <emphasis>
                     <property>XML Configuration</property>
                 </emphasis> includes XML XPaths where a xpath is a path used to access some specific
                 part of an xml document. </para>
-
+            
             <figure>
                 <title>XML Configuration and Properties View</title>
                 <mediaobject>
@@ -385,6 +385,9 @@
                     </imageobject>
                 </mediaobject>
             </figure>
+
+            <note><para>You are assumed to be familiar with XPath. If not, we highly suggested that you
+                look through an appropriate manual or tutorial on the topic.</para></note>
 
             <para>The <emphasis>
                     <property>XML Configuration</property>
@@ -436,59 +439,59 @@
                 </mediaobject>
             </figure>
 
-            <!--para>As you can see on the figure above, when you type the fields autocomplete to help
-                you locate exactly what xpath you&apos;re looking for. </para-->
-
             <para>The goal here is to get an end result where the XPath matches up with a necessary
                 property. With that in mind, let&apos;s look how it works. If the property you
-                want to reach is the text of an element, for example, number 35 for
-                    <emphasis>&lt;port&gt;35&lt;/port&gt;</emphasis> element, than
-                your <emphasis>
+                want to reach is the value of the <emphasis>name</emphasis> attribute in the element
+                    <emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
                     <property>XPath Patten</property>
-                </emphasis> should end with <emphasis> port </emphasis> and <emphasis>
+                </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
                     <property>Attribute Name</property>
-                </emphasis> field should be left blank. If, on the other hand, your desired field is
-                the value of the port attribute in the element <emphasis>&lt;fieldName
-                    port="35"&gt;</emphasis>, then your <emphasis>
-                    <property>XPath Patten</property>
-                </emphasis> will end with <emphasis>
-                    <property>fieldName</property>
-                </emphasis> and your <emphasis>
-                    <property>Attribute Name</property>
-                </emphasis> should be <emphasis> port</emphasis>.</para>
+                </emphasis> should be <emphasis>name</emphasis> like on the next figure.</para>
 
-            <para>Thus, in our case let&apos;s reach the text of
-                <emphasis>description</emphasis> element on the patton bellow.</para>
-   <para>         
- <programlisting role="XML"><![CDATA[...
+            <programlisting role="XML"><![CDATA[...
 <server>
 ...
-<mbean code="org.jboss.ejb.EJBDeployer" name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
+    <mbean code="org.jboss.ejb.EJBDeployer" name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
   
- <!-- Inline XMBean Descriptor BEGIN -->
- <xmbean>
- <description>The EJBDeployer responsible for ejb jar deployment</description> 
-...
-]]></programlisting></para>
-                
-                
-            <para>So, in the <emphasis>
-                <property>XPath Patten</property>
-            </emphasis> field you should put the xpath like on the figure below.</para>
+     <!-- Inline XMBean Descriptor BEGIN -->
+         <xmbean>
+             <description>The EJBDeployer responsible for ejb jar deployment</description> 
+               ...
+         </xmbean>
+     </mbean>
+</server>
+]]></programlisting>
 
             <figure>
                 <title>XPath Preview</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_11.png"/>
+                        <imagedata fileref="images/perspective/perspective_11a.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
-            
-            <para>When finished, click <emphasis>
+
+            <para>Notice, when you type the fields autocomplete to help you locate exactly what
+                xpath you&apos;re looking for. </para>
+
+            <para>Then, on the other hand, if your desired field is the text of an element
+                    <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
+                    <property>XPath Patten</property>
+                </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
+                    <property>Attribute Name</property>
+                </emphasis> field should be left blank. When finished, click <emphasis>
                     <property>Preview</property>
                 </emphasis> to see how many matches you have for that particular XPath.</para>
-           
+
+            <figure>
+                <title>XPath Preview</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_11b.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
             <para>As part of the <property>JBoss Server View</property> there is a <emphasis>
                     <property>JMX Console</property>
                 </emphasis> section which allows you to browse and use the JMX exposed beans on the
@@ -503,6 +506,7 @@
             </figure>
 
         </section>
+        <para/>
     </section>
 
     <section id="Project_archivesView">
@@ -510,30 +514,52 @@
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
             Tools comes with our own Archives tool with a bit easier and less-verbose XML and a
-            handy user interface.</para>
-        <para>The Project Archives plugin consists primarily of a view, that is <property>Project
-                Archives View</property>, to set up each packaging configuration. Each project can
-            enable or disable its own builder, or depend on the global setting.</para>
-        <para>The packaging configuration for each project is stored in that project's root folder,
-            and is in a file named <emphasis>
-                <property>.packages</property>
-            </emphasis>, which has a fairly simple XML structure. Modifying the file by hand is
-            neither required nor recommended, and using the UI is the official way of modifying your
-            packaging structure.</para>
-        <para>Aside from the builder, the other preferences for the plugin are mostly cosmetic,
-            allowing you to show full or truncated paths, show the project at the root, etc. None of
-            these has any effect on the functionality of the packaging plugin.</para>
-
-        <para>Further, let&apos;s look through all the possibilities that the <property>Project
+            handy user interface. The Project Archives plugin consists primarily of a view, that is
+                <property>Project Archives View</property>, to set up each packaging configuration.</para>
+        <para>So far, let&apos;s look through all functionality that the <property>Project
                 Archives View</property> provides.</para>
+
+        <section id="archives_overview">
+            <title>Overview</title>
+
+            <para>The packaging configuration for each project is stored in the project's root
+                folder, and is in a file named <emphasis>
+                    <property>.packages</property>
+                </emphasis>, which has a fairly simple XML structure. Modifying the file by hand is
+                neither required nor recommended, and using the UI is the official way of modifying
+                your packaging structure.</para>
+
+            <figure>
+                <title>Archives View</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_12_a.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>A project&apos;s configuration contains archives. On the image above there is
+                only one archive, but a project can contain many. Inside the archive folders
+                (testFolder), filesets, or other internal archives can be located. Internal archives
+                and filesets may be directly inside of an archive, or in some sub-folder of that
+                archive.</para>
+
+            <para>In the upper right corner of the view you can see an icon which, when clicked,
+                will build the selected top-level archive. Additionally, you can select <emphasis>
+                    <property>Project &gt; Build Packages</property>
+                </emphasis> when a project is selected in the <property>Packages View</property> to
+                build all declared packages in that project&apos;s <emphasis>
+                    <property>.packages</property>
+                </emphasis> file. This will execute a full build on all declared archives.</para>
+        </section>
 
         <section id="Creating an archive">
             <title>Creating an Archive</title>
             <para>When creating a new archive, you have some different options at your disposal. If
                 the project has no <emphasis>
                     <property>.packages</property>
-                </emphasis> file, your options will be presented to you all at once to choose from
-                (as above). Otherwise you will right-click inside the view and select <emphasis>
+                </emphasis> file, your options will be presented to you all at once to choose from.
+                Otherwise you will right-click inside the view and select <emphasis>
                     <property>New Archive</property>
                 </emphasis> to see your archive type options.</para>
             <figure>
@@ -544,17 +570,17 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para>JAR is the standard archive type, and does very little configuration, leaving most
-                of the work up to you. You can customize the name, add folders, filesets, and inner
-                jars to it.</para>
+            <para><property>JAR</property> is the standard archive type, and does very little
+                configuration, leaving most of the work up to you. You can customize the name, add
+                folders, filesets, and inner jars to it.</para>
             <para>The other types, for the most part, simply start off with a default setting,
                 usually the jar with some specific children based on an expected structure of the
-                project. For example, if the project is a dynamic web project, and you create a WAR
-                archive, the archive will be created with a few filesets relevant to the known
-                structure of the project.</para>
+                project. For example, if the project is a Dynamic Web Project, and you create a
+                    <property>WAR</property> archive, the archive will be created with a few
+                filesets relevant to the known structure of the project.</para>
 
             <para>Because the first page of all new archive wizards are the same, and it is also the
-                only page in the New Jar Wizard, that page is shown below.</para>
+                only page in the <property>New Jar Wizard</property>, that page is shown below.</para>
             <figure>
                 <title>New JAR Wizard</title>
                 <mediaobject>
@@ -585,18 +611,27 @@
                 <title>Creating a FileSet</title>
                 <para>To create a new fileset, you click on an available target location such as an
                     archive, a nested archive, or a folder within an archive, and select <emphasis>
-                        <property>New Fileset</property>
-                    </emphasis>. The <property>New Fileset Wizard</property> requires a destination
-                    (where the files will go), and a root directory (or where the files are coming
-                    from). The source can be anywhere in the workspace or from the filesystem at
-                    large.</para>
+                        <property>New Fileset</property></emphasis>.</para>
+
+                <figure>
+                    <title>Adding a New FileSet</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_13_a.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
+                <para>The <property>New Fileset Wizard</property> requires a destination (where the
+                    files will go), and a root directory (or where the files are coming from). The
+                    source can be anywhere in the workspace or from the filesystem at large.</para>
                 <para>Below that, the fileset requires only an includes pattern and an excludes
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
             </section>
         </section>
         <section id="View Actions">
-            <title>View Actions</title>
+            <title>Archive Actions</title>
             <figure>
                 <title>Context Menu on the Item</title>
                 <mediaobject>
@@ -676,13 +711,15 @@
                     </tbody>
                 </tgroup>
             </table>
-
-
-
-
         </section>
+
         <section id="PublishToServer">
             <title>Publishing to Server</title>
+            <para>Finally, you&apos;ll need to publish your application to a server. Here, we
+                show you how to do it with the help of <emphasis>
+                    <property>Archives View</property>
+                </emphasis>.</para>
+
             <figure>
                 <title>Context Menu on the Item</title>
                 <mediaobject>
@@ -707,26 +744,5 @@
         </section>
 
     </section>
-
-    <!--section id="Deploy to Server">
-        <?dbhtml filename="DeployToServer.html"?>
-        <title>Deploy to Server</title>
-        <para>In the context menu of files there is a <property>Deploy To Server</property> option
-            that allows a single file deployment. To deploy these non-WTP files/projects right click
-            on the file (-ds.xml, .ear, .jar etc.) and select <emphasis>
-                <property>Deploy To server</property>
-            </emphasis> and it will be automatically deployed.</para>
-        <figure>
-            <title>Deploy to Sever</title>
-            <mediaobject>
-                <imageobject>
-                    <imagedata fileref="images/perspective/perspective_16.png"/>
-                </imageobject>
-            </mediaobject>
-        </figure>
-        <para>The deployed files are listed side-by-side with other modules that are deployed to the
-            server.</para>
-
-    </section-->
 
 </chapter>

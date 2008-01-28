@@ -6,13 +6,16 @@
 	<para> First of all it is necessary to say that deploying to a server is mostly painless. There
 		are several ways to do it provided by WTP, and some additional methods provided by JBoss
 		Tools. These methods are described further in this chapter.</para>
+	
+	<section>
+		<title>Deploying on the Package Explorer</title>
 	<section>
 		<title>Deploying with Run On Server wizard</title>
 		<para> The first WTP method is to right-click on a project, such as a Dynamic Web project,
 			EJB project, or EAR project and then select <emphasis>
 				<property>Run As &gt; Run on Server</property>
 			</emphasis>. The resulting dialog allows you to select which supporting server the
-			project can be published to. </para>
+			project can be published to.</para>
 		<figure>
 			<title>Define a New Server</title>
 			<mediaobject>
@@ -44,7 +47,29 @@
 				linkend="Project_archivesView">Project Archives view</link> and customize packaging
 			yourself.</para>
 	</section>
+		
+		<section id="single_file_deployment">
+			<?dbhtml filename="DeployToServer.html"?>
+			<title>Deploying single files</title>
+			<para>In the context menu of files there is a <property>Deploy To Server</property> option
+			that allows a single file deployment. To deploy these non-WTP files/projects right click
+			on the file (-ds.xml, .ear, .jar etc.) and select <emphasis>
+			<property>Deploy To server</property>
+			</emphasis> and it will be automatically deployed.</para>
+			<figure>
+			<title>Deploy to Sever</title>
+			<mediaobject>
+			<imageobject>
+			<imagedata fileref="images/perspective/perspective_16.png"/>
+			</imageobject>
+			</mediaobject>
+			</figure>
+			<para>The deployed files are listed side-by-side with other modules that are deployed to the
+			server.</para>
+			
+			</section>
 
+	</section>
 	<section>
 		<title>Deploying with JBoss Server View</title>
 		<para>As it has been already mentioned <emphasis>
