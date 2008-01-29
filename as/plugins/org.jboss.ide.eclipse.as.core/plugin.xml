@@ -451,4 +451,17 @@
             containerID="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </filteredClasspathContainer>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.defaultFacets">
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.as.runtime.component"
+               version="4.2">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+   </extension>
 </plugin>
