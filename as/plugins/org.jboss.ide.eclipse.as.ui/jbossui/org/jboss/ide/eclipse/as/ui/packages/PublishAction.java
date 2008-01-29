@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui.packages;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -28,6 +29,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
@@ -44,6 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
@@ -58,15 +61,16 @@ public class PublishAction implements INodeActionDelegate {
 	}
 
 	public void run (IArchiveNode node) {
-		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE)	
-		{
+		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE 
+				&& ((IArchive)node).isTopLevel()) {
 			IArchive pkg = (IArchive)node;
 			String servers = node.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
 			if( !new Boolean(pkg.getProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD)).booleanValue()  ||
 					servers == null || "".equals(servers) || anyServerDoesntExist(servers)){
 				servers = showSelectServersDialog(pkg);
 			}
-			ArchivesBuildListener.publish(pkg, servers, IServer.PUBLISH_FULL);
+			if( servers != null ) 
+				ArchivesBuildListener.publish(pkg, servers, IServer.PUBLISH_FULL);
 		}
 	}
 	
@@ -89,8 +93,11 @@ public class PublishAction implements INodeActionDelegate {
 	
 	protected String showSelectServersDialog(IArchive node) {
 		SelectServerWizard wiz = new SelectServerWizard(node);
-		new WizardDialog(new Shell(), wiz).open();
-		return wiz.getServers();
+		int result = new WizardDialog(new Shell(), wiz).open();
+		if( result == Window.OK) {
+			return wiz.getServers();
+		}
+		return null;
 	}
 
 	
@@ -103,6 +110,8 @@ public class PublishAction implements INodeActionDelegate {
 		public boolean performFinish() {
 			pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, getServers());
 			pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
+			IPath p = pack.getProjectPath();
+			ArchivesModel.instance().saveModel(p, null);
 			return true;
 		}
 		public void addPages() {
