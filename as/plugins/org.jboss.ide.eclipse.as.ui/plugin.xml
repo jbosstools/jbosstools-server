@@ -268,9 +268,15 @@
       <nodeContribution
             class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
             icon="icons/publish.gif"
-            id="org.jboss.ide.eclipse.as.ui.nodeContextContrib"
+            id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
             label="Publish To Server"
             weight="1"/>
+      <nodeContribution
+            class="org.jboss.ide.eclipse.as.ui.packages.EditPublishAction"
+            icon="icons/publishDetails.gif"
+            id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
+            label="Edit publish settings...">
+      </nodeContribution>
    </extension>
    <extension
          point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
