@@ -18,4 +18,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.core,
  org.eclipse.jdt.launching
 Eclipse-LazyStart: true
-Bundle-ClassPath: archivestest.jar
+Bundle-ClassPath: jbossastest.jar
