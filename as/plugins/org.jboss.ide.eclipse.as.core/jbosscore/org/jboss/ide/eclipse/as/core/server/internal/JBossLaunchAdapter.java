@@ -53,14 +53,16 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 	 * @see ILaunchableAdapterDelegate#getLaunchable(IServer, IModuleObject)
 	 */
 	public Object getLaunchable(IServer server, IModuleArtifact moduleObject) {
-		ServerDelegate delegate = (ServerDelegate)server.loadAdapter(ServerDelegate.class,null);
-		if (!(delegate instanceof JBossServer ))
-			return null;
-		if ((moduleObject instanceof Servlet) ||(moduleObject instanceof WebResource))
-            return prepareHttpLaunchable(moduleObject, delegate);
-		
-        if((moduleObject instanceof EJBBean) || (moduleObject instanceof JndiObject))
-            return prepareJndiLaunchable(moduleObject,delegate);
+		if (server != null) {
+			ServerDelegate delegate = (ServerDelegate)server.loadAdapter(ServerDelegate.class,null);
+			if (!(delegate instanceof JBossServer ))
+				return null;
+			if ((moduleObject instanceof Servlet) ||(moduleObject instanceof WebResource))
+	            return prepareHttpLaunchable(moduleObject, delegate);
+			
+	        if((moduleObject instanceof EJBBean) || (moduleObject instanceof JndiObject))
+	            return prepareJndiLaunchable(moduleObject,delegate);
+		}
 		return null;
 	}
 
