@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.test;
+package org.jboss.ide.eclipse.as.classpath.test;
 
 import java.util.HashSet;
 

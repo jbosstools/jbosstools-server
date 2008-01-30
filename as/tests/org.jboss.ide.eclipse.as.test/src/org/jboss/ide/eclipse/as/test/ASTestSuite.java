@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.test;
 
+import org.jboss.ide.eclipse.as.classpath.test.ASClasspathTest;
 import org.jboss.ide.eclipse.as.classpath.test.JEEClasspathContainerTest;
 
 import junit.framework.Test;
