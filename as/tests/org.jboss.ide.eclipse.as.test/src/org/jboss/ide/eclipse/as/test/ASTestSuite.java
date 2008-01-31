@@ -1,7 +1,7 @@
 package org.jboss.ide.eclipse.as.test;
 
-import org.jboss.ide.eclipse.as.classpath.test.ProjectRuntimeTest;
-import org.jboss.ide.eclipse.as.classpath.test.JEEClasspathContainerTest;
+import org.jboss.ide.eclipse.as.test.model.JEEClasspathContainerTest;
+import org.jboss.ide.eclipse.as.test.model.ProjectRuntimeTest;
 import org.jboss.ide.eclipse.as.test.model.RuntimeServerModelTest;
 
 import junit.framework.Test;

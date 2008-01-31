@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.classpath.test;
+package org.jboss.ide.eclipse.as.test.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
