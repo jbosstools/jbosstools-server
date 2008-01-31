@@ -18,7 +18,7 @@ import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ProjectRuntimeUtil;
 import org.jboss.tools.common.test.util.TestProjectProvider;
 
-public class JBIDE1657Test extends TestCase {
+public class ProjectRuntimeTest extends TestCase {
 	private TestProjectProvider provider;
 	private IProject project;
 
@@ -32,7 +32,7 @@ public class JBIDE1657Test extends TestCase {
 		provider.dispose();
 	}
 
-	public void testJBIDE1657() {
+	public void testProjectRuntime() {
 		try {
 			IJavaProject jp = JavaCore.create(project);
 			verifyInitialClasspathEntries(jp);
@@ -65,9 +65,6 @@ public class JBIDE1657Test extends TestCase {
 	protected void verifyInitialClasspathEntries(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
 		assertEquals(2, entries.length);
-		
-		// TODO: Currently fails because the JRE is not bound. This must be changed. 
-		//IClasspathEntry[] resolved = jp.getResolvedClasspath(false);
 		
 		String[] acceptable = new String[] { "org.eclipse.jst.j2ee.internal.web.container",
 				"basicwebproject"};

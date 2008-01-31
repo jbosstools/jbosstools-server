@@ -12,7 +12,7 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
 
 public class RuntimeServerModelTest extends TestCase {
-		
+
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=201340
 	// skipped since reported issue and always failing
 	public void skip_testDoubleCreateEclipseBug201340() throws CoreException {
