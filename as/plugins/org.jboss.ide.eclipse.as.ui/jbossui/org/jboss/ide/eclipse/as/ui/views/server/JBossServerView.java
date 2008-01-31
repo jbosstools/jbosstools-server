@@ -47,6 +47,8 @@ import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
  */
 public class JBossServerView extends ViewPart {
 
+	public static final String VIEW_ID = "org.jboss.ide.eclipse.as.ui.views.JBossServerView";
+	
 	private static final String TAG_SASHFORM_HEIGHT = "sashformHeight";
 	
 	public static JBossServerView instance;
