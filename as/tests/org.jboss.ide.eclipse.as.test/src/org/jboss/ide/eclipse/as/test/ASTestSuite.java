@@ -24,7 +24,7 @@ package org.jboss.ide.eclipse.as.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.jboss.ide.eclipse.as.test.model.JBIDE1657Test;
+//import org.jboss.ide.eclipse.as.test.model.JBIDE1657Test;
 import org.jboss.ide.eclipse.as.test.model.JEEClasspathContainerTest;
 import org.jboss.ide.eclipse.as.test.model.ProjectRuntimeTest;
 import org.jboss.ide.eclipse.as.test.model.RuntimeServerModelTest;
@@ -36,7 +36,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(RuntimeServerModelTest.class);
         suite.addTestSuite(JEEClasspathContainerTest.class);
         suite.addTestSuite(ProjectRuntimeTest.class);
-        suite.addTestSuite(JBIDE1657Test.class);
+ //       suite.addTestSuite(JBIDE1657Test.class);
         return suite; 
    }
 
