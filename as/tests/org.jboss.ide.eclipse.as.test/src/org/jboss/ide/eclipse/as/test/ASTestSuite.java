@@ -32,7 +32,7 @@ import org.jboss.ide.eclipse.as.test.model.RuntimeServerModelTest;
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
         TestSuite suite = new TestSuite("ASTools Test Suite");
-
+        suite.addTestSuite(PreReqTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
         suite.addTestSuite(JEEClasspathContainerTest.class);
         suite.addTestSuite(ProjectRuntimeTest.class);
