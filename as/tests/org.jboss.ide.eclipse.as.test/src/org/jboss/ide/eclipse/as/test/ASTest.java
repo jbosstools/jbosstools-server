@@ -47,4 +47,19 @@ public class ASTest extends Plugin {
 		return plugin;
 	}
 
+	
+	
+	// set some constants for wide-use
+	public static final String TOMCAT_RUNTIME_55 = "org.eclipse.jst.server.tomcat.runtime.55";
+	public static final String JBOSS_RUNTIME_32 = "org.jboss.ide.eclipse.as.runtime.32";
+	public static final String JBOSS_RUNTIME_40 = "org.jboss.ide.eclipse.as.runtime.40";
+	public static final String JBOSS_RUNTIME_42 = "org.jboss.ide.eclipse.as.runtime.42";
+	public static final String JBOSS_SERVER_32 = "org.jboss.ide.eclipse.as.32";
+	public static final String JBOSS_SERVER_40 = "org.jboss.ide.eclipse.as.40";
+	public static final String JBOSS_SERVER_42 = "org.jboss.ide.eclipse.as.42";
+	public static final String JBOSS_AS_32_HOME = System.getProperty("jbosstools.test.jboss.home.3.2", "C:\\apps\\jboss\\jboss-3.2.8.SP1\\");
+	public static final String JBOSS_AS_40_HOME = System.getProperty("jbosstools.test.jboss.home.4.0", "C:\\apps\\jboss\\jboss-4.0.5.GA\\");
+	public static final String JBOSS_AS_42_HOME = System.getProperty("jbosstools.test.jboss.home.4.2", "C:\\apps\\jboss\\jboss-4.2.1.GA\\");
+
+	public static final String JBOSS_AS_HOME = System.getProperty("jbosstools.test.jboss.home", JBOSS_AS_42_HOME);
 }

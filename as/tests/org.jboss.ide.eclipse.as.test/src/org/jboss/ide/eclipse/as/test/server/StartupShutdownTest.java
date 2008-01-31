@@ -31,6 +31,7 @@ import org.eclipse.wst.server.core.IServer.IOperationListener;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.test.ASTest;
 
 /**
  * These tests are for a simple startup / shutdown of a basic, 
@@ -41,15 +42,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
  *
  */
 public class StartupShutdownTest extends TestCase {
-	private static final String RUNTIME_32 = "org.jboss.ide.eclipse.as.runtime.32";
-	private static final String RUNTIME_40 = "org.jboss.ide.eclipse.as.runtime.40";
-	private static final String RUNTIME_42 = "org.jboss.ide.eclipse.as.runtime.42";
-	private static final String SERVER_32 = "org.jboss.ide.eclipse.as.32";
-	private static final String SERVER_40 = "org.jboss.ide.eclipse.as.40";
-	private static final String SERVER_42 = "org.jboss.ide.eclipse.as.42";
-	private static final String JBOSS_AS_32_HOME = System.getProperty("jbosstools.test.jboss.home.3.2", "C:\\apps\\jboss\\jboss-3.2.8.SP1\\");
-	private static final String JBOSS_AS_40_HOME = System.getProperty("jbosstools.test.jboss.home.4.0", "C:\\apps\\jboss\\jboss-4.0.5.GA\\");
-	private static final String JBOSS_AS_42_HOME = System.getProperty("jbosstools.test.jboss.home.4.2", "C:\\apps\\jboss\\jboss-4.2.1.GA\\");
 
 	protected static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
 	protected static final String DEFAULT_CONFIG = "default";
@@ -64,11 +56,11 @@ public class StartupShutdownTest extends TestCase {
 	public void setUp() {
 		try {
 			if( getName().equals("test32"))
-				createServer(RUNTIME_32, SERVER_32, JBOSS_AS_32_HOME, DEFAULT_CONFIG);
+				createServer(ASTest.JBOSS_RUNTIME_32, ASTest.JBOSS_SERVER_32, ASTest.JBOSS_AS_32_HOME, DEFAULT_CONFIG);
 			else if( getName().equals("test40"))
-				createServer(RUNTIME_40, SERVER_40, JBOSS_AS_40_HOME, DEFAULT_CONFIG);
+				createServer(ASTest.JBOSS_RUNTIME_40, ASTest.JBOSS_SERVER_40, ASTest.JBOSS_AS_40_HOME, DEFAULT_CONFIG);
 			else if( getName().equals("test42"))
-				createServer(RUNTIME_42, SERVER_42, JBOSS_AS_42_HOME, DEFAULT_CONFIG);
+				createServer(ASTest.JBOSS_RUNTIME_42, ASTest.JBOSS_SERVER_42, ASTest.JBOSS_AS_42_HOME, DEFAULT_CONFIG);
 			
 			// first thing's first. Let's add a server state listener
 			stateListener = new ServerStateListener();
