@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.classpath.test;
+package org.jboss.ide.eclipse.as.test.model;
 
 import junit.framework.TestCase;
 
@@ -11,7 +11,7 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
 
-public class ASClasspathTest extends TestCase {
+public class RuntimeServerModelTest extends TestCase {
 		
 	// https://bugs.eclipse.org/bugs/show_bug.cgi?id=201340
 	// skipped since reported issue and always failing
