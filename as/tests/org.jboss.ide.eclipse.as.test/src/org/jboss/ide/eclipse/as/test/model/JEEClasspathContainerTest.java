@@ -41,7 +41,7 @@ import org.jboss.tools.common.test.util.TestProjectProvider;
 
 public class JEEClasspathContainerTest extends TestCase {
 	
-	private static final int ORIGINAL_ENTRIES = 3;
+	private static final int ORIGINAL_ENTRIES = 2;
 
 	private TestProjectProvider provider;
 	private IProject project;
@@ -52,7 +52,10 @@ public class JEEClasspathContainerTest extends TestCase {
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
 
-	
+	protected void tearDown() throws Exception {
+		provider.dispose();
+	}
+
 	public void testJEE13ClasspathContainer() {
 		testGenericClasspathContainer("org.jboss.ide.eclipse.as.classpath.core.j2ee-1.3", 7);
 	}
@@ -100,7 +103,7 @@ public class JEEClasspathContainerTest extends TestCase {
 	
 	protected void verifyRawClasspathCount(IJavaProject jproject, int count) throws JavaModelException {
 		IClasspathEntry[] projectEntry = jproject.getRawClasspath();
-		assertEquals("Project should start with only 3 classpath entries", count, projectEntry.length);
+		assertEquals("Project should start with only " + count + " classpath entries", count, projectEntry.length);
 	}
 	
 	protected void verifyNotIncludedEntry(IJavaProject jproject, IPath path) throws JavaModelException {

@@ -78,31 +78,29 @@ public class ProjectRuntimeTest extends TestCase {
 	protected void verifyPostRuntimeCPE(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
 		assertEquals(3, entries.length);
-		String[] acceptable = new String[] { "org.eclipse.jst.server.core.container",
+		jp.getResolvedClasspath(false); // make sure it can resolve all
+		String[] required = new String[] { "org.eclipse.jst.server.core.container",
 				"basicwebproject", "org.eclipse.jst.j2ee.internal.web.container" };
-		verifyClasspathEntries(entries, acceptable);
+		verifyClasspathEntries(entries, required);
 	}
 
 	protected void verifyInitialClasspathEntries(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
-		assertEquals(2, entries.length);
-		
-		String[] acceptable = new String[] { "org.eclipse.jst.j2ee.internal.web.container",
-				"basicwebproject"};
-		verifyClasspathEntries(entries, acceptable);
+		jp.getResolvedClasspath(false); // make sure it can resolve all
+		String[] required = new String[] { 
+				"org.eclipse.jst.j2ee.internal.web.container", "basicwebproject"};
+		verifyClasspathEntries(entries, required);
 	}
 	
-	protected void verifyClasspathEntries(IClasspathEntry[] entries, String[] acceptablePrefixes) {
-		ArrayList list = new ArrayList(Arrays.asList(acceptablePrefixes));
+	protected void verifyClasspathEntries(IClasspathEntry[] entries, String[] required) {
+		ArrayList list = new ArrayList(Arrays.asList(required));
 		for( int i = 0; i < entries.length; i++ ) {
 			if( list.contains(entries[i].getPath().segment(0)))
 				list.remove(entries[i].getPath().segment(0));
-			else
-				fail("classpath contains unexpected entry: " + entries[i].getPath());
 		}
 		
 		if( list.size() > 0 ) {
-			String tmp = "Expected enties not found: ";
+			String tmp = "Required enties not found: ";
 			for( int i = 0; i < list.size(); i++ ) {
 				tmp += list.get(i) + ", ";
 			}
