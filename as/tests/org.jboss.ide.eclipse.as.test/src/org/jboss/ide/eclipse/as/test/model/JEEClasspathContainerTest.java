@@ -39,6 +39,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.jboss.tools.common.test.util.TestProjectProvider;
 
+/**
+ * This class tests the jee classpath containers
+ * to make sure they're returning live jars that exist.
+ * 
+ * @author rob.stryker <rob.stryker@redhat.com>
+ */
 public class JEEClasspathContainerTest extends TestCase {
 	
 	private static final int ORIGINAL_ENTRIES = 2;
