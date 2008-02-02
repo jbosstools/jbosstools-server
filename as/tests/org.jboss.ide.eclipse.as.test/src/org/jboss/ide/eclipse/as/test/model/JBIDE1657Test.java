@@ -80,8 +80,9 @@ public class JBIDE1657Test extends TestCase {
 			}
 			jp.setRawClasspath(raw2, new NullProgressMonitor());
 			IClasspathEntry[] resolved2 = jp.getResolvedClasspath(false);
-			assertTrue("New classpath container path should return the same classpath entries as the old. ", 
-					resolved1.length == resolved2.length);
+			assertEquals("New classpath container path should return the same classpath entries as the old. ", 
+					resolved1.length , resolved2.length);
+			assertTrue("Should be more than one classpath entry", resolved1.length > 0);
 		} catch( CoreException ce ) {
 			ce.printStackTrace();
 			fail(ce.getMessage());
