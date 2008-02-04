@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -31,7 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
-	protected static final String SERVER_ID = "server-id";
+	public static final String SERVER_ID = "server-id";
 
 	// we have no need to do anything in pre-launch check
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
@@ -125,31 +124,29 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(getServerHome(jbs)).append(relative)));
 	}
 	
+	@Deprecated
 	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
-		if (vmInstall != null) {
-				try {
-					cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
-						new Path(JavaRuntime.JRE_CONTAINER).append(
-							"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")
-								.append(vmInstall.getName()),
-							IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
-				} catch (CoreException e) {
-					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"Unexpected Exception converting launch classpath: ", e);
-					JBossServerCorePlugin.getDefault().getLog().log(s);
-				}
+		addJREEntry(cp, vmInstall);
+		return convertClasspath(cp);
+	}
 
-			IPath jrePath = new Path(vmInstall.getInstallLocation()
-					.getAbsolutePath());
-			if (jrePath != null) {
-				IPath toolsPath = jrePath.append("lib").append("tools.jar");
-				if (toolsPath.toFile().exists()) {
-					cp.add(JavaRuntime
-							.newArchiveRuntimeClasspathEntry(toolsPath));
-				}
+	protected static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
+		if (vmInstall != null) {
+			try {
+				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
+					new Path(JavaRuntime.JRE_CONTAINER)
+						.append(vmInstall.getVMInstallType().getId()).append(vmInstall.getName()),
+//						"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")
+						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
+			} catch (CoreException e) {
+				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+						"Unexpected Exception converting launch classpath: ", e);
+				JBossServerCorePlugin.getDefault().getLog().log(s);
 			}
 		}
-
+	}
+	
+	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
@@ -188,4 +185,12 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	public static String getServerHome(JBossServer jbs) {
 		return jbs.getServer().getRuntime().getLocation().toOSString();
 	}
+	
+	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
+		String serverId = configuration.getAttribute(SERVER_ID, (String)null);
+		JBossServer jbs = findJBossServer(serverId);
+		IJBossServerRuntime jbrt = findJBossServerRuntime(jbs.getServer());
+		return jbrt.getVM();
+	}
+
 }

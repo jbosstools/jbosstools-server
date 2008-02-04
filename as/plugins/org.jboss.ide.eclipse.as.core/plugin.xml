@@ -464,4 +464,11 @@
          </facet>
       </default-facets>
    </extension>
+   <extension
+         point="org.eclipse.jdt.launching.classpathProviders">
+      <classpathProvider
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration$StartupClasspathProvider"
+            id="org.jboss.ide.eclipse.as.core.launch.classpathProvider">
+      </classpathProvider>
+   </extension>
 </plugin>

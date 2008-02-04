@@ -38,6 +38,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerType;
@@ -49,7 +50,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	protected static final char[] INVALID_CHARS = new char[] {'\\', '/', ':', '*', '?', '"', '<', '>', '|', '\0', '@', '&'};
-
 	private static final String LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.startupConfiguration";
 	private static final String DEFAULTS_SET = "jboss.defaults.been.set";
 	private static final String START_JAR_LOC = "bin" + Path.SEPARATOR + "run.jar";
@@ -64,28 +64,21 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 
 	public static void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		ensureDefaultsSet(workingCopy, server);
+		if(!workingCopy.getAttributes().containsKey(DEFAULTS_SET)) {
+			forceDefaultsSet(workingCopy, server);
+		}
 	}
 
-	public static void ensureDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
-		if(!wc.getAttributes().containsKey(DEFAULTS_SET)) {
-			JBossServer jbs = findJBossServer(server.getId());
-			IJBossServerRuntime jbrt = findJBossServerRuntime(server);
-			String serverHome = getServerHome(jbs);
-			
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
-			
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-			ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-			addCPEntry(classpath, jbs, START_JAR_LOC);
-			ArrayList<String> runtimeClassPaths = convertClasspath(classpath, jbrt.getVM());
-			String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
-			wc.setAttribute(cpKey, runtimeClassPaths);
-			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-			wc.setAttribute(DEFAULTS_SET, true);
-		}
+	public static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
+		JBossServer jbs = findJBossServer(server.getId());
+		String serverHome = getServerHome(jbs);
+		
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, "org.jboss.ide.eclipse.as.core.launch.classpathProvider");
+		wc.setAttribute(DEFAULTS_SET, true);
 	}
 
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
@@ -182,4 +175,29 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		return wc;
 	}
 
+	
+	public static class StartupClasspathProvider extends StandardClasspathProvider {
+
+		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration) throws CoreException {
+			boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
+			if (useDefault) {
+				return computeUnresolvedDefaultClasspath(configuration);
+			}
+			// recover persisted classpath
+			return recoverRuntimePath(configuration, IJavaLaunchConfigurationConstants.ATTR_CLASSPATH);
+		}
+		
+		protected IRuntimeClasspathEntry[] computeUnresolvedDefaultClasspath(ILaunchConfiguration configuration) throws CoreException {
+			String serverId = configuration.getAttribute(SERVER_ID, (String)null);
+			JBossServer jbs = findJBossServer(serverId);
+			IJBossServerRuntime jbrt = findJBossServerRuntime(jbs.getServer());
+			ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
+			addCPEntry(classpath, jbs, START_JAR_LOC);
+			addJREEntry(classpath, jbrt.getVM());
+			return (IRuntimeClasspathEntry[]) classpath
+					.toArray(new IRuntimeClasspathEntry[classpath.size()]);
+		}
+		
+	}
+	
 }
