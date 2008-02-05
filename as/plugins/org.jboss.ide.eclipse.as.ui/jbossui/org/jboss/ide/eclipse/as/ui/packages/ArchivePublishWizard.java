@@ -35,6 +35,7 @@ public class ArchivePublishWizard extends Wizard {
 	private IArchive pack;
 	public ArchivePublishWizard(IArchive pack) {
 		this.pack = pack;
+		setWindowTitle("Archive Publish Settings");
 	}
 	public boolean performFinish() {
 		if( new Boolean(page.getAlwaysPublish()).booleanValue() ) { 
