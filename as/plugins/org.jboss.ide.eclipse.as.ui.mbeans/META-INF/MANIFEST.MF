@@ -21,8 +21,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.ui,
  org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
- org.jboss.ide.eclipse.as.ui,
- org.jboss.ide.eclipse.ui
+ org.jboss.ide.eclipse.as.ui
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals
 Bundle-Vendor: JBoss, a division of Red Hat
