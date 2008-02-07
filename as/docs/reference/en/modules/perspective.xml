@@ -451,11 +451,13 @@
             <programlisting role="XML"><![CDATA[...
 <server>
 ...
-    <mbean code="org.jboss.ejb.EJBDeployer" name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
+    <mbean code="org.jboss.ejb.EJBDeployer" 
+                   name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
   
      <!-- Inline XMBean Descriptor BEGIN -->
          <xmbean>
-             <description>The EJBDeployer responsible for ejb jar deployment</description> 
+             <description>
+                    The EJBDeployer responsible for ejb jar deployment</description> 
                ...
          </xmbean>
      </mbean>
