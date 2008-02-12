@@ -276,6 +276,8 @@ public class XPathModel {
 		Path p = (Path)rtToPortsFile.get(ajbsr.getId());
 		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
+		if( url == null ) return;
+
 		Properties pr = new Properties();
 		try {
 			pr.load(url.openStream());
