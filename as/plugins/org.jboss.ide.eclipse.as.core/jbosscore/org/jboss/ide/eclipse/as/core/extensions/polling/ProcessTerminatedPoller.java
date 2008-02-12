@@ -38,6 +38,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
  */
 public class ProcessTerminatedPoller implements IServerStatePoller {
 
+	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller";
+	
 	private JBossServerBehavior server;
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {

@@ -50,6 +50,8 @@ import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
  */
 public class JMXPoller implements IServerStatePoller {
 
+	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller";
+	
 	public static final String STARTED_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.STARTED_PROPERTY";
 	public static final String EVENT_TYPE_STARTING = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.STARTING";
 	

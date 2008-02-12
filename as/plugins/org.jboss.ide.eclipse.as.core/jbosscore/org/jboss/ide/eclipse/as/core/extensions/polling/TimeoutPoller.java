@@ -37,7 +37,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  *
  */
 public class TimeoutPoller implements IServerStatePoller {
-
+	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller";
+	
 	private boolean expectedState;
 	private long endTime;
 	private IServer server;
