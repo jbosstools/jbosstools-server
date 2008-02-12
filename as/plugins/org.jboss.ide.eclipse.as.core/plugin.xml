@@ -73,14 +73,6 @@
             startTimeout="450000"
             stopTimeout="450000" 
             supportsRemoteHosts="false"/>
-
-      <serverType
-            class="org.jboss.ide.eclipse.as.core.ServerDelegate1"
-            description="description"
-            id="org.jboss.ide.eclipse.as.50"
-            name="name"
-            runtimeTypeId="org.jboss.ide.eclipse.as.core.serverType1">
-      </serverType>
    </extension>
 
    <extension
