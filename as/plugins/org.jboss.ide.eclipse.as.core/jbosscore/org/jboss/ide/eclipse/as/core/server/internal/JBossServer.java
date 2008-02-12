@@ -129,7 +129,7 @@ public class JBossServer extends ServerDelegate
 
 	private IModule[] doGetParentModules(IModule module) {
 		IModule[] ears = ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
-		ArrayList list = new ArrayList();
+		ArrayList<IModule> list = new ArrayList<IModule>();
 		for (int i = 0; i < ears.length; i++) {
 			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
 			IModule[] childs = ear.getModules();
@@ -138,7 +138,7 @@ public class JBossServer extends ServerDelegate
 					list.add(ears[i]);
 			}
 		}
-		return (IModule[])list.toArray(new IModule[list.size()]);
+		return list.toArray(new IModule[list.size()]);
 	}
 
 	public ServerPort[] getServerPorts() {
