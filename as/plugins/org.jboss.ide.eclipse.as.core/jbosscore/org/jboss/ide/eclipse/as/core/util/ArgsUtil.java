@@ -29,9 +29,9 @@ public class ArgsUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
 
-	public static Map getSystemProperties(String argString) {
+	public static Map<String, Object> getSystemProperties(String argString) {
 		String[] args = parse(argString);
-		HashMap map = new HashMap();
+		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		for( int i = 0; i < args.length; i++ ) {
 			if( args[i].startsWith("-D")) {
@@ -59,7 +59,7 @@ public class ArgsUtil {
 	}
 	public static String[] parse(String s) {
 		try {
-			ArrayList l = new ArrayList();
+			ArrayList<String> l = new ArrayList<String>();
 			int length = s.length();
 			
 			int current = 0;
