@@ -44,9 +44,9 @@
         </figure>
 
 
-        <para>The view's toolbar shown below provides quick access to starting a server (in debug
-            mode, run mode, or profile mode), restarting a server, stopping a server, or publishing
-            to a server.</para>
+        <para>The view's toolbar provides quick access to starting a server (in debug mode, run
+            mode, or profile mode), restarting a server, stopping a server, or publishing to a
+            server.</para>
         <figure>
             <title>The JBoss Server View Toolbar</title>
             <mediaobject>
@@ -132,14 +132,14 @@
                 </tgroup>
             </table>
 
-            <para>By double-clicking on any server an editor window will appear allowing you to edit
-                parts of that server. The editor will also link you to modify that server's launch
-                configuration, set command line arguments, and other things that are relevant to
-                launching the server.</para>
+            <para>By double-clicking on any server, an editor window will appear allowing you to
+                edit parts of that server. The editor will also link you to modify that server's
+                launch configuration, set command line arguments, and other things that are relevant
+                to launching the server.</para>
 
-            <para>On the figure below you can see that a username/password is available in the UI
-                when configuring the server. If you get an SecurityException when trying to launch
-                the server, it is most likely because your server is protected and hence you need to
+            <para>On the figure you can see that a username/password is available in the UI when
+                configuring the server. If you get an SecurityException when trying to launch the
+                server, it is most likely because your server is protected and hence you need to
                 fill the username/password fields with appropriate values.</para>
 
             <figure>
@@ -151,9 +151,8 @@
                 </mediaobject>
             </figure>
 
-            <para>As the JBoss servers have few properties to edit in the editor, a shortcut to the
-                launch configuration has been provided in the context menu when right-clicking on a
-                server.</para>
+            <para>As the JBoss servers have few properties to edit here, a shortcut to the launch
+                configuration has been provided in the context menu when right-clicking on a server.</para>
 
             <figure>
                 <title>Launch Configuration</title>
@@ -189,7 +188,7 @@
                                 <para>New Server</para>
                             </entry>
                             <entry>
-                                <para>The option allows to define a new server.</para>
+                                <para>The option allows to define a new server</para>
                             </entry>
                         </row>
 
@@ -198,8 +197,7 @@
                                 <para>Delete</para>
                             </entry>
                             <entry>
-                                <para>Standard option that allows to delete the chosen
-                                server.</para>
+                                <para>Standard option that allows to delete the chosen server</para>
                             </entry>
                         </row>
 
@@ -208,7 +206,7 @@
                                 <para>Start</para>
                             </entry>
                             <entry>
-                                <para>The action for stating a server in a run mode.</para>
+                                <para>The action for stating a server in a run mode</para>
                             </entry>
                         </row>
 
@@ -217,7 +215,7 @@
                                 <para>Debug</para>
                             </entry>
                             <entry>
-                                <para>The action for stating a server in a debug mode.</para>
+                                <para>The action for stating a server in a debug mode</para>
                             </entry>
                         </row>
 
@@ -226,7 +224,7 @@
                                 <para>Stop</para>
                             </entry>
                             <entry>
-                                <para>The action for stopping a declared server.</para>
+                                <para>The action for stopping a declared server</para>
                             </entry>
                         </row>
 
@@ -236,7 +234,7 @@
                             </entry>
                             <entry>
                                 <para>The action for synching the publish information between the
-                                    server and workspace.</para>
+                                    server and workspace</para>
                             </entry>
                         </row>
 
@@ -245,7 +243,7 @@
                                 <para>Clean</para>
                             </entry>
                             <entry>
-                                <para>The option for complete redeploying the resources.</para>
+                                <para>The option for complete redeploying the resources</para>
                             </entry>
                         </row>
 
@@ -255,7 +253,7 @@
                             </entry>
                             <entry>
                                 <para>The option provides a dialog for running Twiddle commands
-                                    against the Twiddle Server.</para>
+                                    against the Twiddle Server</para>
                             </entry>
                         </row>
 
@@ -265,7 +263,7 @@
                             </entry>
                             <entry>
                                 <para>The option that provides an editor for editing launch
-                                    configuration properties of the proper server.</para>
+                                    configuration properties of the proper server</para>
                             </entry>
                         </row>
 
@@ -275,7 +273,7 @@
                             </entry>
                             <entry>
                                 <para>The option allows to publish a new project to the server (if
-                                    its type is supported).</para>
+                                    its type is supported)</para>
                             </entry>
                         </row>
                     </tbody>
@@ -284,6 +282,12 @@
 
             <para>Mentioned above Twiddle is a JMX library that comes with JBoss, and you can use it
                 to access any variables that exposed via the JBoss JMX interfaces.</para>
+
+            <section>
+                <title>Relevant Resources Links</title>
+                <para>Find more about XPath in the <ulink url="http://www.w3.org/TR/xpath20/">XPath
+                    Documentation</ulink>.</para>
+            </section>
         </section>
 
         <section>
@@ -372,11 +376,11 @@
                     <property>XML Configuration</property>
                 </emphasis> category allows you to quickly browse to descriptor files in your
                 server's deploy directory and check or change the values. Its use requires the
-                <property>Properties view</property>. Basically, <emphasis>
+                    <property>Properties view</property>. Basically, <emphasis>
                     <property>XML Configuration</property>
                 </emphasis> includes XML XPaths where a xpath is a path used to access some specific
                 part of an xml document. </para>
-            
+
             <figure>
                 <title>XML Configuration and Properties View</title>
                 <mediaobject>
@@ -386,8 +390,10 @@
                 </mediaobject>
             </figure>
 
-            <note><para>You are assumed to be familiar with XPath. If not, we highly suggested that you
-                look through an appropriate manual or tutorial on the topic.</para></note>
+            <note>
+                <para>You are assumed to be familiar with XPath. If not, we highly suggested that
+                    you look through an appropriate manual or tutorial on the topic.</para>
+            </note>
 
             <para>The <emphasis>
                     <property>XML Configuration</property>
@@ -613,7 +619,8 @@
                 <title>Creating a FileSet</title>
                 <para>To create a new fileset, you click on an available target location such as an
                     archive, a nested archive, or a folder within an archive, and select <emphasis>
-                        <property>New Fileset</property></emphasis>.</para>
+                        <property>New Fileset</property>
+                    </emphasis>.</para>
 
                 <figure>
                     <title>Adding a New FileSet</title>

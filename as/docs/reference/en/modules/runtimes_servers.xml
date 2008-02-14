@@ -14,17 +14,16 @@
 
   <para>In this chapter we will discuss how to install runtimes and servers.</para>
 
-  <para>The JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or
+  <para>First of all it&apos;s necessary to mention that the JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or
     debug mode. It also includes targeting WTP projects, such as Dynamic Web Projects, to certain
     server runtimes in order to ensure that the proper jars from a specific server are added to the
     project&apos;s classpath properly.</para>
-  <para>In order to get started creating, running, and debugging J2EE applications, we must start
-    with creating our <property>runtime</property> and <property>server</property> instances.</para>
+  <para>In order to get started creating, running, and debugging J2EE applications, we should create our <property>runtime</property> and <property>server</property> instances.</para>
 
   <section>
     <title>Runtimes</title>
     <para>In JBoss Tools, the main purpose of Server Runtimes is to point to a server installation
-      somewhere on disk. In our case, this will be a JBoss installation, and it can than be used for
+      somewhere on disk. In our case, this will be a JBoss installation, and it can then be used for
       two primary purposes:</para>
     <itemizedlist>
       <listitem>
@@ -57,7 +56,7 @@
 
       <para>To create a JBoss runtime click <emphasis>
           <property>Add</property>
-        </emphasis> button and choose necessary type of runtime from the appeared dialog. </para>
+        </emphasis> button and choose a necessary type of runtime from the appeared dialog. </para>
 
       <figure>
         <title>Adding a Runtime</title>
@@ -68,7 +67,7 @@
         </mediaobject>
       </figure>
 
-      <para>As seen above, <property>JBoss Tools</property> provides
+      <para>As shown on the above figure, <property>JBoss Tools</property> provides
         its own updated and supported adapters such as JBoss 3.2, 4.0, and 4.2.
         You&apos;ll also note a Deploy-Only Runtime type. This type provides no classpath for WTP
         projects. It is used solely by its server type for the purpose of setting up a deploy
@@ -109,7 +108,7 @@
                 <para>Name</para>
               </entry>
               <entry>
-                <para>The name of a new Runtime for chosen server. We suggest that you
+                <para>The name of a new Runtime for a chosen server. We suggest that you
                   don&apos;t leave a default value. It&apos;s better to give descriptive
                   names that will help to distinguish one runtime from another.</para>
               </entry>
@@ -132,7 +131,7 @@
                 <para>The proper Java Runtime Environment. Because of the open-source nature of
                   JBoss, a user is likely to want to modify and repackage some of the
                   configuration-specific jboss jars and create their own configuration. Thus, rather
-                  than forcing the user to copy his entire JBoss installation, the structure of the
+                  than forcing you to copy his entire JBoss installation, the structure of the
                   wizard allows to create only a new configuration instead.</para>
               </entry>
             </row>
@@ -142,7 +141,7 @@
                 <para>Configuration</para>
               </entry>
               <entry>
-                <para>The lists of configurations (all, default, minimal) that is updated as soon as you browse to a valid
+                <para>The list of configurations (all, default, minimal) that is updated as soon as you browse to a valid
                   runtime installation folder. After the runtime is created the configuration
                   becomes an unchanging property of that runtime. To
                   compile against a different configuration's jars, you will need to create a new runtime from
@@ -153,13 +152,6 @@
           </tbody>
         </tgroup>
       </table>
-
-      <!--para>Once the runtime is created, the configuration is an unchanging property of that
-        runtime. This is because many of the jars necessary to provide for classpaths, such as the
-        ejb3 jar locations or the servlet jar locations, are located in deploy directories of each
-        configurations (depending on which version of JBoss is being used). Because of this, to
-        compile against a different configuration's jars, you will need to create a new runtime from
-        that configuration.</para-->
 
       <para>As a result of having each runtime represent a specific configuration rather than the
         server installation as a whole, it is very likely you&apos;ll create several different runtimes
@@ -222,8 +214,8 @@
           linkend="add_runtime_figure">the previous section</link> will ask you to create the
         associated runtime.</para>
       <para>Either way, after targeting your server to a runtime, the final screen in this wizard is
-        largely confirmational, giving the user a chance to verify that he's selected the
-        appropriate runtime. It also allows the user to name the server appropriately. </para>
+        largely confirmational, giving you a chance to verify that you&apos;ve selected the
+        appropriate runtime. It also allows to name the server appropriately. </para>
 
       <figure>
         <title>Installed Server Runtime Environments</title>
