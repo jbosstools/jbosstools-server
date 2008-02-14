@@ -21,6 +21,10 @@
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.50"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image
+            icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.32"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
@@ -30,6 +34,10 @@
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.42"
+            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
+      <image
+            icon="icons/jboss.gif"
+            typeIds="org.jboss.ide.eclipse.as.runtime.50"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
