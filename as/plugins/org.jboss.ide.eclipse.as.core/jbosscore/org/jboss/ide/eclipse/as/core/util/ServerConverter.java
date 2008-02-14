@@ -60,7 +60,7 @@ public class ServerConverter {
 	 * @return
 	 */
 	public static JBossServer[] getAllJBossServers() {
-		ArrayList servers = new ArrayList();
+		ArrayList<JBossServer> servers = new ArrayList<JBossServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
 			if( getJBossServer(iservers[i]) != null ) {
@@ -73,7 +73,7 @@ public class ServerConverter {
 	}
 	
 	public static IServer[] getJBossServersAsIServers() {
-		ArrayList servers = new ArrayList();
+		ArrayList<IServer> servers = new ArrayList<IServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
 			if( getJBossServer(iservers[i]) != null ) {
@@ -86,7 +86,7 @@ public class ServerConverter {
 	}
 
 	public static IDeployableServer[] getAllDeployableServers() {
-		ArrayList servers = new ArrayList();
+		ArrayList<IDeployableServer> servers = new ArrayList<IDeployableServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
 			if( getDeployableServer(iservers[i]) != null ) {
@@ -98,7 +98,7 @@ public class ServerConverter {
 		return ret;
 	}
 	public static IServer[] getDeployableServersAsIServers() {
-		ArrayList servers = new ArrayList();
+		ArrayList<IServer> servers = new ArrayList<IServer>();
 		IServer[] iservers = ServerCore.getServers();
 		for( int i = 0; i < iservers.length; i++ ) {
 			if( getDeployableServer(iservers[i]) != null ) {
