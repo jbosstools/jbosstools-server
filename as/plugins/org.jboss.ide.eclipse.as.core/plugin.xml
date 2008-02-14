@@ -59,7 +59,7 @@
 
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer50"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.50.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.50"
@@ -73,13 +73,32 @@
             startTimeout="450000"
             stopTimeout="450000" 
             supportsRemoteHosts="false"/>
-   </extension>
+
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServer"
+            description="A server which only provides a deploy folder for publishing."
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.systemCopyServer"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
+            launchModes="run"
+            name="JBoss Deploy-Only Server"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
+            startBeforePublish="false"
+            startTimeout="100000"
+            stopTimeout="100000"
+            supportsRemoteHosts="true"/>
+            
+ </extension>
 
    <extension
          point="org.eclipse.wst.server.core.runtimeTypes">
       <runtimeType
             vendor="%providerName"
-            class="org.jboss.ide.eclipse.as.core.server.internal.JBoss32ServerRuntime"
+            class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
             description="%jboss.version.32.description"
             name="JBoss 3.2 Runtime"
             id="org.jboss.ide.eclipse.as.runtime.32"
@@ -102,7 +121,7 @@
       </runtimeType>
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss40ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
              description="%jboss.version.40.description"
              name="JBoss 4.0 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.40"
@@ -131,7 +150,7 @@
       </runtimeType>
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss42ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
              description="%jboss.version.42.description"
              name="JBoss 4.2 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.42"
@@ -160,7 +179,7 @@
       </runtimeType>
       <runtimeType
              vendor="%providerName"
-             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss50ServerRuntime"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
              description="%jboss.version.50.description"
              name="JBoss 5.0 Runtime"
              id="org.jboss.ide.eclipse.as.runtime.50"

@@ -39,4 +39,8 @@ public interface IJBossServerRuntime {
 	public void setVM(IVMInstall install);
 	public String getJBossConfiguration();
 	public void setJBossConfiguration(String config);
+	
+	// for startup
+	public String getDefaultRunArgs();
+	public String getDefaultRunVMArgs();
 }

@@ -42,7 +42,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 /**
@@ -91,8 +91,8 @@ public class XPathModel {
 								return Status.OK_STATUS; // server has no runtime so we can't set this up.
 							}
 							
-							AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime)
-							server2.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, null);
+							LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
+							server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
 							if(ajbsr != null ) {
 								IPath loc = server2.getRuntime().getLocation();
 								IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
@@ -271,8 +271,8 @@ public class XPathModel {
 
 	public void loadDefaults(IServer server, String configFolder) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
-		AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime)
-			server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
+		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
+			server.getRuntime().loadAdapter(LocalJBossServerRuntime.class, new NullProgressMonitor());
 		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getVersion());
 		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);

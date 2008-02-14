@@ -36,7 +36,9 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
-public abstract class AbstractJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
+import sun.security.action.GetLongAction;
+
+public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 
 	public void setDefaults(IProgressMonitor monitor) {
 		String location = Platform.getOS().equals(Platform.WS_WIN32) 
@@ -104,5 +106,24 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 	
 	public void setJBossConfiguration(String config) {
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
+	}
+
+	public String getDefaultRunArgs() {
+		return "--configuration=" + getJBossConfiguration() + " ";
+	}
+
+	public String getDefaultRunVMArgs() {
+		String name = getRuntime().getName();
+		String ret = "-Dprogram.name=\"JBossTools " + name + "\" ";
+		if( Platform.getOS().equals(Platform.OS_MACOSX))
+			ret += "-server ";
+		ret += "-Xms256m -Xmx512m -XX:MaxPermSize=256m ";
+		if( Platform.getOS().equals(Platform.OS_LINUX))
+			ret += "-Djava.net.preferIPv4Stack=true ";
+		ret += "-Dsun.rmi.dgc.client.gcInterval=3600000 ";
+		ret += "-Dsun.rmi.dgc.server.gcInterval=3600000 ";
+		ret += "-Djava.endorsed.dirs=" + (getRuntime().getLocation().append("lib").append("endorsed")) + " ";
+		
+		return ret;
 	}
 }

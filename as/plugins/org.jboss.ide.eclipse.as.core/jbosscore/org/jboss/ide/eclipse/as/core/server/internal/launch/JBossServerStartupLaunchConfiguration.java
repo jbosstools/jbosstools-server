@@ -41,7 +41,6 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -84,16 +83,17 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
-			return "--configuration=" + rt.getJBossConfiguration();
+			return rt.getDefaultRunArgs();
 		}
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
 	
 	public static String getDefaultVMArgs(JBossServer jbs) throws CoreException {
-		String ret = "-Xms256m -Xmx512m -XX:MaxPermSize=256m ";
-		if( Platform.getOS().equals(Platform.OS_LINUX))
-			ret += "-Djava.net.preferIPv4Stack=true";
-		return ret;
+		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
+		if (rt != null) {
+			return rt.getDefaultRunVMArgs();
+		}
+		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
 
 
@@ -140,8 +140,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	 * if one does not already exist. 
 	 */
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
-		ILaunchConfigurationType launchConfigType = 
-			((ServerType) server.getServerType()).getLaunchConfigurationType();
+		ILaunchConfigurationType launchConfigType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(LAUNCH_TYPE);
 		if (launchConfigType == null)
 			return null;
 		

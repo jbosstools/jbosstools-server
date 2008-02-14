@@ -38,7 +38,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 /**
  * This is a class that would ultimately try to respond to different facets
@@ -59,8 +59,8 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 	private static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet("jst.web");
 	private static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet("jst.ejb");
 	private static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet("jst.ear");
-	private static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet("jst.utility");
-	private static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet("jst.connector");
+//	private static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet("jst.utility");
+//	private static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet("jst.connector");
 	private static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet("jst.appclient");
 
 
@@ -127,30 +127,32 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IRuntime runtime = ServerCore.findRuntime(runtimeId);
 			if( runtime == null ) return;
 			
-			Object serverRuntime = runtime.loadAdapter(AbstractJBossServerRuntime.class, null);
+			IJBossServerRuntime  jbRuntime = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, null);
 
-			if( serverRuntime == null ) return;
-			AbstractJBossServerRuntime  jbRuntime = (AbstractJBossServerRuntime)serverRuntime;
+			if( jbRuntime != null ) {
 
-			String serverHome = runtime.getLocation().toOSString();
-			String configName = jbRuntime.getJBossConfiguration();
-			
-			String jbossVersion = jbRuntime.getId();
-			
-			entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, 
-					serverHome, configName, jbossVersion, jbRuntime);
+				String serverHome = runtime.getLocation().toOSString();
+				String configName = jbRuntime.getJBossConfiguration();
+				
+				String jbossVersion = jbRuntime.getRuntime().getRuntimeType().getVersion();
+				
+				entries = loadClasspathEntries2(runtimeId, facetId, facetVersion, 
+						serverHome, configName, jbossVersion, jbRuntime);
+			}
 		}
 
 		protected IClasspathEntry[] loadClasspathEntries2(String runtimeId, String facetId, 
 				String facetVersion, String serverHome, String configName, String jbVersion, 
-				AbstractJBossServerRuntime jbsRuntime) {
+				IJBossServerRuntime jbsRuntime) {
 			if( facetId.equals(JST_JAVA_FACET.getId())) {
 				return loadJREClasspathEntries(jbsRuntime);
-			} else if( jbVersion.equals("4.2")) {
+			} else if("5.0".equals(jbVersion)) {
+				return loadClasspathEntriesDefault(facetId, facetVersion, serverHome, configName);
+			} else if( "4.2".equals(jbVersion)) {
 				return loadClasspathEntries42(facetId, facetVersion, serverHome, configName);
-			} else if( jbVersion.equals("4.0"))
+			} else if( "4.0".equals(jbVersion)) {
 				return loadClasspathEntries40(facetId, facetVersion, serverHome, configName);
-			if( jbVersion.equals("3.2")) 
+			} else if( "3.2".equals(jbVersion))  
 				return loadClasspathEntries32( facetId, facetVersion, serverHome, configName);
 			return loadClasspathEntriesDefault(facetId, facetVersion, serverHome, configName);
 		}
@@ -166,15 +168,15 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		}
 		protected IClasspathEntry[] getEntries(IPath folder) {
 			String[] files = folder.toFile().list();
-			ArrayList list = new ArrayList();
+			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 			for( int i = 0; i < files.length; i++ ) {
 				if( files[i].endsWith(".jar")) {
 					list.add(getEntry(folder.append(files[i])));
 				}
 			}
-			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+			return list.toArray(new IClasspathEntry[list.size()]);
 		}
-		protected IClasspathEntry[] loadJREClasspathEntries(AbstractJBossServerRuntime jbsRuntime) {
+		protected IClasspathEntry[] loadJREClasspathEntries(IJBossServerRuntime jbsRuntime) {
 			IVMInstall vmInstall = jbsRuntime.getVM();
 			if (vmInstall != null) {
 				String name = vmInstall.getName();
@@ -187,7 +189,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		protected IClasspathEntry[] loadClasspathEntries42(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
-			ArrayList list = new ArrayList();
+			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 			if (facetId.equals(WEB_FACET.getId())) {
 				IPath jsfDir = configPath.append("deploy").append("jboss-web.deployer").append("jsf-libs");
 				list.add(getEntry(configPath.append("lib").append("jsp-api.jar")));
@@ -222,13 +224,13 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
 				list.add(getEntry(homePath.append("client").append("jbossall-client.jar")));
 			}
-			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+			return list.toArray(new IClasspathEntry[list.size()]);
 		}
 
 		protected IClasspathEntry[] loadClasspathEntries40(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
-			ArrayList list = new ArrayList();
+			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 			if (facetId.equals(WEB_FACET.getId())) {
 				IPath jsfDir = configPath.append("deploy").append("jbossweb-tomcat55.sar").append("jsf-libs");
 				list.add(getEntry(configPath.append("lib").append("javax.servlet.jsp.jar")));
@@ -259,14 +261,14 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
 				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append("client").append("jbossall-client.jar")).getClasspathEntry());
 			}
-			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+			return list.toArray(new IClasspathEntry[list.size()]);
 		}
 
 		
 		protected IClasspathEntry[] loadClasspathEntries32(String facetId, String facetVersion, String serverHome, String configName) {
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append("server").append(configName);
-			ArrayList list = new ArrayList();
+			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 			if (facetId.equals(WEB_FACET.getId())) {
 				IPath p = configPath.append("deploy").append("jbossweb-tomcat50.sar");
 				list.add(getEntry(p.append("jsp-api.jar")));
@@ -277,7 +279,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
 				list.add(getEntry(homePath.append("client").append("jbossall-client.jar")));
 			}
-			return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
+			return list.toArray(new IClasspathEntry[list.size()]);
 		}
 		protected IClasspathEntry[] loadClasspathEntriesDefault(String facetId, String facetVersion, String serverHome, String configName) {
 			return new IClasspathEntry[0];

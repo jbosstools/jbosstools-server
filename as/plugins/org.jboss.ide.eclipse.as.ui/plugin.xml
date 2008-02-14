@@ -53,21 +53,19 @@
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50"
         	id="org.jboss.ide.eclipse.as.ui.jboss32RuntimeWizardFragmentragment"/>
-
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42"/>
-       <fragment
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50"/>
+      <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
              typeIds="org.jboss.ide.eclipse.as.systemCopyServer"/>
    </extension>
 
-   <extension
-         point="org.eclipse.ui.startup">
+   <extension point="org.eclipse.ui.startup">
       <startup />
    </extension>   
    
