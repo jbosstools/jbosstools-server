@@ -26,6 +26,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 
 /**
+ * This is a stub superclass which can be used
+ * to override only those methods you care about.
  * 
  * @author Rob Stryker
  *

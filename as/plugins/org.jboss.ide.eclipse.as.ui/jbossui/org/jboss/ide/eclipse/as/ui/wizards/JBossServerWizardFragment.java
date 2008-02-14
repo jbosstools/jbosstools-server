@@ -47,19 +47,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
-import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -113,15 +107,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	
-	public String getVersion() {
-		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		String id = rt.getRuntimeType().getId();
-		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) return "3.2";
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) return "4.0";
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) return "4.2";
-		return ""; // default
-	}
-
 	private void createExplanationLabel(Composite main) {
 		serverExplanationLabel = new Label(main, SWT.NONE);
 		FormData data = new FormData();
@@ -172,7 +157,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getDefaultNameText() {
-		String base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, getVersion());
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		String base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, rt.getRuntimeType().getVersion());
 		if( findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
@@ -182,9 +168,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private IServer findServer(String name) {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
-			Server server = (Server) servers[i];
-			if (name.trim().equals(server.getName()))
-				return server;
+			if (name.trim().equals(servers[i].getName()))
+				return servers[i];
 		}
 		return null;
 	}
@@ -353,31 +338,21 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 	// WST API methods
 	public void enter() {
-		if(homeValLabel==null) {
+		if(homeValLabel==null) 
 			return;
-		}
 		
-		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy wc;
-		if( r instanceof IRuntimeWorkingCopy ) 
-			wc = (IRuntimeWorkingCopy)r;
-		else
-			wc = r.createWorkingCopy();
-		
-		if( wc instanceof RuntimeWorkingCopy ) {
-			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy)wc;
-			homeValLabel.setText(rwc.getLocation().toOSString());
-			configValLabel.setText(rwc.getAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, ""));
-			AbstractJBossServerRuntime jbsrt = (AbstractJBossServerRuntime)wc.loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
-			IVMInstall install = jbsrt.getVM();
-			jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
-			runtimeGroup.layout();
-			String p = rwc.getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
-			deployTmpFolderVal = rwc.getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("jbosstoolsTemp").toOSString();
-			deployText.setText(p);
-			deployVal = p;
-			deployGroup.layout();
-		}
+		IJBossServerRuntime srt = getRuntime();
+			
+		homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
+		configValLabel.setText(srt.getJBossConfiguration());
+		IVMInstall install = srt.getVM();
+		jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
+		String deployFolder = srt.getRuntime().getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
+		deployTmpFolderVal = srt.getRuntime().getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("jbosstoolsTemp").toOSString();
+		deployText.setText(deployFolder);
+		deployVal = deployFolder;
+		runtimeGroup.layout();
+		deployGroup.layout();
 	}
 
 	public void exit() {
@@ -387,14 +362,25 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
-		serverWC.setServerConfiguration(null);
-		if( serverWC instanceof ServerWorkingCopy) {
-			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_USERNAME, authUser);
-			((ServerWorkingCopy)serverWC).setAttribute(JBossServer.SERVER_PASSWORD, authPass);
-			((ServerWorkingCopy)serverWC).setAttribute(IDeployableServer.DEPLOY_DIRECTORY, deployVal);
-			((ServerWorkingCopy)serverWC).setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, deployTmpFolderVal);
-			new File(deployTmpFolderVal).mkdirs();
+		serverWC.setServerConfiguration(null); // no inside jboss folder
+		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
+		jbs.setUsername(authUser);
+		jbs.setPassword(authPass);
+		jbs.setDeployFolder(deployVal);
+		jbs.setTempDeployFolder(deployTmpFolderVal);
+		new File(deployTmpFolderVal).mkdirs();
+	}
+
+	private IJBossServerRuntime getRuntime() {
+		IRuntime r = (IRuntime) getTaskModel()
+				.getObject(TaskModel.TASK_RUNTIME);
+		IJBossServerRuntime ajbsrt = null;
+		if (r != null) {
+			ajbsrt = (IJBossServerRuntime) r
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
 		}
+		return ajbsrt;
 	}
 
 	public boolean isComplete() {

@@ -26,7 +26,4 @@ public class JBoss40ServerRuntime extends AbstractJBossServerRuntime {
 
 	public JBoss40ServerRuntime() {
 	}
-	public String getId() {
-		return "4.0";
-	}
 }

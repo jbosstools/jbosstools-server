@@ -273,7 +273,7 @@ public class XPathModel {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
 		AbstractJBossServerRuntime ajbsr = (AbstractJBossServerRuntime)
 			server.getRuntime().loadAdapter(AbstractJBossServerRuntime.class, new NullProgressMonitor());
-		Path p = (Path)rtToPortsFile.get(ajbsr.getId());
+		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getVersion());
 		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
 		if( url == null ) return;

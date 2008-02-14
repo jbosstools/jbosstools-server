@@ -26,7 +26,7 @@ package org.jboss.ide.eclipse.as.core.server;
  * @author Rob Stryker
  *
  */
-public interface IServerStartupParameters {
+public interface IJBossServerConstants {
 	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir";
 	public static final String JBOSS_SERVER_BASE_DIR = "jboss.server.base.dir";
 	public static final String JBOSS_SERVER_NAME = "jboss.server.name";

@@ -21,27 +21,46 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.internal.Messages;
-import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public abstract class AbstractJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 
 	public void setDefaults(IProgressMonitor monitor) {
-		getRuntimeWorkingCopy().setLocation(new Path(""));
+		String location = Platform.getOS().equals(Platform.WS_WIN32) 
+		? "c:/program files/jboss-" : "/usr/bin/jboss-";
+		String version = getRuntime().getRuntimeType().getVersion();
+		location += version + ".x";
+		getRuntimeWorkingCopy().setLocation(new Path(location));
+		getRuntimeWorkingCopy().setName(getNextRuntimeName());
+		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_SERVER_NAME);
+		setVM(null);
+	}
+
+	private String getNextRuntimeName() {
+		String version = getRuntime().getRuntimeType().getVersion(); 
+		String base = "JBoss " + version + " Runtime";
+		IRuntime rt = ServerCore.findRuntime(base);
+		if (rt == null)
+			return base;
+
+		int i = 0;
+		while (rt != null) {
+			rt = ServerCore.findRuntime(base + " " + ++i);
+		}
+		return base + " " + i;
 	}
 
 	public IStatus validate() {
@@ -54,19 +73,6 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 		return Status.OK_STATUS;
 	}
 	
-	public void setVMInstall(IVMInstall selectedVM) {
-		IRuntimeWorkingCopy copy = getRuntimeWorkingCopy();
-		if( copy instanceof RuntimeWorkingCopy ) {
-			((RuntimeWorkingCopy)copy).setAttribute(PROPERTY_VM_ID, selectedVM.getId());
-			((RuntimeWorkingCopy)copy).setAttribute(PROPERTY_VM_TYPE_ID, selectedVM.getVMInstallType().getId());
-			try {
-				copy.save(true, new NullProgressMonitor());
-			} catch( CoreException ce ) {
-				
-			}
-		}
-	}
-
 	public IVMInstall getVM() {
 		String id = getAttribute(PROPERTY_VM_ID, (String)null);
 		String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
@@ -83,9 +89,20 @@ public abstract class AbstractJBossServerRuntime extends RuntimeDelegate impleme
 		return JavaRuntime.getDefaultVMInstall();
 	}
 	
+	public void setVM(IVMInstall selectedVM) {
+		if( selectedVM == null )
+			selectedVM = JavaRuntime.getDefaultVMInstall();
+		
+		setAttribute(IJBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
+		setAttribute(IJBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM
+						.getVMInstallType().getId());
+	}
+	
 	public String getJBossConfiguration() {
 		return getAttribute(PROPERTY_CONFIGURATION_NAME, (String)"");
 	}
 	
-	public abstract String getId();
+	public void setJBossConfiguration(String config) {
+		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
+	}
 }

@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -60,11 +59,11 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
-import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.IServerStartupParameters;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -73,18 +72,6 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class JBossRuntimeWizardFragment extends WizardFragment {
 
-	private final static int NAME_CHANGED = 1;
-	private final static int HOME_CHANGED = 2;
-	private final static int JRE_CHANGED = 3;
-	private final static int CONFIG_CHANGED = 4;
-
-	private final static int SEVERITY_ALL = 1;
-	private final static int SEVERITY_MAJOR = 2;
-
-	public static final String LOCATION_TEXT = Platform.getOS().equals(Platform.WS_WIN32) 
-		? "c:/program files/jboss-" : "/usr/bin/jboss-";
-	
-	
 	private IWizardHandle handle;
 	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel,
 			explanationLabel;
@@ -96,15 +83,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private String name, homeDir, config;
 
 	// jre fields
-	protected ArrayList installedJREs;
+	protected ArrayList<IVMInstall> installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
-
-	private JBossConfigurationTableViewer configurations;
-
 	private IVMInstall selectedVM;
-
-	private boolean pristine;
+	private JBossConfigurationTableViewer configurations;
 	private String originalName;
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
@@ -120,14 +103,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		createJREComposite(main);
 		createConfigurationComposite(main);
 
-		// If it's an already filled runtime (ie not new) fill our widgets
-		pristine = isPristineRuntime();
-		if (!pristine) {
-			fillWidgets();
-		} else {
-			setWidgetDefaults();
-		}
-		// initTaskModel();
+		fillWidgets();
 
 		// make modifications to parent
 		handle.setTitle(Messages.rwf_Title);
@@ -150,109 +126,43 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	private void fillWidgets() {
-		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
-		if (rwc != null) {
-			originalName = rwc.getName();
+		boolean canEdit = true;
 
-			nameText.setText(rwc.getName());
-			homeDirText.setText(rwc.getLocation().toOSString());
-			String configSelected = rwc.getAttribute(
-					IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, "");
-			configurations.setDefaultConfiguration(configSelected);
+		IJBossServerRuntime rt = getRuntime();
+		if (rt != null) {
+			originalName = rt.getRuntime().getName();
+			nameText.setText(rt.getRuntime().getName());
+			name = rt.getRuntime().getName();
+			homeDirText.setText(rt.getRuntime().getLocation().toOSString());
+			homeDir = rt.getRuntime().getLocation().toOSString();
+			config = rt.getJBossConfiguration();
+			configurations.setDefaultConfiguration(config);
+			configLabel.setText(Messages.wf_ConfigLabel + ":  " + config);
 
-			configurations.getTable().setVisible(false);
-			configLabel.setText(Messages.wf_ConfigLabel + ":  "
-					+ configSelected);
-			homeDirText.setEditable(false);
-			homeDirButton.setEnabled(false);
-
-			Object o = rwc.loadAdapter(IJBossServerRuntime.class,
-					new NullProgressMonitor());
-			if (o != null) {
-				IJBossServerRuntime jbsr = (IJBossServerRuntime) o;
-				IVMInstall install = jbsr.getVM();
-				String vmName = install.getName();
-				String[] jres = jreCombo.getItems();
-				for (int i = 0; i < jres.length; i++) {
-					if (vmName.equals(jres[i]))
-						jreCombo.select(i);
-				}
+			IVMInstall install = rt.getVM();
+			String vmName = install.getName();
+			String[] jres = jreCombo.getItems();
+			for (int i = 0; i < jres.length; i++) {
+				if (vmName.equals(jres[i]))
+					jreCombo.select(i);
 			}
+
+			homeDirText.setEditable(canEdit);
+			homeDirButton.setEnabled(canEdit);
+			configurations.getTable().setVisible(canEdit);
 		}
 	}
 
-	private void setWidgetDefaults() {
-		nameText.setText(generateNewRuntimeName());
-		homeDirText.setText(LOCATION_TEXT + getRuntimeVersionId() + ".x");
-	}
-
-	public String getVersion() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String id = rt.getRuntimeType().getId();
-		if (id.equals("org.jboss.ide.eclipse.as.runtime.32"))
-			return "3.2";
-		else if (id.equals("org.jboss.ide.eclipse.as.runtime.40"))
-			return "4.0";
-		else if (id.equals("org.jboss.ide.eclipse.as.runtime.42"))
-			return "4.2";
-		return ""; // default
-	}
-
-	private String generateNewRuntimeName() {
-		String base = Messages.rwf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, getVersion());
-		IRuntime rt = ServerCore.findRuntime(base);
-		if (rt == null)
-			return base;
-
-		int i = 0;
-		while (rt != null) {
-			rt = ServerCore.findRuntime(base + " " + ++i);
-		}
-		return base + " " + i;
-	}
-
-	private RuntimeWorkingCopy getRuntimeWorkingCopy() {
+	private IJBossServerRuntime getRuntime() {
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy wc;
-		if (!(r instanceof IRuntimeWorkingCopy)) {
-			wc = r.createWorkingCopy();
-		} else {
-			wc = (IRuntimeWorkingCopy) r;
+		IJBossServerRuntime ajbsrt = null;
+		if (r != null) {
+			ajbsrt = (IJBossServerRuntime) r
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
 		}
-
-		if (wc instanceof RuntimeWorkingCopy) {
-			RuntimeWorkingCopy rwc = (RuntimeWorkingCopy) wc;
-			return rwc;
-		}
-		return null;
-	}
-
-	private String getRuntimeVersionId() {
-		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
-		if( rwc != null ) {
-			Object o = rwc.loadAdapter(IJBossServerRuntime.class,
-					new NullProgressMonitor());
-			if (o != null) {
-				IJBossServerRuntime jbsr = (IJBossServerRuntime) o;
-				return jbsr.getId();
-			}
-		}
-		return "4.0";
-	}
-
-	private boolean isPristineRuntime() {
-		RuntimeWorkingCopy rwc = getRuntimeWorkingCopy();
-		if (rwc != null) {
-			if (rwc.getAttribute(
-					IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME,
-					(String) null) == null) {
-				return true;
-			}
-			return false;
-		}
-		return true;
+		return ajbsrt;
 	}
 
 	private void createExplanation(Composite main) {
@@ -262,7 +172,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		data.left = new FormAttachment(0, 5);
 		data.right = new FormAttachment(100, -5);
 		explanationLabel.setLayoutData(data);
-
 		explanationLabel.setText(Messages.rwf_Explanation);
 	}
 
@@ -284,11 +193,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		nameText = new Text(nameComposite, SWT.BORDER);
 		nameText.addModifyListener(new ModifyListener() {
-
 			public void modifyText(ModifyEvent e) {
-				updatePage(NAME_CHANGED);
+				name = nameText.getText();
+				updatePage();
 			}
-
 		});
 
 		// organize widgets inside composite
@@ -318,16 +226,15 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		// Create Internal Widgets
 		homeDirLabel = new Label(homeDirComposite, SWT.NONE);
 		homeDirLabel.setText(Messages.wf_HomeDirLabel);
-
 		homeDirText = new Text(homeDirComposite, SWT.BORDER);
-
 		homeDirButton = new Button(homeDirComposite, SWT.NONE);
 		homeDirButton.setText(Messages.browse);
 
 		// Add listeners
 		homeDirText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				updatePage(HOME_CHANGED);
+				homeDir = homeDirText.getText();
+				updatePage();
 			}
 		});
 
@@ -399,11 +306,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		jreCombo.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
-				updatePage(JRE_CHANGED);
+				updatePage();
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				updatePage(JRE_CHANGED);
+				updatePage();
 			}
 		});
 
@@ -426,90 +333,118 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	}
 
-	private void updatePage(int changed) {
-		switch (changed) {
-		case NAME_CHANGED:
-			updateErrorMessage(SEVERITY_MAJOR);
-			break;
-		case HOME_CHANGED:
-			if (!isHomeValid()) {
-				configurations.getControl().setEnabled(false);
-				configurations.setJBossHome(homeDirText.getText());
-			} else {
-				// No errors, clear the message and update the available
-				// configurations
-				configurations.setJBossHome(homeDirText.getText());
-				configurations.setDefaultConfiguration(IServerStartupParameters.DEFAULT_SERVER_NAME);
+	private void createConfigurationComposite(Composite main) {
+		configComposite = new Composite(main, SWT.NONE);
 
-				// update config variable
-				int index = configurations.getTable().getSelectionIndex();
-				if (index != -1)
-					config = configurations.getTable().getItem(index).getText();
+		FormData cData = new FormData();
+		cData.left = new FormAttachment(0, 5);
+		cData.right = new FormAttachment(100, -5);
+		cData.top = new FormAttachment(jreComposite, 10);
+		cData.bottom = new FormAttachment(100, -5);
+		configComposite.setLayoutData(cData);
+
+		configComposite.setLayout(new FormLayout());
+
+		configLabel = new Label(configComposite, SWT.NONE);
+		configLabel.setText(Messages.wf_ConfigLabel);
+
+		configurations = new JBossConfigurationTableViewer(configComposite,
+				SWT.BORDER | SWT.SINGLE);
+
+		FormData labelData = new FormData();
+		labelData.left = new FormAttachment(0, 5);
+		configLabel.setLayoutData(labelData);
+
+		FormData viewerData = new FormData();
+		viewerData.left = new FormAttachment(0, 5);
+		viewerData.right = new FormAttachment(100, -5);
+		viewerData.top = new FormAttachment(configLabel, 5);
+		viewerData.bottom = new FormAttachment(100, -5);
+
+		configurations.getTable().setLayoutData(viewerData);
+
+		configurations.getTable().addSelectionListener(new SelectionListener() {
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				updatePage();
 			}
 
-			updateErrorMessage(SEVERITY_MAJOR);
-			break;
-		case JRE_CHANGED:
-			int sel = jreCombo.getSelectionIndex();
-			if (sel != -1)
-				selectedVM = (IVMInstall) installedJREs.get(sel);
-			break;
-		default:
-			break;
-		}
+			public void widgetSelected(SelectionEvent e) {
+				updatePage();
+			}
+
+		});
+
 	}
 
-	private void updateErrorMessage(int severity) {
-		String error = getErrorString(severity);
-		if (error == null) {
+	private void updatePage() {
+		updateErrorMessage();
+		if (!isHomeValid()) {
+			configurations.getControl().setEnabled(false);
+			configurations.setJBossHome(homeDirText.getText());
+		} else {
+			configurations.setJBossHome(homeDirText.getText());
+			configurations
+					.setDefaultConfiguration(IJBossServerConstants.DEFAULT_SERVER_NAME);
+		}
+
+		int sel = jreCombo.getSelectionIndex();
+		if (sel != -1)
+			selectedVM = installedJREs.get(sel);
+		else
+			selectedVM = null;
+	}
+
+	private void updateErrorMessage() {
+		String error = getErrorString();
+		if (error == null)
 			handle.setMessage(null, IMessageProvider.NONE);
-			return;
-		}
-
-		handle.setMessage(error, IMessageProvider.ERROR);
+		else
+			handle.setMessage(error, IMessageProvider.ERROR);
 	}
 
-	private String getErrorString(int severity) {
-		if(nameText==null) { // We haven't yet been created so don't know any errors yet.			
+	private String getErrorString() {
+		if (nameText == null) {
+			// not yet initialized. no errors
 			return null;
 		}
-		if (getRuntime(nameText.getText()) != null) {
+
+		if (getRuntime(name) != null) {
 			return Messages.rwf_NameInUse;
 		}
 
 		if (!isHomeValid())
 			return Messages.rwf_invalidDirectory;
 
-		if (severity == SEVERITY_MAJOR)
-			return null;
-
-		// now give minor warnings
-		if (nameText.getText().equals(""))
+		if (name == null || name.equals(""))
 			return Messages.rwf_nameTextBlank;
 
-		if (homeDirText.getText().equals(""))
+		if (homeDir == null || homeDir.equals(""))
 			return Messages.rwf_homeDirBlank;
+
+		if (selectedVM == null)
+			return "No VM selected";
 
 		return null;
 	}
 
 	protected boolean isHomeValid() {
-		return new Path(homeDirText.getText()).append("bin").append("run.jar")
-				.toFile().exists();
+		return homeDir != null
+				&& new Path(homeDir).append("bin").append("run.jar").toFile()
+						.exists();
 	}
 
 	private void browseHomeDirClicked() {
-		File file = new File(homeDirText.getText());
+		File file = new File(homeDir);
 		if (!file.exists()) {
 			file = null;
 		}
 
 		File directory = getDirectory(file, homeDirComposite.getShell());
-		if (directory == null) {
-			return;
+		if (directory != null) {
+			homeDir = directory.getAbsolutePath();
+			homeDirText.setText(homeDir);
 		}
-
-		homeDirText.setText(directory.getAbsolutePath());
 	}
 
 	protected File getDirectory(File startingDirectory, Shell shell) {
@@ -554,7 +489,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	// JRE methods
 	protected void updateJREs() {
 		// get all installed JVMs
-		installedJREs = new ArrayList();
+		installedJREs = new ArrayList<IVMInstall>();
 		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
 		int size = vmInstallTypes.length;
 		for (int i = 0; i < size; i++) {
@@ -569,13 +504,12 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		size = installedJREs.size();
 		jreNames = new String[size];
 		for (int i = 0; i < size; i++) {
-			IVMInstall vmInstall = (IVMInstall) installedJREs.get(i);
+			IVMInstall vmInstall = installedJREs.get(i);
 			jreNames[i] = vmInstall.getName();
 		}
 
 		selectedVM = JavaRuntime.getDefaultVMInstall();
 		defaultVMIndex = installedJREs.indexOf(selectedVM);
-
 	}
 
 	// WST API methods
@@ -583,98 +517,30 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	public void exit() {
-		name = nameText.getText();
-		homeDir = homeDirText.getText();
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy runtimeWC;
-		if (r instanceof IRuntimeWorkingCopy) {
-			runtimeWC = (IRuntimeWorkingCopy) r;
-		} else {
-			runtimeWC = r.createWorkingCopy();
-		}
+		IRuntimeWorkingCopy runtimeWC = r.isWorkingCopy() ? ((IRuntimeWorkingCopy) r)
+				: r.createWorkingCopy();
+
 		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
-
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM
-						.getVMInstallType().getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations
-						.getSelectedConfiguration());
-
+		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
+		srt.setVM(selectedVM);
+		srt.setJBossConfiguration(configurations.getSelectedConfiguration());
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 
-	private void createConfigurationComposite(Composite main) {
-		configComposite = new Composite(main, SWT.NONE);
-
-		FormData cData = new FormData();
-		cData.left = new FormAttachment(0, 5);
-		cData.right = new FormAttachment(100, -5);
-		cData.top = new FormAttachment(jreComposite, 10);
-		cData.bottom = new FormAttachment(100, -5);
-		configComposite.setLayoutData(cData);
-
-		configComposite.setLayout(new FormLayout());
-
-		configLabel = new Label(configComposite, SWT.NONE);
-		configLabel.setText(Messages.wf_ConfigLabel);
-
-		configurations = new JBossConfigurationTableViewer(configComposite,
-				SWT.BORDER | SWT.SINGLE);
-
-		FormData labelData = new FormData();
-		labelData.left = new FormAttachment(0, 5);
-		configLabel.setLayoutData(labelData);
-
-		FormData viewerData = new FormData();
-		viewerData.left = new FormAttachment(0, 5);
-		viewerData.right = new FormAttachment(100, -5);
-		viewerData.top = new FormAttachment(configLabel, 5);
-		viewerData.bottom = new FormAttachment(100, -5);
-
-		configurations.getTable().setLayoutData(viewerData);
-
-		configurations.getTable().addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				updatePage(CONFIG_CHANGED);
-			}
-
-		});
-
-	}
-
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-
-		IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
-		IRuntimeWorkingCopy runtimeWC = r.createWorkingCopy();
-		runtimeWC.setName(name);
-		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM
-						.getVMInstallType().getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, configurations
-						.getSelectedConfiguration());
-
-		IRuntime saved = runtimeWC.save(false, new NullProgressMonitor());
+		exit();
+		IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		IRuntime saved = r.save(false, new NullProgressMonitor());
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
 	}
 
 	public boolean isComplete() {
-		String s = getErrorString(SEVERITY_ALL);
-		return s == null ? true : false;
+		return getErrorString() == null ? true : false;
 	}
 
 	public boolean hasComposite() {

@@ -52,7 +52,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.IServerStartupParameters;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
 /**
@@ -61,7 +61,7 @@ import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
  *
  */
 public class JBossServer extends ServerDelegate 
-		implements IServerStartupParameters, IDeployableServer, IURLProvider {
+		implements IJBossServerConstants, IDeployableServer, IURLProvider {
 
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName";
 	public static final String SERVER_PASSWORD = "org.jboss.ide.eclipse.as.core.server.password";
@@ -282,11 +282,32 @@ public class JBossServer extends ServerDelegate
 	}
 	
 	
+	// first class parameters
 	public String getUsername() {
-		return getAttributeHelper().getAttribute(SERVER_USERNAME, "");
+		return getAttribute(SERVER_USERNAME, "");
+	}
+	public void setUsername(String name) {
+		setAttribute(SERVER_USERNAME, name);
+	}
+
+	public String getPassword() {
+		return getAttribute(SERVER_PASSWORD, "");
+	}
+	public void setPassword(String pass) {
+		setAttribute(SERVER_PASSWORD, pass);
 	}
 	
-	public String getPassword() {
-		return getAttributeHelper().getAttribute(SERVER_PASSWORD, "");
+	public String getDeployFolder() {
+		return getAttribute(DEPLOY_DIRECTORY, "");
+	}
+	public void setDeployFolder(String folder) {
+		setAttribute(DEPLOY_DIRECTORY, folder);
+	}
+	
+	public String getTempDeployFolder() {
+		return getAttribute(TEMP_DEPLOY_DIRECTORY, "");
+	}
+	public void setTempDeployFolder(String folder) {
+		setAttribute(TEMP_DEPLOY_DIRECTORY, folder);
 	}
 }

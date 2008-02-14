@@ -33,6 +33,11 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
 
 /**
+ * The UnitedServerListenerManager keeps an array of
+ * UnitedServerListeners. The manager registers itself as 
+ * a listener for all server operations and passes
+ * all requests to every UnitedServerListener that's been
+ * added to the model.
  * 
  * @author Rob Stryker 
  *

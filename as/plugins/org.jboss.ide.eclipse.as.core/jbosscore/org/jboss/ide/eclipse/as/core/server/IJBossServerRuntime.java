@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.server;
 
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.wst.server.core.IRuntime;
 
 /**
  * 
@@ -33,7 +34,9 @@ public interface IJBossServerRuntime {
 	
 	public static String PROPERTY_CONFIGURATION_NAME = "org.jboss.ide.eclipse.as.core.runtime.configurationName";
 
+	public IRuntime getRuntime();
 	public IVMInstall getVM();
+	public void setVM(IVMInstall install);
 	public String getJBossConfiguration();
-	public String getId();
+	public void setJBossConfiguration(String config);
 }

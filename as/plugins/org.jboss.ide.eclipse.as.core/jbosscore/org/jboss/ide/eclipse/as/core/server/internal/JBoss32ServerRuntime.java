@@ -27,8 +27,4 @@ public class JBoss32ServerRuntime extends AbstractJBossServerRuntime {
 	public JBoss32ServerRuntime() {
 		// TODO Auto-generated constructor stub
 	}
-
-	public String getId() {
-		return "3.2";
-	}
 }

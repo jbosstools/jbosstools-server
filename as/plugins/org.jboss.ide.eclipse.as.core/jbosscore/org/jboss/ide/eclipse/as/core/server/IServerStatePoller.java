@@ -25,7 +25,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 
 /**
- * 
+ * A server state poller will 
  * @author Rob Stryker
  *
  */
@@ -40,9 +40,14 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
 	public boolean isComplete() throws PollingException;
 	public boolean getState() throws PollingException; 
-	public void cancel(int type);    // cancel the polling
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
 	
+	/**
+	 * Cancel the polling. 
+	 * @param type CANCEL or TIMEOUT_REACHED
+	 */
+	public void cancel(int type);    
+
 	public class PollingException extends Exception {
 		public PollingException(String message) {super(message);}
 	}
