@@ -282,12 +282,6 @@
 
             <para>Mentioned above Twiddle is a JMX library that comes with JBoss, and you can use it
                 to access any variables that exposed via the JBoss JMX interfaces.</para>
-
-            <section>
-                <title>Relevant Resources Links</title>
-                <para>Find more about XPath in the <ulink url="http://www.w3.org/TR/xpath20/">XPath
-                    Documentation</ulink>.</para>
-            </section>
         </section>
 
         <section>
@@ -310,7 +304,7 @@
                 </mediaobject>
             </figure>
 
-            <para>In order to access the view's preferences, you should access <emphasis>
+            <para>In order to access the view&apos;s preferences, you should access <emphasis>
                     <property>Window &gt; Preferences &gt; JBoss Tools &gt; JBoss
                         Servers &gt; View</property>
                 </emphasis>. This preference page allows you to select which view extensions you
@@ -407,8 +401,12 @@
                 what its current value is.</para>
 
             <para> By right-clicking on <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis>, you can create a new category. </para>
+                    <property>XML Configuration</property>,
+            </emphasis> you can create a new category. Besides, context menu for <emphasis>
+                <property>XML Configuration</property>
+            </emphasis> category makes possible to disable it. You can disable any category in the bottom part of the <emphasis>
+                <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                    <property>Inactive Categories</property></emphasis> afterwards to re-enable.</para>
 
             <figure>
                 <title>Adding New Category</title>
@@ -479,8 +477,10 @@
                 </mediaobject>
             </figure>
 
-            <para>Notice, when you type the fields autocomplete to help you locate exactly what
-                xpath you&apos;re looking for. </para>
+            <note>
+                <title>Tip:</title>
+                <para>Notice, when you type the fields autocomplete to help you locate exactly what
+                xpath you&apos;re looking for.</para></note>
 
             <para>Then, on the other hand, if your desired field is the text of an element
                     <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
@@ -513,8 +513,14 @@
                 </mediaobject>
             </figure>
 
+            <section>
+                <title>Relevant Resources Links</title>
+                <para>Find more about XPath in the <ulink url="http://www.w3.org/TR/xpath20/">XPath
+                    Documentation</ulink>.</para>
+            </section>
         </section>
         <para/>
+        
     </section>
 
     <section id="Project_archivesView">
@@ -587,8 +593,8 @@
                     <property>WAR</property> archive, the archive will be created with a few
                 filesets relevant to the known structure of the project.</para>
 
-            <para>Because the first page of all new archive wizards are the same, and it is also the
-                only page in the <property>New Jar Wizard</property>, that page is shown below.</para>
+            <para>Here is the first page of all New archive wizards. It is the same for any archive type and the
+                only page in the <property>New Jar Wizard</property>.</para>
             <figure>
                 <title>New JAR Wizard</title>
                 <mediaobject>
@@ -607,7 +613,7 @@
                 respective buttons. To select a destination inside some other archive, you'll need
                 to press the <emphasis>
                     <property>Workspace...</property>
-                </emphasis> button. At the bottom of the list, you'll see archives that have been
+                </emphasis> button. At the bottom of the list, you&apos;ll see archives that have been
                 declared in the workspace.</para>
             <section id="CreatingaFolder">
                 <title>Creating a Folder</title>
@@ -751,7 +757,13 @@
                 server, it might be easier to have the archive's destination folder be the deploy
                 folder of the server.</para>
         </section>
+        <section>
+            <title>Relevant Resources Links</title>
+            <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink> to find more on how to build your applications with help of Ant.</para>
+            </section>
 
     </section>
 
+    <!--para>Now you are guessed to be familiar with <emphasis>
+        <property>JBoss AS Perspective</property></emphasis>. </para-->
 </chapter>

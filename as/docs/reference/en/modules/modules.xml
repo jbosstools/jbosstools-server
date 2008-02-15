@@ -6,68 +6,74 @@
 	<para> First of all it is necessary to say that deploying to a server is mostly painless. There
 		are several ways to do it provided by WTP, and some additional methods provided by JBoss
 		Tools. These methods are described further in this chapter.</para>
-	
+
 	<section>
 		<title>Deploying on the Package Explorer</title>
-	<section>
-		<title>Deploying with Run On Server wizard</title>
-		<para> The first WTP method is to right-click on a project, such as a Dynamic Web project,
-			EJB project, or EAR project and then select <emphasis>
-				<property>Run As &gt; Run on Server</property>
-			</emphasis>. The resulting dialog allows you to select which supporting server the
-			project can be published to.</para>
-		<figure>
-			<title>Define a New Server</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/modules/modules_1.png"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<para>Click <emphasis>
-				<property>Next</property>
-			</emphasis> button to see add or remove projects page where you can choose projects to
-			configure them on server.</para>
-		<figure>
-			<title>Add or Remove Projects</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/modules/modules_2.png"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-		<para> For the JBoss AS Server Adapters, publishing using this method will force a default,
-			best-guess, packaging configuration for your project. This best-guess does not publish
-			incrementally, but instead repackages your entire project into a <emphasis>
-				<property>.war</property></emphasis>, <emphasis>
-					<property>.jar</property></emphasis>, or <emphasis>
-						<property>.ear</property></emphasis> as
-			appropriate, and then copies that file into the proper deploy directory. For quicker
-			smarter deployment, you will need to create archives using the <link
-				linkend="Project_archivesView">Project Archives view</link> and customize packaging
-			yourself.</para>
-	</section>
-		
+		<section id="run_on_server_wizard">
+			<title>Deploying with Run On Server Wizard</title>
+			<para> The first WTP method is to right-click on a project, such as a Dynamic Web
+				project, EJB project, or EAR project and then select <emphasis>
+					<property>Run As &gt; Run on Server</property>
+				</emphasis>. The resulting dialog allows you to select which supporting server the
+				project can be published to.</para>
+			<figure>
+				<title>Define a New Server</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/modules/modules_1.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para>Click <emphasis>
+					<property>Next</property>
+				</emphasis> button to see add or remove projects page where you can choose projects
+				to configure them on server.</para>
+			<figure>
+				<title>Add or Remove Projects</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/modules/modules_2.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
+			<para>This page of the wizard also allows to undeploy modules from the server. For that
+				choose proper module(s) from the right and click <emphasis>
+					<property> &lt; Remove</property>
+				</emphasis>. The modules will be completely undeployed after restarting your server or republishing.</para>
+			<para>Generally, for the JBoss AS Server Adapters, publishing using this method will force a
+				default, best-guess, packaging configuration for your project. This best-guess does
+				not publish incrementally, but instead repackages your entire project into a <emphasis>
+					<property>.war</property>
+				</emphasis>, <emphasis>
+					<property>.jar</property>
+				</emphasis>, or <emphasis>
+					<property>.ear</property>
+				</emphasis> as appropriate, and then copies that file into the proper deploy
+				directory. For quicker smarter deployment, you will need to create archives using
+				the <link linkend="Project_archivesView">Project Archives view</link> and customize
+				packaging yourself.</para>
+		</section>
+
 		<section id="single_file_deployment">
 			<?dbhtml filename="DeployToServer.html"?>
 			<title>Deploying single files</title>
-			<para>In the context menu of files there is a <property>Deploy To Server</property> option
-			that allows a single file deployment. To deploy these non-WTP files/projects right click
-			on the file (-ds.xml, .ear, .jar etc.) and select <emphasis>
-			<property>Deploy To server</property>
-			</emphasis> and it will be automatically deployed.</para>
+			<para>In the context menu of files there is a <property>Deploy To Server</property>
+				option that allows a single file deployment. To deploy these non-WTP files/projects
+				right click on the file (-ds.xml, .ear, .jar etc.) and select <emphasis>
+					<property>Deploy To server</property>
+				</emphasis> and it will be automatically deployed.</para>
 			<figure>
-			<title>Deploy to Sever</title>
-			<mediaobject>
-			<imageobject>
-			<imagedata fileref="images/perspective/perspective_16.png"/>
-			</imageobject>
-			</mediaobject>
+				<title>Deploy to Sever</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/perspective/perspective_16.png"/>
+					</imageobject>
+				</mediaobject>
 			</figure>
-			<para>The deployed files are listed side-by-side with other modules that are deployed to the
-			server.</para>
-			
-			</section>
+			<para>The deployed files are listed side-by-side with other modules that are deployed to
+				the server.</para>
+
+		</section>
 
 	</section>
 	<section>
@@ -79,8 +85,8 @@
 			we suggest two more ways to deploy resources onto the server.</para>
 		<section>
 			<title>Top part of JBoss Server View</title>
-			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers View you should
-				right click on a server and select the <emphasis>
+			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers
+				View you should right click on a server and select the <emphasis>
 					<property>Add and Remove Projects</property>
 				</emphasis> menu item. This will bring up a dialog allowing you to either publish
 				projects or modules to a server, or remove them from the server.</para>
@@ -120,20 +126,20 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
-			
+
 			<para>Here, <emphasis>
-				<property>Incremental Publish</property>
-			</emphasis> is meant to enable publishing of only those parts where changes have been made.</para>
+					<property>Incremental Publish</property>
+				</emphasis> is meant to enable publishing of only those parts where changes have
+				been made.</para>
 		</section>
 	</section>
 	<section>
 		<title>Deploying with Project Archives View</title>
-		<para>In the <property>Project Archives View</property> you can right-click on any declared archive and select
-			the <emphasis>
+		<para>In the <property>Project Archives View</property> you can right-click on any declared
+			archive and select the <emphasis>
 				<property>Publish To Server</property>
-			</emphasis> element. For more on this subject, see <link
-				linkend="PublishToServer">Publishing to Server</link> in the Project Archives
-			View section.</para>
+			</emphasis> element. For more on this subject, see <link linkend="PublishToServer"
+				>Publishing to Server</link> in the Project Archives View section.</para>
 		<figure>
 			<title>Publish to Server</title>
 			<mediaobject>

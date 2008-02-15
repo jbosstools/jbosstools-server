@@ -8,7 +8,7 @@
 		type of project.</para>
 
 	<section>
-		<title>Description</title>
+		<title>Faceted Projects Overview</title>
 		<para>The idea behind faceted projects is that each project can accept units of
 			functionality, or facets, which can be added or removed by the user. Most often, these
 			facets either add to the project's classpath, enable a builder, or watch the project in
@@ -42,6 +42,19 @@
 			give opportunity to modify it by clicking on <emphasis>
 				<property>Modify Project...</property>
 			</emphasis> button.</para>
+
+
+		<figure>
+			<title>Adding Facets to the Existing Project</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/webtools/webtools_0.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+
+
 
 		<para>The other way is adding necessary facets while organizing a new project. To
 			demonstrate it let&apos;s create a new <property>Dynamic Web Project</property>
@@ -87,6 +100,6 @@
 			described above. Some facets may require others, and some may conflict with others, but
 			on the whole this page allows you to add any number of facets that don't conflict with
 			each other. </para>
-		<para> Further pages are specific to either the project type, or the facets selected.</para>
+		<para> Further pages in the wizard are specific to either the project type, or the facets selected.</para>
 	</section>
 </chapter>

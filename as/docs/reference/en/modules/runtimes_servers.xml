@@ -170,7 +170,7 @@
     <para>WTP servers are eclipse-representations of a backing server installation. They are used to
       start or stop servers, deploy to servers, or debug code that will run on the server. They keep
       track of the modules (jars, wars, etc) you deploy to the server and also allow you to undeploy
-      those modules. </para>
+      those modules (see <link linkend="run_on_server_wizard">Deploying with Run On Server Wizard</link> section). </para>
     <para>Servers can be started or stopped with different command-line arguments. They are often
       backed by a runtime object representing that server's location.</para>
     <section>
@@ -226,6 +226,8 @@
         </mediaobject>
       </figure>
 
+      <para>Press <emphasis>
+        <property>Finish</property></emphasis> to complete the process of the server creation.</para>
       <para>Now that we&apos;ve created our runtimes and servers, we can dwell on all services and tools
         that JBoss Server Manager provides.</para>
     </section>
