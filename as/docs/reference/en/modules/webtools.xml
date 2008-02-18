@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="webtools">
 	<title>Projects</title>
-	<para>The most popular of the projects we deal with are the J2EE projects, such as
-			Dynamic Web Project, EJB Project, or EAR project. Web projects of
-		JBoss Tools are Struts, JSF and Seam projects. Thus, in this chapter we are going to tell you
-		about facets the main benefit of which to provide proper structuring and packaging for any
-		type of project.</para>
+	<para>The most popular of the projects we deal with are the J2EE ones, such as Dynamic Web
+		Project, EJB Project, or EAR project. Web projects of JBoss Tools are Struts, JSF and Seam
+		projects. All of them are called faceted projects. Thus, in this chapter we are going to
+		tell you about facets the main benefit of which to provide proper structuring and packaging
+		for any type of project.</para>
 
 	<section>
 		<title>Faceted Projects Overview</title>
@@ -22,10 +22,11 @@
 			another. For example, an EAR project may have a Web Project child, an EJB project child,
 			or other types.</para>
 
-		<para> However, the benefit of this is that the structure of your projects is then known, and
-			packaging it up *should* be trivial. Apparently, if your project is non-standard, or you
-			feel too confined by such rigid structural requirements, you can still choose to package
-			your project <link linkend="Project_archivesView">using the Archives plugin</link>.</para>
+		<para> However, the benefit of this is that the structure of your projects is then known,
+			and packaging it up *should* be trivial. Apparently, if your project is non-standard, or
+			you feel too confined by such rigid structural requirements, you can still choose to
+			package your project using the <link linkend="Project_archivesView">Archives
+			plugin</link>.</para>
 	</section>
 
 
@@ -35,14 +36,13 @@
 		<para>There are two ways to add facets to a project. The first way is to include facets into
 			already existing project. For that you should bring up the context menu for selected
 			project and click <emphasis>
-				<property>Properties</property>
-			</emphasis>. At this point, choose <emphasis>
+				<property>Properties</property>.
+			</emphasis> At this point, choose <emphasis>
 				<property>Project Facets</property>
 			</emphasis> from the left. It will represent a list of the facets for your project and
 			give opportunity to modify it by clicking on <emphasis>
 				<property>Modify Project...</property>
 			</emphasis> button.</para>
-
 
 		<figure>
 			<title>Adding Facets to the Existing Project</title>
@@ -53,15 +53,12 @@
 			</mediaobject>
 		</figure>
 
-
-
-
-		<para>The other way is adding necessary facets while organizing a new project. To
+		<para> The other way is adding necessary facets while organizing a new project. To
 			demonstrate it let&apos;s create a new <property>Dynamic Web Project</property>
 			selecting as usual <emphasis>
 				<property>File &gt; New &gt; Other...</property>
 			</emphasis> and then <emphasis>
-				<property>Web &gt; Dynamic Web Project.</property>
+				<property>Web &gt; Dynamic Web Project</property>.
 			</emphasis></para>
 		<figure>
 			<title>New Dynamic Web Project</title>
@@ -98,8 +95,35 @@
 		</figure>
 		<para> The second page of the wizard allows you to enable or disable specific facets, as
 			described above. Some facets may require others, and some may conflict with others, but
-			on the whole this page allows you to add any number of facets that don't conflict with
-			each other. </para>
-		<para> Further pages in the wizard are specific to either the project type, or the facets selected.</para>
+			on the whole this page allows you to add any number of facets that don&apos;t
+			conflict with each other. It means that the list doesn&apos;t show those facets that
+			couldn&apos;t be in the same project. To view the information on limitations and
+			requirements for the chosen facet right-click on the facet and press <emphasis>
+				<property>Show Constraints</property>.</emphasis></para>
+
+		<figure>
+			<title>Facet Constraints</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/webtools/webtools_4.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+
+		<para>Notice that here it is also possible to change the version of any facet. If
+			the chosen version isn&apos;t compatible with any other facet version, you&apos;ll be prompted
+			about this in the combo box underneath.</para>
+		
+		<figure>
+			<title>Facet Constraints</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/webtools/webtools_5.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<para> Further pages in the wizard are specific to either the project type, or the facets
+			selected.</para>
+
 	</section>
 </chapter>
