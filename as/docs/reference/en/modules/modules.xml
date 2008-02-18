@@ -9,6 +9,9 @@
 
 	<section>
 		<title>Deploying on the Package Explorer</title>
+
+		<para>On the package explorer it is possible to publish either a project to a server
+			or just a signal file. Let&apos;s look at how to do this.</para>
 		<section id="run_on_server_wizard">
 			<title>Deploying with Run On Server Wizard</title>
 			<para> The first WTP method is to right-click on a project, such as a Dynamic Web
@@ -28,7 +31,7 @@
 					<property>Next</property>
 				</emphasis> button to see add or remove projects page where you can choose projects
 				to configure them on server.</para>
-			<figure>
+			<figure id="add_rem_proj">
 				<title>Add or Remove Projects</title>
 				<mediaobject>
 					<imageobject>
@@ -39,10 +42,12 @@
 			<para>This page of the wizard also allows to undeploy modules from the server. For that
 				choose proper module(s) from the right and click <emphasis>
 					<property> &lt; Remove</property>
-				</emphasis>. The modules will be completely undeployed after restarting your server or republishing.</para>
-			<para>Generally, for the JBoss AS Server Adapters, publishing using this method will force a
-				default, best-guess, packaging configuration for your project. This best-guess does
-				not publish incrementally, but instead repackages your entire project into a <emphasis>
+				</emphasis>. The modules will be completely undeployed after restarting your server
+				or republishing.</para>
+			<para>Generally, for the JBoss AS Server Adapters, publishing using this method will
+				force a default, best-guess, packaging configuration for your project. This
+				best-guess does not publish incrementally, but instead repackages your entire
+				project into a <emphasis>
 					<property>.war</property>
 				</emphasis>, <emphasis>
 					<property>.jar</property>
@@ -88,8 +93,7 @@
 			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers
 				View you should right click on a server and select the <emphasis>
 					<property>Add and Remove Projects</property>
-				</emphasis> menu item. This will bring up a dialog allowing you to either publish
-				projects or modules to a server, or remove them from the server.</para>
+				</emphasis> menu item.</para>
 			<figure>
 				<title>Add and Remove Projects</title>
 				<mediaobject>
@@ -99,8 +103,10 @@
 				</mediaobject>
 			</figure>
 
-			<para> If the selected module is a project like a Dynamic Web project, EJB project, or
-				EAR project, it will be published as through <emphasis>
+			<para>This will bring up a <link linkend="add_rem_proj">familiar dialog</link> allowing
+				you to either publish projects or modules to a server, or remove them from the
+				server. If the selected module is a project like a Dynamic Web project, EJB project,
+				or EAR project, it will be published as through <emphasis>
 					<property>Run on Server</property>
 				</emphasis> wizard, with a best-guess full package. If, however, the selected
 				element is an archive from the <link linkend="Project_archivesView">Project Archives
