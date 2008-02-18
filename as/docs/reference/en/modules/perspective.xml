@@ -763,7 +763,7 @@
             </section>
 
     </section>
-
-    <!--para>Now you are guessed to be familiar with <emphasis>
-        <property>JBoss AS Perspective</property></emphasis>. </para-->
+    <literallayout>  </literallayout>
+    <para>So far you are guessed to be familiar with <emphasis>
+        <property>JBoss AS Perspective</property></emphasis> and your next step now is to explore how to work with different kinds of projects.</para>
 </chapter>
