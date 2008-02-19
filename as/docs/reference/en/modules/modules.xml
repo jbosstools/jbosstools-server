@@ -10,8 +10,8 @@
 	<section>
 		<title>Deploying on the Package Explorer</title>
 
-		<para>On the package explorer it is possible to publish either a project to a server
-			or just a signal file. Let&apos;s look at how to do this.</para>
+		<para>On the package explorer it is possible to publish either a project to a server or just
+			a signal file. Let&apos;s look at how to do this.</para>
 		<section id="run_on_server_wizard">
 			<title>Deploying with Run On Server Wizard</title>
 			<para> The first WTP method is to right-click on a project, such as a Dynamic Web
@@ -83,9 +83,8 @@
 	</section>
 	<section>
 		<title>Deploying with JBoss Server View</title>
-		<para>As it has been already mentioned <emphasis>
-				<property>JBoss Server View</property>
-			</emphasis> contains two parts: the top part that displays all defined servers and the
+		<para>As it has been already mentioned 
+				<property>JBoss Server View</property> contains two parts: the top part that displays all defined servers and the
 			bottom part which provides categories with additional information. Thus, in this section
 			we suggest two more ways to deploy resources onto the server.</para>
 		<section>
@@ -157,16 +156,22 @@
 		<para> The only way to ensure an <emphasis>
 				<property>Incremental Build</property>
 			</emphasis>, such as changes to one <emphasis>
-				<property>.jsp</property>
-			</emphasis>, <emphasis>
-				<property>.html</property>
-			</emphasis>, or <emphasis>
+				<property>.jsp</property>,
+			</emphasis> <emphasis>
+				<property>.html</property>,
+			</emphasis> or <emphasis>
 				<property>.class</property>
 			</emphasis> file, is to enable the builder for that project. This is done by either
 			changing the global preferences for the <property>Archives View</property>, or by
 			enabling project-specific preferences and ensuring the builder is on.</para>
 	</section>
 
+	<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a server.</para>
+	<literallayout> </literallayout>
 
-
+	<para>In summary, this reference supplies you with all necessary information on the
+		functionality that 
+			<property>JBoss Server Manager</property>
+		 provides for work with <ulink url="http://www.jboss.org/products/jbossas">JBoss
+			AS</ulink>.</para>
 </chapter>
