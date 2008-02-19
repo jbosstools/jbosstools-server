@@ -106,7 +106,7 @@
 
                             <entry align="center">
                                 <para>The status which allows you to see if changes are
-                                awaiting.</para>
+                                awaiting</para>
                             </entry>
                         </row>
                         <row>
@@ -115,7 +115,7 @@
                             </entry>
 
                             <entry align="center">
-                                <para>The status which shows if changes are being updated.</para>
+                                <para>The status which shows if changes are being updated</para>
                             </entry>
                         </row>
                         <row>
@@ -125,7 +125,7 @@
 
                             <entry align="center">
                                 <para>The status which allows you to see if changes are
-                                in-sync.</para>
+                                in-sync</para>
                             </entry>
                         </row>
                     </tbody>
@@ -627,7 +627,10 @@
                     archive, a nested archive, or a folder within an archive, and select <emphasis>
                         <property>New Fileset</property>
                     </emphasis>.</para>
-
+                <para>The <property>New Fileset Wizard</property> requires a destination (where the
+                    files will go), and a root directory (or where the files are coming from). The
+                    source can be anywhere in the workspace or from the filesystem at large.</para>
+                
                 <figure>
                     <title>Adding a New FileSet</title>
                     <mediaobject>
@@ -636,10 +639,7 @@
                         </imageobject>
                     </mediaobject>
                 </figure>
-
-                <para>The <property>New Fileset Wizard</property> requires a destination (where the
-                    files will go), and a root directory (or where the files are coming from). The
-                    source can be anywhere in the workspace or from the filesystem at large.</para>
+                
                 <para>Below that, the fileset requires only an includes pattern and an excludes
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
@@ -764,6 +764,5 @@
 
     </section>
     <literallayout>  </literallayout>
-    <para>So far you are guessed to be familiar with <emphasis>
-        <property>JBoss AS Perspective</property></emphasis> and your next step now is to explore how to work with different kinds of projects.</para>
+    <para>At this point, you are guessed to be familiar with <property>JBoss AS Perspective</property> and your next step now is to explore how to work with different kinds of projects.</para>
 </chapter>
