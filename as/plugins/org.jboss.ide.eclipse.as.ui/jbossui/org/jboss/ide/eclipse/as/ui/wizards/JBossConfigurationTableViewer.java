@@ -43,156 +43,141 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 /**
  * @author Marshall
  */
-public class JBossConfigurationTableViewer extends TableViewer
-{
-	//private String jbossHome;
+public class JBossConfigurationTableViewer extends TableViewer {
+	// private String jbossHome;
 	private String selectedConfiguration;
 	private WizardFragment fragment;
-	
-	public JBossConfigurationTableViewer (Composite parent)
-	{
-		super (parent);
+
+	public JBossConfigurationTableViewer(Composite parent) {
+		super(parent);
 		init();
 	}
-	
-	public JBossConfigurationTableViewer (Composite parent, int style)
-	{
-		super (parent, style);
+
+	public JBossConfigurationTableViewer(Composite parent, int style) {
+		super(parent, style);
 		init();
 	}
-	
-	public JBossConfigurationTableViewer (Table table)
-	{
-		super (table);
+
+	public JBossConfigurationTableViewer(Table table) {
+		super(table);
 		init();
 	}
-	
-	public void setJBossHome (String jbossHome)
-	{
-		//this.jbossHome = jbossHome;
+
+	public void setJBossHome(String jbossHome) {
+		// this.jbossHome = jbossHome;
 		setInput(jbossHome);
 	}
-	
-	public String getSelectedConfiguration ()
-	{
+
+	public String getSelectedConfiguration() {
 		return selectedConfiguration;
 	}
-	
-	public void setDefaultConfiguration (String defaultConfiguration)
-	{
+
+	public void setConfiguration(String defaultConfiguration) {
 		int item = -1;
 		TableItem items[] = getTable().getItems();
-		for (int i = 0; i < items.length; i++)
-		{
-			if (items[i] != null && items[i].getText() != null && items[i].getText().equals(defaultConfiguration))
-			{
+		for (int i = 0; i < items.length; i++) {
+			if (items[i] != null && items[i].getText() != null
+					&& items[i].getText().equals(defaultConfiguration)) {
 				item = i;
 				break;
 			}
 		}
-		
+
 		if (item != -1) {
 			getTable().setSelection(item);
 		}
-		
+
 		selectedConfiguration = defaultConfiguration;
 	}
-	
-	private void init ()
-	{
+
+	private void init() {
 		ConfigurationProvider provider = new ConfigurationProvider();
 		setContentProvider(provider);
 		setLabelProvider(provider);
-		getControl().setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		getControl().setEnabled(false);
-		addSelectionChangedListener(new ISelectionChangedListener()
-		{
-			public void selectionChanged(SelectionChangedEvent event)
-			{
+		getControl().setLayoutData(
+				new GridData(GridData.FILL, GridData.FILL, true, true));
+		addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
 				configurationSelected();
 			}
 		});
 	}
-	
-	protected String getCurrentlySelectedConfiguration ()
-	{
-		if (getSelection() instanceof IStructuredSelection)
-		{
+
+	protected String getCurrentlySelectedConfiguration() {
+		if (getSelection() instanceof IStructuredSelection) {
 			IStructuredSelection selection = (IStructuredSelection) getSelection();
-			return (String) selection.getFirstElement();	
+			return (String) selection.getFirstElement();
 		}
-		
+
 		return null;
 	}
-	
-	protected void configurationSelected ()
-	{
+
+	protected void configurationSelected() {
 		selectedConfiguration = getCurrentlySelectedConfiguration();
-		
-		if (fragment != null)
-		{
+
+		if (fragment != null) {
 			fragment.updateChildFragments();
 		}
 	}
-	
-	protected class ConfigurationProvider implements IStructuredContentProvider, ILabelProvider
-	{
+
+	protected class ConfigurationProvider implements
+			IStructuredContentProvider, ILabelProvider {
 		public void dispose() {
 			// ignore
 		}
+
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			// ignore
 		}
-		
-		public Object[] getElements(Object inputElement)
-		{
-			ArrayList configList = new ArrayList();
-			File serverDirectory = new File(inputElement.toString() + File.separator + "server");
-			
-			if (serverDirectory.exists())
-			{
-				
+
+		public Object[] getElements(Object inputElement) {
+			ArrayList<String> configList = new ArrayList<String>();
+			File serverDirectory = new File(inputElement.toString()
+					+ File.separator + "server");
+
+			if (serverDirectory.exists()) {
+
 				File types[] = serverDirectory.listFiles();
-				for (int i = 0; i < types.length; i++)
-				{
-					File serviceDescriptor = new File(
-						types[i].getAbsolutePath() + File.separator +
-						"conf" + File.separator + "jboss-service.xml");
-					
-					if (types[i].isDirectory() && serviceDescriptor.exists())
-					{
+				for (int i = 0; i < types.length; i++) {
+					File serviceDescriptor = new File(types[i]
+							.getAbsolutePath()
+							+ File.separator
+							+ "conf"
+							+ File.separator
+							+ "jboss-service.xml");
+
+					if (types[i].isDirectory() && serviceDescriptor.exists()) {
 						String configuration = types[i].getName();
-						
-						// Can't shutdown the minimal configuration -- hopefully we can find something a little less crude in the future.
-						//if (!configuration.equals("minimal"))
-							configList.add(configuration);
+						configList.add(configuration);
 					}
 				}
-				
-				if (configList.size() > 0)
-				{
+
+				if (configList.size() > 0) {
 					getControl().setEnabled(true);
 				}
 			}
-			
+
 			return configList.toArray();
 		}
-		
+
 		public void addListener(ILabelProviderListener listener) {
 			// ignore
 		}
-		public boolean isLabelProperty(Object element, String property) { return false; }
+
+		public boolean isLabelProperty(Object element, String property) {
+			return false;
+		}
+
 		public void removeListener(ILabelProviderListener listener) {
 			// ignore
 		}
-		
-		public Image getImage(Object element)
-		{
-			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.IMG_JBOSS_CONFIGURATION);
+
+		public Image getImage(Object element) {
+			return JBossServerUISharedImages
+					.getImage(JBossServerUISharedImages.IMG_JBOSS_CONFIGURATION);
 		}
-		
-		public String getText(Object element)
-		{
+
+		public String getText(Object element) {
 			return (String) element;
 		}
 	}

@@ -63,7 +63,6 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -136,7 +135,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			homeDirText.setText(rt.getRuntime().getLocation().toOSString());
 			homeDir = rt.getRuntime().getLocation().toOSString();
 			config = rt.getJBossConfiguration();
-			configurations.setDefaultConfiguration(config);
+			configurations.setConfiguration(config);
 			configLabel.setText(Messages.wf_ConfigLabel + ":  " + config);
 
 			IVMInstall install = rt.getVM();
@@ -383,9 +382,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.getControl().setEnabled(false);
 			configurations.setJBossHome(homeDirText.getText());
 		} else {
+			configurations.getControl().setEnabled(true);
 			configurations.setJBossHome(homeDirText.getText());
-			configurations
-					.setDefaultConfiguration(IJBossServerConstants.DEFAULT_SERVER_NAME);
+			if( !homeDirText.getText().equals(configurations.getInput())) 
+				configurations.setConfiguration(IJBossServerConstants.DEFAULT_SERVER_NAME);
 		}
 
 		int sel = jreCombo.getSelectionIndex();
