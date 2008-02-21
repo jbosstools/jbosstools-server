@@ -22,9 +22,13 @@
 package org.jboss.ide.eclipse.as.ui.actions;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -37,7 +41,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.MessageBox;
@@ -47,13 +50,12 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
-import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 /**
  * 
@@ -71,25 +73,51 @@ public class DeployAction implements IObjectActionDelegate {
 
 	public void run(IAction action) {
 		IServer server = getServer();
+		IStatus errorStatus = null;
+		String errorTitle, errorMessage;
+		errorTitle = errorMessage = null;
+
 		if( selection instanceof IStructuredSelection ) {
-			Object element = ((IStructuredSelection)selection).getFirstElement();
+			IStructuredSelection sel2 = (IStructuredSelection)selection;
+			Object[] objs = sel2.toArray();
 			if( server == null ) {
-				MessageBox messageBox = new MessageBox (new Shell(), SWT.OK );
-				messageBox.setText ("Cannot Publish To Server");
-				messageBox.setMessage ("No deployable servers located.");
-				messageBox.open();
-			} else if( element != null && element instanceof IFile ) {
-				IFile tmp = (IFile)element;
-				SingleDeployableFactory factory = SingleDeployableFactory.getFactory();
-				factory.makeDeployable(tmp.getFullPath());
-				IModule module = factory.findModule(tmp.getFullPath());
-				DeployableServerBehavior behavior = (DeployableServerBehavior)
-					server.loadAdapter(DeployableServerBehavior.class, new NullProgressMonitor());
-				if( module != null && behavior != null ) {
-					behavior.publishOneModule(new IModule[]{module}, IServer.PUBLISH_FULL, ServerBehaviourDelegate.CHANGED, false, new NullProgressMonitor());
+				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "No deployable servers located");
+				errorTitle = "Cannot Publish To Server";
+				errorMessage = "No deployable servers located";
+			} else if( objs == null || !allFiles(objs) ) {
+				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "One or more selected objects are not Files");
+				errorTitle = "Cannot Publish To Server";
+				errorMessage = "Only File resources may be published.\nOne or more selected objects are not Files.";
+			} else {
+				IModule[] modules = new IModule[objs.length];
+				for( int i = 0; i < objs.length; i++ ) {
+					SingleDeployableFactory.makeDeployable(((IFile)objs[i]).getFullPath());
+					modules[i] = SingleDeployableFactory.findModule(((IFile)objs[i]).getFullPath());
+				}
+				try {
+					IServerWorkingCopy copy = server.createWorkingCopy();
+					copy.modifyModules(modules, new IModule[0], new NullProgressMonitor());
+					IServer saved = copy.save(false, new NullProgressMonitor());
+					PublishServerJob job = new PublishServerJob(saved);
+					job.schedule();
+				} catch( CoreException ce ) {
+					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Publishing files to server failed", ce);
+					errorTitle = "Cannot Publish to Server";
+					errorMessage = "Publishing files to server failed";
 				}
 			}
 		}
+		if( errorStatus != null ) {
+			ErrorDialog dialog = new ErrorDialog(new Shell(), errorTitle, errorMessage, errorStatus, 0xFFFF);
+			dialog.open();
+		}
+	}
+	
+	protected boolean allFiles(Object[] objs) {
+		for( int i = 0; i < objs.length; i++ ) 
+			if( !(objs[i] instanceof IFile) )
+				return false;
+		return true;
 	}
 
 	
