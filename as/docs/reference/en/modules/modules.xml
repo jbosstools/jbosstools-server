@@ -35,7 +35,7 @@
 				<title>Add or Remove Projects</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/modules/modules_2.png"/>
+						<imagedata fileref="images/modules/modules_2a.png"/>
 					</imageobject>
 				</mediaobject>
 			</figure>
@@ -62,31 +62,45 @@
 		<section id="single_file_deployment">
 			<?dbhtml filename="DeployToServer.html"?>
 			<title>Deploying single files</title>
-			<para>In the context menu of files there is a <property>Deploy To Server</property>
-				option that allows a single file deployment. To deploy these non-WTP files/projects
-				right click on the file (-ds.xml, .ear, .jar etc.) and select <emphasis>
-					<property>Deploy To server</property>
+
+			<para>Sometimes it becomes necessary to deploy only one or two files to a server. For
+				that in order not to do a full republish in the context menu of files a <emphasis><property>Deploy To Server</property></emphasis>
+				option is provided that allows a single file deployment. To deploy these non-WTP files/projects
+				right click on the file (<emphasis>
+					<property>-ds.xml</property></emphasis>, <emphasis>
+						<property>.ear</property></emphasis>, <emphasis>
+							<property>.jar</property></emphasis> etc.) and select <emphasis>
+					<property>Deploy To Server</property>
 				</emphasis> and it will be automatically deployed.</para>
 			<figure>
 				<title>Deploy to Sever</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/perspective/perspective_16.png"/>
+						<imagedata fileref="images/modules/modules_2b.png"/>
 					</imageobject>
 				</mediaobject>
 			</figure>
 			<para>The deployed files are listed side-by-side with other modules that are deployed to
-				the server.</para>
+			the server.</para>
+			
+			<figure>
+				<title>Deployed files on the Server</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/modules/modules_2c.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
 
 		</section>
 
 	</section>
 	<section>
 		<title>Deploying with JBoss Server View</title>
-		<para>As it has been already mentioned 
-				<property>JBoss Server View</property> contains two parts: the top part that displays all defined servers and the
-			bottom part which provides categories with additional information. Thus, in this section
-			we suggest two more ways to deploy resources onto the server.</para>
+		<para>As it has been already mentioned <property>JBoss Server View</property> contains two
+			parts: the top part that displays all defined servers and the bottom part which provides
+			categories with additional information. Thus, in this section we suggest two more ways
+			to deploy resources onto the server.</para>
 		<section>
 			<title>Top part of JBoss Server View</title>
 			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers
@@ -156,22 +170,20 @@
 		<para> The only way to ensure an <emphasis>
 				<property>Incremental Build</property>
 			</emphasis>, such as changes to one <emphasis>
-				<property>.jsp</property>,
-			</emphasis> <emphasis>
-				<property>.html</property>,
-			</emphasis> or <emphasis>
+				<property>.jsp</property>, </emphasis>
+			<emphasis>
+				<property>.html</property>, </emphasis> or <emphasis>
 				<property>.class</property>
 			</emphasis> file, is to enable the builder for that project. This is done by either
 			changing the global preferences for the <property>Archives View</property>, or by
 			enabling project-specific preferences and ensuring the builder is on.</para>
 	</section>
 
-	<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a server.</para>
+	<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
+		server.</para>
 	<literallayout> </literallayout>
 
 	<para>In summary, this reference supplies you with all necessary information on the
-		functionality that 
-			<property>JBoss Server Manager</property>
-		 provides for work with <ulink url="http://www.jboss.org/products/jbossas">JBoss
-			AS</ulink>.</para>
+		functionality that <property>JBoss Server Manager</property> provides for work with <ulink
+			url="http://www.jboss.org/products/jbossas">JBoss AS</ulink>.</para>
 </chapter>
