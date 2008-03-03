@@ -133,14 +133,10 @@
             </table>
 
             <para>By double-clicking on any server, an editor window will appear allowing you to
-                edit parts of that server. The editor will also link you to modify that server's
-                launch configuration, set command line arguments, and other things that are relevant
-                to launching the server.</para>
-
-            <para>On the figure you can see that a username/password is available in the UI when
-                configuring the server. If you get an SecurityException when trying to launch the
-                server, it is most likely because your server is protected and hence you need to
-                fill the username/password fields with appropriate values.</para>
+                edit parts of that server. On the figure you can see that a username/password is
+                available in the UI when configuring the server. If you get an SecurityException
+                when trying to launch the server, it is most likely because your server is protected
+                and hence you need to fill the username/password fields with appropriate values.</para>
 
             <figure>
                 <title>Preferences Page for the Chosen Server</title>
@@ -151,8 +147,29 @@
                 </mediaobject>
             </figure>
 
-            <para>As the JBoss servers have few properties to edit here, a shortcut to the launch
-                configuration has been provided in the context menu when right-clicking on a server.</para>
+            <para>The editor will also allow you to modify that server&apos;s launch
+                configuration. It&apos;s just after clicking <emphasis>
+                    <property>Open launch configuration</property>
+                </emphasis> link. In the open window there are the tabs for setting command line
+                arguments and other things that are relevant to launching the server.</para>
+
+            <figure id="com_line_arg">
+                <title>Launch Configuration Properties</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_20_b.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>Look up <ulink
+                    url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"
+                    >here</ulink> to find parameters which can be specified for <property>JBoss
+                    Server</property>.</para>
+
+            <para>As the JBoss Servers have few properties to modify in this editor, a shortcut to
+                the launch configuration has been provided in the context menu when right-clicking
+                on a server.</para>
 
             <figure>
                 <title>Launch Configuration</title>
@@ -401,12 +418,14 @@
                 what its current value is.</para>
 
             <para> By right-clicking on <emphasis>
-                    <property>XML Configuration</property>,
-            </emphasis> you can create a new category. Besides, context menu for <emphasis>
-                <property>XML Configuration</property>
-            </emphasis> category makes possible to disable it. You can disable any category in the bottom part of the <emphasis>
-                <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
-                    <property>Inactive Categories</property></emphasis> afterwards to re-enable.</para>
+                    <property>XML Configuration</property>, </emphasis> you can create a new
+                category. Besides, context menu for <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis> category makes possible to disable it. You can disable any category in
+                the bottom part of the <emphasis>
+                    <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                    <property>Inactive Categories</property>
+                </emphasis> afterwards to re-enable.</para>
 
             <figure>
                 <title>Adding New Category</title>
@@ -480,7 +499,8 @@
             <note>
                 <title>Tip:</title>
                 <para>Notice, when you type the fields autocomplete to help you locate exactly what
-                xpath you&apos;re looking for.</para></note>
+                    xpath you&apos;re looking for.</para>
+            </note>
 
             <para>Then, on the other hand, if your desired field is the text of an element
                     <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
@@ -516,11 +536,11 @@
             <section>
                 <title>Relevant Resources Links</title>
                 <para>Find more about XPath in the <ulink url="http://www.w3.org/TR/xpath20/">XPath
-                    Documentation</ulink>.</para>
+                        Documentation</ulink>.</para>
             </section>
         </section>
         <para/>
-        
+
     </section>
 
     <section id="Project_archivesView">
@@ -593,8 +613,8 @@
                     <property>WAR</property> archive, the archive will be created with a few
                 filesets relevant to the known structure of the project.</para>
 
-            <para>Here is the first page of all New archive wizards. It is the same for any archive type and the
-                only page in the <property>New Jar Wizard</property>.</para>
+            <para>Here is the first page of all New archive wizards. It is the same for any archive
+                type and the only page in the <property>New Jar Wizard</property>.</para>
             <figure>
                 <title>New JAR Wizard</title>
                 <mediaobject>
@@ -613,8 +633,8 @@
                 respective buttons. To select a destination inside some other archive, you'll need
                 to press the <emphasis>
                     <property>Workspace...</property>
-                </emphasis> button. At the bottom of the list, you&apos;ll see archives that have been
-                declared in the workspace.</para>
+                </emphasis> button. At the bottom of the list, you&apos;ll see archives that
+                have been declared in the workspace.</para>
             <section id="CreatingaFolder">
                 <title>Creating a Folder</title>
                 <para>Creating a folder is much easier. You simply right-click on an archive or
@@ -630,7 +650,7 @@
                 <para>The <property>New Fileset Wizard</property> requires a destination (where the
                     files will go), and a root directory (or where the files are coming from). The
                     source can be anywhere in the workspace or from the filesystem at large.</para>
-                
+
                 <figure>
                     <title>Adding a New FileSet</title>
                     <mediaobject>
@@ -639,7 +659,7 @@
                         </imageobject>
                     </mediaobject>
                 </figure>
-                
+
                 <para>Below that, the fileset requires only an includes pattern and an excludes
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
@@ -759,10 +779,13 @@
         </section>
         <section>
             <title>Relevant Resources Links</title>
-            <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink> to find more on how to build your applications with help of Ant.</para>
-            </section>
+            <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink>
+                to find more on how to build your applications with help of Ant.</para>
+        </section>
 
     </section>
     <literallayout>  </literallayout>
-    <para>At this point, you are guessed to be familiar with <property>JBoss AS Perspective</property> and your next step now is to explore how to work with different kinds of projects.</para>
+    <para>At this point, you are guessed to be familiar with <property>JBoss AS
+        Perspective</property> and your next step now is to explore how to work with different kinds
+        of projects.</para>
 </chapter>

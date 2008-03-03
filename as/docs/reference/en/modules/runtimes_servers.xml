@@ -171,7 +171,7 @@
       start or stop servers, deploy to servers, or debug code that will run on the server. They keep
       track of the modules (jars, wars, etc) you deploy to the server and also allow you to undeploy
       those modules (see <link linkend="run_on_server_wizard">Deploying with Run On Server Wizard</link> section). </para>
-    <para>Servers can be started or stopped with different command-line arguments. They are often
+    <para>Servers can be started or stopped with different <link linkend="com_line_arg">command-line arguments</link>. They are often
       backed by a runtime object representing that server's location.</para>
     <section>
       <title>Creating a New Server</title>
