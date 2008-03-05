@@ -181,8 +181,7 @@
 
 	<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
 		server.</para>
-	<literallayout> </literallayout>
-
+	
 	<para>In summary, this reference supplies you with all necessary information on the
 		functionality that <property>JBoss Server Manager</property> provides for work with <ulink
 			url="http://www.jboss.org/products/jbossas">JBoss AS</ulink>.</para>
