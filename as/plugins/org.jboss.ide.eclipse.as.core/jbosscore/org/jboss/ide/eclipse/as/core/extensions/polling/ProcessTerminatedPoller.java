@@ -21,11 +21,15 @@
  */
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
+import java.util.List;
+import java.util.Properties;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  * Essentially does nothing because the process already has a listener
@@ -40,6 +44,7 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller";
 	
+	private ServerStatePollerType type;
 	private JBossServerBehavior server;
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {
@@ -59,5 +64,21 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	public boolean isComplete() throws PollingException {
 		return server.getProcess() == null || server.getProcess().isTerminated();
 	}
+
+	public void failureHandled(Properties properties) {
+	}
+
+	public List getRequiredProperties() {
+		return null;
+	}
+	
+	public ServerStatePollerType getPollerType() {
+		return type;
+	}
+
+	public void setPollerType(ServerStatePollerType type) {
+		this.type = type;
+	}
+
 
 }

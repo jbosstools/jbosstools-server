@@ -4,7 +4,7 @@
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
-* This is free software; you can redistribute it and/or modify it
+ * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
@@ -27,35 +27,33 @@ import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.Properties;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * Utility class
+ * 
  * @author Rob Stryker rob.stryker@redhat.com
- *
+ * 
  */
 public class JMXUtil {
-	
 
 	/**
 	 * In the current thread, set the credentials from some server
+	 * 
 	 * @param server
 	 */
-	public static void setCredentials(IServer server) throws CredentialException {
+	public static void setCredentials(IServer server)
+			throws CredentialException {
+		String user = ServerConverter.getJBossServer(server).getUsername();
+		String pass = ServerConverter.getJBossServer(server).getPassword();
+		setCredentials(server, user, pass);
+	}
+
+	public static void setCredentials(IServer server, Object principal,
+			Object credential) throws CredentialException {
 		Exception temp = null;
 		try {
-			ILaunchConfiguration lc = server.getLaunchConfiguration(true,
-					new NullProgressMonitor());
-			// get user from the IServer, but override with launch configuration
-			String user = ServerConverter.getJBossServer(server).getUsername();
-			
-			// get password from the IServer, but override with launch configuration
-			String pass = ServerConverter.getJBossServer(server).getPassword();
-			
 			// get our methods
 			Class simplePrincipal = Thread.currentThread()
 					.getContextClassLoader().loadClass(
@@ -69,20 +67,18 @@ public class JMXUtil {
 			Constructor newSimplePrincipal = simplePrincipal
 					.getConstructor(new Class[] { String.class });
 			Object newPrincipalInstance = newSimplePrincipal
-					.newInstance(new Object[] { user });
+					.newInstance(new Object[] { principal });
 
 			// set the principal
-			Method setPrincipalMethod = securityAssoc.getMethod(
-					"setPrincipal", new Class[] { Principal.class });
+			Method setPrincipalMethod = securityAssoc.getMethod("setPrincipal",
+					new Class[] { Principal.class });
 			setPrincipalMethod.invoke(null,
 					new Object[] { newPrincipalInstance });
 
 			// set the credential
 			Method setCredentialMethod = securityAssoc.getMethod(
 					"setCredential", new Class[] { Object.class });
-			setCredentialMethod.invoke(null, new Object[] { pass });
-		} catch (CoreException e) {
-			temp = e;
+			setCredentialMethod.invoke(null, new Object[] { credential });
 		} catch (ClassNotFoundException e) {
 			temp = e;
 		} catch (SecurityException e) {
@@ -101,16 +97,20 @@ public class JMXUtil {
 		if( temp != null )
 			throw new CredentialException(temp); 
 	}
-	
+
 	public static class CredentialException extends Exception {
 		private static final long serialVersionUID = 1L;
 		protected Exception wrapped;
+
 		public CredentialException(Exception wrapped) {
 			this.wrapped = wrapped;
 		}
-		public Exception getWrapped() { return wrapped; }
+
+		public Exception getWrapped() {
+			return wrapped;
+		}
 	}
-	
+
 	public static Properties getDefaultProperties(IServer server) {
 		int port = ServerConverter.getJBossServer(server).getJNDIPort();
 		Properties props = new Properties();
@@ -118,8 +118,8 @@ public class JMXUtil {
 				"org.jnp.interfaces.NamingContextFactory");
 		props.put("java.naming.factory.url.pkgs",
 				"org.jboss.naming:org.jnp.interfaces");
-		props.put("java.naming.provider.url", "jnp://"
-				+ server.getHost() + ":" + port);
+		props.put("java.naming.provider.url", "jnp://" + server.getHost() + ":"
+				+ port);
 		return props;
 	}
 }

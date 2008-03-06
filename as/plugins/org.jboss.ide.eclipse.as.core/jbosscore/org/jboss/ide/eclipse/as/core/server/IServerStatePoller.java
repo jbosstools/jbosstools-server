@@ -21,8 +21,12 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+import java.util.List;
+import java.util.Properties;
+
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  * A server state poller will 
@@ -37,10 +41,16 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public static final int CANCEL = 0;
 	public static final int TIMEOUT_REACHED = 1;
 	
+	public ServerStatePollerType getPollerType();
+	public void setPollerType(ServerStatePollerType type);
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
-	public boolean isComplete() throws PollingException;
-	public boolean getState() throws PollingException; 
+	
+	public boolean isComplete() throws PollingException, RequiresInfoException;
+	public boolean getState() throws PollingException, RequiresInfoException; 
+	
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
+	public List getRequiredProperties();
+	public void failureHandled(Properties properties);
 	
 	/**
 	 * Cancel the polling. 
@@ -50,5 +60,12 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 
 	public class PollingException extends Exception {
 		public PollingException(String message) {super(message);}
+	}
+	
+	public class RequiresInfoException extends Exception {
+		private boolean checked = false;
+		public RequiresInfoException(String msg) {super(msg);}
+		public void setChecked() { this.checked = true; }
+		public boolean getChecked() { return this.checked; }
 	}
 }

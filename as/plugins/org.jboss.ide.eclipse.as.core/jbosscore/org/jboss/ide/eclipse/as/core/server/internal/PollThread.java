@@ -29,9 +29,11 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
@@ -86,7 +88,12 @@ public class PollThread extends Thread {
 				IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER;
 		String pollerId = helper.getAttribute(key, defaultPoller);
 		ServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
-		return type == null ? null : type.createPoller();
+		if( type != null ) {
+			IServerStatePoller tempPoller = type.createPoller();
+			tempPoller.setPollerType(type);
+			return tempPoller;
+		}
+		return null;
 	}
 	
 	public void cancel() {
@@ -145,6 +152,14 @@ public class PollThread extends Thread {
 				alertEventLogPollerException(e);
 				alertBehavior(IServerStatePoller.SERVER_DOWN, false);
 				return;
+			} catch( RequiresInfoException rie ) {
+				// This way each request for new info is checked only once.
+				if( !rie.getChecked()) {
+					rie.setChecked();
+					String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING : SERVER_STOPPING;
+					IPollerFailureHandler handler = ExtensionManager.getDefault().getFirstPollFailureHandler(poller, action, poller.getRequiredProperties());
+					handler.handle(poller, action, poller.getRequiredProperties());
+				}
 			}
 		}
 		
@@ -168,6 +183,8 @@ public class PollThread extends Thread {
 					alertEventLogPollerException(pe);
 					alertBehavior(IServerStatePoller.SERVER_DOWN, false);
 					return;
+				} catch( RequiresInfoException rie ) {
+					// You don't have an answer... liar!
 				}
 			} else {
 				// we timed out.  get response from preferences

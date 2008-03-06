@@ -22,12 +22,17 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -49,6 +54,9 @@ public class ExtensionManager {
 	/** The map of pollerID -> PollerObject */
 	private HashMap<String, ServerStatePollerType> pollers;
 	
+	/** The map of pollerID -> PollerObject */
+	private HashMap<String, IPollerFailureHandler> pollerFailureHandlers;
+
 	/** The method used to load / instantiate the pollers */
 	public void loadPollers() {
 		pollers = new HashMap<String, ServerStatePollerType>();
@@ -99,5 +107,39 @@ public class ExtensionManager {
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
+	
 
+	/** The method used to load / instantiate the failure handlers */
+	public void loadFailureHandler() {
+		pollerFailureHandlers = new HashMap<String, IPollerFailureHandler>();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerFailureHandler");
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				pollerFailureHandlers.put(cf[i].getAttribute("id"), 
+						(IPollerFailureHandler)cf[i].createExecutableExtension("class"));
+			} catch( CoreException e ) {
+				// TODO ERROR LOG
+			} catch( ClassCastException cce ) {
+				// TODO ERROR LOG
+			}
+		}
+	}
+
+	public IPollerFailureHandler[] getPollerFailureHandlers() {
+		if( pollerFailureHandlers == null ) 
+			loadFailureHandler();
+		Collection<IPollerFailureHandler> c = pollerFailureHandlers.values();
+		return c.toArray(new IPollerFailureHandler[c.size()]);
+	}
+	
+	public IPollerFailureHandler getFirstPollFailureHandler(IServerStatePoller poller, String action, List requiredProperties) {
+		IPollerFailureHandler[] handlers = getPollerFailureHandlers();
+		for( int i = 0; i < handlers.length; i++ ) {
+			if( handlers[i].accepts(poller, action, requiredProperties)) {
+				return handlers[i];
+			}
+		}
+		return null;
+	}
 }

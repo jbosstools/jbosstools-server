@@ -3,6 +3,7 @@
 <plugin>
 
    <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
+   <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
    		
    <extension
          point="org.eclipse.wst.server.core.serverTypes">

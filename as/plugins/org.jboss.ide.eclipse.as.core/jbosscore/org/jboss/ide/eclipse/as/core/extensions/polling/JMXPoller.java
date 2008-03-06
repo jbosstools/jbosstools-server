@@ -22,6 +22,8 @@
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.management.MBeanException;
@@ -41,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil.CredentialException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 
 /**
@@ -55,6 +58,8 @@ public class JMXPoller implements IServerStatePoller {
 	public static final String STARTED_PROPERTY = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.STARTED_PROPERTY";
 	public static final String EVENT_TYPE_STARTING = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.eventTypes.STARTING";
 	
+	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER";
+	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS";
 	
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_STOPPED = 0;
@@ -63,8 +68,12 @@ public class JMXPoller implements IServerStatePoller {
 	private int started;
 	private boolean canceled;
 	private boolean done;
+	private boolean waitingForCredentials = false;
 	private IServer server;
+	private ServerStatePollerType type;
 	private PollingException pollingException = null;
+	private RequiresInfoException requiresInfoException = null;
+	private Properties requiredPropertiesReturned = null;
 
 	private EventLogTreeItem event;
 
@@ -108,9 +117,21 @@ public class JMXPoller implements IServerStatePoller {
 							new JMXEvent(event, b);
 						}
 					} catch (SecurityException se) {
-						pollingException = new PollingSecurityException(
-								"Security Exception: " + se.getMessage());
-						done = true;
+						if( !waitingForCredentials ) {
+							waitingForCredentials = true;
+							requiresInfoException = new PollingSecurityException(
+									"Security Exception: " + se.getMessage());
+						} else {
+							// we're waiting. are they back yet?
+							if( requiredPropertiesReturned != null ) {
+								requiresInfoException = null;
+								String user, pass;
+								user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
+								pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
+								setCredentials(user, pass);
+								waitingForCredentials = false;
+							}
+						}
 					} catch (CommunicationException ce) {
 						started = STATE_STOPPED;
 						new JMXEvent(event, ce);
@@ -152,8 +173,18 @@ public class JMXPoller implements IServerStatePoller {
 				pollingException = new PollingException(ce.getWrapped().getMessage());
 			}
 		}
+		
+		protected void setCredentials(String user, String pass) {
+			try {
+				JMXUtil.setCredentials(server, user, pass);
+			} catch( CredentialException ce ) {
+				pollingException = new PollingException(ce.getWrapped().getMessage());
+			}
+		}
 	}
 
+
+	
 	private void launchJMXPoller() {
 		PollerRunnable run = new PollerRunnable();
 		Thread t = new Thread(run, "JMX Poller");
@@ -167,16 +198,19 @@ public class JMXPoller implements IServerStatePoller {
 	public void cleanup() {
 	}
 
-	public class PollingSecurityException extends PollingException {
+	public class PollingSecurityException extends RequiresInfoException {
 		private static final long serialVersionUID = 1L;
 		public PollingSecurityException(String msg) {
 			super(msg);
 		}
 	}
 
-	public boolean getState() throws PollingException {
+	public boolean getState() throws PollingException, RequiresInfoException {
 		if (pollingException != null)
 			throw pollingException;
+		if( requiresInfoException != null )
+			throw requiresInfoException;
+		
 		if (started == 0)
 			return SERVER_DOWN;
 		if (started == 1)
@@ -188,9 +222,11 @@ public class JMXPoller implements IServerStatePoller {
 		return SERVER_UP; // done or canceled, doesnt matter
 	}
 
-	public boolean isComplete() throws PollingException {
+	public boolean isComplete() throws PollingException, RequiresInfoException {
 		if (pollingException != null)
 			throw pollingException;
+		if( requiresInfoException != null )
+			throw requiresInfoException;
 		return done;
 	}
 
@@ -204,5 +240,25 @@ public class JMXPoller implements IServerStatePoller {
 			super(parent, PollThread.SERVER_STATE_MAJOR_TYPE, EventLogModel.EVENT_TYPE_EXCEPTION );
 			setProperty(EventLogModel.EXCEPTION_PROPERTY, e);
 		}
+	}
+	
+	
+	public void failureHandled(Properties properties) {
+		requiredPropertiesReturned = properties;
+	}
+
+	public List<String> getRequiredProperties() {
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(REQUIRED_USER);
+		list.add(REQUIRED_PASS);
+		return list;
+	}
+
+	public ServerStatePollerType getPollerType() {
+		return type;
+	}
+
+	public void setPollerType(ServerStatePollerType type) {
+		this.type = type;
 	}
 }
