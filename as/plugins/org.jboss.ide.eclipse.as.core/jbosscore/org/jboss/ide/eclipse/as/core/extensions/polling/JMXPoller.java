@@ -244,7 +244,11 @@ public class JMXPoller implements IServerStatePoller {
 	
 	
 	public void failureHandled(Properties properties) {
-		requiredPropertiesReturned = properties;
+		if( properties == null ) {
+			done = true;
+			pollingException = new PollingException("Request for more information ignored");
+		} else
+			requiredPropertiesReturned = properties;
 	}
 
 	public List<String> getRequiredProperties() {

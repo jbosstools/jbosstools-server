@@ -22,10 +22,11 @@ public class SecurityFailureHandler implements IPollerFailureHandler {
 	}
 
 	public void handle(IServerStatePoller poller, String action, List requiredProperties) {
-		Properties p = new Properties();
-		p.put(JMXPoller.REQUIRED_USER, "admin" );
-		p.put(JMXPoller.REQUIRED_PASS, "admin");
-		poller.failureHandled(p);
-		System.out.println("handled");
+//		Properties p = new Properties();
+//		p.put(JMXPoller.REQUIRED_USER, "admin" );
+//		p.put(JMXPoller.REQUIRED_PASS, "admin");
+//		poller.failureHandled(p);
+//		System.out.println("handled");
+		poller.failureHandled(null);
 	}
 }
