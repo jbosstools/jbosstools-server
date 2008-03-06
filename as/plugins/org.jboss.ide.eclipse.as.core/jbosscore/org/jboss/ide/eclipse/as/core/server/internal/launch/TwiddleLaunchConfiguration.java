@@ -60,7 +60,8 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, TWIDDLE_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-		
+		wc.setAttribute(TwiddleLaunchConfiguration.SERVER_ID, server.getId());
+
 		ArrayList classpath = new ArrayList();
 		addCPEntry(classpath, jbs, TWIDDLE_JAR_LOC);
 		// Twiddle requires more classes and I'm too lazy to actually figure OUT which ones it needs.
