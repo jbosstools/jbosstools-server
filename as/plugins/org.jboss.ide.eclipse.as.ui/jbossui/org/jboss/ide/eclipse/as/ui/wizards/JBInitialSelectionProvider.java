@@ -29,9 +29,9 @@ import org.eclipse.wst.server.ui.internal.viewers.InitialSelectionProvider;
  * @author Rob Stryker <rob.stryker@redhat.com>
  *
  */
-public class initialSelectionProvider extends InitialSelectionProvider {
+public class JBInitialSelectionProvider extends InitialSelectionProvider {
 
-	public initialSelectionProvider() {
+	public JBInitialSelectionProvider() {
 	}
 	
 	public IServerType getInitialSelection(IServerType[] serverTypes) {
@@ -40,7 +40,7 @@ public class initialSelectionProvider extends InitialSelectionProvider {
 		
 		int size = serverTypes.length;
 		for (int i = 0; i < size; i++) {
-			if( serverTypes[i].getId().equals("org.jboss.ide.eclipse.as.40"))
+			if( serverTypes[i].getId().equals("org.jboss.ide.eclipse.as.42"))
 				return serverTypes[i];
 		}
 		return serverTypes[0];

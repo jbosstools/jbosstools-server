@@ -209,7 +209,7 @@
       <extension
             point="org.eclipse.wst.server.ui.initialSelectionProvider">
          <selectionProvider
-               class="org.jboss.ide.eclipse.as.ui.wizards.initialSelectionProvider"
+               class="org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider"
                id="org.jboss.ide.eclipse.as.ui.jboss40SelectionProvider"/>
       </extension>
       <extension
