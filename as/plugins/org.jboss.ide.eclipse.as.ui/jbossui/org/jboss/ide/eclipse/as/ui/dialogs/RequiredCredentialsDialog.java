@@ -25,10 +25,13 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -43,7 +46,8 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 public class RequiredCredentialsDialog extends Dialog {
 
 	private String user, pass;
-
+	private boolean save;
+	
 	public RequiredCredentialsDialog(Shell parentShell) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
@@ -68,30 +72,42 @@ public class RequiredCredentialsDialog extends Dialog {
 		final Text passText = new Text(main, SWT.DEFAULT);
 		userText.setEditable(true);
 		passText.setEditable(true);
-		
+		final Button saveCredentials = new Button(main, SWT.CHECK);
 		
 		top.setLayoutData(createFormData(0,5,null,0,0,5,100,-5));
 		userLabel.setLayoutData(createFormData(top, 10, null, 0, 0,5, 100, -5));
 		userText.setLayoutData(createFormData(userLabel, 5, null, 0, 0,5, 100, -5));
 		passLabel.setLayoutData(createFormData(userText, 10, null, 0, 0,5, 100, -5));
 		passText.setLayoutData(createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
+		saveCredentials.setLayoutData(createFormData(passText, 10, null, 0, 0,5, 100, -5));
 		
 		top.setText("Your server is throwing a security exception.\nYou should make sure to open the server\neditor and save the jmx username and password there.");
 		userLabel.setText(Messages.swf_Username);
 		passLabel.setText(Messages.swf_Password);
+		saveCredentials.setText("Save these credentials?");
 		
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				user = userText.getText();
 				pass = passText.getText();
+				save = saveCredentials.getSelection();
+			}
+		};
+		SelectionListener listener2 = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				user = userText.getText();
+				pass = passText.getText();
+				save = saveCredentials.getSelection();
 			}
 		};
 		userText.addModifyListener(listener);
 		passText.addModifyListener(listener);
+		saveCredentials.addSelectionListener(listener2);
 		return c;
 	}
-
-	
 
 	private FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
 			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
@@ -132,5 +148,12 @@ public class RequiredCredentialsDialog extends Dialog {
 	 */
 	public String getPass() {
 		return pass;
+	}
+	
+	/**
+	 * @return whether to save
+	 */
+	public boolean getSave() {
+		return save;
 	}
 }
