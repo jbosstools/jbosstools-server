@@ -58,9 +58,8 @@ public class PollThread extends Thread {
 	public static final String POLL_THREAD_EXCEPTION_MESSAGE = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.exception.message";
 
 	
-	private boolean expectedState;
+	private boolean expectedState, abort, stateStartedOrStopped;
 	private IServerStatePoller poller;
-	private boolean abort;
 	private String abortMessage;
 	private JBossServerBehavior behavior;
 	private EventLogRoot eventRoot;
@@ -138,7 +137,8 @@ public class PollThread extends Thread {
 		poller.beginPolling(getServer(), expectedState, this);
 		
 		// begin the loop; ask the poller every so often
-		while( !abort && !done && new Date().getTime() < startTime + maxWait ) {
+		while( !stateStartedOrStopped && !abort && !done && 
+				new Date().getTime() < startTime + maxWait ) {
 			try {
 				Thread.sleep(100);
 			} catch( InterruptedException ie ) { }
@@ -161,15 +161,26 @@ public class PollThread extends Thread {
 					handler.handle(poller, action, poller.getRequiredProperties());
 				}
 			}
+			stateStartedOrStopped = checkServerState();
 		}
 		
-		boolean currentState = !expectedState;
 		// we stopped. Did we abort?
-		if( abort ) {
+		if( stateStartedOrStopped ) {
+			int state = behavior.getServer().getServerState();
+			boolean success = false;
+			if( expectedState == IServerStatePoller.SERVER_UP)
+				success = state == IServer.STATE_STARTED;
+			else 
+				success = state == IServer.STATE_STOPPED;
+			
+			poller.cancel(success ? IServerStatePoller.SUCCESS : IServerStatePoller.FAILED);
+			poller.cleanup();
+		} else if( abort ) {
 			poller.cancel(IServerStatePoller.CANCEL);
 			poller.cleanup();
 			alertEventLogAbort();
 		} else {
+			boolean currentState = !expectedState;
 			boolean finalAlert = true;
 			if( done ) {
 				// the poller has an answer
@@ -198,6 +209,13 @@ public class PollThread extends Thread {
 		}
 	}
 
+	protected boolean checkServerState() {
+		int state = behavior.getServer().getServerState();
+		if( state == IServer.STATE_STARTED ) return true;
+		if( state == IServer.STATE_STOPPED ) return true;
+		return false;
+	}
+	
 	protected void alertBehavior(boolean currentState, boolean finalAlert) {
 		if( currentState != expectedState ) {
 			// it didnt work... cancel all processes! force stop

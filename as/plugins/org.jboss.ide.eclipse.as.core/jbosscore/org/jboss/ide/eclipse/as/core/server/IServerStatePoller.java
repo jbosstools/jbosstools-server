@@ -40,11 +40,13 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	
 	public static final int CANCEL = 0;
 	public static final int TIMEOUT_REACHED = 1;
+	public static final int SUCCESS = 2;
+	public static final int FAILED = 3;
 	
 	public ServerStatePollerType getPollerType();
 	public void setPollerType(ServerStatePollerType type);
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
-	
+	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	public boolean getState() throws PollingException, RequiresInfoException; 
 	

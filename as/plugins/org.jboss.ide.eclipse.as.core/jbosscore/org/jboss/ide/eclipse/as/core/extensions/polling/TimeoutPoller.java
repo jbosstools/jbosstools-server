@@ -54,6 +54,10 @@ public class TimeoutPoller implements IServerStatePoller {
 		this.server = server;
 		this.endTime = new Date().getTime() + getTimeout() - 2000;
 	}
+	
+	public IServer getServer() {
+		return server;
+	}
 
 	public void cancel(int type) {
 	}

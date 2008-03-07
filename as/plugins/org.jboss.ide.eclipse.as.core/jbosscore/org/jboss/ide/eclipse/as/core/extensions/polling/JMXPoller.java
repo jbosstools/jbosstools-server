@@ -268,4 +268,8 @@ public class JMXPoller implements IServerStatePoller {
 	public void setPollerType(ServerStatePollerType type) {
 		this.type = type;
 	}
+	
+	public IServer getServer() {
+		return server;
+	}
 }

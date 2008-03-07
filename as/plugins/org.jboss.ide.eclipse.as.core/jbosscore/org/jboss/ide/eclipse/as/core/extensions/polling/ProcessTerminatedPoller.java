@@ -51,6 +51,10 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 		this.server = (JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
 	}
 
+	public IServer getServer() {
+		return server.getServer();
+	}
+
 	public void cancel(int type) {
 	}
 
