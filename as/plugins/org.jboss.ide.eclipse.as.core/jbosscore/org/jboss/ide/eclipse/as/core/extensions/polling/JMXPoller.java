@@ -117,19 +117,22 @@ public class JMXPoller implements IServerStatePoller {
 							new JMXEvent(event, b);
 						}
 					} catch (SecurityException se) {
-						if( !waitingForCredentials ) {
-							waitingForCredentials = true;
-							requiresInfoException = new PollingSecurityException(
-									"Security Exception: " + se.getMessage());
-						} else {
-							// we're waiting. are they back yet?
-							if( requiredPropertiesReturned != null ) {
-								requiresInfoException = null;
-								String user, pass;
-								user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
-								pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
-								setCredentials(user, pass);
-								waitingForCredentials = false;
+						synchronized(this) {
+							if( !waitingForCredentials ) {
+								waitingForCredentials = true;
+								requiresInfoException = new PollingSecurityException(
+										"Security Exception: " + se.getMessage());
+							} else {
+								// we're waiting. are they back yet?
+								if( requiredPropertiesReturned != null ) {
+									requiresInfoException = null;
+									String user, pass;
+									user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
+									pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
+									requiredPropertiesReturned = null;
+									setCredentials(user, pass);
+									waitingForCredentials = false;
+								}
 							}
 						}
 					} catch (CommunicationException ce) {
