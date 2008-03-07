@@ -7,5 +7,12 @@
         file="toc.xml"
         primary="true"/>
 	</extension>
+ <extension
+       point="org.eclipse.help.contexts">
+    <contexts
+          file="ASContextHelp.xml"
+          plugin="org.jboss.ide.eclipse.as.doc.user">
+    </contexts>
+ </extension>
 
 </plugin>
