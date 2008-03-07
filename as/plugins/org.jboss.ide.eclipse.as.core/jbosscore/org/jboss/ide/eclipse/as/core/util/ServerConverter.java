@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -36,6 +37,13 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
  */
 public class ServerConverter {
 	public static JBossServer getJBossServer(IServer server) {
+		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
+		if (jbServer == null) {
+			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
+		}
+		return jbServer;
+	}
+	public static JBossServer getJBossServer(IServerWorkingCopy server) {
 		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
 			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
