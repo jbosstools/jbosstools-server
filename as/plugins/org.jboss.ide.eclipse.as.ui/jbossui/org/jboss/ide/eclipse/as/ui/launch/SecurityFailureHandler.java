@@ -3,9 +3,13 @@ package org.jboss.ide.eclipse.as.ui.launch;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.ui.dialogs.RequiredCredentialsDialog;
 
 /**
  * 
@@ -21,12 +25,19 @@ public class SecurityFailureHandler implements IPollerFailureHandler {
 		return false;
 	}
 
-	public void handle(IServerStatePoller poller, String action, List requiredProperties) {
-//		Properties p = new Properties();
-//		p.put(JMXPoller.REQUIRED_USER, "admin" );
-//		p.put(JMXPoller.REQUIRED_PASS, "admin");
-//		poller.failureHandled(p);
-//		System.out.println("handled");
-		poller.failureHandled(null);
+	public void handle(final IServerStatePoller poller, String action, List requiredProperties) {
+		Display.getDefault().asyncExec(new Runnable() { 
+			public void run() {
+				RequiredCredentialsDialog d = new RequiredCredentialsDialog(new Shell());
+				if( d.open() == Window.OK) {
+					Properties p = new Properties();
+					p.put(JMXPoller.REQUIRED_USER, d.getUser());
+					p.put(JMXPoller.REQUIRED_PASS, d.getPass());
+					poller.failureHandled(p);
+				} else {
+					poller.failureHandled(null);
+				}
+			}
+		});
 	}
 }
