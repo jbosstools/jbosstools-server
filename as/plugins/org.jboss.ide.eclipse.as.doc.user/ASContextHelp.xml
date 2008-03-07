@@ -24,4 +24,8 @@
 		<description>New Server Runtime Wizard</description>
 		<topic href="runtimes_servers.html#d0e246" label="Runtimes"/>
 	</context>
+	<context id="new_dynamic_web_project" title="New Dynamic Web Project">
+		<description>New Dynamic Web Project Wizard</description>
+		<topic href="webtools.html#d0e1335" label="Adding Facets to a Project"/>
+	</context>
 </contexts>
