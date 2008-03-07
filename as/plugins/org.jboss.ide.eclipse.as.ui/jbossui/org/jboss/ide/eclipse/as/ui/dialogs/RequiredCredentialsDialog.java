@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -47,10 +48,12 @@ public class RequiredCredentialsDialog extends Dialog {
 
 	private String user, pass;
 	private boolean save;
+	private JBossServer jbs;
 	
-	public RequiredCredentialsDialog(Shell parentShell) {
+	public RequiredCredentialsDialog(Shell parentShell, JBossServer jbs) {
 		super(parentShell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
+		this.jbs = jbs;
 	}
 
 	protected void configureShell(Shell newShell) {
@@ -106,6 +109,13 @@ public class RequiredCredentialsDialog extends Dialog {
 		userText.addModifyListener(listener);
 		passText.addModifyListener(listener);
 		saveCredentials.addSelectionListener(listener2);
+		
+		// defaults
+		userText.setText(jbs.getUsername());
+		userText.setSelection(0, jbs.getUsername() == null ? 0 : jbs.getUsername().length());
+		passText.setText(jbs.getPassword());
+		// save by default
+		saveCredentials.setSelection(true);
 		return c;
 	}
 

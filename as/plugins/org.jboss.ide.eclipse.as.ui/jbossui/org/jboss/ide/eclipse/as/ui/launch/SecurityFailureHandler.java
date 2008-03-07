@@ -33,12 +33,12 @@ public class SecurityFailureHandler implements IPollerFailureHandler {
 	public void handle(final IServerStatePoller poller, String action, List requiredProperties) {
 		Display.getDefault().asyncExec(new Runnable() { 
 			public void run() {
-				RequiredCredentialsDialog d = new RequiredCredentialsDialog(new Shell());
+				IServer server = poller.getServer();
+				IServerWorkingCopy copy = server.createWorkingCopy();
+				JBossServer jbs = ServerConverter.getJBossServer(copy);
+				RequiredCredentialsDialog d = new RequiredCredentialsDialog(new Shell(), jbs);
 				if( d.open() == Window.OK) {
 					if( d.getSave() ) {
-						IServer server = poller.getServer();
-						IServerWorkingCopy copy = server.createWorkingCopy();
-						JBossServer jbs = ServerConverter.getJBossServer(copy);
 						jbs.setPassword(d.getPass());
 						jbs.setUsername(d.getUser());
 						try {
