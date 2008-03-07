@@ -107,6 +107,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		// make modifications to parent
 		handle.setTitle(Messages.rwf_Title);
 		handle.setImageDescriptor(getImageDescriptor());
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime");
 		return main;
 	}
 
