@@ -21,6 +21,10 @@
  */
 package org.jboss.ide.eclipse.as.ui.packages;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -40,13 +44,20 @@ public class PublishAction implements INodeActionDelegate {
 	public void run (IArchiveNode node) {
 		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE 
 				&& ((IArchive)node).isTopLevel()) {
-			IArchive pkg = (IArchive)node;
+			final IArchive pkg = (IArchive)node;
 			String servers = node.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
 			if( servers == null || "".equals(servers) || anyServerDoesntExist(servers)){
 				servers = showSelectServersDialog(pkg);
 			}
-			if( servers != null ) 
-				ArchivesBuildListener.publish(pkg, servers, IServer.PUBLISH_FULL);
+			final String servers2 = servers;
+			if( servers != null ) {
+				Job j = new Job("Build Archive") {
+					protected IStatus run(IProgressMonitor monitor) {
+						ArchivesBuildListener.publish(pkg, servers2, IServer.PUBLISH_FULL);
+						return Status.OK_STATUS;
+					} };
+				j.schedule();
+			}
 		}
 	}
 	
