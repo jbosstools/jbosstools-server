@@ -422,7 +422,7 @@ public class JMXModel {
 	}
 
 	public interface JMXRunnable {
-		public void run(MBeanServerConnection connection);
+		public void run(MBeanServerConnection connection) throws Exception;
 	}
 
 	public static class JMXSafeRunner {

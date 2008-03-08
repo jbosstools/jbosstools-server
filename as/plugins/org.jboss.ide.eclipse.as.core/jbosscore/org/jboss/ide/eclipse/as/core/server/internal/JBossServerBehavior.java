@@ -21,6 +21,16 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.io.IOException;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.IntrospectionException;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -31,10 +41,15 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
+import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
@@ -174,4 +189,46 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		pollThread.start();
 	}
 	
+
+	protected void publishStart(IProgressMonitor monitor) throws CoreException {
+		super.publishStart(monitor);
+		if( shouldSuspendScanner() )
+			suspendDeployment();
+	}
+
+	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
+		if( shouldSuspendScanner() )
+			resumeDeployment();
+		super.publishFinish(monitor);
+	}
+	
+	protected boolean shouldSuspendScanner() {
+		if( getServer().getServerType().getId().equals("org.jboss.ide.eclipse.as.50"))
+			return false;
+		if( getServer().getServerState() != IServer.STATE_STARTED)
+			return false;
+		return true;
+	}
+	
+	protected void suspendDeployment() {
+		JMXRunnable r = new JMXRunnable() {
+			public void run(MBeanServerConnection connection) throws Exception {
+				ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
+				connection.invoke(name, "stop", new Object[] {  }, new String[] {});
+			}
+		};
+		JMXSafeRunner.run(getServer(), r);
+	}
+	
+	protected void resumeDeployment() {
+		JMXRunnable r = new JMXRunnable() {
+			public void run(MBeanServerConnection connection) throws Exception {
+				ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
+				connection.invoke(name, "start", new Object[] {  }, new String[] {});
+			}
+		};
+		JMXSafeRunner.run(getServer(), r);
+	}
+		
+
 }
