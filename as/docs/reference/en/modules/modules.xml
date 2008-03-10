@@ -35,7 +35,7 @@
 				<title>Add or Remove Projects</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/modules/modules_2a.png"/>
+						<imagedata fileref="images/modules/modules_2.png"/>
 					</imageobject>
 				</mediaobject>
 			</figure>
@@ -76,7 +76,7 @@
 				<title>Deploy to Sever</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/modules/modules_2b.png"/>
+						<imagedata fileref="images/modules/modules_6.png"/>
 					</imageobject>
 				</mediaobject>
 			</figure>
@@ -87,7 +87,7 @@
 				<title>Deployed files on the Server</title>
 				<mediaobject>
 					<imageobject>
-						<imagedata fileref="images/modules/modules_2c.png"/>
+						<imagedata fileref="images/modules/modules_7.png"/>
 					</imageobject>
 				</mediaobject>
 			</figure>

@@ -156,7 +156,7 @@
                 <title>Launch Configuration Properties</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_20_b.png"/>
+                        <imagedata fileref="images/perspective/perspective_22.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -490,7 +490,7 @@
                 <title>XPath Preview</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_11a.png"/>
+                        <imagedata fileref="images/perspective/perspective_23.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -514,7 +514,7 @@
                 <title>XPath Preview</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_11b.png"/>
+                        <imagedata fileref="images/perspective/perspective_24.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -566,7 +566,7 @@
                 <title>Archives View</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_12_a.png"/>
+                        <imagedata fileref="images/perspective/perspective_25.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -654,7 +654,7 @@
                     <title>Adding a New FileSet</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="images/perspective/perspective_13_a.png"/>
+                            <imagedata fileref="images/perspective/perspective_26.png"/>
                         </imageobject>
                     </mediaobject>
                 </figure>

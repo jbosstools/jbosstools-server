@@ -22,7 +22,7 @@
       <title>JBoss Server Toolbar</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start1.png"/>
+          <imagedata fileref="images/quick_start/quick_start_1.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -37,7 +37,7 @@
       <title>Start JBoss Server</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start2.png"/>
+          <imagedata fileref="images/quick_start/quick_start_2.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -54,7 +54,7 @@
       <title>Stop JBoss Server</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start3.png"/>
+          <imagedata fileref="images/quick_start/quick_start_3.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -79,7 +79,7 @@
       <title>Archive Creating</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start7.png"/>
+          <imagedata fileref="images/quick_start/quick_start_7.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -92,7 +92,7 @@
       <title>Context Menu on the Item</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start8.png"/>
+          <imagedata fileref="images/quick_start/quick_start_8.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -126,7 +126,7 @@
       <title>Runtime and Server Sections in the New Project Wizard</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start4.png" scale="68"/>
+          <imagedata fileref="images/quick_start/quick_start_4.png" scale="68"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -139,7 +139,7 @@
       <title>Add and Remove Projects From the Context Menu.</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start5.png"/>
+          <imagedata fileref="images/quick_start/quick_start_5.png"/>
         </imageobject>
       </mediaobject>
     </figure>
@@ -152,7 +152,7 @@
       <title>Modifying The Projects that are Configured on the Server</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start6.png"/>
+          <imagedata fileref="images/quick_start/quick_start_6.png"/>
         </imageobject>
       </mediaobject>
     </figure>
