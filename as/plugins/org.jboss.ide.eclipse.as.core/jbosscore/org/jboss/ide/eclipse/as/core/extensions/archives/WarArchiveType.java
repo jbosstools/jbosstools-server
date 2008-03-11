@@ -41,6 +41,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -77,24 +78,26 @@ public class WarArchiveType extends J2EEArchiveType {
 		return fillDefaultConfiguration(getProject(projectName), topLevel, monitor);
 	}
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {	
-		IModule mod = getModule(project.getName());
-		IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
-		IArchiveFolder lib = addFolder(project, webinf, LIB);
-		IArchiveFolder classes = addFolder(project, webinf, CLASSES);
-		addReferencedProjectsAsLibs(project, lib);
-		addLibFileset(project, lib, true);
-		addClassesFileset(project, classes);
-
-		if( mod == null ) {
-			addWebinfFileset(project, webinf);
-		} else {
-			addWebContentFileset(project, topLevel);
-		}
+		try {
+			IModule mod = getModule(project.getName());
+			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
+			IArchiveFolder lib = addFolder(project, webinf, LIB);
+			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
+			addReferencedProjectsAsLibs(project, lib);
+			addLibFileset(project, lib, true);
+			addClassesFileset(project, classes);
+	
+			if( mod == null ) {
+				addWebinfFileset(project, webinf);
+			} else {
+				addWebContentFileset(project, topLevel);
+			}
+		} catch( ArchivesModelException ame) {}
 		return topLevel;
 	}
 	
 	// For modules only
-	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) {
+	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
 			DirectoryScanner scanner = 
@@ -115,7 +118,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		}
 	}
 
-	protected void addClassesFileset(IProject project, IArchiveFolder folder) {
+	protected void addClassesFileset(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null ) {
 			try {
@@ -127,7 +130,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			}
 		}
 	}
-	protected void addWebinfFileset(IProject project, IArchiveFolder folder) {
+	protected void addWebinfFileset(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
 			DirectoryScanner scanner = 
@@ -147,7 +150,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 	
 	// Lib support
-	protected void addLibFileset(IProject project, IArchiveFolder folder, boolean includeTopLevelJars) {
+	protected void addLibFileset(IProject project, IArchiveFolder folder, boolean includeTopLevelJars) throws ArchivesModelException {
 		// Let us find /WEB-INF/lib directory and set it as source for the file set.
 		String sourcePath = null;
 		
@@ -178,7 +181,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			}
 		}
 	}
-	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) {
+	protected void addReferencedProjectsAsLibs(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		IJavaProject jp = JavaCore.create(project);
 		if( jp != null && jp.exists()) {
 			try {
@@ -199,7 +202,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 	
 	
-	protected void createLibFromProject(IProject project, IArchiveFolder folder) {
+	protected void createLibFromProject(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		IArchive pack = createGenericIArchive(project, null, project.getName() + ".jar");
 		folder.addChild(pack);
 	}

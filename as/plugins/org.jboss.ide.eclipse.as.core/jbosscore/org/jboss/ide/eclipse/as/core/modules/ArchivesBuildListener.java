@@ -63,7 +63,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 	
 	public ArchivesBuildListener() {
 		ArchivesModel.instance().addBuildListener(this);
-		ArchivesModel.instance().addModelListener(this, ArchivesModel.LIST_FRONT);
+		ArchivesModel.instance().addModelListener(this); // ? , ArchivesModel.LIST_FRONT);
 	}
 	
 	public void cleanArchive(IArchive pkg) {

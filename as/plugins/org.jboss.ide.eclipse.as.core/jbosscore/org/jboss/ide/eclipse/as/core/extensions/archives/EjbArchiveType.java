@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 
 /**
@@ -71,8 +72,7 @@ public class EjbArchiveType extends J2EEArchiveType {
 					IPath outputLoc = proj.getOutputLocation();
 					addFileset(project, topLevel, outputLoc.toOSString(), null);
 				} catch( JavaModelException jmde) {
-					// ignore. No reporting necessary here
-				}
+				} catch( ArchivesModelException ame ) {}
 			}
 		}
 		return topLevel;

@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
@@ -84,6 +85,7 @@ public class EarArchiveType extends J2EEArchiveType {
 	}
 
 	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
+		try {
 		IModule mod = getModule(projectName);
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 
@@ -110,7 +112,7 @@ public class EarArchiveType extends J2EEArchiveType {
 			}
 		}
 
+		} catch( ArchivesModelException ame) {}
 		return topLevel;
 	}
-
 }

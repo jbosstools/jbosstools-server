@@ -37,6 +37,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
@@ -118,13 +119,15 @@ public abstract class J2EEArchiveType implements IArchiveType {
 	}
 
 	
-	public static IArchiveFolder addFolder(IProject project, IArchiveNode parent, String name) {
+	public static IArchiveFolder addFolder(IProject project, 
+			IArchiveNode parent, String name) throws ArchivesModelException {
 		IArchiveFolder folder = ArchiveNodeFactory.createFolder();
 		folder.setName(name);
 		parent.addChild(folder);
 		return folder;
 	}
-	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent, String sourcePath, String includePattern) {
+	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent, 
+			String sourcePath, String includePattern) throws ArchivesModelException {
 		IArchiveFileSet fs = ArchiveNodeFactory.createFileset();
 		Assert.isNotNull(project);
 		IJavaProject javaProject = JavaCore.create(project);

@@ -28,11 +28,15 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.IModuleContributor;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.PackagedModuleDelegate;
 
@@ -68,18 +72,26 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 			int size = projects2.length;
 			for (int i = 0; i < size; i++) {
 				if (projects2[i].isAccessible()) {
-					createModules(projects2[i]);
+					try {
+						createModules(projects2[i]);
+					} catch(ArchivesModelException ame) {
+						IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ame.getMessage(), ame);
+						JBossServerCorePlugin.getDefault().getLog().log(status);
+					}
 				}
 			}
 		}
 		return modules.toArray(new IModule[modules.size()]);
 	}
 	
-	protected void createModules(IProject project) {
-		IArchive[] packs = ArchivesModelCore.getProjectPackages(project.getLocation(), null, false);
+	protected void createModules(IProject project) throws ArchivesModelException {
+		IArchive[] packs = ModelUtil.getProjectArchives(project.getLocation());
 		if( packs != null && packs.length > 0 ) {
 			IModule module;
-			IArchive[] packages = ArchivesModelCore.getProjectPackages(project.getLocation(), new NullProgressMonitor(), true);
+			if( !ArchivesModel.instance().isProjectRegistered(project.getLocation())) {
+				ArchivesModel.instance().registerProject(project.getLocation(), new NullProgressMonitor());
+			}
+			IArchive[] packages = ModelUtil.getProjectArchives(project.getLocation());
 			boolean requiresSave = ensureArchivesHaveIDs(project, packages);
 			ArrayList<IModule> mods = new ArrayList<IModule>();
 			for( int i = 0; i < packages.length; i++ ) {
@@ -92,8 +104,12 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 			}
 			projectToModules.put(project.getLocation(), mods);
 			if( requiresSave )
-				ArchivesModel.instance().saveModel(project.getLocation(), 
-						new NullProgressMonitor());
+				try {
+					ArchivesModel.instance().save(project.getLocation(), 
+							new NullProgressMonitor());
+				} catch( ArchivesModelException ame ) {
+					
+				}
 		}
 	}
 	
@@ -126,7 +142,12 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 				}
 			}
 		}
-		createModules(findProject(projectLoc));
+		try {
+			createModules(findProject(projectLoc));
+		} catch( ArchivesModelException ame ) {
+			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ame.getMessage(), ame);
+			JBossServerCorePlugin.getDefault().getLog().log(status);
+		}
 	}
 
 	protected IProject findProject(IPath projectLoc) {

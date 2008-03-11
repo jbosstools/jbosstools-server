@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.modules.ArchivesBuildListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -42,7 +43,11 @@ public class ArchivePublishWizard extends Wizard {
 			pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, getServers());
 			pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 			IPath p = pack.getProjectPath();
-			ArchivesModel.instance().saveModel(p, null);
+			try {
+				ArchivesModel.instance().save(p, null);
+			} catch( ArchivesModelException ame ) {
+				// TODO
+			}
 		}
 		return true;
 	}
