@@ -63,7 +63,7 @@
 			<?dbhtml filename="DeployToServer.html"?>
 			<title>Deploying single files</title>
 
-			<para>Sometimes it becomes necessary to deploy only one or two files to a server. For
+			<para>Sometimes it becomes necessary to deploy one or more files to a server. For
 				that in order not to do a full republish in the context menu of files a <emphasis><property>Deploy To Server</property></emphasis>
 				option is provided that allows a single file deployment. To deploy these non-WTP files/projects
 				right click on the file (<emphasis>
