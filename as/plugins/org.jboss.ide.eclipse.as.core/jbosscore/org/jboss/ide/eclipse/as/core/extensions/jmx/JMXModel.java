@@ -430,6 +430,7 @@ public class JMXModel {
 			// do nothing if the server is down.
 			if( s.getServerState() != IServer.STATE_STARTED ) return;
 			
+			JMXClassLoaderRepository.getDefault().addConcerned(s, r);
 			ClassLoader currentLoader = Thread.currentThread()
 					.getContextClassLoader();
 			ClassLoader newLoader = JMXClassLoaderRepository.getDefault()
@@ -454,6 +455,7 @@ public class JMXModel {
 									"Error while running JMX-safe code", e));
 				}
 			}
+			JMXClassLoaderRepository.getDefault().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}
 	}
