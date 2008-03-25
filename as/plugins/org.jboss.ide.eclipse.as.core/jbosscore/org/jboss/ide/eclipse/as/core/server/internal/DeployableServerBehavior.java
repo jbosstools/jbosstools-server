@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -33,6 +34,8 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -116,7 +119,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			PublishEvent modulePublishEvent = PublisherEventLogger.createModuleRootEvent(publishRootEvent, module, kind, deltaKind, modulePublishState);
 			
 			IModule lastMod = module[module.length -1];
-			if( isJstModule(lastMod) ) {
+			if( lastMod.getProject() != null && 
+					ModuleCoreNature.isFlexibleProject(lastMod.getProject())) {
 				publisher = new JstPublisher(getServer(), modulePublishEvent);
 			} else if( isPackagesTypeModule(lastMod) ) {
 				publisher = new PackagesPublisher(getServer(), modulePublishEvent);
@@ -154,16 +158,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
 		} 
 		return IJBossServerPublisher.NO_PUBLISH;
-	}
-	
-	/* Temporary and will need to be fixed */
-	// TODO: Change to if it is a flex project. Don't know how to do that yet. 
-	protected boolean isJstModule(IModule mod) {
-		String type = mod.getModuleType().getId();
-		if( type.equals("jst.ejb") || type.equals("jst.web") || 
-				type.equals("jst.ear") || type.equals("jst.utility") || type.equals("jst.appclient"))
-			return true;
-		return false;
 	}
 	
 	protected boolean isPackagesTypeModule(IModule module) {
