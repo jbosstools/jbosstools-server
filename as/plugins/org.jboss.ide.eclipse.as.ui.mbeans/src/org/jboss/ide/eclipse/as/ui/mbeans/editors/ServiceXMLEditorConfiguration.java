@@ -28,7 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -64,6 +66,7 @@ import org.eclipse.wst.xml.ui.internal.contentassist.NoRegionContentAssistProces
 import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentAssistProcessor;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.ui.util.BaseXMLHyperlinkUtil;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher;
 import org.jboss.ide.eclipse.as.ui.util.ServiceXMLEditorUtil;
@@ -681,9 +684,12 @@ public class ServiceXMLEditorConfiguration extends
 					if(part!=null) {
 						EditorUtility.revealInEditor(part, element);
 					}
-				} catch (JavaModelException e) {
-					// ignore...TODO?	
 				} catch (PartInitException e) {
+					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to display element in editor.", e);
+					Activator.getDefault().getLog().log(status);
+				} catch( JavaModelException e ) {
+					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to display element in editor.", e);
+					Activator.getDefault().getLog().log(status);
 				}
 			}
 			
