@@ -188,7 +188,9 @@ public class JstPublisher implements IJBossServerPublisher {
 				root = root.append(name + ".war");
 			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId())) 
 				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
-			else
+			else if( "jst.connector".equals(type)) {
+				root = root.append(name + ".rar");
+			} else
 				root = root.append(name + ".jar");
 		}
 		return root;
