@@ -51,7 +51,7 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public boolean getState() throws PollingException, RequiresInfoException; 
 	
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
-	public List getRequiredProperties();
+	public List<String> getRequiredProperties();
 	public void failureHandled(Properties properties);
 	
 	/**
@@ -61,10 +61,12 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public void cancel(int type);    
 
 	public class PollingException extends Exception {
+		private static final long serialVersionUID = -7830978018908940551L;
 		public PollingException(String message) {super(message);}
 	}
 	
 	public class RequiresInfoException extends Exception {
+		private static final long serialVersionUID = 5050044329807740335L;
 		private boolean checked = false;
 		public RequiresInfoException(String msg) {super(msg);}
 		public void setChecked() { this.checked = true; }

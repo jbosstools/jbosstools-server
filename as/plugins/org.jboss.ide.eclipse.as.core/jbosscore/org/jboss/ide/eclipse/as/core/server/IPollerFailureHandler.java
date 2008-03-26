@@ -28,6 +28,6 @@ import java.util.List;
  *
  */
 public interface IPollerFailureHandler {
-	public boolean accepts(IServerStatePoller poller, String action, List requiredProperties);
-	public void handle(IServerStatePoller poller, String action, List requiredProperties);
+	public boolean accepts(IServerStatePoller poller, String action, List<String> requiredProperties);
+	public void handle(IServerStatePoller poller, String action, List<String> requiredProperties);
 }
