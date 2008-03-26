@@ -34,18 +34,15 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.PackagedModuleDelegate;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -129,13 +126,13 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix, 
 								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
-		ArrayList changedFiles = new ArrayList();
+		ArrayList<IPath> changedFiles = new ArrayList<IPath>();
 		for( int i = 0; i < delta.length; i++ ) {
 			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles, listener);
 		}
 	}
 	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot, 
-			IPath sourcePrefix, ArrayList changedFiles, PublisherFileUtilListener listener) {
+			IPath sourcePrefix, ArrayList<IPath> changedFiles, PublisherFileUtilListener listener) {
 		switch( delta.getKind()) {
 		case IModuleResourceDelta.REMOVED:
 			// removed might not be IExtendedModuleResource
