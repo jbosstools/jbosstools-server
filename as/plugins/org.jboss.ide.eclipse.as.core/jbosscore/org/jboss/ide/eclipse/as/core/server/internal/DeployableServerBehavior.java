@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,7 +34,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -119,13 +117,13 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			PublishEvent modulePublishEvent = PublisherEventLogger.createModuleRootEvent(publishRootEvent, module, kind, deltaKind, modulePublishState);
 			
 			IModule lastMod = module[module.length -1];
-			if( lastMod.getProject() != null && 
-					ModuleCoreNature.isFlexibleProject(lastMod.getProject())) {
-				publisher = new JstPublisher(getServer(), modulePublishEvent);
-			} else if( isPackagesTypeModule(lastMod) ) {
+			if( isPackagesTypeModule(lastMod) ) {
 				publisher = new PackagesPublisher(getServer(), modulePublishEvent);
 			} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
 				publisher = new SingleFilePublisher(getServer(), modulePublishEvent);
+			} else if( lastMod.getProject() != null && 
+					ModuleCoreNature.isFlexibleProject(lastMod.getProject())) {
+				publisher = new JstPublisher(getServer(), modulePublishEvent);
 			} else {
 				publisher = new NullPublisher();
 			}
