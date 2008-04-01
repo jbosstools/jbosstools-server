@@ -122,6 +122,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
 		else if (id.equals("org.jboss.ide.eclipse.as.runtime.42"))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
+		else if (id.equals("org.jboss.ide.eclipse.as.runtime.50"))
+			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 
