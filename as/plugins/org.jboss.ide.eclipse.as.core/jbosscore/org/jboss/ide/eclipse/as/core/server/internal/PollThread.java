@@ -137,7 +137,7 @@ public class PollThread extends Thread {
 		poller.beginPolling(getServer(), expectedState, this);
 		
 		// begin the loop; ask the poller every so often
-		while( !stateStartedOrStopped && !abort && !done && 
+		while( !stateStartedOrStopped && !abort && !done && maxWait > 0 && 
 				new Date().getTime() < startTime + maxWait ) {
 			try {
 				Thread.sleep(100);
