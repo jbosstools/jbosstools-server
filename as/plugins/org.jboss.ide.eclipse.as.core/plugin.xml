@@ -530,6 +530,10 @@
                id="jst.java"
                version="5.0">
          </facet>
+		 <facet
+				id="jst.seam"
+				version="1.2">
+		 </facet>
       </default-facets>
    </extension>
    <extension
