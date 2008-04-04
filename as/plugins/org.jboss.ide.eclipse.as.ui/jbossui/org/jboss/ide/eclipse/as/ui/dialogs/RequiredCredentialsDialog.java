@@ -84,10 +84,10 @@ public class RequiredCredentialsDialog extends Dialog {
 		passText.setLayoutData(createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
 		saveCredentials.setLayoutData(createFormData(passText, 10, null, 0, 0,5, 100, -5));
 		
-		top.setText("Your server is throwing a security exception.\nYou should make sure to open the server\neditor and save the jmx username and password there.");
+		top.setText(Messages.credentials_warning);
 		userLabel.setText(Messages.swf_Username);
 		passLabel.setText(Messages.swf_Password);
-		saveCredentials.setText("Save these credentials?");
+		saveCredentials.setText(Messages.credentials_save);
 		
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {

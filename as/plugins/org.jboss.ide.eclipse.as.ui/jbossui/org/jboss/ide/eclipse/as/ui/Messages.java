@@ -61,7 +61,10 @@ public class Messages {
 	public static String sswf_BaseName;
 
 	public static String ServerDialogHeading;
-
+	public static String credentials_warning;
+	public static String credentials_save;
+	
+	
 	/* Module extension properties */
 	public static String ModulePropertyType;
 	public static String ModulePropertyProject;
