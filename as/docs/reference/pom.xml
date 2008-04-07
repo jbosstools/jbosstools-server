@@ -8,7 +8,7 @@
     <artifactId>as-ref-guide-${translation}</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jdocbook</packaging>
-    <name>AS_Reference_Guide_(${translation})</name>
+    <name>AS_Reference_Guide</name>
 
     <build>
         <plugins>
