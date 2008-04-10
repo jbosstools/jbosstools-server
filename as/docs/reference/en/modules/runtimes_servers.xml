@@ -67,8 +67,8 @@
         </mediaobject>
       </figure>
 
-      <para>As shown on the above figure, <property>JBoss Tools</property> provides
-        its own updated and supported adapters such as JBoss 3.2, 4.0, and 4.2.
+      <para>As shown on the above figure, <property>JBoss Tools</property> provide
+        its own updated and supported adapters such as JBoss 3.2, 4.0, 4.2 and 5.0 as well.
         You&apos;ll also note a Deploy-Only Runtime type. This type provides no classpath for WTP
         projects. It is used solely by its server type for the purpose of setting up a deploy
         directory for users who don&apos;t wish to make use of starting, stopping, or debugging their

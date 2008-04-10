@@ -26,7 +26,7 @@
         <?dbhtml filename="JBossServerView.html"?>
         <title>The JBoss Server View</title>
         <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect
-            in details all parts it consists of. </para>
+            in detail all parts it consists of. </para>
 
         <para>The <property>JBoss Server View</property> is based on the WTP view, Server View. The
             top part of the <property>JBoss Servers View</property> essentially embeds the original
@@ -146,13 +146,13 @@
                 </mediaobject>
             </figure>
 
-            <para>The editor will also allow you to modify that server&apos;s launch
+            <para id="com_line_arg">The editor will also allow you to modify that server&apos;s launch
                 configuration. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
                 arguments and other things that are relevant to launching the server.</para>
 
-            <figure id="com_line_arg">
+            <figure>
                 <title>Launch Configuration Properties</title>
                 <mediaobject>
                     <imageobject>
