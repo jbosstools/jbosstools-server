@@ -204,13 +204,24 @@
         <title>Installed Server Runtime Environments</title>
         <mediaobject>
           <imageobject>
-            <imagedata fileref="images/runtimes_servers/runtimes_servers_5.png"/>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_5a.png"/>
           </imageobject>
         </mediaobject>
       </figure>
 
       <para>If the server you want to create doesn't have any installed runtime yet, the combo box
-        and button will disappear. The next page in the wizard which has the same form as in <link
+        and button will disappear.</para>
+        
+      <figure>
+        <title>Installed Server Runtime Environments</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_5b.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      
+        <para>In this case the next page in the wizard which has the same form as in <link
           linkend="add_runtime_figure">the previous section</link> will ask you to create the
         associated runtime.</para>
       <para>Either way, after targeting your server to a runtime, the final screen in this wizard is

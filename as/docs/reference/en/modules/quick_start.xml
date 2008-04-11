@@ -126,7 +126,16 @@
       <title>Runtime and Server Sections in the New Project Wizard</title>
       <mediaobject>
         <imageobject>
-          <imagedata fileref="images/quick_start/quick_start_4.png" scale="68"/>
+          <imagedata fileref="images/quick_start/quick_start_4a.png" scale="68"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    
+    <figure>
+      <title>Runtime and Server Sections in the Import Project Wizard</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/quick_start/quick_start_4b.png" scale="68"/>
         </imageobject>
       </mediaobject>
     </figure>
