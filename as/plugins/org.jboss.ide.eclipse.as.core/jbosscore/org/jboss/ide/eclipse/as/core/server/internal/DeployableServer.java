@@ -31,21 +31,36 @@ import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 
-// TODO: share the logic for modules with normal deployable server!
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
 	public DeployableServer() {
 	}
 
+	protected void initialize() {
+	}
+	
+	public void setDefaults(IProgressMonitor monitor) {
+	}
+	
+	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {
+	}
+
+	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
+	}
+
+	public void configurationChanged() {
+	}
+	
 	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.server.core.model.ServerDelegate#canModifyModules(org.eclipse.wst.server.core.IModule[], org.eclipse.wst.server.core.IModule[])
+	 * Abstracts to implement
 	 */
 	public IStatus canModifyModules(IModule[] add, IModule[] remove) {
 		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
@@ -89,7 +104,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 	private IModule[] doGetParentModules(IModule module) {
 		IModule[] ears = ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
-		ArrayList list = new ArrayList();
+		ArrayList<IModule> list = new ArrayList<IModule>();
 		for (int i = 0; i < ears.length; i++) {
 			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
 			IModule[] childs = ear.getModules();
@@ -98,15 +113,15 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 					list.add(ears[i]);
 			}
 		}
-		return (IModule[])list.toArray(new IModule[list.size()]);
+		return list.toArray(new IModule[list.size()]);
 	}
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.server.core.model.ServerDelegate#modifyModules(org.eclipse.wst.server.core.IModule[], org.eclipse.wst.server.core.IModule[], org.eclipse.core.runtime.IProgressMonitor)
-	 */
+
+	public ServerPort[] getServerPorts() {
+		return new ServerPort[0];
+	}
+	
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
 	}
 
 	/* (non-Javadoc)
