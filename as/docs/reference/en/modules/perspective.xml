@@ -586,7 +586,7 @@
                 </emphasis> file. This will execute a full build on all declared archives.</para>
         </section>
 
-        <section id="Creating an archive">
+        <section id="Creating_Archive">
             <title>Creating an Archive</title>
             <para>When creating a new archive, you have some different options at your disposal. If
                 the project has no <emphasis>
@@ -664,7 +664,7 @@
                     itself with which files are matched.</para>
             </section>
         </section>
-        <section id="View Actions">
+        <section id="View_Actions">
             <title>Archive Actions</title>
             <figure>
                 <title>Context Menu on the Item</title>
