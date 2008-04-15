@@ -1,6 +1,9 @@
 package org.jboss.ide.eclipse.as.classpath.core;
 
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -47,4 +50,9 @@ public class ClasspathCorePlugin extends Plugin {
 		return plugin;
 	}
 
+	public static void log(String msg,Throwable e) {
+		ILog log = ClasspathCorePlugin.getDefault().getLog();
+        IStatus status = new Status(Status.ERROR,ClasspathCorePlugin.PLUGIN_ID,msg,e);
+        log.log(status);
+	}
 }

@@ -27,15 +27,20 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IAccessRule;
+import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorations;
+import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorationsManager;
 
 /**
  * 
@@ -53,6 +58,12 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 	protected String description;
 	protected String libFolder;
 
+	private static ClasspathDecorationsManager decorations;
+	static {
+		
+		decorations = new ClasspathDecorationsManager();
+	}
+	
 	public AbstractClasspathContainer(IPath path, String description,
 			String libFolder) {
 		this.path = path;
@@ -109,14 +120,27 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 				IPath sourceAttachementPath = null;
 				IPath sourceAttachementRootPath = null;
 
-				if (jarSrcFile.exists()) {
-					sourceAttachementPath = new Path(jarSrcFile.toString());
-					sourceAttachementRootPath = new Path("/");//$NON-NLS-1$
-				}
-
-				IClasspathEntry entry = JavaCore.newLibraryEntry(entryPath,
-						sourceAttachementPath, sourceAttachementRootPath, true);
-				entries.add(entry);
+				final ClasspathDecorations dec 
+	            = decorations.getDecorations( getDecorationManagerKey(getPath().toString()), entryPath.toString() );
+	        
+	        
+			IClasspathAttribute[] attrs = {};
+			if( dec != null )
+	        {
+	            sourceAttachementPath = dec.getSourceAttachmentPath();
+	            sourceAttachementRootPath = dec.getSourceAttachmentRootPath();
+	            attrs = dec.getExtraAttributes();
+	        } else if (jarSrcFile.exists()) {
+				sourceAttachementPath = new Path(jarSrcFile.toString());
+				sourceAttachementRootPath = new Path("/");//$NON-NLS-1$
+			}
+	        
+			IAccessRule[] access = {};
+			IClasspathEntry entry = JavaCore.newLibraryEntry( entryPath, sourceAttachementPath, sourceAttachementRootPath, access, attrs,
+	                                         false );
+			//	IClasspathEntry entry = JavaCore.newLibraryEntry(entryPath,
+			//			sourceAttachementPath, sourceAttachementRootPath, true);
+			entries.add(entry);
 			}
 		}
 
@@ -140,4 +164,18 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 		}
 		return null;
 	}
+	
+	public static String getDecorationManagerKey( String container){
+    	return container;
+    }
+	
+	static ClasspathDecorationsManager getDecorationsManager()
+    {
+        return decorations;
+    }
+
+	public void refresh() {
+		entries = computeEntries();
+	}
+
 }
