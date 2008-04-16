@@ -69,11 +69,13 @@
         </mediaobject>
       </figure>
 
-      <para>As you can see, <property>JBoss Tools</property> provide its own updated
-        and supported adapters such as JBoss 3.2, 4.0, 4.2 and 5.0 as well. The last one comes with
-        its own new feature, that is a safer incremental deployment, which prevents partial
-        deployments to be picked up by the server. It means that scanning for auto-deployment is
-        suspended while files are being copied to the deployment location and resumed when the copy is completed.</para>
+      <para>As you can see, <property>JBoss Tools</property> provide its own adapters such as JBoss
+        3.2, 4.0, 4.2 and 5.0 as well. The last one comes with its own new feature, that is a safer
+        incremental deployment, which prevents partial deployments to be picked up by the server. It
+        means that scanning for auto-deployment is suspended while files are being copied to the
+        deployment location and resumed when the copy is completed.</para>
+      
+      <note><para>Currently we recommend you to use a fully supported JBoss 4.2 server adapter.</para></note>
 
       <para>You&apos;ll also note a Deploy-Only Runtime type. This type provides no classpath
         for WTP projects. It is used solely by its server type for the purpose of setting up a
