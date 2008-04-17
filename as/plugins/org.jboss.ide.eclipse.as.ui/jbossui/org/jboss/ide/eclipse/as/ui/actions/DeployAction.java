@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -65,14 +66,26 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 public class DeployAction implements IObjectActionDelegate {
 
 	protected ISelection selection;
+	private Shell shell;
+	
 	public DeployAction() {
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		if(targetPart!=null && targetPart.getSite()!=null) {
+			shell = targetPart.getSite().getShell();
+		}
 	}
 
 	public void run(IAction action) {
-		IServer server = getServer();
+		IServer[] deployableServersAsIServers = ServerConverter.getDeployableServersAsIServers();
+		if(deployableServersAsIServers.length==0) {
+			MessageDialog.openInformation(shell, "No deployable servers found", "There are no servers that support deploying single files.");
+		}
+		IServer server = getServer(shell,deployableServersAsIServers);
+		if(server==null) { // User pressed cancel. 
+			return; 
+		}
 		IStatus errorStatus = null;
 		String errorTitle, errorMessage;
 		errorTitle = errorMessage = null;
@@ -121,14 +134,13 @@ public class DeployAction implements IObjectActionDelegate {
 	}
 
 	
-	protected IServer getServer() {
+	protected IServer getServer(Shell shell, IServer[] servers) {
 		
-		IServer[] servers = ServerConverter.getDeployableServersAsIServers();
 		if( servers.length == 0 ) return null;
 		if( servers.length == 1 ) return servers[0];
 
 		// Throw up a dialog
-		SelectServerDialog d = new SelectServerDialog(null); 
+		SelectServerDialog d = new SelectServerDialog(shell); 
 		int result = d.open();
 		if( result == Dialog.OK ) {
 			return d.getSelectedServer();
