@@ -41,7 +41,8 @@
                     </imageResource>
                     <!--<cssResource>
                         <directory>src/main/css</directory>
-                        </cssResource>-->
+                        </cssResource>
+                    -->
                     <formats>
                         <format>
                             <formatName>pdf</formatName>
