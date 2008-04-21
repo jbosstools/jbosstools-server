@@ -34,7 +34,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
@@ -57,14 +56,6 @@ public class JBossServer extends DeployableServer
 	
 	public JBossServer() {
 	}
-
-	public ServerAttributeHelper getAttributeHelper() {
-		IServerWorkingCopy copy = getServerWorkingCopy();
-		if( copy == null ) {
-			copy = getServer().createWorkingCopy();
-		}
-		return new ServerAttributeHelper(getServer(), copy);
-	}
 	
 	public String getConfigDirectory() {
 		return getConfigDirectory(true);
@@ -86,11 +77,11 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public String getDeployDirectory() {
-		String folder = getAttributeHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, (String)null);
+		String folder = super.getDeployDirectory();
 		return folder != null ? folder : getDeployDirectory(true);
 	}
 	
-	public String getDeployDirectory(boolean checkLaunchConfig) {
+	protected String getDeployDirectory(boolean checkLaunchConfig) {
 		return new Path(getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY).toOSString();
 	}
 
