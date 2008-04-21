@@ -33,10 +33,9 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-
-import sun.security.action.GetLongAction;
 
 public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 
@@ -53,7 +52,7 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 
 	private String getNextRuntimeName() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
-		String base = "JBoss " + version + " Runtime";
+		String base = Messages.jboss + " " + version + " " + Messages.runtime;
 		IRuntime rt = ServerCore.findRuntime(base);
 		if (rt == null)
 			return base;
