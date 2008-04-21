@@ -159,7 +159,15 @@ public class JBossServerWizardFragment extends WizardFragment {
 	
 	private String getDefaultNameText() {
 		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		String base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, rt.getRuntimeType().getVersion());
+		String name = rt.getName();
+		String base = null;
+		if( name == null || name.equals(""))
+			base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, rt.getRuntimeType().getVersion());
+		else if( name.endsWith(org.jboss.ide.eclipse.as.core.Messages.runtime)) 
+			base = name.substring(0, name.indexOf(org.jboss.ide.eclipse.as.core.Messages.runtime)) + org.jboss.ide.eclipse.as.core.Messages.server; 
+		else 
+			base = name + " " + Messages.wf_Server;
+		
 		if( findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
@@ -343,7 +351,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 			return;
 		
 		IJBossServerRuntime srt = getRuntime();
-			
+		name = getDefaultNameText();
+		nameText.setText(name);
 		homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 		configValLabel.setText(srt.getJBossConfiguration());
 		IVMInstall install = srt.getVM();
