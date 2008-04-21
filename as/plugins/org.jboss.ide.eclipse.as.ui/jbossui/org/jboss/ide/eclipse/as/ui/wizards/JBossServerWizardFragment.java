@@ -166,7 +166,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( name.endsWith(org.jboss.ide.eclipse.as.core.Messages.runtime)) 
 			base = name.substring(0, name.indexOf(org.jboss.ide.eclipse.as.core.Messages.runtime)) + org.jboss.ide.eclipse.as.core.Messages.server; 
 		else 
-			base = name + " " + Messages.wf_Server;
+			base = name + " " + org.jboss.ide.eclipse.as.core.Messages.server;
 		
 		if( findServer(base) == null ) return base;
 		int i = 1;
