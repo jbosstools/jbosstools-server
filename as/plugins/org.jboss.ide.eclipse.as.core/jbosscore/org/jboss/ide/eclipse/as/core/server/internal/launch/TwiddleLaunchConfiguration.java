@@ -78,7 +78,7 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	
 	public static String getDefaultArgs(IServer server) throws CoreException {
 		JBossServer jbs = findJBossServer(server.getId());
-		String twiddleArgs = "-s " + jbs.getServer().getHost() + ":" 
+		String twiddleArgs = "-s " + jbs.getHost() + ":" 
 				+ jbs.getJNDIPort() +  " -a jmx/rmi/RMIAdaptor ";
 		if( jbs.getUsername() != null ) 
 			twiddleArgs += "-u " + jbs.getUsername() + " ";

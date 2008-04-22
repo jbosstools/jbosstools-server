@@ -100,7 +100,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		String args = "-S ";
-		args += "-s " + jbs.getServer().getHost() + ":" + jbs.getJNDIPort() + " ";
+		args += "-s " + jbs.getHost() + ":" + jbs.getJNDIPort() + " ";
 		if( jbs.getUsername() != null && !jbs.getUsername().equals("")) 
 			args += "-u " + jbs.getUsername() + " ";
 		if( jbs.getPassword() != null && !jbs.getUsername().equals("")) 

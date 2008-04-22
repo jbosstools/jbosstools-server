@@ -28,6 +28,7 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -112,14 +113,18 @@ public class JMXUtil {
 	}
 
 	public static Properties getDefaultProperties(IServer server) {
-		int port = ServerConverter.getJBossServer(server).getJNDIPort();
+		JBossServer jbs = ServerConverter.getJBossServer(server);
 		Properties props = new Properties();
-		props.put("java.naming.factory.initial",
-				"org.jnp.interfaces.NamingContextFactory");
-		props.put("java.naming.factory.url.pkgs",
-				"org.jboss.naming:org.jnp.interfaces");
-		props.put("java.naming.provider.url", "jnp://" + server.getHost() + ":"
-				+ port);
+		if( jbs != null ) {
+			
+			int port = jbs.getJNDIPort();
+			props.put("java.naming.factory.initial",
+					"org.jnp.interfaces.NamingContextFactory");
+			props.put("java.naming.factory.url.pkgs",
+					"org.jboss.naming:org.jnp.interfaces");
+			props.put("java.naming.provider.url", "jnp://" + jbs.getHost() + ":"
+					+ port);
+		} 
 		return props;
 	}
 }

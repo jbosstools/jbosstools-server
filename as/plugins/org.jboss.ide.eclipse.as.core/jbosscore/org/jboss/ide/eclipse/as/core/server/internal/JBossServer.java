@@ -57,6 +57,26 @@ public class JBossServer extends DeployableServer
 	public JBossServer() {
 	}
 	
+	public String getHost() {
+		return getHost(true);
+	}
+	
+	public String getHost(boolean checkLaunchConfig) {
+		String host = getServer().getHost();
+		if( checkLaunchConfig ) {
+			try {
+				Server s = (Server)getServer();
+				ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
+				String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
+				String val = ArgsUtil.getValue(startArgs, "-b", "--host");
+				if( val != null )
+					host = val;
+			} catch( CoreException ce ) {
+			}
+		}
+		return host;
+	}
+	
 	public String getConfigDirectory() {
 		return getConfigDirectory(true);
 	}
@@ -156,7 +176,7 @@ public class JBossServer extends DeployableServer
 			return null;
         
         IWebModule webModule =(IWebModule)module.loadAdapter(IWebModule.class,null);
-        String host = getServer().getHost();
+        String host = getHost();
 		String url = "http://"+host; //$NON-NLS-1$
 		int port = getJBossWebPort();
 		if (port != 80)
