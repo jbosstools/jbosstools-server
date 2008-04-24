@@ -139,7 +139,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			homeDir = rt.getRuntime().getLocation().toOSString();
 			config = rt.getJBossConfiguration();
 			configurations.setConfiguration(config);
-			configLabel.setText(Messages.wf_ConfigLabel + ":  " + config);
+			configLabel.setText(Messages.wf_ConfigLabel);
 
 			IVMInstall install = rt.getVM();
 			String vmName = install.getName();
@@ -386,9 +386,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.setJBossHome(homeDirText.getText());
 		} else {
 			configurations.getControl().setEnabled(true);
-			configurations.setJBossHome(homeDirText.getText());
-			if( !homeDirText.getText().equals(configurations.getInput())) 
+			if( !homeDirText.getText().equals(configurations.getInput())) {
+				configurations.setJBossHome(homeDirText.getText());
 				configurations.setConfiguration(IJBossServerConstants.DEFAULT_SERVER_NAME);
+			}
 		}
 
 		int sel = jreCombo.getSelectionIndex();
