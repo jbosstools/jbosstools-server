@@ -121,9 +121,9 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 			ret += "-Djava.net.preferIPv4Stack=true ";
 		ret += "-Dsun.rmi.dgc.client.gcInterval=3600000 ";
 		ret += "-Dsun.rmi.dgc.server.gcInterval=3600000 ";
-		ret += "-Djava.endorsed.dirs=" + (getRuntime().getLocation().append("lib").append("endorsed")) + " ";
+		ret += "-Djava.endorsed.dirs=\"" + (getRuntime().getLocation().append("lib").append("endorsed")) + "\" ";
 		if( getRuntime().getLocation().append("bin").append("native").toFile().exists() ) 
-			ret +=  "-Djava.library.path=" + getRuntime().getLocation().append("bin").append("native") + " ";
+			ret +=  "-Djava.library.path=\"" + getRuntime().getLocation().append("bin").append("native") + "\" ";
 		
 		return ret;
 	}
