@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3CR3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3CR3/docbookx.dtd"
+
+[<!ENTITY quick_start SYSTEM "modules/quick_start.xml">
+<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
+<!ENTITY perspective SYSTEM "modules/perspective.xml">
+<!ENTITY webtools SYSTEM "modules/webtools.xml">
+<!ENTITY modules SYSTEM "modules/modules.xml">
+
+]>
+
+<book>
+    
+     <bookinfo>
+         <title>JBoss Server Manager Reference Guide</title>
+         <pubdate>April 2008</pubdate>
+	                       <copyright>
+			<year>2007</year>
+	                           <year>2008</year>
+	                           <holder>JBoss, a division of Red Hat Inc.</holder>
+	                       </copyright>
+          <releaseinfo>
+Version: 1.1.0.CR1
+</releaseinfo>
+    </bookinfo>
+	
+    
+    <toc/> 
+    &quick_start;
+    &runtimes_servers;
+    &perspective;
+    &webtools;
+    &modules;
+</book>    
