@@ -26,7 +26,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -123,8 +122,12 @@ public class JstPublisher implements IJBossServerPublisher {
 		IPath deployPath = getDeployPath(moduleTree);
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
-		localSafeDelete(deployPath, eventRoot);
-		IStatus[] results = new IStatus[0];
+ 
+		// if the module we're publishing is a project, not a binary, clean it's folder
+		if( !(new Path(module.getName()).segmentCount() > 1 ))
+			localSafeDelete(deployPath, eventRoot);
+
+		IStatus[] results;
 		if( !deployPackaged(moduleTree))
 			results = new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor);
 		else
@@ -177,11 +180,12 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IPath getDeployPath(IModule[] moduleTree) {
 		IPath root = new Path( server.getDeployDirectory() );
 		String type, name;
-		IProject project;
 		for( int i = 0; i < moduleTree.length; i++ ) {
 			type = moduleTree[i].getModuleType().getId();
-			project = moduleTree[i].getProject();
-			name = project == null ? moduleTree[i].getName() : project.getName();
+			name = moduleTree[i].getName();
+			if( new Path(name).segmentCount() > 1 )
+				// we strongly suspect this is a binary object and not a project
+				return root;
 			if( "jst.ear".equals(type)) 
 				root = root.append(name + ".ear");
 			else if( "jst.web".equals(type)) 
