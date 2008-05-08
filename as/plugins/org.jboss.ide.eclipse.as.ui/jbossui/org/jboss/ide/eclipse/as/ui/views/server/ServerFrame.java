@@ -27,10 +27,12 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -44,10 +46,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.Trace;
@@ -55,10 +61,17 @@ import org.eclipse.wst.server.ui.internal.ContextIds;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
+import org.eclipse.wst.server.ui.internal.view.servers.CopyAction;
 import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleSloshAction;
+import org.eclipse.wst.server.ui.internal.view.servers.OpenAction;
+import org.eclipse.wst.server.ui.internal.view.servers.PasteAction;
+import org.eclipse.wst.server.ui.internal.view.servers.PropertiesAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishCleanAction;
+import org.eclipse.wst.server.ui.internal.view.servers.RenameAction;
+import org.eclipse.wst.server.ui.internal.view.servers.ShowInConsoleAction;
+import org.eclipse.wst.server.ui.internal.view.servers.ShowInDebugAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -78,9 +91,14 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 	protected IViewSite viewSite;
 	protected Tree treeTable;
 	protected ServerTableViewer tableViewer;
-	protected Action editLaunchConfigAction;
-	protected Action twiddleAction;
-	protected Action newServerAction;
+	
+	// custom
+	protected Action editLaunchConfigAction, twiddleAction, newServerAction;
+
+	// wtp
+	protected Action actionModifyModules;
+	protected Action openAction, showInConsoleAction, showInDebugAction, propertiesAction;
+	protected Action copyAction, pasteAction, deleteAction, renameAction;
 
 	public ServerFrame(Composite parent, JBossServerView view) {
 		super(parent, SWT.BORDER);
@@ -149,55 +167,111 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 	}
 	
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
-		menu.add(newServerAction);
 		if( getSelectedServer() != null ) {
-			menu.add(new Separator());
-			menu.add(new DeleteAction(new Shell(), getSelectedServer()));
-			menu.add(new Separator());
-			menu.add(actions[1]);
-			menu.add(actions[0]);
-			menu.add(actions[3]);
-			menu.add(actions[4]);
-			menu.add(actions[5]);
-			menu.add(new Separator());
-			menu.add(twiddleAction);
-			menu.add(editLaunchConfigAction);
-			menu.add(actions[6]);
-			menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-			twiddleAction.setEnabled(true);
-			editLaunchConfigAction.setEnabled(true);
-		} else {
-			menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+			cloneFill(shell, menu);
 		}
 	}
 
+	protected void cloneFill(Shell shell, IMenuManager menu) {
+		
+		/* Show in ... */
+		String text = Messages.actionShowIn;
+		final IWorkbench workbench = PlatformUI.getWorkbench();
+		final IBindingService bindingService = (IBindingService) workbench
+				.getAdapter(IBindingService.class);
+		final TriggerSequence[] activeBindings = bindingService
+				.getActiveBindingsFor("org.eclipse.ui.navigate.showInQuickMenu");
+		if (activeBindings.length > 0) {
+			text += "\t" + activeBindings[0].format();
+		}
+
+		menu.add(newServerAction);
+		menu.add(openAction);
+
+		MenuManager showInMenu = new MenuManager(text);
+		showInMenu.add(showInConsoleAction);
+		showInMenu.add(showInDebugAction);
+		menu.add(showInMenu);
+		menu.add(new Separator());
+		
+		menu.add(copyAction);
+		menu.add(pasteAction);
+		menu.add(deleteAction);
+		menu.add(renameAction);
+
+		menu.add(new Separator());
+		
+		// server actions
+		for (int i = 0; i < actions.length; i++)
+			menu.add(actions[i]);
+		
+		menu.add(new Separator());
+//		menu.add(actionModifyModules);
+
+		menu.add(twiddleAction);
+		menu.add(editLaunchConfigAction);
+		menu.add(actionModifyModules);
+		twiddleAction.setEnabled(true);
+		editLaunchConfigAction.setEnabled(true);
+
+	}
+	
 	public IServer getSelectedServer() {
 		Object o = ((IStructuredSelection)tableViewer.getSelection()).getFirstElement();
 		return (IServer)o;
 	}
 	
 	public void initializeActions(ISelectionProvider provider) {
-		Shell shell = site.getShell();
-
-		createActions();
-		
-		actions = new Action[] {
-				// create the start actions
-				new StartAction(shell, provider, ILaunchManager.DEBUG_MODE),
-				new StartAction(shell, provider, ILaunchManager.RUN_MODE),
-				new StartAction(shell, provider, ILaunchManager.PROFILE_MODE),
-		
-				// create the stop action
-				new StopAction(shell, provider),
-		
-				// create the publish actions
-				new PublishAction(shell, provider),
-				new PublishCleanAction(shell, provider),
-				new ModuleSloshAction(shell, provider)
-		};
+		createWTPActions(provider);
+		createCustomActions();
 	}
 	
-	protected void createActions() {
+	protected void createWTPActions(ISelectionProvider provider) {
+		Shell shell = viewSite.getShell();
+		IActionBars actionBars = viewSite.getActionBars();
+		
+		actions = new Action[6];
+		// create the start actions
+		actions[0] = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
+		actionBars.setGlobalActionHandler("org.eclipse.wst.server.debug", actions[0]);
+		actions[1] = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
+		actionBars.setGlobalActionHandler("org.eclipse.wst.server.run", actions[1]);
+		actions[2] = new StartAction(shell, provider, ILaunchManager.PROFILE_MODE);
+		
+		// create the stop action
+		actions[3] = new StopAction(shell, provider);
+		actionBars.setGlobalActionHandler("org.eclipse.wst.server.stop", actions[3]);
+		
+		// create the publish actions
+		actions[4] = new PublishAction(shell, provider);
+		actionBars.setGlobalActionHandler("org.eclipse.wst.server.publish", actions[4]);
+		actions[5] = new PublishCleanAction(shell, provider);
+		
+		// create the open action
+		openAction = new OpenAction(provider);
+		actionBars.setGlobalActionHandler("org.eclipse.ui.navigator.Open", openAction);
+		
+		// create copy, paste, and delete actions
+		pasteAction = new PasteAction(shell, provider, tableViewer.clipboard);
+		copyAction = new CopyAction(provider, tableViewer.clipboard, pasteAction);
+		deleteAction = new DeleteAction(shell, provider);
+		renameAction = new RenameAction(shell, tableViewer, provider);
+		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), copyAction);
+		actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), pasteAction);
+		actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), deleteAction);
+		actionBars.setGlobalActionHandler(ActionFactory.RENAME.getId(), renameAction);
+		
+		// create the other actions
+		actionModifyModules = new ModuleSloshAction(shell, provider);
+		showInConsoleAction = new ShowInConsoleAction(provider);
+		showInDebugAction = new ShowInDebugAction(provider);
+		
+		// create the properties action
+		propertiesAction = new PropertiesAction(shell, provider);
+		actionBars.setGlobalActionHandler(ActionFactory.PROPERTIES.getId(), propertiesAction);
+	}
+	
+	protected void createCustomActions() {
 		newServerAction = new Action() {
 			public void run() {
 				IAction newServerAction = new NewServerWizardAction();
@@ -260,7 +334,7 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 	}
 	
 	public IAction[] getActionBarActions() {
-		return new IAction[] { actions[0], actions[1], actions[2], actions[3], actions[4], actions[5] };
+		return actions;
 	}
 
 	public int getDefaultSize() {

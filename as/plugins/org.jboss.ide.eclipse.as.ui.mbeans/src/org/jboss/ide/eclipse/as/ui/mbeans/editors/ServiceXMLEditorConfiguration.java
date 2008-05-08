@@ -687,10 +687,7 @@ public class ServiceXMLEditorConfiguration extends
 				} catch (PartInitException e) {
 					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to display element in editor.", e);
 					Activator.getDefault().getLog().log(status);
-				} catch( JavaModelException e ) {
-					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to display element in editor.", e);
-					Activator.getDefault().getLog().log(status);
-				}
+				} 
 			}
 			
 		}

@@ -362,13 +362,13 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			this.node = fs;
 		}
 		public int hashCode() {
-			return name.hashCode() * 37 + path.hashCode();
+			return getName().hashCode() * 37 + getPath().hashCode();
 		}
 		
 		public IPath getPath() { return srcPath; }
 		public IArchiveNode getNode() { return node; }
 		public IPath getDeepDestination() {
-			return node.getRootArchive().getGlobalDestinationPath().append(node.getRootArchiveRelativePath(path));
+			return node.getRootArchive().getGlobalDestinationPath().append(node.getRootArchiveRelativePath(getModuleRelativePath()));
 		}
 		public IPath getSourcePath() {
 			return this.srcPath;

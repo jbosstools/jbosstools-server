@@ -44,13 +44,12 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewSite;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
@@ -62,8 +61,6 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.util.PublishAdapter;
 import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.provisional.UIDecoratorManager;
-import org.eclipse.wst.server.ui.internal.view.servers.ServerAction;
-import org.eclipse.wst.server.ui.internal.view.servers.ServerActionHelper;
 import org.eclipse.wst.server.ui.internal.view.servers.ServerTableLabelProvider;
 /**
  * Tree view showing servers and their associations.
@@ -85,7 +82,7 @@ public class ServerTableViewer extends TreeViewer {
 	protected static List starting = new ArrayList();
 	
 	protected ServerTableLabelProvider2 labelProvider;
-	//protected ISelectionListener dsListener;
+	protected Clipboard clipboard;
 
 	protected IViewSite viewSite;
 	
@@ -176,7 +173,8 @@ public class ServerTableViewer extends TreeViewer {
 	public ServerTableViewer(final IViewSite site, final Tree tree) {
 		super(tree);
 		this.viewSite = site;
-		
+		clipboard = new Clipboard(tree.getDisplay());
+
 		setContentProvider(new TrimmedServerContentProvider());
 		labelProvider = new ServerTableLabelProvider2();
 		labelProvider.addListener(new ILabelProviderListener() {
@@ -197,11 +195,7 @@ public class ServerTableViewer extends TreeViewer {
 		});
 		
 		setInput(ROOT);
-		
 		addListeners();
-		
-		IActionBars actionBars = viewSite.getActionBars();
-		actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), new ServerAction(getControl().getShell(), this, "Delete it!", ServerActionHelper.ACTION_DELETE));
 	}
 
 	protected void addListeners() {
@@ -312,7 +306,8 @@ public class ServerTableViewer extends TreeViewer {
 				((Server) servers[i]).removePublishListener(publishListener);
 			}
 		}
-	
+
+		clipboard.dispose();
 		super.handleDispose(event);
 	}
 
