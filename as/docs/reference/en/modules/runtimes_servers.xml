@@ -182,9 +182,11 @@
       Wizard</link> section). </para>
     <para>Servers can be started or stopped with different <link linkend="com_line_arg">command-line
         arguments</link>. They are often backed by a runtime object representing that server's
-      location.</para>
-    <section>
+        location.</para>
+    
+    <section> <!-- mark as updated -->
       <title>Creating a New Server</title>
+      
       <para>There are many ways to get to the new server wizard. One way is to use the old standard <emphasis>
           <property>File &gt; New &gt; Other... </property>
         </emphasis> and then <emphasis>

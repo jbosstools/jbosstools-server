@@ -7,7 +7,7 @@
 		are several ways to do it provided by WTP, and some additional methods provided by JBoss
 		Tools. These methods are described further in this chapter.</para>
 
-	<section>
+	<section> <!-- mark as updated -->
 		<title>Deploying on the Package Explorer</title>
 
 		<para>On the package explorer it is possible to publish either a project to a server or just
