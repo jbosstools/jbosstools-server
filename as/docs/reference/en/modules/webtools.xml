@@ -30,7 +30,7 @@
 	</section>
 
 
-	<section> <!-- mark as updated -->
+	<section revisionflag="changed">
 		<title>Adding Facets to a Project</title>
 
 		<para>There are two ways to add facets to a project. The first way is to include facets into
