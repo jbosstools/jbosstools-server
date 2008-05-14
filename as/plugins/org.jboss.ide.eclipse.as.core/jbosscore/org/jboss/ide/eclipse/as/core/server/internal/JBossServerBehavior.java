@@ -84,8 +84,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			return;
 		}
 		
+		serverStopping();
 		new Thread() {public void run() {
-			serverStopping();
 			boolean success = StopLaunchConfiguration.stop(getServer());
 			if( !success ) {
 				if( process != null && !process.isTerminated() ) { 
