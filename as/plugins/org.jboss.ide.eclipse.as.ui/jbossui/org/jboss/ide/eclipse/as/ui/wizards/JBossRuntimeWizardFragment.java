@@ -72,6 +72,9 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	private IWizardHandle handle;
+	private boolean beenEntered = false;
+	
+	
 	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel,
 			explanationLabel;
 	private Text nameText, homeDirText;
@@ -518,6 +521,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	// WST API methods
 	public void enter() {
+		beenEntered = true;
 	}
 
 	public void exit() {
@@ -544,7 +548,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	public boolean isComplete() {
-		return getErrorString() == null ? true : false;
+		return beenEntered && (getErrorString() == null ? true : false);
 	}
 
 	public boolean hasComposite() {
