@@ -48,15 +48,19 @@ public class ArgsUtil {
 	}
 
 	public static String getValue(String allArgs, String shortOpt, String longOpt) {
-		String[] args = parse(allArgs);
+		return getValue(parse(allArgs), shortOpt, longOpt);
+	}
+	
+	public static String getValue(String[] args, String shortOpt, String longOpt ) {
 		for( int i = 0; i < args.length; i++ ) {
 			if( args[i].equals(shortOpt))
 				return args[i+1];
-			if( args[i].startsWith(longOpt + "=")) 
+			if( longOpt != null && args[i].startsWith(longOpt + "=")) 
 				return args[i].substring(args[i].indexOf('=') + 1);
 		}
 		return null;
 	}
+	
 	public static String[] parse(String s) {
 		try {
 			ArrayList<String> l = new ArrayList<String>();
@@ -72,6 +76,7 @@ public class ArgsUtil {
 				switch(s.charAt(current)) {
 				case '"':
 					inQuotes = !inQuotes;
+					buf.append(s.charAt(current));
 					break;
 				case '\n':
 				case ' ':
@@ -103,4 +108,27 @@ public class ArgsUtil {
 			return new String[] { };
 		}
 	}
+	
+	public static String setArg(String allArgs, String shortOpt, String longOpt, String value ) {
+		if( value.contains(" "))
+			value = "\"" + value + "\"";
+		
+		String[] args = parse(allArgs);
+		String retVal = "";
+		for( int i = 0; i < args.length; i++ ) {
+			if( args[i].equals(shortOpt)) {
+				args[i+1] = value;
+				retVal += args[i] + " " + args[++i] + " ";
+			} else if( longOpt != null && args[i].startsWith(longOpt + "=")) { 
+				args[i] = longOpt + "=" + value;
+				retVal += args[i] + " ";
+			} else {
+				retVal += args[i] + " ";
+			}
+		}
+		
+		// turn this to a retval;
+		return retVal;
+	}
+	
 }

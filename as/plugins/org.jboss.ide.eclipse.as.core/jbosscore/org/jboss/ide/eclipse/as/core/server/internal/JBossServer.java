@@ -28,14 +28,19 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -57,12 +62,39 @@ public class JBossServer extends DeployableServer
 	public JBossServer() {
 	}
 	
+	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
+		// here we update the launch configuration with any details that might have changed. 
+		try {
+			Server s = (Server)getServer();
+			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
+			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
+			String originalArgs = startArgs;
+			if( !getServer().getHost().equals(getHost(true)))
+				startArgs = ArgsUtil.setArg(startArgs, "-b", "--host", getServer().getHost());
+			
+			IJBossServerRuntime runtime = (IJBossServerRuntime)
+				getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+			String config = runtime.getJBossConfiguration();
+			startArgs = ArgsUtil.setArg(startArgs, "-c", "--configuration", config);
+			
+			if( !startArgs.equals(originalArgs)) {
+				ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
+				wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, startArgs);
+				wc.doSave();
+			}
+		} catch( CoreException ce )  {
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Could not save server's start arguments", ce);
+			JBossServerCorePlugin.getDefault().getLog().log(s);
+		}
+	}
+	
 	public String getHost() {
-		return getHost(true);
+		String host = getHost(true);
+		return host == null ? getServer().getHost() : host;
 	}
 	
 	public String getHost(boolean checkLaunchConfig) {
-		String host = getServer().getHost();
+		String host = null;
 		if( checkLaunchConfig ) {
 			try {
 				Server s = (Server)getServer();
@@ -71,8 +103,7 @@ public class JBossServer extends DeployableServer
 				String val = ArgsUtil.getValue(startArgs, "-b", "--host");
 				if( val != null )
 					host = val;
-			} catch( CoreException ce ) {
-			}
+			} catch( CoreException ce )  {}
 		}
 		return host;
 	}
