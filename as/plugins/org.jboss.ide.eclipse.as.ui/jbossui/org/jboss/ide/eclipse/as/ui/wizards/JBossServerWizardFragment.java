@@ -170,7 +170,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 		if( findServer(base) == null ) return base;
 		int i = 1;
-		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
+		while( findServer(base + " (" + i + ")") != null ) 
 			i++;
 		return base + " (" + i + ")";
 	}
