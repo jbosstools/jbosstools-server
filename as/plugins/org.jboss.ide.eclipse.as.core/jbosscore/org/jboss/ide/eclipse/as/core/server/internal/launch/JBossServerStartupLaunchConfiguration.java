@@ -83,7 +83,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
-			return rt.getDefaultRunArgs();
+			return rt.getDefaultRunArgs() + " -b " + jbs.getServer().getHost();
 		}
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
