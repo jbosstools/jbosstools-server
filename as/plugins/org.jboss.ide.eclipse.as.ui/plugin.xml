@@ -97,13 +97,13 @@
          point="org.eclipse.ui.preferencePages">
       <page
             category="org.eclipse.wst.server.ui.preferencePage"
-            class="org.jboss.tools.wst.server.ui.views.server.preferencepages.JBossServersPreferencePage"
+            class="org.jboss.tools.as.wst.server.ui.views.server.preferencepages.JBossServersPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
             name="JBoss Servers"/>
 
       <page
             category="org.eclipse.wst.server.ui.preferencePage"
-            class="org.jboss.tools.wst.server.ui.views.server.preferencepages.ViewPreferencePage"
+            class="org.jboss.tools.as.wst.server.ui.views.server.preferencepages.ViewPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
             name="JBoss Server View"/>
    </extension> 
@@ -129,7 +129,7 @@
       <view
             allowMultiple="false"
             category="org.eclipse.wst.server.ui"
-            class="org.jboss.tools.wst.server.ui.views.server.JBossServerView"
+            class="org.jboss.tools.as.wst.server.ui.views.server.JBossServerView"
             icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
             name="JBoss Server View"/>
@@ -353,15 +353,15 @@
 
    <extension point="org.eclipse.ui.actionSets">
       <actionSet description="%actionSets.serverActions.description" id="org.jboss.tools.jst.web.ui.server.actionSet" label="%actionSets.serverActions.label" visible="true">
-         <action class="org.jboss.tools.wst.server.ui.action.SelectServerActionDelegate" icon="icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
+         <action class="org.jboss.tools.as.wst.server.ui.action.SelectServerActionDelegate" icon="icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
          </action>
-         <action class="org.jboss.tools.wst.server.ui.action.ChangeTimeStampActionDelegate" icon="icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
+         <action class="org.jboss.tools.as.wst.server.ui.action.ChangeTimeStampActionDelegate" icon="icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
          </action>
-         <action class="org.jboss.tools.wst.server.ui.action.StopServerActionDelegate" icon="icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
+         <action class="org.jboss.tools.as.wst.server.ui.action.StopServerActionDelegate" icon="icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
          </action>
-         <action class="org.jboss.tools.wst.server.ui.action.DebugServerActionDelegate" icon="icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.tools.as.wst.server.ui.action.DebugServerActionDelegate" icon="icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
-         <action class="org.jboss.tools.wst.server.ui.action.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.tools.as.wst.server.ui.action.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
       </actionSet>
    </extension>
