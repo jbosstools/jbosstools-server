@@ -24,7 +24,7 @@ public class DebugServerActionDelegate extends RunServerActionDelegate {
 	protected String computeToolTip() {
 		IServer selected = ServerManager.getInstance().getSelectedServer();
 		String name = selected == null ? "" : selected.getName(); //$NON-NLS-1$
-		if( selected.getServerState() == IServer.STATE_STARTED)
+		if( selected != null && selected.getServerState() == IServer.STATE_STARTED)
 			return NLS.bind(ServerActionMessages.RESTART_IN_DEBUG_MODE, name);
 		return NLS.bind(ServerActionMessages.START_IN_DEBUG_MODE, name); //$NON-NLS-2$
 	}	

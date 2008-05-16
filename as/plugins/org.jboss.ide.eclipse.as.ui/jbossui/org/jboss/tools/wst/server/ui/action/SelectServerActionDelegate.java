@@ -56,8 +56,10 @@ public class SelectServerActionDelegate extends AbstractServerActionDelegate
 	private void update0() {
 		if(action == null) return;
 		IServer server = ServerManager.getInstance().getSelectedServer();
-		ImageDescriptor id = ImageResource.getImageDescriptor(server.getServerType().getId());
-		action.setImageDescriptor(id);
+		if( server != null ) {
+			ImageDescriptor id = ImageResource.getImageDescriptor(server.getServerType().getId());
+			action.setImageDescriptor(id);
+		}
 		action.setText(null);
 		action.setToolTipText(ServerActionMessages.SELECT_A_SERVER);
 	}

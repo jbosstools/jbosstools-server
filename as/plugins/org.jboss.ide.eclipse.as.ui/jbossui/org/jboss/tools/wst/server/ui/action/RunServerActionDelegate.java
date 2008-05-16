@@ -47,7 +47,7 @@ public class RunServerActionDelegate extends AbstractServerActionDelegate {
 	protected String computeToolTip() {
 		IServer selected = ServerManager.getInstance().getSelectedServer();
 		String name = selected == null ? "" : selected.getName(); //$NON-NLS-1$
-		if( selected.getServerState() == IServer.STATE_STARTED)
+		if( selected != null && selected.getServerState() == IServer.STATE_STARTED)
 			return NLS.bind(ServerActionMessages.RESTART_IN_RUN_MODE, name);
 		return NLS.bind(ServerActionMessages.START_IN_RUN_MODE, name);
 	}	
