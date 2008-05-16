@@ -90,7 +90,7 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
-import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 

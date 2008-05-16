@@ -36,8 +36,8 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
-import org.jboss.tools.wst.server.ui.ToolsServerUICore;
-import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.as.wst.server.ui.ToolsServerUICore;
+import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 

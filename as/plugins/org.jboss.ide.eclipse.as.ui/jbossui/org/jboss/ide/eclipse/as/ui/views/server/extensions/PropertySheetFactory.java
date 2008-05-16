@@ -45,7 +45,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 

@@ -61,7 +61,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider;
-import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 

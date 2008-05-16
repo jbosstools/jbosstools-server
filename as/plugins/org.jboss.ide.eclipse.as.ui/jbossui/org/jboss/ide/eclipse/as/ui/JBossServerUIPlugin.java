@@ -32,7 +32,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
-import org.jboss.tools.wst.server.ui.ExtensionManager;
+import org.jboss.tools.as.wst.server.ui.ExtensionManager;
 import org.osgi.framework.BundleContext;
 
 /**

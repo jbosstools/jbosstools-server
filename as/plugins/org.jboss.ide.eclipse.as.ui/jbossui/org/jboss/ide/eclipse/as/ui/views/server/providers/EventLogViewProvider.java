@@ -64,7 +64,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtens
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
-import org.jboss.tools.wst.server.ui.views.server.preferencepages.ViewProviderPreferenceComposite;
+import org.jboss.tools.as.wst.server.ui.views.server.preferencepages.ViewProviderPreferenceComposite;
 
 /**
  * 

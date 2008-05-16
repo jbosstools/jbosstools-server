@@ -47,7 +47,7 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXBean;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXDomain;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.WrappedMBeanOperationInfo;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.JMXViewProvider.ErrorGroup;
-import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 

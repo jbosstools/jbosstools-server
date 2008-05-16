@@ -42,8 +42,8 @@ import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
-import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
-import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 

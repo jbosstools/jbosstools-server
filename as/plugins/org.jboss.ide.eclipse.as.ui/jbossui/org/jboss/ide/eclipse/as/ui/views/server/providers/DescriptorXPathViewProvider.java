@@ -63,7 +63,7 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtens
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
-import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 
