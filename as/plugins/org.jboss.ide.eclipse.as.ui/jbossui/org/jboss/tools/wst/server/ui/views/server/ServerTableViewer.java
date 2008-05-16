@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.ui.views.server;
+package org.jboss.tools.wst.server.ui.views.server;
 /**
  * JBoss, a Division of Red Hat
  * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated

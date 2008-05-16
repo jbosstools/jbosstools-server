@@ -34,9 +34,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
+import org.jboss.tools.wst.server.ui.ToolsServerUICore;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 
@@ -57,7 +58,7 @@ public class InactiveExtensionViewProvider extends JBossServerViewExtension {
 
 		public Object[] getChildren(Object parentElement) {
 			if( parentElement == provider ) {
-				ServerViewProvider[] allExtensions = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
+				ServerViewProvider[] allExtensions = ToolsServerUICore.getAllServerViewProviders();
 				ArrayList<ServerViewProvider> list = new ArrayList<ServerViewProvider>();
 				for( int i = 0; i < allExtensions.length; i++ ) {
 					if( !allExtensions[i].isEnabled()) {

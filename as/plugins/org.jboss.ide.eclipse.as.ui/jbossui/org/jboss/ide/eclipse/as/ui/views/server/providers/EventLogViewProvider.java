@@ -59,12 +59,12 @@ import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.IEventLogLi
 import org.jboss.ide.eclipse.as.core.util.SimpleTreeItem;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.dialogs.ShowStackTraceDialog;
-import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.IEventLogLabelProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.PropertySheetFactory.ISimplePropertiesHolder;
+import org.jboss.tools.wst.server.ui.views.server.preferencepages.ViewProviderPreferenceComposite;
 
 /**
  * 

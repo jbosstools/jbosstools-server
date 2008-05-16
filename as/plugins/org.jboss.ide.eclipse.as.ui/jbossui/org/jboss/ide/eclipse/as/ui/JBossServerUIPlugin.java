@@ -32,6 +32,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
+import org.jboss.tools.wst.server.ui.ExtensionManager;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -87,23 +88,6 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 
 	public void earlyStartup() {
 		JBossServerCorePlugin.getDefault();
-	}
-	
-
-	
-	public ServerViewProvider[] getEnabledViewProviders(IServer server) {
-		ServerViewProvider[] serverViewExtensions = getAllServerViewProviders();
-		ArrayList list = new ArrayList();
-		for( int i = 0; i < serverViewExtensions.length; i++ ) {
-			if( serverViewExtensions[i].isEnabled() && serverViewExtensions[i].supports(server)) {
-				list.add(serverViewExtensions[i]);
-			}
-		}
-		return (ServerViewProvider[]) list.toArray(new ServerViewProvider[list.size()]);
-	}
-	
-	public ServerViewProvider[] getAllServerViewProviders() {
-		return ExtensionManager.getDefault().getAllServerViewProviders();
 	}
 	
 	public static void log(String message, Exception e) {

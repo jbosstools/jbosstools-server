@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.preferencepages;
+package org.jboss.tools.wst.server.ui.views.server.preferencepages;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,10 +48,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.part.PageBook;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
+import org.jboss.tools.wst.server.ui.ToolsServerUICore;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 
@@ -226,7 +226,7 @@ public class ViewPreferencePage extends PreferencePage implements
         TableColumn column3 = new TableColumn(table, SWT.NONE);
         column3.setText(Messages.ViewPreferencePageDescription);
         
-        providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
+        providers = ToolsServerUICore.getAllServerViewProviders();
         int minWidth = 0;
         
         enabledButtons = new ArrayList<Control>();
@@ -392,7 +392,7 @@ public class ViewPreferencePage extends PreferencePage implements
 		
 	    
 	    
-		ServerViewProvider[] providers = JBossServerUIPlugin.getDefault().getAllServerViewProviders();
+		ServerViewProvider[] providers = ToolsServerUICore.getAllServerViewProviders();
 		
 		for( int i = 0; i < providers.length; i++ ) {
 			Group g = new Group(book, SWT.NONE);
@@ -431,7 +431,7 @@ public class ViewPreferencePage extends PreferencePage implements
 			setLayout(new FormLayout());
 			Button enabled = new Button(this, SWT.CHECK);
 			enabled.setText(Messages.ViewPreferencePageEnabled);
-			enabled.setSelection(provider.isEnabled());
+			enabled.setSelection(myProvider.isEnabled());
 		}
 	}
 	

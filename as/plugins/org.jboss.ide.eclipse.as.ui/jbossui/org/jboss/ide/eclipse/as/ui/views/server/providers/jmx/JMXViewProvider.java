@@ -39,11 +39,11 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXBean;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXDomain;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
-import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 

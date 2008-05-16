@@ -96,16 +96,16 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.jboss.ide.eclipse.ui.MainPreferencePage"
-            class="org.jboss.ide.eclipse.as.ui.preferencepages.JBossServersPreferencePage"
+            category="org.eclipse.wst.server.ui.preferencePage"
+            class="org.jboss.tools.wst.server.ui.views.server.preferencepages.JBossServersPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
             name="JBoss Servers"/>
 
       <page
-            category="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
-            class="org.jboss.ide.eclipse.as.ui.preferencepages.ViewPreferencePage"
+            category="org.eclipse.wst.server.ui.preferencePage"
+            class="org.jboss.tools.wst.server.ui.views.server.preferencepages.ViewPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
-            name="View"/>
+            name="JBoss Server View"/>
    </extension> 
 
 
@@ -129,7 +129,7 @@
       <view
             allowMultiple="false"
             category="org.eclipse.wst.server.ui"
-            class="org.jboss.ide.eclipse.as.ui.views.server.JBossServerView"
+            class="org.jboss.tools.wst.server.ui.views.server.JBossServerView"
             icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
             name="JBoss Server View"/>

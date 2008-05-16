@@ -59,11 +59,11 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathCategoryDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 

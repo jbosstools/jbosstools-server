@@ -34,10 +34,10 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.preferencepages.ViewProviderPreferenceComposite;
-import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
-import org.jboss.ide.eclipse.as.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
+import org.jboss.tools.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
+import org.jboss.tools.wst.server.ui.views.server.preferencepages.ViewProviderPreferenceComposite;
 
 /**
  * 

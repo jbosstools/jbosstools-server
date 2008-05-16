@@ -30,7 +30,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 

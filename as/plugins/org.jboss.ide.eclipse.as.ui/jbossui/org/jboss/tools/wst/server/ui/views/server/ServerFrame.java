@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.views.server;
+package org.jboss.tools.wst.server.ui.views.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -77,7 +77,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.dialogs.TwiddleDialog;
-import org.jboss.ide.eclipse.as.ui.views.server.JBossServerView.IServerViewFrame;
+import org.jboss.tools.wst.server.ui.views.server.JBossServerView.IServerViewFrame;
 
 /**
  * 
@@ -169,6 +169,8 @@ public class ServerFrame extends Composite implements IServerViewFrame {
 	protected void fillContextMenu(Shell shell, IMenuManager menu) {
 		if( getSelectedServer() != null ) {
 			cloneFill(shell, menu);
+		} else {
+			menu.add(newServerAction);
 		}
 	}
 
