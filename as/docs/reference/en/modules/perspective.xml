@@ -538,7 +538,6 @@
                         Documentation</ulink>.</para>
             </section>
         </section>
-        <para/>
 
     </section>
 
@@ -781,10 +780,11 @@
             <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink>
                 to find more on how to build your applications with help of Ant.</para>
         </section>
-
+        
+        <para>At this point, you are guessed to be familiar with <property>JBoss AS
+            Perspective</property> and your next step now is to explore how to work with different kinds
+            of projects.</para>
     </section>
 
-    <para>At this point, you are guessed to be familiar with <property>JBoss AS
-        Perspective</property> and your next step now is to explore how to work with different kinds
-        of projects.</para>
+    
 </chapter>
