@@ -32,6 +32,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleFile;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -79,9 +81,9 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	    	if( publishType == REMOVE_PUBLISH ) {
 	    		removeModule(module2, monitor);
 	    	} else if( publishType == FULL_PUBLISH ) {
-	    		publishModule(module2, true, monitor);
-	    	} else if( publishType == INCREMENTAL_PUBLISH ) {
 	    		publishModule(module2, false, monitor);
+	    	} else if( publishType == INCREMENTAL_PUBLISH ) {
+	    		publishModule(module2, true, monitor);
 	    	}
 		}catch(Exception e) {
 			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error during publish", e);
@@ -117,9 +119,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 		PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
 		if( incremental ) {
+			eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countChanges(delta));
 			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta, listener);
 		} else {
 			// full publish, copy whole folder or file
+			eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countConcreteFiles(module));
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
 		}
 	}
@@ -131,6 +135,44 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles, listener);
 		}
 	}
+	
+	protected int countChanges(IModuleResourceDelta[] deltas) {
+		IModuleResource res;
+		int count = 0;
+		if( deltas == null ) return 0;
+		for( int i = 0; i < deltas.length; i++ ) {
+			res = deltas[i].getModuleResource();
+			if( res != null && res instanceof IModuleFile)
+				count++;
+			count += countChanges(deltas[i].getAffectedChildren());
+		}
+		return count;
+	}
+	
+	protected int countConcreteFiles(IModule module) {
+		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
+		try {
+			ArrayList list = new ArrayList();
+			countConcreteFiles(delegate.members()[0], list);
+			return list.size();
+		} catch( CoreException ce ) {
+			
+		}
+		return -1;
+	}
+	protected void countConcreteFiles(IModuleResource mr, ArrayList list) {
+		if( mr instanceof IExtendedModuleResource) {
+			IExtendedModuleResource emr = ((IExtendedModuleResource)mr);
+			IPath p = emr.getConcreteDestFile();
+			if( mr instanceof IModuleFile && !list.contains(p)) list.add(p);
+			if( mr instanceof IModuleFolder) {
+				IModuleResource[] children = ((IModuleFolder)mr).members();
+				for( int i = 0; i < children.length; i++ )
+					countConcreteFiles(children[i], list);
+			}
+		}
+	}
+	
 	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot, 
 			IPath sourcePrefix, ArrayList<IPath> changedFiles, PublisherFileUtilListener listener) {
 		switch( delta.getKind()) {
@@ -160,7 +202,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 				}
 				return;
 			} else {
-				System.out.println("not an extended module resource. need help here");
+				// TODO
 				return;
 			}
 		case IModuleResourceDelta.ADDED:
@@ -174,7 +216,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 				}
 				return;
 			} else {
-				System.out.println("not an extended module resource. need help here");
+				// TODO
 				return;
 			}
 		case IModuleResourceDelta.CHANGED:

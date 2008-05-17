@@ -72,11 +72,19 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 			int size = projects2.length;
 			for (int i = 0; i < size; i++) {
 				if (projects2[i].isAccessible()) {
-					try {
-						createModules(projects2[i]);
-					} catch(ArchivesModelException ame) {
-						IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ame.getMessage(), ame);
-						JBossServerCorePlugin.getDefault().getLog().log(status);
+
+					if( !ArchivesModel.instance().isProjectRegistered(projects2[i].getLocation())) {
+						if( ArchivesModel.instance().canReregister(projects2[i].getLocation()))
+							// registration should also add this to the factory manually, so do not create the module
+							ArchivesModel.instance().registerProject(projects2[i].getLocation(), new NullProgressMonitor());
+					} else {
+						try {
+							// project is already registered. create the module
+							createModules(projects2[i]);
+						} catch(ArchivesModelException ame) {
+							IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ame.getMessage(), ame);
+							JBossServerCorePlugin.getDefault().getLog().log(status);
+						}
 					}
 				}
 			}
@@ -85,13 +93,9 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 	}
 	
 	protected void createModules(IProject project) throws ArchivesModelException {
-		IArchive[] packs = ModelUtil.getProjectArchives(project.getLocation());
-		if( packs != null && packs.length > 0 ) {
+		IArchive[] packages = ModelUtil.getProjectArchives(project.getLocation());
+		if( packages != null && packages.length > 0 ) {
 			IModule module;
-			if( !ArchivesModel.instance().isProjectRegistered(project.getLocation())) {
-				ArchivesModel.instance().registerProject(project.getLocation(), new NullProgressMonitor());
-			}
-			IArchive[] packages = ModelUtil.getProjectArchives(project.getLocation());
 			boolean requiresSave = ensureArchivesHaveIDs(project, packages);
 			ArrayList<IModule> mods = new ArrayList<IModule>();
 			for( int i = 0; i < packages.length; i++ ) {
@@ -103,13 +107,14 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 				mods.add(module);
 			}
 			projectToModules.put(project.getLocation(), mods);
-			if( requiresSave )
+			if( requiresSave ) {
 				try {
 					ArchivesModel.instance().save(project.getLocation(), 
 							new NullProgressMonitor());
 				} catch( ArchivesModelException ame ) {
 					
 				}
+			}
 		}
 	}
 	
