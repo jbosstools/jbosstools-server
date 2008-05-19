@@ -81,7 +81,7 @@ public class PublisherEventLogger {
 	public static final String DEST_PROPERTY = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.DEST_PROPERTY";
 	public static final String EXCEPTION_MESSAGE = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.EXCEPTION_PROPERTY";
 	public static final String CHANGED_MODULE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.CHANGED_MODULE_COUNT_PROPERTY";
-	public static final String CHANGED_FILE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.CHANGED_FILE_COUNT_PROPERTY";
+	public static final String CHANGED_RESOURCE_COUNT = "org.jboss.ide.eclipse.as.core.publishers.Events.Properties.CHANGED_RESOURCE_COUNT_PROPERTY";
 	
 	
 	public static class DeletedEvent extends EventLogTreeItem {

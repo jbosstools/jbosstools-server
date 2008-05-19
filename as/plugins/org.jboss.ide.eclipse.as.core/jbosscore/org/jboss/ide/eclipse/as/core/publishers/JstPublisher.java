@@ -118,7 +118,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countMembers(module));
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countMembers(module));
 		IPath deployPath = getDeployPath(moduleTree);
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
@@ -151,7 +151,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	}
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countChanges(delta));
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IStatus[] results = new IStatus[] {};
 		if( !deployPackaged(moduleTree))
 			results = new PublishUtil(server.getServer()).publishDelta(delta, getDeployPath(moduleTree), monitor);
@@ -168,7 +168,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countMembers(module[module.length-1]));
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countMembers(module[module.length-1]));
 		boolean error = localSafeDelete(getDeployPath(module), eventRoot);
 		if( error ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
