@@ -53,7 +53,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
         } else if( publishType == INCREMENTAL_PUBLISH ) {
         	status = publish(server, module2, false, monitor);
         }
-		root.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, new Integer(1));
+		root.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, new Integer(1));
 		return status;
 
 	}

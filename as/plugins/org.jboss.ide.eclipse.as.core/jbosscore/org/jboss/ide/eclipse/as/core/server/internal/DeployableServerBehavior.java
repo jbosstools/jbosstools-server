@@ -137,11 +137,11 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			}
 			
 			// add file changed count to top level element
-			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_FILE_COUNT);
-			j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_FILE_COUNT);
+			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
+			j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
 			j = j == null ? new Integer(0) : j;
 			int count = (i == null ? 0 : i.intValue()) + j.intValue();
-			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, count);
+			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, count);
 		}
 	}
 	

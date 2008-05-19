@@ -118,12 +118,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 
 		PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		if( incremental ) {
-			eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countChanges(delta));
 			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta, listener);
 		} else {
 			// full publish, copy whole folder or file
-			eventRoot.setProperty(PublisherEventLogger.CHANGED_FILE_COUNT, countConcreteFiles(module));
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
 		}
 	}
