@@ -34,10 +34,10 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -47,8 +47,12 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class ServerPasswordSection extends ServerEditorSection {
 
+	private ModifyListener nameModifyListener, passModifyListener;
+	private Text nameText, passText;
+	private ServerAttributeHelper helper;
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
+		helper = new ServerAttributeHelper(server.getOriginal(), server);
 	}
 	
 	public void createSection(Composite parent) {
@@ -66,60 +70,78 @@ public class ServerPasswordSection extends ServerEditorSection {
 		GridData d = new GridData(); d.horizontalSpan = 2;
 		explanation.setLayoutData(d);
 		
-		Label name = toolkit.createLabel(composite, Messages.swf_Username);
-		final Text nameText = toolkit.createText(composite, ((ServerWorkingCopy)server).getAttribute(JBossServer.SERVER_USERNAME, "")); 
-		Label pass = toolkit.createLabel(composite, Messages.swf_Password);
-		final Text passText = toolkit.createText(composite, ((ServerWorkingCopy)server).getAttribute(JBossServer.SERVER_PASSWORD, ""));
+		toolkit.createLabel(composite, Messages.swf_Username);
+		String n = helper.getAttribute(JBossServer.SERVER_USERNAME, "");
+		String p = helper.getAttribute(JBossServer.SERVER_PASSWORD, "");
+		nameText = toolkit.createText(composite, n); 
+		toolkit.createLabel(composite, Messages.swf_Password);
+		passText = toolkit.createText(composite, p);
 		
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
 		nameText.setLayoutData(d);
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
 		passText.setLayoutData(d);
 		
-		
-		nameText.addModifyListener(new ModifyListener() {
+		nameModifyListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				execute(new SetVarCommand(server, nameText, nameText.getText(), JBossServer.SERVER_USERNAME));
+				execute(new SetUserCommand(server));
 			}
-		});
+		};
 		
-		passText.addModifyListener(new ModifyListener() {
+		passModifyListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				execute(new SetVarCommand(server, passText, passText.getText(), JBossServer.SERVER_PASSWORD));
+				execute(new SetPassCommand(server));
 			}
-		});
+		};
 
+		nameText.addModifyListener(nameModifyListener);
+		passText.addModifyListener(passModifyListener);
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
 
 	
-	public static class SetVarCommand extends ServerCommand {
+	public class SetUserCommand extends SetVarCommand {
+		public SetUserCommand(IServerWorkingCopy server) {
+			super(server, "Change Username", nameText, nameText.getText(), 
+					JBossServer.SERVER_USERNAME, nameModifyListener);
+		}
+	}
+
+	public class SetPassCommand extends SetVarCommand {
+		public SetPassCommand(IServerWorkingCopy server) {
+			super(server, "Change Password", passText, passText.getText(), 
+					JBossServer.SERVER_PASSWORD, passModifyListener);
+		}
+	}
+
+	public class SetVarCommand extends ServerCommand {
 		private String oldVal;
 		private String newVal;
 		private String key;
 		private Text text;
+		private ModifyListener listener;
 		
-		public SetVarCommand(IServerWorkingCopy wc, Text text, String newVal, String attributeKey) {
-			super(wc, "SetVarCommand");
+		public SetVarCommand(IServerWorkingCopy wc, String name, 
+				Text text, String newVal, String attributeKey,
+				ModifyListener listener) {
+			super(wc, name);
 			this.text = text;
 			this.key = attributeKey;
 			this.newVal = newVal;
-			if( wc instanceof ServerWorkingCopy ) {
-				this.oldVal = ((ServerWorkingCopy)wc).getAttribute(attributeKey, "");
-			}
+			this.listener = listener;
+			this.oldVal = helper.getAttribute(attributeKey, "");
 		}
 		
 		public void execute() {
-			if( server instanceof ServerWorkingCopy ) 
-				((ServerWorkingCopy)server).setAttribute(key, newVal);
+			helper.setAttribute(key, newVal);
 		}
 		
 		public void undo() {
-			if( server instanceof ServerWorkingCopy ) 
-				((ServerWorkingCopy)server).setAttribute(key, oldVal);
+			text.removeModifyListener(listener);
+			helper.setAttribute(key, oldVal);
 			text.setText(oldVal);
+			text.addModifyListener(listener);
 		}
 	}
-
 }

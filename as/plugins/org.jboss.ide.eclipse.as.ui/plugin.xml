@@ -95,11 +95,6 @@
 
    <extension
          point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.eclipse.wst.server.ui.preferencePage"
-            class="org.jboss.tools.as.wst.server.ui.views.server.preferencepages.JBossServersPreferencePage"
-            id="org.jboss.ide.eclipse.as.ui.jbossServerPreferencePage"
-            name="JBoss Servers"/>
 
       <page
             category="org.eclipse.wst.server.ui.preferencePage"
@@ -233,8 +228,14 @@
          point="org.eclipse.wst.server.ui.editorPageSections">
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.DeploySection"
-            id="org.jboss.ide.eclipse.as.ui.exitor.deployServer.deployDir"
+            id="org.jboss.ide.eclipse.as.ui.editor.deployServer.deployDir"
             insertionId="org.eclipse.wst.server.editor.overview.left"
+            order="10"
+            typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50"/>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PollerSection"
+            id="org.jboss.ide.eclipse.as.ui.editor.pollerSection"
+            insertionId="org.eclipse.wst.server.editor.overview.right"
             order="10"
             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50"/>
       <section
