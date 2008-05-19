@@ -3,7 +3,8 @@
       id="org.jboss.ide.eclipse.as.feature"
       label="JBossAS Tools"
       version="1.0.0"
-      provider-name="JBoss, Inc.">
+      provider-name="JBoss, Inc."
+      plugin="org.jboss.ide.eclipse.as.ui">
 
    <description url="http://www.jboss.org/tools">
       JBossAS Tools Feature
