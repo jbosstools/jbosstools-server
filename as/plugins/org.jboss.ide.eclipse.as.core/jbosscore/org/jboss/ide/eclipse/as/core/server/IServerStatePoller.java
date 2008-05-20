@@ -43,13 +43,27 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	public static final int SUCCESS = 2;
 	public static final int FAILED = 3;
 	
+	/**
+	 * Force a successful state change if we timeout
+	 */
+	public static final int TIMEOUT_BEHAVIOR_SUCCEED = 0;
+	
+	/**
+	 * Ignore the timeout and let the wst tools handle the timeout
+	 */
+	public static final int TIMEOUT_BEHAVIOR_IGNORE = 1;
+	
+	/**
+	 * Force a failure upon timeout
+	 */
+	public static final int TIMEOUT_BEHAVIOR_FAIL = 2;
+	
 	public ServerStatePollerType getPollerType();
 	public void setPollerType(ServerStatePollerType type);
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
 	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	public boolean getState() throws PollingException, RequiresInfoException; 
-	
 	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
 	public List<String> getRequiredProperties();
 	public void failureHandled(Properties properties);
@@ -59,6 +73,12 @@ public interface IServerStatePoller extends IServerPollingAttributes {
 	 * @param type CANCEL or TIMEOUT_REACHED
 	 */
 	public void cancel(int type);    
+	
+	/**
+	 * Returns a TIMEOUT_BEHAVIOR_XXX constant
+	 * @return
+	 */
+	public int getTimeoutBehavior();
 
 	public class PollingException extends Exception {
 		private static final long serialVersionUID = -7830978018908940551L;

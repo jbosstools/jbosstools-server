@@ -272,4 +272,8 @@ public class JMXPoller implements IServerStatePoller {
 	public IServer getServer() {
 		return server;
 	}
+	
+	public int getTimeoutBehavior() {
+		return TIMEOUT_BEHAVIOR_IGNORE;
+	}
 }

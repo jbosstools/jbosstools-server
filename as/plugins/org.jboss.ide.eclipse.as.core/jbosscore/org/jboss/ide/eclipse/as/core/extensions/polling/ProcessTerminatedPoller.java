@@ -84,5 +84,9 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 		this.type = type;
 	}
 
+	public int getTimeoutBehavior() {
+		return TIMEOUT_BEHAVIOR_IGNORE;
+	}
+
 
 }

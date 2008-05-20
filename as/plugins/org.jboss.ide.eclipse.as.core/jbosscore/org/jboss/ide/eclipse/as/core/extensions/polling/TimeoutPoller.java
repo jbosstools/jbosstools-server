@@ -52,7 +52,7 @@ public class TimeoutPoller implements IServerStatePoller {
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
 		this.expectedState = expectedState;
 		this.server = server;
-		this.endTime = new Date().getTime() + getTimeout() - 2000;
+		this.endTime = new Date().getTime() + getTimeout();
 	}
 	
 	public IServer getServer() {
@@ -76,17 +76,10 @@ public class TimeoutPoller implements IServerStatePoller {
 	}
 	
 	public int getTimeout() {
-		int timeout;
-		JBossServer jbs = ((JBossServer)server.loadAdapter(JBossServer.class, null));
-		ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
-		if( expectedState == IServerStatePoller.SERVER_UP) {
-			int def = ((ServerType)server.getServerType()).getStartTimeout();
-			timeout = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, def);
-		} else {
-			int def = ((ServerType)server.getServerType()).getStopTimeout();
-			timeout = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, def);
-		}
-		return timeout;
+		if( expectedState == IServerStatePoller.SERVER_UP)
+			return (getServer().getStartTimeout()-3) * 1000;
+		else 
+			return (getServer().getStopTimeout()-3) * 1000;
 	}
 
 	public boolean supportsShutdown() {
@@ -110,6 +103,13 @@ public class TimeoutPoller implements IServerStatePoller {
 
 	public void setPollerType(ServerStatePollerType type) {
 		this.type = type;
+	}
+
+	public int getTimeoutBehavior() {
+		if( expectedState == IServerStatePoller.SERVER_UP)
+			return TIMEOUT_BEHAVIOR_SUCCEED;
+		else 
+			return TIMEOUT_BEHAVIOR_IGNORE;
 	}
 
 

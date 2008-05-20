@@ -103,20 +103,11 @@ public class PollThread extends Thread {
 		abortMessage = message;
 	}
 
-	
-	// Getting the timeouts. First from plugin.xml as default, or from user settings.
 	public int getTimeout() {
-		int timeout;
-		JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
-		ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
-		if( expectedState == IServerStatePoller.SERVER_UP) {
-			int def = ((ServerType)getServer().getServerType()).getStartTimeout();
-			timeout = helper.getAttribute(IServerPollingAttributes.START_TIMEOUT, def);
-		} else {
-			int def = ((ServerType)getServer().getServerType()).getStopTimeout();
-			timeout = helper.getAttribute(IServerPollingAttributes.STOP_TIMEOUT, def);
-		}
-		return timeout;
+		if( expectedState == IServerStatePoller.SERVER_UP)
+			return (getServer().getStartTimeout()-2) * 1000;
+		else 
+			return (getServer().getStopTimeout()-2) * 1000;
 	}
 	
 	
