@@ -185,22 +185,16 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String getDeployDir() {
-		if( server instanceof ServerWorkingCopy ) {
-			return ((ServerWorkingCopy)server).getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
-		}
-		return "";
+		return helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
 	}
 	private String getTempDeployDir() {
-		if( server instanceof ServerWorkingCopy ) {
-			return ((ServerWorkingCopy)server).getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
-					ServerPlugin.getInstance().getStateLocation().toFile().getAbsolutePath());
-		}
-		return "";
+		String defaultt = ServerPlugin.getInstance().getStateLocation().toFile().getAbsolutePath();
+		return helper.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, defaultt);
 	}
 	
 	public IStatus[] getSaveStatus() {
 		String error = "";
-		List status = new ArrayList();
+		List<Status> status = new ArrayList<Status>();
 		if(!new Path(deployText.getText()).toFile().exists()) {
 			String msg = "The deploy directory \"" + deployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
@@ -214,7 +208,7 @@ public class DeploySection extends ServerEditorSection {
 		}
 		
 		setErrorMessage(error.equals("") ? null : error);
-		return status.size() == 0 ? null : (IStatus[]) status.toArray(new IStatus[status.size()]);
+		return status.size() == 0 ? null : status.toArray(new IStatus[status.size()]);
 	}
 
 
@@ -235,8 +229,10 @@ public class DeploySection extends ServerEditorSection {
 			helper.setAttribute(DeployableServer.DEPLOY_DIRECTORY, newDir);
 		}
 		public void undo() {
+			text.removeModifyListener(listener);
 			helper.setAttribute(DeployableServer.DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
+			text.addModifyListener(listener);
 		}
 	}
 
