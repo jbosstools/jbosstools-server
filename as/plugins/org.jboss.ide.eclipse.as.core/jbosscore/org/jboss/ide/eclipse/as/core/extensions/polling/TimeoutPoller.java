@@ -26,12 +26,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.ServerType;
-import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -45,7 +41,6 @@ public class TimeoutPoller implements IServerStatePoller {
 	private boolean expectedState;
 	private long endTime;
 	private IServer server;
-	private int timeout = -1;
 	private ServerStatePollerType type;
 
 	
