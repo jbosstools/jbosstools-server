@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="quick_start">
+<chapter id="quick_start" revisionflag="added">
   <title>Quick Start with JBoss Server</title>
 
   <para>This chapter covers the basics of working with the JBoss server. If you already have
@@ -166,10 +166,10 @@
       </mediaobject>
     </figure>
 
-
+    <para>Here, we have just performed the basic steps you should know to quick start with JBoss
+      server. In fact, there are more functionalities which you can make use of. Further we will talk about them in detail.</para>
   </section>
-  <para>Here, we have just performed the basic steps you should know to quick start with JBoss
-  server. In fact, there are more functionalities which you can make use of. Further we will talk about them in detail.</para>
+  
   
   <section>
     <title>Other relevant resources on the topic</title>
