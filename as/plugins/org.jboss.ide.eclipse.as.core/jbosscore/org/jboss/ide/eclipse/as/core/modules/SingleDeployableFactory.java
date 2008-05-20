@@ -165,7 +165,8 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			if( !usedMods.contains(mods[i])) {
 				SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)
 					mods[i].loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
-				unmakeDeployable(delegate.getWorkspaceRelativePath());
+				if( !delegate.getGlobalSourcePath().toFile().exists())
+					unmakeDeployable(delegate.getWorkspaceRelativePath());
 			} else {
 				usedMods.remove(mods[i]);
 			}
