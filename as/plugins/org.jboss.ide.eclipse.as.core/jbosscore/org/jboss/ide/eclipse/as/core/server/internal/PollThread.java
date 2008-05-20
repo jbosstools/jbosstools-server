@@ -116,7 +116,7 @@ public class PollThread extends Thread {
 		if( poller == null ) {
 			alertEventLogStarting();
 			alertPollerNotFound();
-			alertBehavior(getTimeoutBehavior(), false);
+			alertBehavior(!expectedState, false);
 			return;
 		}
 		
@@ -178,6 +178,7 @@ public class PollThread extends Thread {
 				try {
 					currentState = poller.getState();
 					poller.cleanup();
+					alertBehavior(currentState, finalAlert);
 				} catch( PollingException pe) {
 					// abort and put the message in event log
 					poller.cancel(IServerStatePoller.CANCEL);
@@ -191,12 +192,19 @@ public class PollThread extends Thread {
 			} else {
 				// we timed out.  get response from preferences
 				poller.cancel(IServerStatePoller.TIMEOUT_REACHED);
-				currentState = getTimeoutBehavior();
+				int behavior = poller.getTimeoutBehavior();
 				poller.cleanup();
 				alertEventLogTimeout();
-				finalAlert = false;
+				if( behavior != IServerStatePoller.TIMEOUT_BEHAVIOR_IGNORE) {
+					// xnor; 
+					// if behavior is to succeed and we're expected to go up, we're up
+					// if behavior is to fail and we're expecting to be down, we're up (failed to shutdown)
+					// all other cases, we're down.
+					currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
+					finalAlert = false;
+					alertBehavior(currentState, finalAlert);
+				}
 			}
-			alertBehavior(currentState, finalAlert);
 		}
 	}
 
@@ -222,18 +230,6 @@ public class PollThread extends Thread {
 		}
 	}
 
-	protected boolean getTimeoutBehavior() {
-		// timeout has been reached, so let the user's preferences override
-		JBossServer jbs = ((JBossServer)getServer().loadAdapter(JBossServer.class, null));
-		ServerAttributeHelper helper = (ServerAttributeHelper)jbs.getAttributeHelper();
-			
-		boolean behavior = helper.getAttribute(IServerPollingAttributes.TIMEOUT_BEHAVIOR, IServerPollingAttributes.TIMEOUT_IGNORE);
-		if( behavior == IServerPollingAttributes.TIMEOUT_ABORT ) 
-			return !expectedState;
-
-		return expectedState;
-	}
-		
 	protected IServer getServer() {
 		 return behavior.getServer();
 	}
