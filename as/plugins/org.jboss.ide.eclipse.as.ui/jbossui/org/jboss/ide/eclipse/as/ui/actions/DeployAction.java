@@ -21,8 +21,13 @@
  */
 package org.jboss.ide.eclipse.as.ui.actions;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -55,6 +60,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
+import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.UndeployFromServerJob;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
@@ -71,6 +77,48 @@ public class DeployAction implements IObjectActionDelegate {
 	public DeployAction() {
 	}
 
+	public void selectionChanged(IAction action, ISelection selection) {
+		this.selection = selection;
+		action.setEnabled(verifyEnablement());
+		action.setText(getText(verifyType()));
+	}
+
+	protected boolean verifyEnablement() {
+		if( selection instanceof IStructuredSelection ) {
+			IStructuredSelection sel = (IStructuredSelection)selection;
+			if( sel.isEmpty())
+				return false;
+			Iterator i = sel.iterator();
+			while(i.hasNext())
+				if( !(i.next() instanceof IFile ))
+					return false;
+		}
+		return true;
+	}
+
+	protected String getText(boolean type) {
+		if( type )
+			return "Unmake Deployable";
+		return "Make Deployable";
+	}
+	
+	// True if we want to unpublish, false if we wantt to publish
+	protected boolean verifyType() {
+		if( selection instanceof IStructuredSelection ) {
+			IStructuredSelection sel = (IStructuredSelection)selection;
+			if( sel.isEmpty())
+				return false;
+			Iterator i = sel.iterator();
+			Object o;
+			while(i.hasNext()) {
+				o = i.next();
+				if( !(o instanceof IFile) || SingleDeployableFactory.findModule(((IFile)o).getFullPath()) == null)
+					return false;
+			}
+		}
+		return true;
+	}
+
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		if(targetPart!=null && targetPart.getSite()!=null) {
 			shell = targetPart.getSite().getShell();
@@ -78,6 +126,35 @@ public class DeployAction implements IObjectActionDelegate {
 	}
 
 	public void run(IAction action) {
+		if( verifyType())
+			makeUndeployable();
+		else
+			makeDeployable();
+	}
+	
+	protected void makeDeployable() {
+		IStructuredSelection sel2 = (IStructuredSelection)selection;
+		Object[] objs = sel2.toArray();
+		IModule[] modules = new IModule[objs.length];
+		for( int i = 0; i < objs.length; i++ ) {
+			SingleDeployableFactory.makeDeployable(((IFile)objs[i]).getFullPath());
+			modules[i] = SingleDeployableFactory.findModule(((IFile)objs[i]).getFullPath());
+		}
+		
+		tryToPublish();
+	}
+
+	protected void makeUndeployable() {
+		IStructuredSelection sel2 = (IStructuredSelection)selection;
+		Object[] objs = sel2.toArray();
+		ArrayList<IPath> paths = new ArrayList<IPath>();
+		for( int i = 0; i < objs.length; i++ )
+			if(objs[i] instanceof IFile )
+				paths.add(((IFile)objs[i]).getFullPath());
+		new UndeployFromServerJob(paths).schedule();
+	}
+	
+	protected void tryToPublish() {
 		IServer[] deployableServersAsIServers = ServerConverter.getDeployableServersAsIServers();
 		if(deployableServersAsIServers.length==0) {
 			MessageDialog.openInformation(shell, "No deployable servers found", "There are no servers that support deploying single files.");
@@ -104,7 +181,6 @@ public class DeployAction implements IObjectActionDelegate {
 			} else {
 				IModule[] modules = new IModule[objs.length];
 				for( int i = 0; i < objs.length; i++ ) {
-					SingleDeployableFactory.makeDeployable(((IFile)objs[i]).getFullPath());
 					modules[i] = SingleDeployableFactory.findModule(((IFile)objs[i]).getFullPath());
 				}
 				try {
@@ -147,11 +223,6 @@ public class DeployAction implements IObjectActionDelegate {
 		}
 		return null;
 	}
-	
-	public void selectionChanged(IAction action, ISelection selection) {
-		this.selection = selection;
-	}
-
 	
 	public class SelectServerDialog extends Dialog {
 		private Object selected;

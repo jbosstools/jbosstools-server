@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -288,21 +289,28 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		}
 	}
 	
-	public class UndeployFromServerJob extends Job {
+	public static class UndeployFromServerJob extends Job {
 		private ArrayList<IPath> paths;
+		private boolean removeFromFactory;
 		public UndeployFromServerJob(ArrayList<IPath> paths) {
+			this(paths,true);
+		}
+		public UndeployFromServerJob(ArrayList<IPath> paths, boolean removeFromFactory) {
 			super("Undeploy Single Files From Server");
 			this.paths = paths;
+			this.removeFromFactory = removeFromFactory;
 		}
 
 		protected IStatus run(IProgressMonitor monitor) {
 			IPath next;
 			IModule mod;
 			IServer[] allServers = ServerCore.getServers();
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Failed to undeploy modules from all servers", null);
 			for( Iterator i = paths.iterator(); i.hasNext(); ) {
 				next = (IPath)i.next();
-				mod = getModule(next);
+				mod = getFactory().getModule(next);
 				if( mod != null ) {
+					boolean removedFromAllServers = true;
 					for( int j = 0; j < allServers.length; j++ ) {
 						List l = Arrays.asList(allServers[j].getModules());
 						if( l.contains(mod)) {
@@ -312,12 +320,18 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 								IServer s = copy.save(false, new NullProgressMonitor());
 								new PublishServerJob(s).schedule();
 							} catch( CoreException ce ) {
+								removedFromAllServers = false;
+								IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Failed to remove " + next + " from " + allServers[j].getName(), ce);
+								ms.add(s);
 							}
 						}
 					}
+					if( removeFromFactory && removedFromAllServers )
+						SingleDeployableFactory.unmakeDeployable(next);
+
 				}
 			}
-			return Status.OK_STATUS;
+			return ms.getChildren().length == 0 ? Status.OK_STATUS : ms;
 		}
 		
 	}
