@@ -319,7 +319,7 @@
        objectClass="org.eclipse.core.resources.IFile">
       <action
          id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action" 
-         label="Deploy To Server"
+         label="Make Publishable"
          icon="icons/publish.gif"
          menubarPath="additions" 
       class="org.jboss.ide.eclipse.as.ui.actions.DeployAction"> 
