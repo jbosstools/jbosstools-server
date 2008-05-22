@@ -187,8 +187,7 @@ public class DeployAction implements IObjectActionDelegate {
 					IServerWorkingCopy copy = server.createWorkingCopy();
 					copy.modifyModules(modules, new IModule[0], new NullProgressMonitor());
 					IServer saved = copy.save(false, new NullProgressMonitor());
-					PublishServerJob job = new PublishServerJob(saved);
-					job.schedule();
+					saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 				} catch( CoreException ce ) {
 					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Publishing files to server failed", ce);
 					errorTitle = "Cannot Publish to Server";
