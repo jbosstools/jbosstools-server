@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -118,7 +119,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countMembers(module));
+		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IPath deployPath = getDeployPath(moduleTree);
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
@@ -130,8 +131,10 @@ public class JstPublisher implements IJBossServerPublisher {
 		IStatus[] results;
 		if( !deployPackaged(moduleTree))
 			results = new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor);
+		else if( isBinaryObject(moduleTree))
+			results = copyBinaryModule(moduleTree);
 		else
-			results = packModuleIntoJar(moduleTree[moduleTree.length-1], getDeployPath(moduleTree));
+			results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);
 		
 		int length = results == null ? 0 : results.length;
 		for( int i = 0; i < length; i++ ) {
@@ -153,11 +156,15 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IStatus[] results = new IStatus[] {};
+		IPath deployPath = getDeployPath(moduleTree);
 		if( !deployPackaged(moduleTree))
-			results = new PublishUtil(server.getServer()).publishDelta(delta, getDeployPath(moduleTree), monitor);
-		else if( delta.length > 0 )
-			results = packModuleIntoJar(moduleTree[moduleTree.length-1], getDeployPath(moduleTree));
-		
+			results = new PublishUtil(server.getServer()).publishDelta(delta, deployPath, monitor);
+		else if( delta.length > 0 ) {
+			if( isBinaryObject(moduleTree))
+				results = copyBinaryModule(moduleTree);
+			else
+				results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);
+		}
 		int length = results == null ? 0 : results.length;
 		for( int i = 0; i < length; i++ ) {
 			new PublisherEventLogger.PublishUtilStatusWrapper(eventRoot, results[i]);
@@ -185,7 +192,7 @@ public class JstPublisher implements IJBossServerPublisher {
 			name = moduleTree[i].getName();
 			if( new Path(name).segmentCount() > 1 )
 				// we strongly suspect this is a binary object and not a project
-				return root;
+				return root.append(new Path(name).lastSegment());
 			if( "jst.ear".equals(type)) 
 				root = root.append(name + ".ear");
 			else if( "jst.web".equals(type)) 
@@ -200,6 +207,65 @@ public class JstPublisher implements IJBossServerPublisher {
 		return root;
 	}
 	
+	protected boolean isBinaryObject(IModule[] moduleTree) {
+		String name;
+		for( int i = 0; i < moduleTree.length; i++ ) {
+			name = moduleTree[i].getName();
+			if( new Path(name).segmentCount() > 1 )
+				// we strongly suspect this is a binary object and not a project
+				return true;
+		}
+		return false;
+	}
+	
+	
+	protected class FileUtilListener implements IFileUtilListener {
+		protected ArrayList<IStatus> errors = new ArrayList<IStatus>();
+		public void fileCoppied(File source, File dest, boolean result,
+				Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error copying file " + source.toString() + " to " + dest.toString(), e));
+		}
+		public void fileDeleted(File file, boolean result, Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting file " + file.toString(), e));
+		}
+
+		public void folderDeleted(File file, boolean result, Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting folder " + file.toString(), e));
+		} 
+		
+		public IStatus[] getStatuses() {
+			return (IStatus[]) errors.toArray(new IStatus[errors.size()]);
+		}
+	}
+	protected IStatus[] copyBinaryModule(IModule[] moduleTree) {
+		try {
+			IPath deployPath = getDeployPath(moduleTree);
+			FileUtilListener listener = new FileUtilListener();
+			ModuleDelegate deployable =(ModuleDelegate)moduleTree[moduleTree.length-1].loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+			IModuleResource[] members = deployable.members();
+			File source = (File)members[0].getAdapter(File.class);
+			if( source == null ) {
+				IFile ifile = (IFile)members[0].getAdapter(IFile.class);
+				if( ifile != null ) 
+					source = ifile.getLocation().toFile();
+			}
+			if( source != null ) {
+				FileUtil.fileSafeCopy(source, deployPath.toFile(), listener);
+				return listener.getStatuses();
+			} else {
+				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+						"Could not publish module " + moduleTree[moduleTree.length-1]);
+				return new IStatus[] {s};
+			}
+		} catch( CoreException ce ) {
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"Could not publish module " + moduleTree[moduleTree.length-1], ce);
+			return new IStatus[] {s};
+		}
+	}
 	/**
 	 * 
 	 * @param deployPath
