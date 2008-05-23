@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="perspective" xreflabel="perspective">
+    <?dbhtml filename="perspective.html"?>
+    <chapterinfo>
+        <keywordset>
+            <keyword>JBoss Developer Studio</keyword>
+            <keyword>Eclipse</keyword>
+            <keyword>Deploy</keyword>
+            <keyword>Deployment</keyword>
+            <keyword>JBoss</keyword>
+        </keywordset>
+    </chapterinfo>
+    <title>JBoss AS Perspective</title>
+
+    <para>This chapter tells how to manage installed JBoss Servers via <property>JBoss AS
+            Perspective</property>.</para>
+
+    <para>The <property>JBoss AS Perspective</property> is similar to the <property>Java
+        Perspective</property>, but it contains a few additional views. Two of the additional views
+        are standard views, specifically the <property>Console View</property> and the
+            <property>Properties View</property>. The other two views that are added are the
+            <property>Project Archives View</property> and the <property>JBoss Server
+        View</property>.</para>
+
+    <section id="JBossServerView">
+        <?dbhtml filename="JBossServerView.html"?>
+        <title>The JBoss Server View</title>
+        <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect
+            in detail all parts it consists of. </para>
+
+        <para>The <property>JBoss Server View</property> is based on the WTP view, Server View. The
+            top part of the <property>JBoss Servers View</property> essentially embeds the original
+            Server View directly into it, making slight changes to the context menu. A second part
+            was added to provide additional information about the server selected in the top part. </para>
+
+        <figure>
+            <title>The JBoss Server View</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_1.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+
+
+        <para>The view's toolbar provides quick access to starting a server (in debug mode, run
+            mode, or profile mode), restarting a server, stopping a server, or publishing to a
+            server.</para>
+        <figure>
+            <title>The JBoss Server View Toolbar</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/perspective/perspective_19.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+
+        <para>In order to debug your applications or EJB's that are deployed to the server, you must
+            start the server in debug mode. By starting the server in debug mode, eclipse will allow
+            you to set breakpoints on code in your workspace and step through the code.</para>
+        
+        <para>The publish icon on the extreme right will republish any modules where it has
+            determined the workspace is out of sync with the server. It will attempt to do an
+            incremental publish if it turns out that the module in question is capable of doing one.</para>
+
+        <para>Now, let&apos;s get to know with both of the <property>JBoss Server
+            View</property> parts.</para>
+        <section>
+            <title>Top Part of the JBoss Server View</title>
+            <para>In the top part of the <property>JBoss Server View</property> all declared servers
+                are represented as well as their current states, that is, whether they are started
+                or stopped. </para>
+            <figure>
+                <title>Server Publish Status</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_18.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The top part also shows the server&apos;s publish status. The fallowing table
+                lists possible statuses.</para>
+
+            <table>
+                <title>Server Publish Status</title>
+                <tgroup cols="2">
+                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="2" colwidth="3*"/>
+
+
+                    <thead>
+                        <row>
+                            <entry align="center">Status</entry>
+
+                            <entry align="center">Description</entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry align="center">
+                                <para>Republish</para>
+                            </entry>
+
+                            <entry align="center">
+                                <para>The status which allows you to see if changes are
+                                awaiting</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry align="center">
+                                <para>Publishing...</para>
+                            </entry>
+
+                            <entry align="center">
+                                <para>The status which shows if changes are being updated</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry align="center">
+                                <para>Synchronized</para>
+                            </entry>
+
+                            <entry align="center">
+                                <para>The status which allows you to see if changes are
+                                in-sync</para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <para>By double-clicking on any server, an editor window will appear allowing you to
+                edit parts of that server. On the figure you can see that a username/password is
+                available in the UI when configuring the server. If you get an SecurityException
+                when trying to launch the server, it is most likely because your server is protected
+                and hence you need to fill the username/password fields with appropriate values.</para>
+
+            <figure>
+                <title>Preferences Page for the Chosen Server</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_20.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para id="com_line_arg">The editor will also allow you to modify that server&apos;s launch
+                configuration. It&apos;s just after clicking <emphasis>
+                    <property>Open launch configuration</property>
+                </emphasis> link. In the open window there are the tabs for setting command line
+                arguments and other things that are relevant to launching the server.</para>
+
+            <figure>
+                <title>Launch Configuration Properties</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_22.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>Look up <ulink
+                    url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"
+                    >here</ulink> to find parameters which can be specified for <property>JBoss
+                    Server</property>.</para>
+
+            <para>As the JBoss Servers have few properties to modify in this editor, a shortcut to
+                the launch configuration has been provided in the context menu when right-clicking
+                on a server.</para>
+
+            <figure>
+                <title>Launch Configuration</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_21.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The following table describes all these additional properties.</para>
+            <table>
+                <title>Server Properties through the Context Menu</title>
+                <tgroup cols="2">
+                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="2" colwidth="3*"/>
+
+                    <thead>
+                        <row>
+                            <entry align="center">
+                                <para>Name</para>
+                            </entry>
+
+                            <entry align="center">
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para>New Server</para>
+                            </entry>
+                            <entry>
+                                <para>The option allows to define a new server</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Delete</para>
+                            </entry>
+                            <entry>
+                                <para>Standard option that allows to delete the chosen server</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Start</para>
+                            </entry>
+                            <entry>
+                                <para>The action for stating a server in a run mode</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Debug</para>
+                            </entry>
+                            <entry>
+                                <para>The action for stating a server in a debug mode</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Stop</para>
+                            </entry>
+                            <entry>
+                                <para>The action for stopping a declared server</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Publish</para>
+                            </entry>
+                            <entry>
+                                <para>The action for synching the publish information between the
+                                    server and workspace</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Clean</para>
+                            </entry>
+                            <entry>
+                                <para>The option for complete redeploying the resources</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Twiddle Server</para>
+                            </entry>
+                            <entry>
+                                <para>The option provides a dialog for running Twiddle commands
+                                    against the Twiddle Server</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Edit Launch Configuration</para>
+                            </entry>
+                            <entry>
+                                <para>The option that provides an editor for editing launch
+                                    configuration properties of the proper server</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Add and Remove Projects</para>
+                            </entry>
+                            <entry>
+                                <para>The option allows to publish a new project to the server (if
+                                    its type is supported)</para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <para>Mentioned above Twiddle is a JMX library that comes with JBoss, and you can use it
+                to access any variables that exposed via the JBoss JMX interfaces.</para>
+        </section>
+
+        <section>
+            <title>Bottom Part of the JBoss Server View</title>
+
+            <para>Here, we dwell on the bottom part of the <property>JBoss Server View</property>.</para>
+            <para>First, we should say that the bottom part is meant to provide additional
+                functionality relevant to the server selected in the top part of the view. If a
+                standard server element is selected from above, some of the extensions may still
+                provide the additional information. Others may not. So, let&apos;s look at the
+                currently available extensions to the bottom part of the <property>JBoss Server
+                View</property>.</para>
+
+            <figure>
+                <title>View Extensions</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_3.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>In order to access the view&apos;s preferences, you should access <emphasis>
+                    <property>Window &gt; Preferences &gt; JBoss Tools &gt; JBoss
+                        Servers &gt; View</property>
+                </emphasis>. This preference page allows you to select which view extensions you
+                want on or off, the order they appear in the view, as well as any other
+                extension-specific preferences that may be available.</para>
+
+            <figure>
+                <title>View Preferences</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_2.png" scale="75"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The first view extension is <emphasis>
+                    <property>Modules</property>
+                </emphasis> section. It shows which modules are currently deployed to the server,
+                and allows you to remove them from the server, or force a full republish upon them.
+                It only shows which modules have been deployed through Eclipse, not any and all
+                modules that happen to be in the deploy directory.</para>
+
+            <figure>
+                <title>Modules Action</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_4.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The <emphasis>
+                    <property>Event Log</property>
+                </emphasis> will show relevant information to your server&apos;s startup,
+                shutdown, and publish processes. This allows you to keep an eye on what&apos;s
+                going on (such as automatic incremental deployment if you have it enabled). The only
+                action available is to clear the <emphasis>
+                    <property>Event Log</property>
+                </emphasis>. However, if the <property>Properties View</property> is opened, you can
+                receive further information on each <emphasis>
+                    <property>Event Log</property>
+                </emphasis> item (when available).</para>
+
+            <figure>
+                <title>Event Log Actions</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_5.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <figure>
+                <title>Stopping the Server</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_6.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis> category allows you to quickly browse to descriptor files in your
+                server's deploy directory and check or change the values. Its use requires the
+                    <property>Properties view</property>. Basically, <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis> includes XML XPaths where a xpath is a path used to access some specific
+                part of an xml document. </para>
+
+            <figure>
+                <title>XML Configuration and Properties View</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_7.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <note>
+                <para>You are assumed to be familiar with XPath. If not, we highly suggested that
+                    you look through an appropriate manual or tutorial on the topic.</para>
+            </note>
+
+            <para>The <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis> category itself contains only a list of categories. <emphasis>
+                    <property>Ports</property>
+                </emphasis> are provided by default and is filled with many of the most commonly
+                used ports in the <property>JBoss Server</property>. In the <property>Properties
+                    view</property> you can see an identifier and nested files underneath in which
+                that xpath can be found as well as its current value. The details of the xpath are
+                hidden as all you need to see is only which file you&apos;re referring to and
+                what its current value is.</para>
+
+            <para> By right-clicking on <emphasis>
+                    <property>XML Configuration</property>, </emphasis> you can create a new
+                category. Besides, context menu for <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis> category makes possible to disable it. You can disable any category in
+                the bottom part of the <emphasis>
+                    <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                    <property>Inactive Categories</property>
+                </emphasis> afterwards to re-enable.</para>
+
+            <figure>
+                <title>Adding New Category</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_8.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>By right-clicking on <emphasis>
+                    <property>Ports</property>
+                </emphasis> or any other category in <emphasis>
+                    <property>XML Configuration</property>
+                </emphasis>, you can create a new xpath.</para>
+
+            <figure>
+                <title>Adding New XPath</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_9.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>After that, the dialog shown below will appear.</para>
+
+            <figure>
+                <title>Adding New XPath</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_10.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The goal here is to get an end result where the XPath matches up with a necessary
+                property. With that in mind, let&apos;s look how it works. If the property you
+                want to reach is the value of the <emphasis>name</emphasis> attribute in the element
+                    <emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
+                    <property>XPath Patten</property>
+                </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
+                    <property>Attribute Name</property>
+                </emphasis> should be <emphasis>name</emphasis> like on the next figure.</para>
+
+            <programlisting role="XML"><![CDATA[...
+<server>
+...
+    <mbean code="org.jboss.ejb.EJBDeployer" 
+                   name="jboss.ejb:service=EJBDeployer" xmbean-dd="">
+  
+     <!-- Inline XMBean Descriptor BEGIN -->
+         <xmbean>
+             <description>
+                    The EJBDeployer responsible for ejb jar deployment</description> 
+               ...
+         </xmbean>
+     </mbean>
+</server>
+]]></programlisting>
+
+            <figure>
+                <title>XPath Preview</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_23.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <note>
+                <title>Tip:</title>
+                <para>Notice, when you type the fields autocomplete to help you locate exactly what
+                    xpath you&apos;re looking for.</para>
+            </note>
+
+            <para>Then, on the other hand, if your desired field is the text of an element
+                    <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
+                    <property>XPath Patten</property>
+                </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
+                    <property>Attribute Name</property>
+                </emphasis> field should be left blank. When finished, click <emphasis>
+                    <property>Preview</property>
+                </emphasis> to see how many matches you have for that particular XPath.</para>
+
+            <figure>
+                <title>XPath Preview</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_24.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>As part of the <property>JBoss Server View</property> there is a <emphasis>
+                    <property>JMX Console</property>
+                </emphasis> section which allows you to browse and use the JMX exposed beans on the
+                server.</para>
+            <figure>
+                <title>JMX Console</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_17.png" scale="75"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <section>
+                <title>Relevant Resources Links</title>
+                <para>Find more about XPath in the <ulink url="http://www.w3.org/TR/xpath20/">XPath
+                        Documentation</ulink>.</para>
+            </section>
+        </section>
+
+    </section>
+
+    <section id="Project_archivesView">
+        <title>Project Archives View</title>
+        <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
+            needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
+            Tools comes with our own Archives tool with a bit easier and less-verbose XML and a
+            handy user interface. The Project Archives plugin consists primarily of a view, that is
+                <property>Project Archives View</property>, to set up each packaging configuration.</para>
+        <para>So far, let&apos;s look through all functionality that the <property>Project
+                Archives View</property> provides.</para>
+
+        <section id="archives_overview">
+            <title>Overview</title>
+
+            <para>The packaging configuration for each project is stored in the project's root
+                folder, and is in a file named <emphasis>
+                    <property>.packages</property>
+                </emphasis>, which has a fairly simple XML structure. Modifying the file by hand is
+                neither required nor recommended, and using the UI is the official way of modifying
+                your packaging structure.</para>
+
+            <figure>
+                <title>Archives View</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_25.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>A project&apos;s configuration contains archives. On the image above there is
+                only one archive, but a project can contain many. Inside the archive folders
+                (testFolder), filesets, or other internal archives can be located. Internal archives
+                and filesets may be directly inside of an archive, or in some sub-folder of that
+                archive.</para>
+
+            <para>In the upper right corner of the view you can see an icon which, when clicked,
+                will build the selected top-level archive. Additionally, you can select <emphasis>
+                    <property>Project &gt; Build Packages</property>
+                </emphasis> when a project is selected in the <property>Packages View</property> to
+                build all declared packages in that project&apos;s <emphasis>
+                    <property>.packages</property>
+                </emphasis> file. This will execute a full build on all declared archives.</para>
+        </section>
+
+        <section id="Creating_Archive">
+            <title>Creating an Archive</title>
+            <para>When creating a new archive, you have some different options at your disposal. If
+                the project has no <emphasis>
+                    <property>.packages</property>
+                </emphasis> file, your options will be presented to you all at once to choose from.
+                Otherwise you will right-click inside the view and select <emphasis>
+                    <property>New Archive</property>
+                </emphasis> to see your archive type options.</para>
+            <figure>
+                <title>Create an Archive</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_12.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para><property>JAR</property> is the standard archive type, and does very little
+                configuration, leaving most of the work up to you. You can customize the name, add
+                folders, filesets, and inner jars to it.</para>
+            <para>The other types, for the most part, simply start off with a default setting,
+                usually the jar with some specific children based on an expected structure of the
+                project. For example, if the project is a Dynamic Web Project, and you create a
+                    <property>WAR</property> archive, the archive will be created with a few
+                filesets relevant to the known structure of the project.</para>
+
+            <para>Here is the first page of all New archive wizards. It is the same for any archive
+                type and the only page in the <property>New Jar Wizard</property>.</para>
+            <figure>
+                <title>New JAR Wizard</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_13.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The page is pretty simple. All it asks for is the name of your new archive, a
+                destination, which we'll get to in a moment, and whether the archive is exploded or
+                packaged up.</para>
+            <para>The destination of an archive can be anywhere on the filesystem, anywhere in the
+                workspace, inside some other archive, or inside a folder declared inside an archive.
+                You can browse to workspace or filesystem destinations by clicking on their
+                respective buttons. To select a destination inside some other archive, you'll need
+                to press the <emphasis>
+                    <property>Workspace...</property>
+                </emphasis> button. At the bottom of the list, you&apos;ll see archives that
+                have been declared in the workspace.</para>
+            <section id="CreatingaFolder">
+                <title>Creating a Folder</title>
+                <para>Creating a folder is much easier. You simply right-click on an archive or
+                    folder you want your new folder to be a child under. The only piece of required
+                    information is naming the file.</para>
+            </section>
+            <section id="CreatingaFileSet">
+                <title>Creating a FileSet</title>
+                <para>To create a new fileset, you click on an available target location such as an
+                    archive, a nested archive, or a folder within an archive, and select <emphasis>
+                        <property>New Fileset</property>
+                    </emphasis>.</para>
+                <para>The <property>New Fileset Wizard</property> requires a destination (where the
+                    files will go), and a root directory (or where the files are coming from). The
+                    source can be anywhere in the workspace or from the filesystem at large.</para>
+
+                <figure>
+                    <title>Adding a New FileSet</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_26.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
+                <para>Below that, the fileset requires only an includes pattern and an excludes
+                    pattern. As you type in either of these fields, the preview viewer should update
+                    itself with which files are matched.</para>
+            </section>
+        </section>
+        <section id="View_Actions">
+            <title>Archive Actions</title>
+            <figure>
+                <title>Context Menu on the Item</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_14.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>The context menu on the items in the view is extendable, but there are several
+                that come standard.</para>
+
+            <table>
+                <title>Context Menu on the Item</title>
+                <tgroup cols="2">
+                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="2" colwidth="3*"/>
+
+
+                    <thead>
+                        <row>
+                            <entry align="center">
+                                <para>Name</para>
+                            </entry>
+
+                            <entry align="center">
+                                <para>Description</para>
+                            </entry>
+                        </row>
+                    </thead>
+
+                    <tbody>
+
+                        <row>
+                            <entry>
+                                <para>Build Archive (Full)</para>
+                            </entry>
+
+                            <entry>
+                                <para>The action enabled only on top-level archives, which initiates
+                                    a full build on that archive</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Edit Archive</para>
+                            </entry>
+
+                            <entry>
+                                <para>Standard action that brings up the wizard associated with that
+                                    particular node type and allows the details to be changed</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Delete Archive</para>
+                            </entry>
+
+                            <entry>
+                                <para>Deleting node is standard action with deletion not needing an
+                                    explanation</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
+                                <para>Publish To Server</para>
+                            </entry>
+
+                            <entry>
+                                <para>The action means the ability to publish to a declared
+                                server</para>
+                            </entry>
+                        </row>
+
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+
+        <section id="PublishToServer">
+            <title>Publishing to Server</title>
+            <para>Finally, you&apos;ll need to publish your application to a server. Here, we
+                show you how to do it with the help of <emphasis>
+                    <property>Archives View</property>
+                </emphasis>.</para>
+
+            <figure>
+                <title>Context Menu on the Item</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_15.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>The dialog above appears after selecting <emphasis>
+                    <property>Publish To Server</property>
+                </emphasis>. To simply publish once, you just select the server(s) that you want,
+                and finish. If you want the <emphasis>
+                    <property>Publish to Server</property>
+                </emphasis> action on that particular Archive to publish always to that set of
+                servers, then check the appropriate checkbox. And finally, to enable automatic
+                publishing upon build events, check the last checkbox.</para>
+            <para>The automatic publishing feature is nice if, for example, your package's
+                destination (where it is built) is a temporary folder and you want the archive
+                published to several servers. If you only really want your archive published to one
+                server, it might be easier to have the archive's destination folder be the deploy
+                folder of the server.</para>
+        </section>
+        <section>
+            <title>Relevant Resources Links</title>
+            <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink>
+                to find more on how to build your applications with help of Ant.</para>
+        </section>
+        
+        <para>At this point, you are guessed to be familiar with <property>JBoss AS
+            Perspective</property> and your next step now is to explore how to work with different kinds
+            of projects.</para>
+    </section>
+
+    
+</chapter>

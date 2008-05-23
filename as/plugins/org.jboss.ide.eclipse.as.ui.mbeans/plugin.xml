@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="ServiceXMLQuickFixProvider" name="org.jboss.ide.eclipse.as.ui.mbeans.serviceXMLQuickFixProvider" schema="schema/ServiceXMLQuickFixProvider.exsd"/>
+   <extension-point id="ServiceXMLOutlineMenuProvider" name="org.jboss.ide.eclipse.as.ui.mbeans.serviceXMLOutlineMenuProvider" schema="schema/ServiceXMLOutlineMenuProvider.exsd"/>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="servicexml"
+            name="JBoss Service XML"
+            priority="normal">
+         <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="server"/>
+         </describer>
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.editorConfiguration">
+      <sourceViewerConfiguration
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLEditorConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml"/>
+      <contentOutlineConfiguration
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLOutlineConfiguration"
+            target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml"/>
+	<provisionalConfiguration
+			type="correctionassistant"
+			class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServiceXMLCorrectionAssistantProvider"
+			target="org.jboss.ide.eclipse.as.ui.mbeans.servicexml" />
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.core.modelHandler">
+      <modelHandler
+            associatedContentTypeId="org.jboss.ide.eclipse.as.ui.servicexml"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.editors.ServicexmlModelHandler"
+            default="false"
+            id="org.jboss.ide.eclipse.as.ui.servicexmlModelHandler"/>
+   </extension>
+   <extension point="org.eclipse.wst.sse.ui.adapterFactoryDescription">
+		<adapterFactoryDescription
+				class="org.jboss.ide.eclipse.as.ui.mbeans.editors.AdaptorFactoryProviderForServiceXML"/>
+   </extension>
+
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLQuickFixProvider">
+         <QuickFixProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogProvider"/>
+      </extension>
+      <extension
+            point="org.jboss.ide.eclipse.as.ui.mbeans.ServiceXMLOutlineMenuProvider">
+         <MenuProvider class="org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.internal.ConvertNodeToXPathDialogOutlineMenuItemProvider"/>
+      </extension>
+
+<!--   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="org.jboss.ide.eclipse.packages.ui.jbossContribution"
+            targetID="org.jboss.ide.eclipse.packages.ui.newPackageMenu">
+         <action
+               class="org.jboss.ide.eclipse.as.ui.mbeans.packages.NewSARAction"
+               icon="icons/sar.gif"
+               id="org.jboss.ide.eclipse.packages.ui.newSARAction"
+               label="SAR"
+               menubarPath="additions"
+               style="push"/>
+      </viewerContribution>
+   </extension>-->
+   
+   
+   
+      <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            name="MBean Components"
+            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
+      <wizard
+            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
+            icon="icons/mbean16.gif"
+            id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
+            name="MBean Stubs"
+            project="false">
+		<description>
+            	Create an MBean Stubs
+        </description>
+      </wizard>          
+   </extension>
+   
+   
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard
+            icon="icons/ctool16/newclass_wiz.gif"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewSessionBeanWizard"
+            category="org.eclipse.jst.ejb.ui"
+            name="EJB3 Session Bean"
+            id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard"/>
+      <wizard
+            icon="icons/ctool16/newclass_wiz.gif"
+            class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMessageDrivenBeanWizard"
+            category="org.eclipse.jst.ejb.ui"
+            name="EJB3 Message Driven Bean"
+            id="org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard"/>
+   </extension>
+
+</plugin>
