@@ -44,9 +44,10 @@ import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.core.runtime.content.IContentTypeMatcher;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -78,7 +79,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
-import org.eclipse.ui.internal.util.SWTResourceUtil;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
@@ -98,7 +98,7 @@ import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
  *
  */
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
-	
+
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey";
 	
 	private Action createFilter, deleteFilter, editFilter, deleteFileAction, editFileAction;
@@ -470,7 +470,15 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	}
 	
 	public class FilesetLabelProvider extends LabelProvider {
-	    public Image getImage(Object element) {
+		
+	    private LocalResourceManager resourceManager;
+
+		public FilesetLabelProvider() {
+			super();
+			this.resourceManager = new LocalResourceManager(JFaceResources.getResources());
+		}
+
+		public Image getImage(Object element) {
 	    	if( element instanceof Fileset ) {
 	    		return PlatformUI.getWorkbench().getSharedImages()
                 .getImage(ISharedImages.IMG_OBJ_FOLDER);
@@ -488,12 +496,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			    	descriptor = PlatformUI.getWorkbench().getSharedImages()
 			                .getImageDescriptor(ISharedImages.IMG_OBJ_FILE);
 				}
-		        Image image = (Image)SWTResourceUtil.getImageTable().get(descriptor);
-		        if (image == null) {
-		            image = descriptor.createImage();
-		            SWTResourceUtil.getImageTable().put(descriptor, image);
-		        }
-		        return image;
+			    return resourceManager.createImage(descriptor);
 	    	}
 	        return null;
 	    }
@@ -503,6 +506,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getFolder();
 	        return element == null ? "" : element.toString();//$NON-NLS-1$
 	    }
+
+		
+		public void dispose() {
+			resourceManager.dispose();
+			resourceManager = null;
+			super.dispose();
+		}
 
 	}
 	
