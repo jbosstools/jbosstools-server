@@ -401,6 +401,7 @@
             </figure>
 
             <note>
+                <title>Note:</title>
                 <para>You are assumed to be familiar with XPath. If not, we highly suggested that
                     you look through an appropriate manual or tutorial on the topic.</para>
             </note>
@@ -495,11 +496,11 @@
                 </mediaobject>
             </figure>
 
-            <note>
+            <tip>
                 <title>Tip:</title>
                 <para>Notice, when you type the fields autocomplete to help you locate exactly what
                     xpath you&apos;re looking for.</para>
-            </note>
+            </tip>
 
             <para>Then, on the other hand, if your desired field is the text of an element
                     <emphasis>&lt;description&gt;</emphasis>, your <emphasis>

@@ -75,7 +75,10 @@
         means that scanning for auto-deployment is suspended while files are being copied to the
         deployment location and resumed when the copy is completed.</para>
       
-      <note><para>Currently we recommend you to use a fully supported JBoss 4.2 server adapter.</para></note>
+      <note>
+        <title>Note:</title>
+        <para>Currently we recommend you to use a fully supported JBoss 4.2 server adapter.</para>
+      </note>
 
       <para>You&apos;ll also note a Deploy-Only Runtime type. This type provides no classpath
         for WTP projects. It is used solely by its server type for the purpose of setting up a
