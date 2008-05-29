@@ -23,22 +23,25 @@ package org.jboss.ide.eclipse.as.core.modules;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -92,9 +95,23 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 		DeployableServerBehavior[] serverBehaviors = ArchivesBuildListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
-				serverBehaviors[i].publishOneModule(publishType, module, ServerBehaviourDelegate.CHANGED, new NullProgressMonitor());
+				publish(serverBehaviors[i].getServer(), publishType, module );
 			}
 		}
+	}
+	
+	protected static IStatus publish(IServer server, int publishType, IModule[] module ) {
+		try {
+			IServerWorkingCopy copy = server.createWorkingCopy();
+			copy.modifyModules(module, new IModule[0], new NullProgressMonitor());
+			IServer saved = copy.save(false, new NullProgressMonitor());
+			saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		} catch( CoreException ce ) {
+			return new Status(Status.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"Cannot deploy file " + module[0].getName(), ce);
+		}
+		return Status.OK_STATUS;
+
 	}
 	protected static IModule[] getModule(IArchive node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
