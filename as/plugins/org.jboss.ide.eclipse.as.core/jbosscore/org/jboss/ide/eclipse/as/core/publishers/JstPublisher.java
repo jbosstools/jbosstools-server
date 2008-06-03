@@ -129,7 +129,7 @@ public class JstPublisher implements IJBossServerPublisher {
 			localSafeDelete(deployPath, eventRoot);
 
 		IStatus[] results;
-		if( !deployPackaged(moduleTree))
+		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
 			results = new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor);
 		else if( isBinaryObject(moduleTree))
 			results = copyBinaryModule(moduleTree);
@@ -157,7 +157,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree);
-		if( !deployPackaged(moduleTree))
+		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
 			results = new PublishUtil(server.getServer()).publishDelta(delta, deployPath, monitor);
 		else if( delta.length > 0 ) {
 			if( isBinaryObject(moduleTree))
