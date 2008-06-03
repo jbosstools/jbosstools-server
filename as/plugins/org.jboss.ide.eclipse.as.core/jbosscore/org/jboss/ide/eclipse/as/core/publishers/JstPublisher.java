@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -273,6 +274,9 @@ public class JstPublisher implements IJBossServerPublisher {
 	 * @return  returns whether an error was found
 	 */
 	protected boolean localSafeDelete(IPath deployPath, final EventLogTreeItem event) {
+        String serverDeployFolder = server.getDeployDirectory();
+        Assert.isTrue(!deployPath.toFile().equals(new Path(serverDeployFolder).toFile()), "An attempt to delete your entire deploy folder has been prevented. This should never happen");
+
 		final Boolean[] errorFound = new Boolean[] { new Boolean(false)};
 		IFileUtilListener listener = new IFileUtilListener() {
 			public void fileCoppied(File source, File dest, boolean result,Exception e) {}
