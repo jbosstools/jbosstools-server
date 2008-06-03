@@ -1,0 +1,31 @@
+<contexts>
+	<context id="run_on_server" title="Run On Server">
+		<description>Run On Server Wizard</description>
+		<topic href="modules.html#run_on_server_wizard" label="Deploying with Run On Server Wizard"/>
+	</context>
+	<context id="add_and_remove_projects" title="Add and Remove Projects">
+		<description>Add and Remove Projects Wizard</description>
+		<topic href="quick_start.html#deployment" label="Deploying an Application to a Server"/>
+		<topic href="modules.html#single_file_deployment" label="Deploying single files"/>
+	</context>
+	<context id="new_xpath" title="New XPath">
+		<description>New XPath Wizard</description>
+		<topic href="perspective.html#d0e779" label="Bottom Part of the JBoss Server View"/>
+	</context>
+	<context id="new_war" title="New WAR">
+		<description>New WAR Wizard</description>
+		<topic href="perspective.html#Creating an archive" label="Creating an Archive"/>
+	</context>
+	<context id="fileset" title="Fileset Wizard">
+		<description>Fileset Wizard</description>
+		<topic href="perspective.html#CreatingaFileSet" label="Creating a FileSet"/>
+	</context>
+	<context id="new_server_runtime" title="New Server Runtime">
+		<description>New Server Runtime Wizard</description>
+		<topic href="runtimes_servers.html#d0e246" label="Runtimes"/>
+	</context>
+	<context id="new_dynamic_web_project" title="New Dynamic Web Project">
+		<description>New Dynamic Web Project Wizard</description>
+		<topic href="webtools.html#d0e1335" label="Adding Facets to a Project"/>
+	</context>
+</contexts>
