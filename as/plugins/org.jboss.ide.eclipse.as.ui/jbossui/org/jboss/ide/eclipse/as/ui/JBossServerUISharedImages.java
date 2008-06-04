@@ -55,12 +55,12 @@ public class JBossServerUISharedImages {
 	
 	private static JBossServerUISharedImages instance;
 	
-	private Hashtable images, descriptors;
+	private Hashtable<String, Object> images, descriptors;
 	
 	private JBossServerUISharedImages () {
 		instance = this;
-		images = new Hashtable();
-		descriptors = new Hashtable();
+		images = new Hashtable<String, Object>();
+		descriptors = new Hashtable<String, Object>();
 		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 		
 		descriptors.put(IMG_JBOSS, createImageDescriptor(pluginBundle, "/icons/jboss.gif"));
@@ -76,10 +76,10 @@ public class JBossServerUISharedImages {
 		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
 		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
 
-		Iterator iter = descriptors.keySet().iterator();
+		Iterator<String> iter = descriptors.keySet().iterator();
 
 		while (iter.hasNext()) {
-			String key = (String) iter.next();
+			String key = iter.next();
 			ImageDescriptor descriptor = descriptor(key);
 			images.put(key,  descriptor.createImage());	
 		}
@@ -121,7 +121,7 @@ public class JBossServerUISharedImages {
 	}
 	
 	protected void finalize() throws Throwable {
-		Iterator iter = images.keySet().iterator();
+		Iterator<String> iter = images.keySet().iterator();
 		while (iter.hasNext())
 		{
 			Image image = (Image) images.get(iter.next());

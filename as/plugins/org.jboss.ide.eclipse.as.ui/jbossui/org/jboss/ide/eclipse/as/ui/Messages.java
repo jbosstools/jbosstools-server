@@ -108,12 +108,19 @@ public class Messages {
 	public static String ActionDelegateNew;
 	public static String ActionDelegateNewMBeanStubs;
 	public static String ActionDelegateNewServer;
-
-	/* Launch Group */
-	public static String LaunchGroupStartArgs;
-	public static String LaunchGroupStopArgs;
-	public static String LaunchGroupTwiddleArgs;
-	public static String LaunchGroupConfigChanged;
+	public static String ActionDelegateMakeDeployable;
+	public static String ActionDelegateMakeUndeployable;
+	public static String ActionDelegateDeployableServersNotFoundTitle;
+	public static String ActionDelegateDeployableServersNotFoundDesc;
+	public static String ActionDelegateCannotPublish;
+	public static String ActionDelegatePublishFailed;
+	public static String ActionDelegateFileResourcesOnly;
+	public static String ActionDelegateSelectServer;
+	
+	/* Console */
+	public static String ConsoleResourceNotFound;
+	public static String ConsoleCouldNotLocateInWorkspace;
+	
 
 	/* Twiddle Dialog */
 	public static String TwiddleDialog;
@@ -208,7 +215,26 @@ public class Messages {
 	
 	
 	/* Editor Strings */
-	 
+	public static String EditorSetDeployLabel;
+	public static String EditorSetTempDeployLabel;
+	public static String EditorDeployDNE;
+	public static String EditorTempDeployDNE;
+	public static String EditorStartupPollerLabel;
+	public static String EditorShutdownPollerLabel;
+	public static String EditorChangeStartPollerCommandName;
+	public static String EditorChangeStopPollerCommandName;
+	public static String EditorServerPorts;
+	public static String EditorServerPortsDescription;
+	public static String EditorJNDIPort;
+	public static String EditorWebPort;
+	public static String EditorAutomaticallyDetectPort;
+	public static String EditorChangeJNDICommandName;
+	public static String EditorChangeWebCommandName;
+	public static String EditorChangeUsernameCommandName;
+	public static String EditorChangePasswordCommandName;
+	
+	// misc
+	public static String ServerSaveFailed;
 	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",

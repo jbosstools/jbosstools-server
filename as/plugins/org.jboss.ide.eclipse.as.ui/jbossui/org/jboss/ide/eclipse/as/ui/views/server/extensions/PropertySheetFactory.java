@@ -99,8 +99,6 @@ public class PropertySheetFactory {
 		}
 
 		public void dispose() {
-			// TODO Auto-generated method stub
-			
 		}
 
 		public Control getControl() {

@@ -21,6 +21,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * 
@@ -68,8 +69,8 @@ public class PollerSection extends ServerEditorSection {
 		stop = new Label(pollers, SWT.NONE);
 		stopPollerCombo = new Combo(pollers, SWT.READ_ONLY);
 
-		start.setText("Startup Poller");
-		stop.setText("Shutdown Poller");
+		start.setText(Messages.EditorStartupPollerLabel);
+		stop.setText(Messages.EditorShutdownPollerLabel);
 		
 		// set items
 		startPollerCombo.setItems(startupTypesStrings);
@@ -118,7 +119,7 @@ public class PollerSection extends ServerEditorSection {
 
 	public class SetStartupPollerCommand extends SetPollerCommand {
 		public SetStartupPollerCommand(IServerWorkingCopy server) {
-			super(server, "Change Start Poller",  IJBossServerConstants.STARTUP_POLLER_KEY, 
+			super(server, Messages.EditorChangeStartPollerCommandName,  IJBossServerConstants.STARTUP_POLLER_KEY, 
 					IJBossServerConstants.DEFAULT_STARTUP_POLLER,
 					startupTypes, startPollerCombo, startPollerListener);
 		}
@@ -126,7 +127,7 @@ public class PollerSection extends ServerEditorSection {
 	
 	public class SetStopPollerCommand extends SetPollerCommand {
 		public SetStopPollerCommand(IServerWorkingCopy server) {
-			super(server, "Change Stop Poller",  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
+			super(server, Messages.EditorChangeStartPollerCommandName,  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
 					IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER,
 					shutdownTypes, stopPollerCombo, stopPollerListener);
 		}

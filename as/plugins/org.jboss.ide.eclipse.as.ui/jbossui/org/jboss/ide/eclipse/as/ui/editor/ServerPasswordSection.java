@@ -103,14 +103,14 @@ public class ServerPasswordSection extends ServerEditorSection {
 	
 	public class SetUserCommand extends SetVarCommand {
 		public SetUserCommand(IServerWorkingCopy server) {
-			super(server, "Change Username", nameText, nameText.getText(), 
+			super(server, Messages.EditorChangeUsernameCommandName, nameText, nameText.getText(), 
 					JBossServer.SERVER_USERNAME, nameModifyListener);
 		}
 	}
 
 	public class SetPassCommand extends SetVarCommand {
 		public SetPassCommand(IServerWorkingCopy server) {
-			super(server, "Change Password", passText, passText.getText(), 
+			super(server, Messages.EditorChangePasswordCommandName, passText, passText.getText(), 
 					JBossServer.SERVER_PASSWORD, passModifyListener);
 		}
 	}

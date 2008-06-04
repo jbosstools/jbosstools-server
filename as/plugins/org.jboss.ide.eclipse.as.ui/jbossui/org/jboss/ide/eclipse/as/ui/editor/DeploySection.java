@@ -27,6 +27,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -196,13 +197,15 @@ public class DeploySection extends ServerEditorSection {
 		String error = "";
 		List<Status> status = new ArrayList<Status>();
 		if(!new Path(deployText.getText()).toFile().exists()) {
-			String msg = "The deploy directory \"" + deployText.getText() + "\" does not exist.";
+			String msg = NLS.bind(Messages.EditorDeployDNE, deployText.getText()); 
+//				"The deploy directory \"" + deployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = msg + "\n"; 
 		}
 		
 		if(!new Path(tempDeployText.getText()).toFile().exists()) {
-			String msg = "The temporary deploy directory \"" + tempDeployText.getText() + "\" does not exist.";
+			String msg = NLS.bind(Messages.EditorTempDeployDNE, tempDeployText.getText());
+				//"The temporary deploy directory \"" + tempDeployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n";
 		}
@@ -219,7 +222,7 @@ public class DeploySection extends ServerEditorSection {
 		private Text text;
 		private ModifyListener listener;
 		public SetDeployDirCommand() {
-			super(DeploySection.this.server, "Set Deploy Directory");
+			super(DeploySection.this.server, Messages.EditorSetDeployLabel);
 			this.text = deployText;
 			this.newDir = deployText.getText();
 			this.listener = deployListener;
@@ -242,7 +245,7 @@ public class DeploySection extends ServerEditorSection {
 		private Text text;
 		private ModifyListener listener;
 		public SetTempDeployDirCommand() {
-			super(DeploySection.this.server, "Set Temporary Deploy Directory");
+			super(DeploySection.this.server, Messages.EditorSetTempDeployLabel);
 			text = tempDeployText;
 			newDir = tempDeployText.getText();
 			listener = tempDeployListener;

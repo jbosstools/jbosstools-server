@@ -27,7 +27,6 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -49,7 +48,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -57,12 +55,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.UndeployFromServerJob;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * 
@@ -98,8 +96,8 @@ public class DeployAction implements IObjectActionDelegate {
 
 	protected String getText(boolean type) {
 		if( type )
-			return "Unmake Deployable";
-		return "Make Deployable";
+			return Messages.ActionDelegateMakeUndeployable;
+		return Messages.ActionDelegateMakeDeployable;
 	}
 	
 	// True if we want to unpublish, false if we wantt to publish
@@ -157,7 +155,9 @@ public class DeployAction implements IObjectActionDelegate {
 	protected void tryToPublish() {
 		IServer[] deployableServersAsIServers = ServerConverter.getDeployableServersAsIServers();
 		if(deployableServersAsIServers.length==0) {
-			MessageDialog.openInformation(shell, "No deployable servers found", "There are no servers that support deploying single files.");
+			MessageDialog.openInformation(shell, 
+					Messages.ActionDelegateDeployableServersNotFoundTitle,
+					Messages.ActionDelegateDeployableServersNotFoundDesc);
 		}
 		IServer server = getServer(shell,deployableServersAsIServers);
 		if(server==null) { // User pressed cancel. 
@@ -171,13 +171,13 @@ public class DeployAction implements IObjectActionDelegate {
 			IStructuredSelection sel2 = (IStructuredSelection)selection;
 			Object[] objs = sel2.toArray();
 			if( server == null ) {
-				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "No deployable servers located");
-				errorTitle = "Cannot Publish To Server";
-				errorMessage = "No deployable servers located";
+				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegateDeployableServersNotFoundTitle);
+				errorTitle = Messages.ActionDelegateCannotPublish;
+				errorMessage = Messages.ActionDelegateDeployableServersNotFoundDesc;
 			} else if( objs == null || !allFiles(objs) ) {
-				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "One or more selected objects are not Files");
-				errorTitle = "Cannot Publish To Server";
-				errorMessage = "Only File resources may be published.\nOne or more selected objects are not Files.";
+				errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegateFileResourcesOnly);
+				errorTitle = Messages.ActionDelegateCannotPublish;
+				errorMessage = Messages.ActionDelegateFileResourcesOnly;
 			} else {
 				IModule[] modules = new IModule[objs.length];
 				for( int i = 0; i < objs.length; i++ ) {
@@ -189,9 +189,9 @@ public class DeployAction implements IObjectActionDelegate {
 					IServer saved = copy.save(false, new NullProgressMonitor());
 					saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 				} catch( CoreException ce ) {
-					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Publishing files to server failed", ce);
-					errorTitle = "Cannot Publish to Server";
-					errorMessage = "Publishing files to server failed";
+					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegatePublishFailed, ce);
+					errorTitle = Messages.ActionDelegateCannotPublish;
+					errorMessage = Messages.ActionDelegatePublishFailed;
 				}
 			}
 		}
@@ -235,7 +235,7 @@ public class DeployAction implements IObjectActionDelegate {
 			public String getText(Object element) {
 				if( element instanceof IServer )
 					return ((IServer)element).getName();
-				return "unknown object type";
+				return ""; //$NON-NLS-1$
 			}
 		}
 
@@ -245,7 +245,7 @@ public class DeployAction implements IObjectActionDelegate {
 		
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Select a server to publish to");
+			newShell.setText(Messages.ActionDelegateSelectServer);
 		}
 
 		public IServer getSelectedServer() {

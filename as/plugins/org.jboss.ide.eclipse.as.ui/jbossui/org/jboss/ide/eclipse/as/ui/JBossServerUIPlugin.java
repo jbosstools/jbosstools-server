@@ -43,7 +43,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	private ResourceBundle resourceBundle;
 
 	// UI plugin id
-	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui";
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui"; //$NON-NLS-1$
 
 	/**
 	 * The constructor.
@@ -52,7 +52,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		super();
 		plugin = this;
 		try {
-			resourceBundle = ResourceBundle.getBundle("org.jboss.ide.eclipse.as.ui.ServerUiPluginResources");
+			resourceBundle = ResourceBundle.getBundle("org.jboss.ide.eclipse.as.ui.ServerUiPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}

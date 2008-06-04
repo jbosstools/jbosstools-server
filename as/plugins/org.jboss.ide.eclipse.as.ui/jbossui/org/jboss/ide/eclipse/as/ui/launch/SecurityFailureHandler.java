@@ -14,6 +14,8 @@ import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.RequiredCredentialsDialog;
 
 /**
@@ -25,7 +27,7 @@ public class SecurityFailureHandler implements IPollerFailureHandler {
 
 	public boolean accepts(IServerStatePoller poller, String action,
 			List requiredProperties) {
-		if( poller.getPollerType().getId().equals("org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"))
+		if( poller.getPollerType().getId().equals(JMXPoller.POLLER_ID))
 			return true;
 		return false;
 	}
@@ -44,7 +46,7 @@ public class SecurityFailureHandler implements IPollerFailureHandler {
 						try {
 							copy.save(false, null);
 						} catch( CoreException ce ) {
-							// TODO log
+							JBossServerUIPlugin.log(Messages.ServerSaveFailed, ce);
 						}
 					}
 					

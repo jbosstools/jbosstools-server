@@ -42,7 +42,7 @@ public class ASPerspective implements IPerspectiveFactory {
 		
 		IFolderLayout folder= layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
 		folder.addView(JavaUI.ID_PACKAGES);
-		folder.addView("org.eclipse.ui.navigator.ProjectExplorer");
+		folder.addView("org.eclipse.ui.navigator.ProjectExplorer"); //$NON-NLS-1$
 		folder.addPlaceholder(IPageLayout.ID_RES_NAV);
 		
 		
@@ -51,16 +51,16 @@ public class ASPerspective implements IPerspectiveFactory {
 		outputfolder.addView(JavaUI.ID_JAVADOC_VIEW);
 		outputfolder.addView(JavaUI.ID_SOURCE_VIEW);
 		outputfolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
-		outputfolder.addView("org.eclipse.ui.views.PropertySheet");
-		outputfolder.addView("org.jboss.ide.eclipse.archives.ui.ProjectArchivesView");
+		outputfolder.addView("org.eclipse.ui.views.PropertySheet"); //$NON-NLS-1$
+		outputfolder.addView("org.jboss.ide.eclipse.archives.ui.ProjectArchivesView"); //$NON-NLS-1$
 		outputfolder.addPlaceholder(NewSearchUI.SEARCH_VIEW_ID);
 		outputfolder.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		outputfolder.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
 		
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);
 		
-		IFolderLayout serverFolder = layout.createFolder("leftBottom", IPageLayout.BOTTOM, (float)0.60, "left"); //$NON-NLS-1$
-		serverFolder.addView("org.jboss.ide.eclipse.as.ui.views.JBossServerView");
+		IFolderLayout serverFolder = layout.createFolder("leftBottom", IPageLayout.BOTTOM, (float)0.60, "left"); //$NON-NLS-1$ //$NON-NLS-2$
+		serverFolder.addView("org.jboss.ide.eclipse.as.ui.views.JBossServerView"); //$NON-NLS-1$
 		
 		
 		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
@@ -94,20 +94,20 @@ public class ASPerspective implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewInterfaceCreationWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewAnnotationCreationWizard"); //$NON-NLS-1$
 		
-		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.project.facet.WebProjectWizard");
-		layout.addNewWizardShortcut("org.jboss.tools.seam.ui.wizards.SeamProjectWizard");
-		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.internal.wizard.AddServletWizard");
-		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard");
-		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard");
-		layout.addNewWizardShortcut("org.jboss.ide.eclipse.as.ui.MBeanComponents");
+		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.project.facet.WebProjectWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.jboss.tools.seam.ui.wizards.SeamProjectWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.eclipse.jst.servlet.ui.internal.wizard.AddServletWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewSessionBeanWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.ejb3.wizards.ui.NewMessageDrivenBeanWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.jboss.ide.eclipse.as.ui.MBeanComponents"); //$NON-NLS-1$
 		
 		
 		
 		// perspectives
-		layout.addPerspectiveShortcut("org.eclipse.debug.ui.DebugPerspective");
-		layout.addPerspectiveShortcut("org.jboss.ide.eclipse.jbosscache.perspective2");
-		layout.addPerspectiveShortcut("org.drools.ide.DroolsPerspective");
-		layout.addPerspectiveShortcut("org.hibernate.eclipse.console.HibernateConsolePerspective");
+		layout.addPerspectiveShortcut("org.eclipse.debug.ui.DebugPerspective"); //$NON-NLS-1$
+		layout.addPerspectiveShortcut("org.jboss.ide.eclipse.jbosscache.perspective2"); //$NON-NLS-1$
+		layout.addPerspectiveShortcut("org.drools.ide.DroolsPerspective"); //$NON-NLS-1$
+		layout.addPerspectiveShortcut("org.hibernate.eclipse.console.HibernateConsolePerspective"); //$NON-NLS-1$
 		// Other JBoss perspectives
 		
 	}

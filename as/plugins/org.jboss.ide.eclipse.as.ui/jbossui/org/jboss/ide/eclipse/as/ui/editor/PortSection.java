@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * 
@@ -158,8 +159,8 @@ public class PortSection extends ServerEditorSection {
 		data.top = new FormAttachment(0,5);
 		jndiDetectCombo.setLayoutData(data);
 		
-		jndiLabel.setText("JNDI Port: ");
-		jndiDetect.setText("Automatically detect");
+		jndiLabel.setText(Messages.EditorJNDIPort);
+		jndiDetect.setText(Messages.EditorAutomaticallyDetectPort);
 		jndiDetectCombo.setItems(getXPathStrings());
 		return child;
 	}
@@ -193,8 +194,8 @@ public class PortSection extends ServerEditorSection {
 		data.top = new FormAttachment(0,5);
 		webDetectCombo.setLayoutData(data);
 		
-		webLabel.setText("web Port: ");
-		webDetect.setText("Automatically detect");
+		webLabel.setText(Messages.EditorWebPort);
+		webDetect.setText(Messages.EditorAutomaticallyDetectPort);
 		webDetectCombo.setItems(getXPathStrings());
 		return child;
 	}
@@ -236,7 +237,7 @@ public class PortSection extends ServerEditorSection {
 
 	public class ChangeJNDICommand extends SetPortCommand {
 		public ChangeJNDICommand(IServerWorkingCopy server) {
-			super(server, "Change JNDI Details",  
+			super(server, Messages.EditorChangeJNDICommandName,  
 					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
 					jndiText, jndiDetect, jndiDetectCombo, jndiListener);
@@ -245,7 +246,7 @@ public class PortSection extends ServerEditorSection {
 
 	public class ChangeWebCommand extends SetPortCommand {
 		public ChangeWebCommand(IServerWorkingCopy server) {
-			super(server, "Change Web Port Details",  
+			super(server, Messages.EditorChangeWebCommandName,  
 					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
 					webText, webDetect, webDetectCombo, webListener);

@@ -41,15 +41,14 @@ import org.eclipse.debug.core.model.ISourceLocator;
 import org.eclipse.debug.core.sourcelookup.ISourceLookupDirector;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.console.FileLink;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IHyperlink;
 import org.eclipse.ui.console.IPatternMatchListenerDelegate;
 import org.eclipse.ui.console.PatternMatchEvent;
 import org.eclipse.ui.console.TextConsole;
-import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -64,7 +63,7 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 
 	private TextConsole console;
 
-	static final Pattern resourceLocationPattern = Pattern.compile("Exception: (.*) @(\\d+),(\\d+)");
+	static final Pattern resourceLocationPattern = Pattern.compile("Exception: (.*) @(\\d+),(\\d+)"); //$NON-NLS-1$
 	
 	public void connect(TextConsole console) {
 		this.console = console;
@@ -165,13 +164,16 @@ public class ELExceptionsMatcher implements IPatternMatchListenerDelegate {
 			}
 			
 			// Nothing found, lets inform the user about that.
-			MessageDialog.openInformation(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), "Resource not found", "Could not locate '" + resource + "' in workspace." );
+			MessageDialog.openInformation(
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), 
+					Messages.ConsoleResourceNotFound, 
+					NLS.bind(Messages.ConsoleCouldNotLocateInWorkspace, resource));
 
 		}
 
 		private FileLink findFileInWorkspace() {
 			final String simpleName = resource.substring(resource
-					.lastIndexOf("/") + 1);
+					.lastIndexOf("/") + 1); //$NON-NLS-1$
 
 			IPath path = new Path(resource);
 			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
