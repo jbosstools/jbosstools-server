@@ -237,7 +237,13 @@
             id="org.jboss.ide.eclipse.as.ui.editor.pollerSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50"/>
+            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50"/>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection"
+            id="org.jboss.ide.eclipse.as.ui.editor.portSection"
+            insertionId="org.eclipse.wst.server.editor.overview.right"
+            order="11"
+            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection"
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"

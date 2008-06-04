@@ -33,7 +33,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
  * @author Rob Stryker
  *
  */
-public interface IServerStatePoller extends IServerPollingAttributes {
+public interface IServerStatePoller {
 	
 	public static final boolean SERVER_UP = true;
 	public static final boolean SERVER_DOWN = false;

@@ -206,6 +206,10 @@ public class Messages {
 	public static String FilesetsNewExcludes; 
 	public static String FilesetsNewPreview;
 	
+	
+	/* Editor Strings */
+	 
+	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
 				Messages.class);

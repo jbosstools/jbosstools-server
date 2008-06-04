@@ -18,7 +18,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -77,8 +77,8 @@ public class PollerSection extends ServerEditorSection {
 		
 		startPollerCombo.setEnabled(true);
 		stopPollerCombo.setEnabled(true);
-		String currentStartId = helper.getAttribute(IServerPollingAttributes.STARTUP_POLLER_KEY, IServerPollingAttributes.DEFAULT_STARTUP_POLLER);
-		String currentStopId = helper.getAttribute(IServerPollingAttributes.SHUTDOWN_POLLER_KEY, IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER);
+		String currentStartId = helper.getAttribute(IJBossServerConstants.STARTUP_POLLER_KEY, IJBossServerConstants.DEFAULT_STARTUP_POLLER);
+		String currentStopId = helper.getAttribute(IJBossServerConstants.SHUTDOWN_POLLER_KEY, IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER);
 		startPollerCombo.select(startPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStartId).getName()));
 		stopPollerCombo.select(stopPollerCombo.indexOf(ExtensionManager.getDefault().getPollerType(currentStopId).getName()));
 		
@@ -118,16 +118,16 @@ public class PollerSection extends ServerEditorSection {
 
 	public class SetStartupPollerCommand extends SetPollerCommand {
 		public SetStartupPollerCommand(IServerWorkingCopy server) {
-			super(server, "Change Start Poller",  IServerPollingAttributes.STARTUP_POLLER_KEY, 
-					IServerPollingAttributes.DEFAULT_STARTUP_POLLER,
+			super(server, "Change Start Poller",  IJBossServerConstants.STARTUP_POLLER_KEY, 
+					IJBossServerConstants.DEFAULT_STARTUP_POLLER,
 					startupTypes, startPollerCombo, startPollerListener);
 		}
 	}
 	
 	public class SetStopPollerCommand extends SetPollerCommand {
 		public SetStopPollerCommand(IServerWorkingCopy server) {
-			super(server, "Change Stop Poller",  IServerPollingAttributes.SHUTDOWN_POLLER_KEY, 
-					IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER,
+			super(server, "Change Stop Poller",  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
+					IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER,
 					shutdownTypes, stopPollerCombo, stopPollerListener);
 		}
 	}

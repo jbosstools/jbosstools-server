@@ -24,13 +24,12 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.util.Date;
 
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.ServerType;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogRoot;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
-import org.jboss.ide.eclipse.as.core.server.IServerPollingAttributes;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
@@ -80,11 +79,11 @@ public class PollThread extends Thread {
 		JBossServer s = ServerConverter.getJBossServer(behavior.getServer());
 		ServerAttributeHelper helper = s.getAttributeHelper();
 		String key = expectedState == IServerStatePoller.SERVER_UP ? 
-				IServerPollingAttributes.STARTUP_POLLER_KEY : 
-				IServerPollingAttributes.SHUTDOWN_POLLER_KEY;
+				IJBossServerConstants.STARTUP_POLLER_KEY : 
+					IJBossServerConstants.SHUTDOWN_POLLER_KEY;
 		String defaultPoller = expectedState == IServerStatePoller.SERVER_UP ? 
-				IServerPollingAttributes.DEFAULT_STARTUP_POLLER : 
-				IServerPollingAttributes.DEFAULT_SHUTDOWN_POLLER;
+				IJBossServerConstants.DEFAULT_STARTUP_POLLER : 
+					IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER;
 		String pollerId = helper.getAttribute(key, defaultPoller);
 		ServerStatePollerType type = ExtensionManager.getDefault().getPollerType(pollerId);
 		if( type != null ) {

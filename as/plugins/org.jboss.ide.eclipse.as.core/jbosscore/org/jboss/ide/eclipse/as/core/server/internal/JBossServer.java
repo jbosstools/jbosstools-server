@@ -27,7 +27,6 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -56,9 +55,6 @@ import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 public class JBossServer extends DeployableServer 
 		implements IJBossServerConstants, IDeployableServer, IURLProvider {
 
-	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName";
-	public static final String SERVER_PASSWORD = "org.jboss.ide.eclipse.as.core.server.password";
-	
 	public JBossServer() {
 	}
 	
@@ -164,39 +160,42 @@ public class JBossServer extends DeployableServer
 	protected String getRuntimeConfigDirectory() {
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-		String p = getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + "server" + 
+		String p = getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + SERVER + 
 				Path.SEPARATOR + runtime.getJBossConfiguration();
 		return new Path(p).toOSString();
 	}
 	
-	private static final IPath JNDI_KEY = new Path("Ports").append("JNDI"); 
-	private static final int JNDI_DEFAULT_PORT = 1099;
 	public int getJNDIPort() {
-		int port = findPort(JNDI_KEY);
-		return port == -1 ? JNDI_DEFAULT_PORT : port;
+		return findPort(JNDI_PORT, JNDI_PORT_DETECT, JNDI_PORT_DETECT_XPATH, 
+				JNDI_PORT_DEFAULT_XPATH, JNDI_DEFAULT_PORT);
 	}
 	
-	private static final IPath JBOSS_WEB_KEY = new Path("Ports").append("JBoss Web");
-	public static final int JBOSS_WEB_DEFAULT_PORT = 8080;
 	public int getJBossWebPort() {
-		int port = findPort(JBOSS_WEB_KEY);
-		return port == -1 ? JBOSS_WEB_DEFAULT_PORT : port;
+		return findPort(WEB_PORT, WEB_PORT_DETECT, WEB_PORT_DETECT_XPATH, 
+				WEB_PORT_DEFAULT_XPATH, JBOSS_WEB_DEFAULT_PORT);
 	}
 
-	protected int findPort(IPath path) {
-		
-			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), path);
+	protected int findPort(String attributeKey, String detectKey, String xpathKey, String defaultXPath, int defaultValue) {
+		boolean detect = getAttribute(detectKey, true);
+		String result = null;
+		if( !detect ) {
+			result = getAttribute(attributeKey, (String)null);
+		} else {
+			String xpath = getAttribute(xpathKey, defaultXPath);
+			XPathQuery query = XPathModel.getDefault().getQuery(getServer(), new Path(xpath));
 			if(query!=null) {
-				String result = query.getFirstResult();
-				if( result != null ) {
-					try {
-						return Integer.parseInt(result);
-					} catch(NumberFormatException nfe) {
-						return -1;
-					}
-				}
-			}		
-		return -1;
+				result = query.getFirstResult();
+			}
+		}
+		
+		if( result != null ) {
+			try {
+				return Integer.parseInt(result);
+			} catch(NumberFormatException nfe) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
 	}
 	
 	
