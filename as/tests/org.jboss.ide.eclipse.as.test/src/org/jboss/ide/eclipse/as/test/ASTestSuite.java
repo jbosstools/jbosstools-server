@@ -24,10 +24,10 @@ package org.jboss.ide.eclipse.as.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.jboss.ide.eclipse.as.test.model.JBIDE1657Test;
-import org.jboss.ide.eclipse.as.test.model.JEEClasspathContainerTest;
-import org.jboss.ide.eclipse.as.test.model.ProjectRuntimeTest;
-import org.jboss.ide.eclipse.as.test.model.RuntimeServerModelTest;
+import org.jboss.ide.eclipse.as.test.classpath.JBIDE1657Test;
+import org.jboss.ide.eclipse.as.test.classpath.JEEClasspathContainerTest;
+import org.jboss.ide.eclipse.as.test.classpath.ProjectRuntimeTest;
+import org.jboss.ide.eclipse.as.test.classpath.RuntimeServerModelTest;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
