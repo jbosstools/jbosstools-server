@@ -21,8 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.test.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -93,7 +93,7 @@ public class ProjectRuntimeTest extends TestCase {
 	}
 	
 	protected void verifyClasspathEntries(IClasspathEntry[] entries, String[] required) {
-		ArrayList list = new ArrayList(Arrays.asList(required));
+		List<String> list = Arrays.asList(required);
 		for( int i = 0; i < entries.length; i++ ) {
 			if( list.contains(entries[i].getPath().segment(0)))
 				list.remove(entries[i].getPath().segment(0));
