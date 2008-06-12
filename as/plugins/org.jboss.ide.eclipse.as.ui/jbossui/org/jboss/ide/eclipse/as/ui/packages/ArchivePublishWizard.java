@@ -3,6 +3,10 @@ package org.jboss.ide.eclipse.as.ui.packages;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -29,6 +33,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.modules.ArchivesBuildListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ArchivePublishWizard extends Wizard {
 
@@ -39,16 +44,20 @@ public class ArchivePublishWizard extends Wizard {
 		setWindowTitle("Archive Publish Settings");
 	}
 	public boolean performFinish() {
-		if( new Boolean(page.getAlwaysPublish()).booleanValue() ) { 
-			pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, getServers());
-			pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
-			IPath p = pack.getProjectPath();
-			try {
-				ArchivesModel.instance().save(p, null);
-			} catch( ArchivesModelException ame ) {
-				// TODO
+		boolean alwaysPublish = new Boolean(page.getAlwaysPublish()).booleanValue();
+		pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, alwaysPublish ? getServers() : null);
+		pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
+		final IPath p = pack.getProjectPath();
+		new Job("Saving Archives Preferences") {
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					ArchivesModel.instance().save(p, null);
+					return Status.OK_STATUS;
+				} catch( ArchivesModelException ame ) {
+					return new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unable to save archive preferences", ame);
+				}
 			}
-		}
+		}.schedule();
 		return true;
 	}
 	public void addPages() {
