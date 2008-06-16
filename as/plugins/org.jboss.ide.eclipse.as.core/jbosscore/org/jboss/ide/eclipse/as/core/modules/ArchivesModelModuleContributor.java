@@ -112,7 +112,6 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 					ArchivesModel.instance().save(project.getLocation(), 
 							new NullProgressMonitor());
 				} catch( ArchivesModelException ame ) {
-					
 				}
 			}
 		}

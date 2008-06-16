@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -48,16 +49,7 @@ public class ArchivePublishWizard extends Wizard {
 		pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, alwaysPublish ? getServers() : null);
 		pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 		final IPath p = pack.getProjectPath();
-		new Job("Saving Archives Preferences") {
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					ArchivesModel.instance().save(p, null);
-					return Status.OK_STATUS;
-				} catch( ArchivesModelException ame ) {
-					return new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unable to save archive preferences", ame);
-				}
-			}
-		}.schedule();
+		new SaveArchivesJob(p).schedule();
 		return true;
 	}
 	public void addPages() {
