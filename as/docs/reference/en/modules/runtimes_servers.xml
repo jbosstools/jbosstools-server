@@ -98,7 +98,7 @@
       <table>
         <title>Server Runtime Wizard Parameters</title>
         <tgroup cols="2">
-          <colspec colnum="1" colwidth="1*"/>
+          <colspec colnum="1" align="left" colwidth="1*"/>
           <colspec colnum="2" colwidth="3*"/>
 
           <thead>

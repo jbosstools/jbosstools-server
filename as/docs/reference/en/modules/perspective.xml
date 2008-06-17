@@ -85,7 +85,7 @@
             <table>
                 <title>Server Publish Status</title>
                 <tgroup cols="2">
-                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="1" align="left" colwidth="1*"/>
                     <colspec colnum="2" colwidth="3*"/>
 
 
@@ -183,7 +183,7 @@
             <table>
                 <title>Server Properties through the Context Menu</title>
                 <tgroup cols="2">
-                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="1" align="left" colwidth="1*"/>
                     <colspec colnum="2" colwidth="3*"/>
 
                     <thead>
@@ -680,7 +680,7 @@
             <table>
                 <title>Context Menu on the Item</title>
                 <tgroup cols="2">
-                    <colspec colnum="1" colwidth="1*"/>
+                    <colspec colnum="1" align="left" colwidth="1*"/>
                     <colspec colnum="2" colwidth="3*"/>
 
 
