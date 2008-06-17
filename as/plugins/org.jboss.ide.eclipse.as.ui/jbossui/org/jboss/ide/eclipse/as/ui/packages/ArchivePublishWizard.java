@@ -3,18 +3,14 @@ package org.jboss.ide.eclipse.as.ui.packages;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -27,14 +23,13 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.as.core.modules.ArchivesBuildListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ArchivePublishWizard extends Wizard {
 
@@ -70,7 +65,7 @@ public class ArchivePublishWizard extends Wizard {
 	
 	public class ArchivePublishWizardPage extends WizardPage {
 		protected IArchive pack;
-		protected ListViewer viewer;
+		protected TableViewer viewer;
 		protected Button autoDeploy, alwaysPublish;
 		protected String viewerResult = "";
 		protected String deployResult = Boolean.toString(false);
@@ -108,7 +103,7 @@ public class ArchivePublishWizard extends Wizard {
 				
 				IDeployableServer[] depServers = ServerConverter.getAllDeployableServers();
 				String[] serverList = servers.split(",");
-				final ArrayList selected = new ArrayList();
+				final ArrayList<IDeployableServer> selected = new ArrayList<IDeployableServer>();
 				for(int i = 0; i < serverList.length; i++ ) {
 					for( int j = 0; j < depServers.length; j++ ) {
 						if( serverList[i].equals(depServers[j].getServer().getId())) 
@@ -120,18 +115,18 @@ public class ArchivePublishWizard extends Wizard {
 		}
 		
 		protected void fillComposite(Composite mainComposite) {
-			viewer = new ListViewer(mainComposite);
+			viewer = new TableViewer(mainComposite);
 			FormData viewerData = new FormData();
 			viewerData.left = new FormAttachment(15,0);
 			viewerData.right = new FormAttachment(85,0);
 			viewerData.top = new FormAttachment(0,10);
 			viewerData.bottom = new FormAttachment(80,0);
-			viewer.getList().setLayoutData(viewerData);
+			viewer.getTable().setLayoutData(viewerData);
 			
 			this.alwaysPublish = new Button(mainComposite, SWT.CHECK);
 			FormData always = new FormData();
 			always.left = new FormAttachment(15,0);
-			always.top = new FormAttachment(viewer.getList(), 5);
+			always.top = new FormAttachment(viewer.getTable(), 5);
 			alwaysPublish.setLayoutData(always);
 			alwaysPublish.setText("Always publish to these servers");
 			
@@ -208,6 +203,10 @@ public class ArchivePublishWizard extends Wizard {
 	
 	protected class ArchivePublishLabelProvider extends LabelProvider {
 	    public Image getImage(Object element) {
+	    	if( element instanceof IDeployableServer ) {
+	    		IServerType type = ((IDeployableServer)element).getServer().getServerType();
+	    		return ImageResource.getImage(type.getId());
+	    	}
 	        return null;
 	    }
 	    public String getText(Object element) {
