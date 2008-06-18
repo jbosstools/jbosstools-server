@@ -81,9 +81,19 @@
             class="org.jboss.ide.eclipse.as.classpath.core.jee.J2EE50ClasspathContainerInitializer"
             id="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </classpathContainerInitializer>
+
+	<!-- Legacy ID's -->
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.jee.J2EE13ClasspathContainerInitializer"
+            id="org.jboss.ide.eclipse.jdt.core.classpath.j2ee-1.3">
+      </classpathContainerInitializer>
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.classpath.core.jee.J2EE14ClasspathContainerInitializer"
+            id="org.jboss.ide.eclipse.jdt.core.classpath.j2ee-1.4">
+      </classpathContainerInitializer>
    </extension>
-   <!--
    
+   <!--
    Cannot be enabled before resource change listening is implemented.(max)
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">

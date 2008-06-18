@@ -57,13 +57,10 @@ public abstract class AbstractClasspathContainerInitializer extends
 			throws CoreException {
 		int size = containerPath.segmentCount();
 		if (size > 0) {
-			if (containerPath.segment(0).equals(this.getClasspathContainerID())) {
-				AbstractClasspathContainer container = this
-						.createClasspathContainer(containerPath);
-				JavaCore.setClasspathContainer(containerPath,
-						new IJavaProject[] { project },
-						new IClasspathContainer[] { container }, null);
-			}
+			AbstractClasspathContainer container = createClasspathContainer(containerPath);
+			JavaCore.setClasspathContainer(containerPath,
+				new IJavaProject[] { project },
+				new IClasspathContainer[] { container }, null);
 		}
 	}
 

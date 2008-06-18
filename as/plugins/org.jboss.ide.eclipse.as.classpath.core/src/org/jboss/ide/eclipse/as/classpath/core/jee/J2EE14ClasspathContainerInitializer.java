@@ -27,7 +27,7 @@ public class J2EE14ClasspathContainerInitializer extends
 		public final static String SUFFIX = "j2ee-1.4";//$NON-NLS-1$
 		public final static String CLASSPATH_CONTAINER = CLASSPATH_CONTAINER_PREFIX
 				+ "." + J2EE14ClasspathContainer.SUFFIX;//$NON-NLS-1$
-		public final static String DESCRIPTION = "J2EE 1.4 Libraries (JBoss-IDE)";
+		public final static String DESCRIPTION = "J2EE 1.4 Libraries (JBoss Tools)";
 
 		public J2EE14ClasspathContainer(IPath path) {
 			super(path, DESCRIPTION, SUFFIX);
