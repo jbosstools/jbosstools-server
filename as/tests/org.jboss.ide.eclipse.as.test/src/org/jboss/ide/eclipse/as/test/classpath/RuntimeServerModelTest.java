@@ -59,7 +59,7 @@ public class RuntimeServerModelTest extends TestCase {
 		return new IRuntime[] { savedRuntime, secondSavedRuntime };
 	}
 	
-	public void testCreateBrokenServer() throws CoreException {
+	public void testCreateBrokenRuntime() throws CoreException {
 		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, ASTest.JBOSS_RUNTIME_42);
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		IRuntimeType runtimeType = runtimeTypes[0];
