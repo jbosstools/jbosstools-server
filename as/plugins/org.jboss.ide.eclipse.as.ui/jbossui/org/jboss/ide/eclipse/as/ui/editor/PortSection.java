@@ -103,13 +103,13 @@ public class PortSection extends ServerEditorSection {
 		
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE|ExpandableComposite.EXPANDED|ExpandableComposite.TITLE_BAR);
-		section.setText("Server Ports");
+		section.setText(Messages.EditorServerPorts);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 		
 		Composite composite = toolkit.createComposite(section);
 		composite.setLayout(new FormLayout());
 		Label description = new Label(composite, SWT.NONE);
-		description.setText("The ports entered here are which ports the tools\nwill poll the server on. Changing these fields\nwill not change the ports the server itself listens on.");
+		description.setText(Messages.EditorServerPortsDescription);
 
 		Composite jndiChild = createJNDIUI(composite);
 		Composite webChild = createWebUI(composite);
