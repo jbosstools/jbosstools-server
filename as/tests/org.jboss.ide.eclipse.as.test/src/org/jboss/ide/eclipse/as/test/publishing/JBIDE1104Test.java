@@ -1,5 +1,7 @@
 package org.jboss.ide.eclipse.as.test.publishing;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
@@ -22,8 +24,31 @@ public class JBIDE1104Test extends AbstractDeploymentTest {
 		assertEquals(IStatus.OK, result.getSeverity());
 		
 		// now do my asserts regarding the output structure
-		// TODO
-		
+		File depLoc = new File(deployLocation);
+		File projLoc = new File(depLoc, "SimpleEar.ear");
+		assertNotNull(projLoc);
+		assertTrue(projLoc.exists());
+		assertTrue(projLoc.isDirectory());
+		File sarFile = new File(projLoc, "directory-monitor.sar");
+		File ejbFile = new File(projLoc, "EJB3WithDescriptor.jar");
+		File metainfFile = new File(projLoc, "META-INF");
+		assertTrue(sarFile != null);
+		assertTrue(sarFile.exists());
+		assertTrue(sarFile.isFile());
+		assertTrue(ejbFile != null);
+		assertTrue(ejbFile.exists());
+		assertTrue(ejbFile.isFile());
+		assertTrue(metainfFile != null);
+		assertTrue(metainfFile.exists());
+		assertTrue(metainfFile.isDirectory());
+		File appxmlFile = new File(metainfFile, "application.xml");
+		File jbossappxmlFile = new File(metainfFile, "jboss-app.xml");
+		assertTrue(appxmlFile != null);
+		assertTrue(appxmlFile.exists());
+		assertTrue(appxmlFile.isFile());
+		assertTrue(jbossappxmlFile != null);
+		assertTrue(jbossappxmlFile.exists());
+		assertTrue(jbossappxmlFile.isFile());
 	}
 	
 }

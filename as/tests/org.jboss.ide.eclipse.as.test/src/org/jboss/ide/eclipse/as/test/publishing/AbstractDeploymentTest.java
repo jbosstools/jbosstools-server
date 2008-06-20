@@ -40,10 +40,16 @@ public abstract class AbstractDeploymentTest extends TestCase {
 	protected String testProperties;
 	protected IRuntime runtime;
 	protected IServer server;
+	protected String deployLocation;
 	
 	public AbstractDeploymentTest(String projectName, String testProperties) {
-		this.sourceProjectName = projectName;
-		this.testProperties = testProperties;
+		try {
+			this.sourceProjectName = projectName;
+			this.testProperties = testProperties;
+			this.deployLocation = getFileLocation("/testOutputs").getAbsolutePath();
+		} catch( CoreException ce ) {
+			fail("Could not access deploy location");
+		}
 	}
 	
 	protected void setUp() throws Exception {
@@ -85,6 +91,12 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		return new File(location);
 	}
 	
+	
+	/* 
+	 * The whole reason for all this is so that I don't duplicate
+	 * jars or archives all over the place and to keep the size
+	 * of the test plugin small
+	 */
 	protected void assembleInTempProject() throws CoreException {
 		File tempProject = getProjectLocation("TempProject");
 		File srcProject = getProjectLocation(sourceProjectName);
@@ -135,7 +147,7 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer("testServer", null, null);
 		swc.setServerConfiguration(null);
 		swc.setName("testServer");
-		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, getFileLocation("/testOutputs").getAbsolutePath());
+		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
 		server = swc.save(true, null);
 	}
 	
