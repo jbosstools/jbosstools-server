@@ -550,4 +550,29 @@
             id="org.jboss.ide.eclipse.as.core.launch.classpathProvider">
       </classpathProvider>
    </extension>
+   <extension
+         point="org.eclipse.wst.xml.core.catalogContributions">
+     <catalogContribution>
+	        <public publicId="-//JBoss//DTD JBOSS 4.0//EN"
+				uri="dtd/jboss_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd"/>
+	        <public publicId="-//JBoss//DTD JBOSS 4.2//EN"
+				uri="dtd/jboss_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd"/>
+				
+	        <public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
+				uri="dtd/jboss-app_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_0.dtd"/>
+	        <public publicId="-//JBoss//DTD J2EE Application 4.2//EN"
+				uri="dtd/jboss-app_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_2.dtd"/>
+				
+	        <public publicId="-//JBoss//DTD Web Application 2.4//EN"
+				uri="dtd/jboss-web_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_0.dtd"/>
+	        <public publicId="-//JBoss//DTD Web Application 4.2//EN"
+				uri="dtd/jboss-web_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"/>
+     </catalogContribution>
+   </extension>
 </plugin>
