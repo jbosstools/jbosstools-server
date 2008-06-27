@@ -33,26 +33,25 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
-import org.eclipse.wst.server.core.internal.ModuleFile;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
+import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  *
@@ -182,7 +181,9 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	public static interface IExtendedModuleResource extends IModuleResource {
 		public IPath getSourcePath();
 		public IArchiveNode getNode();
+		// deep destination is the full path this resource represents, even if it's inside a jar
 		public IPath getDeepDestination();
+		// the concrete file this resource is part of... so the top most zipped jar or, if all is exploded, the file itself
 		public IPath getConcreteDestFile();
 	}
 
@@ -234,20 +235,20 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	public static class ArchiveContainerResource implements IModuleFolder, IExtendedModuleResource {
 
 		protected IPath moduleRelativePath;
+		protected IPath fsRelative;
 		protected IArchiveNode node;
 		protected String name;
 		private HashMap<IPath, IModuleResource> members;
-				
+		
 		// represents source folder on disk. only used if node is fileset
-		private IPath folderGlobalPath = null;
+//		private IPath folderGlobalPath = null;
 		public ArchiveContainerResource(String name,IArchiveNode node,IPath moduleRelativePath ) {
 			this.name = name;
 			this.node = node;
 			this.moduleRelativePath = moduleRelativePath;
 			members = new HashMap<IPath, IModuleResource>();
-			if( node instanceof IArchiveFileSet) {
-				IPath tmp = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
-				folderGlobalPath = ((IArchiveFileSet)node).getGlobalSourcePath().append(tmp);
+			if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
+				fsRelative = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
 			}
 		}
 		
@@ -275,30 +276,28 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		
 		public void addFilesetAsChild(IArchiveFileSet fs) {
-			IPath[] paths = fs.findMatchingPaths(); // file-system based source paths
-			IPath globalSource = fs.getGlobalSourcePath();
-			for( int i = 0; i < paths.length; i++ ) {
-				addFilesetPathAsChild(fs, globalSource, paths[i]);
+			FileWrapper[] files = fs.findMatchingPaths(); // file-system based source paths
+			for( int i = 0; i < files.length; i++ ) {
+				addFilesetPathAsChild(fs, files[i]);
 			}
 		}
 		
-		public void addFilesetPathAsChild(IArchiveFileSet fs, IPath globalSource, IPath path) {
-			IPath archiveRelative = fs.getRootArchiveRelativePath(path);
-			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
-			ArchiveContainerResource parent = find(fs, globalSource, fsRelative.removeLastSegments(1), true);
-			ExtendedModuleFile emf = new ExtendedModuleFile(archiveRelative.lastSegment(), archiveRelative, path.toFile().lastModified(), path, fs);
+		public void addFilesetPathAsChild(IArchiveFileSet fs, FileWrapper file) {
+			IPath fsRelative = new Path(file.getFilesetRelative());
+			ArchiveContainerResource parent = find(fs, fsRelative.removeLastSegments(1), true);
+			ExtendedModuleFile emf = new ExtendedModuleFile(file, fs);
 			parent.addChild(emf);
 		}
 		
 		public void removeFilesetPathAsChild(IArchiveFileSet fs, IPath path) {
 			IPath globalSource = fs.getGlobalSourcePath();
 			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
-			ArchiveContainerResource parent = find(fs, globalSource, fsRelative.removeLastSegments(1), false);
+			ArchiveContainerResource parent = find(fs, fsRelative.removeLastSegments(1), false);
 			if( parent != null ) 
 				parent.removeFilesetPathAsChild(fs, path);
 		}
 		
-		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath globalSource, IPath fsRelative, boolean create) {
+		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath fsRelative, boolean create) {
 			ArchiveContainerResource resource = this;
 			ArchiveContainerResource tmpResource;
 			IPath tmpPath = fs.getRootArchiveRelativePath();
@@ -335,12 +334,16 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 
 		public IPath getDeepDestination() {
-			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ?  
-					((IArchiveFileSet)node).getRootArchiveRelativePath(folderGlobalPath) : node.getRootArchiveRelativePath();
+			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET 
+					?  moduleRelativePath : node.getRootArchiveRelativePath();
 			return node.getRootArchive().getGlobalDestinationPath().append(tmp);
 		}
+		
 		public IPath getConcreteDestFile() {
-			return ModelUtil.getBaseDestinationFile(node,folderGlobalPath);
+			if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ) 
+				return ModelUtil.getBaseDestinationFile((IArchiveFileSet)node,fsRelative);
+			else
+				return ModelUtil.getBaseDestinationFile((IArchiveFileSet)node);
 		}
 		public IArchiveNode getNode() {
 			return node;
@@ -353,29 +356,27 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	}
 
 	public static class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
-		private IPath srcPath;
+		private FileWrapper wrapper;
 		private IArchiveFileSet node;
-		public ExtendedModuleFile(String name, IPath relativePath, long stamp, 
-				IPath srcPath, IArchiveFileSet fs) {
-			super(name, relativePath, stamp);
-			this.srcPath = srcPath;
+		public ExtendedModuleFile(FileWrapper wrapper, IArchiveFileSet fs) {
+			super(wrapper.getOutputName(), wrapper.getRootArchiveRelative(), wrapper.lastModified());
 			this.node = fs;
 		}
 		public int hashCode() {
 			return getName().hashCode() * 37 + getPath().hashCode();
 		}
 		
-		public IPath getPath() { return srcPath; }
+		public IPath getPath() { return new Path(wrapper.getAbsolutePath()); }
 		public IArchiveNode getNode() { return node; }
 		public IPath getDeepDestination() {
-			return node.getRootArchive().getGlobalDestinationPath().append(node.getRootArchiveRelativePath(getModuleRelativePath()));
+			return node.getRootArchive().getGlobalDestinationPath().append(wrapper.getRootArchiveRelative());
 		}
 		public IPath getSourcePath() {
-			return this.srcPath;
+			return new Path(this.wrapper.getAbsolutePath());
 		}
 
 		public IPath getConcreteDestFile() {
-			return ModelUtil.getBaseDestinationFile(node, srcPath);
+			return ModelUtil.getBaseDestinationFile(node, new Path(this.wrapper.getFilesetRelative()));
 		}
 
 		public boolean equals(Object other) {

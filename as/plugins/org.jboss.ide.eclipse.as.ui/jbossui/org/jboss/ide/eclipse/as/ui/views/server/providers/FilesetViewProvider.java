@@ -81,7 +81,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.core.model.ArchivesModelCore;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -302,8 +303,9 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				Fileset fs = (Fileset)parentElement;
 				IPath[] paths = null;
 				try {
-					paths = ArchivesModelCore.findMatchingPaths(
-							new Path(fs.getFolder()), fs.getIncludesPattern(), fs.getExcludesPattern());
+					paths = findPaths(fs.getFolder(), 
+							fs.getIncludesPattern(), 
+							fs.getExcludesPattern());
 				} catch( BuildException be ) {
 					return new Object[]{};
 				}
@@ -588,6 +590,24 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		return null;
 	}
 	
+	private IPath[] findPaths(String dir, String includes, String excludes) {
+		IPath[] paths = new IPath[0];
+		try {
+			if( dir != null ) {
+				DirectoryScanner scanner  = 
+					DirectoryScannerFactory.createDirectoryScanner(new Path(dir), includes, excludes, true);
+				if( scanner != null ) {
+					String[] files = scanner.getIncludedFiles();
+					paths = new IPath[files.length];
+					for( int i = 0; i < files.length; i++ ) {
+						paths[i] = new Path(files[i]);
+					}
+				}
+			}
+		} catch( IllegalStateException ise ) {}
+		return paths;
+	}
+	
 	protected class FilesetDialog extends TitleAreaDialog {
 		protected Fileset fileset;
 		private String name, dir, includes, excludes;
@@ -721,10 +741,9 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		
 		private void updatePreview() {
-			IPath files[] = ArchivesModelCore.findMatchingPaths(new Path(dir), includesText.getText(), excludesText.getText());
-			preview.setInput(files);
+			preview.setInput(findPaths(dir, includes, excludes));
 		}
-		
+
 		public String getDir() {
 			return dir;
 		}

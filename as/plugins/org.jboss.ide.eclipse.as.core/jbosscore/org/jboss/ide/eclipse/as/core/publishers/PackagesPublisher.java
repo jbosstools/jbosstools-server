@@ -162,8 +162,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	protected void countConcreteFiles(IModuleResource mr, ArrayList list) {
 		if( mr instanceof IExtendedModuleResource) {
 			IExtendedModuleResource emr = ((IExtendedModuleResource)mr);
-			IPath p = emr.getConcreteDestFile();
-			if( mr instanceof IModuleFile && !list.contains(p)) list.add(p);
+			if( mr instanceof IModuleFile ) {
+				IPath p = emr.getConcreteDestFile();
+				if( !list.contains(p)) 
+					list.add(p);
+			}
 			if( mr instanceof IModuleFolder) {
 				IModuleResource[] children = ((IModuleFolder)mr).members();
 				for( int i = 0; i < children.length; i++ )
