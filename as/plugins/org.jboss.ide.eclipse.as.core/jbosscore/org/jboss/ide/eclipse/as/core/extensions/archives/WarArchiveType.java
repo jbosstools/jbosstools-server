@@ -101,7 +101,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		try {
 			IPath projectPath = project.getLocation();
 			DirectoryScanner scanner = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
+				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
@@ -134,7 +134,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		try {
 			IPath projectPath = project.getLocation();
 			DirectoryScanner scanner = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/web.xml", null, true);
+				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/web.xml", null, true);
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
@@ -156,7 +156,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		
 		IPath projectPath = project.getLocation();
 		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/WEB-INF/web.xml", null, true);
+			DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
 		String[] files = scanner.getIncludedFiles();
 		
 		if(files != null && files.length > 0) {
@@ -168,7 +168,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			//having failed to find 'lib' directory, let us make source of the project itself
 			sourcePath = project.getName();
 			DirectoryScanner scanner2 = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath, "**/*.jar", null, true);
+				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/*.jar", null, true);
 			String[] files2 = scanner2.getIncludedFiles();
 			IPath p;
 			ArrayList list = new ArrayList();

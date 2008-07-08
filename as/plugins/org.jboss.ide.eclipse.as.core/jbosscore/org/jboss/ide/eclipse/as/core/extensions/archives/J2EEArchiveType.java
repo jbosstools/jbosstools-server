@@ -142,7 +142,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			sourceContainer = project;
 		}
 
-		fs.setSourcePath(sourceContainer.getFullPath());
+		fs.setRawSourcePath(sourceContainer.getFullPath().toString());
 		fs.setInWorkspace(true);
 		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern );
 		parent.addChild(fs);
