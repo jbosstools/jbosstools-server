@@ -249,7 +249,7 @@
             category="JBoss"
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
-            modes="run,debug"
+            modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"

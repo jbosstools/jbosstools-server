@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
@@ -21,12 +22,16 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
+import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
@@ -59,6 +64,13 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		IVMInstall vm = verifyVMInstall(configuration);
 		IVMRunner runner = vm.getVMRunner(mode);
 		
+		if(runner == null && ILaunchManager.PROFILE_MODE.equals(mode)){
+			runner = vm.getVMRunner(ILaunchManager.RUN_MODE);
+		}
+		if(runner == null){
+			throw new CoreException(new Status(IStatus.ERROR,JBossServerCorePlugin.PLUGIN_ID,0,Messages.runModeNotSupported,null));
+		}
+		
 		File workingDir = verifyWorkingDirectory(configuration);
 		String workingDirName = null;
 		if (workingDir != null)
@@ -90,6 +102,17 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		
 		setDefaultSourceLocator(launch, configuration);
 		
+		if (ILaunchManager.PROFILE_MODE.equals(mode)) {
+			try {
+				ServerProfilerDelegate.configureProfiling(launch, vm, runConfig, monitor);
+			} catch (CoreException ce) {
+				IServer server = ServerUtil.getServer(configuration);
+				JBossServerBehavior jbsb = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
+				jbsb.stop(true);
+				//genericServer.stopImpl();
+				throw ce;
+			}
+		}
 		// Launch the configuration
 		runner.run(runConfig, launch, monitor);
 	}

@@ -28,6 +28,7 @@ public class Messages {
 	public static String jboss;
 	public static String server;
 	public static String runtime;
+	public static String runModeNotSupported;
 	
 	static {
 		NLS.initializeMessages(JBossServerCorePlugin.PLUGIN_ID + ".Messages",
