@@ -236,6 +236,10 @@ public class Messages {
 	// misc
 	public static String ServerSaveFailed;
 	
+	// Launch Config
+	public static String LaunchInvalidConfigChanged;
+	public static String LaunchInvalidHostChanged;
+	
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
 				Messages.class);
