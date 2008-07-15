@@ -70,7 +70,13 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 
 	public static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
 		JBossServer jbs = findJBossServer(server.getId());
+		if( jbs == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is not a proper JBoss Server"));
+		
 		String serverHome = getServerHome(jbs);
+		if( serverHome == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is corrupt and the server home is unable to be located."));
+			
 		
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
