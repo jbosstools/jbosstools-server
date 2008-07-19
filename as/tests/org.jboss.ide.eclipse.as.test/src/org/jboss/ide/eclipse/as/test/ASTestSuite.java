@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.test.classpath.JEEClasspathContainerTest;
 import org.jboss.ide.eclipse.as.test.classpath.ProjectRuntimeTest;
 import org.jboss.ide.eclipse.as.test.classpath.RuntimeServerModelTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512aTest;
+import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
@@ -39,6 +40,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(ProjectRuntimeTest.class);
         suite.addTestSuite(JBIDE1657Test.class);
         suite.addTestSuite(JBIDE2512aTest.class);
+        suite.addTestSuite(JBIDE2512bTest.class);
         return suite; 
    }
 

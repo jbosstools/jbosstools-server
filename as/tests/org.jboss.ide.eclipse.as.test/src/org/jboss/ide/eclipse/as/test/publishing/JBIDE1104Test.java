@@ -14,7 +14,7 @@ public class JBIDE1104Test extends AbstractDeploymentTest {
 	}
 	
 	public void testJBIDE1104() throws Exception {
-		IModuleArtifact[] artifacts = ServerPlugin.getModuleArtifacts(workspaceProject);
+		IModuleArtifact[] artifacts = ServerPlugin.getModuleArtifacts(workspaceProject[0]);
 		assertNotNull(artifacts);
 		assertEquals(1, artifacts.length);
 		assertNotNull(artifacts[0]);

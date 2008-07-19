@@ -34,32 +34,39 @@ import org.osgi.framework.Bundle;
 
 public abstract class AbstractDeploymentTest extends TestCase {
 	protected String BUNDLE_NAME = "org.jboss.ide.eclipse.as.test";
-	private TestProjectProvider provider;
-	protected IProject workspaceProject;
-	protected String sourceProjectName;
-	protected String testProperties;
+	private TestProjectProvider[] provider;
+	protected IProject[] workspaceProject;
+	protected String[] sourceProjectName;
+	protected String[] testProperties;
 	protected IRuntime runtime;
 	protected IServer server;
 	protected String deployLocation;
 	
-	public AbstractDeploymentTest(String projectName, String testProperties) {
+	public AbstractDeploymentTest(String[] projectNames, String[] testProperties) {
 		try {
-			this.sourceProjectName = projectName;
+			this.sourceProjectName = projectNames;
 			this.testProperties = testProperties;
 			this.deployLocation = getFileLocation("/testOutputs").getAbsolutePath();
+			this.provider = new TestProjectProvider[sourceProjectName.length];
+			this.workspaceProject = new IProject[sourceProjectName.length];
 		} catch( CoreException ce ) {
 			fail("Could not access deploy location");
 		}
 	}
+	public AbstractDeploymentTest(String projectName, String testProperties) {
+		this(new String[]{projectName}, new String[] {testProperties});
+	}
 	
 	protected void setUp() throws Exception {
-		cleanFolder(getProjectLocation("TempProject").getAbsolutePath());
-		assembleInTempProject();
 		createServer();
-		String path = "/projects/TempProject/" + sourceProjectName;
-		provider = new TestProjectProvider(BUNDLE_NAME, path, sourceProjectName, true); 
-		workspaceProject = provider.getProject();
-		workspaceProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		for( int i = 0; i < sourceProjectName.length; i++ ) {
+			cleanFolder(getProjectLocation("TempProject").getAbsolutePath());
+			assembleInTempProject(i);
+			String path = "/projects/TempProject/" + sourceProjectName[i];
+			provider[i] = new TestProjectProvider(BUNDLE_NAME, path, sourceProjectName[i], true); 
+			workspaceProject[i] = provider[i].getProject();
+			workspaceProject[i].refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		}
 	}
 	
 	protected void cleanFolder(String folder) throws CoreException {
@@ -97,30 +104,33 @@ public abstract class AbstractDeploymentTest extends TestCase {
 	 * jars or archives all over the place and to keep the size
 	 * of the test plugin small
 	 */
-	protected void assembleInTempProject() throws CoreException {
+	protected void assembleInTempProject(int index) throws CoreException {
+		String sourceProjectName = this.sourceProjectName[index];
 		File tempProject = getProjectLocation("TempProject");
 		File srcProject = getProjectLocation(sourceProjectName);
 		File destProject = new File(tempProject, sourceProjectName);
 		FileUtil.fileSafeCopy(srcProject, destProject);
 		
 		// now copy files over from the properties file
-		File propertiesFile = getFileLocation("projectPieces/" + testProperties);
-		Properties props = new Properties();
-		try {
-			props.load(new FileInputStream(propertiesFile));
-			boolean done = false;
-			String srcKey, destKey;
-			int i = 1;
-			while( !done ) {
-				srcKey = "copy" + i + "src";
-				destKey = "copy" + i + "dest";
-				done = copy(props.getProperty(srcKey), props.getProperty(destKey));
-				i++;
+		if( testProperties[index] != null ) {
+			File propertiesFile = getFileLocation("projectPieces/" + testProperties[index]);
+			Properties props = new Properties();
+			try {
+				props.load(new FileInputStream(propertiesFile));
+				boolean done = false;
+				String srcKey, destKey;
+				int i = 1;
+				while( !done ) {
+					srcKey = "copy" + i + "src";
+					destKey = "copy" + i + "dest";
+					done = copy(props.getProperty(srcKey), props.getProperty(destKey));
+					i++;
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -159,11 +169,12 @@ public abstract class AbstractDeploymentTest extends TestCase {
 	}
 
 	protected void tearDown() throws Exception {
-		provider.dispose();
+		for( int i = 0; i < sourceProjectName.length; i++ ) 
+			provider[i].dispose();
+
 		cleanFolder(getProjectLocation("TempProject").getAbsolutePath());
 		cleanFolder(getFileLocation("testOutputs"));
 		runtime.delete();
 		server.delete();
-	}
-	
+	}	
 }
