@@ -17,5 +17,6 @@ Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.classpath.core,
  org.jboss.ide.eclipse.as.classpath.core.ejb3,
  org.jboss.ide.eclipse.as.classpath.core.jee,
- org.jboss.ide.eclipse.as.classpath.core.runtime
+ org.jboss.ide.eclipse.as.classpath.core.runtime,
+ org.jboss.ide.eclipse.as.classpath.core.xpl
 Bundle-Vendor: JBoss, a division of Red Hat

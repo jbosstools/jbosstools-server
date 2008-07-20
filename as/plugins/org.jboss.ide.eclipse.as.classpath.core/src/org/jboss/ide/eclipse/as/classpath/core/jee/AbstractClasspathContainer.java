@@ -57,7 +57,7 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 	protected String description;
 	protected String libFolder;
 
-	private static ClasspathDecorationsManager decorations;
+	protected static ClasspathDecorationsManager decorations;
 	static {
 		
 		decorations = new ClasspathDecorationsManager();
@@ -164,7 +164,7 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
     	return container;
     }
 	
-	static ClasspathDecorationsManager getDecorationsManager() {
+	protected static ClasspathDecorationsManager getDecorationsManager() {
         return decorations;
     }
 
