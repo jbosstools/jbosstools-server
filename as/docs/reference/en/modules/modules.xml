@@ -179,10 +179,11 @@
 			enabling project-specific preferences and ensuring the builder is on.</para>
 	</section>
 
-	<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
+		<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
 		server.</para>
 	
 	<para>In summary, this reference supplies you with all necessary information on the
 		functionality that <property>JBoss Server Manager</property> provides for work with <ulink
 			url="http://www.jboss.org/jbossas">JBoss AS</ulink>.</para>
+
 </chapter>
