@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="urn:jboss:jaxws-config:2.0"
+            xmlns:tns="urn:jboss:jaxws-config:2.0"
+            xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            version="1.1">
+
+   <xsd:annotation>
+      <xsd:documentation>
+         <![CDATA[
+            This is the schema definition for JBossWS configurations JAXWS.
+            It relies on the handler definitions that are part of the standard J2EE-1.5 deployment descriptors.
+         ]]>
+      </xsd:documentation>
+   </xsd:annotation>
+
+   <xsd:import namespace="http://java.sun.com/xml/ns/javaee" schemaLocation="javaee_web_services_1_2.xsd"/>
+
+   <xsd:element name="jaxws-config" type="tns:jaxwsConfigType"/>
+   <xsd:complexType name="jaxwsConfigType">
+      <xsd:choice>
+         <xsd:element name="endpoint-config" type="tns:endpointConfigType" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="client-config" type="tns:clientConfigType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+   </xsd:complexType>
+
+   <xsd:complexType name="endpointConfigType">
+      <xsd:complexContent>
+         <xsd:extension base="tns:commonConfigType"/>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="clientConfigType">
+      <xsd:complexContent>
+         <xsd:extension base="tns:commonConfigType"/>
+      </xsd:complexContent>
+   </xsd:complexType>
+
+   <xsd:complexType name="commonConfigType">
+      <xsd:sequence>
+         <xsd:element name="config-name" type="xsd:string"/>
+         <xsd:element name="reliable-messaging" type="tns:rmConfigType" minOccurs="0"/>
+         <xsd:element name="pre-handler-chains" type="javaee:handler-chainsType" minOccurs="0"/>
+         <xsd:element name="post-handler-chains" type="javaee:handler-chainsType" minOccurs="0"/>
+         <xsd:element name="feature" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="property" type="tns:propertyType" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="propertyType">
+      <xsd:sequence>
+         <xsd:element name="property-name" type="xsd:anyURI"/>
+         <xsd:element name="property-value" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+
+  <!-- WSRM configuration -->
+  <xsd:complexType name="rmConfigType">
+    <xsd:sequence>
+      <xsd:element name="delivery-assurance" type="tns:deliveryAssuranceType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Global WS-RM delivery assurance configuration that applies to all WSDL ports.
+            If there is the WS-Policy with attached WS-RM assertion in WSDL
+            associated with some port or its associated binding it
+            will always override this global configuration.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="backports-server" type="tns:backportsServerType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Backports server configuration to be used for addressable clients.
+            If element is not present in client configuration then client is anonymous.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="message-retransmission" type="tns:messageRetransmissionType" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Message retransmission allow users to configure the QoS of WS-RM.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="port" type="tns:portType" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>
+            WSDL port specific WS-RM delivery assurance configuration.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="messageRetransmissionType">
+    <xsd:attribute name="interval" type="xsd:int" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Message retransmission interval (in seconds)
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="attempts" type="xsd:int" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+           Maximum count of message retransmission attempts.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="timeout" type="xsd:int" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+           Maximum count of seconds to wait for response.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:complexType name="backportsServerType">
+    <xsd:attribute name="host" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation>
+          Host name to be used for backports server. If not specified default one will be detected.
+          Make sure you have DNS correctly configured so runtime is able to detect your real hostname.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="port" type="xsd:int" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+           Port number to be used for backports server.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:complexType name="deliveryAssuranceType">
+    <xsd:attribute name="quality" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          Quality of service to be ensured.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="AtLeastOnce"/>
+          <xsd:enumeration value="AtMostOnce"/>
+          <xsd:enumeration value="ExactlyOnce"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="inOrder" type="xsd:boolean" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          In order quality of service to be ensured. Set this attribute to 'true' to ensure in order message delivery.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+  <xsd:complexType name="portType">
+    <xsd:sequence>
+      <xsd:element name="delivery-assurance" type="tns:deliveryAssuranceType">
+        <xsd:annotation>
+          <xsd:documentation>
+            This WSDL port specific WS-RM delivery assurance configuration
+            applies to all its operations.
+            This configuration always overrides the global configuration.
+            If there is a WS-Policy with attached WS-RM assertion in WSDL
+            associated with this port or its associated binding it
+            will be always overriden this port specific configuration.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation>
+          WSDL port name specified in the form {namespace}localPart.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+</xsd:schema>
