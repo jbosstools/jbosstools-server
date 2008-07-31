@@ -125,7 +125,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				IDeployableServer server = (IDeployableServer)contentProvider.server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 				String location = null;
 				if( server != null ) 
-					location = server.getDeployDirectory();
+					location = server.getConfigDirectory();
 				else 
 					location = contentProvider.server.getRuntime().getLocation().toOSString();
 
