@@ -62,21 +62,23 @@ public class JBossServer extends DeployableServer
 		// here we update the launch configuration with any details that might have changed. 
 		try {
 			Server s = (Server)getServer();
-			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-			String originalArgs = startArgs;
-			if( !getServer().getHost().equals(getHost(true)))
-				startArgs = ArgsUtil.setArg(startArgs, "-b", "--host", getServer().getHost());
-			
-			IJBossServerRuntime runtime = (IJBossServerRuntime)
-				getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-			String config = runtime.getJBossConfiguration();
-			startArgs = ArgsUtil.setArg(startArgs, "-c", "--configuration", config);
-			
-			if( !startArgs.equals(originalArgs)) {
-				ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
-				wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, startArgs);
-				wc.doSave();
+			ILaunchConfiguration lc = s.getLaunchConfiguration(false, new NullProgressMonitor());
+			if( lc != null ) {
+				String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
+				String originalArgs = startArgs;
+				if( !getServer().getHost().equals(getHost(true)))
+					startArgs = ArgsUtil.setArg(startArgs, "-b", "--host", getServer().getHost());
+				
+				IJBossServerRuntime runtime = (IJBossServerRuntime)
+					getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+				String config = runtime.getJBossConfiguration();
+				startArgs = ArgsUtil.setArg(startArgs, "-c", "--configuration", config);
+				
+				if( startArgs != null && !startArgs.equals(originalArgs)) {
+					ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
+					wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, startArgs);
+					wc.doSave();
+				}
 			}
 		} catch( CoreException ce )  {
 			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Could not save server's start arguments", ce);
