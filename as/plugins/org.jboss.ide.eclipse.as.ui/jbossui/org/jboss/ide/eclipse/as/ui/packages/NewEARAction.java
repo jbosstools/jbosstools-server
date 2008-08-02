@@ -22,48 +22,43 @@
 package org.jboss.ide.eclipse.as.ui.packages;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
-import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
-import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.as.core.extensions.archives.EarArchiveType;
 
-public class NewEARAction extends ActionWithDelegate {
+public class NewEARAction implements IActionDelegate {
 
+	private IStructuredSelection selection;
 	public void run() {
 		AbstractArchiveWizard wizard = new NewEARWizard();
-		wizard.init(PlatformUI.getWorkbench(), ProjectArchivesView.getInstance().getSelection());
+		wizard.init(PlatformUI.getWorkbench(), selection);
 		WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 		dialog.open();
 	}
-	public IStructuredSelection getSelection() {
-		return ProjectArchivesView.getInstance().getSelection();
-	}
 
 	
-	public ImageDescriptor getImageDescriptor() {
-		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
+	public void run(IAction action) {
+		run();
 	}
-	
-	public String getText() {
-		return "EAR";
-	}
-	
-	public String getToolTipText() {
-		return "Create a new EAR archive";
+
+	public void selectionChanged(IAction action, ISelection selection) {
+		if( selection instanceof IStructuredSelection)
+			this.selection = (IStructuredSelection)selection;
 	}
 	
 	public void init(IViewPart view) {
-		
 	}
 
 	public static class NewEARWizard extends AbstractArchiveWizard {

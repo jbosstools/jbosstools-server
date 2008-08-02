@@ -22,49 +22,37 @@
 package org.jboss.ide.eclipse.as.ui.packages;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
-import org.jboss.ide.eclipse.archives.ui.actions.ActionWithDelegate;
-import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesView;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.as.core.extensions.archives.EjbArchiveType;
 
-public class NewEJBJARAction extends ActionWithDelegate implements IViewActionDelegate {
-
+public class NewEJBJARAction implements IActionDelegate {
+	private IStructuredSelection selection;
 	public void run() {
 		AbstractArchiveWizard wizard = new NewEJBWizard();
-		wizard.init(PlatformUI.getWorkbench(), ProjectArchivesView.getInstance().getSelection());
+		wizard.init(PlatformUI.getWorkbench(), selection);
 		WizardDialog dialog = new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
 		dialog.open();
 	}
-	public IStructuredSelection getSelection() {
-		return ProjectArchivesView.getInstance().getSelection();
+
+	public void run(IAction action) {
+		run();
 	}
 
-	
-	public ImageDescriptor getImageDescriptor() {
-		return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
-	}
-	
-	public String getText() {
-		return "EJB JAR";
-	}
-	
-	public String getToolTipText() {
-		return "Create a new EJB JAR archive";
-	}
-	
-	public void init(IViewPart view) {
-		
+	public void selectionChanged(IAction action, ISelection selection) {
+		if( selection instanceof IStructuredSelection)
+			this.selection = (IStructuredSelection)selection;
 	}
 
 	public static class NewEJBWizard extends AbstractArchiveWizard {
