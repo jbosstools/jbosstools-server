@@ -55,7 +55,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
-import org.jboss.ide.eclipse.archives.ui.views.ArchivesContentProvider;
+import org.jboss.ide.eclipse.archives.ui.views.ArchivesContentProviderDelegate;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
 
@@ -94,7 +94,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		previewGroup.setLayout(new FormLayout());
 		previewViewer = new TreeViewer(previewGroup);
 		previewViewer.setLabelProvider(new ArchivesLabelProvider());
-		previewViewer.setContentProvider(new ArchivesContentProvider());
+		previewViewer.setContentProvider(new ArchivesContentProviderDelegate());
 		FormData warPreviewData = new FormData();
 		warPreviewData.left = new FormAttachment(0,5);
 		warPreviewData.right = new FormAttachment(100,-5);
