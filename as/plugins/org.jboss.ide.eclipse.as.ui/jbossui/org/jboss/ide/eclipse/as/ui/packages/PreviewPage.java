@@ -54,8 +54,8 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
-import org.jboss.ide.eclipse.archives.ui.views.ArchivesContentProviderDelegate;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
 
