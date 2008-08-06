@@ -37,6 +37,7 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory.ExtendedModuleFile;
@@ -112,7 +113,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		IPath destPathRoot = new Path(server.getDeployDirectory());
 		
 		// if destination is deploy directory... no need to re-copy!
-		if( destPathRoot.toOSString().equals(pack.getGlobalDestinationPath().toOSString())) {
+		if( destPathRoot.toOSString().equals(PathUtils.getGlobalLocation(pack).toOSString())) {
 			// fire null publish event
 			return;
 		}

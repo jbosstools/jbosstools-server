@@ -42,7 +42,6 @@ import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
@@ -100,8 +99,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
-			DirectoryScanner scanner = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
+			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
@@ -133,8 +131,7 @@ public class WarArchiveType extends J2EEArchiveType {
 	protected void addWebinfFileset(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
-			DirectoryScanner scanner = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/web.xml", null, true);
+			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/web.xml", null, true);
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
@@ -155,8 +152,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		String sourcePath = null;
 		
 		IPath projectPath = project.getLocation();
-		DirectoryScanner scanner = 
-			DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
+		DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
 		String[] files = scanner.getIncludedFiles();
 		
 		if(files != null && files.length > 0) {
@@ -167,8 +163,7 @@ public class WarArchiveType extends J2EEArchiveType {
 		} else {
 			//having failed to find 'lib' directory, let us make source of the project itself
 			sourcePath = project.getName();
-			DirectoryScanner scanner2 = 
-				DirectoryScannerFactory.createDirectoryScanner(projectPath.toString(), "**/*.jar", null, true);
+			DirectoryScanner scanner2 =  createDirectoryScanner(projectPath.toString(), "**/*.jar", null, true);
 			String[] files2 = scanner2.getIncludedFiles();
 			IPath p;
 			ArrayList list = new ArrayList();

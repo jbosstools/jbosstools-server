@@ -129,7 +129,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
     
     protected abstract void addToPackage();
     protected void fillWidgets(IArchive pkg) {
-    	previewViewer.setInput(new IArchive[] {pkg});
+    	previewViewer.setInput(pkg);
     	previewViewer.expandAll();
     }
     

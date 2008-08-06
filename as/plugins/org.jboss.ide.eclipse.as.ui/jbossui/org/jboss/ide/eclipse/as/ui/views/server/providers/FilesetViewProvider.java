@@ -595,7 +595,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		try {
 			if( dir != null ) {
 				DirectoryScanner scanner  = 
-					DirectoryScannerFactory.createDirectoryScanner(dir, includes, excludes, true);
+					DirectoryScannerFactory.createDirectoryScanner(dir, null, includes, excludes, null, false, 1, true);
 				if( scanner != null ) {
 					String[] files = scanner.getIncludedFiles();
 					paths = new IPath[files.length];

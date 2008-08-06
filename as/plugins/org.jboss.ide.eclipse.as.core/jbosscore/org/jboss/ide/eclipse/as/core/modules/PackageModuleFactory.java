@@ -51,6 +51,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
+import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
@@ -289,14 +290,6 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			parent.addChild(emf);
 		}
 		
-		public void removeFilesetPathAsChild(IArchiveFileSet fs, IPath path) {
-			IPath globalSource = fs.getGlobalSourcePath();
-			IPath fsRelative = path.removeFirstSegments(globalSource.segmentCount());
-			ArchiveContainerResource parent = find(fs, fsRelative.removeLastSegments(1), false);
-			if( parent != null ) 
-				parent.removeFilesetPathAsChild(fs, path);
-		}
-		
 		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath fsRelative, boolean create) {
 			ArchiveContainerResource resource = this;
 			ArchiveContainerResource tmpResource;
@@ -336,7 +329,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public IPath getDeepDestination() {
 			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET 
 					?  moduleRelativePath : node.getRootArchiveRelativePath();
-			return node.getRootArchive().getGlobalDestinationPath().append(tmp);
+			return PathUtils.getGlobalLocation(node.getRootArchive()).append(tmp);
 		}
 		
 		public IPath getConcreteDestFile() {
@@ -369,7 +362,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public IPath getPath() { return new Path(wrapper.getAbsolutePath()); }
 		public IArchiveNode getNode() { return node; }
 		public IPath getDeepDestination() {
-			return node.getRootArchive().getGlobalDestinationPath().append(wrapper.getRootArchiveRelative());
+			return PathUtils.getGlobalLocation(node.getRootArchive()).append(wrapper.getRootArchiveRelative());
 		}
 		public IPath getSourcePath() {
 			return new Path(this.wrapper.getAbsolutePath());

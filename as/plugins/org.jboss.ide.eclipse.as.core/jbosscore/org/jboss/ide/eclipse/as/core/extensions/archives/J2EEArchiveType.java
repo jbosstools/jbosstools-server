@@ -38,11 +38,13 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
@@ -150,5 +152,12 @@ public abstract class J2EEArchiveType implements IArchiveType {
 	}
 	
 	public abstract String getAssociatedModuleType();
+	
+	/*
+	 * Creates a directory scanner for some global path 
+	 */
+	public static DirectoryScannerExtension createDirectoryScanner (String rawPath, String includes, String excludes, boolean scan) {
+		return DirectoryScannerFactory.createDirectoryScanner(rawPath, null, includes, excludes, null, false, 1, scan);
+	}
 	
 }
