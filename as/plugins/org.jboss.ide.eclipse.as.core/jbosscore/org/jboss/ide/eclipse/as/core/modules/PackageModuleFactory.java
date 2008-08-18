@@ -21,8 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.modules;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -143,34 +141,29 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 	
 	
-	protected IModuleContributor[] moduleContributors;
+	protected ArchivesModelModuleContributor moduleContributor;
 	public PackageModuleFactory() {
 		super();
 	}
 	
 	public void initialize() {
-		moduleContributors = new IModuleContributor[] { ArchivesModelModuleContributor.getInstance() };
+		moduleContributor = ArchivesModelModuleContributor.getInstance();
 	}
 
 	protected IModule createModule2(IArchive pack, IProject project) {
 		return createModule(getID(pack), getName(pack), MODULE_TYPE, VERSION, project);
 	}
 	
-	
+	public IModule[] getModules(IProject project) {
+		moduleContributor.refreshProject(project.getLocation());
+		return super.getModules(project);
+	}
 	public IModule[] getModules() {
-		ArrayList<IModule> list = new ArrayList<IModule>();
-		for( int i = 0; i < moduleContributors.length; i++ ) {
-			list.addAll(Arrays.asList(moduleContributors[i].getModules()));
-		}
-		return list.toArray(new IModule[list.size()]);
+		return moduleContributor.getModules();
 	}
 	
 	public ModuleDelegate getModuleDelegate(IModule module) {
-		for( int i = 0; i < moduleContributors.length; i++ ) {
-			if( moduleContributors[i].containsModule(module)) 
-				return moduleContributors[i].getModuleDelegate(module);
-		}
-		return null;
+		return moduleContributor.getModuleDelegate(module);
 	}
 	
 	public static interface IModuleContributor {
@@ -354,6 +347,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public ExtendedModuleFile(FileWrapper wrapper, IArchiveFileSet fs) {
 			super(wrapper.getOutputName(), wrapper.getRootArchiveRelative(), wrapper.lastModified());
 			this.node = fs;
+			this.wrapper = wrapper;
 		}
 		public int hashCode() {
 			return getName().hashCode() * 37 + getPath().hashCode();
