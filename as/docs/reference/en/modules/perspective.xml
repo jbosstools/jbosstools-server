@@ -58,8 +58,16 @@
         <para>In order to debug your applications or EJB's that are deployed to the server, you must
             start the server in debug mode. By starting the server in debug mode, eclipse will allow
             you to set breakpoints on code in your workspace and step through the code.</para>
-        
-        <para>The publish icon on the extreme right will republish any modules where it has
+
+        <para><emphasis>
+                <property>Start the server in profiling mode</property>
+            </emphasis> button allows to enable profiling actions for your application. For more
+            details on how to start using TPTP profiling with <property>JBoss Tools</property> refer
+            to <link linkend="tptp_support">TPTP Support</link> chapter.</para>
+
+        <para><emphasis>
+                <property>Publish to the server</property>
+            </emphasis> button on the extreme right will republish any modules where it has
             determined the workspace is out of sync with the server. It will attempt to do an
             incremental publish if it turns out that the module in question is capable of doing one.</para>
 
@@ -146,8 +154,8 @@
                 </mediaobject>
             </figure>
 
-            <para id="com_line_arg">The editor will also allow you to modify that server&apos;s launch
-                configuration. It&apos;s just after clicking <emphasis>
+            <para id="com_line_arg">The editor will also allow you to modify that server&apos;s
+                launch configuration. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
                 arguments and other things that are relevant to launching the server.</para>
@@ -171,7 +179,7 @@
                 on a server.</para>
 
             <figure>
-                <title>Launch Configuration</title>
+                <title>Twiddle Server</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_21.png"/>
@@ -374,7 +382,7 @@
             </figure>
 
             <figure>
-                <title>Stopping the Server</title>
+                <title>Starting the Server</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_6.png"/>
@@ -780,13 +788,13 @@
             <title>Relevant Resources Links</title>
             <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink>
                 to find more on how to build your applications with help of Ant.</para>
-       
+
             <para>At this point, you are guessed to be familiar with <property>JBoss AS
-                Perspective</property> and your next step now is to explore how to work with different kinds
-                of projects.</para>
+                Perspective</property> and your next step now is to explore how to work with
+                different kinds of projects.</para>
         </section>
-       
+
     </section>
 
-    
+
 </chapter>
