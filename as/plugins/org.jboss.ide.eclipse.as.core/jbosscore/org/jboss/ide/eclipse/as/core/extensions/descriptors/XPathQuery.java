@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dom4j.Document;
 import org.dom4j.Node;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
@@ -103,11 +104,13 @@ public class XPathQuery implements Serializable {
 		String[] files = getFilter().getIncludedFiles();
 		String fileLoc;
 		ArrayList<XPathFileResult> resultList = new ArrayList<XPathFileResult>();
-		List<Node> nodeList;
+		List<Node> nodeList = null;
 		for( int i = 0; i < files.length; i++ ) {
 			fileLoc = new Path(baseDir).append(files[i]).toOSString();
-			nodeList = getRepository().getDocument(fileLoc).selectNodes(xpathPattern);
-			if( nodeList.size() > 0 ) 
+			Document d = getRepository().getDocument(fileLoc);
+			if( d != null )
+				nodeList = d.selectNodes(xpathPattern);
+			if( nodeList != null && nodeList.size() > 0 ) 
 				resultList.add(new XPathFileResult(this, fileLoc, nodeList));
 		}
 		results = resultList.toArray(new XPathFileResult[resultList.size()]);
