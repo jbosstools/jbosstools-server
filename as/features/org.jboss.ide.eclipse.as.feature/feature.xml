@@ -475,7 +475,6 @@ END OF TERMS AND CONDITIONS
       <import plugin="org.eclipse.jst.ws.axis.creation.ui"/>
       <import plugin="org.eclipse.wst.ws"/>
       <import plugin="org.eclipse.wst.ws.ui"/>
-      <import plugin="org.jboss.ide.eclipse.firstrun"/>
       <import plugin="org.jboss.ide.eclipse.archives.core"/>
       <import plugin="org.apache.ant"/>
       <import plugin="org.jboss.ide.eclipse.archives.ui"/>
