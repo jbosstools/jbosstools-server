@@ -18,13 +18,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.jst.common.project.facet.core,
  org.eclipse.wst.xml.core,
- org.jboss.ide.eclipse.archives.core,
  org.apache.ant,
  org.eclipse.jst.server.tomcat.core,
  org.eclipse.wst.web
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.core,
- org.jboss.ide.eclipse.as.core.extensions.archives,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
  org.jboss.ide.eclipse.as.core.extensions.events,
  org.jboss.ide.eclipse.as.core.extensions.jmx,

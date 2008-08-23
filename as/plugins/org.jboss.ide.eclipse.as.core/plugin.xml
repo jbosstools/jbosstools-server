@@ -4,6 +4,7 @@
 
    <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
    <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
+   <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
    		
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
@@ -291,14 +292,6 @@
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory"
-            id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
-            projects="true">
-         <moduleType
-               types="jboss.package"
-               versions="1.0"/>
-      </moduleFactory>
-      <moduleFactory
             class="org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory"
             id="org.jboss.ide.eclipse.as.core.singledeployablefactory"
             projects="false">
@@ -307,25 +300,6 @@
                versions="1.0">
          </moduleType>
       </moduleFactory>
-   </extension>
-   
-   		
-   		
-   
-   <!-- Adapters and clients to make stuff 'runnable' on server -->
-   <extension
-         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
-      <moduleArtifactAdapter
-            class="org.jboss.ide.eclipse.as.core.modules.PackagedArtifactAdapter"
-            id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
-            priority="0">
-         <enablement>
-            <or>
-               <instanceof value="org.eclipse.core.resources.IProject"/>
-               <instanceof value="org.eclipse.jdt.core.IJavaProject"/>
-            </or>
-         </enablement>
-		</moduleArtifactAdapter>
    </extension>
    
    <extension
@@ -482,28 +456,7 @@
    </extension>
    
    
-   <extension
-         point="org.eclipse.wst.server.core.moduleTypes">
-      <moduleType
-            id="jboss.package"
-            name="Project Package"/>  
-   </extension>
-   
-   <extension
-         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
-      <packageType
-            class="org.jboss.ide.eclipse.as.core.extensions.archives.WarArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.warArchive"
-            label="WAR"/>
-      <packageType
-            class="org.jboss.ide.eclipse.as.core.extensions.archives.EjbArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
-            label="EJB JAR"/>
-      <packageType
-            class="org.jboss.ide.eclipse.as.core.extensions.archives.EarArchiveType"
-            id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
-            label="EAR"/>
-   </extension>
+
    <extension
          point="org.eclipse.jst.j2ee.classpathdep">
       <filteredClasspathContainer
@@ -597,5 +550,20 @@
                webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd">
          </public>
      </catalogContribution>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"
+            priority="5">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
+            priority="5">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
+            priority="0">
+      </publisher>
    </extension>
 </plugin>

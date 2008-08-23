@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 
 /**
@@ -38,12 +39,13 @@ public class NullPublisher implements IJBossServerPublisher {
 	public int getPublishState() {
 		return IServer.PUBLISH_STATE_NONE;
 	}
-
-    public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor) throws CoreException {
-    	return null;
+	public boolean accepts(IServer server, IModule[] module) {
+		return true;
 	}
 
-	public void setDelta(IModuleResourceDelta[] delta) {
+	public IStatus publishModule(IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException {
+		return null;
 	}
-
 }

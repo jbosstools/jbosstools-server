@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
@@ -73,15 +74,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected int publishState = IServer.PUBLISH_STATE_NONE;
 
 
-	public JstPublisher(IDeployableServer server, EventLogTreeItem context) {
-		this.server = server;
-		eventRoot = context;
-	}
-	public JstPublisher(IServer server, EventLogTreeItem eventContext) {
-		this( ServerConverter.getDeployableServer(server), eventContext);
-	}
-	public void setDelta(IModuleResourceDelta[] delta) {
-		this.delta = delta;
+	public JstPublisher() {
 	}
 
 	protected String getModulePath(IModule[] module ) {
@@ -93,9 +86,14 @@ public class JstPublisher implements IJBossServerPublisher {
 		return modulePath;
 	}
 	
-	public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor)
-			throws CoreException {
+	public IStatus publishModule(IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException {
 		IStatus status = null;
+		this.server = ServerConverter.getDeployableServer(server);
+		this.eventRoot = log;
+		this.delta = delta;
+		
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
 			if( module[i] instanceof DeletedModule )
@@ -103,7 +101,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		}
 		
 		if (publishType == REMOVE_PUBLISH ) {
-			status = unpublish(server, module, monitor);
+			status = unpublish(this.server, module, monitor);
 		} else {
 			if( deleted ) {
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
@@ -394,5 +392,9 @@ public class JstPublisher implements IJBossServerPublisher {
 			}
 		}
 		return count;
+	}
+
+	public boolean accepts(IServer server, IModule[] module) {
+		return ModuleCoreNature.isFlexibleProject(module[0].getProject());
 	}
 }

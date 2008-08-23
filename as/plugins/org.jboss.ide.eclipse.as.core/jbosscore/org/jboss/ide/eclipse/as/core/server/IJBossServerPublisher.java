@@ -25,7 +25,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 
 /**
  * 
@@ -38,8 +40,14 @@ public interface IJBossServerPublisher {
 	public static final int FULL_PUBLISH = 2;
 	public static final int REMOVE_PUBLISH = 3;
 
-	public IStatus publishModule(IModule[] module, int publishType, 
-			IProgressMonitor monitor) throws CoreException;
+	// pre-publish
+	public boolean accepts(IServer server, IModule[] module);
+	
+	
+	public IStatus publishModule(IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException;
+	
+	// post publish
 	public int getPublishState();
-	public void setDelta(IModuleResourceDelta[] delta);
 }

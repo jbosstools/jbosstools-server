@@ -23,6 +23,8 @@ package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +33,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -57,6 +62,8 @@ public class ExtensionManager {
 	/** The map of pollerID -> PollerObject */
 	private HashMap<String, IPollerFailureHandler> pollerFailureHandlers;
 
+	private ArrayList<PublisherWrapper> publishers;
+	
 	/** The method used to load / instantiate the pollers */
 	public void loadPollers() {
 		pollers = new HashMap<String, ServerStatePollerType>();
@@ -141,5 +148,54 @@ public class ExtensionManager {
 			}
 		}
 		return null;
+	}
+	
+	
+	public IJBossServerPublisher getPublisher(IServer server, IModule[] module) {
+		if( publishers == null ) 
+			loadPublishers();
+		Iterator i = publishers.iterator();
+		PublisherWrapper wrapper;
+		while(i.hasNext()) {
+			wrapper = (PublisherWrapper)i.next();
+			if( wrapper.publisher.accepts(server, module))
+				return wrapper.publisher;
+		}
+		return null;
+	}
+	
+	private void loadPublishers() {
+		ArrayList<PublisherWrapper> publishers = new ArrayList<PublisherWrapper>();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishers");
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				Object clazz = cf[i].createExecutableExtension("class");
+				String priority = cf[i].getAttribute("priority");
+				int p = -1; 
+				try {
+					p = Integer.parseInt(priority);
+				} catch( NumberFormatException nfe) {}
+				publishers.add(new PublisherWrapper(p, (IJBossServerPublisher)clazz));
+			} catch( CoreException e ) {
+			} catch( ClassCastException cce ) {
+			}
+		}
+		this.publishers = publishers;
+		Comparator<PublisherWrapper> comparator = new Comparator<PublisherWrapper>() {
+			public int compare(PublisherWrapper o1, PublisherWrapper o2) {
+				return o2.priority - o1.priority;
+			} 
+		};
+		Collections.sort(this.publishers, comparator);
+	}
+	
+	private class PublisherWrapper {
+		private int priority;
+		private IJBossServerPublisher publisher;
+		private PublisherWrapper(int priority, IJBossServerPublisher publisher) {
+			this.priority = priority;
+			this.publisher = publisher;
+		}
 	}
 }

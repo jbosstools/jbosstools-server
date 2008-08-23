@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
-import org.jboss.ide.eclipse.as.core.modules.ArchivesBuildListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.osgi.framework.BundleContext;
 
@@ -73,7 +72,6 @@ public class JBossServerCorePlugin extends Plugin  {
 		super.start(context);
 		
 		// Start the array of models that need to be started
-		ArchivesBuildListener.getInstance();
 		XPathModel.getDefault();
 		UnitedServerListenerManager.getDefault();
 	}

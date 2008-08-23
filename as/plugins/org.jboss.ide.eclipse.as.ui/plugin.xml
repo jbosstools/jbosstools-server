@@ -277,39 +277,6 @@
    -->
 
    <extension
-         point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
-      <nodeContribution
-            class="org.jboss.ide.eclipse.as.ui.packages.PublishAction"
-            icon="icons/publish.gif"
-            id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
-            label="Publish To Server"
-            weight="1"/>
-      <nodeContribution
-            class="org.jboss.ide.eclipse.as.ui.packages.EditPublishAction"
-            icon="icons/publishDetails.gif"
-            id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
-            label="Edit publish settings...">
-      </nodeContribution>
-   </extension>
-   <extension
-         point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
-      <newPackageAction
-            class="org.jboss.ide.eclipse.as.ui.packages.NewWARAction"
-            icon="icons/packages/war.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newWARAction"
-            label="WAR"/>
-      <newPackageAction
-            class="org.jboss.ide.eclipse.as.ui.packages.NewEJBJARAction"
-            icon="icons/packages/EJBJar.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
-            label="EJB JAR"/>
-      <newPackageAction
-            class="org.jboss.ide.eclipse.as.ui.packages.NewEARAction"
-            icon="icons/packages/ear.gif"
-            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
-            label="EAR"/>
-   </extension>
-   <extension
          point="org.eclipse.help.contexts">
       <contexts
             file="InlineDocs/Twiddle/twiddleContext.xml">

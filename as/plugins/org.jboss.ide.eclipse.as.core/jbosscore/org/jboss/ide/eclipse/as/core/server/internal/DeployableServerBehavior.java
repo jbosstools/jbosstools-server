@@ -24,18 +24,13 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.modules.PackageModuleFactory;
-import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.NullPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.PackagesPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
-import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
@@ -92,39 +87,30 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		int publishType = getPublishType(kind, deltaKind, modulePublishState);
 		IJBossServerPublisher publisher;
 		
-
 		if( module.length > 0 && publishType != IJBossServerPublisher.NO_PUBLISH) {
 			Integer i,j;
 			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_MODULE_COUNT);
 			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_MODULE_COUNT, new Integer(i == null ? 1 : i.intValue()+1));
 			PublishEvent modulePublishEvent = PublisherEventLogger.createModuleRootEvent(publishRootEvent, module, kind, deltaKind, modulePublishState);
 			
-			IModule lastMod = module[module.length -1];
-			if( isPackagesTypeModule(lastMod) ) {
-				publisher = new PackagesPublisher(getServer(), modulePublishEvent);
-			} else if( lastMod.getModuleType().getId().equals("jboss.singlefile")){
-				publisher = new SingleFilePublisher(getServer(), modulePublishEvent);
-			} else if( lastMod.getProject() != null && 
-					ModuleCoreNature.isFlexibleProject(lastMod.getProject())) {
-				publisher = new JstPublisher(getServer(), modulePublishEvent);
-			} else {
-				publisher = new NullPublisher();
+			publisher = ExtensionManager.getDefault().getPublisher(getServer(), module);
+			if( publisher != null ) {
+				try {
+					publisher.publishModule(getServer(), module, publishType,  
+							getPublishedResourceDelta(module), 
+							modulePublishEvent, monitor);
+				} catch( CoreException ce ) {
+					throw ce;
+				} finally {
+					setModulePublishState(module, publisher.getPublishState());
+				}
+				// add file changed count to top level element
+				i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
+				j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
+				j = j == null ? new Integer(0) : j;
+				int count = (i == null ? 0 : i.intValue()) + j.intValue();
+				publishRootEvent.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, count);
 			}
-			publisher.setDelta(getPublishedResourceDelta(module));
-			try {
-				publisher.publishModule(module, publishType, monitor);
-			} catch( CoreException ce ) {
-				throw ce;
-			} finally {
-				setModulePublishState(module, publisher.getPublishState());
-			}
-			
-			// add file changed count to top level element
-			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
-			j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
-			j = j == null ? new Integer(0) : j;
-			int count = (i == null ? 0 : i.intValue()) + j.intValue();
-			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, count);
 		}
 	}
 	
@@ -139,10 +125,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
 		} 
 		return IJBossServerPublisher.NO_PUBLISH;
-	}
-	
-	protected boolean isPackagesTypeModule(IModule module) {
-		return module.getModuleType().getId().equals(PackageModuleFactory.MODULE_TYPE);
 	}
 	
 	/*

@@ -30,28 +30,38 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 	private IDeployableServer server;
 	private EventLogTreeItem root;
 	private int publishState = IServer.PUBLISH_STATE_NONE;
-	public SingleFilePublisher(IServer server, EventLogTreeItem root) {
-		this.server = ServerConverter.getDeployableServer(server);
-		this.root = root;
+	public SingleFilePublisher() {
 	}
 	
 	public int getPublishState() {
 		return publishState;
 	}
+	
+	public boolean accepts(IServer server, IModule[] module) {
+		if( module != null && module.length > 0 
+				&& module[module.length-1] != null  
+				&& module[module.length-1].getModuleType().getId().equals("jboss.singlefile"))
+			return true;
+		return false;
+	}
 
-	public IStatus publishModule(IModule[] module, int publishType, IProgressMonitor monitor)
-			throws CoreException {
-		
+	public IStatus publishModule(IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException {
+
+		this.server = ServerConverter.getDeployableServer(server);
+		this.root = log;
+
 		IModule module2 = module[0];
 		
 		IStatus status = null;
 		if(publishType == REMOVE_PUBLISH){
-        	status = unpublish(server, module2, monitor);
+        	status = unpublish(this.server, module2, monitor);
         } else if( publishType == FULL_PUBLISH ){
         	// if there's no change, do nothing. Otherwise, on change or add, re-publish
-        	status = publish(server, module2, true, monitor);
+        	status = publish(this.server, module2, true, monitor);
         } else if( publishType == INCREMENTAL_PUBLISH ) {
-        	status = publish(server, module2, false, monitor);
+        	status = publish(this.server, module2, false, monitor);
         }
 		root.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, new Integer(1));
 		return status;
@@ -97,9 +107,6 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		
 		return null;
 	}
-	public void setDelta(IModuleResourceDelta[] delta) {
-		// ignore delta
-	}
 
 	public static class FileUtilListener implements IFileUtilListener {
 		protected EventLogTreeItem root;
@@ -128,6 +135,5 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 				EventLogModel.markChanged(root);
 			}
 		} 
-	};
-
+	}
 }
