@@ -72,8 +72,9 @@
             incremental publish if it turns out that the module in question is capable of doing one.</para>
 
         <para>Now, let&apos;s get to know with both of the <property>JBoss Server
-            View</property> parts.</para>
-        <section>
+        View</property> parts.</para>
+        
+        <section role="updated">
             <title>Top Part of the JBoss Server View</title>
             <para>In the top part of the <property>JBoss Server View</property> all declared servers
                 are represented as well as their current states, that is, whether they are started
@@ -154,8 +155,21 @@
                 </mediaobject>
             </figure>
 
-            <para id="com_line_arg">The editor will also allow you to modify that server&apos;s
-                launch configuration. It&apos;s just after clicking <emphasis>
+            <para>It should be pointed out that our server adapter by default tries to automatically
+                detect the ports it needs for integrating with a <property>JBoss server</property>.
+                Sometimes it can though be relevant to override this automatic detection if you are
+                using some custom configuration. For this purposes the <emphasis>
+                    <property>Server Ports</property>
+                </emphasis> section in the <property>Server editor</property> is provided where the
+                port settings are configurable.</para>
+
+            <para>The settings relating to <emphasis>
+                <property>Publishing</property></emphasis>, <emphasis>
+                    <property>Timeouts</property></emphasis> or <emphasis>
+                        <property>Server Polling</property></emphasis> can also be adjusted here.</para>
+
+            <para id="com_line_arg">In the <property>Server editor</property> it&apos;s possible to modify the server&apos;s
+                launch configuration as well. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
                 arguments and other things that are relevant to launching the server.</para>
