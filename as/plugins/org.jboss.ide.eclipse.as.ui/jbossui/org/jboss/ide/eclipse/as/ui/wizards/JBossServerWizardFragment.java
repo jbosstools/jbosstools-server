@@ -363,6 +363,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		deployVal = deployFolder;
 		runtimeGroup.layout();
 		deployGroup.layout();
+		updateErrorMessage();
 	}
 
 	public void exit() {
