@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerListener;
+import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
@@ -129,20 +131,44 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	/*
 	 * Change the state of the server
+	 * Also, cache the state we think we're setting it to.
+	 * 
+	 * Much of this can be changed once eclipse bug 231956 is fixed
 	 */
+	protected int serverStateVal;
+	protected int getServerStateVal() {
+		return serverStateVal;
+	}
 	public void setServerStarted() {
+		serverStateVal = IServer.STATE_STARTED;
 		setServerState(IServer.STATE_STARTED);
 	}
 	
 	public void setServerStarting() {
+		serverStateVal = IServer.STATE_STARTING;
 		setServerState(IServer.STATE_STARTING);
 	}
 	
 	public void setServerStopped() {
+		serverStateVal = IServer.STATE_STOPPED;
 		setServerState(IServer.STATE_STOPPED);
 	}
 	
 	public void setServerStopping() {
+		serverStateVal = IServer.STATE_STOPPING;
 		setServerState(IServer.STATE_STOPPING);
+	}
+	protected void initialize(IProgressMonitor monitor) {
+		serverStateVal =  getServer().getServerState();
+		getServer().addServerListener(new IServerListener() {
+			public void serverChanged(ServerEvent event) {
+				if( event.getState() != serverStateVal ) {
+					// something's been changed by the framework and NOT by us. 
+					if( serverStateVal == IServer.STATE_STARTING && event.getState() == IServer.STATE_STOPPED) {
+						stop(true);
+					}
+				}
+			} 
+		} );
 	}
 }
