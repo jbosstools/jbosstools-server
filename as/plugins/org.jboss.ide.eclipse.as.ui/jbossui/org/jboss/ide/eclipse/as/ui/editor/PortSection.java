@@ -1,19 +1,26 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -29,7 +36,10 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
+import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog.ChangePortDialogInfo;
 
 /**
  * 
@@ -37,11 +47,23 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  *
  */
 public class PortSection extends ServerEditorSection {
+	
+	/* Load the various port editor pieces */
+	private static ArrayList<IPortEditorExtension> sectionList = new ArrayList<IPortEditorExtension>();
+	static {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection");
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				Object o = cf[i].createExecutableExtension("class");
+				if( o != null && o instanceof IPortEditorExtension)
+					sectionList.add((IPortEditorExtension)o);
+			} catch( CoreException ce) { /* ignore */ }
+		}
+	}
+	
+	
 	protected ServerAttributeHelper helper;
-	protected Label jndiLabel, webLabel;
-	protected Text jndiText, webText;
-	protected Button jndiDetect, webDetect;
-	protected Combo jndiDetectCombo, webDetectCombo;
 
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
@@ -51,53 +73,177 @@ public class PortSection extends ServerEditorSection {
 	public void createSection(Composite parent) {
 		super.createSection(parent);
 		createUI(parent);
-		initializeState();
-		addListeners();
+	}
+
+	public static interface IPortEditorExtension {
+		public void setServerAttributeHelper(ServerAttributeHelper helper);
+		public void setSection(ServerEditorSection section);
+		public Control createControl(Composite parent);
 	}
 	
-	protected void initializeState() {
-		boolean detectJNDI = helper.getAttribute(IJBossServerConstants.JNDI_PORT_DETECT, true);
-		jndiDetect.setSelection(detectJNDI);
-		jndiDetectCombo.setEnabled(detectJNDI);
-		jndiText.setEnabled(!detectJNDI);
-		jndiText.setEditable(!detectJNDI);
-		String jndiXPath = helper.getAttribute(IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH.toString());
-		int index = jndiDetectCombo.indexOf(jndiXPath);
-		if( index != -1 ) {
-			jndiDetectCombo.select(index);
-			if( detectJNDI )
-				jndiText.setText(findPort(new Path(jndiXPath)));
-			else
-				jndiText.setText(helper.getAttribute(IJBossServerConstants.JNDI_PORT, ""));
+	public static class JNDIPortEditorExtension extends PortEditorExtension {
+		public JNDIPortEditorExtension() {
+			super(Messages.EditorJNDIPort, IJBossServerConstants.JNDI_PORT_DETECT_XPATH, 
+					IJBossServerConstants.JNDI_PORT_DETECT, 
+					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH);
+		}
+		public ServerCommand getCommand() {
+			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeJNDICommandName,  
+					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
+					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
+					text, detect, currentXPath, listener);
+		}
+		protected ChangePortDialogInfo getDialogInfo() {
+			ChangePortDialogInfo info = new ChangePortDialogInfo();
+			info.port = Messages.EditorJNDIPort;
+			info.defaultValue = IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH;
+			info.server = helper.getWorkingCopy().getOriginal();
+			info.currentXPath = currentXPath;
+			return info;
+		}
+	}
+
+	public static class WebPortEditorExtension extends PortEditorExtension {
+		public WebPortEditorExtension() {
+			super(Messages.EditorWebPort, IJBossServerConstants.WEB_PORT_DETECT_XPATH, 
+					IJBossServerConstants.WEB_PORT_DETECT, 
+					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH);
+		}
+
+		public ServerCommand getCommand() {
+			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeWebCommandName,  
+					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
+					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
+					text, detect, currentXPath, listener);
+		}
+		protected ChangePortDialogInfo getDialogInfo() {
+			ChangePortDialogInfo info = new ChangePortDialogInfo();
+			info.port = Messages.EditorWebPort;
+			info.defaultValue = IJBossServerConstants.WEB_PORT_DEFAULT_XPATH;
+			info.server = helper.getWorkingCopy().getOriginal();
+			info.currentXPath = currentXPath;
+			return info;
+		}
+	}
+
+	public static abstract class PortEditorExtension implements IPortEditorExtension {
+		protected Button detect;
+		protected Text text;
+		protected Label label;
+		protected Link link;
+		protected String labelText, currentXPathKey, detectXPathKey, defaultXPath;
+		protected String currentXPath;
+		protected ServerAttributeHelper helper;
+		protected Listener listener;
+		protected ServerEditorSection section;
+		public PortEditorExtension(String labelText, String currentXPathKey, String detectXPathKey, String defaultXPath) {
+			this.labelText = labelText;
+			this.currentXPathKey = currentXPathKey;
+			this.detectXPathKey = detectXPathKey;
+			this.defaultXPath = defaultXPath;
+		}
+		public void setServerAttributeHelper(ServerAttributeHelper helper) {
+			this.helper = helper;
+		}
+		public void setSection(ServerEditorSection section) {
+			this.section = section;
+		}
+		public Control createControl(Composite parent) {
+			Control c = createUI(parent);
+			initialize();
+			addListeners();
+			return c;
 		}
 		
-		boolean detectWeb = helper.getAttribute(IJBossServerConstants.WEB_PORT_DETECT, true);
-		webDetect.setSelection(detectWeb);
-		webDetectCombo.setEnabled(detectWeb);
-		webText.setEnabled(!detectWeb);
-		webText.setEditable(!detectWeb);
-		String webXPath = helper.getAttribute(IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH.toString());
-		int index2 = webDetectCombo.indexOf(webXPath);
-		if( index2 != -1 ) {
-			webDetectCombo.select(index2);
-			if( detectWeb ) 
-				webText.setText(findPort(new Path(webXPath)));
+		protected Control createUI(Composite parent) {
+			Composite child = new Composite(parent, SWT.NONE);
+			child.setLayout(new FormLayout());
+			label = new Label(child, SWT.NONE);
+			text = new Text(child, SWT.DEFAULT);
+			detect = new Button(child, SWT.CHECK);
+			link = new Link(child, SWT.DEFAULT);
+			
+			FormData data;
+			data = new FormData();
+			data.top = new FormAttachment(0,8);
+			data.right = new FormAttachment(100,-5);
+			link.setLayoutData(data);
+			
+			data = new FormData();
+			data.right = new FormAttachment(link, -5);
+			data.top = new FormAttachment(0,5);
+			detect.setLayoutData(data);
+
+			data = new FormData();
+			data.left = new FormAttachment(detect, -200);
+			data.right = new FormAttachment(detect, -5);
+			data.top = new FormAttachment(0,5);
+			text.setLayoutData(data);
+
+			data = new FormData();
+			data.right = new FormAttachment(text,-5);
+			data.top = new FormAttachment(0,8);
+			label.setLayoutData(data);
+						
+			label.setText(labelText);
+			detect.setText(Messages.EditorAutomaticallyDetectPort);
+			link.setText("<a href=\"\">" + Messages.Customize + "</a>");
+			return child;
+		}
+		protected void initialize() {
+			boolean shouldDetect = helper.getAttribute(detectXPathKey, true);
+			detect.setSelection(shouldDetect);
+			text.setEnabled(!shouldDetect);
+			text.setEditable(!shouldDetect);
+			currentXPath = helper.getAttribute(currentXPathKey, defaultXPath);
+			if( shouldDetect )
+				text.setText(findPort(new Path(currentXPath)));
 			else
-				webText.setText(helper.getAttribute(IJBossServerConstants.WEB_PORT, ""));
+				text.setText(helper.getAttribute(IJBossServerConstants.JNDI_PORT, ""));
+		}
+		protected void addListeners() {
+			listener = new Listener() {
+				public void handleEvent(Event event) {
+					section.execute(getCommand());
+				}
+			};
+			text.addListener(SWT.Modify, listener);
+			detect.addListener(SWT.Selection, listener);
+			link.addListener(SWT.Selection, createLinkListener());
+		}
+		
+		protected Listener createLinkListener() {
+			return new Listener() {
+				public void handleEvent(Event event) {
+					ChangePortDialog dialog = getDialog();
+					int result = dialog.open();
+					if( result == Dialog.OK) {
+						currentXPath = dialog.getSelection();
+						section.execute(getCommand());
+						text.setFocus();
+					}
+				}
+			};
+		}
+		public ChangePortDialog getDialog() {
+			return new ChangePortDialog(section.getShell(), getDialogInfo());
+		}
+		protected abstract ChangePortDialogInfo getDialogInfo();
+		
+		protected String findPort(IPath path) {
+			XPathQuery query = XPathModel.getDefault().getQuery(helper.getServer(), path);
+			if(query!=null) {
+				String result = query.getFirstResult();
+				if( result != null ) {
+					return result;
+				}
+			}
+			return "-1";
+		}
+		protected /* abstract */ ServerCommand getCommand() {
+			return null;
 		}
 	}
-	
-	protected String findPort(IPath path) {
-		XPathQuery query = XPathModel.getDefault().getQuery(server.getOriginal(), path);
-		if(query!=null) {
-			String result = query.getFirstResult();
-			if( result != null ) {
-				return result;
-			}
-		}
-	return "-1";
-}
-
 	
 	protected void createUI(Composite parent) {
 		
@@ -110,94 +256,42 @@ public class PortSection extends ServerEditorSection {
 		composite.setLayout(new FormLayout());
 		Label description = new Label(composite, SWT.NONE);
 		description.setText(Messages.EditorServerPortsDescription);
-
-		Composite jndiChild = createJNDIUI(composite);
-		Composite webChild = createWebUI(composite);
-		
 		FormData data = new FormData();
 		data.top = new FormAttachment(0,5);
+		data.left = new FormAttachment(0,5);
 		description.setLayoutData(data);
-		
-		data = new FormData();
-		data.top = new FormAttachment(description, 5);
-		jndiChild.setLayoutData(data);
-		
-		data = new FormData();
-		data.top = new FormAttachment(jndiChild, 5);
-		webChild.setLayoutData(data);
 
+		addUIAdditions(composite, description);
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
 	
-	protected Composite createJNDIUI(Composite composite) {
-		Composite child = new Composite(composite, SWT.NONE);
-		child.setLayout(new FormLayout());
-		jndiLabel = new Label(child, SWT.NONE);
-		jndiText = new Text(child, SWT.DEFAULT);
-		jndiDetect = new Button(child, SWT.CHECK);
-		jndiDetectCombo = new Combo(child, SWT.DEFAULT);
+	private void addUIAdditions(Composite parent, Control top) {
+		IPortEditorExtension[] extensions = (IPortEditorExtension[]) sectionList.toArray(new IPortEditorExtension[sectionList.size()]);
 		
-		FormData data = new FormData();
-		data.left = new FormAttachment(0,5);
-		data.top = new FormAttachment(0,5);
-		jndiLabel.setLayoutData(data);
-		
+		FormData data;
+		Control c;
+		Composite wrapper = new Composite(parent, SWT.NONE);
+		wrapper.setLayout(new FormLayout());
 		data = new FormData();
-		data.left = new FormAttachment(jndiLabel,5);
-		data.right = new FormAttachment(jndiLabel, 150);
-		data.top = new FormAttachment(0,5);
-		jndiText.setLayoutData(data);
-		
-		data = new FormData();
-		data.left = new FormAttachment(jndiText,5);
-		data.top = new FormAttachment(0,5);
-		jndiDetect.setLayoutData(data);
-		
-		data = new FormData();
-		data.left = new FormAttachment(jndiDetect,5);
-		data.top = new FormAttachment(0,5);
-		jndiDetectCombo.setLayoutData(data);
-		
-		jndiLabel.setText(Messages.EditorJNDIPort);
-		jndiDetect.setText(Messages.EditorAutomaticallyDetectPort);
-		jndiDetectCombo.setItems(getXPathStrings());
-		return child;
-	}
-	
-	protected Composite createWebUI(Composite composite) {
-		Composite child = new Composite(composite, SWT.NONE);
-		child.setLayout(new FormLayout());
-		webLabel = new Label(child, SWT.NONE);
-		webText = new Text(child, SWT.DEFAULT);
-		webDetect = new Button(child, SWT.CHECK);
-		webDetectCombo = new Combo(child, SWT.DEFAULT);
-		
-		FormData data = new FormData();
-		data.left = new FormAttachment(0,5);
-		data.top = new FormAttachment(0,5);
-		webLabel.setLayoutData(data);
-		
-		data = new FormData();
-		data.left = new FormAttachment(webLabel,5);
-		data.right = new FormAttachment(webLabel, 150);
-		data.top = new FormAttachment(0,5);
-		webText.setLayoutData(data);
-		
-		data = new FormData();
-		data.left = new FormAttachment(webText,5);
-		data.top = new FormAttachment(0,5);
-		webDetect.setLayoutData(data);
-		
-		data = new FormData();
-		data.left = new FormAttachment(webDetect,5);
-		data.top = new FormAttachment(0,5);
-		webDetectCombo.setLayoutData(data);
-		
-		webLabel.setText(Messages.EditorWebPort);
-		webDetect.setText(Messages.EditorAutomaticallyDetectPort);
-		webDetectCombo.setItems(getXPathStrings());
-		return child;
+		data.top = new FormAttachment(top,0);
+		data.left = new FormAttachment(0,0);
+		wrapper.setLayoutData(data);
+		top = null;
+		for( int i = 0; i < extensions.length; i++ ) { 
+			extensions[i].setServerAttributeHelper(helper);
+			extensions[i].setSection(this);
+			c = extensions[i].createControl(wrapper);
+			data = new FormData();
+			if( top == null )
+				data.top = new FormAttachment(0, 5);
+			else
+				data.top = new FormAttachment(top, 5);
+			data.left = new FormAttachment(0,5);
+			data.right = new FormAttachment(100,-5);
+			c.setLayoutData(data);
+			top = c;
+		}
 	}
 	
 	protected String[] getXPathStrings() {
@@ -212,84 +306,45 @@ public class PortSection extends ServerEditorSection {
 		return (String[]) list.toArray(new String[list.size()]);
 	}
 	
-	protected Listener jndiListener, webListener;
-	
-	protected void addListeners() {
-		jndiListener = new Listener() {
-			public void handleEvent(Event event) {
-				execute(new ChangeJNDICommand(server));
-			}
-		};
-		jndiText.addListener(SWT.Modify, jndiListener);
-		jndiDetect.addListener(SWT.Selection, jndiListener);
-		jndiDetectCombo.addListener(SWT.Modify, jndiListener);
-		
-		webListener = new Listener() {
-			public void handleEvent(Event event) {
-				execute(new ChangeWebCommand(server));
-			}
-		};
-		webText.addListener(SWT.Modify, webListener);
-		webDetect.addListener(SWT.Selection, webListener);
-		webDetectCombo.addListener(SWT.Modify, webListener);
-		
-	}
-
-	public class ChangeJNDICommand extends SetPortCommand {
-		public ChangeJNDICommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeJNDICommandName,  
-					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
-					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
-					jndiText, jndiDetect, jndiDetectCombo, jndiListener);
-		}
-	}
-
-	public class ChangeWebCommand extends SetPortCommand {
-		public ChangeWebCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeWebCommandName,  
-					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
-					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
-					webText, webDetect, webDetectCombo, webListener);
-		}
-	}
-
-	
-	public class SetPortCommand extends ServerCommand {
+	public static class SetPortCommand extends ServerCommand {
+		ServerAttributeHelper helper;
 		String textAttribute, overrideAttribute, overridePathAttribute;
 		String preText, prePath, defaultPath;
 		boolean preOverride;
 		Text text;
 		Button button;
-		Combo combo;
 		Listener listener;
-		public SetPortCommand(IServerWorkingCopy server, String name, 
+		String xpath;
+		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name, 
 				String textAttribute, String overrideAttribute, String overridePathAttribute,
-				String pathDefault, Text text, Button button, Combo xpath, Listener listener) {
+				String pathDefault, Text text, Button button, String xpath, Listener listener) {
 			super(server, name);
+			this.helper = helper;
 			this.textAttribute = textAttribute;
 			this.overrideAttribute = overrideAttribute;
 			this.overridePathAttribute = overridePathAttribute;
 			this.defaultPath = pathDefault;
 			this.text = text;
 			this.button = button;
-			this.combo = xpath;
 			this.listener = listener;
+			this.xpath = xpath;
 		}
 
 		public void execute() {
 			preText = helper.getAttribute(textAttribute, (String)null);
+			if( preText == null )
+				preText = findPort(new Path(defaultPath));
 			prePath = helper.getAttribute(overridePathAttribute, (String)defaultPath);
-			preOverride = helper.getAttribute(overrideAttribute, false);
+			preOverride = helper.getAttribute(overrideAttribute, true);
 			helper.setAttribute(textAttribute, text.getText());
 			helper.setAttribute(overrideAttribute, button.getSelection());
-			helper.setAttribute(overridePathAttribute, combo.getText());
+			helper.setAttribute(overridePathAttribute, xpath);
 			
 			text.setEnabled(!button.getSelection());
 			text.setEditable(!button.getSelection());
-			combo.setEnabled(button.getSelection());
 			if( button.getSelection() ) {
 				text.removeListener(SWT.Modify, listener);
-				text.setText(findPort(new Path(combo.getText())));
+				text.setText(findPort(new Path(xpath)));
 				text.addListener(SWT.Modify, listener);
 			}
 		}
@@ -301,25 +356,26 @@ public class PortSection extends ServerEditorSection {
 			helper.setAttribute(overridePathAttribute, prePath);
 
 			// update ui
-			combo.removeListener(SWT.Modify, listener);
 			text.removeListener(SWT.Modify, listener);
 			button.removeListener(SWT.Selection, listener);
 
 			button.setSelection(preOverride);
 			text.setText(preText == null ? "" : preText);
-			int ind = combo.indexOf(prePath);
-			if( ind == -1 )
-				combo.clearSelection();
-			else
-				combo.select(ind);
-
 			text.setEnabled(!preOverride);
 			text.setEditable(!preOverride);
-			combo.setEnabled(preOverride);
-
-			combo.addListener(SWT.Modify, listener);
 			button.addListener(SWT.Selection, listener);
 			text.addListener(SWT.Modify, listener);		
+		}
+		
+		protected String findPort(IPath path) {
+			XPathQuery query = XPathModel.getDefault().getQuery(helper.getServer(), path);
+			if(query!=null) {
+				String result = query.getFirstResult();
+				if( result != null ) {
+					return result;
+				}
+			}
+			return "-1";
 		}
 	}
 

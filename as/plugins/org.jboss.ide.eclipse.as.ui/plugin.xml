@@ -4,6 +4,7 @@
    <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
    <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
    <extension-point id="EventLogMajorType" name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd"/>
+   <extension-point id="ServerEditorPortSection" name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd"/>
  
    <extension
          point="org.eclipse.wst.server.ui.serverImages"> 
@@ -338,6 +339,15 @@
          <action class="org.jboss.tools.as.wst.server.ui.action.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
       </actionSet>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension">
+      </section>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension">
+      </section>
    </extension>
 
    

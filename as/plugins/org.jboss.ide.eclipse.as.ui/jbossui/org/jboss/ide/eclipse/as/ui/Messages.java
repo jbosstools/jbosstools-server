@@ -232,6 +232,21 @@ public class Messages {
 	public static String EditorChangeWebCommandName;
 	public static String EditorChangeUsernameCommandName;
 	public static String EditorChangePasswordCommandName;
+	public static String EditorCPD_Name;
+	public static String EditorCPD_XPath;
+	public static String EditorCPD_Attribute;
+	public static String EditorCPD_Count;
+	public static String EditorCPD_Value;
+	public static String EditorCPD_Location;
+	public static String EditorCPD_Default;
+	public static String EditorCPD_NoDefault;
+	public static String EditorCPD_SelectionDetails;
+	public static String EditorCPD_DefaultShellTitle;
+	public static String EditorCPD_DefaultDescription;
+
+
+	
+	public static String Customize;
 	
 	// misc
 	public static String ServerSaveFailed;
