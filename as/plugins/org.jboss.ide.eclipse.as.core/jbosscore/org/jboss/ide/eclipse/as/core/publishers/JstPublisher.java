@@ -200,7 +200,9 @@ public class JstPublisher implements IJBossServerPublisher {
 				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
 			else if( "jst.connector".equals(type)) {
 				root = root.append(name + ".rar");
-			} else
+			} else if( "jst.jboss.esb".equals(type)){
+				root = root.append(name + ".esb");
+			}else
 				root = root.append(name + ".jar");
 		}
 		return root;
