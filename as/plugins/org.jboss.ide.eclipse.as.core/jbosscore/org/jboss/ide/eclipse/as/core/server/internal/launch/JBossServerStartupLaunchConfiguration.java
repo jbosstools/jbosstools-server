@@ -24,10 +24,10 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -38,7 +38,10 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -76,13 +79,24 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		String serverHome = getServerHome(jbs);
 		if( serverHome == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is corrupt and the server home is unable to be located."));
-			
+		
+		IRuntime rt = jbs.getServer().getRuntime();
+		String jrePath = null;
+		if( rt != null ) {
+			IJBossServerRuntime jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
+			if( jbrt != null ) {
+				IVMInstall install = jbrt.getVM();
+				IPath path = JavaRuntime.newJREContainerPath(install);
+				jrePath = path.toPortableString();
+			}
+		}
 		
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, "org.jboss.ide.eclipse.as.core.launch.classpathProvider");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, jrePath);
 		wc.setAttribute(DEFAULTS_SET, true);
 	}
 
