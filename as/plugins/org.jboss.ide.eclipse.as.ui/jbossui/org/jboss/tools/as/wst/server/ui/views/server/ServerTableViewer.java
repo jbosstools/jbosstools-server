@@ -94,7 +94,7 @@ public class ServerTableViewer extends TreeViewer {
 		protected String getStateLabel(IServerType serverType, int state, String mode) {
 			return UIDecoratorManager.getUIDecorator(serverType).getStateLabel(state, mode, myCount);
 		}
-		protected void animate() {
+		protected void animate2() {
 			myCount ++;
 			if (myCount > 2)
 				myCount = 0;
@@ -140,7 +140,7 @@ public class ServerTableViewer extends TreeViewer {
 			public void run() {
 				while (!stopThread) {
 					try {
-						labelProvider.animate();
+						labelProvider.animate2();
 						final Object[] rootElements = ((ITreeContentProvider)getContentProvider()).getElements(null); 
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
