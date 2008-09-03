@@ -105,6 +105,9 @@ public class ServerAttributeHelper {
 		return wch.getAttribute(attributeName, defaultValue);
 	}
 
+	public IServerWorkingCopy getWorkingCopy() {
+		return this.wch;
+	}
 	public boolean isDirty() {
 		return wch.isDirty();
 	}
