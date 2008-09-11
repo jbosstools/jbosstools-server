@@ -101,19 +101,24 @@ public class XPathQuery implements Serializable {
 	}
 
 	protected void loadResults() {
-		String[] files = getFilter().getIncludedFiles();
-		String fileLoc;
-		ArrayList<XPathFileResult> resultList = new ArrayList<XPathFileResult>();
-		List<Node> nodeList = null;
-		for( int i = 0; i < files.length; i++ ) {
-			fileLoc = new Path(baseDir).append(files[i]).toOSString();
-			Document d = getRepository().getDocument(fileLoc);
-			if( d != null )
-				nodeList = d.selectNodes(xpathPattern);
-			if( nodeList != null && nodeList.size() > 0 ) 
-				resultList.add(new XPathFileResult(this, fileLoc, nodeList));
+		try {
+			String[] files = getFilter().getIncludedFiles();
+			String fileLoc;
+			ArrayList<XPathFileResult> resultList = new ArrayList<XPathFileResult>();
+			List<Node> nodeList = null;
+			for( int i = 0; i < files.length; i++ ) {
+				fileLoc = new Path(baseDir).append(files[i]).toOSString();
+				Document d = getRepository().getDocument(fileLoc);
+				if( d != null )
+					nodeList = d.selectNodes(xpathPattern);
+				if( nodeList != null && nodeList.size() > 0 ) 
+					resultList.add(new XPathFileResult(this, fileLoc, nodeList));
+			}
+			results = resultList.toArray(new XPathFileResult[resultList.size()]);
+		} catch( IllegalStateException ise ) {
+			// cannot load  TODO log?
+			results = new XPathFileResult[0];
 		}
-		results = resultList.toArray(new XPathFileResult[resultList.size()]);
 	}
 	
 	public String getFirstResult() {
