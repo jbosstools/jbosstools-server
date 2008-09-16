@@ -480,7 +480,7 @@ END OF TERMS AND CONDITIONS
       <import plugin="org.jboss.ide.eclipse.archives.ui"/>
       <import plugin="org.eclipse.jdt"/>
       <import plugin="org.eclipse.wst.xml.ui.infopop"/>
-      <import plugin="org.jboss.ide.eclipse.ui"/>
+      <import plugin="org.jboss.ide.eclipse.archives.webtools"/>
    </requires>
 
    <plugin
@@ -518,6 +518,13 @@ END OF TERMS AND CONDITIONS
 
    <plugin
          id="org.jboss.tools.eclipse.as.tptp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jboss.ide.eclipse.archives.webtools"
          download-size="0"
          install-size="0"
          version="0.0.0"
