@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<project default="build" basedir=".">
+
+<target name="compile">
+	<path id="classpath">
+		<fileset dir="lib">
+	    	<include name="*.jar"/>
+		</fileset>
+	</path>
+ 
+    <mkdir dir="build/classes"/>
+    		
+		<copy todir="build/classes">
+			<fileset dir="src">
+                <include name="**/*.MF" />
+                <include name="**/*.png" />
+				<include name="**/*.groovy" />
+			</fileset>
+		</copy>
+
+	<javac classpathref="classpath" srcdir="src" destdir="build/classes" debug="true"/>		
+
+	<zip destfile="packaging-converter.jar" basedir="build/classes"/>
+    
+</target>
+		
+<target name="build" depends="compile">
+  <zip destfile="packaging-convert.zip" basedir=".." whenempty="fail">  	 
+	 <include name="packaging-convert/lib/*.jar"/>
+  	<include name="packaging-convert/*.jar"/>
+  	<include name="packaging-convert/README.TXT"/>
+	</zip>
+</target>
+	
+	<target name="convert" depends="build">
+		<property name="packaging-path" value="/home/marshall/Workspaces/jbosside/pojp/.packaging"/>
+		
+		<java jar="packaging-converter.jar" fork="true">
+			<arg line="${packaging-path}"/>
+		</java>
+	</target>
+
+	
+</project>
