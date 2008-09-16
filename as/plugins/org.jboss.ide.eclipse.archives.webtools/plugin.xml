@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.wst.server.core.moduleTypes">
+      <moduleType
+            id="jboss.package"
+            name="Project Package"/>  
+   </extension>
+   
+   <extension
+         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.warArchive"
+            label="WAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EjbArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
+            label="EJB JAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
+            label="EAR"/>
+   </extension>
+
+   <!-- Adapters and clients to make stuff 'runnable' on server -->
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackagedArtifactAdapter"
+            id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
+            priority="0">
+         <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IProject"/>
+               <instanceof value="org.eclipse.jdt.core.IJavaProject"/>
+            </or>
+         </enablement>
+	  </moduleArtifactAdapter>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+      <moduleFactory
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
+            projects="true">
+         <moduleType
+               types="jboss.package"
+               versions="1.0"/>
+      </moduleFactory>
+   </extension>   
+   
+      <extension
+         point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
+      <nodeContribution
+            class="org.jboss.ide.eclipse.archives.webtools.ui.PublishAction"
+            icon="icons/publish.gif"
+            id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
+            label="Publish To Server"
+            weight="1"/>
+      <nodeContribution
+            class="org.jboss.ide.eclipse.archives.webtools.ui.EditPublishAction"
+            icon="icons/publishDetails.gif "
+            id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
+            label="Edit publish settings...">
+      </nodeContribution>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewWARAction"
+            icon="icons/war.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newWARAction"
+            label="WAR"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEJBJARAction"
+            icon="icons/EJBJar.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
+            label="EJB JAR"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEARAction"
+            icon="icons/ear.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
+            label="EAR"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
+            priority="5">
+      </publisher>
+   </extension>
+</plugin>
