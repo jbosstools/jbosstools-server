@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  JBoss, Home of Professional Open Source
+  Copyright 2006, JBoss Inc., and individual contributors as indicated
+  by the @authors tag. See the copyright.txt in the distribution for a
+  full listing of individual contributors.
+
+  This is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as
+  published by the Free Software Foundation; either version 2.1 of
+  the License, or (at your option) any later version.
+
+  This software is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this software; if not, write to the Free
+  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ -->
+<xsd:schema xmlns:jbxb="http://www.jboss.org/xml/ns/jbxb" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:element name="packages" type="packages-type"/>
+     
+    <xsd:complexType name="packages-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages"/>
+            </xsd:appinfo>    
+        </xsd:annotation>
+        
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="package" type="package-type"/>
+            <xsd:element maxOccurs="1" minOccurs="0" name="properties" type="properties-type"/>
+        </xsd:sequence>
+        <xsd:attribute name="version" type="xsd:double" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="package-type">
+    	<xsd:annotation>
+    		<xsd:appinfo>
+    			<jbxb:class
+    				impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackage" />
+    			<jbxb:addMethod name="addChild" />
+    		</xsd:appinfo>
+    	</xsd:annotation>
+
+    	<xsd:sequence>
+    		<xsd:element maxOccurs="unbounded" minOccurs="0"
+    			name="buildAction" type="build-action-type" />
+    		<xsd:element maxOccurs="unbounded" minOccurs="0"
+    			name="package" type="package-type" />
+    		<xsd:element maxOccurs="unbounded" minOccurs="0"
+    			name="fileset" type="fileset-type" />
+    		<xsd:element maxOccurs="unbounded" minOccurs="0"
+    			name="folder" type="folder-type" />
+    		<xsd:element maxOccurs="1" minOccurs="0" name="properties"
+    			type="properties-type" />
+    	</xsd:sequence>
+
+    	<xsd:attribute name="name" type="xsd:string" use="required" />
+    	<xsd:attribute name="type" type="xsd:string" use="optional" >
+    		<xsd:annotation>
+    			<xsd:appinfo>
+    				<jbxb:property name="packageType" />
+    			</xsd:appinfo>
+    		</xsd:annotation>
+    	</xsd:attribute>
+    	<xsd:attribute name="todir" type="xsd:string" use="optional">
+    		<xsd:annotation>
+    			<xsd:appinfo>
+    				<jbxb:property name="toDir" />
+    			</xsd:appinfo>
+    		</xsd:annotation>
+    	</xsd:attribute>
+    	<xsd:attribute name="exploded" type="xsd:boolean" use="optional" default="false"/>
+    	<xsd:attribute name="inWorkspace" type="xsd:boolean" use="optional" default="true"/>
+    	<xsd:attribute name="id" type="xsd:string" use="optional" />
+    </xsd:complexType>
+
+    <xsd:complexType name="properties-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperties"/>
+                <jbxb:addMethod name="setProperties"/>
+            </xsd:appinfo>    
+        </xsd:annotation>
+        
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="property" type="property-type"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="property-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbProperty"/>
+                <jbxb:addMethod name="addProperty"/>
+            </xsd:appinfo>    
+        </xsd:annotation>
+        
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="build-action-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbAction"/>
+                <jbxb:addMethod name="addChild"/>
+            </xsd:appinfo>
+        </xsd:annotation>
+	
+		<xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="0" name="properties" type="properties-type"/>
+		</xsd:sequence>
+		        
+		<!--  Pre / post build -->        
+        <xsd:attribute name="time" type="xsd:string" use="required"/>
+        
+        <!-- Action key / path.  (example:  ant)  format TBD -->
+        <xsd:attribute name="type" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="folder-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFolder"/>
+                <jbxb:addMethod name="addChild"/>
+            </xsd:appinfo>
+        </xsd:annotation>
+        
+        <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="package" type="package-type"/>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="fileset" type="fileset-type"/>
+            <xsd:element maxOccurs="unbounded" minOccurs="0" name="folder" type="folder-type"/>
+            <xsd:element maxOccurs="1" minOccurs="0" name="properties" type="properties-type"/>
+        </xsd:sequence>
+        
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="fileset-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet"/>
+                <jbxb:addMethod name="addChild"/>
+            </xsd:appinfo>    
+        </xsd:annotation>
+        
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="0" name="properties" type="properties-type"/>
+        </xsd:sequence>
+        
+        <xsd:attribute name="dir" type="xsd:string" use="required"/>
+        <xsd:attribute name="includes" type="xsd:string" use="required"/>
+        <xsd:attribute name="excludes" type="xsd:string" use="optional"/>
+        <xsd:attribute name="inWorkspace" type="xsd:boolean" use="optional" default="true"/>
+        <xsd:attribute name="flatten" type="xsd:boolean" use="optional" default="false"/>
+    </xsd:complexType>
+    
+</xsd:schema>
