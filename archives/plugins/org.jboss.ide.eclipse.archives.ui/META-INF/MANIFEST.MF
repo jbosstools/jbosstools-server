@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JBossTools Archives UI Plugin
+Bundle-SymbolicName: org.jboss.ide.eclipse.archives.ui;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.ide,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.jboss.ide.eclipse.archives.core,
+ org.eclipse.jdt.ui;bundle-version="3.4.0",
+ org.eclipse.debug.ui;bundle-version="3.4.0",
+ org.eclipse.core.variables;bundle-version="3.2.100",
+ org.eclipse.ui.navigator;bundle-version="3.3.100"
+Eclipse-LazyStart: true
+Export-Package: org.jboss.ide.eclipse.archives.ui,
+ org.jboss.ide.eclipse.archives.ui.actions,
+ org.jboss.ide.eclipse.archives.ui.preferences,
+ org.jboss.ide.eclipse.archives.ui.providers,
+ org.jboss.ide.eclipse.archives.ui.util.composites,
+ org.jboss.ide.eclipse.archives.ui.views,
+ org.jboss.ide.eclipse.archives.ui.wizards,
+ org.jboss.ide.eclipse.archives.ui.wizards.pages
+Bundle-Vendor: JBoss, a division of Red Hat
