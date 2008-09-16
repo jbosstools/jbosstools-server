@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<server>
+  <!-- Allows JConsole to be access via user defined registry and proxy ports. 
+  This is necessary in order to bypass firewalls doing NAT. Format is: 
+  service:jmx:rmi://${bindAddress}:${proxyPort}/jndi/rmi://${bindAddress}:${registryPort}/jmxrmi
+  -->
+  <mbean code="com.acme.mx.ManagementAgent" name="com.acme:service=ManagementAgent">
+    <attribute name="BindAddress">${jboss.bind.address}</attribute>
+    <attribute name="RegistryPort">${com.sun.management.jmxremote.port:21001}</attribute>
+    <attribute name="ProxyPort">${com.acme.jmxremote.proxy.port:21002}</attribute>
+  </mbean>
+</server>

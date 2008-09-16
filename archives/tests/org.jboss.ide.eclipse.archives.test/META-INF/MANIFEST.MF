@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Archives Test Plug-in
+Bundle-SymbolicName: org.jboss.ide.eclipse.archives.test
+Bundle-Version: 1.0.0
+Bundle-Activator: org.jboss.ide.eclipse.archives.test.ArchivesTest
+Require-Bundle: org.eclipse.core.runtime,
+ org.junit,
+ org.jboss.ide.eclipse.archives.core,
+ org.eclipse.core.resources,
+ org.jboss.tools.tests,
+ org.jboss.tools.common.test,
+ org.eclipse.core.variables;bundle-version="3.2.100"
+Eclipse-LazyStart: true
+Bundle-ClassPath: archivestest.jar
+Export-Package: org.jboss.ide.eclipse.archives.test,
+ org.jboss.ide.eclipse.archives.test.core,
+ org.jboss.ide.eclipse.archives.test.model,
+ org.jboss.ide.eclipse.archives.test.projects,
+ org.jboss.ide.eclipse.archives.test.util

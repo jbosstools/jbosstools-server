@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+  http://www.jboss.org/j2ee/schema/jboss_5_0.xsd"
+  version="3.0">
+  <enterprise-beans>
+    <session>
+      <ejb-name>TimeTellerBean</ejb-name>
+      <remote-binding>
+        <jndi-name>TimeTellerBean/remote</jndi-name>
+        <client-bind-url>
+          socket://${jboss.bind.address}:3873
+        </client-bind-url>
+      </remote-binding>         
+      <remote-binding>
+        <jndi-name>TimeTellerBean/http</jndi-name>
+        <client-bind-url>
+          http://${jboss.bind.address}:8080/unified-invoker/Ejb3ServerInvokerServlet
+        </client-bind-url>
+      </remote-binding>
+      <remote-binding>
+        <jndi-name>TimeTellerBean/https</jndi-name>
+        <client-bind-url>
+          https://${jboss.bind.address}:8443/unified-invoker/SSLEjb3ServerInvokerServlet
+        </client-bind-url>
+      </remote-binding>
+      <!-- remote-binding>
+        <jndi-name>OverrideStatefulClusteredSSL</jndi-name>
+        <client-bind-url>sslsocket://0.0.0.0:3843</client-bind-url>
+      </remote-binding>
+      <remote-binding>
+        <jndi-name>OverrideStatefulClusteredNormal</jndi-name>
+        <client-bind-url>socket://0.0.0.0:3873</client-bind-url>
+      </remote-binding -->
+    </session>
+  </enterprise-beans>
+</jboss>

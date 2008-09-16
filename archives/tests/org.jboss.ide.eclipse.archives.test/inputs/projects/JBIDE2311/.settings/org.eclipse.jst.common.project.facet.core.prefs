@@ -1,0 +1,5 @@
+#Mon Jun 09 13:55:44 EDT 2008
+classpath.helper/org.eclipse.jdt.launching.JRE_CONTAINER\:\:org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType\:\:jdk1.6.0_03/owners=jst.java\:5.0
+classpath.helper/org.eclipse.jst.server.core.container\:\:org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget\:\:JBoss\ 4.2\ Runtime/owners=jst.ejb\:3.0
+classpath.helper/org.eclipse.jst.server.core.container\:\:org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget\:\:as-5.0.0.cr1-default/owners=\#system\#
+eclipse.preferences.version=1

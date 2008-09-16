@@ -1,0 +1,4 @@
+#Tue Apr 29 18:58:37 CEST 2008
+classpath.helper/org.eclipse.jdt.launching.JRE_CONTAINER\:\:org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType\:\:jdk1.5.0_12/owners=jst.java\:5.0
+classpath.helper/org.eclipse.jst.server.core.container\:\:org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget\:\:eap-4.3.0.ga-176976/owners=jst.utility\:1.0
+eclipse.preferences.version=1

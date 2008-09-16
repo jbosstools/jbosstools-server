@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="JBIDE1406.jar" type="jar" todir="${archives_current_project}/output" exploded="true" inWorkspace="true">
+      <fileset dir="${archives_current_project}" includes="**" excludes="**/*.jar,**/.packages" inWorkspace="true" flatten="false">
+         <properties></properties>
+      </fileset>
+      <properties>
+         <property name="org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey" value="1214949466221"></property>
+      </properties>
+   </package>
+</packages>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="unified-http-invoker.sar" type="jar" todir="/JBIDE2099/output/dist" exploded="true" inWorkspace="true">
+      <fileset dir="/JBIDE2099/output/eclipse" includes="**" inWorkspace="true" flatten="false">
+         <properties></properties>
+      </fileset>
+      <properties>
+         <property name="org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey" value="1210325615218"></property>
+      </properties>
+   </package>
+   <properties></properties>
+</packages>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC
+   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd">
+<!-- $Id:web.xml 293 2008-04-17 10:29:16Z galder $ -->
+<web-app>
+  <servlet>
+    <servlet-name>ServerInvokerServlet</servlet-name>
+      <description>The ServerInvokerServlet receives requests via HTTP protocol
+        from within a web container and passes it onto the ServletServerInvoker 
+        for processing.
+      </description>
+      <servlet-class>org.jboss.remoting.transport.servlet.web.ServerInvokerServlet</servlet-class>
+      <init-param>
+          <param-name>invokerName</param-name>
+          <param-value>jboss.remoting:service=invoker,transport=servlet</param-value>
+          <description>The servlet server invoker</description>
+      </init-param>
+      <!-- init-param>
+        <param-name>locatorUrl</param-name>
+        <param-value>
+          <![CDATA[servlet://${jboss.bind.address}:8080/unified-invoker/ServerInvokerServlet/?dataType=invocation&marshaller=org.jboss.invocation.unified.marshall.InvocationMarshaller&unmarshaller=org.jboss.invocation.unified.marshall.InvocationUnMarshaller]]>
+        </param-value>
+        <description>The servlet server invoker</description>
+      </init-param -->      
+      <load-on-startup>1</load-on-startup>      
+  </servlet>
+    
+  <servlet>
+    <servlet-name>SSLServerInvokerServlet</servlet-name>
+      <description>The ServerInvokerServlet receives requests via HTTPs protocol
+        from within a web container and passes it onto the ServletServerInvoker 
+        for processing.
+      </description>
+      <servlet-class>org.jboss.remoting.transport.servlet.web.ServerInvokerServlet</servlet-class>
+      <init-param>
+        <param-name>locatorUrl</param-name>
+        <param-value>
+          <![CDATA[sslservlet://${jboss.bind.address}:8443/unified-invoker/SSLServerInvokerServlet/?dataType=invocation&marshaller=org.jboss.invocation.unified.marshall.InvocationMarshaller&unmarshaller=org.jboss.invocation.unified.marshall.InvocationUnMarshaller]]>
+        </param-value>
+        <description>The servlet server invoker</description>
+      </init-param>      
+      <load-on-startup>1</load-on-startup>      
+  </servlet>
+
+  <servlet>
+    <servlet-name>Ejb3ServerInvokerServlet</servlet-name>
+    <description>The ServerInvokerServlet receives requests via HTTP
+       protocol from within a web container and passes it onto the
+       ServletServerInvoker for processing.
+    </description>
+    <servlet-class>org.jboss.remoting.transport.servlet.web.ServerInvokerServlet</servlet-class>
+    <!-- Pass locatorUrl instead of invokerName because otherwise you end up
+    sharing the same server invoker for org.jboss.invocation and org.jboss.aop 
+    type of invocations which you don't wanna do. Worth noting that invokerName 
+    is hardcoded and hence you cannot create a separate one that way, hence the 
+    use of locatorUrl. -->
+    <init-param>
+         <param-name>locatorUrl</param-name>
+         <param-value>servlet://${jboss.bind.address}:8080/unified-invoker/Ejb3ServerInvokerServlet</param-value>
+         <description>The servlet server invoker</description>
+     </init-param>
+    <!--  init-param>
+        <param-name>invokerName</param-name>
+        <param-value>jboss.remoting:service=invoker,transport=servlet</param-value>
+        <description>The servlet server invoker</description>
+    </init-param -->
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+    
+  <servlet>
+    <servlet-name>SSLEjb3ServerInvokerServlet</servlet-name>
+    <description>The ServerInvokerServlet receives requests via HTTPS
+       protocol from within a web container and passes it onto the
+       ServletServerInvoker for processing.
+    </description>
+    <servlet-class>org.jboss.remoting.transport.servlet.web.ServerInvokerServlet</servlet-class>
+    <init-param>
+         <param-name>locatorUrl</param-name>
+         <param-value>sslservlet://${jboss.bind.address}:8443/unified-invoker/SSLEjb3ServerInvokerServlet</param-value>
+         <description>The ssl servlet server invoker locator url</description>
+     </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+    
+  <servlet>
+    <servlet-name>JNDIFactory</servlet-name>
+    <description>A servlet that exposes the JBoss JNDI Naming service stub
+    through http. The return content is a serialized
+    MarshalledValue containg the org.jnp.interfaces.Naming stub. This
+    configuration handles requests for the standard JNDI naming service.
+    </description>
+    <servlet-class>org.jboss.invocation.http.servlet.NamingFactoryServlet</servlet-class>
+    <init-param>
+      <param-name>namingProxyMBean</param-name>
+      <param-value>jboss:service=proxyfactory,type=unified,transport=servlet,target=naming</param-value>
+    </init-param>
+    <init-param>
+      <param-name>proxyAttribute</param-name>
+      <param-value>Proxy</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>SSLJNDIFactory</servlet-name>
+    <description>A servlet that exposes the JBoss JNDI Naming service stub
+    through http. The return content is a serialized
+    MarshalledValue containg the org.jnp.interfaces.Naming stub. This
+    configuration handles requests for the standard JNDI naming service.
+    </description>
+    <servlet-class>org.jboss.invocation.http.servlet.NamingFactoryServlet</servlet-class>
+    <init-param>
+      <param-name>namingProxyMBean</param-name>
+      <param-value>jboss:service=proxyfactory,type=unified,transport=sslservlet,target=naming</param-value>
+    </init-param>
+    <init-param>
+      <param-name>proxyAttribute</param-name>
+      <param-value>Proxy</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+    
+  <servlet-mapping>
+    <servlet-name>ServerInvokerServlet</servlet-name>
+    <url-pattern>/ServerInvokerServlet/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SSLServerInvokerServlet</servlet-name>
+    <url-pattern>/SSLServerInvokerServlet/*</url-pattern>
+  </servlet-mapping>    
+
+  <servlet-mapping>
+    <servlet-name>Ejb3ServerInvokerServlet</servlet-name>
+    <url-pattern>/Ejb3ServerInvokerServlet/*</url-pattern>
+  </servlet-mapping>
+    
+  <servlet-mapping>
+    <servlet-name>SSLEjb3ServerInvokerServlet</servlet-name>
+    <url-pattern>/SSLEjb3ServerInvokerServlet/*</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>JNDIFactory</servlet-name>
+    <url-pattern>/JNDIFactory/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SSLJNDIFactory</servlet-name>
+    <url-pattern>/SSLJNDIFactory/*</url-pattern>
+  </servlet-mapping>
+    
+</web-app>

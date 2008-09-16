@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="TestProject.jar" type="jar" todir="/some/external/path" exploded="false" inWorkspace="false">
+      <folder name="folder">
+         <properties></properties>
+      </folder>
+      <folder name="folder2">
+         <folder name="inner1">
+            <fileset dir="/some/global/path" includes="**/*.xml" inWorkspace="false">
+               <properties></properties>
+            </fileset>
+            <properties></properties>
+         </folder>
+         <properties></properties>
+      </folder>
+   </package>
+   <package name="TestProject2.jar" type="jar" todir="/SomeProject" exploded="true" inWorkspace="true">
+   </package>
+   <properties></properties>
+</packages>

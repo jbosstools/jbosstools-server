@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="TestProject.jar" type="jar" todir="/some/external/path" exploded="false" inWorkspace="false" id="someId">
+      <fileset dir="/some/global/path" includes="**/*.xml" inWorkspace="false" flatten="false">
+         <properties></properties>
+      </fileset>
+   </package>
+</packages>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="worksnot.jar" type="jar" todir="/JBIDE2315" exploded="false" inWorkspace="true">
+      <fileset dir="/JBIDE2315/folder" includes="**/*" inWorkspace="true" flatten="false">
+         <properties></properties>
+      </fileset>
+      <properties>
+         <property name="org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey" value="1213079049734"></property>
+      </properties>
+   </package>
+   <properties></properties>
+</packages>

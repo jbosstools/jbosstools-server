@@ -1,0 +1,7 @@
+<rug>
+	<color>Red</color>
+	<shape>Circle</shape>
+	<size><w unit="inches">60</w>
+	      <l unit="cm">300</l>
+	</size>
+</rug>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+   <package name="TestProject.jar" type="jar" todir="/some/external/path" exploded="false" inWorkspace="false" id="someId">
+   		<buildAction time="preBuild">
+   			<properties>
+   				<property name="name" value="value"/>
+   			</properties>
+   		</buildAction>
+   </package>
+</packages>
