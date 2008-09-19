@@ -129,7 +129,7 @@ public class AntArchivesCore extends ArchivesCore {
 			case IStatus.ERROR: return Project.MSG_ERR;
 			case IStatus.WARNING: return Project.MSG_WARN;
 			case IStatus.INFO: return Project.MSG_INFO;
-			case IStatus.OK: return Project.MSG_VERBOSE;
+			case IStatus.OK: return Project.MSG_DEBUG;
 			}
 			return Project.MSG_DEBUG;
 		}
