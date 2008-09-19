@@ -36,16 +36,17 @@ import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
+import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FileWrapperStatusPair;
 
 /**
- * This class responds to model change events. 
- * It is given a delta as to what nodes are added, removed, or changed. 
+ * This class responds to model change events.
+ * It is given a delta as to what nodes are added, removed, or changed.
  * It then keeps the output file for the top level archive in sync with
  * the changes to the model.
- * 
+ *
  * If the automatic builder is not enabled for this project, the listener
- * does nothing. 
- * 
+ * does nothing.
+ *
  * @author Rob Stryker (rob.stryker@redhat.com)
  *
  */
@@ -57,33 +58,33 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 */
 	public void modelChanged(IArchiveNodeDelta delta) {
 		// if we're not building, get out
-		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(delta.getPostNode().getProjectPath())) 
+		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(delta.getPostNode().getProjectPath()))
 			return;
 
 		try {
 			handle(delta);
 		} catch( Exception e ) {
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, "Error updating model changes", e);
+			ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, "Error updating model changes", e);
 		}
 	}
 
 	/**
 	 * This can handle any type of node / delta, not just
-	 * root elements. If the node is added or removed, it 
+	 * root elements. If the node is added or removed, it
 	 * will handle those segments and return without checking
 	 * the children at all. IT is the responsibility of the add
 	 * and remove methods to go through the children.
-	 * 
+	 *
 	 *  Otherwise, it will simply handle attribute children and then
 	 *  move on to the children.
-	 * 
+	 *
 	 * @param delta
 	 */
 	private void handle(IArchiveNodeDelta delta) {
 		if( isTopLevelArchive(delta.getPostNode())) {
 			EventManager.startedBuildingArchive((IArchive)delta.getPostNode());
 		}
-		
+
 		if( (delta.getKind() & (IArchiveNodeDelta.NODE_REGISTERED | IArchiveNodeDelta.UNKNOWN_CHANGE)) != 0 ) {
 			nodeRemoved(delta.getPreNode());
 			nodeAdded(delta.getPostNode());
@@ -99,19 +100,19 @@ public class ModelChangeListener implements IArchiveModelListener {
 					handle(children[i]);
 				}
 			}
-		} else if( descendentChanged(delta.getKind()) ) { 
+		} else if( descendentChanged(delta.getKind()) ) {
 			IArchiveNodeDelta[] children = delta.getAllAffectedChildren();
 			for( int i = 0; i < children.length; i++ ) {
 				handle(children[i]);
 			}
 		}
-		
-		if( isTopLevelArchive(delta.getPostNode())) 
+
+		if( isTopLevelArchive(delta.getPostNode()))
 			EventManager.finishedBuildingArchive((IArchive)delta.getPostNode());
 
 	}
 	protected boolean descendentChanged(int kind) {
-		 return (kind & IArchiveNodeDelta.DESCENDENT_CHANGED) != 0 || 
+		 return (kind & IArchiveNodeDelta.DESCENDENT_CHANGED) != 0 ||
 		 		(kind & IArchiveNodeDelta.CHILD_ADDED) != 0 ||
 		 		(kind & IArchiveNodeDelta.CHILD_REMOVED) != 0;
 	}
@@ -127,7 +128,7 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 */
 	private boolean handleAttributeChange(IArchiveNodeDelta delta) {
 		switch( delta.getPostNode().getNodeType()) {
-		case IArchiveNode.TYPE_ARCHIVE_FOLDER: 
+		case IArchiveNode.TYPE_ARCHIVE_FOLDER:
 			return handleFolderAttributeChanged(delta);
 		case IArchiveNode.TYPE_ARCHIVE_FILESET:
 			return handleFilesetAttributeChanged(delta);
@@ -137,7 +138,7 @@ public class ModelChangeListener implements IArchiveModelListener {
 		return false;
 	}
 
-	
+
 	/*
 	 * These three methods will need to be optimized eventually. Because right now they suck
 	 */
@@ -146,25 +147,25 @@ public class ModelChangeListener implements IArchiveModelListener {
 		nodeAdded(delta.getPostNode());
 		return false;
 	}
-	
+
 	private boolean handleFilesetAttributeChanged(IArchiveNodeDelta delta) {
 		nodeRemoved(delta.getPreNode());
 		nodeAdded(delta.getPostNode());
 		return false;
 	}
-	
+
 	private boolean handlePackageAttributeChanged(IArchiveNodeDelta delta) {
 		nodeRemoved(delta.getPreNode());
 		nodeAdded(delta.getPostNode());
 		return false;
 	}
-	
-	
-	
-	
+
+
+
+
 	private void nodeAdded(IArchiveNode added) {
 		if( added == null ) return;
-		
+
 		if( added.getNodeType() == IArchiveNode.TYPE_MODEL_ROOT) {
 			IArchiveNode[] archives = ((IArchiveModelRootNode)added).getChildren(IArchiveNode.TYPE_ARCHIVE);
 			for( int i = 0; i < archives.length; i++ ) {
@@ -183,14 +184,15 @@ public class ModelChangeListener implements IArchiveModelListener {
 		}
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(added);
 		for( int i = 0; i < filesets.length; i++ ) {
-			ModelTruezipBridge.fullFilesetBuild(filesets[i]);
+			FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetBuild(filesets[i], true);
 			FileWrapper[] files = filesets[i].findMatchingPaths();
+			EventManager.error(filesets[i], result.s);
 			EventManager.filesUpdated(filesets[i].getRootArchive(), filesets[i], files);
 		}
 		postChange(added);
 	}
-	
-	
+
+
 	private void nodeRemoved(IArchiveNode removed) {
 		if( removed == null ) return;
 		if( removed.getNodeType() == IArchiveNode.TYPE_MODEL_ROOT ) {
@@ -212,28 +214,36 @@ public class ModelChangeListener implements IArchiveModelListener {
 		} else if( removed.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER ){
 			IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(((IArchiveFolder)removed));
 			for( int i = 0; i < filesets.length; i++ ) {
-				IPath[] removedPaths = ModelTruezipBridge.fullFilesetRemove(filesets[i], false);
-				EventManager.filesRemoved(removedPaths, ((IArchiveFileSet)filesets[i]));
+				// TODO report IO Errors
+				FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetRemove(filesets[i], false);
+				EventManager.filesRemoved(convertToPath(result.f), ((IArchiveFileSet)filesets[i]));
 			}
 			postChange(removed);
 			return;
-		} 
+		}
 
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(removed);
 		for( int i = 0; i < filesets.length; i++ ) {
-			IPath[] removedPaths = ModelTruezipBridge.fullFilesetRemove(((IArchiveFileSet)removed), false);
-			EventManager.filesRemoved(removedPaths, ((IArchiveFileSet)removed));
+			FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetRemove(
+					((IArchiveFileSet)removed), false);
+			EventManager.filesRemoved(convertToPath(result.f), ((IArchiveFileSet)removed));
 		}
 		postChange(removed);
 	}
-	
-	
+
+	protected IPath[] convertToPath(FileWrapper[] wrappers) {
+		IPath[] paths = new IPath[wrappers.length];
+		for( int i = 0; i < wrappers.length; i++ ) {
+			paths[i] = wrappers[i].getWrapperPath();
+		}
+		return paths;
+	}
 	protected void postChange(IArchiveNode node) {
 	}
-	
+
 	protected void logCannotBuildError(IArchive archive) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, 
-				"Cannot Build archive \"" + archive.getName() + 
+		ArchivesCore.getInstance().getLogger().log(IStatus.WARNING,
+				"Cannot Build archive \"" + archive.getName() +
 				"\" due to a problem in the archive's configuration.", null);
 		return;
 	}

@@ -27,11 +27,11 @@ public class MainPreferencePage extends PropertyPage implements
 
 	private Button showPackageOutputPath, showFullFilesetRootDir;
 	private Button showProjectRoot, showAllProjects;
-	private Button automaticBuilder, overrideButton;
+	private Button automaticBuilder, showErrorDialog, overrideButton;
 	private Group corePrefGroup, viewPrefGroup;
 	private Composite overrideComp;
-	
-	
+
+
 	public MainPreferencePage() {
 		super();
 		setTitle(ArchivesUIMessages.PreferencePageTitle);
@@ -41,20 +41,20 @@ public class MainPreferencePage extends PropertyPage implements
 	protected Control createContents(Composite parent) {
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new GridLayout(1, false));
-		
+
 		createOverridePrefs(main);
 		createCorePrefs(main);
 		createViewPrefs(main);
 		fillValues();
 		return main;
 	}
-	
+
 	public IPath getResourceLocationIfExists() {
 		IAdaptable el = getElement();
-		return el == null ? null :  
+		return el == null ? null :
 				((IResource)el.getAdapter(IResource.class)).getLocation();
 	}
-	
+
 	public IPreferenceManager getPrefManager() {
 		return ArchivesCore.getInstance().getPreferenceManager();
 	}
@@ -62,7 +62,8 @@ public class MainPreferencePage extends PropertyPage implements
 		if( getResourceLocationIfExists() != null ) {
 			overrideButton.setSelection(getPrefManager().areProjectSpecificPrefsEnabled(getResourceLocationIfExists()));
 		}
-		automaticBuilder.setSelection(getPrefManager().isBuilderEnabled(getResourceLocationIfExists()));		
+		automaticBuilder.setSelection(getPrefManager().isBuilderEnabled(getResourceLocationIfExists()));
+		showErrorDialog.setSelection(PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG, getElement(), true));
 		showAllProjects.setSelection(
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_ALL_PROJECTS, getElement(), false));
 		showPackageOutputPath.setSelection(
@@ -73,21 +74,21 @@ public class MainPreferencePage extends PropertyPage implements
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, getElement(), false));
 
 		showAllProjects.setEnabled(showProjectRoot.getSelection());
-		if (!showProjectRoot.getSelection()) 
+		if (!showProjectRoot.getSelection())
 			showAllProjects.setSelection(false);
-		
+
 		if( getElement() != null ) {
 			setWidgetsEnabled(overrideButton.getSelection());
 		}
 	}
-	
+
 	protected void createOverridePrefs(Composite main) {
 		if( getResourceLocationIfExists() != null ) {
 			overrideComp = new Composite(main, SWT.NONE);
 			overrideComp.setLayout(new FillLayout());
 			overrideButton = new Button(overrideComp, SWT.CHECK);
 			overrideButton.setText(ArchivesUIMessages.ProjectSpecificSettings);
-			
+
 			overrideButton.addSelectionListener(new SelectionListener(){
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
@@ -98,7 +99,7 @@ public class MainPreferencePage extends PropertyPage implements
 			});
 		}
 	}
-	
+
 	protected void setWidgetsEnabled(boolean val) {
 		showPackageOutputPath.setEnabled(val);
 		showProjectRoot.setEnabled(val);
@@ -106,61 +107,65 @@ public class MainPreferencePage extends PropertyPage implements
 		if( showProjectRoot.getSelection())
 			showAllProjects.setEnabled(val);
 		automaticBuilder.setEnabled(val);
+		showErrorDialog.setEnabled(val);
 	}
-	
+
 	protected void createCorePrefs(Composite main) {
 		corePrefGroup = new Group(main, SWT.NONE);
 		corePrefGroup.setText(ArchivesUIMessages.CorePreferences);
 		corePrefGroup.setLayout(new GridLayout(1, false));
-		corePrefGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));		
-		
+		corePrefGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
 		automaticBuilder = new Button(corePrefGroup, SWT.CHECK);
 		automaticBuilder.setText(ArchivesUIMessages.EnableIncrementalBuilder);
+		showErrorDialog = new Button(corePrefGroup, SWT.CHECK);
+		showErrorDialog.setText("Externalize me");
 	}
-	
+
 	protected void createViewPrefs(Composite main) {
-		
+
 		viewPrefGroup = new Group(main, SWT.NONE);
 		viewPrefGroup.setText(ArchivesUIMessages.ProjectPackagesView);
 		viewPrefGroup.setLayout(new GridLayout(1, false));
 		viewPrefGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+
 		showPackageOutputPath = new Button(viewPrefGroup, SWT.CHECK);
 		showPackageOutputPath.setText(ArchivesUIMessages.ShowFullOutputPath);
-		
+
 		showFullFilesetRootDir = new Button(viewPrefGroup, SWT.CHECK);
 		showFullFilesetRootDir.setText(ArchivesUIMessages.ShowFullRootDirectory);
-		
+
 		showProjectRoot = new Button(viewPrefGroup, SWT.CHECK);
 		showProjectRoot.setText(ArchivesUIMessages.ShowRootProject);
-		
+
 		showProjectRoot.addSelectionListener(new SelectionListener () {
 			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);	
+				widgetSelected(e);
 			}
 			public void widgetSelected(SelectionEvent e) {
 				showAllProjects.setEnabled(showProjectRoot.getSelection());
-				
+
 				if (!showProjectRoot.getSelection())
 				{
 					showAllProjects.setSelection(false);
 				}
 			}
 		});
-		
+
 		showAllProjects = new Button(viewPrefGroup, SWT.CHECK);
 		showAllProjects.setText(ArchivesUIMessages.ShowAllProjects);
 		showAllProjects.setEnabled(showProjectRoot.getSelection());
-		if( !showProjectRoot.getSelection() ) 
+		if( !showProjectRoot.getSelection() )
 			showAllProjects.setSelection(false);
 
 	}
-	
+
 	public void init(IWorkbench workbench) {
 	}
 
 	public void performDefaults() {
 		automaticBuilder.setSelection(true);
+		showErrorDialog.setSelection(true);
 		showPackageOutputPath.setSelection(true);
 		showFullFilesetRootDir.setSelection(true);
 		showProjectRoot.setSelection(true);
@@ -178,6 +183,7 @@ public class MainPreferencePage extends PropertyPage implements
 			getPrefManager().setProjectSpecificPrefsEnabled(getResourceLocationIfExists(), overrideButton.getSelection());
 		}
 		getPrefManager().setBuilderEnabled(getResourceLocationIfExists(), automaticBuilder.getSelection());
+		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG, showErrorDialog.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH, showPackageOutputPath.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR, showFullFilesetRootDir.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, showProjectRoot.getSelection(), getElement());

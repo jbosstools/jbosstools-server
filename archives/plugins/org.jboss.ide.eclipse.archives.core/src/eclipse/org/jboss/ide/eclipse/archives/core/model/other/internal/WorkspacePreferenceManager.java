@@ -27,6 +27,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
@@ -42,7 +43,7 @@ import org.osgi.service.prefs.BackingStoreException;
 /**
  * Sets default preferences for the plugin.
  * By default, the builder is enabled for all projects with archives.
- * 
+ *
  * @author rstryker
  *
  */
@@ -63,7 +64,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		}
 		return null;
 	}
-	
+
 	public boolean isBuilderEnabled(IPath path) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, AUTOMATIC_BUILDER_ENABLED);
 		IResource res = getResource(path);
@@ -76,7 +77,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		}
 		return new InstanceScope().getNode(ArchivesCorePlugin.PLUGIN_ID).getBoolean(AUTOMATIC_BUILDER_ENABLED, true);
 	}
-	
+
 	public void setBuilderEnabled(IPath path, boolean value) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, AUTOMATIC_BUILDER_ENABLED);
 		IResource resource = getResource(path);
@@ -91,25 +92,25 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		prefs.putBoolean(AUTOMATIC_BUILDER_ENABLED, value);
 		try {
 			prefs.flush();
-		} catch (BackingStoreException e) {	
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, e.getMessage(), e);
+		} catch (BackingStoreException e) {
+			ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, e.getMessage(), e);
 		}
 	}
-	
+
 	public void initializeDefaultPreferences() {
 		IEclipsePreferences prefs = new DefaultScope().getNode(ArchivesCorePlugin.PLUGIN_ID);
 		prefs.putBoolean(AUTOMATIC_BUILDER_ENABLED, true);
 		try {
 			prefs.flush();
 		} catch (BackingStoreException e1) {
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, e1.getMessage(), e1);
+			ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, e1.getMessage(), e1);
 		}
 	}
-	
+
 	public boolean areProjectSpecificPrefsEnabled(IPath path) {
 		return areProjectSpecificPrefsEnabled(getResource(path));
 	}
-	public boolean areProjectSpecificPrefsEnabled(IResource resource) {	
+	public boolean areProjectSpecificPrefsEnabled(IResource resource) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, PROJECT_SPECIFIC_PREFS);
 		try {
 			if( resource != null && resource.getPersistentProperty(name) != null) {
@@ -118,7 +119,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		} catch( CoreException ce ) {}
 		return false;
 	}
-	
+
 	public void setProjectSpecificPrefsEnabled(IPath path, boolean value) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, PROJECT_SPECIFIC_PREFS);
 		IResource resource = getResource(path);

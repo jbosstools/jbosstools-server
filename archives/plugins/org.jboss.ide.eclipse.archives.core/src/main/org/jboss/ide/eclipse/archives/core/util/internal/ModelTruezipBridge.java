@@ -25,7 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
@@ -41,162 +44,178 @@ import de.schlichtherle.io.File;
 /**
  * This class is meant to bridge between the model
  * and the raw true-zip utility class. It is a higher level
- * API which deals with filesets and packages instead of 
+ * API which deals with filesets and packages instead of
  * raw Strings and paths.
- * 
+ *
  * It will also make sure that a de.schlichtherle.io.File is
  * created with the proper ArchiveDetector for each and every
  * level, rather than the TrueZipUtil class, which not accurately
  * create the proper File type for exploded archives.
- * 
+ *
  * @author rstryker
  *
  */
 public class ModelTruezipBridge {
-	public static void deleteArchive(IArchive archive) {
-		final File file = getFile(archive);
-		boolean b = file.deleteAll();
-		TrueZipUtil.sync();
+	public static class FileWrapperStatusPair {
+		public FileWrapper[] f;
+		public IStatus[] s;
+		public FileWrapperStatusPair(FileWrapper[] files, IStatus[] statuses) {
+			this.f = files;
+			this.s = statuses;
+		}
 	}
-		
-	public static void cleanFolder(IArchiveFolder folder) {
-		cleanFolder(getFile(folder), true);
-	}
-	
-	public static void cleanFolder(java.io.File folder, boolean sync) {
-		TrueZipUtil.deleteEmptyChildren(folder);
-		if( sync )
-			TrueZipUtil.sync();
-	}
-	
-	public static void fullFilesetBuild(IArchiveFileSet fileset) {
-		fullFilesetBuild(fileset, true);
-	}
-	public static void fullFilesetBuild(final IArchiveFileSet fileset, boolean sync) {
+	public static FileWrapperStatusPair fullFilesetBuild(final IArchiveFileSet fileset, boolean sync) {
 		FileWrapper[] files = fileset.findMatchingPaths();
-		copyFiles(fileset, files, false);
+		IStatus[] s = copyFiles(fileset, files, false);
 		if( sync )
 			TrueZipUtil.sync();
+		return new FileWrapperStatusPair( files, s );
 	}
-		
-	public static void fullFilesetsRemove(IArchiveFileSet[] filesets, boolean sync) {
-		for( int i = 0; i < filesets.length; i++ )
-			fullFilesetRemove(filesets[i], false);
-		if( sync )
-			TrueZipUtil.sync();
-	}
-	
-	
-	// Let them know which files were removed, for events
-	public static IPath[] fullFilesetRemove(final IArchiveFileSet fileset, boolean sync) {
+
+	/*
+	 * 	Returns an Object array as follows:
+	 *  Object[] {
+	 *     FileWrapper[] removedPaths,
+	 *     IStatus[] errors
+	 *  }
+	 */
+	public static FileWrapperStatusPair fullFilesetRemove(final IArchiveFileSet fileset, boolean sync) {
 		FileWrapper[] files = fileset.findMatchingPaths();
+		final ArrayList<IStatus> errors = new ArrayList<IStatus>();
 		final ArrayList<FileWrapper> list = new ArrayList<FileWrapper>();
 		list.addAll(Arrays.asList(files));
 		for( int i = 0; i < files.length; i++ ) {
 			if( !ModelUtil.otherFilesetMatchesPathAndOutputLocation(fileset, files[i])) {
 				// remove
-				deleteFiles(fileset, new FileWrapper[] {files[i]}, false);
+				errors.addAll(Arrays.asList(deleteFiles(fileset, new FileWrapper[] {files[i]}, false)));
 			} else {
 				list.remove(files[i]);
 			}
 		}
-		
+
 		// kinda ugly here.   delete all empty folders beneath
-		cleanFolder(getFile(fileset), false);
-		
+		File folder = getFile(fileset);
+		if( !cleanFolder(folder, false) ) {
+			IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error emptying folder " + folder.toString());
+			errors.add(e);
+		}
+
 		// now ensure all mandatory child folders are still there
 		fileset.getParent().accept(new IArchiveNodeVisitor() {
 			public boolean visit(IArchiveNode node) {
+				boolean b = true;
 				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
-					createFile(node);
+					b = createFile(node);
 				} else if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
-					createFile(node);
+					b = createFile(node);
+				}
+				if( !b ) {
+					IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error creating file " + getFile(node).toString());
+					errors.add(e);
 				}
 				return true;
-			} 
+			}
 		} );
-				
-		if( sync ) 
+
+		if( sync )
 			TrueZipUtil.sync();
-		
-		return list.toArray(new IPath[list.size()]);
+		IStatus[] errorsArr = errors.toArray(new IStatus[errors.size()]);
+		FileWrapper[] files2 = list.toArray(new FileWrapper[list.size()]);
+		return new FileWrapperStatusPair( files2, errorsArr);
 	}
 
-	
-	public static void copyFiles(IArchiveFileSet[] filesets, FileWrapper[] files) {
-		copyFiles(filesets, files, true);
+	public static boolean deleteArchive(IArchive archive) {
+		final File file = getFile(archive);
+		boolean b = file.deleteAll();
+		TrueZipUtil.sync();
+		return b;
 	}
-	
-	public static void copyFiles(final IArchiveFileSet[] filesets, final FileWrapper[] files, boolean sync) {
-		for( int i = 0; i < filesets.length; i++ ) {
-			copyFiles(filesets[i], files, false);
-		}
-		if( sync ) 
+
+	public static boolean cleanFolder(IArchiveFolder folder) {
+		return cleanFolder(getFile(folder), true);
+	}
+
+	public static boolean cleanFolder(java.io.File folder, boolean sync) {
+		boolean b = TrueZipUtil.deleteEmptyChildren(folder);
+		if( sync )
 			TrueZipUtil.sync();
-		
+		return b;
 	}
-	
-	public static void copyFiles(IArchiveFileSet fileset, final FileWrapper[] files) {
-		copyFiles(fileset, files, true);
+
+
+	public static IStatus[] copyFiles(IArchiveFileSet[] filesets, FileWrapper[] files) {
+		return copyFiles(filesets, files, true);
 	}
-	
-	public static void copyFiles(IArchiveFileSet fileset, final FileWrapper[] files, boolean sync) {
+
+	public static IStatus[] copyFiles(final IArchiveFileSet[] filesets, final FileWrapper[] files, boolean sync) {
+		ArrayList<IStatus> list = new ArrayList<IStatus>();
+		for( int i = 0; i < filesets.length; i++ ) {
+			list.addAll(Arrays.asList(copyFiles(filesets[i], files, false)));
+		}
+		if( sync )
+			TrueZipUtil.sync();
+		return list.toArray(new IStatus[list.size()]);
+	}
+
+	public static IStatus[] copyFiles(IArchiveFileSet fileset, final FileWrapper[] files, boolean sync) {
+		boolean b = true;
+		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		final File[] destFiles = getFiles(files, fileset);
 		for( int i = 0; i < files.length; i++ ) {
-			TrueZipUtil.copyFile(files[i].getAbsolutePath(), destFiles[i]);
+			b = TrueZipUtil.copyFile(files[i].getAbsolutePath(), destFiles[i]);
+			if( b == false ) {
+				list.add(new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "File copy failed. Source=" + files[i].getAbsolutePath() + ", dest=" + destFiles[i]));
+			}
 		}
-		if( sync ) 
+		if( sync )
 			TrueZipUtil.sync();
+		return list.toArray(new IStatus[list.size()]);
 	}
-	
-	
+
+
 	/*
 	 * Deleting files
 	 */
-	public static void deleteFiles(IArchiveFileSet[] filesets, FileWrapper[] files ) {
-		deleteFiles(filesets, files, true);
+
+	public static IStatus[] deleteFiles(IArchiveFileSet fileset, final FileWrapper[] paths ) {
+		return deleteFiles(fileset, paths, true);
 	}
-	public static void deleteFiles(final IArchiveFileSet[] filesets, final FileWrapper[] files, boolean sync ) {
-		for( int i = 0; i < filesets.length; i++ ) {
-			deleteFiles(filesets[i], files, false);
-		}
-		if( sync ) 
-			TrueZipUtil.sync();
-	}
-	
-	public static void deleteFiles(IArchiveFileSet fileset, final FileWrapper[] paths ) {
-		deleteFiles(fileset, paths, true);
-	}
-	public static void deleteFiles(IArchiveFileSet fileset, final FileWrapper[] files, boolean sync ) {
+	public static IStatus[] deleteFiles(IArchiveFileSet fileset, final FileWrapper[] files, boolean sync ) {
 		final File[] destFiles = getFiles(files, fileset);
+		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		for( int i = 0; i < files.length; i++ ) {
-			TrueZipUtil.deleteAll(destFiles[i]);
+			if( !TrueZipUtil.deleteAll(destFiles[i]) ) {
+				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error deleting file " + destFiles[i].toString());
+				list.add(e);
+			}
 		}
-		
-		if( sync ) 	
+		if( sync )
 			TrueZipUtil.sync();
+		return list.toArray(new IStatus[list.size()]);
 	}
-	
-	
+
+
 	/**
 	 * Creates the file, folder, or archive represented by the node.
 	 * Does nothing for filesets
 	 * @param node
 	 */
-	public static void createFile(final IArchiveNode node) {
-		createFile(node, true);
+	public static boolean createFile(final IArchiveNode node) {
+		return createFile(node, true);
 	}
-	public static void createFile(final IArchiveNode node, boolean sync) {
+	public static boolean createFile(final IArchiveNode node, boolean sync) {
 		File f = getFile(node);
+		boolean b = true;
 		if( f != null ) {
-			f.mkdirs();
+			b = f.mkdirs();
 		}
-		if( sync ) 
+		if( sync )
 			TrueZipUtil.sync();
+		return b;
 	}
-	
 
-	
+
+
 	/**
 	 * Gets all properly-created de.sch destination files for a fileset
 	 * @param inputFiles
@@ -208,16 +227,16 @@ public class ModelTruezipBridge {
 		File fsFile = getFile(fs);
 		if( fsFile == null )
 			return new File[]{};
-		
+
 		File[] returnFiles = new File[inputFiles.length];
 		for( int i = 0; i < inputFiles.length; i++ ) {
 			if( fs.isFlattened() )
 				filesetRelative = inputFiles[i].getOutputName();
-			else 
+			else
 				filesetRelative = inputFiles[i].getFilesetRelative();
-			
+
 			File parentFile;
-			if(new Path(filesetRelative).segmentCount() > 1 ) { 
+			if(new Path(filesetRelative).segmentCount() > 1 ) {
 				String tmp = new Path(filesetRelative).removeLastSegments(1).toString();
 				parentFile = new File(fsFile, tmp, ArchiveDetector.NULL);
 				if( parentFile.getEnclArchive() != null )
@@ -225,30 +244,30 @@ public class ModelTruezipBridge {
 			} else {
 				parentFile = fsFile;
 			}
-			returnFiles[i] = new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.DEFAULT); 
+			returnFiles[i] = new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.DEFAULT);
 		}
 		return returnFiles;
 	}
-	
-	
+
+
 	/**
-	 * This should go through the tree and create a file that is 
-	 * correctly perceived at each step of the way. 
-	 * 
-	 * To just create a new File would let the Archive Detector have too 
-	 * much control, and *ALL* war's and jars, including exploded ones, 
-	 * would be treated as archives instead of folders. 
+	 * This should go through the tree and create a file that is
+	 * correctly perceived at each step of the way.
+	 *
+	 * To just create a new File would let the Archive Detector have too
+	 * much control, and *ALL* war's and jars, including exploded ones,
+	 * would be treated as archives instead of folders.
 	 * @param node
 	 * @return
 	 */
 	private static File getFile(IArchiveNode node) {
 		if( node == null ) return null;
-		
+
 		if( node.getNodeType() == IArchiveNode.TYPE_MODEL_ROOT ) return null;
-		
+
 		if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET)
 			return getFile(node.getParent());
-		
+
 		File parentFile = getFile(node.getParent());
 		if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE ) {
 			IArchive node2 = ((IArchive)node);
@@ -267,5 +286,5 @@ public class ModelTruezipBridge {
 		}
 		return null;
 	}
-	
+
 }

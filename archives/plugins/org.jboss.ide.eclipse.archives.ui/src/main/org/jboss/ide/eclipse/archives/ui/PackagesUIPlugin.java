@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.archives.ui;
 
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -13,10 +14,10 @@ public class PackagesUIPlugin extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.archives.ui";
 
 
-	
+
 	// The shared instance
 	private static PackagesUIPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -28,8 +29,11 @@ public class PackagesUIPlugin extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
+	private ArchivesUIBuildListener buildListener;
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		buildListener = new ArchivesUIBuildListener();
+		ArchivesModel.instance().addBuildListener(buildListener);
 	}
 
 	/*
@@ -37,6 +41,7 @@ public class PackagesUIPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		ArchivesModel.instance().removeBuildListener(buildListener);
 		plugin = null;
 		super.stop(context);
 	}
@@ -50,8 +55,8 @@ public class PackagesUIPlugin extends AbstractUIPlugin {
 		return plugin;
 	}
 
-	
-	
+
+
 	protected void initializeImageRegistry(ImageRegistry registry) {
 		ArchivesSharedImages.register(registry);
 	}

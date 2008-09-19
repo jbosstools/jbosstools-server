@@ -37,21 +37,21 @@ import de.schlichtherle.io.archive.zip.Zip32Driver;
  *
  */
 public class TrueZipUtil {
-	
+
 	public static de.schlichtherle.io.File getFile(IPath path) {
 		return getFile(path, ArchiveDetector.DEFAULT);
 	}
 	public static de.schlichtherle.io.File getFile(IPath path, ArchiveDetector detector) {
 		return new de.schlichtherle.io.File(path.toOSString(), detector);
 	}
-	
+
 	public static boolean pathExists(IPath path) {
 		return pathExists( getFile(path));
 	}
 	public static boolean pathExists( de.schlichtherle.io.File file) {
 		return file.exists();
 	}
-	
+
 
 	public static long getTimestamp(IPath path) {
 		return getTimestamp( getFile(path));
@@ -60,67 +60,71 @@ public class TrueZipUtil {
 	public static long getTimestamp(de.schlichtherle.io.File file) {
 		return file.lastModified();
 	}
-	
-	
-	public static void copyFile(String source, IPath dest) throws IOException {
-		copyFile(source, getFile(dest));
+
+
+	public static boolean copyFile(String source, IPath dest) throws IOException {
+		return copyFile(source, getFile(dest));
 	}
-	
-	public static void copyFile(String source, de.schlichtherle.io.File file) {
+
+	public static boolean copyFile(String source, de.schlichtherle.io.File file) {
 		file.getParentFile().mkdirs();
-		new de.schlichtherle.io.File(source).copyAllTo(file);
-	    updateParentTimestamps(file);
+		boolean b = new de.schlichtherle.io.File(source).copyAllTo(file);
+	    return b && updateParentTimestamps(file);
 	}
-	
-	public static void touchFile(IPath path) {
+
+	public static boolean touchFile(IPath path) {
 		de.schlichtherle.io.File f = getFile(path);
-		f.setLastModified(System.currentTimeMillis());
-	    updateParentTimestamps(path);
+		boolean b = f.setLastModified(System.currentTimeMillis());
+	    return b && updateParentTimestamps(path);
 	}
-	
-	
+
+
 	// Delete methods
-	public static void deleteAll(IPath path, String fileName) {
-		deleteAll(path.append(fileName));
+	public static boolean deleteAll(IPath path, String fileName) {
+		return deleteAll(path.append(fileName));
 	}
-	public static void deleteAll(IPath path) {
-		deleteAll(getFile(path));
+	public static boolean deleteAll(IPath path) {
+		return deleteAll(getFile(path));
 	}
-	public static void deleteAll(de.schlichtherle.io.File file) {
-		file.deleteAll();
+	public static boolean deleteAll(de.schlichtherle.io.File file) {
+		return file.deleteAll();
 	}
-	
-	public static void deleteEmptyChildren(java.io.File file) {
+
+	public static boolean deleteEmptyChildren(java.io.File file) {
+		boolean b = true;
 		if( file.isDirectory() ) {
 			java.io.File[] children = file.listFiles();
 			for( int i = 0; i < children.length; i++ )
-				deleteEmptyFolders(children[i]);
+				b &= deleteEmptyFolders(children[i]);
 		}
+		return b;
 	}
-	public static void deleteEmptyFolders(java.io.File file ) {
+	public static boolean deleteEmptyFolders(java.io.File file ) {
+		boolean b = true;
 		if( file.isDirectory() ) {
 			java.io.File[] children = file.listFiles();
 			for( int i = 0; i < children.length; i++ )
-				deleteEmptyFolders(children[i]);
+				b &= deleteEmptyFolders(children[i]);
 			if( file.listFiles().length == 0 )
 				file.delete();
 		}
+		return b;
 	}
-	
-	
-	public static void createFolder(IPath parent, String folderName) {
-		new de.schlichtherle.io.File(getFile(parent, ArchiveDetector.DEFAULT), folderName, ArchiveDetector.NULL).mkdirs();
-		updateParentTimestamps(parent.append(folderName));
+
+
+	public static boolean createFolder(IPath parent, String folderName) {
+		boolean b = new de.schlichtherle.io.File(getFile(parent, ArchiveDetector.DEFAULT), folderName, ArchiveDetector.NULL).mkdirs();
+		return b && updateParentTimestamps(parent.append(folderName));
 	}
-	public static void createFolder(IPath path) {
-		createFolder(path.removeLastSegments(1), path.lastSegment());
+	public static boolean createFolder(IPath path) {
+		return createFolder(path.removeLastSegments(1), path.lastSegment());
 	}
-	public static void createArchive(IPath parent, String folderName) {
-		new de.schlichtherle.io.File(getFile(parent, ArchiveDetector.DEFAULT), folderName, getJarArchiveDetector()).mkdirs();
-	    updateParentTimestamps(parent.append(folderName));
+	public static boolean createArchive(IPath parent, String folderName) {
+		boolean b = new de.schlichtherle.io.File(getFile(parent, ArchiveDetector.DEFAULT), folderName, getJarArchiveDetector()).mkdirs();
+	    return b && updateParentTimestamps(parent.append(folderName));
 	}
-	public static void createArchive(IPath path) {
-		createArchive(path.removeLastSegments(1), path.lastSegment());
+	public static boolean createArchive(IPath path) {
+		return createArchive(path.removeLastSegments(1), path.lastSegment());
 	}
 	public static void umount() {
 		try {
@@ -128,7 +132,7 @@ public class TrueZipUtil {
 		} catch( ArchiveException ae ) {
 		}
 	}
-	
+
 	/**
 	 * Sync's with file system after executing a runnable
 	 * @param run Runnable or null
@@ -140,24 +144,26 @@ public class TrueZipUtil {
 		} catch (Exception e ) {}
 		umount();
 	}
-	
+
 	public static void sync() {
 		syncExec(null);
 	}
-	
-	public static void updateParentTimestamps(IPath path) {
-		updateParentTimestamps(getFile(path));
+
+	public static boolean updateParentTimestamps(IPath path) {
+		return updateParentTimestamps(getFile(path));
 	}
-	public static void updateParentTimestamps(de.schlichtherle.io.File file) {
+	public static boolean updateParentTimestamps(de.schlichtherle.io.File file) {
 		long time = System.currentTimeMillis();
 		de.schlichtherle.io.File parent = file.getEnclArchive();
+		boolean b = true;
 		while( parent != null ) {
-			parent.setLastModified(time);
+			b &= parent.setLastModified(time);
 			parent = parent.getEnclArchive();
 		}
+		return b;
 	}
-	
-	
+
+
 	private static ArchiveDetector JAR_ARCHIVE_DETECTOR;
 	public static ArchiveDetector getJarArchiveDetector() {
 		if( JAR_ARCHIVE_DETECTOR == null ) {
@@ -165,11 +171,11 @@ public class TrueZipUtil {
 		}
 		return JAR_ARCHIVE_DETECTOR;
 	}
-	
+
 	public static class JarArchiveDetector extends AbstractArchiveDetector {
 		public ArchiveDriver getArchiveDriver(String arg0) {
 			return new Zip32Driver();
 		}
-		
+
 	}
 }

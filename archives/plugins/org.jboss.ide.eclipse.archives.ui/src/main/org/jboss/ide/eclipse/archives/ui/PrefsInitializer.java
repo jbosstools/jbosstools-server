@@ -21,21 +21,23 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	public static final String PREF_SHOW_FULL_FILESET_ROOT_DIR = "showFullFilesetRootDir";
 	public static final String PREF_SHOW_PROJECT_ROOT = "showProjectRoot";
 	public static final String PREF_SHOW_ALL_PROJECTS = "showAllProjects";
+	public static final String PREF_SHOW_BUILD_ERROR_DIALOG = "showBuildErrorDialog";
 	public static final ArrayList<IArchivesPreferenceListener> listeners = new ArrayList<IArchivesPreferenceListener>();
-	
+
 	public static interface IArchivesPreferenceListener {
 		public void preferenceChanged(String key, boolean val);
 	}
-	
+
 	public void initializeDefaultPreferences() {
 		IEclipsePreferences prefs = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID);
 		prefs.putBoolean(PREF_SHOW_FULL_FILESET_ROOT_DIR, true);
 		prefs.putBoolean(PREF_SHOW_PACKAGE_OUTPUT_PATH, true);
 		prefs.putBoolean(PREF_SHOW_PROJECT_ROOT, true);
 		prefs.putBoolean(PREF_SHOW_ALL_PROJECTS, false);
+		prefs.putBoolean(PREF_SHOW_BUILD_ERROR_DIALOG, true);
 		try {
 			prefs.flush();
-		} catch (org.osgi.service.prefs.BackingStoreException e) { 
+		} catch (org.osgi.service.prefs.BackingStoreException e) {
 			e.printStackTrace();
 		} // swallow
 	}
@@ -43,7 +45,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	public static void setBoolean(String key, boolean val) {
 		setBoolean(key, val, null);
 	}
-	
+
 	public static void setBoolean(String key, boolean val, IAdaptable adaptable) {
 		QualifiedName name = new QualifiedName(PackagesUIPlugin.PLUGIN_ID, key);
 		if( adaptable != null ) {
@@ -62,23 +64,23 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		} catch (org.osgi.service.prefs.BackingStoreException e) { } // swallow
 		fireChanged(key, val);
 	}
-	
+
 	protected static void fireChanged(String key, boolean val) {
 		Iterator<IArchivesPreferenceListener> i = listeners.iterator();
 		while(i.hasNext()) {
 			i.next().preferenceChanged(key, val);
 		}
 	}
-	
+
 	public static void addListener(IArchivesPreferenceListener listener) {
 		if( !listeners.contains(listener))
 			listeners.add(listener);
 	}
-	
+
 	public static void removeListener(IArchivesPreferenceListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	/**
 	 * Get the global pref value for this key
 	 * @param key
@@ -87,13 +89,13 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	public static boolean getBoolean(String key) {
 		return getBoolean(key, null, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param key  the preference to be gotten
 	 * @param adaptable  the project / resource where the pref might be stored
-	 * @param effective  whether or not to get the raw pref value or the effective value 
-	 * 					(based on whether project specific prefs are turned on) 
+	 * @param effective  whether or not to get the raw pref value or the effective value
+	 * 					(based on whether project specific prefs are turned on)
 	 * @return
 	 */
 	public static boolean getBoolean(String key, IAdaptable adaptable, boolean effective) {
@@ -110,6 +112,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 				} catch(CoreException ce) {}
 			}
 		}
-		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, false);
+		boolean defaultVal = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, false);
+		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, defaultVal);
 	}
 }

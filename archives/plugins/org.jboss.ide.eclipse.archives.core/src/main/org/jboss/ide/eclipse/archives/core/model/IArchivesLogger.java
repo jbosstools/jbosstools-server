@@ -21,27 +21,13 @@
  */
 package org.jboss.ide.eclipse.archives.core.model;
 
+import org.eclipse.core.runtime.IStatus;
+
 /**
  * @author rob.stryker <rob.stryker@redhat.com>
  *
  */
 public interface IArchivesLogger {
-    /** Message priority of &quot;error&quot;. */
-    public static final int MSG_ERR = 0;
-    /** Message priority of &quot;warning&quot;. */
-    public static final int MSG_WARN = 1;
-    /** Message priority of &quot;information&quot;. */
-    public static final int MSG_INFO = 2;
-    /** Message priority of &quot;verbose&quot;. */
-    public static final int MSG_VERBOSE = 3;
-    /** Message priority of &quot;debug&quot;. */
-    public static final int MSG_DEBUG = 4;
-
-    /**
-     * Log a message
-     * @param severety
-     * @param message
-     * @param error
-     */
-	public void log(int severety, String message,Throwable throwable);
+	public void log(IStatus status);
+	public void log(int severity, String message,Throwable throwable);
 }

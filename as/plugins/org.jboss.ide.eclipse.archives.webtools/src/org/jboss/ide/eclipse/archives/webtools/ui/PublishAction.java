@@ -33,7 +33,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.actions.INodeActionDelegate;
-import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesBuildListener;
+import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
 
 public class PublishAction implements INodeActionDelegate {
 
@@ -45,7 +45,7 @@ public class PublishAction implements INodeActionDelegate {
 		if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE 
 				&& ((IArchive)node).isTopLevel()) {
 			final IArchive pkg = (IArchive)node;
-			String servers = node.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
+			String servers = node.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
 			if( servers == null || "".equals(servers) || anyServerDoesntExist(servers)){
 				servers = showSelectServersDialog(pkg);
 			}
@@ -53,7 +53,7 @@ public class PublishAction implements INodeActionDelegate {
 			if( servers != null ) {
 				Job j = new Job("Build Archive") {
 					protected IStatus run(IProgressMonitor monitor) {
-						ArchivesBuildListener.publish(pkg, servers2, IServer.PUBLISH_FULL);
+						ArchivesModuleModelListener.publish(pkg, servers2, IServer.PUBLISH_FULL);
 						return Status.OK_STATUS;
 					} };
 				j.schedule();

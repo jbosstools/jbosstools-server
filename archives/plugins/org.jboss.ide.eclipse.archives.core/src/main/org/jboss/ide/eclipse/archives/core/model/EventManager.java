@@ -32,16 +32,16 @@ import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.Directo
  * @author <a href="rob.stryker@redhat.com">Rob Stryker</a>
  */
 public class EventManager {
-	
+
 	public static void cleanProjectBuild(IPath project) {
 			IArchiveBuildListener[] listeners = getBuildListeners();
 			for( int i = 0; i < listeners.length; i++ ) {
-				try { 
+				try {
 					listeners[i].cleanProject(project);
 				} catch(Exception e ) {logError(e);}
 			}
 	}
-	
+
 	public static void cleanArchiveBuild(IArchive archive) {
 		IArchiveBuildListener[] listeners = getBuildListeners(archive);
 		for( int i = 0; i < listeners.length; i++ ) {
@@ -50,7 +50,7 @@ public class EventManager {
 			} catch(Exception e ) {logError(e);}
 		}
 	}
-	
+
 	public static void startedBuild(IPath project) {
 		IArchiveBuildListener[] listeners = getBuildListeners();
 		for( int i = 0; i < listeners.length; i++ ) {
@@ -87,8 +87,8 @@ public class EventManager {
 		}
 	}
 
-	
-	
+
+
 	public static void startedCollectingFileSet(IArchiveFileSet fileset) {
 		IArchiveBuildListener[] listeners = getBuildListeners(fileset);
 		for( int i = 0; i < listeners.length; i++ ) {
@@ -112,14 +112,14 @@ public class EventManager {
 			fileUpdated(topLevelArchive, fileset, new Path(filePath[i].getAbsolutePath()));
 		}
 	}
-	
+
 	// one file updated matching multiple filesets
 	public static void fileUpdated(IPath path, IArchiveFileSet[] matchingFilesets) {
 		for( int i = 0; i < matchingFilesets.length; i++ ) {
 			fileUpdated(matchingFilesets[i].getRootArchive(), matchingFilesets[i], path);
 		}
 	}
-	
+
 	public static void fileUpdated(IArchive topLevelArchive, IArchiveFileSet fileset, IPath filePath) {
 		IArchiveBuildListener[] listeners = getBuildListeners(topLevelArchive);
 		for( int i = 0; i < listeners.length; i++ ) {
@@ -144,7 +144,7 @@ public class EventManager {
 			fileRemoved(matchingFilesets[i].getRootArchive(), matchingFilesets[i], path);
 		}
 	}
-	
+
 	public static void filesRemoved(IPath[] paths, IArchiveFileSet fileset) {
 		for( int i = 0; i < paths.length; i++ ) {
 			fileRemoved(fileset.getRootArchive(), fileset, paths[i]);
@@ -160,13 +160,23 @@ public class EventManager {
 		}
 	}
 
+	public static void error(IArchiveNode node, IStatus[] errors) {
+		if( errors != null && errors.length > 0 ) {
+			IArchiveBuildListener[] listeners = getBuildListeners(node);
+			for( int i = 0; i < listeners.length; i++ ) {
+				try {
+					listeners[i].error(node, errors);
+				} catch(Exception e ) {logError(e);}
+			}
+		}
+	}
 
-	
+
 	/**
 	 * Fire events dealing with model changes
 	 * @param delta
 	 */
-	
+
 	public static void fireDelta(IArchiveNodeDelta delta) {
 		IArchiveNode node = delta.getPostNode() == null ? delta.getPreNode() : delta.getPostNode();
 		IArchiveModelListener[] listeners = getModelListeners(node);
@@ -176,7 +186,7 @@ public class EventManager {
 			} catch(Exception e ) {logError(e);}		}
 	}
 
-	
+
 	private static IArchiveModelListener[] getModelListeners(IArchiveNode node) {
 		IArchiveModelRootNode model = node.getModelRootNode();
 		if( model != null && model.getModel() != null ) {
@@ -184,12 +194,14 @@ public class EventManager {
 		}
 		return new IArchiveModelListener[]{};
 	}
-	
+
 	// get workspace default ones
 	private static IArchiveBuildListener[] getBuildListeners() {
 		return ArchivesModel.instance().getBuildListeners();
 	}
 	private static IArchiveBuildListener[] getBuildListeners(IArchiveNode node) {
+		if( node == null )
+			return getBuildListeners();
 		IArchiveModelRootNode model = node.getModelRootNode();
 		if( model != null && model.getModel() != null ) {
 			return model.getModel().getBuildListeners();
@@ -201,9 +213,9 @@ public class EventManager {
 		e.printStackTrace();
 		try {
 			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_WARN, "Archives Listener error in " + trace[1].getMethodName(), e);
+			ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, "Archives Listener error in " + trace[1].getMethodName(), e);
 		} catch( Exception f ) {
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_WARN, "Archives Listener error", e);
+			ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, "Archives Listener error", e);
 		}
 	}
 }

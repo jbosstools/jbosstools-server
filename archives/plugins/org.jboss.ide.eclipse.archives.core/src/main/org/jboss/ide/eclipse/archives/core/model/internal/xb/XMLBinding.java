@@ -38,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
@@ -55,20 +56,20 @@ import org.xml.sax.SAXException;
  * @author Rob Stryker
  */
 public class XMLBinding {
-	
+
 	public static final int NUM_UNMARSHAL_MONITOR_STEPS = 3;
 	public static final int NUM_MARSHALL_MONITOR_STEPS = 2;
 
-	private static URL schema = XMLBinding.class.getClassLoader().getResource("packages.xsd"); 
+	private static URL schema = XMLBinding.class.getClassLoader().getResource("packages.xsd");
 	private static URL log4jxml = XMLBinding.class.getClassLoader().getResource("log4j.xml");
 	private static SchemaBinding binding;
-	
+
 	private static boolean initialized = false;
-	
+
 	static {
 		System.setProperty("log4j.configuration", log4jxml.toString());
 	}
-	
+
 	public static void init ()
 	{
 		try {
@@ -77,10 +78,10 @@ public class XMLBinding {
 			stream.close();
 			initialized = true;
 		} catch (IOException e) {
-			ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, e.getMessage(), e);
+			ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, e.getMessage(), e);
 		}
 	}
-	
+
 	private static void binderSandbox (XbRunnable runnable) throws XbException {
 		ClassLoader original = Thread.currentThread().getContextClassLoader();
 		ClassLoader myCL = XMLBinding.class.getClassLoader();
@@ -95,11 +96,11 @@ public class XMLBinding {
 		if( e != null )
 			throw e;
 	}
-	
+
 	public static XbPackages unmarshal( String input, IProgressMonitor monitor ) throws XbException {
 		return unmarshal(new ByteArrayInputStream(input.getBytes()), monitor);
 	}
-	
+
 	public static XbPackages unmarshal(File file, IProgressMonitor monitor) throws XbException {
 		try {
 			FileInputStream fis = new FileInputStream(file);
@@ -110,15 +111,15 @@ public class XMLBinding {
 			throw xbe;
 		}
 	}
-	
-	protected static XbPackages unmarshal (final InputStream in, 
+
+	protected static XbPackages unmarshal (final InputStream in,
 				final IProgressMonitor monitor) throws XbException {
 		if( !initialized) init();
 		final XbPackages[] element = new XbPackages[1];
 		element[0] = null;
 		XbRunnable runnable = new XbRunnable() {
 			public void run () throws XbException {
-				try {	
+				try {
 					ArchivesUnmarshallerImpl unmarshaller = new ArchivesUnmarshallerImpl();
 					monitor.worked(1);
 					binding.setStrictSchema(true);
@@ -127,20 +128,20 @@ public class XMLBinding {
 					unmarshaller.getParser().setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schema.toExternalForm());
 					Object xmlObject = unmarshaller.unmarshal(in, binding);
 					monitor.worked(1);
-					
+
 					element[0] = (XbPackages) xmlObject;
 					monitor.worked(1);
-					
+
 				} catch (JBossXBException e) {
 					throw new XbException(e);
 				}
 			}
 		};
-		
+
 		binderSandbox(runnable);
 		return element[0];
 	}
-	
+
 	public static String marshall(IArchive topLevelArchive, IProgressMonitor monitor ) throws XbException {
 		if( topLevelArchive.isTopLevel() && topLevelArchive instanceof ArchiveImpl ) {
 			XbPackages packs = (XbPackages)((ArchiveImpl)topLevelArchive).getNodeDelegate().getParent();
@@ -150,7 +151,7 @@ public class XMLBinding {
 		}
 		return null;
 	}
-	
+
 	public static void marshallToFile(XbPackages element, IPath filePath, IProgressMonitor monitor) throws XbException {
 		OutputStreamWriter writer = null;
 		try {
@@ -167,8 +168,8 @@ public class XMLBinding {
 			} catch( IOException ioe) {}
 		}
 	}
-	
-	public static void marshall (final XbPackages element, final Writer writer, 
+
+	public static void marshall (final XbPackages element, final Writer writer,
 			final IProgressMonitor monitor) throws XbException {
 		if( !initialized) init();
 		binderSandbox(new XbRunnable() {
@@ -178,7 +179,7 @@ public class XMLBinding {
 				try {
 					stream = schema.openStream();
 					monitor.worked(1);
-					
+
 					StrictXercesXSMarshaller marshaller = new StrictXercesXSMarshaller();
 					marshaller.marshal(new InputStreamReader(stream), new XbPackagesObjectProvider(), element, writer);
 					monitor.worked(1);
@@ -203,7 +204,7 @@ public class XMLBinding {
 			}
 		});
 	}
-	
+
 	public static String serializePackages(XbPackages packages, IProgressMonitor monitor) throws XbException {
 		try {
 			StringWriter sw = new StringWriter();
@@ -213,12 +214,12 @@ public class XMLBinding {
 			throw new XbException(e);
 		}
 	}
-	
-	
+
+
 	public static interface XbRunnable {
 		public void run() throws XbException;
 	}
-	
+
 	public static class XbException extends Exception {
 		private Exception parent;
 		public XbException(Exception e) {

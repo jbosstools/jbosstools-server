@@ -27,7 +27,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesBuildListener;
+import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -41,8 +41,8 @@ public class ArchivePublishWizard extends Wizard {
 	}
 	public boolean performFinish() {
 		boolean alwaysPublish = new Boolean(page.getAlwaysPublish()).booleanValue();
-		pack.setProperty(ArchivesBuildListener.DEPLOY_SERVERS, alwaysPublish ? getServers() : null);
-		pack.setProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
+		pack.setProperty(ArchivesModuleModelListener.DEPLOY_SERVERS, alwaysPublish ? getServers() : null);
+		pack.setProperty(ArchivesModuleModelListener.DEPLOY_AFTER_BUILD, getAutoDeploy());
 		final IPath p = pack.getProjectPath();
 		new SaveArchivesJob(p).schedule();
 		return true;
@@ -91,9 +91,9 @@ public class ArchivePublishWizard extends Wizard {
 		}
 
 		protected void setPackageDefaults() {
-			String servers = pack.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
+			String servers = pack.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
 			viewerResult = servers;
-			String deployAfterBuild = pack.getProperty(ArchivesBuildListener.DEPLOY_AFTER_BUILD);
+			String deployAfterBuild = pack.getProperty(ArchivesModuleModelListener.DEPLOY_AFTER_BUILD);
 			if( servers != null ) {
 				alwaysPublish.setSelection(true);
 				alwaysPublishSelected();

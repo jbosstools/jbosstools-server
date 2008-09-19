@@ -52,7 +52,6 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.jboss.ide.eclipse.ui.MainPreferencePage"
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.archivesPreferencePage"
             name="Packaging Archives"/>

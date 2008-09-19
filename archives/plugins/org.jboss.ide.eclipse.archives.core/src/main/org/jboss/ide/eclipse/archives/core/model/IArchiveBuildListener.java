@@ -25,20 +25,20 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * This interface is inteded to be implemented by classes who are 
+ * This interface is inteded to be implemented by classes who are
  * interested in receiving callbacks for various IArchive build events
- * 
+ *
  * @author Marshall
  */
 public interface IArchiveBuildListener {
 
-	
+
 	/**
 	 * A project has started being built by the Archives builder
 	 * @param project the project being built
 	 */
 	public void startedBuild (IPath project);
-	
+
 	/**
 	 * A project is finished being built by the Archives builder
 	 * @param project the project being built
@@ -50,21 +50,21 @@ public interface IArchiveBuildListener {
 	 * @param project
 	 */
 	public void cleanProject(IPath project);
-	
+
 	/**
 	 * An Archive has started being built by the Archives builder
 	 * This can be called from a full build, or from the incremental build
-	 * if and only if one of the affected files matches a fileset in this archive. 
-	 * 
+	 * if and only if one of the affected files matches a fileset in this archive.
+	 *
 	 * @param pkg the Archive being built
 	 */
 	public void startedBuildingArchive (IArchive pkg);
-	
+
 	/**
 	 * An Archive is finished being built by the Archives builder
 	 * This can be called from a full build, or from the incremental build
-	 * if and only if one of the affected files matches a fileset in this archive. 
-	 * 
+	 * if and only if one of the affected files matches a fileset in this archive.
+	 *
 	 * @param pkg the Archive being built
 	 */
 	public void finishedBuildingArchive (IArchive pkg);
@@ -75,7 +75,7 @@ public interface IArchiveBuildListener {
 	 */
 	public void cleanArchive(IArchive pkg);
 
-	
+
 	/**
 	 * A fileset has started being collected for copying into a Archive
 	 * This is *only* used during  a FULL BUILD or after a MODEL CHANGE
@@ -96,7 +96,7 @@ public interface IArchiveBuildListener {
 	 * @param status The status/exception that occurred
 	 */
 	public void buildFailed (IArchive pkg, IStatus status);
-		
+
 	/**
 	 * A file has been updated, with the given IArchive / IArchiveFileSet context
 	 * @param topLevelArchive The top level Archive that was updated
@@ -104,7 +104,7 @@ public interface IArchiveBuildListener {
 	 * @param filePath The path to the file that was copied (filesystem/workspace path)
 	 */
 	public void fileUpdated (IArchive topLevelArchive, IArchiveFileSet fileset, IPath filePath);
-	
+
 	/**
 	 * A file has been removed, with the given IArchive / IArchiveFileSet context
 	 * @param topLevelArchive The top level Archive that was updated
@@ -112,5 +112,10 @@ public interface IArchiveBuildListener {
 	 * @param filePath The path to the file that was removed (filesystem/workspace path)
 	 */
 	public void fileRemoved (IArchive topLevelArchive, IArchiveFileSet fileset, IPath filePath);
-	
+
+	/**
+	 * An error was happened upon.
+	 */
+	public void error(IArchiveNode node, IStatus[] multi);
+
 }

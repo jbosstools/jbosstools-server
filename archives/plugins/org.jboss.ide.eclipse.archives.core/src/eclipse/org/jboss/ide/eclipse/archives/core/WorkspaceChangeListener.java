@@ -61,14 +61,14 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 			}
 		};
 		final Set<IProject> projects = new TreeSet<IProject>(c);
-		
+
 		IResourceDelta delta = event.getDelta();
 		try {
 			if(delta!=null) {
 				delta.accept(new IResourceDeltaVisitor() {
 					public boolean visit(IResourceDelta delta) throws CoreException {
 						// TODO modify to make sure this file is a descriptor in use / registered
-						if( delta.getResource() != null && delta.getResource().getLocation() != null && 
+						if( delta.getResource() != null && delta.getResource().getLocation() != null &&
 								delta.getResource().getLocation().lastSegment().equals(IArchiveModel.DEFAULT_PACKAGES_FILE)) {
 							projects.add(delta.getResource().getProject());
 						}
@@ -97,7 +97,7 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 							}
 						}.schedule();
 					} catch( ArchivesModelException ame ) {
-						ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, "Could not register project " + p.getName(), ame);
+						ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, "Could not register project " + p.getName(), ame);
 					}
 				}
 			} catch( CoreException ce ) {

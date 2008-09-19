@@ -46,9 +46,9 @@ import org.jboss.tools.test.util.ResourcesUtils;
 import org.osgi.framework.Bundle;
 
 /**
- * This class will test the individual portions 
+ * This class will test the individual portions
  * of the build process.
- * 
+ *
  * @author rob.stryker <rob.stryker@redhat.com>
  */
 public class ModelTruezipBridgeTest extends ModelTest {
@@ -106,7 +106,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		ModelTruezipBridge.createFile(explodedInExploded);
 		File eIeF = PathUtils.getGlobalLocation(exploded).append("exploded.war").append("explodedInExploded.jar").toFile();
 		assertTrue(eIeF.exists());
-		
+
 		// zip inside exploded
 		IArchive ZipInExploded = createArchive("zipInExploded.jar", "");
 		ZipInExploded.setExploded(false);
@@ -127,7 +127,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		} catch( AssertionFailedError re ) {
 			System.out.println("gah");
 		}
-		
+
 		// zip inside zip
 		IArchive zipInZip = createArchive("zipInZip.jar", "");
 		zipInZip.setExploded(false);
@@ -135,7 +135,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		ModelTruezipBridge.createFile(zipInZip);
 		assertEquals(2, countEntries(zipF));
 	}
-	
+
 	public void testCreateFileInWorkspace() {
 		IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
 		zipped.setInWorkspace(true);
@@ -144,15 +144,15 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		File zippedF = proj.getLocation().append("outputs").append("zipped.war").toFile();
 		assertTrue(zippedF.exists());
 		assertTrue(!zippedF.isDirectory());
-		
+
 		// inner child; zip inside zip
 		IArchive zipInZip = createArchive("zipInZip.jar", "");
 		zipInZip.setExploded(false);
 		zipped.addChild(zipInZip);
 		ModelTruezipBridge.createFile(zipInZip);
 		assertEquals(1, countEntries(zippedF));
-	}	
-	
+	}
+
 	public void testNoSync() {
 		// zipped
 		IArchive zipped = createArchive("zipped.war", outputs.toString());
@@ -162,14 +162,14 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		File zipF = outputs.append("zipped.war").toFile();
 		assertTrue(zipF.exists());
 		assertFalse(zipF.isDirectory());
-		
+
 		// zip inside zip
 		IArchive zipInZip = createArchive("zipInZip.jar", "");
 		zipInZip.setExploded(false);
 		zipped.addChild(zipInZip);
 		ModelTruezipBridge.createFile(zipInZip);
 		assertEquals(1, countEntries(zipF));
-		
+
 		// zip inside zip2
 		IArchive zipInZip2 = createArchive("zipInZip2.jar", "");
 		zipInZip.setExploded(false);
@@ -179,8 +179,8 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		TrueZipUtil.umount();
 		assertEquals(2, countEntries(zipF));
 	}
-	
-	
+
+
 	public void testDeleteArchive() {
 		IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
 		zipped.setInWorkspace(true);
@@ -189,7 +189,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		File zippedF = proj.getLocation().append("outputs").append("zipped.war").toFile();
 		assertTrue(zippedF.exists());
 		assertTrue(!zippedF.isDirectory());
-		
+
 		// inner child; zip inside zip
 		IArchive zipInZip = createArchive("zipInZip.jar", "");
 		zipInZip.setExploded(false);
@@ -206,12 +206,12 @@ public class ModelTruezipBridgeTest extends ModelTest {
 
 		ModelTruezipBridge.deleteArchive(zipInZip2);
 		assertEquals(1, countEntries(zippedF));
-		
+
 		ModelTruezipBridge.deleteArchive(zipped);
 		assertFalse(zippedF.exists());
 	}
-	
-	
+
+
 	/*
 	 * Fileset-related
 	 */
@@ -227,10 +227,10 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		IArchiveFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
 		fs.setInWorkspace(true);
 		zipped.addChild(fs);
-		ModelTruezipBridge.fullFilesetBuild(fs);
+		ModelTruezipBridge.fullFilesetBuild(fs, true);
 		assertEquals(19, countEntries(zippedF));
 	}
-	
+
 	public void testFlattenedFileset() {
 		IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
 		zipped.setInWorkspace(true);
@@ -244,17 +244,17 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		fs.setInWorkspace(true);
 		fs.setFlattened(true);
 		zipped.addChild(fs);
-		ModelTruezipBridge.fullFilesetBuild(fs);
-		
+		ModelTruezipBridge.fullFilesetBuild(fs, true);
+
 		// should be two less files and 3 less folders created
 		assertEquals(14, countEntries(zippedF));
 	}
-	
-	
+
+
 	/*
 	 * Utility
 	 */
-	
+
 	protected int countEntries(File zipF) {
 
 		ZipFile zf = null;

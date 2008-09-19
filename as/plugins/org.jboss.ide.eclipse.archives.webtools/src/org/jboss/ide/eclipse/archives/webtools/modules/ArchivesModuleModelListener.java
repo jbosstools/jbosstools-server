@@ -35,10 +35,9 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.archives.core.model.AbstractBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveBuildListener;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
@@ -51,27 +50,22 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
  *
  * @author rob.stryker@jboss.com
  */
-public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveModelListener {
+public class ArchivesModuleModelListener implements IArchiveModelListener {
 
-	public static ArchivesBuildListener instance;
+	public static ArchivesModuleModelListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";
 	public static final String DEPLOY_AFTER_BUILD = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployAfterBuild";
-	
-	public static ArchivesBuildListener getInstance() {
+
+	public static ArchivesModuleModelListener getInstance() {
 		if( instance == null ) {
-			instance = new ArchivesBuildListener();
+			instance = new ArchivesModuleModelListener();
 		}
 		return instance;
 	}
-	
-	public ArchivesBuildListener() {
-		ArchivesModel.instance().addBuildListener(this);
-		ArchivesModel.instance().addModelListener(this); // ? , ArchivesModel.LIST_FRONT);
-	}
-	
-	public void cleanArchive(IArchive pkg) {
-	}
 
+	public ArchivesModuleModelListener() {
+		ArchivesModel.instance().addModelListener(this);
+	}
 
 	public void finishedBuildingArchive(IArchive pkg) {
 		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
@@ -79,27 +73,22 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 		}
 	}
 
-	public void fileRemoved(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-	}
-	public void fileUpdated(IArchive topLevelPackage, IArchiveFileSet fileset, IPath filePath) {
-	}
-	
 	// If we're supposed to auto-deploy, get on it
 	protected static void publish(IArchive pkg) {
-		String servers = pkg.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
+		String servers = pkg.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
 		publish(pkg, servers, IServer.PUBLISH_INCREMENTAL);
-	} 
+	}
 	public static void publish(IArchive pkg, String servers, int publishType) {
 		IModule[] module = getModule(pkg);
-		if( module[0] == null ) return; 
-		DeployableServerBehavior[] serverBehaviors = ArchivesBuildListener.getServers(servers);
+		if( module[0] == null ) return;
+		DeployableServerBehavior[] serverBehaviors = ArchivesModuleModelListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
 				publish(serverBehaviors[i].getServer(), publishType, module );
 			}
 		}
 	}
-	
+
 	protected static IStatus publish(IServer server, int publishType, IModule[] module ) {
 		try {
 			IServerWorkingCopy copy = server.createWorkingCopy();
@@ -107,7 +96,7 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 			IServer saved = copy.save(false, new NullProgressMonitor());
 			saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		} catch( CoreException ce ) {
-			return new Status(Status.ERROR, IntegrationPlugin.PLUGIN_ID, 
+			return new Status(Status.ERROR, IntegrationPlugin.PLUGIN_ID,
 					"Cannot deploy file " + module[0].getName(), ce);
 		}
 		return Status.OK_STATUS;
@@ -148,11 +137,11 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 
 	/*
 	 * If a node is changing from exploded to imploded, or vice versa
-	 * make sure to delete the pre-existing file or folder on the server. 
+	 * make sure to delete the pre-existing file or folder on the server.
 	 */
 	public void packageBuildTypeChanged(IArchive topLevelPackage, boolean isExploded) {
-		String servers = topLevelPackage.getProperty(ArchivesBuildListener.DEPLOY_SERVERS);
-		DeployableServerBehavior[] serverBehaviors = ArchivesBuildListener.getServers(servers);
+		String servers = topLevelPackage.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
+		DeployableServerBehavior[] serverBehaviors = ArchivesModuleModelListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			IPath sourcePath, destPath;
 			IDeployableServer depServer;
@@ -166,50 +155,13 @@ public class ArchivesBuildListener implements IArchiveBuildListener, IArchiveMod
 		}
 	}
 
-	public void buildFailed(IArchive pkg, IStatus status) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void finishedBuild(IPath project) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void finishedCollectingFileSet(IArchiveFileSet fileset) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void startedBuild(IPath project) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void startedBuildingArchive(IArchive pkg) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void startedCollectingFileSet(IArchiveFileSet fileset) {
-		// TODO Auto-generated method stub
-	}
-	public void startedBuildingPackage(IArchive pkg) {
-		// TODO Auto-generated method stub
-	}
-
-	public void cleanProject(IPath project) {
-	}
-
 	public void modelChanged(IArchiveNodeDelta delta) {
 		IPath p ;
 		if( delta.getPreNode() == null )
 			p = delta.getPostNode().getProjectPath();
 		else
 			p = delta.getPreNode().getProjectPath();
-		
+
 		ArchivesModelModuleContributor.getInstance().refreshProject(p);
 	}
-
-
 }

@@ -1,7 +1,7 @@
 package org.jboss.ide.eclipse.archives.webtools;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesBuildListener;
+import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -28,7 +28,7 @@ public class IntegrationPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		ArchivesBuildListener.getInstance();
+		ArchivesModuleModelListener.getInstance();
 	}
 
 	/*

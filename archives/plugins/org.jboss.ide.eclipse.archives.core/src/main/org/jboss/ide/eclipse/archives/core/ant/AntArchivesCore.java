@@ -4,8 +4,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
-import org.jboss.ide.eclipse.archives.core.build.ModelChangeListener;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IActionType;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -25,21 +25,21 @@ public class AntArchivesCore extends ArchivesCore {
 	private Task currentTask;
 	public AntArchivesCore () {
 		super(STANDALONE);
-		ArchivesModel.instance().addModelListener(new ModelChangeListener());
+		ArchivesModel.instance().addBuildListener(new AntBuildListener());
 	}
-	
+
 	public void setProject(Project p) {
 		currentProject = p;
 	}
-	
+
 	public Project getProject() {
 		return currentProject;
 	}
-	
+
 	public void setTask(Task t) {
 		currentTask= t;
 	}
-	
+
 	public Task getTask() {
 		return currentTask;
 	}
@@ -62,7 +62,7 @@ public class AntArchivesCore extends ArchivesCore {
 	protected IArchivesLogger createLogger() {
 		return new AntLogger();
 	}
-	
+
 	protected class AntExtensionManager implements IExtensionManager {
 		public IActionType getActionType(String id) {
 			return null;
@@ -84,7 +84,7 @@ public class AntArchivesCore extends ArchivesCore {
 				}
 				public String getLabel() {
 					return id2;
-				} 
+				}
 			};
 		}
 
@@ -96,7 +96,7 @@ public class AntArchivesCore extends ArchivesCore {
 			return new IArchiveType[]{};
 		}
 	}
-	
+
 	protected class AntPreferences implements IPreferenceManager {
 
 		public boolean areProjectSpecificPrefsEnabled(IPath path) {
@@ -116,10 +116,22 @@ public class AntArchivesCore extends ArchivesCore {
 		}
 	}
 	protected class AntLogger implements IArchivesLogger {
+		public void log(IStatus s) {
+			log(s.getSeverity(), s.getMessage(), s.getException());
+		}
 		public void log(int severity, String message, Throwable throwable) {
-			currentProject.log(message, throwable, severity);
-			if( throwable != null && severity == IArchivesLogger.MSG_ERR)
+			currentProject.log(message, throwable, convert(severity));
+			if( throwable != null && severity == IStatus.ERROR)
 				throwable.printStackTrace();
+		}
+		protected int convert(int severity) {
+			switch(severity) {
+			case IStatus.ERROR: return Project.MSG_ERR;
+			case IStatus.WARNING: return Project.MSG_WARN;
+			case IStatus.INFO: return Project.MSG_INFO;
+			case IStatus.OK: return Project.MSG_VERBOSE;
+			}
+			return Project.MSG_DEBUG;
 		}
 	}
 }

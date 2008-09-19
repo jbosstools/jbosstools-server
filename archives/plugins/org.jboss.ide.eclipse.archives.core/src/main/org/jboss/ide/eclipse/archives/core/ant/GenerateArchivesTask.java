@@ -27,6 +27,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
@@ -41,13 +42,13 @@ import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 public class GenerateArchivesTask extends Task {
 
 	private String projectPath;
-	
+
 	public void init() throws BuildException {
 		// Force standalone mode
 		AntArchivesCore standalone = new AntArchivesCore();
 		ArchivesCore.setInstance(standalone);
 	}
-	
+
 	protected AntArchivesCore getCore() {
 		return (AntArchivesCore)ArchivesCore.getInstance();
 	}
@@ -58,14 +59,14 @@ public class GenerateArchivesTask extends Task {
 		try {
 			IPath projectPath = new Path(this.projectPath);
 			IProgressMonitor monitor = new NullProgressMonitor();
-			
+
 			for (Iterator iter = getProject().getProperties().keySet().iterator(); iter.hasNext(); ) {
 				String property = (String) iter.next();
 				if (property.endsWith(".dir")) {
 					System.setProperty(property, getProject().getProperty(property));
 				}
 			}
-			
+
 			// needed so the correct XML binding / TrueZIP jars are loaded
 			ClassLoader myCL = getClass().getClassLoader();
 			Thread.currentThread().setContextClassLoader(myCL);
@@ -73,10 +74,10 @@ public class GenerateArchivesTask extends Task {
 				ArchivesModel.instance().registerProject(projectPath, monitor);
 				new ArchiveBuildDelegate().fullProjectBuild(projectPath);
 			} else {
-				getCore().getLogger().log(IArchivesLogger.MSG_ERR, "Project \"" + projectPath + "\" does not exist or has no .packages file. Skipping.", null);
+				getCore().getLogger().log(IStatus.ERROR, "Project \"" + projectPath + "\" does not exist or has no .packages file. Skipping.", null);
 			}
 		} catch(RuntimeException e ) {
-			getCore().getLogger().log(IArchivesLogger.MSG_ERR, "A runtime error has occurred during build.", e);
+			getCore().getLogger().log(IStatus.ERROR, "A runtime error has occurred during build.", e);
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(original);

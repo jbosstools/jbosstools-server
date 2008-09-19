@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.core.model.other.internal;
 
 import org.eclipse.core.runtime.ILog;
@@ -19,36 +19,27 @@ import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 
 /**
  * @author eskimo
- *  Comment:  
+ *  Comment:
  *       This could probably be worked into ArchivesCore API
  *       This specific implementation should belong in an eclipse-specific
- *       class. 
+ *       class.
  */
 public class ArchivesWorkspaceLogger implements IArchivesLogger {
 	/**
-	 * Copy of ArchiveCorePlugin.PLUGIN_ID to break dependency cycle between 
+	 * Copy of ArchiveCorePlugin.PLUGIN_ID to break dependency cycle between
 	 * jars in this plug-in
-	 *   
+	 *
 	 * @see ArchiveCorePlugin.PLUGIN_ID
 	 */
 	public static final String PLUGIN_ID = ArchivesCore.PLUGIN_ID;
-	
+
 	static ILog log = Platform.getLog(Platform.getBundle(PLUGIN_ID));
-	
+
 	public void log(int severity, String message,Throwable t) {
-		IStatus status = new Status(convert(severity), PLUGIN_ID, message, t);
-		log.log(status);
+		IStatus status = new Status(severity, PLUGIN_ID, message, t);
+		log(status);
 	}
-	
-	private int convert(int severity) {
-		switch( severity ) {
-		case IArchivesLogger.MSG_ERR: return IStatus.ERROR;
-		case IArchivesLogger.MSG_INFO: return IStatus.INFO;
-		case IArchivesLogger.MSG_WARN: return IStatus.WARNING;
-		case IArchivesLogger.MSG_DEBUG:
-		case IArchivesLogger.MSG_VERBOSE:
-		default:
-			return IStatus.OK;
-		}
+	public void log(IStatus status) {
+		log.log(status);
 	}
 }

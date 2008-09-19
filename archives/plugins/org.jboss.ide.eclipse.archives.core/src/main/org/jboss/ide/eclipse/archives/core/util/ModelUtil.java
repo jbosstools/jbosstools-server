@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
@@ -76,7 +77,7 @@ public class ModelUtil {
 		final ArrayList<IArchiveFileSet> rets = new ArrayList<IArchiveFileSet>();
 		IArchiveNodeVisitor visitor = new IArchiveNodeVisitor() {
 			public boolean visit(IArchiveNode node) {
-				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET && 
+				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET &&
 						((IArchiveFileSet)node).matchesPath(path, inWorkspace)) {
 					rets.add((IArchiveFileSet)node);
 				}
@@ -88,7 +89,7 @@ public class ModelUtil {
 			ArchivesModel.instance().accept(visitor);
 		else
 			node.accept(visitor);
-		
+
 		return rets.toArray(new IArchiveFileSet[rets.size()]);
 	}
 
@@ -111,7 +112,7 @@ public class ModelUtil {
 		ArrayList<IArchiveNode> matches = findAllDescendents(node, IArchiveNode.TYPE_ARCHIVE_FOLDER, false);
 		return matches.toArray(new IArchiveFolder[matches.size()]);
 	}
-	
+
 	/**
 	 * Find all nodes of one type that are a child to this one
 	 * @param node
@@ -125,21 +126,21 @@ public class ModelUtil {
 				if( ((node.getNodeType() == type) && !matches.contains(node)) && (includeSelf || node != original))
 					matches.add(node);
 				return true;
-			} 
+			}
 		});
 		return matches;
 	}
 
-	
+
 
 	/**
 	 * Do any filesets other than the parameter match this path?
 	 */
 	public static boolean otherFilesetMatchesPathAndOutputLocation(IArchiveFileSet fileset, FileWrapper file) {
-		return otherFilesetMatchesPathAndOutputLocation(fileset, new Path(file.getAbsolutePath()), 
+		return otherFilesetMatchesPathAndOutputLocation(fileset, new Path(file.getAbsolutePath()),
 				file.getFilesetRelative(), file.getRootArchiveRelative().toString(), null);
 	}
-	public static boolean otherFilesetMatchesPathAndOutputLocation(IArchiveFileSet fileset, IPath absolute, 
+	public static boolean otherFilesetMatchesPathAndOutputLocation(IArchiveFileSet fileset, IPath absolute,
 			String fsRelative, String rootArchiveRelative, IArchiveNode root) {
 		IArchiveFileSet[] filesets = ModelUtil.getMatchingFilesets(root, absolute);
 		if( filesets.length == 0 || (filesets.length == 1 && Arrays.asList(filesets).contains(fileset))) {
@@ -155,7 +156,7 @@ public class ModelUtil {
 				for( int j = 0; j < matches.length; j++ )
 					relativePathsMatch |= matches[j].getRootArchiveRelative().toString().equals(rootArchiveRelative);
 				destinationsMatch = fileset.getRootArchive().getArchiveFilePath().equals(filesets[i].getRootArchive().getArchiveFilePath());
-				
+
 				if( relativePathsMatch && destinationsMatch ) {
 					// the two put the file in the same spot, within the same archive! It's a match!
 					return true;
@@ -166,7 +167,7 @@ public class ModelUtil {
 	}
 
 	/**
-	 * Get the raw file for this node, specifically, 
+	 * Get the raw file for this node, specifically,
 	 * the file actually saved as an OS file.
 	 * @param node
 	 * @return
@@ -176,35 +177,35 @@ public class ModelUtil {
 		IPath lastConcrete = null;
 		for( int i = 0; i < nodes.length; i++ ) {
 			if( nodes[i] instanceof IArchive) {
-				if( lastConcrete == null ) 
+				if( lastConcrete == null )
 					lastConcrete = ((IArchive)nodes[i]).getArchiveFilePath();
 				else
 					lastConcrete = lastConcrete.append(((IArchive)nodes[i]).getName());
-				
+
 				if( !((IArchive)nodes[i]).isExploded())
 					return lastConcrete;
 			}  else if( nodes[i] instanceof IArchiveFolder ) {
 				lastConcrete = lastConcrete.append(((IArchiveFolder)nodes[i]).getName());
 			}
 		}
-		return lastConcrete; 
+		return lastConcrete;
 	}
-	
+
 	public static IPath getBaseDestinationFile(IArchiveFileSet node, IPath fsRelative) {
 		IPath last = getBaseDestinationFile(node);
 		if( fsRelative != null ) {
 			IArchiveNode[] nodes = getReverseNodeTree(node);
 			boolean anyZipped = false;
-			for( int i = 0; !anyZipped && i < nodes.length; i++ ) 
+			for( int i = 0; !anyZipped && i < nodes.length; i++ )
 				if( nodes[i] instanceof IArchive && !((IArchive)nodes[i]).isExploded())
 					anyZipped = true;
-			
+
 			if(!anyZipped) // none are zipped, we can append this path
 				last = last.append(fsRelative);
 		}
 		return last;
 	}
-	
+
 	private static IArchiveNode[] getReverseNodeTree(IArchiveNode node) {
 		ArrayList<IArchiveNode> list = new ArrayList<IArchiveNode>();
 		while( node != null && !(node instanceof ArchiveModelNode)) {
@@ -216,7 +217,7 @@ public class ModelUtil {
 		return nodes;
 	}
 
-	public static void fillArchiveModel( XbPackages node, IArchiveModelRootNode modelNode) throws ArchivesModelException { 
+	public static void fillArchiveModel( XbPackages node, IArchiveModelRootNode modelNode) throws ArchivesModelException {
 		for (Iterator iter = node.getAllChildren().iterator(); iter.hasNext(); ) {
 			XbPackageNode child = (XbPackageNode) iter.next();
 			ArchiveNodeImpl childImpl = (ArchiveNodeImpl)createPackageNodeImpl(child, modelNode);
@@ -224,10 +225,10 @@ public class ModelUtil {
 				try {
 					if( modelNode instanceof ArchiveNodeImpl )
 						((ArchiveNodeImpl)modelNode).addChild(childImpl, false);
-					else 
+					else
 						modelNode.addChild(childImpl);
 				} catch( ArchivesModelException ame ) {
-					ArchivesCore.getInstance().getLogger().log(IArchivesLogger.MSG_ERR, ame.getMessage(), ame);
+					ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, ame.getMessage(), ame);
 				}
 			}
 		}
@@ -244,7 +245,7 @@ public class ModelUtil {
 		} else if( node instanceof XbAction ) {
 			nodeImpl = new ArchiveActionImpl((XbAction)node);
 		}
-		
+
 		for (Iterator iter = node.getAllChildren().iterator(); iter.hasNext(); ) {
 			XbPackageNode child = (XbPackageNode) iter.next();
 			ArchiveNodeImpl childImpl = (ArchiveNodeImpl)createPackageNodeImpl(child, nodeImpl);
@@ -254,11 +255,11 @@ public class ModelUtil {
 		}
 		return nodeImpl;
 	}
-	
+
 	public static IArchive[] getProjectArchives(IPath project) {
 		return getProjectArchives(project, ArchivesModel.instance());
 	}
-	
+
 	public static IArchive[] getProjectArchives(IPath project, IArchiveModel model) {
 		if( model != null ) {
 			IArchiveModelRootNode root = model.getRoot(project);
