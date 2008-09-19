@@ -25,7 +25,7 @@ public class BuildAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-		if( selectedProject != null ) 
+		if( selectedProject != null )
 			buildSelectedNode(selectedProject);
 	}
 
@@ -39,25 +39,26 @@ public class BuildAction implements IWorkbenchWindowActionDelegate {
 			if( o instanceof IAdaptable ) {
 				IResource res = (IResource)  ((IAdaptable)o).getAdapter(IResource.class);
 				if( res != null ) {
-					selectedProject = res.getProject();				
+					selectedProject = res.getProject();
 					return;
 				}
 			}
 		}
 		selectedProject = null;
 	}
-	
+
 	private void buildSelectedNode(final Object selected) {
 		new Job("Build Archive Node") {
+			// TODO actually get the status object
 			protected IStatus run(IProgressMonitor monitor) {
 				if( selected == null ) return Status.OK_STATUS;
-				if (selected instanceof IArchiveNode &&  
+				if (selected instanceof IArchiveNode &&
 						((IArchiveNode)selected).getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
-					new ArchiveBuildDelegate().fullArchiveBuild((IArchive)selected);
+					new ArchiveBuildDelegate().fullArchiveBuild((IArchive)selected, monitor);
 				} else if( selected != null && selected instanceof IProject ){
-					new ArchiveBuildDelegate().fullProjectBuild(((IProject)selected).getProject().getLocation());
+					new ArchiveBuildDelegate().fullProjectBuild(((IProject)selected).getProject().getLocation(), monitor);
 				} else {
-					new ArchiveBuildDelegate().fullArchiveBuild(((IArchiveNode)selected).getRootArchive());
+					new ArchiveBuildDelegate().fullArchiveBuild(((IArchiveNode)selected).getRootArchive(), monitor);
 				}
 				return Status.OK_STATUS;
 			}

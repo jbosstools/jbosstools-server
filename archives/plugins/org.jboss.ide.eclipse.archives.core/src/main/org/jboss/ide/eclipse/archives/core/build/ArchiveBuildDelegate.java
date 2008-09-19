@@ -27,13 +27,15 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveAction;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
@@ -64,7 +66,7 @@ public class ArchiveBuildDelegate {
 	 * A full project build has been requested.
 	 * @param project The project containing the archive model
 	 */
-	public void fullProjectBuild(IPath project) {
+	public void fullProjectBuild(IPath project, IProgressMonitor monitor) {
 		EventManager.cleanProjectBuild(project);
 		EventManager.startedBuild(project);
 
@@ -72,15 +74,21 @@ public class ArchiveBuildDelegate {
 		if( root == null ) {
 			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "An error occurred locating the root node for " + project.toOSString(), null);
 			EventManager.error(null, new IStatus[]{s});
+			monitor.done();
 		} else {
 			IArchiveNode[] nodes = root.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			ArrayList<IStatus> errors = new ArrayList<IStatus>();
+
+			monitor.beginTask("Building project " + ArchivesCore.getInstance().getVFS().getProjectName(project), nodes.length * 1000);
+
 			for( int i = 0; i < nodes.length; i++ ) {
-				errors.addAll(Arrays.asList(fullArchiveBuild(((IArchive)nodes[i]), false)));
+				errors.addAll(Arrays.asList(fullArchiveBuild(((IArchive)nodes[i]),
+						new SubProgressMonitor(monitor, 1000), false)));
 			}
 
 			EventManager.finishedBuild(project);
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
+			monitor.done();
 		}
 	}
 
@@ -88,17 +96,18 @@ public class ArchiveBuildDelegate {
 	 * Builds an archive entirely, overwriting whatever was in the output destination.
 	 * @param pkg The archive to build
 	 */
-	public IStatus[] fullArchiveBuild(IArchive pkg) {
-		return fullArchiveBuild(pkg, true);
+	public IStatus[] fullArchiveBuild(IArchive pkg, IProgressMonitor monitor) {
+		return fullArchiveBuild(pkg, monitor, true);
 	}
-	protected IStatus[] fullArchiveBuild(IArchive pkg, boolean log) {
+	protected IStatus[] fullArchiveBuild(IArchive pkg, IProgressMonitor monitor, boolean log) {
 		if( !pkg.canBuild() ) {
 			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
 					"Cannot Build archive \"" + pkg.getName() +
 					"\" due to a problem in the archive's configuration.", null);
 			if( log )
 				EventManager.error(pkg, new IStatus[]{s});
-			return new IStatus[]{};
+			monitor.done();
+			return new IStatus[]{s};
 		}
 
 		EventManager.cleanArchiveBuild(pkg);
@@ -114,52 +123,70 @@ public class ArchiveBuildDelegate {
 						" is not writeable", null);
 				if( log )
 					EventManager.error(pkg, new IStatus[]{s});
-				return new IStatus[]{};
+				monitor.done();
+				return new IStatus[]{s};
 			}
 		}
 
 		ArrayList<IStatus> errors = new ArrayList<IStatus>();
 
+		/* 3 steps:
+		 * create file: 200
+		 * create folders: 800
+		 * build filesets: 7000
+		 */
+		monitor.beginTask("Building Archive " + pkg.toString(), 8000);
+
 		// Run the pre actions
-		IArchiveAction[] actions = pkg.getActions();
-		for( int i = 0; i < actions.length; i++ ) {
-			if( actions[i].getTime().equals(IArchiveAction.PRE_BUILD)) {
-				actions[i].execute();
-			}
-		}
+//		IArchiveAction[] actions = pkg.getActions();
+//		for( int i = 0; i < actions.length; i++ ) {
+//			if( actions[i].getTime().equals(IArchiveAction.PRE_BUILD)) {
+//				actions[i].execute();
+//			}
+//		}
+
 
 		if( !ModelTruezipBridge.createFile(pkg) ) {
 			IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error creating output file for node " + pkg.toString());
 			errors.add(e);
 		}
+		monitor.worked(200);
 
 		// force create all folders
 		IArchiveFolder[] folders = ModelUtil.findAllDescendentFolders(pkg);
+		IProgressMonitor folderMonitor = new SubProgressMonitor(monitor, 800);
+		folderMonitor.beginTask("Creating folders", folders.length * 100);
 		for( int i = 0; i < folders.length; i++ ) {
 			if( !ModelTruezipBridge.createFile(folders[i])) {
 				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error creating output file for node " + folders[i].toString());
 				errors.add(e);
 			}
+			folderMonitor.worked(100);
 		}
+		folderMonitor.done();
 
 		// build the filesets
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(pkg);
+		IProgressMonitor filesetMonitor = new SubProgressMonitor(monitor, 7000);
+		filesetMonitor.beginTask("Building filesets", filesets.length * 1000);
 		for( int i = 0; i < filesets.length; i++ ) {
-			IStatus[] errors2 = fullFilesetBuild(filesets[i], pkg);
+			IStatus[] errors2 = fullFilesetBuild(filesets[i], new SubProgressMonitor(filesetMonitor, 1000), pkg);
 			errors.addAll(Arrays.asList(errors2));
 		}
+		filesetMonitor.done();
 
-		// Run the post actions
-		for( int i = 0; i < actions.length; i++ ) {
-			if( actions[i].getTime().equals(IArchiveAction.POST_BUILD)) {
-				actions[i].execute();
-			}
-		}
+//		// Run the post actions
+//		for( int i = 0; i < actions.length; i++ ) {
+//			if( actions[i].getTime().equals(IArchiveAction.POST_BUILD)) {
+//				actions[i].execute();
+//			}
+//		}
 
 		EventManager.finishedBuildingArchive(pkg);
 		IStatus[] errors2 = errors.toArray(new IStatus[errors.size()]);
 		if( log )
 			EventManager.error(pkg, errors2 );
+		monitor.done();
 		return errors2;
 	}
 
@@ -168,14 +195,14 @@ public class ArchiveBuildDelegate {
 	 * @param fileset The fileset to match
 	 * @param topLevel The top level archive that the fileset belongs to
 	 */
-	protected IStatus[] fullFilesetBuild(IArchiveFileSet fileset, IArchive topLevel) {
+	protected IStatus[] fullFilesetBuild(IArchiveFileSet fileset, IProgressMonitor monitor, IArchive topLevel) {
 		EventManager.startedCollectingFileSet(fileset);
 
 		// reset the scanner. It *is* a full build afterall
 		fileset.resetScanner();
 		FileWrapper[] paths = fileset.findMatchingPaths();
 
-		FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetBuild(fileset, true);
+		FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetBuild(fileset, monitor, true);
 
 		EventManager.filesUpdated(topLevel, fileset, paths);
 		EventManager.finishedCollectingFileSet(fileset);
@@ -191,8 +218,12 @@ public class ArchiveBuildDelegate {
 	 * @param removed       A list of removed resource paths
 	 */
 	public void incrementalBuild(IArchive archive, Set<IPath> addedChanged,
-			Set<IPath> removed, boolean workspaceRelative) {
+			Set<IPath> removed, boolean workspaceRelative, IProgressMonitor monitor) {
 		ArrayList<IStatus> errors = new ArrayList<IStatus>();
+
+		// removed get more work because all filesets are being rescanned before handling the removed
+		int totalWork = (addedChanged.size()*100) + (removed.size()*200) + 50;
+		monitor.beginTask("Project Archives Incremental Build", totalWork);
 
 		// find any and all filesets that match each file
 		Iterator<IPath> i;
@@ -212,13 +243,16 @@ public class ArchiveBuildDelegate {
 			matchingFilesets = ModelUtil.getMatchingFilesets(archive, path, workspaceRelative);
 			localFireAffectedTopLevelPackages(topPackagesChanged, matchingFilesets);
 			for( int j = 0; j < matchingFilesets.length; j++ ) {
-				IStatus[] errors2 = ModelTruezipBridge.deleteFiles(matchingFilesets[j], matchingFilesets[j].getMatches(globalPath), true);
+				IStatus[] errors2 = ModelTruezipBridge.deleteFiles(
+						matchingFilesets[j], matchingFilesets[j].getMatches(globalPath),
+						new NullProgressMonitor(), true);
 				errors.addAll(Arrays.asList(errors2));
 				if( !seen.contains(matchingFilesets[j])) {
 					seen.add(matchingFilesets[j]);
 				}
 			}
 			EventManager.fileRemoved(path, matchingFilesets);
+			monitor.worked(100);
 		}
 
 		// reset all of the filesets that have already matched
@@ -238,15 +272,17 @@ public class ArchiveBuildDelegate {
 					seen.add(matchingFilesets[j]);
 					matchingFilesets[j].resetScanner();
 				}
-				IStatus[] errors2 = ModelTruezipBridge.copyFiles(matchingFilesets[j], matchingFilesets[j].getMatches(globalPath), true);
+				IStatus[] errors2 = ModelTruezipBridge.copyFiles(matchingFilesets[j],
+						matchingFilesets[j].getMatches(globalPath),
+						new NullProgressMonitor(), true);
 				errors.addAll(Arrays.asList(errors2));
 			}
 			EventManager.fileUpdated(path, matchingFilesets);
+			monitor.worked(200);
 		}
 
 
 		TrueZipUtil.sync();
-
 		Iterator<IArchive> i2 = topPackagesChanged.iterator();
 		while(i2.hasNext()) {
 			EventManager.finishedBuildingArchive(i2.next());
@@ -254,6 +290,9 @@ public class ArchiveBuildDelegate {
 
 		if( errors.size() > 0 )
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
+
+		monitor.worked(50);
+		monitor.done();
 	}
 
 	private void localFireAffectedTopLevelPackages(ArrayList<IArchive> affected, IArchiveFileSet[] filesets) {

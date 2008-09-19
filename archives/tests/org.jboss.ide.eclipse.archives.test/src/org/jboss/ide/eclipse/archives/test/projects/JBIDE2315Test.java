@@ -16,13 +16,13 @@ public class JBIDE2315Test extends TestCase {
 	private IProject project;
 
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID, 
+		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
 				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2315",
-				null, true); 
+				null, true);
 		project = provider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
-	
+
 	protected void tearDown() throws Exception {
 		provider.dispose();
 	}
@@ -30,7 +30,7 @@ public class JBIDE2315Test extends TestCase {
 	public void testJBIDE2311() {
 		ArchiveBuildDelegate delegate = new ArchiveBuildDelegate();
 		try {
-			delegate.fullProjectBuild(project.getLocation());
+			delegate.fullProjectBuild(project.getLocation(), new NullProgressMonitor());
 		} catch( AssertionFailedError afe ) {
 			throw afe;
 		} catch( RuntimeException re ) {

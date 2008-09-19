@@ -21,8 +21,13 @@
  */
 package org.jboss.ide.eclipse.archives.core.build;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -32,7 +37,6 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
@@ -61,11 +65,15 @@ public class ModelChangeListener implements IArchiveModelListener {
 		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(delta.getPostNode().getProjectPath()))
 			return;
 
+		IStatus[] errors;
 		try {
-			handle(delta);
+			errors = handle(delta);
 		} catch( Exception e ) {
-			ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, "Error updating model changes", e);
+			IStatus er = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error updating model changes", e);
+			errors = new IStatus[] { er };
 		}
+		IArchiveNode node = delta.getPreNode() == null ? delta.getPostNode() : delta.getPreNode();
+		EventManager.error(node, errors);
 	}
 
 	/**
@@ -80,36 +88,37 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 *
 	 * @param delta
 	 */
-	private void handle(IArchiveNodeDelta delta) {
+	private IStatus[] handle(IArchiveNodeDelta delta) {
+		ArrayList<IStatus> errors = new ArrayList<IStatus>();
 		if( isTopLevelArchive(delta.getPostNode())) {
 			EventManager.startedBuildingArchive((IArchive)delta.getPostNode());
 		}
 
 		if( (delta.getKind() & (IArchiveNodeDelta.NODE_REGISTERED | IArchiveNodeDelta.UNKNOWN_CHANGE)) != 0 ) {
-			nodeRemoved(delta.getPreNode());
-			nodeAdded(delta.getPostNode());
+			errors.addAll(Arrays.asList(nodeRemoved(delta.getPreNode())));
+			errors.addAll(Arrays.asList(nodeAdded(delta.getPostNode())));
 		} if( (delta.getKind() & IArchiveNodeDelta.REMOVED) != 0 ) {
-			nodeRemoved(delta.getPreNode());
+			errors.addAll(Arrays.asList(nodeRemoved(delta.getPreNode())));
 		} else if( (delta.getKind() & IArchiveNodeDelta.ADDED) != 0 ) {
-			nodeAdded(delta.getPostNode());
+			errors.addAll(Arrays.asList(nodeAdded(delta.getPostNode())));
 		} else  if( (delta.getKind() & IArchiveNodeDelta.ATTRIBUTE_CHANGED) != 0) {
 			boolean shouldHandleChildren = handleAttributeChange(delta);
 			if( shouldHandleChildren ) {
 				IArchiveNodeDelta[] children = delta.getAllAffectedChildren();
 				for( int i = 0; i < children.length; i++ ) {
-					handle(children[i]);
+					errors.addAll(Arrays.asList(handle(children[i])));
 				}
 			}
 		} else if( descendentChanged(delta.getKind()) ) {
 			IArchiveNodeDelta[] children = delta.getAllAffectedChildren();
 			for( int i = 0; i < children.length; i++ ) {
-				handle(children[i]);
+				errors.addAll(Arrays.asList(handle(children[i])));
 			}
 		}
 
 		if( isTopLevelArchive(delta.getPostNode()))
 			EventManager.finishedBuildingArchive((IArchive)delta.getPostNode());
-
+		return errors.toArray(new IStatus[errors.size()]);
 	}
 	protected boolean descendentChanged(int kind) {
 		 return (kind & IArchiveNodeDelta.DESCENDENT_CHANGED) != 0 ||
@@ -163,19 +172,20 @@ public class ModelChangeListener implements IArchiveModelListener {
 
 
 
-	private void nodeAdded(IArchiveNode added) {
-		if( added == null ) return;
+	private IStatus[] nodeAdded(IArchiveNode added) {
+		ArrayList<IStatus> errors = new ArrayList<IStatus>();
+		if( added == null )
+			return new IStatus[]{};
 
 		if( added.getNodeType() == IArchiveNode.TYPE_MODEL_ROOT) {
 			IArchiveNode[] archives = ((IArchiveModelRootNode)added).getChildren(IArchiveNode.TYPE_ARCHIVE);
 			for( int i = 0; i < archives.length; i++ ) {
-				nodeAdded(archives[i]);
+				errors.addAll(Arrays.asList(nodeAdded(archives[i])));
 			}
 		} else if( added.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
 			// create the package
 			if( ((IArchive)added).isTopLevel() && !added.canBuild() ) {
-				logCannotBuildError((IArchive)added);
-				return;
+				return new IStatus[] { logCannotBuildError((IArchive)added)};
 			}
 			ModelTruezipBridge.createFile(added);
 		} else if( added.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER ) {
@@ -184,51 +194,55 @@ public class ModelChangeListener implements IArchiveModelListener {
 		}
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(added);
 		for( int i = 0; i < filesets.length; i++ ) {
-			FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetBuild(filesets[i], true);
+			FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetBuild(filesets[i], new NullProgressMonitor(), true);
+			errors.addAll(Arrays.asList(result.s));
 			FileWrapper[] files = filesets[i].findMatchingPaths();
-			EventManager.error(filesets[i], result.s);
 			EventManager.filesUpdated(filesets[i].getRootArchive(), filesets[i], files);
 		}
 		postChange(added);
+		return errors.toArray(new IStatus[errors.size()]);
 	}
 
 
-	private void nodeRemoved(IArchiveNode removed) {
-		if( removed == null ) return;
+	private IStatus[] nodeRemoved(IArchiveNode removed) {
+		ArrayList<IStatus> errors = new ArrayList<IStatus>();
+		if( removed == null )
+			return new IStatus[] {};
 		if( removed.getNodeType() == IArchiveNode.TYPE_MODEL_ROOT ) {
 			// remove all top level items
 			IArchiveNode[] kids = removed.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			for( int i = 0; i < kids.length; i++ ) {
-				nodeRemoved(kids[i]);
+				errors.addAll(Arrays.asList(nodeRemoved(kids[i])));
 			}
 			postChange(removed);
-			return;
+			return errors.toArray(new IStatus[errors.size()]);
 		} else if( removed.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
 			if( ((IArchive)removed).isTopLevel() && !removed.canBuild() ) {
-				logCannotBuildError((IArchive)removed);
-				return;
+				return new IStatus[] {logCannotBuildError((IArchive)removed)};
 			}
 			ModelTruezipBridge.deleteArchive((IArchive)removed);
 			postChange(removed);
-			return;
+			return new IStatus[] {};
 		} else if( removed.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER ){
 			IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(((IArchiveFolder)removed));
 			for( int i = 0; i < filesets.length; i++ ) {
-				// TODO report IO Errors
-				FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetRemove(filesets[i], false);
+				FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetRemove(filesets[i], new NullProgressMonitor(), false);
+				errors.addAll(Arrays.asList(result.s));
 				EventManager.filesRemoved(convertToPath(result.f), ((IArchiveFileSet)filesets[i]));
 			}
 			postChange(removed);
-			return;
+			return errors.toArray(new IStatus[errors.size()]);
 		}
 
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(removed);
 		for( int i = 0; i < filesets.length; i++ ) {
 			FileWrapperStatusPair result = ModelTruezipBridge.fullFilesetRemove(
-					((IArchiveFileSet)removed), false);
+					((IArchiveFileSet)removed), new NullProgressMonitor(), false);
 			EventManager.filesRemoved(convertToPath(result.f), ((IArchiveFileSet)removed));
+			errors.addAll(Arrays.asList(result.s));
 		}
 		postChange(removed);
+		return errors.toArray(new IStatus[errors.size()]);
 	}
 
 	protected IPath[] convertToPath(FileWrapper[] wrappers) {
@@ -241,10 +255,10 @@ public class ModelChangeListener implements IArchiveModelListener {
 	protected void postChange(IArchiveNode node) {
 	}
 
-	protected void logCannotBuildError(IArchive archive) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.WARNING,
+	protected IStatus logCannotBuildError(IArchive archive) {
+		IStatus s = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID,
 				"Cannot Build archive \"" + archive.getName() +
 				"\" due to a problem in the archive's configuration.", null);
-		return;
+		return s;
 	}
 }

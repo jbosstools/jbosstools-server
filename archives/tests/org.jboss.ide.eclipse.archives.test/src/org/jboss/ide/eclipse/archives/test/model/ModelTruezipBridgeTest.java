@@ -227,7 +227,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		IArchiveFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
 		fs.setInWorkspace(true);
 		zipped.addChild(fs);
-		ModelTruezipBridge.fullFilesetBuild(fs, true);
+		ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
 		assertEquals(19, countEntries(zippedF));
 	}
 
@@ -244,7 +244,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		fs.setInWorkspace(true);
 		fs.setFlattened(true);
 		zipped.addChild(fs);
-		ModelTruezipBridge.fullFilesetBuild(fs, true);
+		ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
 
 		// should be two less files and 3 less folders created
 		assertEquals(14, countEntries(zippedF));

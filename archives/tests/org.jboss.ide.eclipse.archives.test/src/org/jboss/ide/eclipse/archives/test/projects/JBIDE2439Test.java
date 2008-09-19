@@ -22,19 +22,19 @@ public class JBIDE2439Test extends TestCase {
 	private IProject aProject, bProject;
 
 	protected void setUp() throws Exception {
-		aProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID, 
+		aProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
 				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439a",
-				null, true); 
+				null, true);
 		aProject = aProjectProvider.getProject();
 		aProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		
-		
-		bProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID, 
+
+
+		bProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
 				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439b",
-				null, true); 
+				null, true);
 		bProject = bProjectProvider.getProject();
 		bProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		
+
 		IResource folder = bProject.findMember("linked");
 		if( folder != null ) {
 			String linkedLocation = folder.getLocation().toString();
@@ -43,8 +43,8 @@ public class JBIDE2439Test extends TestCase {
 			aProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		}
 	}
-	
-	
+
+
 	protected void tearDown() throws Exception {
 		aProjectProvider.dispose();
 		bProjectProvider.dispose();
@@ -53,19 +53,19 @@ public class JBIDE2439Test extends TestCase {
 	public void testJBIDE2439() {
 		ArchiveBuildDelegate delegate = new ArchiveBuildDelegate();
 		try {
-			delegate.fullProjectBuild(aProject.getLocation());
+			delegate.fullProjectBuild(aProject.getLocation(), new NullProgressMonitor());
 			aProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 			IResource outs = aProject.getFolder("outputs");
 			final ArrayList<IResource> list = new ArrayList<IResource>();
 			outs.accept(new IResourceVisitor() {
-	
+
 				public boolean visit(IResource resource) throws CoreException {
 					if( resource instanceof IFile ) {
 						if( !resource.getFullPath().toString().contains(".svn"))
 							list.add(resource);
 					}
 					return true;
-				} 
+				}
 			});
 			assertEquals(5, list.size());
 		} catch( AssertionFailedError afe ) {

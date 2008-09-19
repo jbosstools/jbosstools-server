@@ -50,25 +50,25 @@ import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 
 /**
  * This builder is responsible for building the archives
- * It delegates to a delegate. 
+ * It delegates to a delegate.
  * @author Rob Stryker (rob.stryker@redhat.com)
  *
  */
 public class ArchivesBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "org.jboss.ide.eclipse.archives.core.archivesBuilder";
-	
+
 	/**
-	 * Build. 
+	 * Build.
 	 * @see IncrementalProjectBuilder#build(int, Map, IProgressMonitor)
-	 * @see IProject#build(int, String, Map, IProgressMonitor) 
+	 * @see IProject#build(int, String, Map, IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-		
+
 		// if we're not to build, get out of here
-		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(getProject().getLocation())) 
+		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(getProject().getLocation()))
 			return new IProject[]{};
-		
+
 		IProject[] interestingProjects = getInterestingProjectsInternal();
 
 		final TreeSet<IPath> addedChanged = createPathTreeSet();
@@ -77,20 +77,19 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 		ArchiveBuildDelegate delegate = new ArchiveBuildDelegate();
 		if (kind == IncrementalProjectBuilder.INCREMENTAL_BUILD || kind == IncrementalProjectBuilder.AUTO_BUILD) {
 			fillDeltas(interestingProjects, addedChanged, removed);
-			delegate.incrementalBuild(null,addedChanged, removed,true);
-			
+			delegate.incrementalBuild(null,addedChanged, removed,true, monitor);
 		} else if (kind == IncrementalProjectBuilder.FULL_BUILD){
 			// build each package fully
 			IProject p = getProject();
-			delegate.fullProjectBuild(p.getLocation());
+			delegate.fullProjectBuild(p.getLocation(), monitor);
 		}
-		
+
 		return interestingProjects;
 	}
-	
+
 	/**
 	 * Delete all archives that were created or represented by this
-	 * project's archive model. 
+	 * project's archive model.
 	 */
 	protected void clean(IProgressMonitor monitor) throws CoreException {
 		IPath p = getProject().getLocation();
@@ -106,7 +105,7 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 
 	/**
 	 * Browse through the deltas and fill the treesets with
-	 * affected resources. 
+	 * affected resources.
 	 * @param projects The interesting projects
 	 * @param addedChanged A collection of resources that have been added or changed
 	 * @param removed A collection of resources that have been removed.
@@ -117,20 +116,20 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 			IResourceDelta delta = getDelta(proj);
 			if( delta == null ) continue;
 			try {
-				delta.accept(new IResourceDeltaVisitor () { 
+				delta.accept(new IResourceDeltaVisitor () {
 					public boolean visit(IResourceDelta delta) throws CoreException {
 						if (delta.getResource().getType() == IResource.FILE)  {
-							if( (delta.getKind() & IResourceDelta.ADDED) > 0  
+							if( (delta.getKind() & IResourceDelta.ADDED) > 0
 									|| (delta.getKind() & IResourceDelta.CHANGED) > 0) {
-								
-								// ignore the packages project. that will it's own build call, 
+
+								// ignore the packages project. that will it's own build call,
 								// or will handle the change in some other way
-								if( !delta.getResource().equals(proj.findMember(IArchiveModel.DEFAULT_PACKAGES_FILE))) 
+								if( !delta.getResource().equals(proj.findMember(IArchiveModel.DEFAULT_PACKAGES_FILE)))
 									addedChanged.add(delta.getResource().getFullPath());
 							} else if( (delta.getKind() & IResourceDelta.REMOVED ) > 0 ) {
 								removed.add(delta.getResource().getFullPath());
 							}
-						} 
+						}
 						return true;
 					}
 				});
@@ -138,17 +137,17 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 			}
 		}
 	}
-	
+
 	/**
-	 * Get any projects that the current project may depend on 
-	 * (regarding it's archive model, if any filesets match files in 
+	 * Get any projects that the current project may depend on
+	 * (regarding it's archive model, if any filesets match files in
 	 * another project).
 	 * @return The list of projects that matter
 	 */
 	protected IProject[] getInterestingProjectsInternal() {
 		final TreeSet<IProject> set = createProjectTreeSet();
 		set.add(getProject());
-		
+
 		final IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
 		IArchiveModelRootNode root = ArchivesModel.instance().getRoot(getProject().getLocation());
@@ -160,7 +159,7 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 						IPath p = PathUtils.getGlobalLocation(fileset);
 						if( p != null ) {
 							IContainer[] containers = workspaceRoot.findContainersForLocation(p);
-							for( int i = 0; i < containers.length; i++ ) { 
+							for( int i = 0; i < containers.length; i++ ) {
 								set.add(containers[i].getProject());
 							}
 						}
@@ -173,8 +172,8 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 			return new IProject[0];
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Default treeset with default comparator
 	 * @return
 	 */
@@ -184,15 +183,15 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 				if (o1.equals(o2)) return 0;
 				else return -1;
 			}
-		});		
+		});
 	}
-	
+
 	protected TreeSet<IPath> createPathTreeSet() {
 		return new TreeSet<IPath>(new Comparator<IPath> () {
 			public int compare(IPath o1, IPath o2) {
 				if (o1.equals(o2)) return 0;
 				else return -1;
 			}
-		});		
+		});
 	}
 }

@@ -33,7 +33,6 @@ import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 
 /**
  * @author rob.stryker <rob.stryker@redhat.com>
@@ -72,7 +71,7 @@ public class GenerateArchivesTask extends Task {
 			Thread.currentThread().setContextClassLoader(myCL);
 			if( ArchivesModel.instance().canReregister(projectPath)) {
 				ArchivesModel.instance().registerProject(projectPath, monitor);
-				new ArchiveBuildDelegate().fullProjectBuild(projectPath);
+				new ArchiveBuildDelegate().fullProjectBuild(projectPath, new NullProgressMonitor());
 			} else {
 				getCore().getLogger().log(IStatus.ERROR, "Project \"" + projectPath + "\" does not exist or has no .packages file. Skipping.", null);
 			}

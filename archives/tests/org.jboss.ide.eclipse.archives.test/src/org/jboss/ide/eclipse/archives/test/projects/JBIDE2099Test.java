@@ -17,15 +17,15 @@ public class JBIDE2099Test extends TestCase {
 	private IProject project;
 	private IPath outputWar;
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID, 
+		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
 				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2099",
-				null, true); 
+				null, true);
 		project = provider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		outputWar = project.getLocation().append("output").append("dist")
 					.append("unified-http-invoker.sar").append("unified-invoker.war");
 	}
-	
+
 	protected void tearDown() throws Exception {
 		provider.dispose();
 	}
@@ -33,7 +33,7 @@ public class JBIDE2099Test extends TestCase {
 	public void testJBIDE2099() {
 		ArchiveBuildDelegate delegate = new ArchiveBuildDelegate();
 		try {
-			delegate.fullProjectBuild(project.getLocation());
+			delegate.fullProjectBuild(project.getLocation(), new NullProgressMonitor());
 			assertTrue(outputWar.toFile().isDirectory());
 		} catch( AssertionFailedError afe) {
 			throw afe;
