@@ -5,7 +5,7 @@
    <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
    <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
    <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
-   		
+
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
       <serverType
@@ -22,9 +22,9 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
             startBeforePublish="false"
             startTimeout="450000"
-            stopTimeout="450000" 
+            stopTimeout="450000"
             supportsRemoteHosts="false"/>
-              
+
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
@@ -41,7 +41,7 @@
             startTimeout="450000"
             stopTimeout="450000"
             supportsRemoteHosts="false"/>
-            
+
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
@@ -56,7 +56,7 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.42"
             startBeforePublish="false"
             startTimeout="450000"
-            stopTimeout="450000" 
+            stopTimeout="450000"
             supportsRemoteHosts="false"/>
 
       <serverType
@@ -73,7 +73,7 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.50"
             startBeforePublish="false"
             startTimeout="450000"
-            stopTimeout="450000" 
+            stopTimeout="450000"
             supportsRemoteHosts="false"/>
 
 
@@ -93,7 +93,7 @@
             startTimeout="100000"
             stopTimeout="100000"
             supportsRemoteHosts="true"/>
-            
+
  </extension>
 
    <extension
@@ -119,7 +119,7 @@
                 versions="1.0"/>
           <moduleType
                types="jboss.singlefile"
-               versions="1.0"/>               
+               versions="1.0"/>
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -152,7 +152,7 @@
           <moduleType
                 types="jst.jboss.esb"
                 versions="4.2,4.3,4.4,5.0">
-          </moduleType>                
+          </moduleType>
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -294,7 +294,7 @@
             public="false">
       </launchConfigurationType>
    </extension>
-	
+
    <extension
          point="org.eclipse.debug.core.sourcePathComputers">
       <sourcePathComputer
@@ -302,7 +302,7 @@
             id="org.jboss.ide.eclipse.as.core.serverSourcePathComputer">
       </sourcePathComputer>
    </extension>
-	
+
 	<!-- Module Factory Stuff -->
 
    <extension
@@ -317,7 +317,7 @@
          </moduleType>
       </moduleFactory>
    </extension>
-   
+
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
       <launchableAdapter
@@ -348,8 +348,8 @@
             supportsStartup="false">
       </serverPoller>
    </extension>
-   
-   
+
+
 
 
    <!-- Stuff for the dual model of runtimes... facet time baby! -->
@@ -384,13 +384,13 @@
       <runtime-component-version
             type="org.jboss.ide.eclipse.as.runtime.stripped.component"
             version="1.0"/>
-      
+
       <supported>
         <runtime-component
          	id="org.jboss.ide.eclipse.as.runtime.stripped.component"
          	version="1.0"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
        <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
@@ -423,7 +423,7 @@
          id="org.jboss.ide.eclipse.as.runtime.component"
          version="3.2"/>
        <facet id="jst.web" version="2.2,2.3,2.4"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.ejb" version="2.0,2.1"/>
        <facet id="jst.ear" version="1.2,1.3,1.4"/>
@@ -436,7 +436,7 @@
          id="org.jboss.ide.eclipse.as.runtime.component"
          version="4.0"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -449,7 +449,7 @@
          	id="org.jboss.ide.eclipse.as.runtime.component"
          	version="4.2"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -462,7 +462,7 @@
          	id="org.jboss.ide.eclipse.as.runtime.component"
          	version="5.0"/>
        <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
-       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>  
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
        <facet id="jst.utility" version="1.0"/>
        <facet id="jst.connector" version="1.0,1.5"/>
        <facet id="jst.ejb" version="2.0,2.1,3.0"/>
@@ -470,8 +470,8 @@
        <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
      </supported>
    </extension>
-   
-   
+
+
 
    <extension
          point="org.eclipse.jst.j2ee.classpathdep">
@@ -528,14 +528,14 @@
 	        <public publicId="-//JBoss//DTD JBOSS 4.2//EN"
 				uri="dtd/jboss_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd"/>
-				
+
 	        <public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
 				uri="dtd/jboss-app_4_0.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_0.dtd"/>
 	        <public publicId="-//JBoss//DTD J2EE Application 4.2//EN"
 				uri="dtd/jboss-app_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_2.dtd"/>
-				
+
 	        <public publicId="-//JBoss//DTD Web Application 2.4//EN"
 				uri="dtd/jboss-web_4_0.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_0.dtd"/>
@@ -567,6 +567,7 @@
          </public>
      </catalogContribution>
    </extension>
+
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
       <publisher
@@ -575,6 +576,22 @@
       </publisher>
       <publisher
             class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
+            priority="5">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
+            priority="0">
+      </publisher>
+   </extension>
+
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
+            priority="7">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"
             priority="5">
       </publisher>
       <publisher
