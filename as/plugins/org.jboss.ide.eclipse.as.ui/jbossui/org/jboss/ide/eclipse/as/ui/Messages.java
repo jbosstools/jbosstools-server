@@ -63,8 +63,8 @@ public class Messages {
 	public static String ServerDialogHeading;
 	public static String credentials_warning;
 	public static String credentials_save;
-	
-	
+
+
 	/* Module extension properties */
 	public static String ModulePropertyType;
 	public static String ModulePropertyProject;
@@ -116,11 +116,11 @@ public class Messages {
 	public static String ActionDelegatePublishFailed;
 	public static String ActionDelegateFileResourcesOnly;
 	public static String ActionDelegateSelectServer;
-	
+
 	/* Console */
 	public static String ConsoleResourceNotFound;
 	public static String ConsoleCouldNotLocateInWorkspace;
-	
+
 
 	/* Twiddle Dialog */
 	public static String TwiddleDialog;
@@ -198,7 +198,7 @@ public class Messages {
 	public static String DescriptorXPathComplex;
 	public static String DescriptorXPathMatch;
 
-	
+
 	/* Filesets addition */
 	public static String FilesetsCreateFilter;
 	public static String FilesetsDeleteFilter;
@@ -209,11 +209,11 @@ public class Messages {
 	public static String FilesetsNewName;
 	public static String FilesetsNewRootDir;
 	public static String FilesetsNewBrowse;
-	public static String FilesetsNewIncludes; 
-	public static String FilesetsNewExcludes; 
+	public static String FilesetsNewIncludes;
+	public static String FilesetsNewExcludes;
 	public static String FilesetsNewPreview;
-	
-	
+
+
 	/* Editor Strings */
 	public static String EditorSetDeployLabel;
 	public static String EditorSetTempDeployLabel;
@@ -232,29 +232,21 @@ public class Messages {
 	public static String EditorChangeWebCommandName;
 	public static String EditorChangeUsernameCommandName;
 	public static String EditorChangePasswordCommandName;
-	public static String EditorCPD_Name;
-	public static String EditorCPD_XPath;
-	public static String EditorCPD_Attribute;
-	public static String EditorCPD_Count;
 	public static String EditorCPD_Value;
-	public static String EditorCPD_Location;
-	public static String EditorCPD_Default;
-	public static String EditorCPD_NoDefault;
-	public static String EditorCPD_SelectionDetails;
 	public static String EditorCPD_DefaultShellTitle;
 	public static String EditorCPD_DefaultDescription;
 
 
-	
+
 	public static String Customize;
-	
+
 	// misc
 	public static String ServerSaveFailed;
-	
+
 	// Launch Config
 	public static String LaunchInvalidConfigChanged;
 	public static String LaunchInvalidHostChanged;
-	
+
 	static {
 		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
 				Messages.class);
