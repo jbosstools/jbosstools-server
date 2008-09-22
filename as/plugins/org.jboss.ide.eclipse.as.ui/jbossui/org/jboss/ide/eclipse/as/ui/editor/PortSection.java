@@ -42,12 +42,12 @@ import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog.ChangePortDialogInfo;
 
 /**
- * 
+ *
  * @author rob Stryker (rob.stryker@redhat.com)
  *
  */
 public class PortSection extends ServerEditorSection {
-	
+
 	/* Load the various port editor pieces */
 	private static ArrayList<IPortEditorExtension> sectionList = new ArrayList<IPortEditorExtension>();
 	static {
@@ -61,15 +61,15 @@ public class PortSection extends ServerEditorSection {
 			} catch( CoreException ce) { /* ignore */ }
 		}
 	}
-	
-	
+
+
 	protected ServerAttributeHelper helper;
 
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
 	}
-	
+
 	public void createSection(Composite parent) {
 		super.createSection(parent);
 		createUI(parent);
@@ -80,15 +80,15 @@ public class PortSection extends ServerEditorSection {
 		public void setSection(ServerEditorSection section);
 		public Control createControl(Composite parent);
 	}
-	
+
 	public static class JNDIPortEditorExtension extends PortEditorExtension {
 		public JNDIPortEditorExtension() {
-			super(Messages.EditorJNDIPort, IJBossServerConstants.JNDI_PORT_DETECT_XPATH, 
-					IJBossServerConstants.JNDI_PORT_DETECT, 
+			super(Messages.EditorJNDIPort, IJBossServerConstants.JNDI_PORT_DETECT_XPATH,
+					IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH);
 		}
 		public ServerCommand getCommand() {
-			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeJNDICommandName,  
+			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeJNDICommandName,
 					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
 					text, detect, currentXPath, listener);
@@ -105,13 +105,13 @@ public class PortSection extends ServerEditorSection {
 
 	public static class WebPortEditorExtension extends PortEditorExtension {
 		public WebPortEditorExtension() {
-			super(Messages.EditorWebPort, IJBossServerConstants.WEB_PORT_DETECT_XPATH, 
-					IJBossServerConstants.WEB_PORT_DETECT, 
+			super(Messages.EditorWebPort, IJBossServerConstants.WEB_PORT_DETECT_XPATH,
+					IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH);
 		}
 
 		public ServerCommand getCommand() {
-			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeWebCommandName,  
+			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeWebCommandName,
 					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
 					text, detect, currentXPath, listener);
@@ -154,21 +154,21 @@ public class PortSection extends ServerEditorSection {
 			addListeners();
 			return c;
 		}
-		
+
 		protected Control createUI(Composite parent) {
 			Composite child = new Composite(parent, SWT.NONE);
 			child.setLayout(new FormLayout());
 			label = new Label(child, SWT.NONE);
 			text = new Text(child, SWT.DEFAULT);
 			detect = new Button(child, SWT.CHECK);
-			link = new Link(child, SWT.DEFAULT);
-			
+			link = new Link(child, SWT.NONE);
+
 			FormData data;
 			data = new FormData();
 			data.top = new FormAttachment(0,8);
 			data.right = new FormAttachment(100,-5);
 			link.setLayoutData(data);
-			
+
 			data = new FormData();
 			data.right = new FormAttachment(link, -5);
 			data.top = new FormAttachment(0,5);
@@ -184,7 +184,7 @@ public class PortSection extends ServerEditorSection {
 			data.right = new FormAttachment(text,-5);
 			data.top = new FormAttachment(0,8);
 			label.setLayoutData(data);
-						
+
 			label.setText(labelText);
 			detect.setText(Messages.EditorAutomaticallyDetectPort);
 			link.setText("<a href=\"\">" + Messages.Customize + "</a>");
@@ -211,7 +211,7 @@ public class PortSection extends ServerEditorSection {
 			detect.addListener(SWT.Selection, listener);
 			link.addListener(SWT.Selection, createLinkListener());
 		}
-		
+
 		protected Listener createLinkListener() {
 			return new Listener() {
 				public void handleEvent(Event event) {
@@ -229,7 +229,7 @@ public class PortSection extends ServerEditorSection {
 			return new ChangePortDialog(section.getShell(), getDialogInfo());
 		}
 		protected abstract ChangePortDialogInfo getDialogInfo();
-		
+
 		protected String findPort(IPath path) {
 			XPathQuery query = XPathModel.getDefault().getQuery(helper.getServer(), path);
 			if(query!=null) {
@@ -244,14 +244,14 @@ public class PortSection extends ServerEditorSection {
 			return null;
 		}
 	}
-	
+
 	protected void createUI(Composite parent) {
-		
+
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
 		Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE|ExpandableComposite.EXPANDED|ExpandableComposite.TITLE_BAR);
 		section.setText(Messages.EditorServerPorts);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
-		
+
 		Composite composite = toolkit.createComposite(section);
 		composite.setLayout(new FormLayout());
 		Label description = new Label(composite, SWT.NONE);
@@ -265,10 +265,10 @@ public class PortSection extends ServerEditorSection {
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 	}
-	
+
 	private void addUIAdditions(Composite parent, Control top) {
 		IPortEditorExtension[] extensions = (IPortEditorExtension[]) sectionList.toArray(new IPortEditorExtension[sectionList.size()]);
-		
+
 		FormData data;
 		Control c;
 		Composite wrapper = new Composite(parent, SWT.NONE);
@@ -278,7 +278,7 @@ public class PortSection extends ServerEditorSection {
 		data.left = new FormAttachment(0,0);
 		wrapper.setLayoutData(data);
 		top = null;
-		for( int i = 0; i < extensions.length; i++ ) { 
+		for( int i = 0; i < extensions.length; i++ ) {
 			extensions[i].setServerAttributeHelper(helper);
 			extensions[i].setSection(this);
 			c = extensions[i].createControl(wrapper);
@@ -293,7 +293,7 @@ public class PortSection extends ServerEditorSection {
 			top = c;
 		}
 	}
-	
+
 	protected String[] getXPathStrings() {
 		ArrayList<String> list = new ArrayList<String>();
 		XPathCategory[] categories = XPathModel.getDefault().getCategories(server.getOriginal());
@@ -305,7 +305,7 @@ public class PortSection extends ServerEditorSection {
 		}
 		return (String[]) list.toArray(new String[list.size()]);
 	}
-	
+
 	public static class SetPortCommand extends ServerCommand {
 		ServerAttributeHelper helper;
 		String textAttribute, overrideAttribute, overridePathAttribute;
@@ -315,7 +315,7 @@ public class PortSection extends ServerEditorSection {
 		Button button;
 		Listener listener;
 		String xpath;
-		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name, 
+		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name,
 				String textAttribute, String overrideAttribute, String overridePathAttribute,
 				String pathDefault, Text text, Button button, String xpath, Listener listener) {
 			super(server, name);
@@ -339,7 +339,7 @@ public class PortSection extends ServerEditorSection {
 			helper.setAttribute(textAttribute, text.getText());
 			helper.setAttribute(overrideAttribute, button.getSelection());
 			helper.setAttribute(overridePathAttribute, xpath);
-			
+
 			text.setEnabled(!button.getSelection());
 			text.setEditable(!button.getSelection());
 			if( button.getSelection() ) {
@@ -348,7 +348,7 @@ public class PortSection extends ServerEditorSection {
 				text.addListener(SWT.Modify, listener);
 			}
 		}
-		
+
 		public void undo() {
 			// set new values
 			helper.setAttribute(textAttribute, preText);
@@ -364,9 +364,9 @@ public class PortSection extends ServerEditorSection {
 			text.setEnabled(!preOverride);
 			text.setEditable(!preOverride);
 			button.addListener(SWT.Selection, listener);
-			text.addListener(SWT.Modify, listener);		
+			text.addListener(SWT.Modify, listener);
 		}
-		
+
 		protected String findPort(IPath path) {
 			XPathQuery query = XPathModel.getDefault().getQuery(helper.getServer(), path);
 			if(query!=null) {
