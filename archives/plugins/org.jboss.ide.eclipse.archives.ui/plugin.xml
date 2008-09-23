@@ -8,7 +8,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            category="org.jboss.ide.eclipse.ui.views"
+            category="org.jboss.tools.common.model.ui.views"
             class="org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView"
             icon="icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView"
