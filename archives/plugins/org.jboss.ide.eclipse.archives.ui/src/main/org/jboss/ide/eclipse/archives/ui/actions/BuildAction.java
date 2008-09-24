@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.actions;
 
 import org.eclipse.core.resources.IProject;
@@ -15,7 +25,13 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 
+/**
+ * Fire off a build of the archives or project / resource selected
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class BuildAction implements IWorkbenchWindowActionDelegate {
 	private IProject selectedProject;
 	public void dispose() {
@@ -48,7 +64,7 @@ public class BuildAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	private void buildSelectedNode(final Object selected) {
-		new Job("Build Archive Node") {
+		new Job(ArchivesUIMessages.BuildArchivesNode) {
 			// TODO actually get the status object
 			protected IStatus run(IProgressMonitor monitor) {
 				if( selected == null ) return Status.OK_STATUS;

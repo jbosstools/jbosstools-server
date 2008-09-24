@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import java.util.ArrayList;
@@ -10,14 +20,19 @@ import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchivesRootContentProvider implements ITreeContentProvider {
 	public static final Object NO_PROJECT = new Object();
-	
+
 	private ArchivesContentProviderDelegate delegate;
 	public ArchivesRootContentProvider() {
 		delegate = new ArchivesContentProviderDelegate(WrappedProject.NAME);
 	}
-	
+
 	public Object[] getChildren(Object parentElement) {
 		return delegate.getChildren(parentElement);
 	}
@@ -56,7 +71,7 @@ public class ArchivesRootContentProvider implements ITreeContentProvider {
 			projs[i] = new WrappedProject(objs[i], WrappedProject.NAME);
 		return projs;
 	}
-	
+
 	public void dispose() {
 		delegate.dispose();
 	}
@@ -64,7 +79,7 @@ public class ArchivesRootContentProvider implements ITreeContentProvider {
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		delegate.inputChanged(viewer, oldInput, newInput);
 	}
-	
+
 	private boolean showProjectRoot () {
 		return PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT);
 	}

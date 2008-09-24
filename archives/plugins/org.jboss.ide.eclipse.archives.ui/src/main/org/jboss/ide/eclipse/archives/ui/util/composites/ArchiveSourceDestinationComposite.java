@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.util.composites;
 
 import java.util.ArrayList;
@@ -13,6 +23,7 @@ import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -39,14 +50,20 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.INamedContainerArchiveNode;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchiveSourceDestinationComposite extends Composite {
 	private Text text;
 	private Label pathImage, translatedPath, translatedPathImage;
 	private Button workspaceButton, filesystemButton, variablesButton,
 			wsRadioButton, fsRadioButton;
-	
+
 	private String projectName;
 	private boolean workspaceRelative = false;
 	private IArchiveNode destinationNode;
@@ -66,7 +83,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		setWidgetData();
 		addListeners();
 	}
-	
+
 	protected void createWidgets() {
 		text = new Text(this, SWT.SINGLE | SWT.BORDER);
 		pathImage = new Label(this, SWT.NONE);
@@ -78,7 +95,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		wsRadioButton = new Button(this, SWT.RADIO);
 		fsRadioButton = new Button(this, SWT.RADIO);
 	}
-	
+
 	protected void layoutWidgets() {
 		pathImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
 		text.setLayoutData(createFormData(0,0,null,0,pathImage,5,100,0));
@@ -90,13 +107,13 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		translatedPathImage.setLayoutData(createFormData(filesystemButton,5,null,0,0,0,0,20));
 		translatedPath.setLayoutData(createFormData(filesystemButton,5,null,0,translatedPathImage,5,100,-5));
 	}
-	
+
 	protected void setWidgetData() {
-		filesystemButton.setText("Filesystem...");
-		workspaceButton.setText("Workspace...");
-		variablesButton.setText("Variables...");
-		wsRadioButton.setText("Workspace Relative");
-		fsRadioButton.setText("Filesystem Relative");
+		filesystemButton.setText(ArchivesUIMessages.Filesystem);
+		workspaceButton.setText(ArchivesUIMessages.Workspace);
+		variablesButton.setText(ArchivesUIMessages.Variables);
+		wsRadioButton.setText(ArchivesUIMessages.WorkspaceRelative);
+		fsRadioButton.setText(ArchivesUIMessages.FilesystemRelative);
 		pathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
 		FontData[] translatedPathData = translatedPath.getFont().getFontData();
 		for( int i = 0; i < translatedPathData.length; i++ )
@@ -105,7 +122,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		translatedPath.setFont(newFont);
 		translatedPathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK));
 	}
-	
+
 	protected void addListeners() {
 		text.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -113,7 +130,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 				destinationNode = null;
 				path = text.getText();
 				textModified(); } });
-		
+
 		// selection listeners
 		filesystemButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
@@ -135,7 +152,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
 				wsRadioButtonPressed();} });
-		
+
 	}
 	protected void textModified() {validateAndUpdateWidgets();}
 	protected void filesystemButtonPressed() {browseFilesystem();}
@@ -143,19 +160,19 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	protected void variablesButtonPressed() {variablesPressed();}
 	protected void fsRadioButtonPressed() {radioPressed(fsRadioButton);}
 	protected void wsRadioButtonPressed() {radioPressed(wsRadioButton);}
-	
+
 	protected void variablesPressed() {
 		StringVariableSelectionDialog d = new StringVariableSelectionDialog(Display.getDefault().getActiveShell());
 		if(d.open() == Window.OK) {
 			Object o = d.getFirstResult();
 			if( o != null && o instanceof IStringVariable) {
 				destinationNode = null;
-				path = path + "${" + ((IStringVariable)o).getName() + "}";
+				path = path + "${" + ((IStringVariable)o).getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 				validateAndUpdateWidgets();;
 			}
 		}
 	}
-	
+
 	protected void openDestinationDialog() {
 		ArchiveNodeDestinationDialog dialog = new ArchiveNodeDestinationDialog(getShell(), true, true);
 		if( dialog.open() == Dialog.OK ) {
@@ -167,7 +184,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			} else if( result instanceof IContainer ) {
 				destinationNode = null;
 				IPath tmpPath = ((IContainer)result).getFullPath();
-				if( tmpPath.segment(0).equals(projectName) && 
+				if( tmpPath.segment(0).equals(projectName) &&
 						getDescriptorVersion() >= IArchiveModelRootNode.DESCRIPTOR_VERSION_1_2)
 					path = tmpPath.removeFirstSegments(1).makeRelative().toString();
 				else
@@ -177,10 +194,10 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			validateAndUpdateWidgets();
 		}
 	}
-	
+
 	protected void browseFilesystem () {
 		DirectoryDialog dialog = new DirectoryDialog(getShell());
-		String currentPath = null; 
+		String currentPath = null;
 		try {
 			currentPath = getTranslatedGlobalPath();
 		} catch(CoreException ce){/* ignore */}
@@ -188,7 +205,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		if (currentPath != null && currentPath.length() > 0 ) {
 			dialog.setFilterPath(currentPath);
 		}
-		
+
 		String path = dialog.open();
 		if( path != null ) {
 			destinationNode = null;
@@ -197,50 +214,50 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			validateAndUpdateWidgets();
 		}
 	}
-	
+
 	protected void radioPressed(Button button) {
 		workspaceRelative = button == wsRadioButton;
 		validateAndUpdateWidgets();
 	}
-	
+
 	protected void validateAndUpdateWidgets() {
 		// clear old status
 		error = false;
 		errorString = null;
-		
-		
+
+
 		wsRadioButton.setEnabled(destinationNode == null);
 		fsRadioButton.setEnabled(destinationNode == null);
 		wsRadioButton.setSelection(destinationNode == null && workspaceRelative);
 		fsRadioButton.setSelection(destinationNode == null && !workspaceRelative);
 
-		Image image = (destinationNode == null ? 
-				PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER) : 
+		Image image = (destinationNode == null ?
+				PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER) :
 				ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE));
 		pathImage.setImage(image);
-		
-		String destText = destinationNode == null ? 
-				(path == null ? "" : path) : ((INamedContainerArchiveNode)destinationNode).getName();
+
+		String destText = destinationNode == null ?
+				(path == null ? "" : path) : ((INamedContainerArchiveNode)destinationNode).getName(); //$NON-NLS-1$
 		if(!text.getText().equals(destText)) {
-			text.setText(destText);	
+			text.setText(destText);
 		}
-		
+
 
 		String translated;
 		Image img=null;
-		try { 
+		try {
 			if( destinationNode != null ) {
-				translated=""; img=null;
+				translated=""; img=null; //$NON-NLS-1$
 			} else {
 				translated = getTranslatedGlobalPath();
 				if( translated == null || !new Path(translated).toFile().exists()) {
-					translated=translated + " does not exist in the filesystem.";
+					translated= NLS.bind(translated, ArchivesUIMessages.PathDoesNotExistInFilesystem);
 					img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 				} else {
 					img = null;
 				}
 			}
-		} catch( CoreException ce ) { 
+		} catch( CoreException ce ) {
 			translated = ce.getMessage();
 			if( ce.getStatus().getSeverity() == IStatus.ERROR) {
 				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
@@ -258,32 +275,33 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		try {
 			String postSub = ArchivesCore.getInstance().getVFS().
 								performStringSubstitution(path, projectName, true);
-			if( workspaceRelative ) { 
+			if( workspaceRelative ) {
 				IPath p = ArchivesCore.getInstance().getVFS().workspacePathToAbsolutePath(new Path(postSub));
 				if( p != null ) return p.toString();
-				return "Unable to convert workspace path into global path: " + postSub;
+				return NLS.bind(postSub, ArchivesUIMessages.ErrorConvertingPaths);
 			}
 			return postSub;
-		} catch( CoreException e ) { 
-			return "Error during string substitution: " + e.getMessage();
+		} catch( CoreException e ) {
+			return NLS.bind(e.getMessage(), ArchivesUIMessages.ErrorStringSubstitution);
 		}
-		
+
 	}
 
 	protected String getTranslatedGlobalPath() throws CoreException {
 		try {
 			IPath p = PathUtils.getGlobalLocation(path, projectName, workspaceRelative, getDescriptorVersion());
 			if( p != null ) return p.toString();
-			String ERROR ="Unable to convert workspace path into global path: " + p.toOSString(); 
+			String ERROR = NLS.bind(p.toOSString(), ArchivesUIMessages.ErrorConvertingPaths);
+
 			Status s = new Status(IStatus.WARNING, PackagesUIPlugin.PLUGIN_ID, ERROR);
 			throw new CoreException(s);
 		} catch( CoreException e ) {
-			String ERROR = "Error during string substitution: " + e.getMessage();
+			String ERROR = NLS.bind(e.getMessage(), ArchivesUIMessages.ErrorStringSubstitution);
 			Status s = new Status(IStatus.ERROR, PackagesUIPlugin.PLUGIN_ID, ERROR, e);
 			throw new CoreException(s);
 		}
 	}
-	
+
 	private FormData createFormData(Object topStart, int topOffset,
 			Object bottomStart, int bottomOffset, Object leftStart,
 			int leftOffset, Object rightStart, int rightOffset) {
@@ -316,8 +334,8 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		return data;
 	}
 
-	
-	
+
+
 	// APIs
 	public void init(IArchiveNode dest) {
 		destinationNode = dest;
@@ -325,22 +343,22 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		workspaceRelative = true;
 		validateAndUpdateWidgets();
 	}
-	
+
 	public void init(String path, boolean workspaceRelative) {
 		this.path = path;
 		this.workspaceRelative = workspaceRelative;
 		this.destinationNode = null;
 		validateAndUpdateWidgets();
 	}
-	
+
 	public boolean isValid() {
 		return !error;
 	}
-	
+
 	public String getErrorMessage() {
 		return errorString;
 	}
-	
+
 	public boolean isWorkspaceRelative() {
 		return workspaceRelative;
 	}
@@ -352,25 +370,25 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	public String getPath() {
 		return path;
 	}
-	
+
 	public void setDescriptorVersion(double version) {
 		this.version = version;
 	}
 	public double getDescriptorVersion() {
 		return version;
 	}
-	
+
 	public static interface ChangeListener {
 		public void compositeChanged();
 	}
 	public void addChangeListener (ChangeListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public void removeChangeListener (ChangeListener listener) {
 		listeners.remove(listener);
 	}
-	
+
 	private void fireChange() {
 		for (Iterator<ChangeListener> iter = listeners.iterator(); iter.hasNext(); ) {
 			((ChangeListener) iter.next()).compositeChanged();

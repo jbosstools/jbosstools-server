@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import java.util.ArrayList;
@@ -20,8 +30,13 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchivesContentProviderDelegate implements ITreeContentProvider, IArchiveModelListener {
-	
+
 	public static class WrappedProject {
 		public static final int NAME = 1;
 		public static final int CATEGORY = 2;
@@ -48,14 +63,14 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			this.project = wProject.element;
 		}
 		public boolean equals(Object otherObject) {
-			return otherObject instanceof DelayProxy && 
+			return otherObject instanceof DelayProxy &&
 				wProject.equals(((DelayProxy)otherObject).wProject);
 		}
 		public int hashCode() {
 			return wProject.hashCode() + 15;
 		}
 	}
-	
+
 	private int type;
 	public ArchivesContentProviderDelegate(int type) {
 		this.type = type;
@@ -66,7 +81,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		if( addListener)
 			ArchivesModel.instance().addModelListener(this);
 	}
-	
+
 	protected Viewer viewerInUse;
 	protected ArrayList<IProject> loadingProjects = new ArrayList<IProject>();
 
@@ -78,7 +93,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			// if currently loading, always send a delay
 			if( loadingProjects.contains(p))
 				return new Object[]{new DelayProxy(wp)};
-			
+
 			if( ArchivesModel.instance().isProjectRegistered(p.getLocation()))
 				return ArchivesModel.instance().getRoot(p.getLocation()).getAllChildren();
 			if( ArchivesModel.instance().canReregister(p.getLocation())) {
@@ -88,16 +103,16 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 				return new Object[]{dp};
 			}
 		}
-		if( parentElement instanceof IArchiveNode ) 
+		if( parentElement instanceof IArchiveNode )
 			return ((IArchiveNode)parentElement).getAllChildren();
 		return new Object[0];
 	}
 
-	
+
 	protected void launchRegistrationThread(final DelayProxy dp) {
-		Runnable callback = new Runnable() { 
+		Runnable callback = new Runnable() {
 			public void run() {
-				Display.getDefault().asyncExec(new Runnable() { 
+				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
 						loadingProjects.remove(dp.project);
 						refreshViewer(dp.wProject);
@@ -108,14 +123,14 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		RegisterArchivesJob job = new RegisterArchivesJob(new IProject[]{dp.project}, callback);
 		job.schedule();
 	}
-	
+
 	protected boolean shouldRefreshProject() {
-		if( viewerInUse == ProjectArchivesCommonView.getInstance().getCommonViewer() && 
+		if( viewerInUse == ProjectArchivesCommonView.getInstance().getCommonViewer() &&
 				!PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT))
 			return true;
 		return false;
 	}
-	
+
 	public Object getParent(Object element) {
 		return null;
 	}
@@ -123,7 +138,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 	public boolean hasChildren(Object element) {
 		if( element instanceof IArchiveNode )
 			return getChildren(element).length > 0;
-		if( element instanceof IResource ) 
+		if( element instanceof IResource )
 			return ArchivesModel.instance().canReregister(((IResource)element).getLocation());
 		if( element == ArchivesRootContentProvider.NO_PROJECT)
 			return false;
@@ -144,15 +159,15 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		viewerInUse = viewer;
 	}
 	public void modelChanged(IArchiveNodeDelta delta) {
-			
+
 		final IArchiveNode[] topChanges;
-		if( delta.getKind() == IArchiveNodeDelta.DESCENDENT_CHANGED) 
+		if( delta.getKind() == IArchiveNodeDelta.DESCENDENT_CHANGED)
 			topChanges = getChanges(delta);
 		else if( delta.getKind() == IArchiveNodeDelta.NO_CHANGE)
 			return;
 		else
 			topChanges = new IArchiveNode[]{delta.getPostNode()};
-		
+
 		// now go through and refresh them
 		Display.getDefault().asyncExec(new Runnable () {
 			public void run () {
@@ -165,25 +180,25 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 
 	/*
 	 * The inputs to ProjectArchivesCommonView are either an IProject, if no root projects are shown,
-	 * or an IWorkspaceRoot, if they are. A parent, though can be a WrappedProject 
+	 * or an IWorkspaceRoot, if they are. A parent, though can be a WrappedProject
 	 */
-	
+
 	protected void refreshViewer(Object o) {
 		if( o instanceof IArchiveModelRootNode) {
 			String projName = ((IArchiveModelRootNode)o).getProjectName();
 			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(projName);
-			if( p != null ) 
+			if( p != null )
 				o = new WrappedProject(p, type);
 		}
 		if( o instanceof WrappedProject && shouldRefreshProject())
 			o = ((WrappedProject)o).element;
-		
+
 		if( viewerInUse instanceof StructuredViewer ) {
 			((StructuredViewer)viewerInUse).refresh(o);
 			if( viewerInUse instanceof TreeViewer ) {
 				((TreeViewer)viewerInUse).expandToLevel(o, 1);
 			}
-		} else 
+		} else
 			viewerInUse.refresh();
 
 	}
@@ -191,7 +206,7 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		IArchiveNodeDelta[] children = delta.getAllAffectedChildren();
 		ArrayList<IArchiveNode> list = new ArrayList<IArchiveNode>();
 		for( int i = 0; i < children.length; i++ ) {
-			if( children[i].getKind() == IArchiveNodeDelta.DESCENDENT_CHANGED) 
+			if( children[i].getKind() == IArchiveNodeDelta.DESCENDENT_CHANGED)
 				list.addAll(Arrays.asList(getChanges(children[i])));
 			else
 				list.add(children[i].getPostNode());

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.util.composites;
 
 import java.util.ArrayList;
@@ -28,6 +38,11 @@ import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchiveNodeDestinationDialog extends ElementTreeSelectionDialog {
 
 	public ArchiveNodeDestinationDialog(Shell parent,
@@ -154,7 +169,7 @@ public class ArchiveNodeDestinationDialog extends ElementTreeSelectionDialog {
 			} else if (element instanceof IContainer) {
 				return ((IContainer) element).getName();
 			}
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 		public void addListener(ILabelProviderListener listener) {

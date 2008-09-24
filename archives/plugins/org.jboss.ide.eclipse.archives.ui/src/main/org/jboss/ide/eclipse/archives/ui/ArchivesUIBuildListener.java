@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui;
 
 import org.eclipse.core.runtime.IStatus;
@@ -23,17 +33,22 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.AbstractBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchivesUIBuildListener extends AbstractBuildListener {
 
 	public void error(IArchiveNode node, final IStatus[] multi) {
-		final MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, "Error during build", null);
+		final MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesUIMessages.BuildError, null);
 		for( int i = 0; i < multi.length; i++ ) {
 			ms.add(multi[i]);
 		}
 		if( PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG)) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					ErrorDialog ed = new ErrorDialogWithPreference(new Shell(), "Error building project archives", "Error building project archives", ms, IStatus.ERROR );
+					ErrorDialog ed = new ErrorDialogWithPreference(new Shell(), ArchivesUIMessages.BuildError, ArchivesUIMessages.BuildError, ms, IStatus.ERROR );
 					ed.open();
 				}
 			} );
@@ -84,7 +99,7 @@ public class ArchivesUIBuildListener extends AbstractBuildListener {
 			}
 
 			checkbox = new Button(composite, SWT.CHECK);
-			checkbox.setText("Do not show this message again");
+			checkbox.setText(ArchivesUIMessages.DoNotShowThisAgain);
 			FormData fd = new FormData();
 			fd.top = new FormAttachment(messageLabel,5);
 			fd.left = new FormAttachment(0,5);

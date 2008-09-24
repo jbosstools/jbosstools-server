@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.resources.IProject;
@@ -8,23 +18,23 @@ import org.jboss.ide.eclipse.archives.ui.PrefsInitializer.IArchivesPreferenceLis
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 
 /**
- * This class is the contribution to the Project Explorer. 
+ * This class is the contribution to the Project Explorer.
  * It returns a wrapped project suitable for adding archives to.
  * It delegates all further content to the common provider.
- * 
+ *
  * @author rob.stryker@redhat.com
  *
  */
-public class ArchivesRootBridgeContentProvider 
+public class ArchivesRootBridgeContentProvider
 	implements ITreeContentProvider, IArchivesPreferenceListener {
 	private ArchivesContentProviderDelegate delegate;
 	public ArchivesRootBridgeContentProvider() {
 		delegate = new ArchivesContentProviderDelegate(WrappedProject.CATEGORY);
 		PrefsInitializer.addListener(this);
 	}
-	
+
 	public Object[] getChildren(Object parentElement) {
-		if( parentElement instanceof IProject ) 
+		if( parentElement instanceof IProject )
 			return new Object[] { new WrappedProject((IProject)parentElement, WrappedProject.CATEGORY) };
 		return delegate.getChildren(parentElement);
 	}

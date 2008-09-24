@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import java.util.Arrays;
@@ -39,9 +49,9 @@ import org.jboss.ide.eclipse.archives.ui.wizards.FilesetWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.NewJARWizard;
 
 public class ArchivesActionProvider extends CommonActionProvider {
-	public static final String NEW_PACKAGE_MENU_ID = "org.jboss.ide.eclipse.archives.ui.newPackageMenu";
-	public static final String NODE_CONTEXT_MENU_ID = "org.jboss.ide.eclipse.archives.ui.nodeContextMenu";
-	public static final String NEW_PACKAGE_ADDITIONS = "newPackageAdditions";
+	public static final String NEW_PACKAGE_MENU_ID = "org.jboss.ide.eclipse.archives.ui.newPackageMenu"; //$NON-NLS-1$
+	public static final String NODE_CONTEXT_MENU_ID = "org.jboss.ide.eclipse.archives.ui.nodeContextMenu"; //$NON-NLS-1$
+	public static final String NEW_PACKAGE_ADDITIONS = "newPackageAdditions"; //$NON-NLS-1$
 
 	private MenuManager newPackageManager;
 	private NodeContribution[]  nodePopupMenuContributions;
@@ -52,7 +62,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 
 	public ArchivesActionProvider() {
 	}
-	
+
 	public void init(ICommonActionExtensionSite aSite) {
 		newPackageActions = ExtensionManager.findNewArchiveActions();
 		nodePopupMenuContributions = ExtensionManager.findNodePopupMenuContributions();
@@ -62,25 +72,25 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		newPackageManager = new MenuManager(ArchivesUIMessages.ProjectPackagesView_newPackageMenu_label, NEW_PACKAGE_MENU_ID);
 		newPackageManager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	
+
 	public void fillContextMenu(IMenuManager manager) {
 		menuAboutToShow2(manager);
 	}
-	
+
 	public void menuAboutToShow2(IMenuManager manager) {
 		addNewPackageActions(newPackageManager);
 
 		IStructuredSelection selection = getSelection();
 		if (selection != null && !selection.isEmpty()) {
 			Object element = selection.getFirstElement();
-			
+
 			if (element instanceof IProject || element instanceof WrappedProject ) {
 				manager.add(newPackageManager);
 				manager.add(buildAction);
 				buildAction.setText(ArchivesUIMessages.ProjectPackagesView_buildProjectAction_label);
 			} else if( element instanceof IArchiveNode ){
 				IArchiveNode node = (IArchiveNode)element;
-				
+
 				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE
 						|| node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
 					manager.add(newPackageManager);
@@ -88,7 +98,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 					manager.add(newFilesetAction);
 					manager.add(new Separator());
 				}
-				
+
 				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editPackageAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label);
@@ -96,11 +106,11 @@ public class ArchivesActionProvider extends CommonActionProvider {
 					buildAction.setText(ArchivesUIMessages.ProjectPackagesView_buildArchiveAction_label);
 					manager.add(buildAction);
 				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
-					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFolderAction_label); 
+					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFolderAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFolderAction_label);
 					editAction.setImageDescriptor(platformDescriptor(ISharedImages.IMG_OBJ_FOLDER));
 				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
-					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFilesetAction_label); 
+					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFilesetAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFilesetAction_label);
 					editAction.setImageDescriptor(ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES));
 				}
@@ -112,40 +122,40 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			manager.add(newPackageManager);
 		}
 	}
-	
+
 	protected void createActions() {
-		newFolderAction = new Action(ArchivesUIMessages.ProjectPackagesView_newFolderAction_label, platformDescriptor(ISharedImages.IMG_OBJ_FOLDER)) { //$NON-NLS-1$
+		newFolderAction = new Action(ArchivesUIMessages.ProjectPackagesView_newFolderAction_label, platformDescriptor(ISharedImages.IMG_OBJ_FOLDER)) {
 			public void run () {
 				createFolder();
 			}
 		};
-		
-		newFilesetAction = new Action(ArchivesUIMessages.ProjectPackagesView_newFilesetAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES)) { //$NON-NLS-1$
+
+		newFilesetAction = new Action(ArchivesUIMessages.ProjectPackagesView_newFilesetAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES)) {
 			public void run () {
 				createFileset();
 			}
 		};
-		
-		deleteAction = new Action (ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label, platformDescriptor(ISharedImages.IMG_TOOL_DELETE)) { //$NON-NLS-1$
+
+		deleteAction = new Action (ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label, platformDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
 			public void run () {
 				deleteSelectedNode();
-			}	
+			}
 		};
-		
-		editAction = new Action (ArchivesUIMessages.ProjectPackagesView_editPackageAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_PACKAGE_EDIT)) { //$NON-NLS-1$
+
+		editAction = new Action (ArchivesUIMessages.ProjectPackagesView_editPackageAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_PACKAGE_EDIT)) {
 			public void run () {
 				editSelectedNode();
 			}
 		};
-		
-		buildAction = new Action("", ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_BUILD_PACKAGES)) {
+
+		buildAction = new Action(ArchivesUIMessages.BuildArchivesNode, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_BUILD_PACKAGES)) {
 			public void run() {
 				new BuildAction().run(getSelectedObject());
 			}
 		};
 	}
-	
-	
+
+
 
 
 	private void addContextMenuContributions (final IArchiveNode context, IMenuManager mgr) {
@@ -157,15 +167,15 @@ public class ArchivesActionProvider extends CommonActionProvider {
 					public String getId() {
 						return contribution.getId();
 					}
-		
+
 					public ImageDescriptor getImageDescriptor() {
 						return contribution.getIcon();
 					}
-		
+
 					public String getText() {
 						return contribution.getLabel();
 					}
-		
+
 					public void run() {
 						contribution.getActionDelegate().run(context);
 					}
@@ -174,8 +184,8 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * Adds the new package type actions (which come from an extension point)
 	 * to the menu.
@@ -198,35 +208,35 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		public String getId() {
 			return action.getId();
 		}
-		
+
 		public ImageDescriptor getImageDescriptor() {
 			return action.getIconDescriptor();
 		}
-		
+
 		public String getText() {
 			return action.getLabel();
 		}
-		
+
 		public void run() {
 			action.getAction().run(null);
 		}
-		
+
 		public void selectionChanged(IStructuredSelection sel) {
 			action.getAction().selectionChanged(this, sel);
 		}
 	}
-	
-	
+
+
 	/*
-	 * Methods below are called from the standard actions, 
+	 * Methods below are called from the standard actions,
 	 * the implementations of the action, where the action does its work etc
 	 */
-	
+
 	private void createFolder () {
 		IInputValidator validator = new IInputValidator () {
 			public String isValid(String newText) {
 				IArchiveNode selected = getSelectedNode();
-				
+
 				boolean folderExists = false;
 				IArchiveNode[] folders = selected.getChildren(IArchiveNode.TYPE_ARCHIVE_FOLDER);
 				for (int i = 0; i < folders.length; i++) {
@@ -235,49 +245,49 @@ public class ArchivesActionProvider extends CommonActionProvider {
 						folderExists = true; break;
 					}
 				}
-				
+
 				if (folderExists) {
 					return ArchivesUIMessages.bind(
 						ArchivesUIMessages.ProjectPackagesView_createFolderDialog_warnFolderExists, newText);
-					
+
 				}
 				return null;
 			}
 		};
-		
+
 		InputDialog dialog = new InputDialog(getShell(),
 			ArchivesUIMessages.ProjectPackagesView_createFolderDialog_title,
-			ArchivesUIMessages.ProjectPackagesView_createFolderDialog_message, "", validator);
-		
+			ArchivesUIMessages.ProjectPackagesView_createFolderDialog_message, "", validator); //$NON-NLS-1$
+
 		int response = dialog.open();
 		if (response == Dialog.OK) {
-			String[] folderPaths = dialog.getValue().split("[\\\\/]");
+			String[] folderPaths = dialog.getValue().split("[\\\\/]"); //$NON-NLS-1$
 			IArchiveNode selected = getSelectedNode();
 			IArchiveFolder current = null;
 			IArchiveFolder temp = null;
-			
+
 			for(int i = folderPaths.length-1; i >= 0 ; i-- ) {
 				temp = ArchiveNodeFactory.createFolder();
 				temp.setName(folderPaths[i]);
-				if( current == null ) 
+				if( current == null )
 					current = temp;
 				else {
 					temp.addChild(current);
 					current = temp;
 				}
 			}
-			
+
 			selected.addChild(current);
 			new SaveArchivesJob(selected.getProjectPath()).schedule();
 		}
 	}
-	
+
 	private void createFileset () {
 		IArchiveNode selected = getSelectedNode();
 		WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(null, selected));
 		dialog.open();
 	}
-	
+
 	private void editSelectedNode () {
 		IArchiveNode node = getSelectedNode();
 		if (node != null) {
@@ -290,21 +300,21 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				WizardDialog dialog = new WizardDialog(getShell(), new NewJARWizard(pkg));
 				dialog.open();
 			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
-				// folder can do the model save here. 
+				// folder can do the model save here.
 				IArchiveFolder folder = (IArchiveFolder) node;
 				InputDialog dialog = new InputDialog(getShell(),
 						ArchivesUIMessages.ProjectPackagesView_createFolderDialog_title,
 						ArchivesUIMessages.ProjectPackagesView_createFolderDialog_message, folder.getName(), null);
-				
+
 				int response = dialog.open();
 				if (response == Dialog.OK) {
 					folder.setName(dialog.getValue());
 					new SaveArchivesJob(folder.getProjectPath()).schedule();
 				}
-			} 
+			}
 		}
 	}
-	
+
 	private void deleteSelectedNode () {
 		IArchiveNode node = getSelectedNode();
 		if (node != null) {
@@ -314,11 +324,11 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			job.schedule();
 		}
 	}
-	
-	
+
+
 	private IArchiveNode getSelectedNode () {
 		Object selected = getSelectedObject();
-		if( selected instanceof IArchiveNode ) 
+		if( selected instanceof IArchiveNode )
 			return ((IArchiveNode)selected);
 		return null;
 	}
@@ -331,7 +341,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	private IStructuredSelection getSelection() {
 		return (IStructuredSelection) site.getSelectionProvider().getSelection();
 	}
-	
+
 	private ImageDescriptor platformDescriptor(String desc) {
 		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(desc);
 	}

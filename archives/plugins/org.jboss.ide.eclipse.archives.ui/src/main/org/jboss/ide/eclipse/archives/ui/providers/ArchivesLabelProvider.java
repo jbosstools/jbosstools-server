@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -12,42 +22,48 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.DelayProxy;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelProvider {
-	
-	
+
+
 	/*
 	 * Important snippets to save
 	 * image = PlatformUI.getWorkbench().getDecoratorManager().decorateImage(image, element);
 	 * text = PlatformUI.getWorkbench().getDecoratorManager().decorateText(text, element);
 	 */
-	
+
 	public Image getImage(Object element) {
 		Image image = internalGetImage(element);
-		
+
 		if (image != null) {
 			image = PlatformUI.getWorkbench().getDecoratorManager().decorateImage(image, element);
 		}
-		
+
 		return image;
 	}
-	
+
 	public String getText(Object element) {
 		String text = internalGetText(element);
-		
+
 		if (text != null) {
 			text = PlatformUI.getWorkbench().getDecoratorManager().decorateText(text, element);
 		}
 		return text;
 	}
-	
+
 	private Image internalGetImage(Object element) {
 		if( element instanceof WrappedProject ) {
 			switch(((WrappedProject)element).getType()) {
-				case WrappedProject.NAME: 
+				case WrappedProject.NAME:
 					return PlatformUI.getWorkbench().getSharedImages().getImage(org.eclipse.ui.ide.IDE.SharedImages.IMG_OBJ_PROJECT);
 				case WrappedProject.CATEGORY:
 					return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE);
@@ -78,17 +94,17 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 
 	private String internalGetText(Object element) {
 		if( element == ArchivesRootContentProvider.NO_PROJECT)
-			return "Please select a project";
+			return ArchivesUIMessages.SelectAProject;
 		if( element instanceof WrappedProject ) {
 			switch(((WrappedProject)element).getType()) {
-				case WrappedProject.NAME: 
+				case WrappedProject.NAME:
 					return (((WrappedProject)element).getElement().getName());
 				case WrappedProject.CATEGORY:
-					return "Project Archives";
+					return ArchivesUIMessages.ProjectArchives;
 			}
 		}
-		if( element instanceof DelayProxy ) 
-			return "Loading...";
+		if( element instanceof DelayProxy )
+			return ArchivesUIMessages.Loading;
 		if( element instanceof IArchiveNode ) {
 			switch (((IArchiveNode)element).getNodeType()) {
 				case IArchiveNode.TYPE_ARCHIVE: return getPackageText((IArchive)element);
@@ -100,15 +116,15 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		}
 		return element.toString();
 	}
-	
-	
+
+
 	private String getPackageFolderText (IArchiveFolder folder) {
 		return folder.getName();
 	}
 	private String getPackageText (IArchive pkg) {
 		String text = pkg.getName();
 		if (PrefsInitializer.getBoolean( PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH)) {
-			text += " [" + PathUtils.getGlobalLocation(pkg) + "]";
+			text += " [" + PathUtils.getGlobalLocation(pkg) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return text;
 	}
@@ -121,13 +137,13 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		boolean showFullPath = PrefsInitializer.getBoolean(
 				PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR);
 		boolean inWorkspace = fileset.isInWorkspace();
-		
-		String text = "";
+
+		String text = ""; //$NON-NLS-1$
 		// +[includes] [excludes] : /path/to/root
-		text += "+[" + fileset.getIncludesPattern() + "] ";
-		
+		text += "+[" + fileset.getIncludesPattern() + "] "; //$NON-NLS-1$ //$NON-NLS-2$
+
 		if (fileset.getExcludesPattern() != null) {
-			text += "-[" + fileset.getExcludesPattern() + "] : ";
+			text += "-[" + fileset.getExcludesPattern() + "] : "; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		if (showFullPath) {
@@ -137,7 +153,7 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		} else {
 			text += PathUtils.getGlobalLocation(fileset).lastSegment();
 		}
-		
+
 		return text;
 	}
 

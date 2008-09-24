@@ -1,13 +1,47 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui;
 
 import org.eclipse.osgi.util.NLS;
 
 public class ArchivesUIMessages extends NLS {
-	public static final String BUNDLE_NAME = "org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages";
+	public static String BuildError;
+	public static String DoNotShowThisAgain;
+	public static String BuildArchivesNode;
+	public static String SelectAProject;
+	public static String ProjectArchives;
+	public static String Loading;
+	public static String SelectionNotValid;
+	public static String Filesystem;
+	public static String Workspace;
+	public static String Variables;
+	public static String WorkspaceRelative;
+	public static String FilesystemRelative;
+	public static String PathDoesNotExistInFilesystem;
+	public static String ErrorConvertingPaths;
+	public static String ErrorStringSubstitution;
+	public static String ErrorCompletingWizard;
+	public static String FilesetWizard;
+	public static String DefaultJarConfiguration;
+	public static String Preview;
+	public static String UseDefaultJARConfiguration;
+	public static String Flatten;
+	public static String Yes;
+	public static String No;
+
+
 
 	public static String NewJARWizard_windowTitle;
 	public static String NewJARWizard_windowTitle_editJAR;
-	
+
 	public static String PackageInfoWizardPage_compressedButton_label;
 	public static String PackageInfoWizardPage_destination_label;
 	public static String PackageInfoWizardPage_error_noPackageName;
@@ -25,7 +59,7 @@ public class ArchivesUIMessages extends NLS {
 
 	public static String PackageDestinationComposite_filesystemBrowseButton_label;
 	public static String PackageDestinationComposite_workspaceBrowseButton_label;
-	
+
 	public static String PackageNodeDestinationDialog_filesetLabel;
 	public static String PackageNodeDestinationDialog_folderLabel;
 	public static String PackageNodeDestinationDialog_messagePrefix;
@@ -62,7 +96,7 @@ public class ArchivesUIMessages extends NLS {
 	public static String ProjectPackagesView_createFolderDialog_title;
 	public static String ProjectPackagesView_createFolderDialog_message;
 	public static String ProjectPackagesView_createFolderDialog_warnFolderExists;
-	
+
 	public static String FilesetInfoWizardPage_new_message;
 	public static String FilesetInfoWizardPage_new_title;
 	public static String FilesetInfoWizardPage_edit_message;
@@ -86,12 +120,13 @@ public class ArchivesUIMessages extends NLS {
 	public static String FilesetInfoWizardPage_rootDirWorkspaceBrowser_message;
 	public static String FilesetInfoWizardPage_fileWorkspaceBrowser_title;
 	public static String FilesetInfoWizardPage_fileWorkspaceBrowser_message;
-	
+
 	/* Preference Page */
 	public static String PreferencePageTitle;
 	public static String ProjectSpecificSettings;
 	public static String CorePreferences;
 	public static String EnableIncrementalBuilder;
+	public static String ShowBuildErrorDialog;
 
 	public static String ProjectPackagesView;
 	public static String ShowFullOutputPath;
@@ -107,8 +142,8 @@ public class ArchivesUIMessages extends NLS {
 	public static String Disable;
 	public static String MoveUp;
 	public static String MoveDown;
-	
+
 	static {
-		NLS.initializeMessages(BUNDLE_NAME, ArchivesUIMessages.class);
+		NLS.initializeMessages("org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages", ArchivesUIMessages.class); //$NON-NLS-1$
 	}
 }

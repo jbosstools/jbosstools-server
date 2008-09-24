@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.views;
 
 import org.eclipse.core.resources.IProject;
@@ -20,11 +30,17 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
+import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer.IArchivesPreferenceListener;
 import org.jboss.ide.eclipse.archives.ui.actions.BuildAction;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 
+/**
+ *
+ * @author "Rob Stryker" <rob.stryker@redhat.com>
+ *
+ */
 public class ProjectArchivesCommonView extends CommonNavigator implements IArchivesPreferenceListener {
 	protected static ProjectArchivesCommonView instance;
 	protected ISelectionListener selectionListener;
@@ -118,7 +134,7 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 	}
 
 	public void addBuildActionToSite() {
-		Action buildAction = new Action("", ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_BUILD_PACKAGES)) {
+		Action buildAction = new Action(ArchivesUIMessages.BuildArchivesNode, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_BUILD_PACKAGES)) {
 			public void run() {
 				buildSelection(getSelectedObject());
 			}

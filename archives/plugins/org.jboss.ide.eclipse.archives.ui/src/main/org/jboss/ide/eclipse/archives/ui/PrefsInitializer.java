@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui;
 
 import java.util.ArrayList;
@@ -17,11 +27,11 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 
 
 	// preference keys
-	public static final String PREF_SHOW_PACKAGE_OUTPUT_PATH = "showPackageOutputPath";
-	public static final String PREF_SHOW_FULL_FILESET_ROOT_DIR = "showFullFilesetRootDir";
-	public static final String PREF_SHOW_PROJECT_ROOT = "showProjectRoot";
-	public static final String PREF_SHOW_ALL_PROJECTS = "showAllProjects";
-	public static final String PREF_SHOW_BUILD_ERROR_DIALOG = "showBuildErrorDialog";
+	public static final String PREF_SHOW_PACKAGE_OUTPUT_PATH = "showPackageOutputPath"; //$NON-NLS-1$
+	public static final String PREF_SHOW_FULL_FILESET_ROOT_DIR = "showFullFilesetRootDir";//$NON-NLS-1$
+	public static final String PREF_SHOW_PROJECT_ROOT = "showProjectRoot";//$NON-NLS-1$
+	public static final String PREF_SHOW_ALL_PROJECTS = "showAllProjects";//$NON-NLS-1$
+	public static final String PREF_SHOW_BUILD_ERROR_DIALOG = "showBuildErrorDialog";//$NON-NLS-1$
 	public static final ArrayList<IArchivesPreferenceListener> listeners = new ArrayList<IArchivesPreferenceListener>();
 
 	public static interface IArchivesPreferenceListener {
