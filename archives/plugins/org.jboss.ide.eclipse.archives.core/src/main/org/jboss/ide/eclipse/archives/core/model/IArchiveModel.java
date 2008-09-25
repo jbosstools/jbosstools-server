@@ -33,7 +33,7 @@ import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbExcept
  *
  */
 public interface IArchiveModel {
-	public static final String DEFAULT_PACKAGES_FILE = ".packages";
+	public static final String DEFAULT_PACKAGES_FILE = ".packages"; //$NON-NLS-1$
 
 	public boolean isProjectRegistered(IPath projectPath);
 	public void save(IPath projectPath, IProgressMonitor monitor) throws ArchivesModelException;
@@ -48,7 +48,7 @@ public interface IArchiveModel {
 	public IArchiveModelRootNode getRoot(IPath project);
 	public IArchiveModelRootNode[] getModelNodes();
 	public boolean accept(IArchiveNodeVisitor visitor);
-	
+
 	public void addBuildListener(IArchiveBuildListener listener);
 	public void removeBuildListener(IArchiveBuildListener listener);
 	public IArchiveBuildListener[] getBuildListeners();

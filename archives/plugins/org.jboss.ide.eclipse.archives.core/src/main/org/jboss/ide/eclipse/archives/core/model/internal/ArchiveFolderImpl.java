@@ -33,7 +33,7 @@ import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFolder;
 
 /**
  * A PackageFolderImpl.
- * 
+ *
  * @author <a href="marshall@jboss.org">Marshall Culpepper</a>
  * @author <a href="rob.stryker@redhat.com">Rob Stryker</a>
  * @version $Revision: 1930 $
@@ -42,7 +42,7 @@ public class ArchiveFolderImpl extends ArchiveNodeImpl implements
 		IArchiveFolder {
 
 	private XbFolder folderDelegate;
-	
+
 	public ArchiveFolderImpl() {
 		this(new XbFolder());
 	}
@@ -106,18 +106,18 @@ public class ArchiveFolderImpl extends ArchiveNodeImpl implements
 	protected XbFolder getFolderDelegate () {
 		return folderDelegate;
 	}
-	
+
 	public String toString() {
-		return "folder[" + getName() + "]";
+		return "folder[" + getName() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
-	
+
 	/*
 	 * @see IArchiveNode#getRootArchiveRelativePath()
 	 */
 	public IPath getRootArchiveRelativePath() {
 		return getParent().getRootArchiveRelativePath().append(getName());
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl#validateChild(org.jboss.ide.eclipse.archives.core.model.IArchiveNode)

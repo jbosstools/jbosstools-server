@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
@@ -13,11 +14,11 @@ public class RegisterArchivesJob extends Job {
 	private IProject[] projects;
 	private Runnable callback;
 	public RegisterArchivesJob(IProject[] projects, Runnable callback) {
-		super("Register Project Archives");
+		super(ArchivesCoreMessages.RegisterProject);
 		this.projects = projects;
 		this.callback = callback;
 	}
-	
+
 	protected IStatus run(IProgressMonitor monitor) {
 		// register the projects
 		for( int i = 0; i < projects.length; i++ ) {
@@ -28,7 +29,7 @@ public class RegisterArchivesJob extends Job {
 				return status;
 			}
 		}
-		
+
 		callback.run();
 		return Status.OK_STATUS;
 	}

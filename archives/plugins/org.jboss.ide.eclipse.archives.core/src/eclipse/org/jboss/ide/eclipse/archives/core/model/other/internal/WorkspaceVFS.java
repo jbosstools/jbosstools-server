@@ -17,14 +17,14 @@ import org.jboss.ide.eclipse.archives.core.model.IVariableManager;
 public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 	public WorkspaceVFS() {
 	}
-		
+
 	public IPath[] getWorkspaceChildren(IPath path) {
 		IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
 		if( res != null || !(res instanceof IContainer)) {
 			try {
 				IResource[] resources = ((IContainer)res).members();
 				IPath[] paths = new IPath[resources.length];
-				for( int i = 0; i < resources.length; i++ ) 
+				for( int i = 0; i < resources.length; i++ )
 					paths[i] = resources[i].getFullPath();
 				return paths;
 			} catch( CoreException ce ) {
@@ -36,7 +36,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 
 	public IPath workspacePathToAbsolutePath(IPath path) {
 		IResource r = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-		IPath append = new Path("");
+		IPath append = new Path(""); //$NON-NLS-1$
 		while( r == null && path.segmentCount() > 0) {
 			append = new Path(path.lastSegment()).append(append);
 			path = path.removeLastSegments(1);
@@ -49,13 +49,13 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 
 	public String getProjectName(IPath absolutePath) {
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for( int i = 0; i < projects.length; i++ ) 
+		for( int i = 0; i < projects.length; i++ )
 			if( projects[i].getLocation().equals(absolutePath))
 				return projects[i].getName();
 		return null;
 	}
 
-	
+
 	private String currentProject;
 	public synchronized String performStringSubstitution(String expression,
 			String projectName, boolean reportUndefinedVariables)
@@ -63,7 +63,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 		// set this project name
 		if( expression == null )
 			return null;
-		
+
 		currentProject = projectName;
 		try {
 			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(expression);
@@ -71,7 +71,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 			currentProject = null;
 		}
 	}
-	
+
 	// Since the extension point re-instantiates this, we must delegate to the official instance
 	public String resolveValue(IDynamicVariable variable, String argument)
 			throws CoreException {

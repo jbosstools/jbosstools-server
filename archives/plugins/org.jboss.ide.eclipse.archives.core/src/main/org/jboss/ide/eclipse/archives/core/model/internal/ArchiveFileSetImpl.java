@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
@@ -47,29 +48,29 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 	private FileWrapper[] matchingPaths;
 	private HashMap<String, ArrayList<FileWrapper>> matchingMap;
 	private boolean rescanRequired = true;
-	
+
 	public ArchiveFileSetImpl() {
 		this(new XbFileSet());
 	}
-	
+
 	public ArchiveFileSetImpl (XbFileSet delegate) {
 		super(delegate);
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#getExcludesPattern()
 	 */
 	public String getExcludesPattern() {
 		return getFileSetDelegate().getExcludes();
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#isInWorkspace()
 	 */
 	public boolean isInWorkspace() {
 		return getFileSetDelegate().isInWorkspace();
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#getIncludesPattern()
 	 */
@@ -85,14 +86,14 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		return getFileSetDelegate().getDir();
 	}
 
-	
+
 	/*
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet#isFlattened()
 	 */
 	public boolean isFlattened() {
 		return getFileSetDelegate().isFlattened();
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#matchesPath(IPath)
 	 */
@@ -105,12 +106,12 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		IPath globalPath = path;
 		if( inWorkspace )
 			globalPath = ArchivesCore.getInstance().getVFS().workspacePathToAbsolutePath(path);
-		
+
 		ArrayList<FileWrapper> result = matchingMap.get(globalPath.toFile().getAbsolutePath());
 		if( result != null )
-			if( result.size() > 0 ) 
+			if( result.size() > 0 )
 				return true;
-		
+
 		return getScanner().couldBeIncluded(path.toString(), inWorkspace);
 	}
 
@@ -121,7 +122,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 			return (FileWrapper[]) l.toArray(new FileWrapper[l.size()]);
 		return new FileWrapper[0];
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#findMatchingPaths()
 	 */
@@ -129,7 +130,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		getScanner();
 		return matchingPaths;
 	}
-	
+
 	/*
 	 * Will re-scan if required, or use cached scanner
 	 * @return
@@ -145,21 +146,21 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 					matchingMap = scanner.getMatchedMap();
 				}
 			} catch( IllegalStateException ise ) {
-				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, "Could not create directory scanner", ise);
+				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, ArchivesCoreMessages.CouldNotCreateScanner, ise);
 				matchingPaths = new FileWrapper[0];
 				matchingMap = new HashMap<String, ArrayList<FileWrapper>>();
 			}
 		}
 		return scanner;
 	}
-		
+
 	/*
 	 * @see IArchiveNode#getNodeType()
 	 */
 	public int getNodeType() {
 		return TYPE_ARCHIVE_FILESET;
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#setExcludesPattern(String)
 	 */
@@ -186,7 +187,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		getFileSetDelegate().setInWorkspace(isInWorkspace);
 		rescanRequired = true;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet#setFlattened(boolean)
@@ -196,25 +197,25 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 		getFileSetDelegate().setFlattened(flat);
 		rescanRequired = true;
 	}
-	
+
 	/*
 	 * @see IArchiveFileSet#setSourcePath(IPath, boolean)
 	 */
 	public void setRawSourcePath (String raw) {
 		Assert.isNotNull(raw);
 		String src = getRawSourcePath();
-		attributeChanged(SOURCE_PATH_ATTRIBUTE, 
-				src == null ? null : src.toString(), 
+		attributeChanged(SOURCE_PATH_ATTRIBUTE,
+				src == null ? null : src.toString(),
 				raw == null ? null : raw);
 		getFileSetDelegate().setDir(raw);
 		rescanRequired = true;
 	}
-	
+
 	protected XbFileSet getFileSetDelegate () {
 		return (XbFileSet)nodeDelegate;
 	}
 
-	
+
 	/*
 	 * filesets have no path of their own
 	 * and should not be the parents of any other node
@@ -222,7 +223,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 	 * @see IArchiveNode#getRootArchiveRelativePath()
 	 */
 	public IPath getRootArchiveRelativePath() {
-		return getParent().getRootArchiveRelativePath(); 
+		return getParent().getRootArchiveRelativePath();
 	}
 
 	/*
@@ -231,30 +232,30 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 	public void resetScanner() {
 		rescanRequired = true;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl#validateChild(org.jboss.ide.eclipse.archives.core.model.IArchiveNode)
 	 */
 	public boolean validateModel() {
-		return getAllChildren().length == 0 ? true : false; 
+		return getAllChildren().length == 0 ? true : false;
 	}
-	
+
 	public boolean canBuild() {
 		return PathUtils.getGlobalLocation(this) != null && super.canBuild();
 	}
-	
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("{dir=");
+		sb.append("{dir="); //$NON-NLS-1$
 		sb.append(getFileSetDelegate().getDir());
-		sb.append(",includes=");
+		sb.append(",includes="); //$NON-NLS-1$
 		sb.append(getFileSetDelegate().getIncludes());
-		sb.append(",excludes=");
+		sb.append(",excludes="); //$NON-NLS-1$
 		sb.append(getFileSetDelegate().getExcludes());
-		sb.append(",inWorkspace=");
+		sb.append(",inWorkspace="); //$NON-NLS-1$
 		sb.append(getFileSetDelegate().isInWorkspace());
-		sb.append(",flatten=");
+		sb.append(",flatten="); //$NON-NLS-1$
 		sb.append(getFileSetDelegate().isFlattened());
 		return sb.toString();
 	}

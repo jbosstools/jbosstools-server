@@ -15,14 +15,14 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
 /**
- * This class responds to model change events. 
- * It is given a delta as to what nodes are added, removed, or changed. 
+ * This class responds to model change events.
+ * It is given a delta as to what nodes are added, removed, or changed.
  * It then keeps the output file for the top level archive in sync with
  * the changes to the model.
- * 
+ *
  * If the automatic builder is not enabled for this project, the listener
- * does nothing. 
- * 
+ * does nothing.
+ *
  * @author Rob Stryker (rob.stryker@redhat.com)
  *
  */
@@ -34,7 +34,7 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			IContainer proj = root.getContainerForLocation(pack.getProjectPath());
 			try {
-				proj.setSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname"), "inUse");
+				proj.setSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname"), "inUse"); //$NON-NLS-1$ //$NON-NLS-2$
 				if( pack.isDestinationInWorkspace() ) {
 					// refresh the root package node
 					IResource res = root.getContainerForLocation(pack.getProjectPath());
@@ -46,19 +46,19 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 						}
 					}
 				}
-				
+
 				try {
 					proj.getFile(new Path(IArchiveModel.DEFAULT_PACKAGES_FILE)).refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
 				} catch( CoreException ce ) {
 				}
 			} catch( CoreException ce ) {
 			}
-			
+
 			try {
-				proj.setSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname"), null);
+				proj.setSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname"), null); //$NON-NLS-1$
 			} catch( CoreException ce ) {
 			}
-			
+
 		}
 	}
 }

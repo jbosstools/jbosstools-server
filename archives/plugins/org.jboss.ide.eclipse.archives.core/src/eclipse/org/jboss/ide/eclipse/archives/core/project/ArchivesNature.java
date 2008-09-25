@@ -33,16 +33,16 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 /**
  * The nature associated with archives, specifically
  * the builder is added or removed based on this nature.
- * 
+ *
  * @author Rob Stryker (rob.stryker@redhat.com)
  *
  */
 public class ArchivesNature implements IProjectNature {
 
-	public static final String NATURE_ID = "org.jboss.ide.eclipse.archives.core.archivesNature";
-	
+	public static final String NATURE_ID = "org.jboss.ide.eclipse.archives.core.archivesNature"; //$NON-NLS-1$
+
 	private IProject project;
-	
+
 	public void configure() throws CoreException {
 		addProjectBuilder(project, ArchivesBuilder.BUILDER_ID);
 	}
@@ -58,24 +58,24 @@ public class ArchivesNature implements IProjectNature {
 	public void setProject(IProject project) {
 		this.project = project;
 	}
-	
+
 	public static boolean addProjectBuilder(IProject project, String builderId)
 	{
 		try
 		{
 			IProjectDescription desc = project.getDescription();
 			ICommand[] commands = desc.getBuildSpec();
-			
+
 			//add builders to project
 			ICommand builderCommand = desc.newCommand();
 			builderCommand.setBuilderName(builderId);
-			
+
 			ICommand[] newCommands = new ICommand[commands.length + 1];
 			System.arraycopy(commands, 0, newCommands, 0, commands.length);
 			newCommands[newCommands.length - 1] = builderCommand;
-			
+
 			desc.setBuildSpec(newCommands);
-			
+
 			project.setDescription(desc, new NullProgressMonitor());
 	      }
 	      catch (CoreException e)

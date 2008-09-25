@@ -42,7 +42,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 
 /**
  * Update the model if someone changes the packaging file by hand
@@ -82,22 +81,24 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 		while(i.hasNext()) {
 			final IProject p = i.next();
 			try {
-				if( p.getSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname")) == null ) {
+				if( p.getSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname")) == null ) { //$NON-NLS-1$
 					try {
 						ArchivesModel.instance().registerProject(p.getLocation(), new NullProgressMonitor());
-						new Job("Refresh Project: " + p.getName()) {
+						new Job(ArchivesCore.bind(ArchivesCoreMessages.RefreshProject, p.getName())) {
 							protected IStatus run(IProgressMonitor monitor) {
 								try {
 									p.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 								} catch( CoreException e ) {
-									IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID, "Could not refresh project " + p.getName(), e);
+									IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID,
+											ArchivesCore.bind(ArchivesCoreMessages.RefreshProjectFailed, p.getName()),e);
 									return status;
 								}
 								return Status.OK_STATUS;
 							}
 						}.schedule();
 					} catch( ArchivesModelException ame ) {
-						ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, "Could not register project " + p.getName(), ame);
+						ArchivesCore.getInstance().getLogger().log(IStatus.ERROR,
+								ArchivesCore.bind(ArchivesCoreMessages.RegisterProjectFailed, p.getName()), ame);
 					}
 				}
 			} catch( CoreException ce ) {

@@ -60,21 +60,21 @@ public class XMLBinding {
 	public static final int NUM_UNMARSHAL_MONITOR_STEPS = 3;
 	public static final int NUM_MARSHALL_MONITOR_STEPS = 2;
 
-	private static URL schema = XMLBinding.class.getClassLoader().getResource("packages.xsd");
-	private static URL log4jxml = XMLBinding.class.getClassLoader().getResource("log4j.xml");
+	private static URL schema = XMLBinding.class.getClassLoader().getResource("packages.xsd"); //$NON-NLS-1$
+	private static URL log4jxml = XMLBinding.class.getClassLoader().getResource("log4j.xml"); //$NON-NLS-1$
 	private static SchemaBinding binding;
 
 	private static boolean initialized = false;
 
 	static {
-		System.setProperty("log4j.configuration", log4jxml.toString());
+		System.setProperty("log4j.configuration", log4jxml.toString()); //$NON-NLS-1$
 	}
 
 	public static void init ()
 	{
 		try {
 			InputStream stream = schema.openStream();
-			binding = XsdBinder.bind(stream, "UTF-8", (String)null);
+			binding = XsdBinder.bind(stream, "UTF-8", (String)null); //$NON-NLS-1$
 			stream.close();
 			initialized = true;
 		} catch (IOException e) {
@@ -124,8 +124,8 @@ public class XMLBinding {
 					monitor.worked(1);
 					binding.setStrictSchema(true);
 					unmarshaller.setValidation(true);
-					unmarshaller.getParser().setFeature("http://apache.org/xml/features/validation/schema", true);
-					unmarshaller.getParser().setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schema.toExternalForm());
+					unmarshaller.getParser().setFeature("http://apache.org/xml/features/validation/schema", true); //$NON-NLS-1$
+					unmarshaller.getParser().setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schema.toExternalForm()); //$NON-NLS-1$
 					Object xmlObject = unmarshaller.unmarshal(in, binding);
 					monitor.worked(1);
 

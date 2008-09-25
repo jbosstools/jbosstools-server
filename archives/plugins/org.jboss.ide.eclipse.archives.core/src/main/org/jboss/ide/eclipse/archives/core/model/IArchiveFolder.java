@@ -23,5 +23,5 @@ package org.jboss.ide.eclipse.archives.core.model;
 
 
 public interface IArchiveFolder extends INamedContainerArchiveNode {
-	public static final String ATTRIBUTE_PREFIX = "org.jboss.ide.eclipse.archives.core.model.IPackageFolder.";	
+	public static final String ATTRIBUTE_PREFIX = "org.jboss.ide.eclipse.archives.core.model.IPackageFolder.";	 //$NON-NLS-1$
 }

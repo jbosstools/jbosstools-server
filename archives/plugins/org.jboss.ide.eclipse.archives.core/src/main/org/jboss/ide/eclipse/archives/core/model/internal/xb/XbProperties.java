@@ -26,16 +26,19 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
+
 
 public class XbProperties extends XbPackageNode {
 
 	private PropertiesExt properties;
-	
+
 	public XbProperties () {
 		super();
 		this.properties = new PropertiesExt();
 	}
-	
+
 	public XbProperties (XbProperties props) {
 		super(props);
 		this.properties = new PropertiesExt();
@@ -44,32 +47,34 @@ public class XbProperties extends XbPackageNode {
 			addProperty(element);
 		}
 	}
-	
+
 	protected Object clone() throws CloneNotSupportedException {
 		return new XbProperties(this);
 	}
-	
+
 	public class PropertiesExt extends Properties {
 		private static final long serialVersionUID = 1L;
 		private Hashtable propertyElements;
-		
+
 		public PropertiesExt () {
 			propertyElements = new Hashtable();
 		}
-		
+
 		/**
 		 * Will map String key -> XbProperty element(key,value) in the local structure
 		 * and map String key -> String value in the superclass
-		 * 
+		 *
 		 * @return The String value held previously
 		 */
 		public synchronized Object put(Object key, Object value) {
 			if( key == null )
-				throw new NullPointerException("Key is null in " + getClass().getName());
-			
+				throw new NullPointerException( ArchivesCore.bind(
+						ArchivesCoreMessages.KeyIsNull, getClass().getName()));
+
 			if( value == null )
-				throw new NullPointerException("Value is null in " + getClass().getName());
-				
+				throw new NullPointerException( ArchivesCore.bind(
+									ArchivesCoreMessages.ValueIsNull, getClass().getName()));
+
 			if (!propertyElements.containsKey(key)) {
 				XbProperty element = new XbProperty();
 				element.setName((String)key);
@@ -79,32 +84,32 @@ public class XbProperties extends XbPackageNode {
 				XbProperty element = (XbProperty)propertyElements.get(key);
 				element.setValue((String)value);
 			}
-			
+
 			return super.put(key, value);
 		}
-		
+
 		public synchronized Object remove(Object key) {
 			propertyElements.remove(key);
 			return super.remove(key);
 		}
-		
+
 		public Collection getPropertyElements () {
 			return propertyElements.values();
 		}
 	}
-		
+
 	public PropertiesExt getProperties () {
 		return properties;
 	}
-	
+
 	public void addProperty (Object property) {
 		addProperty((XbProperty)property);
 	}
-	
+
 	public void addProperty (XbProperty property) {
 		properties.setProperty(property.getName(), property.getValue());
 		addChild(property);
 	}
-	
-	
+
+
 }

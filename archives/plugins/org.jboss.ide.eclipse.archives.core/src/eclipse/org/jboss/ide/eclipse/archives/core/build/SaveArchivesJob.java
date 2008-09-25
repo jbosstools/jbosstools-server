@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
@@ -17,24 +18,24 @@ public class SaveArchivesJob extends Job {
 		this(projectPath, null, null);
 	}
 	public SaveArchivesJob(IPath projectPath,Runnable runnable, String jobName) {
-		super(jobName == null ? "Save Archives Job" : jobName);
+		super(jobName == null ? ArchivesCoreMessages.SaveArchivesJob : jobName);
 		this.runnable = runnable;
 		this.projectPath = projectPath;
 	}
 
 	protected IStatus run(IProgressMonitor monitor) {
-		if( runnable != null ) { 
+		if( runnable != null ) {
 			try {
 				runnable.run();
 			} catch( Exception e ) {
-				IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, "Problem executing pre-save runnable", e);
+				IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, ArchivesCoreMessages.ErrorPreSave, e);
 				return status;
 			}
 		}
 		try {
 			ArchivesModel.instance().save(projectPath, new NullProgressMonitor());
 		} catch( ArchivesModelException ame ) {
-			IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, "Problem saving archives model", ame);
+			IStatus status = new Status(IStatus.ERROR, ArchivesCorePlugin.PLUGIN_ID, ArchivesCoreMessages.ErrorUpdatingModel, ame);
 			return status;
 		}
 		return Status.OK_STATUS;

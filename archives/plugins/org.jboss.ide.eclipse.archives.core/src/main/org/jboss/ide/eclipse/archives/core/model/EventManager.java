@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 
 /**
@@ -210,12 +211,6 @@ public class EventManager {
 	}
 
 	protected static void logError(Exception e) {
-		e.printStackTrace();
-		try {
-			StackTraceElement[] trace = Thread.currentThread().getStackTrace();
-			ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, "Archives Listener error in " + trace[1].getMethodName(), e);
-		} catch( Exception f ) {
-			ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, "Archives Listener error", e);
-		}
+		ArchivesCore.log(IStatus.WARNING, ArchivesCoreMessages.ArchivesListenerError, e);
 	}
 }

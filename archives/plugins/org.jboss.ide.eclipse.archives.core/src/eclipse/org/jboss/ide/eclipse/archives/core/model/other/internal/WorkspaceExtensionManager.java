@@ -39,31 +39,31 @@ import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 
 /**
  * This class will be responsible for loading extension points in the core.
- * 
+ *
  * @author Rob Stryker (rob.stryker@redhat.com)
  *
  */
 public class WorkspaceExtensionManager implements IExtensionManager {
-	public static final String ARCHIVE_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.archiveTypes";
-	public static final String ACTION_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.actionTypes";
-	public static final String VARIABLE_PROVIDER_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.variableProviders";
-	
+	public static final String ARCHIVE_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.archiveTypes"; //$NON-NLS-1$
+	public static final String ACTION_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.actionTypes"; //$NON-NLS-1$
+	public static final String VARIABLE_PROVIDER_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.variableProviders"; //$NON-NLS-1$
+
 	private IExtension[] findExtension (String extensionId) {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionId);
 		return extensionPoint.getExtensions();
 	}
-	
+
 	private static Hashtable<String, IArchiveType> archiveTypes;
 	private void loadPackageTypes () {
 		archiveTypes = new Hashtable<String, IArchiveType>();
 		IExtension[] extensions = findExtension(ARCHIVE_TYPES_EXTENSION_ID);
-		
+
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
 				try {
-					Object executable = elements[j].createExecutableExtension("class");
+					Object executable = elements[j].createExecutableExtension("class"); //$NON-NLS-1$
 					IArchiveType type = (IArchiveType)executable;
 					archiveTypes.put(type.getId(), type);
 				} catch (InvalidRegistryObjectException e) {
@@ -74,7 +74,7 @@ public class WorkspaceExtensionManager implements IExtensionManager {
 			}
 		}
 	}
-	
+
 	public IArchiveType getArchiveType (String packageType) {
 		if (archiveTypes == null)
 			loadPackageTypes();
@@ -113,7 +113,7 @@ public class WorkspaceExtensionManager implements IExtensionManager {
 			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
 				try {
-					Object executable = elements[j].createExecutableExtension("class");
+					Object executable = elements[j].createExecutableExtension("class"); //$NON-NLS-1$
 					IActionType type = (IActionType)executable;
 					actionTypes.put(type.getId(), type);
 				} catch (InvalidRegistryObjectException e) {

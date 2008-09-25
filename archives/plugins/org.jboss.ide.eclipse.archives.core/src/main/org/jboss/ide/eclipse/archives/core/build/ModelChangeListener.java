@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -69,7 +70,7 @@ public class ModelChangeListener implements IArchiveModelListener {
 		try {
 			errors = handle(delta);
 		} catch( Exception e ) {
-			IStatus er = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error updating model changes", e);
+			IStatus er = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, ArchivesCoreMessages.ErrorUpdatingModel, e);
 			errors = new IStatus[] { er };
 		}
 		IArchiveNode node = delta.getPreNode() == null ? delta.getPostNode() : delta.getPreNode();
@@ -257,8 +258,7 @@ public class ModelChangeListener implements IArchiveModelListener {
 
 	protected IStatus logCannotBuildError(IArchive archive) {
 		IStatus s = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID,
-				"Cannot Build archive \"" + archive.getName() +
-				"\" due to a problem in the archive's configuration.", null);
+				ArchivesCore.bind(ArchivesCoreMessages.CannotBuildBadConfiguration, archive.getName()), null);
 		return s;
 	}
 }

@@ -12,19 +12,19 @@ public class PathUtils {
 	public static IPath getGlobalLocation(IArchiveNode node) {
 		if( node instanceof IArchive ) {
 			IArchive a = (IArchive)node;
-			return getGlobalLocation(a.getRawDestinationPath(), 
-					a.getProjectName(), a.isDestinationInWorkspace(), 
+			return getGlobalLocation(a.getRawDestinationPath(),
+					a.getProjectName(), a.isDestinationInWorkspace(),
 					a.getDescriptorVersion());
 		}
 		else if( node instanceof IArchiveFileSet ) {
 			IArchiveFileSet a = (IArchiveFileSet)node;
-			return getGlobalLocation(a.getRawSourcePath(), 
-					a.getProjectName(), a.isInWorkspace(), 
+			return getGlobalLocation(a.getRawSourcePath(),
+					a.getProjectName(), a.isInWorkspace(),
 					a.getDescriptorVersion());
 		}
 		return null;
 	}
-	
+
 	public static String getAbsoluteLocation(IArchiveNode node) {
 		if( node instanceof IArchive ) {
 			IArchive a = (IArchive)node;
@@ -38,7 +38,7 @@ public class PathUtils {
 	}
 
 	// Get the actual file located on the filesystem
-	public static IPath getGlobalLocation(String expression, 
+	public static IPath getGlobalLocation(String expression,
 			String projectName, boolean inWorkspace, double version) {
 		String absolute = getAbsoluteLocation(expression, projectName, inWorkspace, version);
 		if( absolute != null ) {
@@ -53,12 +53,12 @@ public class PathUtils {
 	}
 
 	// Get an absolute path, workspace-absolute or fs-absolute
-	public static String getAbsoluteLocation(String expression, 
+	public static String getAbsoluteLocation(String expression,
 			String projectName, boolean inWorkspace, double version) {
-		
-		if( inWorkspace && ("".equals(expression) || ".".equals(expression)))
+
+		if( inWorkspace && ("".equals(expression) || ".".equals(expression))) //$NON-NLS-1$ //$NON-NLS-2$
 			return new Path(projectName).makeAbsolute().toString();
-		
+
 		try {
 			String translated = ArchivesCore.getInstance().getVFS().
 				performStringSubstitution(expression, projectName, true);

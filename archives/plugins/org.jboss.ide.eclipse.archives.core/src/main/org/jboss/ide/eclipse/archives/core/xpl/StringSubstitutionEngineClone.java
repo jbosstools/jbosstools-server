@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -21,25 +21,26 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.IVariableManager;
 
 /**
  * Performs string substitution for context and value variables.
  */
 public class StringSubstitutionEngineClone {
-	
+
 	// delimiters
-	private static final String VARIABLE_START = "${"; 
+	private static final String VARIABLE_START = "${";  //$NON-NLS-1$
 	private static final char VARIABLE_END = '}';
 	// parsing states
 	private static final int SCAN_FOR_START = 0;
 	private static final int SCAN_FOR_END = 1;
-	
+
 	/**
 	 * Resulting string
 	 */
 	private StringBuffer fResult;
-	
+
 	class VariableReference {
 		private StringBuffer fText;
 		public VariableReference() {
@@ -52,21 +53,21 @@ public class StringSubstitutionEngineClone {
 			return fText.toString();
 		}
 	}
-	
+
 	public String performStringSubstitution(String expression, boolean reportUndefinedVariables, IVariableManager manager ) throws CoreException {
 		substitute(expression, reportUndefinedVariables,manager );
 		return fResult.toString();
 	}
-	
+
 	public void validateStringVariables(String expression, IVariableManager manager ) throws CoreException {
 		performStringSubstitution(expression, true, manager );
 	}
-	
+
 	private HashSet substitute(String expression, boolean reportUndefinedVariables, IVariableManager manager) throws CoreException {
 		Stack fStack;
 		fResult = new StringBuffer(expression.length());
 		fStack = new Stack();
-		
+
 		HashSet resolvedVariables = new HashSet();
 
 		int pos = 0;
@@ -84,7 +85,7 @@ public class StringSubstitutionEngineClone {
 						pos = start + 2;
 						state = SCAN_FOR_END;
 
-						fStack.push(new VariableReference());						
+						fStack.push(new VariableReference());
 					} else {
 						// done - no more variables
 						fResult.append(expression.substring(pos));
@@ -109,14 +110,14 @@ public class StringSubstitutionEngineClone {
 								tos.append(expression.substring(pos, start));
 							}
 							pos = start + 2;
-							fStack.push(new VariableReference());	
+							fStack.push(new VariableReference());
 						} else {
 							// end of variable reference
 							VariableReference tos = (VariableReference)fStack.pop();
-							String substring = expression.substring(pos, end);							
+							String substring = expression.substring(pos, end);
 							tos.append(substring);
 							resolvedVariables.add(substring);
-							
+
 							pos = end + 1;
 							String value= resolve(tos, reportUndefinedVariables, manager);
 							if (value == null) {
@@ -148,15 +149,15 @@ public class StringSubstitutionEngineClone {
 				var.append(tos.getText());
 			}
 		}
-		
+
 
 		return resolvedVariables;
 	}
 
 	/**
 	 * Resolve and return the value of the given variable reference,
-	 * possibly <code>null</code>. 
-	 * 
+	 * possibly <code>null</code>.
+	 *
 	 * @param var
 	 * @param reportUndefinedVariables whether to report undefined variables as
 	 *  an error
@@ -170,10 +171,11 @@ public class StringSubstitutionEngineClone {
 		name = text;
 		if( !manager.containsVariable(name)) {
 			if( reportUndefinedVariables )
-				throw new CoreException(new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Variable " + name + " undefined")); 
+				throw new CoreException(new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
+						ArchivesCore.bind(ArchivesCoreMessages.VariableUndefined, name)));
 			return getOriginalVarText(var);
 		}
-		
+
 		String ret = manager.getVariableValue(name);
 		if(ret == null)
 			return getOriginalVarText(var);

@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveModelNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
@@ -190,7 +191,8 @@ public class ArchivesModel implements IArchiveModel {
 				packages = XMLBinding.unmarshal(packagesFile.toFile(), monitor);
 			} catch( XbException xbe ) {
 				// Empty / non-working XML file loaded
-				ArchivesCore.getInstance().getLogger().log(IStatus.ERROR, "Error unmarshalling packages file " + packagesFile, xbe);
+				ArchivesCore.getInstance().getLogger().log(IStatus.ERROR,
+						ArchivesCore.bind(ArchivesCoreMessages.ErrorUnmarshallingFile, packagesFile.toString()), xbe);
 				return null;
 			}
 		} else {

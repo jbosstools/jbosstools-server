@@ -40,7 +40,7 @@ import org.xml.sax.ErrorHandler;
 /**
  * Unmarshaller implementation.
  * WARNING: this implementation is not thread-safe.
- * 
+ *
  * Taken from JBoss XB. Changed to let getParser() be public.
  *
  * @author <a href="mailto:alex@jboss.org">Alexey Loubyansky</a>
@@ -193,7 +193,7 @@ public class ArchivesUnmarshallerImpl implements Unmarshaller {
 			DocumentBinding binding) throws JBossXBException {
 		if (binding != null) {
 			throw new IllegalStateException(
-					"DocumentBinding API is not supported anymore!");
+					"DocumentBinding API is not supported anymore!"); //$NON-NLS-1$
 		}
 		return unmarshal(systemId, factory, (Object) null);
 	}
@@ -202,7 +202,7 @@ public class ArchivesUnmarshallerImpl implements Unmarshaller {
 			DocumentBinding binding) throws JBossXBException {
 		if (binding != null) {
 			throw new IllegalStateException(
-					"DocumentBinding API is not supported anymore!");
+					"DocumentBinding API is not supported anymore!"); //$NON-NLS-1$
 		}
 		return unmarshal(reader, factory, (Object) null);
 	}

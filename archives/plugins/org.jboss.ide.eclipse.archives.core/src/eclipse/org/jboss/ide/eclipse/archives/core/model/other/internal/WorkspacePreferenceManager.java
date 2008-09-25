@@ -48,8 +48,8 @@ import org.osgi.service.prefs.BackingStoreException;
  *
  */
 public class WorkspacePreferenceManager extends AbstractPreferenceInitializer implements IPreferenceManager {
-	public static final String AUTOMATIC_BUILDER_ENABLED = "org.jboss.ide.eclipse.archives.core.automaticBuilderEnabled";
-	public static final String PROJECT_SPECIFIC_PREFS = "org.jboss.ide.eclipse.archives.core.projectSpecificPreferencesEnabled";
+	public static final String AUTOMATIC_BUILDER_ENABLED = "org.jboss.ide.eclipse.archives.core.automaticBuilderEnabled"; //$NON-NLS-1$
+	public static final String PROJECT_SPECIFIC_PREFS = "org.jboss.ide.eclipse.archives.core.projectSpecificPreferencesEnabled"; //$NON-NLS-1$
 
 	private static IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 	private static IResource getResource(IPath path) {

@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 
@@ -61,7 +62,7 @@ public class GenerateArchivesTask extends Task {
 
 			for (Iterator iter = getProject().getProperties().keySet().iterator(); iter.hasNext(); ) {
 				String property = (String) iter.next();
-				if (property.endsWith(".dir")) {
+				if (property.endsWith(AntVFS.SUFFIX)) {
 					System.setProperty(property, getProject().getProperty(property));
 				}
 			}
@@ -73,10 +74,11 @@ public class GenerateArchivesTask extends Task {
 				ArchivesModel.instance().registerProject(projectPath, monitor);
 				new ArchiveBuildDelegate().fullProjectBuild(projectPath, new NullProgressMonitor());
 			} else {
-				getCore().getLogger().log(IStatus.ERROR, "Project \"" + projectPath + "\" does not exist or has no .packages file. Skipping.", null);
+				getCore().log(IStatus.ERROR,
+						getCore().bind(ArchivesCoreMessages.ProjectCannotBeBuilt, projectPath.toString()), null);
 			}
 		} catch(RuntimeException e ) {
-			getCore().getLogger().log(IStatus.ERROR, "A runtime error has occurred during build.", e);
+			getCore().getLogger().log(IStatus.ERROR, ArchivesCoreMessages.RuntimeErrorDuringBuild, e);
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(original);

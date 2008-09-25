@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IActionType;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -14,6 +15,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
+import org.jboss.ide.eclipse.archives.core.xpl.AntNLS;
 
 /**
  * A core API entry point for ant.
@@ -21,11 +23,20 @@ import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
  *
  */
 public class AntArchivesCore extends ArchivesCore {
+	static {
+		AntNLS.initializeMessages("org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages", ArchivesCoreMessages.class); //$NON-NLS-1$
+	}
+
+
 	private Project currentProject;
 	private Task currentTask;
 	public AntArchivesCore () {
 		super(STANDALONE);
 		ArchivesModel.instance().addBuildListener(new AntBuildListener());
+	}
+
+	protected String bind2(String message, Object[] bindings) {
+		return AntNLS.bind(message, bindings);
 	}
 
 	public void setProject(Project p) {

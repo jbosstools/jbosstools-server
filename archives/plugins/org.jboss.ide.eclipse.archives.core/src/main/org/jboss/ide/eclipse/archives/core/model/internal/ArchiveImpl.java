@@ -39,13 +39,13 @@ import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 
 /**
  * An archive
- * 
+ *
  * @author Rob stryker
  */
 public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 
 	private XbPackage packageDelegate;
-	
+
 	public ArchiveImpl() {
 		this(new XbPackage());
 	}
@@ -53,7 +53,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		super(delegate);
 		this.packageDelegate = delegate;
 	}
-	
+
 	/*
 	 * @see IArchiveNode#getNodeType()
 	 */
@@ -67,14 +67,14 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 	public boolean isDestinationInWorkspace() {
 		return packageDelegate.isInWorkspace();
 	}
-	
+
 	public String getRawDestinationPath() {
 		if( !isTopLevel() )
-			return "";
-		return packageDelegate.getToDir() == null ? "" : packageDelegate.getToDir();
+			return ""; //$NON-NLS-1$
+		return packageDelegate.getToDir() == null ? "" : packageDelegate.getToDir(); //$NON-NLS-1$
 	}
-	
-	
+
+
 	/*
 	 * @see IArchive#getArchiveFilePath()
 	 */
@@ -82,7 +82,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		IPath p = PathUtils.getGlobalLocation(this);
 		return p == null ? null : p.append(getName());
 	}
-	
+
 	/*
 	 * @see IArchive#getFileSets()
 	 */
@@ -112,7 +112,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		System.arraycopy(nodes, 0, pkgs, 0, nodes.length);
 		return pkgs;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchive#getActions()
@@ -123,7 +123,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		System.arraycopy(nodes, 0, actions, 0, nodes.length);
 		return actions;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchive#getPreActions()
@@ -131,7 +131,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 	public IArchiveAction[] getPreActions() {
 		return new IArchiveAction[0]; // TODO getPreActions
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.IArchive#getPostActions()
@@ -153,22 +153,22 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 	public IArchiveType  getArchiveType() {
 		return ArchivesCore.getInstance().getExtensionManager().getArchiveType(packageDelegate.getPackageType());
 	}
-		
+
 	/*
 	 * @see IArchive#isExploded()
 	 */
 	public boolean isExploded() {
 		return packageDelegate.isExploded();
 	}
-	
+
 	/*
 	 * @see IArchive#isTopLevel()
 	 */
 	public boolean isTopLevel() {
-		return (packageDelegate.getParent() == null || 
+		return (packageDelegate.getParent() == null ||
 				packageDelegate.getParent() instanceof XbPackages);
 	}
-	
+
 	/*
 	 * @see IArchive#setDestinationPath(IPath, boolean)
 	 */
@@ -185,7 +185,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		attributeChanged(IN_WORKSPACE_ATTRIBUTE, new Boolean(isDestinationInWorkspace()), new Boolean(inWorkspace));
 		packageDelegate.setInWorkspace(inWorkspace);
 	}
-	
+
 	/*
 	 * @see IArchive#setExploded(boolean)
 	 */
@@ -217,19 +217,19 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 		attributeChanged(PACKAGE_TYPE_ATTRIBUTE, getArchiveTypeId(), type);
 		packageDelegate.setPackageType(type);
 	}
-	
+
 	public String toString() {
 		return getName();
 	}
-	
+
 	/*
 	 * @see IArchive#getArchiveTypeId()
 	 */
 	public String getArchiveTypeId() {
 		return packageDelegate.getPackageType();
 	}
-	
-	/* 
+
+	/*
 	 * @see IArchiveNode#getRootArchiveRelativePath()
 	 */
 	public IPath getRootArchiveRelativePath() {
@@ -237,7 +237,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 			return new Path(getName());
 		return getParent().getRootArchiveRelativePath().append(getName());
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl#validateChild(org.jboss.ide.eclipse.archives.core.model.IArchiveNode)

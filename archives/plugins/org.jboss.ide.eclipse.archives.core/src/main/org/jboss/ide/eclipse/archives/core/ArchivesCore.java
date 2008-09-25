@@ -1,27 +1,17 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.core;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
@@ -34,28 +24,28 @@ import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
  */
 public abstract class ArchivesCore {
 
-	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.archives.core";
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.archives.core"; //$NON-NLS-1$
 	private static ArchivesCore instance;
 	// Due to classloader restrictions we won't be able to lazy load, but that should be ok as long
 	// as we keep the construction of ArchivesCore subclasses to a minimum
 	public static ArchivesCore getInstance() {
 		return instance;
 	}
-	
+
 	public static void setInstance(ArchivesCore instance) {
 		ArchivesCore.instance = instance;
 	}
-	
-	
+
+
 	public static final int STANDALONE = 0;
 	public static final int WORKSPACE = 1;
-	
+
 	private int runType;
 	private IArchivesVFS vfs;
 	private IExtensionManager extensionManager;
 	private IPreferenceManager preferenceManager;
 	private IArchivesLogger logger;
-	
+
 	public ArchivesCore(int runType) {
 		this.runType = runType;
 		vfs = createVFS();
@@ -63,12 +53,12 @@ public abstract class ArchivesCore {
 		preferenceManager = createPreferenceManager();
 		logger = createLogger();
 	}
-	
+
 	protected abstract IArchivesVFS createVFS();
 	protected abstract IExtensionManager createExtensionManager();
 	protected abstract IPreferenceManager createPreferenceManager();
 	protected abstract IArchivesLogger createLogger();
-	
+
 	public int getRunType() {
 		return runType;
 	}
@@ -84,6 +74,29 @@ public abstract class ArchivesCore {
 	public IArchivesLogger getLogger() {
 		return logger;
 	}
-	
+
 	public abstract void preRegisterProject(IPath project);
+
+	protected abstract String bind2(String message, Object[] bindings);
+
+
+
+	// Static convenience methods
+	public static String bind(String message, Object[] bindings) {
+		return ArchivesCore.getInstance().bind2(message, bindings);
+	}
+	public static String bind(String message, String binding1) {
+		return ArchivesCore.getInstance().bind2(message, new Object[]{binding1});
+	}
+	public static String bind(String message, String binding1, String binding2) {
+		return ArchivesCore.getInstance().bind2(message, new Object[]{binding1, binding2});
+	}
+
+	public static void log(IStatus status) {
+		ArchivesCore.getInstance().getLogger().log(status);
+	}
+	public static void log(int severity, String message,Throwable throwable) {
+		ArchivesCore.getInstance().getLogger().log(severity, message, throwable);
+	}
+
 }

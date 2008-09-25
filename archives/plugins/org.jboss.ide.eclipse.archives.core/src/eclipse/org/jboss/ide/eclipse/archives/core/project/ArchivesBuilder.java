@@ -56,7 +56,7 @@ import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
  */
 public class ArchivesBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "org.jboss.ide.eclipse.archives.core.archivesBuilder";
+	public static final String BUILDER_ID = "org.jboss.ide.eclipse.archives.core.archivesBuilder"; //$NON-NLS-1$
 
 	/**
 	 * Build.

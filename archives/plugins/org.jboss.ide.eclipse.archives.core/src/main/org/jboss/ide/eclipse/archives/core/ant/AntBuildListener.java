@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.archives.core.ant;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -11,53 +12,55 @@ import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.Directo
 
 public class AntBuildListener implements IArchiveBuildListener {
 	public void buildFailed(IArchive pkg, IStatus status) {
-		ArchivesCore.getInstance().getLogger().log(status);
+		ArchivesCore.log(status);
 	}
 	public void error(IArchiveNode node, IStatus[] multi) {
 		for( int i = 0; i < multi.length; i++ ) {
-			ArchivesCore.getInstance().getLogger().log(multi[i]);
+			ArchivesCore.log(multi[i]);
 		}
 	}
 
 	public void cleanArchive(IArchive pkg) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Cleaned archive " + pkg.getName(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.CleanedArchiveTrace,pkg.getName()), null);
 	}
 	public void cleanProject(IPath project) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Cleaned project " + project, null);
+		ArchivesCore.log(IStatus.INFO,ArchivesCore.bind(ArchivesCoreMessages.CleanedProjectTrace, project.toString()),null);
 	}
 	public void fileRemoved(IArchive topLevelArchive, IArchiveFileSet fileset,
 			IPath filePath) {
 		FileWrapper[] wrappers = fileset.getMatches(filePath);
 		for( int i = 0; i < wrappers.length; i++ ) {
-			ArchivesCore.getInstance().getLogger().log(IStatus.OK, "Removed " + filePath + " in " + topLevelArchive.getName()
-					+ " at " + wrappers[i].getRootArchiveRelative().toString(), null);
+			String s = ArchivesCore.bind(ArchivesCoreMessages.FileRemovedTrace,
+					new Object[] {filePath, topLevelArchive.getName(), wrappers[i].getRootArchiveRelative().toString()});
+			ArchivesCore.log(IStatus.OK, s, null);
 		}
 	}
 	public void fileUpdated(IArchive topLevelArchive, IArchiveFileSet fileset,
 			IPath filePath) {
 		FileWrapper[] wrappers = fileset.getMatches(filePath);
 		for( int i = 0; i < wrappers.length; i++ ) {
-			ArchivesCore.getInstance().getLogger().log(IStatus.OK, "Updated " + filePath + " in " + topLevelArchive.getName()
-					+ " at " + wrappers[i].getRootArchiveRelative().toString(), null);
+			String s = ArchivesCore.bind(ArchivesCoreMessages.UpdatedFileTrace,
+					new Object[] {filePath, topLevelArchive.getName(), wrappers[i].getRootArchiveRelative().toString()});
+			ArchivesCore.log(IStatus.OK, s, null);
 		}
 	}
 	public void finishedBuild(IPath project) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Finished building " + project.toString(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.FinishedBuildingProjectTrace,project.toString()), null);
 	}
 	public void finishedBuildingArchive(IArchive pkg) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Finished building archive " + pkg.getRootArchiveRelativePath(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.FinishedBuildingArchiveTrace,pkg.getRootArchiveRelativePath().toString()), null);
 	}
 	public void finishedCollectingFileSet(IArchiveFileSet fileset) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Finished collecting fileset " + fileset.toString(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.FinishedCollectingFilesetTrace, fileset.toString()), null);
 	}
 	public void startedBuild(IPath project) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Started building project " + project.toString(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.StartedBuildingProjectTrace,project.toString()), null);
 	}
 	public void startedBuildingArchive(IArchive pkg) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Started building archive " + pkg.toString(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.StartedBuildingArchiveTrace, pkg.toString()), null);
 	}
 	public void startedCollectingFileSet(IArchiveFileSet fileset) {
-		ArchivesCore.getInstance().getLogger().log(IStatus.INFO, "Started collecting fileset " + fileset.toString(), null);
+		ArchivesCore.log(IStatus.INFO, ArchivesCore.bind(ArchivesCoreMessages.StartedCollectingFilesetTrace, fileset.toString()), null);
 	}
 
 }

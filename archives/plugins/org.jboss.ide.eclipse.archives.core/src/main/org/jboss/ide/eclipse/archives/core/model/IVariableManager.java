@@ -26,7 +26,7 @@ package org.jboss.ide.eclipse.archives.core.model;
  *
  */
 public interface IVariableManager {
-	public static final String CURRENT_PROJECT = "archives_current_project";
+	public static final String CURRENT_PROJECT = "archives_current_project"; //$NON-NLS-1$
 	public boolean containsVariable(String variable);
 	public String getVariableValue(String variable);
 }

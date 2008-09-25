@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -72,14 +73,16 @@ public class ArchiveBuildDelegate {
 
 		IArchiveModelRootNode root = ArchivesModel.instance().getRoot(project);
 		if( root == null ) {
-			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "An error occurred locating the root node for " + project.toOSString(), null);
+			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
+					ArchivesCore.bind(ArchivesCoreMessages.ErrorLocatingRootNode, project.toOSString()), null);
 			EventManager.error(null, new IStatus[]{s});
 			monitor.done();
 		} else {
 			IArchiveNode[] nodes = root.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			ArrayList<IStatus> errors = new ArrayList<IStatus>();
 
-			monitor.beginTask("Building project " + ArchivesCore.getInstance().getVFS().getProjectName(project), nodes.length * 1000);
+			monitor.beginTask( ArchivesCore.bind(ArchivesCoreMessages.BuildingProject,
+					ArchivesCore.getInstance().getVFS().getProjectName(project)), nodes.length * 1000);
 
 			for( int i = 0; i < nodes.length; i++ ) {
 				errors.addAll(Arrays.asList(fullArchiveBuild(((IArchive)nodes[i]),
@@ -102,8 +105,7 @@ public class ArchiveBuildDelegate {
 	protected IStatus[] fullArchiveBuild(IArchive pkg, IProgressMonitor monitor, boolean log) {
 		if( !pkg.canBuild() ) {
 			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
-					"Cannot Build archive \"" + pkg.getName() +
-					"\" due to a problem in the archive's configuration.", null);
+					ArchivesCore.bind(ArchivesCoreMessages.CannotBuildBadConfiguration, pkg.getName()), null);
 			if( log )
 				EventManager.error(pkg, new IStatus[]{s});
 			monitor.done();
@@ -118,9 +120,8 @@ public class ArchiveBuildDelegate {
 		if( dest != null && !dest.toFile().exists() ) {
 			if( !dest.toFile().mkdirs() ) {
 				IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
-						"Cannot Build archive \"" + pkg.getName() +
-						"\". Output location " + dest +
-						" is not writeable", null);
+						ArchivesCore.bind(ArchivesCoreMessages.CannotBuildOutputLocationNotWriteable,
+								pkg.getName(), dest.toString()), null);
 				if( log )
 					EventManager.error(pkg, new IStatus[]{s});
 				monitor.done();
@@ -135,7 +136,8 @@ public class ArchiveBuildDelegate {
 		 * create folders: 800
 		 * build filesets: 7000
 		 */
-		monitor.beginTask("Building Archive " + pkg.toString(), 8000);
+		monitor.beginTask(ArchivesCore.bind(
+				ArchivesCoreMessages.BuildingArchive, pkg.toString()), 8000);
 
 		// Run the pre actions
 //		IArchiveAction[] actions = pkg.getActions();
@@ -147,7 +149,8 @@ public class ArchiveBuildDelegate {
 
 
 		if( !ModelTruezipBridge.createFile(pkg) ) {
-			IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error creating output file for node " + pkg.toString());
+			IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
+					ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,pkg.toString()));
 			errors.add(e);
 		}
 		monitor.worked(200);
@@ -155,10 +158,10 @@ public class ArchiveBuildDelegate {
 		// force create all folders
 		IArchiveFolder[] folders = ModelUtil.findAllDescendentFolders(pkg);
 		IProgressMonitor folderMonitor = new SubProgressMonitor(monitor, 800);
-		folderMonitor.beginTask("Creating folders", folders.length * 100);
+		folderMonitor.beginTask(ArchivesCoreMessages.CreatingFolders, folders.length * 100);
 		for( int i = 0; i < folders.length; i++ ) {
 			if( !ModelTruezipBridge.createFile(folders[i])) {
-				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, "Error creating output file for node " + folders[i].toString());
+				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,folders[i].toString()));
 				errors.add(e);
 			}
 			folderMonitor.worked(100);
@@ -168,7 +171,7 @@ public class ArchiveBuildDelegate {
 		// build the filesets
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(pkg);
 		IProgressMonitor filesetMonitor = new SubProgressMonitor(monitor, 7000);
-		filesetMonitor.beginTask("Building filesets", filesets.length * 1000);
+		filesetMonitor.beginTask(ArchivesCoreMessages.BuildingFilesets, filesets.length * 1000);
 		for( int i = 0; i < filesets.length; i++ ) {
 			IStatus[] errors2 = fullFilesetBuild(filesets[i], new SubProgressMonitor(filesetMonitor, 1000), pkg);
 			errors.addAll(Arrays.asList(errors2));
@@ -223,7 +226,7 @@ public class ArchiveBuildDelegate {
 
 		// removed get more work because all filesets are being rescanned before handling the removed
 		int totalWork = (addedChanged.size()*100) + (removed.size()*200) + 50;
-		monitor.beginTask("Project Archives Incremental Build", totalWork);
+		monitor.beginTask(ArchivesCoreMessages.ProjectArchivesIncrementalBuild, totalWork);
 
 		// find any and all filesets that match each file
 		Iterator<IPath> i;

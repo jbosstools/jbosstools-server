@@ -37,10 +37,10 @@ public abstract class AbstractArchiveType implements IArchiveType, IExecutableEx
 		if( element == null ) element = config;
 	}
 	public String getId() {
-		return element.getAttribute("id");
+		return element.getAttribute("id"); //$NON-NLS-1$
 	}
 
 	public String getLabel() {
-		return element.getAttribute("label");
+		return element.getAttribute("label"); //$NON-NLS-1$
 	}
 }

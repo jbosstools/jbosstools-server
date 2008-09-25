@@ -12,6 +12,7 @@ import org.jboss.ide.eclipse.archives.core.model.IVariableManager;
 import org.jboss.ide.eclipse.archives.core.xpl.StringSubstitutionEngineClone;
 
 public class AntVFS implements IArchivesVFS, IVariableManager {
+	public static final String SUFFIX = ".dir"; //$NON-NLS-1$
 	private String currentProject;
 	public String performStringSubstitution(String expression,
 			boolean reportUndefinedVariables) throws CoreException {
@@ -30,7 +31,7 @@ public class AntVFS implements IArchivesVFS, IVariableManager {
 		if( ((AntArchivesCore)ArchivesCore.getInstance()).getProject().getProperty(variable) != null ) return true;
 		return false;
 	}
-	
+
 	public String getVariableValue(String variable) {
 		if( IVariableManager.CURRENT_PROJECT.equals(variable))
 			return currentProject;
@@ -40,7 +41,7 @@ public class AntVFS implements IArchivesVFS, IVariableManager {
 	public IPath[] getWorkspaceChildren(IPath path) {
 		ArrayList<IPath> list = new ArrayList<IPath>();
 		IPath pathAbsolute = workspacePathToAbsolutePath(path);
-		
+
 		if( pathAbsolute != null && pathAbsolute.toFile().exists() ) {
 			String[] children = pathAbsolute.toFile().list();
 			for( int i = 0; i < children.length; i++ ) {
@@ -52,9 +53,9 @@ public class AntVFS implements IArchivesVFS, IVariableManager {
 	}
 	public IPath workspacePathToAbsolutePath(IPath path) {
 		if( path.segmentCount() > 0 && path.segment(0) != null ) {
-			String projNameProperty = path.segment(0) + ".dir";
+			String projNameProperty = path.segment(0) + SUFFIX;
 			Object result = ((AntArchivesCore)ArchivesCore.getInstance()).getProject().getProperties().get(projNameProperty);
-			if( result != null && result instanceof String) 
+			if( result != null && result instanceof String)
 				return new Path((String)result).append(path.removeFirstSegments(1));
 		}
 		return null;
@@ -63,10 +64,10 @@ public class AntVFS implements IArchivesVFS, IVariableManager {
 	public String getProjectName(IPath absolutePath) {
 		for (Iterator iter = ((AntArchivesCore)ArchivesCore.getInstance()).getProject().getProperties().keySet().iterator(); iter.hasNext(); ) {
 			String property = (String) iter.next();
-			if (property.endsWith(".dir")) {
+			if (property.endsWith(SUFFIX)) {
 				String val = ((AntArchivesCore)ArchivesCore.getInstance()).getProject().getProperty(property);
 				if( val != null && new Path(val).equals(absolutePath)) {
-					return property.substring(0, property.lastIndexOf("."));
+					return property.substring(0, property.lastIndexOf('.'));
 				}
 			}
 		}

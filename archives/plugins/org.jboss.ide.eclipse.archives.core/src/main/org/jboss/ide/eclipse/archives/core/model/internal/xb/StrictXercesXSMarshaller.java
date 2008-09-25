@@ -103,8 +103,8 @@ public class StrictXercesXSMarshaller
    private XSAttributeUse currentAttribute;
    private XSTypeDefinition currentElementType;
 
-   private String simpleContentProperty = "value";
-   
+   private String simpleContentProperty = "value";//$NON-NLS-1$
+
    private MarshallingContext ctx = new MarshallingContext()
    {
       private ContentHandler ch;
@@ -113,7 +113,7 @@ public class StrictXercesXSMarshaller
       {
          if(currentAttribute == null)
          {
-            throw new JBossXBRuntimeException("There is no current attribute!");
+            throw new JBossXBRuntimeException("There is no current attribute!"); //$NON-NLS-1$
          }
          return currentAttribute.getRequired();
       }
@@ -122,7 +122,7 @@ public class StrictXercesXSMarshaller
       {
          if(currentElementType == null)
          {
-            throw new JBossXBRuntimeException("There is no current element!");
+            throw new JBossXBRuntimeException("There is no current element!"); //$NON-NLS-1$
          }
          return currentElementType.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE;
       }
@@ -239,7 +239,7 @@ public class StrictXercesXSMarshaller
    {
       if(model == null)
       {
-         throw new JBossXBRuntimeException("XSModel is not available!");
+         throw new JBossXBRuntimeException("XSModel is not available!"); //$NON-NLS-1$
       }
 
       this.model = model;
@@ -254,9 +254,9 @@ public class StrictXercesXSMarshaller
       {
          if(rootQNames.isEmpty())
          {
-            throw new JBossXBRuntimeException("If type name (" +
+            throw new JBossXBRuntimeException("If type name (" + //$NON-NLS-1$
                rootTypeQName +
-               ") for the root element is specified then the name for the root element is required!"
+               ") for the root element is specified then the name for the root element is required!" //$NON-NLS-1$
             );
          }
          QName rootQName = (QName)rootQNames.get(0);
@@ -266,7 +266,7 @@ public class StrictXercesXSMarshaller
          );
          if(type == null)
          {
-            throw new JBossXBRuntimeException("Global type definition is not found: " + rootTypeQName);
+            throw new JBossXBRuntimeException("Global type definition is not found: " + rootTypeQName); //$NON-NLS-1$
          }
 
          if(isArrayWrapper(type))
@@ -299,7 +299,7 @@ public class StrictXercesXSMarshaller
          XSNamedMap components = model.getComponents(XSConstants.ELEMENT_DECLARATION);
          if(components.getLength() == 0)
          {
-            throw new JBossXBRuntimeException("The schema doesn't contain global element declarations.");
+            throw new JBossXBRuntimeException("The schema doesn't contain global element declarations."); //$NON-NLS-1$
          }
 
          for(int i = 0; i < components.getLength(); ++i)
@@ -325,17 +325,17 @@ public class StrictXercesXSMarshaller
             if(element == null)
             {
                XSNamedMap components = model.getComponents(XSConstants.ELEMENT_DECLARATION);
-               String roots = "";
+               String roots = ""; //$NON-NLS-1$
                for(int j = 0; j < components.getLength(); ++j)
                {
                   XSObject xsObject = components.item(j);
                   if(j > 0)
                   {
-                     roots += ", ";
+                     roots += ", "; //$NON-NLS-1$
                   }
-                  roots += "{" + xsObject.getNamespace() + "}" + xsObject.getName();
+                  roots += "{" + xsObject.getNamespace() + "}" + xsObject.getName(); //$NON-NLS-1$  //$NON-NLS-2$
                }
-               throw new IllegalStateException("Root element not found: " + qName + " among " + roots);
+               throw new IllegalStateException("Root element not found: " + qName + " among " + roots); //$NON-NLS-1$  //$NON-NLS-2$
             }
 
             Object o = provider.getRoot(root, null, element.getNamespace(), element.getName());
@@ -367,7 +367,7 @@ public class StrictXercesXSMarshaller
             propertyIsTrueOrNotSet(Marshaller.PROP_OUTPUT_INDENTATION)
          );
          content.handleContent(contentWriter);
-         log.trace("marshalled:\n" + traceWriter.getBuffer().toString());
+         log.trace("marshalled:\n" + traceWriter.getBuffer().toString()); //$NON-NLS-1$
       }
    }
 
@@ -384,7 +384,7 @@ public class StrictXercesXSMarshaller
       if(trace)
       {
          String prefix = getPrefix(elementNs);
-         log.trace("started element ns=" + elementNs + ", local=" + elementLocal + ", prefix=" + prefix);
+         log.trace("started element ns=" + elementNs + ", local=" + elementLocal + ", prefix=" + prefix); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
       }
 
       if(value != null)
@@ -398,7 +398,7 @@ public class StrictXercesXSMarshaller
 
       if(trace)
       {
-         log.trace("finished element ns=" + elementNs + ", local=" + elementLocal);
+         log.trace("finished element ns=" + elementNs + ", local=" + elementLocal); //$NON-NLS-1$  //$NON-NLS-2$
       }
 
       return result;
@@ -426,7 +426,7 @@ public class StrictXercesXSMarshaller
             marshalComplexType(elementNs, elementLocal, (XSComplexTypeDefinition)type, declareNs, declareXsiType);
             break;
          default:
-            throw new IllegalStateException("Unexpected type category: " + type.getTypeCategory());
+            throw new IllegalStateException("Unexpected type category: " + type.getTypeCategory()); //$NON-NLS-1$
       }
    }
 
@@ -444,7 +444,7 @@ public class StrictXercesXSMarshaller
          boolean genPrefix = prefix == null && elementUri != null && elementUri.length() > 0;
          if(genPrefix)
          {
-            prefix = "ns_" + elementLocal;
+            prefix = "ns_" + elementLocal; //$NON-NLS-1$
          }
 
          AttributesImpl attrs = null;
@@ -482,7 +482,7 @@ public class StrictXercesXSMarshaller
             {
                attrs = new AttributesImpl(1);
             }
-            attrs.add(null, prefix, "xmlns:" + prefix, null, (String)elementUri);
+            attrs.add(null, prefix, "xmlns:" + prefix, null, (String)elementUri); //$NON-NLS-1$
          }
 
          String qName = prefixLocalName(prefix, elementLocal);
@@ -534,13 +534,13 @@ public class StrictXercesXSMarshaller
       if(genPrefix)
       {
          // todo: it's possible that the generated prefix already mapped. this should be fixed
-         prefix = "ns_" + elementLocalName;
+         prefix = "ns_" + elementLocalName; //$NON-NLS-1$
          declareNamespace(prefix, elementNsUri);
          if(attrs == null)
          {
             attrs = new AttributesImpl(1);
          }
-         attrs.add(null, prefix, "xmlns:" + prefix, null, elementNsUri);
+         attrs.add(null, prefix, "xmlns:" + prefix, null, elementNsUri); //$NON-NLS-1$
       }
 
       for(int i = 0; i < attributeUses.getLength(); ++i)
@@ -564,12 +564,12 @@ public class StrictXercesXSMarshaller
                attrPrefix = getPrefix(attrNs);
                if(attrPrefix == null && attrNs != null && attrNs.length() > 0)
                {
-                  attrPrefix = "ns_" + attrLocal;
-                  attrs.add(null, attrPrefix, "xmlns:" + attrPrefix, null, attrNs);
+                  attrPrefix = "ns_" + attrLocal; //$NON-NLS-1$
+                  attrs.add(null, attrPrefix, "xmlns:" + attrPrefix, null, attrNs); //$NON-NLS-1$
                }
             }
 
-            String qName = attrPrefix == null || attrPrefix.length() == 0 ? attrLocal : attrPrefix + ":" + attrLocal;
+            String qName = attrPrefix == null || attrPrefix.length() == 0 ? attrLocal : attrPrefix + ":" + attrLocal; //$NON-NLS-1$
 
             // todo: this is a quick fix for boolean pattern (0|1 or true|false) should be refactored
             XSSimpleTypeDefinition attrType = attrDec.getTypeDefinition();
@@ -589,9 +589,9 @@ public class StrictXercesXSMarshaller
                   }
                   else
                   {
-                     throw new JBossXBRuntimeException("Expected value for list type is an array or " +
+                     throw new JBossXBRuntimeException("Expected value for list type is an array or " + //$NON-NLS-1$
                         List.class.getName() +
-                        " but got: " +
+                        " but got: " + //$NON-NLS-1$
                         attrValue
                      );
                   }
@@ -628,8 +628,8 @@ public class StrictXercesXSMarshaller
                }
                else
                {
-                  throw new JBossXBRuntimeException("Marshalling of list types with item types not from " +
-                     Constants.NS_XML_SCHEMA + " is not supported."
+                  throw new JBossXBRuntimeException("Marshalling of list types with item types not from " + //$NON-NLS-1$
+                     Constants.NS_XML_SCHEMA + " is not supported." //$NON-NLS-1$
                   );
                }
             }
@@ -643,11 +643,11 @@ public class StrictXercesXSMarshaller
                String item = attrType.getLexicalPattern().item(0);
                if(item.indexOf('0') != -1 && item.indexOf('1') != -1)
                {
-                  attrValue = ((Boolean)attrValue).booleanValue() ? "1" : "0";
+                  attrValue = ((Boolean)attrValue).booleanValue() ? "1" : "0"; //$NON-NLS-1$  //$NON-NLS-2$
                }
                else
                {
-                  attrValue = ((Boolean)attrValue).booleanValue() ? "true" : "false";
+                  attrValue = ((Boolean)attrValue).booleanValue() ? "true" : "false"; //$NON-NLS-1$  //$NON-NLS-2$
                }
             }
             else if(Constants.QNAME_QNAME.getNamespaceURI().equals(attrType.getNamespace()) &&
@@ -666,7 +666,7 @@ public class StrictXercesXSMarshaller
                      qNamePrefix = qNameValue.getPrefix();
                      if(qNamePrefix == null || qNamePrefix.length() == 0)
                      {
-                        qNamePrefix = "ns_" + qNameValue.getLocalPart();
+                        qNamePrefix = "ns_" + qNameValue.getLocalPart(); //$NON-NLS-1$
                      }
                      declareNs(attrs, qNamePrefix, ns);
                      nsRegistry.addPrefixMapping(qNamePrefix, ns);
@@ -692,11 +692,11 @@ public class StrictXercesXSMarshaller
                attrDec.getTypeDefinition().getName(),
                attrValue.toString()
             );
-         } // end if attrValue != null 
+         } // end if attrValue != null
          else if( currentAttribute.getRequired()){
         	 // its required and is not present. Must throw exception
         	 String name = currentAttribute.getAttrDeclaration().getName();
-        	 throw new JBossXBRuntimeException("Required Attribute " + name + " is not present");
+        	 throw new JBossXBRuntimeException("Required Attribute " + name + " is not present"); //$NON-NLS-1$  //$NON-NLS-2$
          }
       }
       currentAttribute = null;
@@ -849,7 +849,7 @@ public class StrictXercesXSMarshaller
             }
             break;
          default:
-            throw new IllegalStateException("Unexpected term type: " + term.getType());
+            throw new IllegalStateException("Unexpected term type: " + term.getType()); //$NON-NLS-1$
       }
       return marshalled;
    }
@@ -875,7 +875,7 @@ public class StrictXercesXSMarshaller
             declareXsiType = true;
             if(log.isTraceEnabled())
             {
-               log.trace(value.getClass() + " is mapped to xsi:type " + xsiTypeQName);
+               log.trace(value.getClass() + " is mapped to xsi:type " + xsiTypeQName); //$NON-NLS-1$
             }
 
             XSTypeDefinition xsiType = model.getTypeDefinition(xsiTypeQName.getLocalPart(),
@@ -884,11 +884,11 @@ public class StrictXercesXSMarshaller
 
             if(xsiType == null)
             {
-               log.warn("Class " +
+               log.warn("Class " + //$NON-NLS-1$
                   value.getClass() +
-                  " is mapped to type " +
+                  " is mapped to type " + //$NON-NLS-1$
                   xsiTypeQName +
-                  " but the type is not found in schema."
+                  " but the type is not found in schema." //$NON-NLS-1$
                );
             }
             // todo should check derivation also, i.e. if(xsiType.derivedFrom())
@@ -951,21 +951,21 @@ public class StrictXercesXSMarshaller
          {
             if(ignoreUnresolvedWildcard)
             {
-               log.warn("Failed to marshal wildcard. Class mapping not found for " +
+               log.warn("Failed to marshal wildcard. Class mapping not found for " + //$NON-NLS-1$
                   o.getClass() +
-                  "@" +
+                  "@" + //$NON-NLS-1$
                   o.hashCode() +
-                  ": " + o
+                  ": " + o //$NON-NLS-1$
                );
                return true;
             }
             else
             {
-               throw new IllegalStateException("Failed to marshal wildcard. Class mapping not found for " +
+               throw new IllegalStateException("Failed to marshal wildcard. Class mapping not found for " + //$NON-NLS-1$
                   o.getClass() +
-                  "@" +
+                  "@" + //$NON-NLS-1$
                   o.hashCode() +
-                  ": " + o
+                  ": " + o //$NON-NLS-1$
                );
             }
          }
@@ -993,7 +993,7 @@ public class StrictXercesXSMarshaller
 
          if(elDec == null)
          {
-            throw new JBossXBRuntimeException("Element " + mapping.elementName + " is not declared in the schema.");
+            throw new JBossXBRuntimeException("Element " + mapping.elementName + " is not declared in the schema."); //$NON-NLS-1$  //$NON-NLS-2$
          }
 
          Object elementValue = provider.getRoot(root, null, elDec.getNamespace(), elDec.getName());
@@ -1024,10 +1024,10 @@ public class StrictXercesXSMarshaller
                   typeNames.add(new QName(type.getNamespace(), type.getName()));
                }
             }
-            throw new JBossXBRuntimeException("Type " +
+            throw new JBossXBRuntimeException("Type " + //$NON-NLS-1$
                mapping.typeName +
-               " is not defined in the schema." +
-               " Defined types are: " + typeNames
+               " is not defined in the schema." + //$NON-NLS-1$
+               " Defined types are: " + typeNames //$NON-NLS-1$
             );
          }
 
@@ -1044,9 +1044,9 @@ public class StrictXercesXSMarshaller
       }
       else
       {
-         throw new JBossXBRuntimeException("Class mapping for " +
+         throw new JBossXBRuntimeException("Class mapping for " + //$NON-NLS-1$
             mapping.cls +
-            " is associated with neither global element name nor global type name."
+            " is associated with neither global element name nor global type name." //$NON-NLS-1$
          );
       }
 
@@ -1074,7 +1074,7 @@ public class StrictXercesXSMarshaller
             marshalled = marshalModelGroupSequence(modelGroup.getParticles(), declareNs);
             break;
          default:
-            throw new IllegalStateException("Unexpected compsitor: " + modelGroup.getCompositor());
+            throw new IllegalStateException("Unexpected compsitor: " + modelGroup.getCompositor()); //$NON-NLS-1$
       }
       return marshalled;
    }
@@ -1146,7 +1146,7 @@ public class StrictXercesXSMarshaller
             {
                // todo: qname are also not yet supported
                throw new JBossXBRuntimeException(
-                  "Expected value for list type is an array or " + List.class.getName() + " but got: " + value
+                  "Expected value for list type is an array or " + List.class.getName() + " but got: " + value //$NON-NLS-1$  //$NON-NLS-2$
                );
             }
 
@@ -1154,8 +1154,8 @@ public class StrictXercesXSMarshaller
          }
          else
          {
-            throw new JBossXBRuntimeException("Marshalling of list types with item types not from " +
-               Constants.NS_XML_SCHEMA + " is not supported."
+            throw new JBossXBRuntimeException("Marshalling of list types with item types not from " + //$NON-NLS-1$
+               Constants.NS_XML_SCHEMA + " is not supported." //$NON-NLS-1$
             );
          }
       }
@@ -1177,7 +1177,7 @@ public class StrictXercesXSMarshaller
                   prefix = qName.getPrefix();
                   if(prefix == null || prefix.length() == 0)
                   {
-                     prefix = qName.getLocalPart() + "_ns";
+                     prefix = qName.getLocalPart() + "_ns"; //$NON-NLS-1$
                   }
                   nsRegistry.addPrefixMapping(prefix, qName.getNamespaceURI());
                   declareNs(attrs, prefix, qName.getNamespaceURI());
@@ -1204,11 +1204,11 @@ public class StrictXercesXSMarshaller
          String item = type.getLexicalPattern().item(0);
          if(item.indexOf('0') != -1 && item.indexOf('1') != -1)
          {
-            marshalled = ((Boolean)value).booleanValue() ? "1" : "0";
+            marshalled = ((Boolean)value).booleanValue() ? "1" : "0";//$NON-NLS-1$ //$NON-NLS-2$
          }
          else
          {
-            marshalled = ((Boolean)value).booleanValue() ? "true" : "false";
+            marshalled = ((Boolean)value).booleanValue() ? "true" : "false";//$NON-NLS-1$ //$NON-NLS-2$
          }
       }
       else
@@ -1219,13 +1219,13 @@ public class StrictXercesXSMarshaller
             Method getValue;
             try
             {
-               getValue = value.getClass().getMethod("value", null);
+               getValue = value.getClass().getMethod("value", null); //$NON-NLS-1$
             }
             catch(NoSuchMethodException e)
             {
                try
                {
-                  getValue = value.getClass().getMethod("getValue", null);
+                  getValue = value.getClass().getMethod("getValue", null); //$NON-NLS-1$
                }
                catch(NoSuchMethodException e1)
                {
@@ -1235,12 +1235,12 @@ public class StrictXercesXSMarshaller
                      values.add(lexicalEnumeration.item(i));
                   }
 
-                  throw new JBossXBRuntimeException("Failed to find neither value() nor getValue() in " +
+                  throw new JBossXBRuntimeException("Failed to find neither value() nor getValue() in " + //$NON-NLS-1$
                      value.getClass() +
-                     " which is bound to enumeration type (" +
+                     " which is bound to enumeration type (" + //$NON-NLS-1$
                      type.getNamespace() +
-                     ", " +
-                     type.getName() + "): " + values
+                     ", " + //$NON-NLS-1$
+                     type.getName() + "): " + values //$NON-NLS-1$
                   );
                }
             }
@@ -1252,7 +1252,7 @@ public class StrictXercesXSMarshaller
             catch(Exception e)
             {
                throw new JBossXBRuntimeException(
-                  "Failed to invoke getValue() on " + value + " to get the enumeration value", e
+                  "Failed to invoke getValue() on " + value + " to get the enumeration value", e//$NON-NLS-1$ //$NON-NLS-2$
                );
             }
          }
@@ -1278,19 +1278,19 @@ public class StrictXercesXSMarshaller
       String xsiPrefix = nsRegistry.getPrefix(Constants.NS_XML_SCHEMA_INSTANCE);
       if(xsiPrefix == null)
       {
-         attrs.add(Constants.NS_XML_SCHEMA, "xmlns", "xmlns:xsi", null, Constants.NS_XML_SCHEMA_INSTANCE);
-         xsiPrefix = "xsi";
+         attrs.add(Constants.NS_XML_SCHEMA, "xmlns", "xmlns:xsi", null, Constants.NS_XML_SCHEMA_INSTANCE);//$NON-NLS-1$ //$NON-NLS-2$
+         xsiPrefix = "xsi"; //$NON-NLS-1$
       }
 
       String pref = getPrefix(type.getNamespace());
       if(pref == null)
       {
          // the ns is not declared
-         result = pref = type.getName() + "_ns";
+         result = pref = type.getName() + "_ns"; //$NON-NLS-1$
       }
 
       String typeQName = pref == null ? type.getName() : pref + ':' + type.getName();
-      attrs.add(Constants.NS_XML_SCHEMA_INSTANCE, "type", xsiPrefix + ":type", null, typeQName);
+      attrs.add(Constants.NS_XML_SCHEMA_INSTANCE, "type", xsiPrefix + ":type", null, typeQName);//$NON-NLS-1$ //$NON-NLS-2$
       return result;
    }
 
@@ -1350,9 +1350,9 @@ public class StrictXercesXSMarshaller
 
       if(!nillable)
       {
-         throw new JBossXBRuntimeException("Failed to marshal " +
+         throw new JBossXBRuntimeException("Failed to marshal " + //$NON-NLS-1$
             new QName(elementNs, elementLocal) +
-            ": Java value is null but the element is not nillable."
+            ": Java value is null but the element is not nillable." //$NON-NLS-1$
          );
       }
 
@@ -1360,9 +1360,9 @@ public class StrictXercesXSMarshaller
       String prefix = getPrefix(elementNs);
       if(prefix == null && elementNs != null && elementNs.length() > 0)
       {
-         prefix = "ns_" + elementLocal;
+         prefix = "ns_" + elementLocal; //$NON-NLS-1$
          attrs = new AttributesImpl(2);
-         attrs.add(null, prefix, "xmlns:" + prefix, null, elementNs);
+         attrs.add(null, prefix, "xmlns:" + prefix, null, elementNs); //$NON-NLS-1$
       }
       else
       {
@@ -1372,17 +1372,17 @@ public class StrictXercesXSMarshaller
       String xsiPrefix = getPrefix(Constants.NS_XML_SCHEMA_INSTANCE);
       if(xsiPrefix == null)
       {
-         xsiPrefix = "xsi";
+         xsiPrefix = "xsi"; //$NON-NLS-1$
          attrs.add(null,
             xsiPrefix,
-            "xmlns:xsi",
+            "xmlns:xsi", //$NON-NLS-1$
             null,
             Constants.NS_XML_SCHEMA_INSTANCE
          );
       }
 
-      String nilQName = xsiPrefix + ":nil";
-      attrs.add(Constants.NS_XML_SCHEMA_INSTANCE, "nil", nilQName, null, "1");
+      String nilQName = xsiPrefix + ":nil"; //$NON-NLS-1$
+      attrs.add(Constants.NS_XML_SCHEMA_INSTANCE, "nil", nilQName, null, "1"); //$NON-NLS-1$ //$NON-NLS-2$
 
       String qName = prefixLocalName(prefix, elementLocal);
       content.startElement(elementNs, elementLocal, qName, attrs);
@@ -1431,7 +1431,7 @@ public class StrictXercesXSMarshaller
 
             public void remove()
             {
-               throw new UnsupportedOperationException("remove is not implemented.");
+               throw new UnsupportedOperationException("remove is not implemented."); //$NON-NLS-1$
             }
          };
       }

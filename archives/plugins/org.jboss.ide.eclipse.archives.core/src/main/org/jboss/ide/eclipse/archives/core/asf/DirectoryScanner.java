@@ -18,12 +18,12 @@
 
 
 /*
- * This file has been CHANGED, MODIFIED, EDITED. 
+ * This file has been CHANGED, MODIFIED, EDITED.
  * It has been coppied because list(File file) is
  * a private method and is not able to be overridden.
- * 
- * For archives, we need to be able to delegate to 
- * the eclipse VFS / resource model. 
+ *
+ * For archives, we need to be able to delegate to
+ * the eclipse VFS / resource model.
  * rob.stryker@redhat.com
  */
 package org.jboss.ide.eclipse.archives.core.asf;
@@ -133,11 +133,17 @@ import org.apache.tools.ant.util.FileUtils;
  * files in all proper subdirectories of a directory called "modules"
  *
  */
+
+/*
+ * Note: This class ideally should be translated, but since
+ * it was stolen from ant, I'd rather leave it as close to the ant
+ * version as possible.
+ */
 public class DirectoryScanner
        implements FileScanner, SelectorScanner, ResourceFactory {
 
     /** Is OpenVMS the operating system we're running on? */
-    private static final boolean ON_VMS = Os.isFamily("openvms");
+    private static final boolean ON_VMS = Os.isFamily("openvms");//$NON-NLS-1$
 
     /**
      * Patterns which should be excluded by default.
@@ -153,30 +159,30 @@ public class DirectoryScanner
      */
     protected static final String[] DEFAULTEXCLUDES = {
         // Miscellaneous typical temporary files
-        "**/*~",
-        "**/#*#",
-        "**/.#*",
-        "**/%*%",
-        "**/._*",
+        "**/*~", //$NON-NLS-1$
+        "**/#*#",//$NON-NLS-1$
+        "**/.#*",//$NON-NLS-1$
+        "**/%*%",//$NON-NLS-1$
+        "**/._*",//$NON-NLS-1$
 
         // CVS
-        "**/CVS",
-        "**/CVS/**",
-        "**/.cvsignore",
+        "**/CVS",//$NON-NLS-1$
+        "**/CVS/**",//$NON-NLS-1$
+        "**/.cvsignore",//$NON-NLS-1$
 
         // SCCS
-        "**/SCCS",
-        "**/SCCS/**",
+        "**/SCCS",//$NON-NLS-1$
+        "**/SCCS/**",//$NON-NLS-1$
 
         // Visual SourceSafe
-        "**/vssver.scc",
+        "**/vssver.scc",//$NON-NLS-1$
 
         // Subversion
-        "**/.svn",
-        "**/.svn/**",
+        "**/.svn",//$NON-NLS-1$
+        "**/.svn/**",//$NON-NLS-1$
 
         // Mac
-        "**/.DS_Store"
+        "**/.DS_Store"//$NON-NLS-1$
     };
 
     /** Helper. */
@@ -732,7 +738,7 @@ public class DirectoryScanner
         String pattern = p.replace('/', File.separatorChar)
             .replace('\\', File.separatorChar);
         if (pattern.endsWith(File.separator)) {
-            pattern += "**";
+            pattern += "**";//$NON-NLS-1$
         }
         return pattern;
     }
@@ -791,7 +797,7 @@ public class DirectoryScanner
 
                 // set in/excludes to reasonable defaults if needed:
                 boolean nullIncludes = (includes == null);
-                includes = nullIncludes ? new String[] {"**"} : includes;
+                includes = nullIncludes ? new String[] {"**"} : includes;//$NON-NLS-1$
                 boolean nullExcludes = (excludes == null);
                 excludes = nullExcludes ? new String[0] : excludes;
 
@@ -802,29 +808,29 @@ public class DirectoryScanner
                     }
                 } else {
                     if (!basedir.exists()) {
-                        illegal = new IllegalStateException("basedir " + basedir
-                                                            + " does not exist");
+                        illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
+                                                            + " does not exist");//$NON-NLS-1$
                     }
                     if (!basedir.isDirectory()) {
-                        illegal = new IllegalStateException("basedir " + basedir
-                                                            + " is not a directory");
+                        illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
+                                                            + " is not a directory");//$NON-NLS-1$
                     }
                     if (illegal != null) {
                         throw illegal;
                     }
                 }
-                if (isIncluded("")) {
-                    if (!isExcluded("")) {
-                        if (isSelected("", basedir)) {
-                            dirsIncluded.addElement("");
+                if (isIncluded("")) {//$NON-NLS-1$
+                    if (!isExcluded("")) {//$NON-NLS-1$
+                        if (isSelected("", basedir)) {//$NON-NLS-1$
+                            dirsIncluded.addElement("");//$NON-NLS-1$
                         } else {
-                            dirsDeselected.addElement("");
+                            dirsDeselected.addElement("");//$NON-NLS-1$
                         }
                     } else {
-                        dirsExcluded.addElement("");
+                        dirsExcluded.addElement("");//$NON-NLS-1$
                     }
                 } else {
-                    dirsNotIncluded.addElement("");
+                    dirsNotIncluded.addElement("");//$NON-NLS-1$
                 }
                 checkIncludePatterns();
                 clearCaches();
@@ -863,9 +869,9 @@ public class DirectoryScanner
             newroots.put(SelectorUtils.rtrimWildcardTokens(
                 includes[i]), includes[i]);
         }
-        if (newroots.containsKey("") && basedir != null) {
+        if (newroots.containsKey("") && basedir != null) {//$NON-NLS-1$
             // we are going to scan everything anyway
-            scandir(basedir, "", true);
+            scandir(basedir, "", true);//$NON-NLS-1$
         } else {
             // only scan directories that can include matched files or
             // directories
@@ -998,7 +1004,7 @@ public class DirectoryScanner
 
                 // set in/excludes to reasonable defaults if needed:
                 boolean nullIncludes = (includes == null);
-                includes = nullIncludes ? new String[] {"**"} : includes;
+                includes = nullIncludes ? new String[] {"**"} : includes;//$NON-NLS-1$
                 boolean nullExcludes = (excludes == null);
                 excludes = nullExcludes ? new String[0] : excludes;
 
@@ -1054,19 +1060,19 @@ public class DirectoryScanner
      */
     protected void scandir(File dir, String vpath, boolean fast) {
         if (dir == null) {
-            throw new BuildException("dir must not be null.");
+            throw new BuildException("dir must not be null.");//$NON-NLS-1$
         } else if (!dir.exists()) {
-            throw new BuildException(dir + " doesn't exist.");
+            throw new BuildException(dir + " doesn't exist.");//$NON-NLS-1$
         } else if (!dir.isDirectory()) {
-            throw new BuildException(dir + " is not a directory.");
+            throw new BuildException(dir + " is not a directory.");//$NON-NLS-1$
         }
         // avoid double scanning of directories, can only happen in fast mode
         if (fast && hasBeenScanned(vpath)) {
             return;
         }
-        
+
         // LINE MODIFIED FOR JBOSS TOOLS;  was  dir.list();
-        File[] newfiles = list(dir); 
+        File[] newfiles = list(dir);
 
         if (newfiles == null) {
             /*
@@ -1076,8 +1082,8 @@ public class DirectoryScanner
              * (2) an IO error occurred (why doesn't it throw an exception
              *     then???)
              */
-            throw new BuildException("IO error scanning directory '"
-                                     + dir.getAbsolutePath() + "'");
+            throw new BuildException("IO error scanning directory '"//$NON-NLS-1$
+                                     + dir.getAbsolutePath() + "'");//$NON-NLS-1$
         }
         if (!followSymlinks) {
             Vector<File> noLinks = new Vector<File>();
@@ -1092,8 +1098,8 @@ public class DirectoryScanner
                         noLinks.addElement(newfiles[i]);
                     }
                 } catch (IOException ioe) {
-                    String msg = "IOException caught while checking "
-                        + "for links, couldn't get canonical path!";
+                    String msg = "IOException caught while checking "//$NON-NLS-1$
+                        + "for links, couldn't get canonical path!";//$NON-NLS-1$
                     // will be caught and redirected to Ant's logging system
                     System.err.println(msg);
                     noLinks.addElement(newfiles[i]);
@@ -1131,7 +1137,7 @@ public class DirectoryScanner
     protected String getName(File file) {
     	return file.getName();
     }
-    
+
     /**
      * Process included file.
      * @param name  path of the file relative to the directory of the FileSet.
@@ -1176,7 +1182,7 @@ public class DirectoryScanner
     protected void postInclude(File f, String name) {
     	// do nothing
     }
-    
+
     protected void postExclude(File f, String name) {
     	// do nothing
     }
@@ -1234,7 +1240,7 @@ public class DirectoryScanner
     private boolean isDeeper(String pattern, String name) {
         Vector p = SelectorUtils.tokenizePath(pattern);
         Vector n = SelectorUtils.tokenizePath(name);
-        return p.contains("**") || p.size() > n.size();
+        return p.contains("**") || p.size() > n.size();//$NON-NLS-1$
     }
 
     /**
@@ -1254,7 +1260,7 @@ public class DirectoryScanner
      *  @since Ant 1.6
      */
     private boolean isMorePowerfulThanExcludes(String name, String includepattern) {
-        String soughtexclude = name + File.separator + "**";
+        String soughtexclude = name + File.separator + "**";//$NON-NLS-1$
         for (int counter = 0; counter < excludes.length; counter++) {
             if (excludes[counter].equals(soughtexclude))  {
                 return false;
@@ -1272,7 +1278,7 @@ public class DirectoryScanner
         name = (name.endsWith(File.separator)) ? name : name + File.separator;
         for (int i = 0; i < excludes.length; i++) {
             String e = excludes[i];
-            if (e.endsWith("**") && SelectorUtils.matchPath(
+            if (e.endsWith("**") && SelectorUtils.matchPath(//$NON-NLS-1$
                 e.substring(0, e.length() - 2), name, isCaseSensitive())) {
                 return true;
             }
@@ -1333,7 +1339,7 @@ public class DirectoryScanner
      */
     public synchronized String[] getIncludedFiles() {
         if (filesIncluded == null) {
-            throw new IllegalStateException("Must call scan() first");
+            throw new IllegalStateException("Must call scan() first");//$NON-NLS-1$
         }
         String[] files = new String[filesIncluded.size()];
         filesIncluded.copyInto(files);
@@ -1348,7 +1354,7 @@ public class DirectoryScanner
      */
     public synchronized int getIncludedFilesCount() {
         if (filesIncluded == null) {
-            throw new IllegalStateException("Must call scan() first");
+            throw new IllegalStateException("Must call scan() first");//$NON-NLS-1$
         }
         return filesIncluded.size();
     }
@@ -1416,7 +1422,7 @@ public class DirectoryScanner
      */
     public synchronized String[] getIncludedDirectories() {
         if (dirsIncluded == null) {
-            throw new IllegalStateException("Must call scan() first");
+            throw new IllegalStateException("Must call scan() first");//$NON-NLS-1$
         }
         String[] directories = new String[dirsIncluded.size()];
         dirsIncluded.copyInto(directories);
@@ -1431,7 +1437,7 @@ public class DirectoryScanner
      */
     public synchronized int getIncludedDirsCount() {
         if (dirsIncluded == null) {
-            throw new IllegalStateException("Must call scan() first");
+            throw new IllegalStateException("Must call scan() first");//$NON-NLS-1$
         }
         return dirsIncluded.size();
     }
@@ -1541,7 +1547,7 @@ public class DirectoryScanner
     protected File[] list2(File file) {
     	return file.listFiles();
     }
-    
+
     /**
      * From <code>base</code> traverse the filesystem in order to find
      * a file that matches the given name.
@@ -1596,7 +1602,7 @@ public class DirectoryScanner
         }
         File[] files = list(base);
         if (files == null) {
-            throw new BuildException("IO error scanning directory "
+            throw new BuildException("IO error scanning directory "//$NON-NLS-1$
                                      + base.getAbsolutePath());
         }
         boolean[] matchCase = cs ? CS_SCAN_ONLY : CS_THEN_NON_CS;
@@ -1636,8 +1642,8 @@ public class DirectoryScanner
                 return FILE_UTILS.isSymbolicLink(base, current)
                     || isSymlink(new File(base, current), pathElements);
             } catch (IOException ioe) {
-                String msg = "IOException caught while checking "
-                    + "for links, couldn't get canonical path!";
+                String msg = "IOException caught while checking "//$NON-NLS-1$
+                    + "for links, couldn't get canonical path!";//$NON-NLS-1$
                 // will be caught and redirected to Ant's logging system
                 System.err.println(msg);
             }
