@@ -5,9 +5,9 @@
    <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
    <extension-point id="EventLogMajorType" name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd"/>
    <extension-point id="ServerEditorPortSection" name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd"/>
- 
+
    <extension
-         point="org.eclipse.wst.server.ui.serverImages"> 
+         point="org.eclipse.wst.server.ui.serverImages">
       <image
             icon="icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.32"
@@ -68,9 +68,9 @@
 
    <extension point="org.eclipse.ui.startup">
       <startup />
-   </extension>   
-   
-   
+   </extension>
+
+
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
@@ -79,7 +79,7 @@
             id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
             type="org.jboss.ide.eclipse.as.core.server.startupConfiguration"/>
    </extension>
-   
+
 
 
    <extension
@@ -102,24 +102,16 @@
             class="org.jboss.tools.as.wst.server.ui.views.server.preferencepages.ViewPreferencePage"
             id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
             name="JBoss Server View"/>
-   </extension> 
+   </extension>
 
 
-  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">  
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
     <adapter>
-      <runtime-component id="org.jboss.ide.eclipse.as.runtime.component"/>
       <factory class="org.eclipse.jst.server.ui.internal.RuntimeLabelProvider$Factory"/>
       <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
     </adapter>
   </extension>
 
-
-
-
-
-   
-   
-   
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -130,10 +122,10 @@
             id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
             name="JBoss Server View"/>
    </extension>
-   
-   
-   
-   
+
+
+
+
       <extension
          point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
       <ViewProvider
@@ -155,12 +147,6 @@
             name="XML Configuration"
             providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider"/>
       <ViewProvider
-            description="A front end to open, edit, or view files in your server&apos;s directories."
-            icon="icons/multiple_files.gif"
-            id="org.jboss.ide.eclipse.as.ui.FilesetViewProvider"
-            name="File Filters"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider"/>
-      <ViewProvider
             description="Lists inactive categories and allows you to turn them back on."
             icon="icons/ignore.gif"
             id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
@@ -181,7 +167,7 @@
                listener="org.jboss.ide.eclipse.as.ui.views.server.TwiddlePollerListener"
                pollerType="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"/>
       </extension>
-	-->   
+	-->
 
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -193,7 +179,7 @@
                relative="org.eclipse.ui.views.TaskList"/>
       </perspectiveExtension>
    </extension>
-   
+
       <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -265,40 +251,27 @@
             id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
    </extension>
 
-<!--
-   <extension
-         point="org.jboss.ide.eclipse.firstrun.FirstRunWizardPage">
-      <UpgradeWizard
-            WizardPage="org.jboss.ide.eclipse.as.ui.upgrades.UpdatePage20"
-            fromVersion="1.6.*"
-            id="org.jboss.ide.eclipse.as.ui.firstrun.16.20"
-            toVersion="2.0.0.*"
-            weight="50"/>
-   </extension>
-   -->
-
    <extension
          point="org.eclipse.help.contexts">
       <contexts
             file="InlineDocs/Twiddle/twiddleContext.xml">
       </contexts>
    </extension>
-   
-   
-   <extension point="org.eclipse.ui.popupMenus"> 
+
+   <extension point="org.eclipse.ui.popupMenus">
 	<objectContribution
        adaptable="true"
        id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.contrib"
        nameFilter="*"
        objectClass="org.eclipse.core.resources.IFile">
       <action
-         id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action" 
+         id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action"
          label="Make Publishable"
          icon="icons/publish.gif"
-         menubarPath="additions" 
-      class="org.jboss.ide.eclipse.as.ui.actions.DeployAction"> 
-      </action> 
-   </objectContribution> 
+         menubarPath="additions"
+      class="org.jboss.ide.eclipse.as.ui.actions.DeployAction">
+      </action>
+   </objectContribution>
 </extension>
    <extension
          point="org.eclipse.ui.console.consolePatternMatchListeners">
@@ -350,5 +323,5 @@
       </section>
    </extension>
 
-   
+
 </plugin>

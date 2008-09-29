@@ -41,12 +41,11 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.variables,
  org.eclipse.search,
  org.apache.ant,
- org.jboss.ide.eclipse.as.core,
- org.jboss.ide.eclipse.archives.core,
- org.jboss.ide.eclipse.archives.ui
+ org.jboss.ide.eclipse.as.core
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.dialogs,
+ org.jboss.ide.eclipse.as.ui.views.server.extensions,
  org.jboss.ide.eclipse.as.ui.wizards
 Bundle-ClassPath: jbossui.jar
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin

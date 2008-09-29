@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.ui.views.server.providers;
+package org.jboss.ide.eclipse.archives.webtools.ui;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,6 +79,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
@@ -91,19 +92,18 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
-import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 
 /**
- * 
+ *
  * @author Rob Stryker <rob.stryker@redhat.com>
  *
  */
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey";
-	
+
 	private Action createFilter, deleteFilter, editFilter, deleteFileAction, editFileAction;
-	
+
 	private FilesetContentProvider contentProvider;
 	private LabelProvider labelProvider;
 	private Fileset[] filesets;
@@ -114,19 +114,19 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		labelProvider = new FilesetLabelProvider();
 		createActions();
 	}
-	
+
 	protected boolean supports(IServer server) {
 		return server != null && (isJBossDeployable(server) || server.getRuntime() != null);
 	}
 
 	protected void createActions() {
-		createFilter =  new Action() { 
+		createFilter =  new Action() {
 			public void run() {
 				IDeployableServer server = (IDeployableServer)contentProvider.server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 				String location = null;
-				if( server != null ) 
+				if( server != null )
 					location = server.getConfigDirectory();
-				else 
+				else
 					location = contentProvider.server.getRuntime().getLocation().toOSString();
 
 				if( location != null ) {
@@ -143,7 +143,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		};
 		createFilter.setText(Messages.FilesetsCreateFilter);
-		deleteFilter =  new Action() { 
+		deleteFilter =  new Action() {
 			public void run() {
 				if( selection.length == 1 && selection[0] instanceof Fileset ) {
 					try {
@@ -158,7 +158,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		};
 		deleteFilter.setText(Messages.FilesetsDeleteFilter);
-		editFilter =  new Action() { 
+		editFilter =  new Action() {
 			public void run() {
 				Fileset sel = selection.length == 1 && selection[0] instanceof Fileset ? (Fileset)selection[0] : null;
 				if( sel == null ) return;
@@ -174,10 +174,10 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		};
 		editFilter.setText(Messages.FilesetsEditFilter);
-		deleteFileAction =  new Action() { 
+		deleteFileAction =  new Action() {
 			public void run() {
 				try {
-					Shell shell = JBossServerView.getDefault().getSite().getShell();
+					Shell shell = Workbench.getInstance().getActiveWorkbenchWindow().getShell();
 					File[] files = getSelectedFiles();
 					MessageBox mb = new MessageBox(shell,SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
 					mb.setText("Delete Files?");
@@ -192,7 +192,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		};
 		deleteFileAction.setText(Messages.FilesetsDeleteFile);
-		editFileAction =  new Action() { 
+		editFileAction =  new Action() {
 			public void run() {
 				File[] files = getSelectedFiles();
 				IWorkbench wb = PlatformUI.getWorkbench();
@@ -206,13 +206,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 							IEditorInput input = new FileEditorInput(eclipseFile);
 							IEditorDescriptor desc = PlatformUI.getWorkbench().
 								getEditorRegistry().getDefaultEditor(files[i].getName());
-							if( desc != null ) 
+							if( desc != null )
 								page.openEditor(input, desc.getId());
 						} else if( fileStore != null ){
 							IEditorInput input = new FileStoreEditorInput(fileStore);
 							IEditorDescriptor desc = PlatformUI.getWorkbench().
 									getEditorRegistry().getDefaultEditor(files[i].getName());
-							if( desc != null ) 
+							if( desc != null )
 								page.openEditor(input, desc.getId());
 						}
 					} catch( Exception e ) {
@@ -224,7 +224,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		};
 		editFileAction.setText(Messages.FilesetsEditFile);
 	}
-	
+
 	protected File[] getSelectedFiles() {
 		ArrayList<File> tmp = new ArrayList<File>();
 		for( int i = 0; i < selection.length; i++ ) {
@@ -232,7 +232,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		return (File[]) tmp.toArray(new File[tmp.size()]);
 	}
-	
+
 	public static class PathWrapper {
 		private IPath path;
 		private IPath folder;
@@ -252,12 +252,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		public IPath getPath() {
 			return folder.append(path);
 		}
-		
+
 		public String getLocalizedResourceName() {
 			return path.toOSString();
 		}
 	}
-	
+
 	public static class FolderWrapper extends PathWrapper {
 		private HashMap<String, FolderWrapper> childrenFolders;
 		private ArrayList<PathWrapper> children;
@@ -270,14 +270,14 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			if( path.segmentCount() == 1 ) {
 				children.add(new PathWrapper(path, getFolder().append(getLocalizedResourceName())));
 			} else {
-				addPath(children, childrenFolders, path, getFolder().append(getLocalizedResourceName()));				
+				addPath(children, childrenFolders, path, getFolder().append(getLocalizedResourceName()));
 			}
 		}
 		public Object[] getChildren() {
 			return children.toArray(new Object[children.size()]);
 		}
 	}
-	
+
 	private static void addPath(ArrayList<PathWrapper> children, HashMap<String, FolderWrapper> folders, IPath path, IPath folder) {
 		try {
 		FolderWrapper fw = null;
@@ -303,13 +303,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				Fileset fs = (Fileset)parentElement;
 				IPath[] paths = null;
 				try {
-					paths = findPaths(fs.getFolder(), 
-							fs.getIncludesPattern(), 
+					paths = findPaths(fs.getFolder(),
+							fs.getIncludesPattern(),
 							fs.getExcludesPattern());
 				} catch( BuildException be ) {
 					return new Object[]{};
 				}
-					
+
 				HashMap<String, FolderWrapper> folders = new HashMap<String, FolderWrapper>();
 				ArrayList<PathWrapper> wrappers = new ArrayList<PathWrapper>();
 				for( int i = 0; i < paths.length; i++ ) {
@@ -361,7 +361,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			}
 		}
 	}
-	
+
 	public void saveFilesets() {
 		IServer server = contentProvider.server;
 		if( server != null ) {
@@ -389,7 +389,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				excludesPattern = parts[3];
 			} catch( ArrayIndexOutOfBoundsException aioobe) {}
 		}
-		
+
 		public Fileset(String name, String folder, String inc, String exc) {
 			this.name = name;
 			this.folder = folder;
@@ -451,28 +451,28 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
 		public Object clone() {
 			try {
 				return super.clone();
 			} catch( Exception e ) {}
 			return null;
 		}
-		
+
 		public boolean equals(Object other) {
 			if( !(other instanceof Fileset)) return false;
 			if( other == this ) return true;
 			Fileset o = (Fileset)other;
-			return o.getName().equals(getName()) && o.getFolder().equals(getFolder()) 
+			return o.getName().equals(getName()) && o.getFolder().equals(getFolder())
 				&& o.getIncludesPattern().equals(getIncludesPattern()) && o.getExcludesPattern().equals(getExcludesPattern());
 		}
 		public int hashCode() {
 			return (name + "::_::" +  folder + "::_::" +  includesPattern + "::_::" +  excludesPattern + "::_::").hashCode();
 		}
 	}
-	
+
 	public class FilesetLabelProvider extends LabelProvider {
-		
+
 	    private LocalResourceManager resourceManager;
 
 		public FilesetLabelProvider() {
@@ -509,7 +509,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	        return element == null ? "" : element.toString();//$NON-NLS-1$
 	    }
 
-		
+
 		public void dispose() {
 			resourceManager.dispose();
 			resourceManager = null;
@@ -517,7 +517,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 
 	}
-	
+
 	public void fillContextMenu(Shell shell, IMenuManager menu, Object[] selection) {
 		this.selection = selection;
 		if( selection.length == 1 && selection[0] instanceof ServerViewProvider ) {
@@ -532,28 +532,28 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			menu.add(deleteFileAction);
 		}
 	}
-	
+
 	protected boolean allPathWrappers(Object[] list) {
 		boolean result = true;
 		for( int i = 0; i < list.length; i++ )
 			result &= list[i] instanceof PathWrapper;
 		return result;
 	}
-	
+
 	protected boolean canDelete(Object[] list ) {
 		boolean result = true;
-		for( int i = 0; i < list.length; i++ ) 
+		for( int i = 0; i < list.length; i++ )
 			result &= ((PathWrapper)selection[i]).getPath().toFile().exists();
 		return result;
 	}
-	
+
 	protected boolean canEdit(Object[] list) {
 		for( int i = 0; i < list.length; i++ )
 			if( canEdit(((PathWrapper)selection[i]).getPath().toFile()))
 				return true;
 		return false;
 	}
-	
+
 	protected boolean canEdit(File file) {
 		IFile eclipseFile = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(file.getAbsolutePath()));
 		IFileStore fileStore= EFS.getLocalFileSystem().fromLocalFile(file);
@@ -562,13 +562,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			IEditorInput input = new FileEditorInput(eclipseFile);
 			IEditorDescriptor desc = PlatformUI.getWorkbench().
 				getEditorRegistry().getDefaultEditor(file.getName());
-			if( input != null && desc != null ) 
+			if( input != null && desc != null )
 				editable = true;
 		} else if( fileStore != null ){
 			IEditorInput input = new FileStoreEditorInput(fileStore);
 			IEditorDescriptor desc = PlatformUI.getWorkbench().
 					getEditorRegistry().getDefaultEditor(file.getName());
-			if( input != null && desc != null ) 
+			if( input != null && desc != null )
 				editable = true;
 		}
 		return editable;
@@ -589,12 +589,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 	public String[] getPropertyKeys(Object selected) {
 		return null;
 	}
-	
+
 	private IPath[] findPaths(String dir, String includes, String excludes) {
 		IPath[] paths = new IPath[0];
 		try {
 			if( dir != null ) {
-				DirectoryScanner scanner  = 
+				DirectoryScanner scanner  =
 					DirectoryScannerFactory.createDirectoryScanner(dir, null, includes, excludes, null, false, 1, true);
 				if( scanner != null ) {
 					String[] files = scanner.getIncludedFiles();
@@ -607,7 +607,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		} catch( IllegalStateException ise ) {}
 		return paths;
 	}
-	
+
 	protected class FilesetDialog extends TitleAreaDialog {
 		protected Fileset fileset;
 		private String name, dir, includes, excludes;
@@ -619,7 +619,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			super(parentShell);
 			this.fileset = new Fileset();
 			this.fileset.setFolder(defaultLocation);
-			
+
 		}
 		protected FilesetDialog(Shell parentShell, Fileset fileset) {
 			super(parentShell);
@@ -633,27 +633,27 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		protected int getShellStyle() {
 			return super.getShellStyle() | SWT.RESIZE;
 		}
-		
+
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
 			shell.setText(Messages.FilesetsNewFileset);
 		}
-		
+
 		protected Control createDialogArea(Composite parent) {
 			setTitle("File filter");
 			setMessage("Creates a new file filter");
-			
+
 			Composite sup = (Composite) super.createDialogArea(parent);
 			main = new Composite(sup, SWT.NONE);
 			main.setLayout(new GridLayout(3, false));
 			main.setLayoutData(new GridData(GridData.FILL_BOTH));
 			fillArea(main);
-			
+
 			nameText.setText(fileset.getName());
 			folderText.setText(fileset.getFolder());
 			includesText.setText(fileset.getIncludesPattern());
 			excludesText.setText(fileset.getExcludesPattern());
-			
+
 			addListeners();
 			return sup;
 		}
@@ -662,13 +662,13 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			ModifyListener mListener = new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					textModified();
-				} 
+				}
 			};
 			nameText.addModifyListener(mListener);
 			folderText.addModifyListener(mListener);
 			includesText.addModifyListener(mListener);
 			excludesText.addModifyListener(mListener);
-			
+
 			browse.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
@@ -676,12 +676,12 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					DirectoryDialog d = new DirectoryDialog(new Shell());
 					d.setFilterPath(folderText.getText());
 					String x = d.open();
-					if( x != null ) 
+					if( x != null )
 						folderText.setText(x);
-				} 
+				}
 			});
 		}
-		
+
 		protected void textModified() {
 			name = nameText.getText();
 			dir = folderText.getText();
@@ -696,50 +696,50 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		protected void fillArea(Composite main) {
 			Label nameLabel = new Label(main, SWT.NONE);
 			nameLabel.setText(Messages.FilesetsNewName);
-			
+
 			nameText = new Text(main, SWT.BORDER);
 			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			Label folderLabel = new Label(main, SWT.NONE);
 			folderLabel.setText(Messages.FilesetsNewRootDir);
-			
+
 			folderText = new Text(main, SWT.BORDER);
 			folderText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 			browse = new Button(main, SWT.PUSH);
 			browse.setText(Messages.FilesetsNewBrowse);
-			
+
 			Label includesLabel = new Label(main, SWT.NONE);
 			includesLabel.setText(Messages.FilesetsNewIncludes);
-			
+
 			includesText = new Text(main, SWT.BORDER);
 			includesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			Label excludeLabel= new Label(main, SWT.NONE);
 			excludeLabel.setText(Messages.FilesetsNewExcludes);
-			
+
 			excludesText = new Text(main, SWT.BORDER);
 			excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			
+
 			Group previewWrapper = new Group(main, SWT.NONE);
-			
+
 			previewWrapper.setLayout(new GridLayout());
 			GridLayout gridLayout = new GridLayout();
 			//gridLayout.numColumns = 3;
-			//gridLayout.verticalSpacing = 9;		
-			
+			//gridLayout.verticalSpacing = 9;
+
 			GridData data = new GridData(GridData.FILL_BOTH);
 			data.grabExcessHorizontalSpace = true;
 			data.grabExcessVerticalSpace = true;
 			data.horizontalSpan = 3;
 			data.minimumHeight = 200;
-			
+
 			previewWrapper.setLayoutData(data);
 			previewWrapper.setText(Messages.FilesetsNewPreview);
-			
+
 			previewWrapper.setLayout(new FillLayout());
 			preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);
 		}
-		
+
 		private void updatePreview() {
 			preview.setInput(findPaths(dir, includes, excludes));
 		}
@@ -759,7 +759,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		public Fileset getFileset() {
 			return fileset;
 		}
-		
+
 	}
 
 }

@@ -5,9 +5,9 @@
          point="org.eclipse.wst.server.core.moduleTypes">
       <moduleType
             id="jboss.package"
-            name="Project Package"/>  
+            name="Project Package"/>
    </extension>
-   
+
    <extension
          point="org.jboss.ide.eclipse.archives.core.archiveTypes">
       <packageType
@@ -49,8 +49,8 @@
                types="jboss.package"
                versions="1.0"/>
       </moduleFactory>
-   </extension>   
-   
+   </extension>
+
       <extension
          point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
       <nodeContribution
@@ -90,5 +90,14 @@
             class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
             priority="5">
       </publisher>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
+      <ViewProvider
+            description="A front end to open, edit, or view files in your server&apos;s directories."
+            icon="icons/multiple_files.gif"
+            id="org.jboss.ide.eclipse.as.ui.FilesetViewProvider"
+            name="File Filters"
+            providerClass="org.jboss.ide.eclipse.archives.webtools.ui.FilesetViewProvider"/>
    </extension>
 </plugin>
