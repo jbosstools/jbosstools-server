@@ -39,9 +39,12 @@ import org.jboss.ide.eclipse.archives.webtools.modules.ModulePackageTypeConverte
  * @author rob.stryker@redhat.com
  */
 public class EarArchiveType extends J2EEArchiveType {
-	public final static String ID = "org.jboss.ide.eclipse.as.core.packages.earPackageType";
+	public final static String ID = "org.jboss.ide.eclipse.as.core.packages.earPackageType"; //$NON-NLS-1$
+	private static final String EXTENSION = ".ear"; //$NON-NLS-1$
+	private static final String JAR_EXTENSION = ".jar"; //$NON-NLS-1$
+
 	public String getAssociatedModuleType() {
-		return "jst.ear";
+		return "jst.ear"; //$NON-NLS-1$
 	}
 
 	public String getId() {
@@ -49,25 +52,25 @@ public class EarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getLabel() {
-		return "EAR";
+		return "EAR"; //$NON-NLS-1$
 	}
 
-	
+
 	public IArchive createDefaultConfiguration(String project, IProgressMonitor monitor) {
 		IModule mod = getModule(project);
-		if( mod != null ) 
+		if( mod != null )
 			return createDefaultConfigFromModule(mod, monitor);
 		else
 			return createDefaultConfiguration2(project, monitor);
 	}
-	
+
 	public IArchive createDefaultConfiguration2(String projectName,
 			IProgressMonitor monitor) {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear");
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + EXTENSION);
 		topLevel.setDestinationPath(new Path(project.getName()));
 		topLevel.setInWorkspace(true);
-		
+
 		fillDefaultConfiguration(projectName, topLevel, monitor);
 		return topLevel;
 	}
@@ -76,10 +79,10 @@ public class EarArchiveType extends J2EEArchiveType {
 			IProgressMonitor monitor) {
 		IProject project = module.getProject();
 		IContainer sourceContainer = project.getFolder(EARCONTENT);
-		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".ear", sourceContainer);
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + EXTENSION, sourceContainer);
 		topLevel.setDestinationPath(new Path(project.getName()));
 		topLevel.setInWorkspace(true);
-		
+
 		fillDefaultConfiguration(project.getName(), topLevel, monitor);
 		return topLevel;
 	}
@@ -93,10 +96,10 @@ public class EarArchiveType extends J2EEArchiveType {
 			// add fileset
 			IArchiveFolder metainf = addFolder(project, topLevel, METAINF);
 			addFileset(project, metainf, new Path(projectName).append(METAINF).toOSString(), null);
-			
+
 		} else {
 			// now add children
-			addFileset(project, topLevel, new Path(project.getName()).append(EARCONTENT).toOSString(), "**/*.*");
+			addFileset(project, topLevel, new Path(project.getName()).append(EARCONTENT).toOSString(), "**/*.*"); //$NON-NLS-1$
 			IEnterpriseApplication earModule = (IEnterpriseApplication)mod.loadAdapter(IEnterpriseApplication.class, monitor);
 			IModule[] childModules = earModule.getModules();
 			for( int i = 0; i < childModules.length; i++ ) {
@@ -104,7 +107,7 @@ public class EarArchiveType extends J2EEArchiveType {
 				IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(child);
 				IArchive childPack;
 				if( type == null ) {
-					childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar");
+					childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + JAR_EXTENSION);
 				} else {
 					childPack = type.createDefaultConfiguration(child.getProject().getName(), new NullProgressMonitor());
 				}

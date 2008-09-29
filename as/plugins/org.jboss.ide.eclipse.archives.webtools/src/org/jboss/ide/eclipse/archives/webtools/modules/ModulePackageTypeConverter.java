@@ -35,11 +35,11 @@ import org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType;
 public class ModulePackageTypeConverter {
 	public static IArchiveType getPackageTypeFor(IModule module) {
 		String modType = module.getModuleType().getId();
-		if("jst.web".equals(modType)) {
+		if("jst.web".equals(modType)) {//$NON-NLS-1$
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
-		} else if("jst.ear".equals(modType)) {
+		} else if("jst.ear".equals(modType)) {//$NON-NLS-1$
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID);
-		} else if("jst.ejb".equals(modType)) {
+		} else if("jst.ejb".equals(modType)) {//$NON-NLS-1$
 			return ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
 		}
 

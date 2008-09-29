@@ -29,18 +29,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.jboss.ide.eclipse.archives.core.model.AbstractBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -53,8 +54,8 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
 public class ArchivesModuleModelListener implements IArchiveModelListener {
 
 	public static ArchivesModuleModelListener instance;
-	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";
-	public static final String DEPLOY_AFTER_BUILD = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployAfterBuild";
+	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";//$NON-NLS-1$
+	public static final String DEPLOY_AFTER_BUILD = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployAfterBuild";//$NON-NLS-1$
 
 	public static ArchivesModuleModelListener getInstance() {
 		if( instance == null ) {
@@ -97,13 +98,13 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 			saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
 		} catch( CoreException ce ) {
 			return new Status(Status.ERROR, IntegrationPlugin.PLUGIN_ID,
-					"Cannot deploy file " + module[0].getName(), ce);
+					NLS.bind(Messages.ExceptionCannotDeployFile, module[0].getName()), ce);
 		}
 		return Status.OK_STATUS;
 
 	}
 	protected static IModule[] getModule(IArchive node) {
-		ModuleFactory factory = ServerPlugin.findModuleFactory("org.jboss.ide.eclipse.as.core.PackageModuleFactory");
+		ModuleFactory factory = ServerPlugin.findModuleFactory(PackageModuleFactory.FACTORY_TYPE_ID);
 		IModule mod = factory.findModule(PackageModuleFactory.getId(node), new NullProgressMonitor());
 		return new IModule[] { mod };
 	}
@@ -119,10 +120,10 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 	}
 
 	public static DeployableServerBehavior[] getServers(String servers) {
-		if( servers == null || "".equals(servers))
+		if( servers == null || "".equals(servers))//$NON-NLS-1$
 			return null;
 		ArrayList<DeployableServerBehavior> list = new ArrayList<DeployableServerBehavior>();
-		String[] byId = servers.split(",");
+		String[] byId = servers.split(",");//$NON-NLS-1$
 		for( int i = 0; i < byId.length; i++ ) {
 			IServer server = ServerCore.findServer(byId[i]);
 			if( server != null ) {

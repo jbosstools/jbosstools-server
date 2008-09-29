@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType;
 
 public class NewWARAction implements IActionDelegate {
@@ -55,23 +56,22 @@ public class NewWARAction implements IActionDelegate {
 			this.selection = (IStructuredSelection)selection;
 	}
 
-	
+
 	public static class NewWARWizard extends AbstractArchiveWizard {
 
 		private WarPreviewPage warInfoPage;
-		
-		public NewWARWizard ()
-		{
-			setWindowTitle("New WAR");
+
+		public NewWARWizard () {
+			setWindowTitle(Messages.NewWar);
 		}
-		
+
 		public ImageDescriptor getImageDescriptor() {
 			return null;
 		}
 
 		public WizardPage[] createWizardPages() {
 			warInfoPage = new WarPreviewPage(this);
-			
+
 			return new WizardPage[] { warInfoPage };
 		}
 
@@ -79,15 +79,15 @@ public class NewWARAction implements IActionDelegate {
 			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE));
 			return true;
 		}
-		
+
 		public String getArchiveExtension() {
-			return "war";
+			return "war"; //$NON-NLS-1$
 		}
 	}
 
 	protected static class WarPreviewPage extends PreviewPage {
 		protected WarPreviewPage(NewWARWizard wiz) {
-			super(wiz, "WAR Archive Stub", "WAR Archive Stub", 
+			super(wiz, Messages.WarPreview, Messages.WarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		}
 		protected void addToPackage() {
@@ -96,8 +96,7 @@ public class NewWARAction implements IActionDelegate {
 		}
 
 		protected String getDescriptionMessage() {
-			return 	"Below is a stub archive configuration for your project. \n" + 
-				"You can customize this structure further after pressing finish.";
+			return 	Messages.WarDescription;
 		}
 	}
 }

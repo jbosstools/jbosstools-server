@@ -85,11 +85,11 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewExtension;
 
@@ -100,8 +100,8 @@ import org.jboss.ide.eclipse.as.ui.views.server.extensions.SimplePropertiesViewE
  */
 public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
-	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey";
-
+	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey"; //$NON-NLS-1$
+	private static final String HASH_SEPARATOR = "::_::"; //$NON-NLS-1$
 	private Action createFilter, deleteFilter, editFilter, deleteFileAction, editFileAction;
 
 	private FilesetContentProvider contentProvider;
@@ -180,8 +180,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 					Shell shell = Workbench.getInstance().getActiveWorkbenchWindow().getShell();
 					File[] files = getSelectedFiles();
 					MessageBox mb = new MessageBox(shell,SWT.ICON_QUESTION | SWT.OK | SWT.CANCEL);
-					mb.setText("Delete Files?");
-					mb.setMessage("Are you sure you want to delete the selected files?");
+					mb.setText(Messages.DeleteFiles);
+					mb.setMessage(Messages.DeleteFilesMessage);
 					if( mb.open() == SWT.OK) {
 						for( int i = 0; i < files.length; i++ )
 							FileUtil.safeDelete(files[i]);
@@ -216,7 +216,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 								page.openEditor(input, desc.getId());
 						}
 					} catch( Exception e ) {
-						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Cannot open file", e);
+						IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.FilesetsCannotOpenFile, e);
 						JBossServerUIPlugin.getDefault().getLog().log(status);
 					}
 				}
@@ -381,8 +381,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 		public Fileset(String string) {
 			try {
-				name = folder = includesPattern =excludesPattern = "";
-				String[] parts = string.split("\n");
+				name = folder = includesPattern =excludesPattern = ""; //$NON-NLS-1$
+				String[] parts = string.split("\n"); //$NON-NLS-1$
 				name = parts[0];
 				folder = parts[1];
 				includesPattern = parts[2];
@@ -397,31 +397,31 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 			excludesPattern = exc;
 		}
 		public String toString() {
-			return name + "\n" + folder + "\n" + includesPattern + "\n" + excludesPattern;
+			return name + "\n" + folder + "\n" + includesPattern + "\n" + excludesPattern;   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 		}
 		/**
 		 * @return the folder
 		 */
 		public String getFolder() {
-			return folder == null ? "" : folder;
+			return folder == null ? "" : folder; //$NON-NLS-1$
 		}
 		/**
 		 * @return the name
 		 */
 		public String getName() {
-			return name == null ? "" : name;
+			return name == null ? "" : name; //$NON-NLS-1$
 		}
 		/**
 		 * @return the excludesPattern
 		 */
 		public String getExcludesPattern() {
-			return excludesPattern == null ? "" : excludesPattern;
+			return excludesPattern == null ? "" : excludesPattern; //$NON-NLS-1$
 		}
 		/**
 		 * @return the includesPattern
 		 */
 		public String getIncludesPattern() {
-			return includesPattern == null ? "" : includesPattern;
+			return includesPattern == null ? "" : includesPattern; //$NON-NLS-1$
 		}
 
 		/**
@@ -467,7 +467,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 				&& o.getIncludesPattern().equals(getIncludesPattern()) && o.getExcludesPattern().equals(getExcludesPattern());
 		}
 		public int hashCode() {
-			return (name + "::_::" +  folder + "::_::" +  includesPattern + "::_::" +  excludesPattern + "::_::").hashCode();
+			return (name + HASH_SEPARATOR +  folder + HASH_SEPARATOR +  includesPattern + HASH_SEPARATOR +  excludesPattern + HASH_SEPARATOR).hashCode();
 		}
 	}
 
@@ -505,7 +505,7 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 
 	    public String getText(Object element) {
 	    	if( element instanceof PathWrapper ) return ((PathWrapper)element).getLocalizedResourceName();
-	    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getFolder();
+	    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getFolder(); //$NON-NLS-1$
 	        return element == null ? "" : element.toString();//$NON-NLS-1$
 	    }
 
@@ -640,8 +640,8 @@ public class FilesetViewProvider extends SimplePropertiesViewExtension {
 		}
 
 		protected Control createDialogArea(Composite parent) {
-			setTitle("File filter");
-			setMessage("Creates a new file filter");
+			setTitle(Messages.FilesetsDialogTitle);
+			setMessage(Messages.FilesetsDialogMessage);
 
 			Composite sup = (Composite) super.createDialogArea(parent);
 			main = new Composite(sup, SWT.NONE);

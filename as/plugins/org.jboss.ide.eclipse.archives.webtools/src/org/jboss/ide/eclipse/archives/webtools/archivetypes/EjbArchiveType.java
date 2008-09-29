@@ -32,14 +32,14 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 
 /**
- * 
+ *
  * @author rob.stryker@redhat.com
  */
 public class EjbArchiveType extends J2EEArchiveType {
 
-	public final static String ID = "org.jboss.ide.eclipse.as.core.packages.ejbPackageType";
+	public final static String ID = "org.jboss.ide.eclipse.as.core.packages.ejbPackageType"; //$NON-NLS-1$
 	public String getAssociatedModuleType() {
-		return "jst.ejb";
+		return "jst.ejb"; //$NON-NLS-1$
 	}
 
 	public String getId() {
@@ -47,13 +47,13 @@ public class EjbArchiveType extends J2EEArchiveType {
 	}
 
 	public String getLabel() {
-		return "EJB JAR";
+		return "EJB JAR"; //$NON-NLS-1$
 	}
 
 	public IArchive createDefaultConfiguration(String projectName, IProgressMonitor monitor) {
 		IProject project = getProject(projectName);
-		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".jar");
-		return fillDefaultConfiguration(project, topLevel, monitor); 
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".jar"); //$NON-NLS-1$
+		return fillDefaultConfiguration(project, topLevel, monitor);
 	}
 
 	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
@@ -62,11 +62,11 @@ public class EjbArchiveType extends J2EEArchiveType {
 	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
 
 		IModule mod = getModule(project.getName());
-		
+
 		if( mod == null ) {
 			// TODO fix me
 		} else {
-			if( mod.getModuleType().getId().equals("jst.ejb") ) {
+			if( mod.getModuleType().getId().equals("jst.ejb") ) { //$NON-NLS-1$
 				try {
 					IJavaProject proj = JavaCore.create(project);
 					IPath outputLoc = proj.getOutputLocation();

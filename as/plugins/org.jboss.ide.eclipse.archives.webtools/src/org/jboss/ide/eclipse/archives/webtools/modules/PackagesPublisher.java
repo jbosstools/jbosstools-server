@@ -39,6 +39,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
@@ -55,21 +56,21 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  * @author rob.stryker@jboss.com
  */
 public class PackagesPublisher implements IJBossServerPublisher {
-	
+
 	protected IDeployableServer server;
 	protected IModuleResourceDelta[] delta;
 	protected EventLogTreeItem eventRoot;
-	
+
 	public PackagesPublisher() {
 	}
-	
+
 	public int getPublishState() {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
 	public boolean accepts(IServer server, IModule[] module) {
-		if( module != null && module.length > 0 
-				&& "jboss.package".equals(module[0].getModuleType().getId()))
+		if( module != null && module.length > 0
+				&& "jboss.package".equals(module[0].getModuleType().getId()))//$NON-NLS-1$
 			return true;
 		return false;
 	}
@@ -80,7 +81,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		this.server = ServerConverter.getDeployableServer(server);
 		eventRoot = log;
 		this.delta = delta;
-		
+
 		try {
 			IModule module2 = module[0];
 	    	// if it's being removed
@@ -92,7 +93,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	    		publishModule(module2, true, monitor);
 	    	}
 		}catch(Exception e) {
-			IStatus status = new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, "Error during publish", e);
+			IStatus status = new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, Messages.ErrorDuringPublish, e);
 			IntegrationPlugin.getDefault().getLog().log(status);
 		}
 		return null;
@@ -109,14 +110,14 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			FileUtil.safeDelete(destPath.toFile(), listener);
 		}
 	}
-	
 
-	
+
+
 	protected void publishModule(IModule module, boolean incremental, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
 		IPath destPathRoot = new Path(server.getDeployDirectory());
-		
+
 		// if destination is deploy directory... no need to re-copy!
 		if( destPathRoot.toOSString().equals(PathUtils.getGlobalLocation(pack).toOSString())) {
 			// fire null publish event
@@ -133,14 +134,14 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 	}
 
-	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix, 
+	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix,
 								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
 		ArrayList<IPath> changedFiles = new ArrayList<IPath>();
 		for( int i = 0; i < delta.length; i++ ) {
 			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles, listener);
 		}
 	}
-	
+
 	protected int countChanges(IModuleResourceDelta[] deltas) {
 		IModuleResource res;
 		int count = 0;
@@ -153,7 +154,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 		return count;
 	}
-	
+
 	protected int countConcreteFiles(IModule module) {
 		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 		try {
@@ -161,7 +162,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			countConcreteFiles(delegate.members()[0], list);
 			return list.size();
 		} catch( CoreException ce ) {
-			
+
 		}
 		return -1;
 	}
@@ -170,7 +171,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			IExtendedModuleResource emr = ((IExtendedModuleResource)mr);
 			if( mr instanceof IModuleFile ) {
 				IPath p = emr.getConcreteDestFile();
-				if( !list.contains(p)) 
+				if( !list.contains(p))
 					list.add(p);
 			}
 			if( mr instanceof IModuleFolder) {
@@ -180,8 +181,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			}
 		}
 	}
-	
-	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot, 
+
+	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot,
 			IPath sourcePrefix, ArrayList<IPath> changedFiles, PublisherFileUtilListener listener) {
 		switch( delta.getKind()) {
 		case IModuleResourceDelta.REMOVED:
@@ -190,17 +191,17 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			if( imr instanceof IExtendedModuleResource) {
 				IExtendedModuleResource emr = ((IExtendedModuleResource)imr);
 				IPath concrete = emr.getConcreteDestFile();
-				if( !changedFiles.contains(concrete)) {  
+				if( !changedFiles.contains(concrete)) {
 					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
 
-					// file hasnt been updated yet. 
-					// But we don't know whether to delete or copy this file. 
-					// depends where it is in the tree and what's exploded. 
+					// file hasnt been updated yet.
+					// But we don't know whether to delete or copy this file.
+					// depends where it is in the tree and what's exploded.
 					changedFiles.add(concrete);
 					IPath concreteRelative = concrete.removeFirstSegments(sourcePrefix.segmentCount()).setDevice(null);
 					IPath emrModRelative = emr.getModuleRelativePath();
 					boolean delete = concreteRelative.equals(emrModRelative);
-					
+
 					if( delete ) {
 						FileUtil.safeDelete(destPath.toFile(), listener);
 					} else {
@@ -237,9 +238,9 @@ public class PackagesPublisher implements IJBossServerPublisher {
 					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
 				}
 			}
-			break;			
+			break;
 		}
-		
+
 		IModuleResourceDelta[] children = delta.getAffectedChildren();
 		if( children != null ) {
 			for( int i = 0; i < children.length; i++ ) {
@@ -247,7 +248,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			}
 		}
 	}
-	
+
 	protected IArchive getPackage(IModule module) {
 		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 		return delegate == null ? null : delegate.getPackage();

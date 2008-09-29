@@ -47,36 +47,37 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
 public class WarArchiveType extends J2EEArchiveType {
-	public static final String WAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.warPackage";
+	public static final String WAR_PACKAGE_TYPE = "org.jboss.ide.eclipse.as.core.packages.warPackage"; //$NON-NLS-1$
 
 	public String getAssociatedModuleType() {
-		return "jst.web";
+		return "jst.web"; //$NON-NLS-1$
 	}
 
 	public IArchive createDefaultConfiguration(String projectName, IProgressMonitor monitor) {
 		IModule mod = getModule(projectName);
-		if( mod == null ) 
+		if( mod == null )
 			return createDefaultConfiguration2(projectName, monitor);
 		else
 			return createDefaultConfigFromModule(mod, monitor);
 	}
-	
+
 	protected IArchive createDefaultConfiguration2(String projectName, IProgressMonitor monitor) {
 		IProject project = getProject(projectName);
-		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
+		IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war"); //$NON-NLS-1$
 		return fillDefaultConfiguration(project, topLevel, monitor);
 	}
-	
+
 	public IArchive fillDefaultConfiguration(String projectName, IArchive topLevel, IProgressMonitor monitor) {
 		return fillDefaultConfiguration(getProject(projectName), topLevel, monitor);
 	}
-	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {	
+	public IArchive fillDefaultConfiguration(IProject project, IArchive topLevel, IProgressMonitor monitor) {
 		try {
 			IModule mod = getModule(project.getName());
 			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
@@ -85,7 +86,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			addReferencedProjectsAsLibs(project, lib);
 			addLibFileset(project, lib, true);
 			addClassesFileset(project, classes);
-	
+
 			if( mod == null ) {
 				addWebinfFileset(project, webinf);
 			} else {
@@ -94,24 +95,24 @@ public class WarArchiveType extends J2EEArchiveType {
 		} catch( ArchivesModelException ame) {}
 		return topLevel;
 	}
-	
+
 	// For modules only
 	protected void addWebContentFileset(IProject project, IArchiveNode packageRoot) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
-			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
+			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true); //$NON-NLS-1$
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
 				IPath path = new Path(files[0]);
 				path = path.removeLastSegments(2); // remove the file name
 				path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-				IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*");
+				IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*"); //$NON-NLS-1$
 				//If we have separate file set for libraries, we do not need to duplicate jars.
-				fs.setExcludesPattern("**/WEB-INF/lib/*.jar");
+				fs.setExcludesPattern("**/WEB-INF/lib/*.jar"); //$NON-NLS-1$
 			}
 		} catch( IllegalStateException ise ) {
-			IStatus status = new Status(IStatus.WARNING, IntegrationPlugin.PLUGIN_ID, "Directory could not be scanned", ise);
+			IStatus status = new Status(IStatus.WARNING, IntegrationPlugin.PLUGIN_ID, Messages.ExceptionCannotScanDirectory, ise);
 			IntegrationPlugin.getDefault().getLog().log(status);
 		}
 	}
@@ -122,7 +123,7 @@ public class WarArchiveType extends J2EEArchiveType {
 			try {
 				IPath outputLoc = project.getWorkspace().getRoot().getLocation();
 				outputLoc = outputLoc.append(jp.getOutputLocation());
-				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*");
+				addFileset(project, folder, jp.getOutputLocation().toOSString(), "**/*"); //$NON-NLS-1$
 			} catch( JavaModelException jme ) {
 				// no logging
 			}
@@ -131,39 +132,39 @@ public class WarArchiveType extends J2EEArchiveType {
 	protected void addWebinfFileset(IProject project, IArchiveFolder folder) throws ArchivesModelException {
 		try {
 			IPath projectPath = project.getLocation();
-			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/web.xml", null, true);
+			DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/web.xml", null, true); //$NON-NLS-1$
 			String[] files = scanner.getIncludedFiles();
 			// just take the first
 			if( files.length > 0 ) {
 				IPath path = new Path(files[0]);
 				path = path.removeLastSegments(1); // remove the file name
 				path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-				addFileset(project, folder, path.toOSString(), "**/*");			
+				addFileset(project, folder, path.toOSString(), "**/*"); //$NON-NLS-1$
 			}
 		} catch( IllegalStateException ise ) {
-			IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID, "Directory could not be scanned", ise);
+			IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID, Messages.ExceptionCannotScanDirectory, ise);
 			ArchivesCorePlugin.getDefault().getLog().log(status);
 		}
 	}
-	
+
 	// Lib support
 	protected void addLibFileset(IProject project, IArchiveFolder folder, boolean includeTopLevelJars) throws ArchivesModelException {
 		// Let us find /WEB-INF/lib directory and set it as source for the file set.
 		String sourcePath = null;
-		
+
 		IPath projectPath = project.getLocation();
-		DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true);
+		DirectoryScanner scanner =  createDirectoryScanner(projectPath.toString(), "**/WEB-INF/web.xml", null, true); //$NON-NLS-1$
 		String[] files = scanner.getIncludedFiles();
-		
+
 		if(files != null && files.length > 0) {
 			IPath path = new Path(files[0]);
-			path = path.removeLastSegments(1).append("lib");
+			path = path.removeLastSegments(1).append("lib"); //$NON-NLS-1$
 			sourcePath = project.getFullPath().append(path).toString();
-			addFileset(project, folder, sourcePath, "*.jar");  // add default jars
+			addFileset(project, folder, sourcePath, "*.jar");  // add default jars //$NON-NLS-1$
 		} else {
 			//having failed to find 'lib' directory, let us make source of the project itself
 			sourcePath = project.getName();
-			DirectoryScanner scanner2 =  createDirectoryScanner(projectPath.toString(), "**/*.jar", null, true);
+			DirectoryScanner scanner2 =  createDirectoryScanner(projectPath.toString(), "**/*.jar", null, true); //$NON-NLS-1$
 			String[] files2 = scanner2.getIncludedFiles();
 			IPath p;
 			ArrayList list = new ArrayList();
@@ -171,7 +172,7 @@ public class WarArchiveType extends J2EEArchiveType {
 				p = project.getFullPath().append(files2[i]).removeLastSegments(1);
 				if( !list.contains(p)) {
 					list.add(p);
-					addFileset(project, folder, p.toString(), "*.jar");  // add default jars
+					addFileset(project, folder, p.toString(), "*.jar");  // add default jars //$NON-NLS-1$
 				}
 			}
 		}
@@ -195,10 +196,10 @@ public class WarArchiveType extends J2EEArchiveType {
 			}
 		}
 	}
-	
-	
+
+
 	protected void createLibFromProject(IProject project, IArchiveFolder folder) throws ArchivesModelException {
-		IArchive pack = createGenericIArchive(project, null, project.getName() + ".jar");
+		IArchive pack = createGenericIArchive(project, null, project.getName() + ".jar");//$NON-NLS-1$
 		folder.addChild(pack);
 	}
 
@@ -207,31 +208,31 @@ public class WarArchiveType extends J2EEArchiveType {
 			IProject project = mod.getProject();
 
 			// create the stub
-			IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");
+			IArchive topLevel = createGenericIArchive(project, null, project.getName() + ".war");//$NON-NLS-1$
 			topLevel.setDestinationPath(new Path(project.getName()));
 			topLevel.setInWorkspace(true);
-			
+
 			// add lib folder so we can add libraries
 			IArchiveFolder webinf = addFolder(project, topLevel, WEBINF);
 			IArchiveFolder lib = addFolder(project, webinf, LIB);
 			IArchiveFolder classes = addFolder(project, webinf, CLASSES);
 
-			
+
 			IVirtualComponent vc = ComponentCore.createComponent(project);
 			IPath webContentPath = vc.getRootFolder().getUnderlyingFolder().getFullPath();
-			addFileset(project, topLevel, webContentPath.toOSString(), "**/*");
+			addFileset(project, topLevel, webContentPath.toOSString(), "**/*");//$NON-NLS-1$
 			addClassesFileset(project, classes);
-			
+
 			// package each child and add to lib folder
 			IWebModule webModule = (IWebModule)mod.loadAdapter(IWebModule.class, monitor);
 			IModule[] childModules = webModule.getModules();
 			for (int i = 0; i < childModules.length; i++) {
 				IModule child = childModules[i];
-				lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));
+				lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));//$NON-NLS-1$
 			}
 			return topLevel;
 		} catch( Exception e ) {
-			IntegrationPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, "Unexpected Exception", e));
+			IntegrationPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, Messages.ExceptionUnexpectedException, e));
 		}
 		return null;
 	}
@@ -241,6 +242,6 @@ public class WarArchiveType extends J2EEArchiveType {
 	}
 
 	public String getLabel() {
-		return "WAR";
+		return "WAR";//$NON-NLS-1$
 	}
 }

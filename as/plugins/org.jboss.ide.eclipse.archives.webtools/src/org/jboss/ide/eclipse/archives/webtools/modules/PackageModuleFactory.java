@@ -57,13 +57,13 @@ import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
  * @author rob.stryker@jboss.com
  */
 public class PackageModuleFactory extends ModuleFactoryDelegate {
-	
-	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";
-	public static final String MODULE_TYPE = "jboss.package";
-	public static final String VERSION = "1.0";
 
-	public static final String MODULE_ID_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey";
-	
+	public static final String FACTORY_TYPE_ID = "org.jboss.ide.eclipse.as.core.PackageModuleFactory";//$NON-NLS-1$
+	public static final String MODULE_TYPE = "jboss.package";//$NON-NLS-1$
+	public static final String VERSION = "1.0";//$NON-NLS-1$
+
+	public static final String MODULE_ID_PROPERTY_KEY = "org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey";//$NON-NLS-1$
+
 	// the factory delegate and the factory respectively
 	private static PackageModuleFactory factDelegate;
 	private static ModuleFactory factory;
@@ -75,7 +75,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	public static PackageModuleFactory getFactory() {
 		if( factDelegate == null ) {
 			ModuleFactory[] factories = ServerPlugin.getModuleFactories();
-			
+
 			for( int i = 0; i < factories.length; i++ ) {
 				if( factories[i].getId().equals(PackageModuleFactory.FACTORY_TYPE_ID)) {
 					Object o = factories[i].getDelegate(new NullProgressMonitor());
@@ -91,7 +91,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	}
 
 	/**
-	 * Get the module ID of this IArchive if it exists. 
+	 * Get the module ID of this IArchive if it exists.
 	 * Do not create a new one otherwise
 	 * @param pack
 	 * @return
@@ -99,7 +99,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected static String getStamp(IArchive pack) {
 		return getStamp(pack, false);
 	}
-	
+
 	/**
 	 * Get the module ID of this IArchive if it exists.
 	 * If create is true, and the ID is not set, set a default ID.
@@ -110,16 +110,16 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected static String getStamp(IArchive pack, boolean create) {
 		String propVal = pack.getProperty(MODULE_ID_PROPERTY_KEY);
 		if( propVal == null && create ) {
-			propVal = "" + new Date().getTime();
+			propVal = "" + new Date().getTime();//$NON-NLS-1$
 		}
 		return propVal;
 	}
-	
-	protected static String getId(IArchive pack) { 
+
+	protected static String getId(IArchive pack) {
 		IPath p = pack.getModelRootNode().getDescriptor().append(getStamp(pack));
 		return p.toString();
 	}
-	
+
 	public IModule findModule(String id) {
 		IModule m = super.findModule(id);
 		IModule[] allModules = getModules();
@@ -130,7 +130,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		return m;
 	}
-	
+
 	/**
 	 * Return the name of the project in the workspace
 	 * @param node
@@ -145,23 +145,23 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				return list[i].getName();
 		return null;
 	}
-	
+
 	/**
 	 * Get the visible name of this module
 	 * @param pack
 	 * @return
 	 */
 	public static String getName(IArchive pack) {
-		return getProjectName(pack) + "/" + pack.getName();
+		return getProjectName(pack) + "/" + pack.getName();//$NON-NLS-1$
 	}
 
-	
-	
+
+
 	protected ArchivesModelModuleContributor moduleContributor;
 	public PackageModuleFactory() {
 		super();
 	}
-	
+
 	public void initialize() {
 		moduleContributor = ArchivesModelModuleContributor.getInstance();
 	}
@@ -169,7 +169,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	protected IModule createModule2(IArchive pack, IProject project) {
 		return createModule(getId(pack), getName(pack), MODULE_TYPE, VERSION, project);
 	}
-	
+
 	public IModule[] getModules(IProject project) {
 		moduleContributor.refreshProject(project.getLocation());
 		return super.getModules(project);
@@ -177,17 +177,17 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	public IModule[] getModules() {
 		return moduleContributor.getModules();
 	}
-	
+
 	public ModuleDelegate getModuleDelegate(IModule module) {
 		return moduleContributor.getModuleDelegate(module);
 	}
-	
+
 	public static interface IModuleContributor {
 		public IModule[] getModules();
 		public boolean containsModule(IModule module);
 		public PackagedModuleDelegate getModuleDelegate(IModule module);
 	}
-	
+
 	public static interface IExtendedModuleResource extends IModuleResource {
 		public IPath getSourcePath();
 		public IArchiveNode getNode();
@@ -222,7 +222,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				IArchiveNode parent = node.getParent();
 				ArchiveContainerResource parentAsResource = members.get(parent);
 				IPath rel = node.getRootArchiveRelativePath();
-				members.put(node, new ArchiveContainerResource(name, node, rel));					
+				members.put(node, new ArchiveContainerResource(name, node, rel));
 				pathToNode.put(rel, node);
 				parentAsResource.addChild(members.get(node));
 			} else if( type == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
@@ -232,16 +232,16 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 			return true;
 		}
-		
+
 		public IModuleResource getRootResource() {
 			return members.get(pack);
 		}
-		
+
 		public IModuleResource getResourceForNode(IArchiveNode node) {
 			return members.get(node);
 		}
 	}
-	
+
 	public static class ArchiveContainerResource implements IModuleFolder, IExtendedModuleResource {
 
 		protected IPath moduleRelativePath;
@@ -249,7 +249,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		protected IArchiveNode node;
 		protected String name;
 		private HashMap<IPath, IModuleResource> members;
-		
+
 		// represents source folder on disk. only used if node is fileset
 //		private IPath folderGlobalPath = null;
 		public ArchiveContainerResource(String name,IArchiveNode node,IPath moduleRelativePath ) {
@@ -261,7 +261,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 				fsRelative = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
 			}
 		}
-		
+
 		public int hashCode() {
 			return name.hashCode() * 37 + moduleRelativePath.hashCode();
 		}
@@ -277,28 +277,28 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public void addChild(IModuleResource resource) {
 			members.put(resource.getModuleRelativePath(), resource);
 		}
-		
+
 		public void removeChild(IPath moduleRelativePath) {
 			members.remove(moduleRelativePath);
 		}
 		public IModuleResource getChild(IPath path) {
 			return members.get(path);
 		}
-		
+
 		public void addFilesetAsChild(IArchiveFileSet fs) {
 			FileWrapper[] files = fs.findMatchingPaths(); // file-system based source paths
 			for( int i = 0; i < files.length; i++ ) {
 				addFilesetPathAsChild(fs, files[i]);
 			}
 		}
-		
+
 		public void addFilesetPathAsChild(IArchiveFileSet fs, FileWrapper file) {
 			IPath fsRelative = new Path(file.getFilesetRelative());
 			ArchiveContainerResource parent = find(fs, fsRelative.removeLastSegments(1), true);
 			ExtendedModuleFile emf = new ExtendedModuleFile(file, fs);
 			parent.addChild(emf);
 		}
-		
+
 		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath fsRelative, boolean create) {
 			ArchiveContainerResource resource = this;
 			ArchiveContainerResource tmpResource;
@@ -317,7 +317,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			}
 			return resource;
 		}
-		
+
 		public IModuleResource[] members() {
 			Collection<IModuleResource> c = members.values();
 			return c.toArray(new IModuleResource[c.size()]);
@@ -336,13 +336,13 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 
 		public IPath getDeepDestination() {
-			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET 
+			IPath tmp = node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET
 					?  moduleRelativePath : node.getRootArchiveRelativePath();
 			return PathUtils.getGlobalLocation(node.getRootArchive()).append(tmp);
 		}
-		
+
 		public IPath getConcreteDestFile() {
-			if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ) 
+			if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET )
 				return ModelUtil.getBaseDestinationFile((IArchiveFileSet)node,fsRelative);
 			else
 				return ModelUtil.getBaseDestinationFile((IArchiveFileSet)node);
@@ -354,7 +354,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public IPath getSourcePath() {
 			return null;
 		}
-		
+
 	}
 
 	public static class ExtendedModuleFile extends ModuleFile implements IExtendedModuleResource {
@@ -368,7 +368,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		public int hashCode() {
 			return getName().hashCode() * 37 + getPath().hashCode();
 		}
-		
+
 		public IPath getPath() { return new Path(wrapper.getAbsolutePath()); }
 		public IArchiveNode getNode() { return node; }
 		public IPath getDeepDestination() {
@@ -389,9 +389,9 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			}
 			return false;
 		}
-		
+
 	}
-	
+
 	public static class PackagedModuleDelegate extends ModuleDelegate {
 		private IArchive pack;
 		private IModuleResource rootResource;
@@ -400,14 +400,14 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			this.pack = pack;
 			initVisitor = new DelegateInitVisitor(pack);
 		}
-		
+
 		public IArchive getPackage() {
 			return pack;
 		}
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}
-		
+
 		protected void init() {
 			initVisitor.reset();
 			pack.accept(initVisitor);
@@ -418,10 +418,9 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			init();
 			return new IModuleResource[] { rootResource };
 		}
-		
+
 		public IStatus validate() {
-			return new Status(IStatus.OK, IntegrationPlugin.PLUGIN_ID, 
-					0, "", null);
+			return Status.OK_STATUS;
 		}
 	}
 

@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.archivetypes.EjbArchiveType;
 
 public class NewEJBJARAction implements IActionDelegate {
@@ -58,18 +59,18 @@ public class NewEJBJARAction implements IActionDelegate {
 	public static class NewEJBWizard extends AbstractArchiveWizard {
 
 		private EjbJarPreviewPage ejbInfoPage;
-		
+
 		public NewEJBWizard () {
-			setWindowTitle("New EJB JAR");
+			setWindowTitle(Messages.NewEjbJar);
 		}
-		
+
 		public ImageDescriptor getImageDescriptor() {
 			return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EJB_JAR);
 		}
 
 		public WizardPage[] createWizardPages() {
 			ejbInfoPage = new EjbJarPreviewPage(this);
-			
+
 			return new WizardPage[] { ejbInfoPage };
 		}
 
@@ -77,16 +78,16 @@ public class NewEJBJARAction implements IActionDelegate {
 			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID));
 			return true;
 		}
-		
+
 		public String getArchiveExtension() {
-			return "jar";
+			return "jar"; //$NON-NLS-1$
 		}
 	}
 
 
 	protected static class EjbJarPreviewPage extends PreviewPage {
 		protected EjbJarPreviewPage(NewEJBWizard wiz) {
-			super(wiz, "EJB JAR Preview", "EJB JAR Preview", 
+			super(wiz, Messages.EjbJarPreview, Messages.EjbJarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_JAR_WIZARD));
 		}
 		protected void addToPackage() {
@@ -95,8 +96,7 @@ public class NewEJBJARAction implements IActionDelegate {
 		}
 
 		protected String getDescriptionMessage() {
-			return 	"Preview the EJB JAR \n" + 
-				"Later, you can customize this structure further.";
+			return 	Messages.EjbJarDescription;
 		}
 	}
 

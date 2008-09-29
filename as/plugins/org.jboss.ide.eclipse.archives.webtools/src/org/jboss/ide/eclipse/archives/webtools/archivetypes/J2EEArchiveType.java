@@ -46,22 +46,23 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 
 /**
  *
  * @author rob.stryker@jboss.com
  */
 public abstract class J2EEArchiveType implements IArchiveType {
-	public static final String METAINF = "META-INF";
-	public static final String WEBINF = "WEB-INF";
-	public static final String CLASSES = "classes";
-	public static final String LIB = "lib";
-	public static final String WEBCONTENT = "WebContent";
-	public static final String EARCONTENT = "EarContent";
-	public static final String EJBMODULE = "ejbModule";
+	public static final String METAINF = "META-INF"; //$NON-NLS-1$
+	public static final String WEBINF = "WEB-INF";//$NON-NLS-1$
+	public static final String CLASSES = "classes";//$NON-NLS-1$
+	public static final String LIB = "lib";//$NON-NLS-1$
+	public static final String WEBCONTENT = "WebContent";//$NON-NLS-1$
+	public static final String EARCONTENT = "EarContent";//$NON-NLS-1$
+	public static final String EJBMODULE = "ejbModule";//$NON-NLS-1$
 
 
-	protected boolean isModuleType(IModule module, String moduleTypeId){	
+	protected boolean isModuleType(IModule module, String moduleTypeId){
 		if(module.getModuleType()!=null && moduleTypeId.equals(module.getModuleType().getId()))
 			return true;
 		return false;
@@ -69,12 +70,12 @@ public abstract class J2EEArchiveType implements IArchiveType {
 
 	protected IModule getModule(String projectName) {
 		IModuleArtifact moduleArtifacts[] = ServerPlugin.getModuleArtifacts(getProject(projectName));
-		
+
 		if (moduleArtifacts != null && moduleArtifacts.length > 0)
 			return moduleArtifacts[0].getModule();
 		else return null;
 	}
-	
+
 	protected IProject getProject(String projectName) {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}
@@ -83,7 +84,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 		try {
 			IJavaProject javaProject = JavaCore.create(project);
 			Assert.isNotNull(javaProject);
-			
+
 			IPath sourcePath;
 			try {
 				sourcePath = javaProject.getOutputLocation();
@@ -92,21 +93,21 @@ public abstract class J2EEArchiveType implements IArchiveType {
 			}
 			sourcePath = sourcePath.removeFirstSegments(1);
 			IContainer sourcePathContainer;
-			if( sourcePath.segmentCount() == 0 ) 
+			if( sourcePath.segmentCount() == 0 )
 				sourcePathContainer = project;
 			else
 				sourcePathContainer = project.getFolder(sourcePath);
 			return createGenericIArchive(project, deployDirectory, packageName, sourcePathContainer);
 		} catch( Exception e ) {
-			IntegrationPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, "Unexpected Exception", e));
+			IntegrationPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, Messages.ExceptionUnexpectedException, e));
 		}
 		return null;
-	} 
-	
+	}
+
 	// Create a detached package with some generic settings
 	public static IArchive createGenericIArchive(IProject project, String deployDirectory, String packageName, IContainer sourceContainer) {
 		IArchive jar = ArchiveNodeFactory.createArchive();
-			
+
 		if( deployDirectory != null ) {
 			jar.setDestinationPath(new Path(deployDirectory));
 			jar.setInWorkspace(ResourcesPlugin.getWorkspace().getRoot().getLocation().isPrefixOf(new Path(deployDirectory)));
@@ -120,15 +121,15 @@ public abstract class J2EEArchiveType implements IArchiveType {
 		return jar;
 	}
 
-	
-	public static IArchiveFolder addFolder(IProject project, 
+
+	public static IArchiveFolder addFolder(IProject project,
 			IArchiveNode parent, String name) throws ArchivesModelException {
 		IArchiveFolder folder = ArchiveNodeFactory.createFolder();
 		folder.setName(name);
 		parent.addChild(folder);
 		return folder;
 	}
-	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent, 
+	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent,
 			String sourcePath, String includePattern) throws ArchivesModelException {
 		IArchiveFileSet fs = ArchiveNodeFactory.createFileset();
 		Assert.isNotNull(project);
@@ -136,7 +137,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 		Assert.isNotNull(javaProject);
 
 		IContainer sourceContainer;
-		if( sourcePath != null && !sourcePath.equals("")) {
+		if( sourcePath != null && !sourcePath.equals("")) { //$NON-NLS-1$
 			Path p = new Path(sourcePath);
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			sourceContainer = p.segmentCount() != 1 ? (IContainer)root.getFolder(p) : root.getProject(p.segment(0));
@@ -146,18 +147,18 @@ public abstract class J2EEArchiveType implements IArchiveType {
 
 		fs.setRawSourcePath(sourceContainer.getFullPath().toString());
 		fs.setInWorkspace(true);
-		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern );
+		fs.setIncludesPattern(  includePattern == null ?  "**/*" : includePattern ); //$NON-NLS-1$
 		parent.addChild(fs);
 		return fs;
 	}
-	
+
 	public abstract String getAssociatedModuleType();
-	
+
 	/*
-	 * Creates a directory scanner for some global path 
+	 * Creates a directory scanner for some global path
 	 */
 	public static DirectoryScannerExtension createDirectoryScanner (String rawPath, String includes, String excludes, boolean scan) {
 		return DirectoryScannerFactory.createDirectoryScanner(rawPath, null, includes, excludes, null, false, 1, scan);
 	}
-	
+
 }

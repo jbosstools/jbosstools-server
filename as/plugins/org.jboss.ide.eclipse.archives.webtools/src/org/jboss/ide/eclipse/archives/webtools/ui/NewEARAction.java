@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType;
 
 public class NewEARAction implements IActionDelegate {
@@ -48,7 +49,7 @@ public class NewEARAction implements IActionDelegate {
 		dialog.open();
 	}
 
-	
+
 	public void run(IAction action) {
 		run();
 	}
@@ -57,25 +58,25 @@ public class NewEARAction implements IActionDelegate {
 		if( selection instanceof IStructuredSelection)
 			this.selection = (IStructuredSelection)selection;
 	}
-	
+
 	public void init(IViewPart view) {
 	}
 
 	public static class NewEARWizard extends AbstractArchiveWizard {
 
 		private EARPreviewPage earInfoPage;
-		
+
 		public NewEARWizard () {
-			setWindowTitle("New EAR");
+			setWindowTitle(Messages.NewEar);
 		}
-		
+
 		public ImageDescriptor getImageDescriptor() {
 			return ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EAR);
 		}
 
 		public WizardPage[] createWizardPages() {
 			earInfoPage = new EARPreviewPage(this);
-			
+
 			return new WizardPage[] { earInfoPage };
 		}
 
@@ -83,16 +84,16 @@ public class NewEARAction implements IActionDelegate {
 			pkg.setArchiveType(ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID));
 			return true;
 		}
-		
+
 		public String getArchiveExtension() {
-			return "ear";
+			return "ear"; //$NON-NLS-1$
 		}
 	}
 
 
 	protected static class EARPreviewPage extends PreviewPage {
 		protected EARPreviewPage(NewEARWizard wiz) {
-			super(wiz, "EAR Preview", "EAR Preview", 
+			super(wiz, Messages.EarPreview, Messages.EarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EAR));
 		}
 		protected void addToPackage() {
@@ -101,8 +102,7 @@ public class NewEARAction implements IActionDelegate {
 		}
 
 		protected String getDescriptionMessage() {
-			return 	"Preview the EAR\n" + 
-				"Later, you can customize this structure further.";
+			return 	Messages.EarDescription;
 		}
 	}
 }

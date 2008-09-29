@@ -58,6 +58,7 @@ import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelega
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 
 public abstract class PreviewPage extends WizardPageWithNotification {
 
@@ -69,22 +70,22 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		super( name, title, descriptor);
 		this.wizard = wizard;
 	}
-	
+
 	protected abstract String getDescriptionMessage();
 	public void createControl(Composite parent) {
-		
+
 		setMessage(getDescriptionMessage());
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
-		
+
 		layoutGroups(main);
 		fillGroups();
-		
+
 		setControl(main);
 	}
 	protected void layoutGroups(Composite main) {
 		previewGroup = new Group(main, SWT.NONE);
-		previewGroup.setText("Preview");
+		previewGroup.setText(Messages.Preview);
 		FormData previewData = new FormData();
 		previewData.left = new FormAttachment(0,5);
 		previewData.right = new FormAttachment(100,-5);
@@ -101,7 +102,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		warPreviewData.top = new FormAttachment(0,5);
 		warPreviewData.bottom = new FormAttachment(100,-5);
 		previewViewer.getTree().setLayoutData(warPreviewData);
-		
+
 	}
 
 	protected void fillGroups() {
@@ -115,7 +116,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
     		hasCreated = true;
     	}
     	fillWidgets(wizard.getArchive());
-    	
+
     	// if it's already a module type project, hide the meta inf stuff
 		IModuleArtifact moduleArtifacts[] = ServerPlugin.getModuleArtifacts(wizard.getProject());
 		if( moduleArtifacts != null && moduleArtifacts.length > 0) {
@@ -126,13 +127,13 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		}
 		getWizard().getContainer().updateButtons();
     }
-    
+
     protected abstract void addToPackage();
     protected void fillWidgets(IArchive pkg) {
     	previewViewer.setInput(pkg);
     	previewViewer.expandAll();
     }
-    
+
     protected IArchiveFolder getFolder(IArchive pkg, String folderName) {
     	IArchiveFolder result = null;
     	IArchiveFolder[] folders = pkg.getFolders();
@@ -144,29 +145,29 @@ public abstract class PreviewPage extends WizardPageWithNotification {
     	}
     	return result;
     }
-    
+
     public void pageExited(int button) {}
 
-    
-    
-    
+
+
+
     // stuff that can be extracted
     public static class WorkspaceFolderSelectionDialog extends ElementTreeSelectionDialog {
-    	
+
     public WorkspaceFolderSelectionDialog(Shell parent, boolean allowMultiple, String selectedPaths) {
    		 super(parent, new FolderLabelProvider(), new FolderContentProvider());
    		 setAllowMultiple(allowMultiple);
    		 setupDestinationList();
    		 setupInitialSelections(selectedPaths);
    	}
-   	 
+
    	 private void setupDestinationList () {
    		 List projects = Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects());
    		 setInput(projects);
    	 }
    	 private void setupInitialSelections(String initialSelection) {
    		 ArrayList resources = new ArrayList();
-   		 String[] paths = initialSelection.split(",");
+   		 String[] paths = initialSelection.split(","); //$NON-NLS-1$
    		 // find IResources
    		 IResource res;
    		 for( int i = 0; i < paths.length; i++ ) {
@@ -175,7 +176,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    		 }
    		 setInitialSelections((IResource[]) resources.toArray(new IResource[resources.size()]));
    	 }
-   	 
+
    	 private static class FolderContentProvider implements ITreeContentProvider {
    		private static final Object[] NO_CHILDREN = new Object[0];
    		public Object[] getChildren(Object parentElement) {
@@ -210,14 +211,14 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    		public Object[] getElements(Object inputElement) {
    			if (inputElement instanceof Collection)
    				return ((Collection)inputElement).toArray();
-   			
+
    			return NO_CHILDREN;
    		}
 
    		public void dispose() {}
    		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
    	 }
-   	 
+
    	 public static class FolderLabelProvider implements ILabelProvider {
    		public FolderLabelProvider () {}
    		public Image getImage(Object element) {
@@ -233,7 +234,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    			if (element instanceof IContainer) {
    				return ((IContainer)element).getName();
    			}
-   			return "";
+   			return ""; //$NON-NLS-1$
    		}
 
    		public void addListener(ILabelProviderListener listener) {
@@ -248,7 +249,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 
    		public void removeListener(ILabelProviderListener listener) {
    		}
-   		 
+
    	 }
    }
 
