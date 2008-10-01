@@ -60,7 +60,7 @@ import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
  */
 public class ArchiveSourceDestinationComposite extends Composite {
 	private Text text;
-	private Label pathImage, translatedPath, translatedPathImage;
+	private Label pathImage, translatedPath, translatedPathImage, relativeTo;
 	private Button workspaceButton, filesystemButton, variablesButton,
 			wsRadioButton, fsRadioButton;
 
@@ -94,6 +94,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		variablesButton = new Button(this, SWT.PUSH);
 		wsRadioButton = new Button(this, SWT.RADIO);
 		fsRadioButton = new Button(this, SWT.RADIO);
+		relativeTo = new Label(this, SWT.NONE);
 	}
 
 	protected void layoutWidgets() {
@@ -104,6 +105,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		variablesButton.setLayoutData(createFormData(text,5,null,0,null,0,workspaceButton,-5));
 		fsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,variablesButton,-5));
 		wsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,fsRadioButton,-5));
+		relativeTo.setLayoutData(createFormData(text,8,null,0,null,0,wsRadioButton,-5));
 		translatedPathImage.setLayoutData(createFormData(filesystemButton,5,null,0,0,0,0,20));
 		translatedPath.setLayoutData(createFormData(filesystemButton,5,null,0,translatedPathImage,5,100,-5));
 	}
@@ -112,8 +114,9 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		filesystemButton.setText(ArchivesUIMessages.Filesystem);
 		workspaceButton.setText(ArchivesUIMessages.Workspace);
 		variablesButton.setText(ArchivesUIMessages.Variables);
-		wsRadioButton.setText(ArchivesUIMessages.WorkspaceRelative);
-		fsRadioButton.setText(ArchivesUIMessages.FilesystemRelative);
+		wsRadioButton.setText(ArchivesUIMessages.Workspace2);
+		fsRadioButton.setText(ArchivesUIMessages.Filesystem2);
+		relativeTo.setText(ArchivesUIMessages.RelativeTo);
 		pathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
 		FontData[] translatedPathData = translatedPath.getFont().getFontData();
 		for( int i = 0; i < translatedPathData.length; i++ )
@@ -251,7 +254,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			} else {
 				translated = getTranslatedGlobalPath();
 				if( translated == null || !new Path(translated).toFile().exists()) {
-					translated= NLS.bind(translated, ArchivesUIMessages.PathDoesNotExistInFilesystem);
+					translated= NLS.bind(ArchivesUIMessages.PathDoesNotExistInFilesystem,translated);
 					img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 				} else {
 					img = null;

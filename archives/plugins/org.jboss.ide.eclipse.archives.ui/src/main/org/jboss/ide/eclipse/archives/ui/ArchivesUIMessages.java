@@ -23,8 +23,9 @@ public class ArchivesUIMessages extends NLS {
 	public static String Filesystem;
 	public static String Workspace;
 	public static String Variables;
-	public static String WorkspaceRelative;
-	public static String FilesystemRelative;
+	public static String Workspace2;
+	public static String Filesystem2;
+	public static String RelativeTo;
 	public static String PathDoesNotExistInFilesystem;
 	public static String ErrorConvertingPaths;
 	public static String ErrorStringSubstitution;
