@@ -93,7 +93,10 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 			// if currently loading, always send a delay
 			if( loadingProjects.contains(p))
 				return new Object[]{new DelayProxy(wp)};
-
+			
+			if( !p.isOpen()) 
+				return new Object[]{};
+			
 			if( ArchivesModel.instance().isProjectRegistered(p.getLocation()))
 				return ArchivesModel.instance().getRoot(p.getLocation()).getAllChildren();
 			if( ArchivesModel.instance().canReregister(p.getLocation())) {
@@ -125,7 +128,8 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 	}
 
 	protected boolean shouldRefreshProject() {
-		if( viewerInUse == ProjectArchivesCommonView.getInstance().getCommonViewer() &&
+		if( ProjectArchivesCommonView.getInstance() != null && 
+				viewerInUse == ProjectArchivesCommonView.getInstance().getCommonViewer() &&
 				!PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT))
 			return true;
 		return false;
@@ -139,7 +143,9 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		if( element instanceof IArchiveNode )
 			return getChildren(element).length > 0;
 		if( element instanceof IResource )
-			return ArchivesModel.instance().canReregister(((IResource)element).getLocation());
+			return 
+				((IResource)element).getProject().isOpen() && 
+			ArchivesModel.instance().canReregister(((IResource)element).getLocation());
 		if( element == ArchivesRootContentProvider.NO_PROJECT)
 			return false;
 		if( element instanceof DelayProxy)
