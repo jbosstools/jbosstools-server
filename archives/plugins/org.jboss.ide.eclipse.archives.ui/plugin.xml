@@ -148,7 +148,7 @@
             id="org.jboss.ide.eclipse.archives.ui.archivesRootBridgeContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
             name="Project Archives"
-            priority="lower">
+            priority="highest">
          <triggerPoints>
             <instanceof
                   value="org.eclipse.core.resources.IProject">
