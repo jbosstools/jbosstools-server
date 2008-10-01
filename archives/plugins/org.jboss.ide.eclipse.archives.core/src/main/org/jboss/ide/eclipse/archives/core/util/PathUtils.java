@@ -62,14 +62,22 @@ public class PathUtils {
 		try {
 			String translated = ArchivesCore.getInstance().getVFS().
 				performStringSubstitution(expression, projectName, true);
-			if( inWorkspace && version >= 1.2) {
-				IPath p = new Path(translated);
-				if( !p.isAbsolute() )
-					p = new Path(projectName).append(p).makeAbsolute();
-				return p.toString();
+			if( inWorkspace ) {
+				if( version >= 1.2) {
+					IPath p = new Path(translated);
+					if( !p.isAbsolute() )
+						p = new Path(projectName).append(p).makeAbsolute();
+					return p.toString();
+				} else {
+					// should be workspace relative already
+					return new Path(translated).makeAbsolute().toString();
+				}
 			} else {
-				// should be workspace relative already
-				return new Path(translated).makeAbsolute().toString();
+				if( new Path(translated).isAbsolute())
+					return new Path(translated).toString();
+				// not absolute... hrmm
+				IPath projectPath = ArchivesCore.getInstance().getVFS().workspacePathToAbsolutePath(new Path(projectName));
+				return projectPath.append(translated).toString();
 			}
 		} catch( CoreException ce ) {
 			// ignore, just return null ce.printStackTrace();
