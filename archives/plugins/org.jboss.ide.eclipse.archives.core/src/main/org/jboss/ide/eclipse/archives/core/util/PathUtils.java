@@ -72,7 +72,7 @@ public class PathUtils {
 				return new Path(translated).makeAbsolute().toString();
 			}
 		} catch( CoreException ce ) {
-			ce.printStackTrace();
+			// ignore, just return null ce.printStackTrace();
 		}
 		return null;
 	}

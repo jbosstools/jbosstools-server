@@ -246,12 +246,10 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		}
 
 
-		String translated;
+		String translated=""; //$NON-NLS-1$
 		Image img=null;
 		try {
-			if( destinationNode != null ) {
-				translated=""; img=null; //$NON-NLS-1$
-			} else {
+			if( destinationNode == null ) {
 				translated = getTranslatedGlobalPath();
 				if( translated == null || !new Path(translated).toFile().exists()) {
 					translated= NLS.bind(ArchivesUIMessages.PathDoesNotExistInFilesystem,translated);
@@ -269,6 +267,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			} else if( ce.getStatus().getSeverity() == IStatus.WARNING)
 				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 		}
+
 		translatedPathImage.setImage(img);
 		translatedPath.setText(translated);
 		fireChange();
@@ -281,11 +280,11 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			if( workspaceRelative ) {
 				IPath p = ArchivesCore.getInstance().getVFS().workspacePathToAbsolutePath(new Path(postSub));
 				if( p != null ) return p.toString();
-				return NLS.bind(postSub, ArchivesUIMessages.ErrorConvertingPaths);
+				return NLS.bind(ArchivesUIMessages.ErrorConvertingPaths, postSub);
 			}
 			return postSub;
 		} catch( CoreException e ) {
-			return NLS.bind(e.getMessage(), ArchivesUIMessages.ErrorStringSubstitution);
+			return NLS.bind(ArchivesUIMessages.ErrorStringSubstitution, e.getMessage());
 		}
 
 	}
@@ -294,12 +293,12 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		try {
 			IPath p = PathUtils.getGlobalLocation(path, projectName, workspaceRelative, getDescriptorVersion());
 			if( p != null ) return p.toString();
-			String ERROR = NLS.bind(p.toOSString(), ArchivesUIMessages.ErrorConvertingPaths);
+			String ERROR = NLS.bind(ArchivesUIMessages.ErrorConvertingPaths, path);
 
 			Status s = new Status(IStatus.WARNING, PackagesUIPlugin.PLUGIN_ID, ERROR);
 			throw new CoreException(s);
 		} catch( CoreException e ) {
-			String ERROR = NLS.bind(e.getMessage(), ArchivesUIMessages.ErrorStringSubstitution);
+			String ERROR = NLS.bind(ArchivesUIMessages.ErrorStringSubstitution, e.getMessage());
 			Status s = new Status(IStatus.ERROR, PackagesUIPlugin.PLUGIN_ID, ERROR, e);
 			throw new CoreException(s);
 		}
