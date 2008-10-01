@@ -34,8 +34,11 @@ public class ArchivesRootBridgeContentProvider
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		if( parentElement instanceof IProject )
-			return new Object[] { new WrappedProject((IProject)parentElement, WrappedProject.CATEGORY) };
+		if( parentElement instanceof IProject) {
+			if(  ((IProject)parentElement).isOpen())
+				return new Object[] { new WrappedProject((IProject)parentElement, WrappedProject.CATEGORY) };
+			return new Object[]{};
+		}
 		return delegate.getChildren(parentElement);
 	}
 
