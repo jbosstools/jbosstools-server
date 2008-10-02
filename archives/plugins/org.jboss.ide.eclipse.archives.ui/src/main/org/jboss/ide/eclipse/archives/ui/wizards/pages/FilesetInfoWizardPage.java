@@ -11,7 +11,10 @@
 package org.jboss.ide.eclipse.archives.ui.wizards.pages;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -35,9 +38,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
+import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
+import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
+import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.util.composites.ArchiveFilesetDestinationComposite;
@@ -241,11 +247,22 @@ public class FilesetInfoWizardPage extends WizardPage {
 
 		srcDestComposite.addChangeListener(new ArchiveSourceDestinationComposite.ChangeListener() {
 			public void compositeChanged() {
+				validate();
 				changePreview();
 			}
 		});
 	}
 
+	private boolean validate () {
+		String errorMessage = null;
+		if( !srcDestComposite.isValid() )
+			errorMessage = srcDestComposite.getErrorMessage();
+		setErrorMessage(errorMessage);
+		setPageComplete(errorMessage == null);
+		return errorMessage == null;
+	}
+
+	
 	public IArchiveNode getRootNode () {
 		return (IArchiveNode) destinationComposite.getPackageNodeDestination();
 	}
