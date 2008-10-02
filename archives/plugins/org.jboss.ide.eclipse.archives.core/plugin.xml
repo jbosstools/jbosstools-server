@@ -5,7 +5,7 @@
    <extension-point id="actionTypes" name="JBoss Tools Build Action Type" schema="schema/actionTypes.exsd"/>
    <extension
          id="archivesNature"
-         name="JBoss Tools Project Archivs Nature"
+         name="Project Archives Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run class="org.jboss.ide.eclipse.archives.core.project.ArchivesNature"/>
@@ -14,7 +14,7 @@
    </extension>
    <extension
          id="archivesBuilder"
-         name="JBoss Project Archives Builder"
+         name="JProject Archives Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="true"
