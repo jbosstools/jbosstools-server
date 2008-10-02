@@ -83,7 +83,7 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 
 				Object element = ((IStructuredSelection)selection).getFirstElement();
 				IProject project = getProject(element);
-				if( project != null && project != currentProject ) {
+				if( project != null && project != currentProject && project.isOpen()) {
 					currentProject = project;
 					jiggleViewerInput();
 				}
