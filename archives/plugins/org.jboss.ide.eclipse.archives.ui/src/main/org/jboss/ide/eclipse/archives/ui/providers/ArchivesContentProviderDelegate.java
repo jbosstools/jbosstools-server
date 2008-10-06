@@ -42,7 +42,9 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		public static final int CATEGORY = 2;
 		private IProject element;
 		private int type;
-		public WrappedProject(IProject element, int type) { this.element = element; this.type = type;}
+		public WrappedProject(IProject element, int type) { 
+			this.element = element; this.type = type;
+		}
 		public IProject getElement() { return element; }
 		public int getType() { return type; }
 		public boolean equals(Object otherObject) {
@@ -50,8 +52,9 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 					return true;
 			return false;
 		}
+		public String toString() { return element.toString() + "," + type;} //$NON-NLS-1$
 		public int hashCode() {
-			return element.hashCode();
+			return element.hashCode() + type;
 		}
 	}
 
@@ -68,6 +71,9 @@ public class ArchivesContentProviderDelegate implements ITreeContentProvider, IA
 		}
 		public int hashCode() {
 			return wProject.hashCode() + 15;
+		}
+		public String toString() {
+			return wProject.toString();
 		}
 	}
 
