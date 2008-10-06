@@ -45,14 +45,6 @@
       </file-association>
    </extension>
    <extension
-         point="org.jboss.ide.eclipse.archives.core.actionTypes">
-      <actionType
-            class="org.jboss.ide.eclipse.archives.core.model.types.AntActionType"
-            id="org.jboss.ide.eclipse.archives.core.antActionType"
-            label="Ant Task">
-      </actionType>
-   </extension>
-   <extension
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
             description="The project an archives node is declared in."

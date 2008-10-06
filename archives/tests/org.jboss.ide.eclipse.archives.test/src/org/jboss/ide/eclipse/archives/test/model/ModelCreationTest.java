@@ -93,14 +93,14 @@ public class ModelCreationTest extends ModelTest {
 		fail();
 	}
 	
-	public void testAddActionToModel() {
-		try {
-			createEmptyModelNode().addChild(createAction());;
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
+//	public void testAddActionToModel() {
+//		try {
+//			createEmptyModelNode().addChild(createAction());;
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
 	
 	public void testAddArchiveToModel() {
 		try {
@@ -146,16 +146,16 @@ public class ModelCreationTest extends ModelTest {
 		}
 	}
 
-	public void testAddActionToArchive() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveAction action = createAction();
-			archive.addChild(action);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			fail();
-		}
-	}
+//	public void testAddActionToArchive() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveAction action = createAction();
+//			archive.addChild(action);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			fail();
+//		}
+//	}
 	
 	
 
@@ -200,21 +200,21 @@ public class ModelCreationTest extends ModelTest {
 			fail();
 		}
 	}
-
-	public void testAddActionToInnerArchive() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchive archive2 = createArchive("someName.war2", "test2");
-			IArchiveAction action = createAction();
-
-			archive.addChild(archive2);
-			archive2.addChild(action);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
+//
+//	public void testAddActionToInnerArchive() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchive archive2 = createArchive("someName.war2", "test2");
+//			IArchiveAction action = createAction();
+//
+//			archive.addChild(archive2);
+//			archive2.addChild(action);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
 
 	
 	// Add all to INNER-folder
@@ -265,78 +265,78 @@ public class ModelCreationTest extends ModelTest {
 	}
 	
 
-	public void testAddActionToInnerFolder() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveFolder folder = createFolder("folder");
-			IArchiveAction action = createAction();
-
-			archive.addChild(folder);
-			folder.addChild(action);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
-	
-	// add all to action
-	public void testAddArchiveToAction() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveAction action = createAction();
-			IArchiveNode child = createArchive("someName2.war", "test2");
-			archive.addChild(action);
-			action.addChild(child);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
-	
-	public void testAddFolderToAction() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveAction action = createAction();
-			IArchiveNode child = createFolder("test");
-			archive.addChild(action);
-			action.addChild(child);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
-	
-	public void testAddFilesetToAction() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveAction action = createAction();
-			IArchiveNode child = createFileSet("*", "path");
-			archive.addChild(action);
-			action.addChild(child);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
-	
-
-	public void testAddActionToAction() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveAction action = createAction();
-			IArchiveNode child = createAction();
-			archive.addChild(action);
-			action.addChild(child);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}
+//	public void testAddActionToInnerFolder() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveFolder folder = createFolder("folder");
+//			IArchiveAction action = createAction();
+//
+//			archive.addChild(folder);
+//			folder.addChild(action);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
+//	
+//	// add all to action
+//	public void testAddArchiveToAction() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveAction action = createAction();
+//			IArchiveNode child = createArchive("someName2.war", "test2");
+//			archive.addChild(action);
+//			action.addChild(child);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
+//	
+//	public void testAddFolderToAction() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveAction action = createAction();
+//			IArchiveNode child = createFolder("test");
+//			archive.addChild(action);
+//			action.addChild(child);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
+//	
+//	public void testAddFilesetToAction() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveAction action = createAction();
+//			IArchiveNode child = createFileSet("*", "path");
+//			archive.addChild(action);
+//			action.addChild(child);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
+//	
+//
+//	public void testAddActionToAction() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveAction action = createAction();
+//			IArchiveNode child = createAction();
+//			archive.addChild(action);
+//			action.addChild(child);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}
 	
 	// add all to fileset
 	public void testAddArchiveToFileset() {
@@ -381,19 +381,19 @@ public class ModelCreationTest extends ModelTest {
 		fail();
 	}
 	
-	public void testAddActionToFileset() {
-		try {
-			IArchive archive = createArchive("someName.war", "test");
-			IArchiveFileSet fs = createFileSet("*", "path");
-			IArchiveNode child = createAction();
-			archive.addChild(fs);
-			fs.addChild(child);
-			createEmptyModelNode().addChild(archive);
-		} catch( ArchivesModelException ame ) {
-			return;
-		}
-		fail();
-	}	
+//	public void testAddActionToFileset() {
+//		try {
+//			IArchive archive = createArchive("someName.war", "test");
+//			IArchiveFileSet fs = createFileSet("*", "path");
+//			IArchiveNode child = createAction();
+//			archive.addChild(fs);
+//			fs.addChild(child);
+//			createEmptyModelNode().addChild(archive);
+//		} catch( ArchivesModelException ame ) {
+//			return;
+//		}
+//		fail();
+//	}	
 	
 	
 	

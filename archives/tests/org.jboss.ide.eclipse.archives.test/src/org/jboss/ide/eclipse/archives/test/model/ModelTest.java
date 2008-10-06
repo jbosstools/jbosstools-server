@@ -51,12 +51,12 @@ public abstract class ModelTest extends TestCase {
 		return fs;
 	}
 	
-	protected IArchiveAction createAction() {
-		IArchiveAction action = ArchiveNodeFactory.createAction();
-		action.setTime(IArchiveAction.POST_BUILD);
-		action.setType("ant");
-		return action;
-	}
+//	protected IArchiveAction createAction() {
+//		IArchiveAction action = ArchiveNodeFactory.createAction();
+//		action.setTime(IArchiveAction.POST_BUILD);
+//		action.setType("ant");
+//		return action;
+//	}
 	
 	protected IArchive createArchive(String name, String dest) {
 		IArchive archive = ArchiveNodeFactory.createArchive();
