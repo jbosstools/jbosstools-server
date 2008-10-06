@@ -1,7 +1,6 @@
 package org.jboss.ide.eclipse.archives.webtools;
 
 import org.eclipse.osgi.util.NLS;
-import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 
 public class Messages extends NLS {
 
@@ -50,6 +49,6 @@ public class Messages extends NLS {
 
 
 	static {
-		initializeMessages("org.jboss.ide.eclipse.archives.webtools.Messages", ArchivesCoreMessages.class); //$NON-NLS-1$
+		initializeMessages("org.jboss.ide.eclipse.archives.webtools.Messages", Messages.class); //$NON-NLS-1$
 	}
 }
