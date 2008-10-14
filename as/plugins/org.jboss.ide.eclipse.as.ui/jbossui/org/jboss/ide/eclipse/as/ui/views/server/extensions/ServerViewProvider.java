@@ -33,6 +33,7 @@ public class ServerViewProvider {
 	
 	private boolean enabled;
 	private int weight;
+	private boolean loadFailed = false;
 	
 	public ServerViewProvider(IConfigurationElement element) {
 		this.element = element;
@@ -84,11 +85,12 @@ public class ServerViewProvider {
 	
 	public JBossServerViewExtension getDelegate() {
 		try {
-			if( extension == null ) {
+			if( extension == null && !loadFailed) {
 				extension = (JBossServerViewExtension)element.createExecutableExtension(PROVIDER_LABEL);
 				extension.setViewProvider(this);
 			}
 		} catch( CoreException ce ) {
+			loadFailed = true;
 			ce.printStackTrace();
 		}
 		return extension;
@@ -105,15 +107,15 @@ public class ServerViewProvider {
 	public void setEnabled(boolean enable) {
 		if( enable && !enabled ) {
 			enabled = true;
-			getDelegate().enable();
+			if(getDelegate() != null ) getDelegate().enable();
 		} else if( !enable && enabled ) {
 			enabled = false;
-			getDelegate().disable();
+			if(getDelegate() != null ) getDelegate().disable();
 		}
 	}
 	
 	public boolean supports(IServer server) {
-		return getDelegate().supports(server);
+		return getDelegate() == null ? false : getDelegate().supports(server);
 	}
 	
 	public int getWeight() {
@@ -125,7 +127,8 @@ public class ServerViewProvider {
 	}
 	
 	public void dispose() {
-		getDelegate().dispose();
+		if( getDelegate() != null ) 
+			getDelegate().dispose();
 		if( icon != null && iconDescriptor != null ) 
 			icon.dispose();
 		
