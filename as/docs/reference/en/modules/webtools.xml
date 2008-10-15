@@ -2,10 +2,10 @@
 <chapter id="webtools">
 	<title>Projects</title>
 	<para>The most popular of the projects we deal with are the J2EE ones, such as Dynamic Web
-		Project, EJB Project, or EAR project. Web projects of JBoss Tools are Struts, JSF and Seam
-		projects. All of them are called faceted projects. Thus, in this chapter we are going to
-		tell you about facets the main benefit of which to provide proper structuring and packaging
-		for any type of project.</para>
+		Project, EJB Project, or EAR project. Web projects of <property>JBoss Tools</property> are
+		Struts, JSF and Seam projects. All of them are called faceted projects. Thus, in this
+		chapter we are going to tell you about facets the main benefit of which to provide proper
+		structuring and packaging for any type of project.</para>
 
 	<section>
 		<title>Faceted Projects Overview</title>
@@ -33,33 +33,16 @@
 	<section revisionflag="changed">
 		<title>Adding Facets to a Project</title>
 
-		<para>There are two ways to add facets to a project. The first way is to include facets into
-			already existing project. For that you should bring up the context menu for selected
-			project and click <emphasis>
-				<property>Properties</property>.
-			</emphasis> At this point, choose <emphasis>
-				<property>Project Facets</property>
-			</emphasis> from the left. It will represent a list of the facets for your project and
-			give opportunity to modify it by clicking on <emphasis>
-				<property>Modify Project...</property>
-			</emphasis> button.</para>
+		<para>In this section we&apos;re going to consider the facets added by <property>JBoss
+				Tools</property> and show how you can configure them in a project: add new ones or
+			modify already existing configuration of the facets.</para>
 
-		<figure>
-			<title>Adding Facets to the Existing Project</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/webtools/webtools_0.png"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
-
-		<para> The other way is adding necessary facets while organizing a new project. To
-			demonstrate it let&apos;s create a new <property>Dynamic Web Project</property>
-			selecting as usual <emphasis>
+		<para>One way to configure the facets is doing it while organizing a new project. To
+			demonstrate this let&apos;s create a new <property>Dynamic Web Project</property> by
+			selecting <emphasis>
 				<property>File &gt; New &gt; Other...</property>
 			</emphasis> and then <emphasis>
-				<property>Web &gt; Dynamic Web Project</property>.
-			</emphasis></para>
+				<property>Web &gt; Dynamic Web Project</property>. </emphasis></para>
 		<figure>
 			<title>New Dynamic Web Project</title>
 			<mediaobject>
@@ -70,37 +53,65 @@
 		</figure>
 		<para>Click <emphasis>
 				<property>Next</property>
-			</emphasis> and you will see Dynamic Web Project page.</para>
-		<figure>
-			<title>Faceted Project Wizard: First Page</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/webtools/webtools_2.png"/>
-				</imageobject>
-			</mediaobject>
-		</figure>
+			</emphasis> and you will see Dynamic Web Project page like on the figure below.</para>
+
 		<para> The first page of most WTP projects allows you to target a specific runtime,
 			representing a server's library location. It will also provide you the ability to add
 			this project to an EAR project, and select a pre-selected default set of facets, called
 			a configuration, rather than manually select each facet you might want.</para>
 		<para> Selecting the runtime, again, allows the project to install the proper classpaths to
 			the project so it knows what code to compile against.</para>
-		<figure>
-			<title>Faceted Project Wizard: Second Page</title>
+
+		<figure id="dyn_web_project">
+			<title>New Dynamic Web Project</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/webtools/webtools_2.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>
+		<para>Click on the <emphasis>
+				<property>Modify</property>
+			</emphasis> button next to <property>Configuration</property> section in order to open
+			the wizard which allows you to modify a chosen configuration. The wizard looks as
+			follows.</para>
+
+		<figure id="project_facets">
+			<title>Project Facets Wizard</title>
 			<mediaobject>
 				<imageobject>
 					<imagedata fileref="images/webtools/webtools_3.png"/>
 				</imageobject>
 			</mediaobject>
 		</figure>
-		<para> The second page of the wizard allows you to enable or disable specific facets, as
-			described above. Some facets may require others, and some may conflict with others, but
-			on the whole this page allows you to add any number of facets that don&apos;t
-			conflict with each other. It means that the list doesn&apos;t show those facets that
-			couldn&apos;t be in the same project. To view the information on limitations and
-			requirements for the chosen facet right-click on the facet and press <emphasis>
-				<property>Show Constraints</property>.</emphasis></para>
 
+		<para>Here part of the listed facets are those which are provided by WTP. Some of them are
+			added by <property>JBoss Tools</property>. They are:</para>
+		<itemizedlist>
+			<listitem>
+				<para>BIRT Charting Runtime Component</para>
+			</listitem>
+			<listitem>
+				<para>BIRT Reporting Runtime Component</para>
+			</listitem>
+			<listitem>
+				<para>JBoss ESB</para>
+			</listitem>
+			<listitem>
+				<para>JBoss Portlets</para>
+			</listitem>
+			<listitem>
+				<para>JBoss Web Services</para>
+			</listitem>
+			<listitem>
+				<para>Seam</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>On this wizard page you can enable or disable any facet as well as change it version.
+			What you should note here is that some facets or facets versions may conflict with each
+			other. In case of incompatibility you&apos;ll be prompted about this in the combo
+			box underneath.</para>
 		<figure>
 			<title>Facet Constraints</title>
 			<mediaobject>
@@ -109,21 +120,44 @@
 				</imageobject>
 			</mediaobject>
 		</figure>
-
-		<para>Notice that here it is also possible to change the version of any facet. If
-			the chosen version isn&apos;t compatible with any other facet version, you&apos;ll be prompted
-			about this in the combo box underneath.</para>
-		
+		<para>When switching on the <emphasis>
+				<property>Runtimes</property>
+			</emphasis> tab on the right you&apos;ll see the currant Server Runtime.</para>
 		<figure>
-			<title>Facet Constraints</title>
+			<title>Runtimes on the Project Facets Wizard</title>
 			<mediaobject>
 				<imageobject>
 					<imagedata fileref="images/webtools/webtools_5.png"/>
 				</imageobject>
 			</mediaobject>
 		</figure>
-		<para> Further pages in the wizard are specific to either the project type, or the facets
-			selected.</para>
+		<para>On this tab you can also create a new Server Runtime and make it primary by pressing <emphasis>
+				<property>Make Primary</property>
+			</emphasis> button after enabling it.</para>
 
+		<para>Clicking on <emphasis>
+				<property>OK</property>
+			</emphasis> will save the chosen configuration of the facets and return you to the <link
+				linkend="dyn_web_project">Dynamic Web Project wizard</link>. Further pages in the
+			wizard are specific to either the project type or the facets selected.</para>
+
+
+		<para>If you need to configure the facets for the existing project, you should bring up the
+			context menu for selected project and click <emphasis>
+				<property>Properties</property>
+			</emphasis> and then <emphasis>
+				<property>Project Facets</property>. </emphasis> This will bring up the familiar
+				<link linkend="project_facets">Project Facets wizard</link>, where you can create
+			your own custom facets configuration.</para>
+
+		<para/>
+
+	</section>
+	<section id="rel_resources_links">
+		<title>Relevant Resources Links</title>
+
+		<para>More on the WTP facets you can read in the <ulink
+				url="http://help.eclipse.org/ganymede/index.jsp?topic=/org.eclipse.jst.j2ee.doc.user/topics/cfacets.html"
+				>eclipse help</ulink>.</para>
 	</section>
 </chapter>
