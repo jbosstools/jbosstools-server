@@ -24,7 +24,6 @@ package org.jboss.ide.eclipse.as.ui.views.server.providers.jmx;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -41,7 +40,6 @@ import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
-import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
 import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
@@ -85,21 +83,6 @@ public class JMXViewProvider extends JBossServerViewExtension {
 
 	
 	protected void addListeners() {
-		jbossServerViewSelectionListener = 	new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				Object o = JBossServerView.getDefault()
-						.getExtensionFrame().getViewer()
-						.getSelectedElement();
-				if (o instanceof JMXBean) {
-					Display.getDefault().asyncExec(new Runnable() { public void run() {
-						ViewUtilityMethods.activatePropertiesView(null);
-					}});
-				}
-			}
-		};
-
-		JBossServerView.addExtensionFrameListener(jbossServerViewSelectionListener);
-
 		// make sure we know about server events
 		serverListener = new JMXServerListener();
 		UnitedServerListenerManager.getDefault().addListener(serverListener);

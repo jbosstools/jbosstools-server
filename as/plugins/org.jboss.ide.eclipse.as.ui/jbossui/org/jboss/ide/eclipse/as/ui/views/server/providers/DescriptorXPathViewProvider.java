@@ -27,10 +27,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -39,10 +37,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -62,8 +58,6 @@ import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.JBossServerViewExtension;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerViewProvider;
 import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.DescriptorXPathPropertySheetPage;
-import org.jboss.ide.eclipse.as.ui.views.server.util.ViewUtilityMethods;
-import org.jboss.tools.as.wst.server.ui.views.server.JBossServerView;
 
 /**
  * 
@@ -88,18 +82,8 @@ public class DescriptorXPathViewProvider extends JBossServerViewExtension {
 		contentProvider = new XPathTreeContentProvider();
 		labelProvider = new XPathTreeLabelProvider();
 		createActions();
-		addListeners();
 	}
 
-	protected void addListeners() {
-		JBossServerView.addExtensionFrameListener(
-			new ISelectionChangedListener() {
-				public void selectionChanged(SelectionChangedEvent event) {
-					ViewUtilityMethods.activatePropertiesView(propertyPage);
-				}
-			});
-	}
-	
 	public void setActiveCategory(XPathCategory o) {
 		if( o != null && o != activeCategory) {
 			activeCategory = o;
