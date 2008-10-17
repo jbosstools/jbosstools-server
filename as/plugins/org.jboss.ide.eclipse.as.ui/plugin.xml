@@ -209,7 +209,7 @@
                typeId="org.jboss.ide.eclipse.as.core.runtime.server.polling.MajorType"/>
          <MajorType
                name="Publish Events"
-               typeId="org.jboss.ide.eclipse.as.core.publishers.MajorType"/>
+               typeId="org.jboss.ide.eclipse.as.core.publishers.Events.MajorType"/>
       </extension>
       <extension
          point="org.eclipse.wst.server.ui.editorPageSections">
@@ -324,4 +324,199 @@
    </extension>
 
 
+
+<!-- Provisional stuff to be contributed to Webtools -->
+
+   <extension point="org.eclipse.ui.views"> 
+   	  <view
+         id="org.eclipse.wst.server.ui.ServersViewProvisional"
+         name="JBoss Servers View 2 (beta)"
+         category="org.eclipse.wst.server.ui"
+         class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServersView"
+         icon="icons/jboss.gif"/>
+   </extension>
+   
+   <extension point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerDecorator"
+            icon="icons/obj16/server.gif"
+            id="org.eclipse.wst.server.ui.navigatorDecorator"
+            label="Server State Decorator"
+            lightweight="true"
+            location="BOTTOM_RIGHT">
+         <enablement>
+            <or>
+               <objectClass
+                     name="org.eclipse.wst.server.core.IServer">
+               </objectClass>
+               <objectClass
+                     name="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+               </objectClass>
+            </or>
+         </enablement>
+      </decorator>
+   </extension>
+   
+	<extension
+      point="org.eclipse.ui.navigator.navigatorContent">
+	   <navigatorContent
+	         activeByDefault="true"
+	         contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerContentProvider"
+	         icon="icons/cview16/servers_view.gif"
+	         id="org.eclipse.wst.server.ui.ServersView.content.root"
+	         labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerLabelProvider"
+	         name="Servers View Default Content"
+	         priority="highest">
+	      <triggerPoints>
+	         <instanceof
+	               value="org.eclipse.wst.server.core.internal.ServerPlugin">
+	         </instanceof>
+	      </triggerPoints>
+	      <possibleChildren>
+	         <or>
+	            <instanceof
+	                  value="org.eclipse.wst.server.core.IServer">
+	            </instanceof>
+	            <instanceof
+	                  value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+	            </instanceof>
+	         </or></possibleChildren>
+	      <actionProvider
+	            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerActionProvider"
+	            id="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerActionProvider"
+	            priority="highest">
+	      </actionProvider>
+	   </navigatorContent>
+	</extension>
+	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.eclipse.wst.server.ui.ServersViewProvisional">
+	      <includes>
+	         <contentExtension
+	               isRoot="true"
+	               pattern="org.eclipse.wst.server.ui.ServersView.content.root">
+	         </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+	</extension>
+	
+	
+	
+	<!-- Extensions to new Server View -->
+	
+	<extension
+      point="org.eclipse.ui.navigator.navigatorContent">
+	   <navigatorContent
+	         id="org.jboss.ide.eclipse.as.ui.extensions.eventLog"
+	         activeByDefault="true"
+	         icon="icons/info_obj.gif"
+	         contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogContentProvider"
+	         labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogLabelProvider"
+	         name="JBoss Server Event Log"
+	         priority="normal">
+	      <triggerPoints>
+	         <instanceof
+	               value="org.eclipse.wst.server.core.IServer">
+	         </instanceof>
+	      </triggerPoints>
+	      <possibleChildren>
+	         <or>
+	            <instanceof
+	                  value="org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel$EventLogTreeItem">
+	            </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel$ServerEventModel">
+             </instanceof>
+	         </or></possibleChildren>
+	      <actionProvider
+	            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogActionProvider"
+	            id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
+	            priority="highest">
+	      </actionProvider>
+	   </navigatorContent>
+    <navigatorContent
+          activeByDefault="true"
+          contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider"
+          icon="icons/XMLFile.gif"
+          id="org.jboss.ide.eclipse.as.ui.extensions.xml"
+          labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeLabelProvider"
+          name="XML Configuration"
+          priority="normal">
+       <triggerPoints>
+          <instanceof
+                value="org.eclipse.wst.server.core.IServer">
+          </instanceof>
+       </triggerPoints>
+       <possibleChildren>
+          <or>
+             <instanceof
+                   value="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider$ServerWrapper">
+             </instanceof>
+             <instanceof
+                   value="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider$DelayProxy">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult$XPathResultNode">
+             </instanceof></or>
+       </possibleChildren>
+       <actionProvider
+             class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XMLActionProvider"
+             id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
+             priority="highest">
+       </actionProvider>
+    </navigatorContent>
+	</extension>
+	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.eclipse.wst.server.ui.ServersViewProvisional">
+	      <includes>
+	         <contentExtension
+	               isRoot="false"
+	               pattern="org.jboss.ide.eclipse.as.ui.extensions.eventLog">
+	         </contentExtension>
+          <contentExtension
+                isRoot="false"
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.xml">
+          </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+	</extension>
+	
+	
+	
+	<!-- Decorator for xpaths / xml-->
+	<extension point="org.eclipse.ui.decorators">
+      <decorator
+            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XMLDecorator"
+            id="org.jboss.ide.eclipse.as.ui.extensions.xml.decorator"
+            label="JBoss Server XML Configuration Decorator"
+            lightweight="true"
+            location="BOTTOM_RIGHT">
+         <enablement>
+            <or>
+               <objectClass name="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery"/>
+               <objectClass
+                     name="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult">
+               </objectClass>
+               <objectClass
+                     name="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult$XPathResultNode">
+               </objectClass>
+            </or>
+         </enablement>
+      </decorator>
+   </extension>
+	
+	
+	
 </plugin>

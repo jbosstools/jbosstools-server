@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -43,7 +44,8 @@ public class XPathCategory {
 	}
 	
 	public String getName() { return this.name; }
-	
+	public IServer getServer() { return this.server; }
+
 	public boolean queriesLoaded() {
 		return children != null;
 	}
@@ -75,6 +77,10 @@ public class XPathCategory {
 	public void removeQuery(XPathQuery query) {
 		getQueries();
 		children.remove(query.getName());
+	}
+	
+	public boolean isLoaded() {
+		return children == null ? false : true;
 	}
 	
 	/*

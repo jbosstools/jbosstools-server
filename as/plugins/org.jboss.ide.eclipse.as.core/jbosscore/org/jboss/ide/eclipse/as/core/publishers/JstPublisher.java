@@ -149,6 +149,7 @@ public class JstPublisher implements IJBossServerPublisher {
 			}
 		};
 		FileUtil.touch(filter, deployPath.toFile(), true);
+		publishState = IServer.PUBLISH_STATE_NONE;
 		return null;
 	}
 

@@ -64,11 +64,15 @@ public class XPathFileResult {
 			Iterator<Node> i = nodeList.iterator();
 			int z = 0;
 			while(i.hasNext()) {
-				childList.add(new XPathResultNode(i.next(), query.getAttribute(), z++));
+				childList.add(new XPathResultNode(i.next(), query.getAttribute(), z++, this));
 			}
 			children = childList.toArray(new XPathResultNode[childList.size()]);
 		}
 		return children;
+	}
+	
+	public boolean isLoaded() {
+		return children == null ? false : true;
 	}
 	
 	/* A class representing an actual result node / element in the document */
@@ -79,11 +83,17 @@ public class XPathFileResult {
 		protected int index;
 		protected Object val;
 		protected boolean dirty;
-		public XPathResultNode(Node node, String attribute, int index) {
+		protected XPathFileResult file;
+		public XPathResultNode(Node node, String attribute, int index, XPathFileResult file) {
 			this.node = node;
 			this.attribute = attribute;
 			this.index = index;
 			this.hasAttribute = attribute == null || attribute.equals("") ? false : true;
+			this.file = file;
+		}
+		
+		public XPathFileResult getFile() {
+			return file;
 		}
 		
 		public int getIndex() {
