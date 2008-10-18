@@ -42,6 +42,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
@@ -303,5 +304,40 @@ public class XPathModel {
 		}
 		
 		serverToCategories.put(server.getId(), retVal);
+	}
+	
+	
+	/* 
+	 * Static utility methods
+	 */
+	
+
+	public static XPathResultNode getResultNode(Object data) {
+		// if we are the node to change, change me
+		if( data instanceof XPathResultNode ) {
+			return (XPathResultNode)data;
+		}
+		
+		// if we're a node which represents a file, but only have one matched node, thats the node.
+		if( data instanceof XPathFileResult && ((XPathFileResult)data).getChildren().length == 1 ) {
+			return (XPathResultNode) (((XPathFileResult)data).getChildren()[0]);
+		}
+		
+		// if we're a top level tree item (JNDI), with one file child and one mbean grandchild, the grandchild is the node
+		if( data instanceof XPathQuery && ((XPathQuery)data).getResults().length == 1 ) {
+			XPathFileResult item = ((XPathFileResult) ((XPathQuery)data).getResults()[0]);
+			if( item.getChildren().length == 1 ) 
+				return (XPathResultNode)item.getChildren()[0];
+		}
+		return null;
+	}
+	
+	public static XPathResultNode[] getResultNodes(XPathQuery query) {
+		ArrayList<XPathResultNode> l = new ArrayList<XPathResultNode>();
+		XPathFileResult[] files = query.getResults();
+		for( int i = 0; i < files.length; i++ ) {
+			l.addAll(Arrays.asList(files[i].getChildren()));
+		}
+		return l.toArray(new XPathResultNode[l.size()]);
 	}
 }

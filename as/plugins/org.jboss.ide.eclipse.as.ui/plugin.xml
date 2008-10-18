@@ -437,10 +437,10 @@
 	   </navigatorContent>
     <navigatorContent
           activeByDefault="true"
-          contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider"
+          contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathTreeContentProvider"
           icon="icons/XMLFile.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.xml"
-          labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeLabelProvider"
+          labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathTreeLabelProvider"
           name="XML Configuration"
           priority="normal">
        <triggerPoints>
@@ -470,7 +470,7 @@
              </instanceof></or>
        </possibleChildren>
        <actionProvider
-             class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XMLActionProvider"
+             class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathActionProvider"
              id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
              priority="highest">
        </actionProvider>
@@ -498,7 +498,7 @@
 	<!-- Decorator for xpaths / xml-->
 	<extension point="org.eclipse.ui.decorators">
       <decorator
-            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XMLDecorator"
+            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathDecorator"
             id="org.jboss.ide.eclipse.as.ui.extensions.xml.decorator"
             label="JBoss Server XML Configuration Decorator"
             lightweight="true"

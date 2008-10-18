@@ -25,8 +25,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IStartup;
+import org.eclipse.ui.internal.WorkbenchPlugin;
+import org.eclipse.ui.internal.decorators.DecoratorDefinition;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.osgi.framework.BundleContext;
@@ -59,6 +63,15 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		Preferences prefs = getPluginPreferences();
+
+		if( !prefs.getBoolean(IPreferenceKeys.ENABLED_DECORATORS)) {
+			IDecoratorManager manager = WorkbenchPlugin.getDefault().getDecoratorManager();
+			manager.setEnabled("org.eclipse.wst.server.ui.navigatorDecorator", true);
+			manager.setEnabled("org.jboss.ide.eclipse.as.ui.extensions.xml.decorator", true);
+			prefs.setValue(IPreferenceKeys.ENABLED_DECORATORS, true);
+			savePluginPreferences();
+		}
 	}
 
 	/**
