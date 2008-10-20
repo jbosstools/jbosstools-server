@@ -221,10 +221,11 @@ public class Messages {
 	public static String EditorCPD_Value;
 	public static String EditorCPD_DefaultShellTitle;
 	public static String EditorCPD_DefaultDescription;
+	public static String EditorCPD_RestoreDefault;
 
 
 
-	public static String Customize;
+	public static String Configure;
 
 	// misc
 	public static String ServerSaveFailed;

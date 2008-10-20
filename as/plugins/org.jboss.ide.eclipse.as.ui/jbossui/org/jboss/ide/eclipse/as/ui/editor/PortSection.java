@@ -91,7 +91,7 @@ public class PortSection extends ServerEditorSection {
 			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeJNDICommandName,
 					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
-					text, detect, currentXPath, listener);
+					this);
 		}
 		protected ChangePortDialogInfo getDialogInfo() {
 			ChangePortDialogInfo info = new ChangePortDialogInfo();
@@ -114,7 +114,7 @@ public class PortSection extends ServerEditorSection {
 			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeWebCommandName,
 					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
-					text, detect, currentXPath, listener);
+					this);
 		}
 		protected ChangePortDialogInfo getDialogInfo() {
 			ChangePortDialogInfo info = new ChangePortDialogInfo();
@@ -187,12 +187,13 @@ public class PortSection extends ServerEditorSection {
 
 			label.setText(labelText);
 			detect.setText(Messages.EditorAutomaticallyDetectPort);
-			link.setText("<a href=\"\">" + Messages.Customize + "</a>");
+			link.setText("<a href=\"\">" + Messages.Configure + "</a>");
 			return child;
 		}
 		protected void initialize() {
 			boolean shouldDetect = helper.getAttribute(detectXPathKey, true);
 			detect.setSelection(shouldDetect);
+			link.setEnabled(shouldDetect);
 			text.setEnabled(!shouldDetect);
 			text.setEditable(!shouldDetect);
 			currentXPath = helper.getAttribute(currentXPathKey, defaultXPath);
@@ -315,19 +316,21 @@ public class PortSection extends ServerEditorSection {
 		Button button;
 		Listener listener;
 		String xpath;
+		Link link;
 		public SetPortCommand(IServerWorkingCopy server, ServerAttributeHelper helper, String name,
 				String textAttribute, String overrideAttribute, String overridePathAttribute,
-				String pathDefault, Text text, Button button, String xpath, Listener listener) {
+				String pathDefault, PortEditorExtension ext) { //Text text, Button button, String xpath, Listener listener) {
 			super(server, name);
 			this.helper = helper;
 			this.textAttribute = textAttribute;
 			this.overrideAttribute = overrideAttribute;
 			this.overridePathAttribute = overridePathAttribute;
 			this.defaultPath = pathDefault;
-			this.text = text;
-			this.button = button;
-			this.listener = listener;
-			this.xpath = xpath;
+			this.text = ext.text;
+			this.button = ext.detect;
+			this.listener = ext.listener;
+			this.xpath = ext.currentXPath;
+			this.link = ext.link;
 		}
 
 		public void execute() {
@@ -338,6 +341,7 @@ public class PortSection extends ServerEditorSection {
 			preOverride = helper.getAttribute(overrideAttribute, true);
 			helper.setAttribute(textAttribute, text.getText());
 			helper.setAttribute(overrideAttribute, button.getSelection());
+			link.setEnabled(button.getSelection());
 			helper.setAttribute(overridePathAttribute, xpath);
 
 			text.setEnabled(!button.getSelection());
@@ -353,8 +357,9 @@ public class PortSection extends ServerEditorSection {
 			// set new values
 			helper.setAttribute(textAttribute, preText);
 			helper.setAttribute(overrideAttribute, preOverride);
+			link.setEnabled(preOverride);
 			helper.setAttribute(overridePathAttribute, prePath);
-
+			
 			// update ui
 			text.removeListener(SWT.Modify, listener);
 			button.removeListener(SWT.Selection, listener);

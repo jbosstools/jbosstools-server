@@ -34,7 +34,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 
 public class ChangePortDialog extends TitleAreaDialog {
-
+	private static final int RESTORE_DEFAULT = 35;
 	public static class ChangePortDialogInfo {
 		public String port;
 		public String defaultValue;
@@ -71,6 +71,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 				: Messages.EditorCPD_DefaultDescription);
 		getShell().setText(info.shellTitle != null ? info.shellTitle
 				: Messages.EditorCPD_DefaultShellTitle);
+		selectionChanged();
 		return c;
 	}
 
@@ -118,7 +119,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 		String[] stuff = (String[]) list.toArray(new String[list.size()]);
 		listWidget.setItems(stuff);
 		for( int i = 0; i < stuff.length; i++ )
-			if( stuff[i] == info.currentXPath)
+			if( stuff[i].equals(info.currentXPath))
 				listWidget.select(i);
 	}
 
@@ -222,5 +223,22 @@ public class ChangePortDialog extends TitleAreaDialog {
 
 	public String getSelection() {
 		return selected;
+	}
+	
+	protected void createButtonsForButtonBar(Composite parent) {
+		super.createButtonsForButtonBar(parent);
+		createButton(parent, RESTORE_DEFAULT, Messages.EditorCPD_RestoreDefault, false);
+	}
+	
+	protected void buttonPressed(int buttonId) {
+		super.buttonPressed(buttonId);
+		if( RESTORE_DEFAULT == buttonId) {
+			String[] items = listWidget.getItems();
+			for( int i = 0; i < items.length; i++ )
+				if( items[i].equals(info.defaultValue)) {
+					listWidget.select(i);
+					return;
+				}
+		}
 	}
 }
