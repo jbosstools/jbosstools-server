@@ -232,11 +232,14 @@ public class ModelTruezipBridge {
 	private static File[] getFiles(FileWrapper[] inputFiles, IArchiveFileSet fs ) {
 		String filesetRelative;
 		File fsFile = getFile(fs);
-		if( fsFile == null )
+		if( fs == null || fsFile == null )
 			return new File[]{};
 
-		File[] returnFiles = new File[inputFiles.length];
+		ArrayList<File> returnFiles = new ArrayList<File>();
 		for( int i = 0; i < inputFiles.length; i++ ) {
+			if( inputFiles[i] == null )
+				continue;
+			
 			if( fs.isFlattened() )
 				filesetRelative = inputFiles[i].getOutputName();
 			else
@@ -251,9 +254,9 @@ public class ModelTruezipBridge {
 			} else {
 				parentFile = fsFile;
 			}
-			returnFiles[i] = new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.DEFAULT);
+			returnFiles.add(new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.DEFAULT));
 		}
-		return returnFiles;
+		return (File[]) returnFiles.toArray(new File[returnFiles.size()]);
 	}
 
 
