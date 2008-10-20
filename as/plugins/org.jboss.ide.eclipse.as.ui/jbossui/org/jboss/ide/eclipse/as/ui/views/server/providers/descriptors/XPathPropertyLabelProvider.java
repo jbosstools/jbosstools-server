@@ -64,7 +64,7 @@ public class XPathPropertyLabelProvider extends LabelProvider implements ITableL
 		if( element instanceof XPathResultNode ) {
 			XPathResultNode element2 = (XPathResultNode)element;
 			if( columnIndex == 0 ) return Messages.DescriptorXPathMatch + element2.getIndex();
-			if( columnIndex == 1 ) return element2.getText();
+			if( columnIndex == 1 ) return element2.getText().trim();
 		}
 		
 		return null; 
