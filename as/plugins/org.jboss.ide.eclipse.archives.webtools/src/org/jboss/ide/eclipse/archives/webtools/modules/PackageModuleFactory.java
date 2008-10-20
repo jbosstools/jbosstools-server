@@ -287,8 +287,10 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 		public void addFilesetAsChild(IArchiveFileSet fs) {
 			FileWrapper[] files = fs.findMatchingPaths(); // file-system based source paths
-			for( int i = 0; i < files.length; i++ ) {
-				addFilesetPathAsChild(fs, files[i]);
+			if( files != null ) {
+				for( int i = 0; i < files.length; i++ ) {
+					addFilesetPathAsChild(fs, files[i]);
+				}
 			}
 		}
 
