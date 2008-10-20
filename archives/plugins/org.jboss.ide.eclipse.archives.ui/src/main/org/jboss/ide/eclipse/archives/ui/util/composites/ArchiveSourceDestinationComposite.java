@@ -60,7 +60,7 @@ import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
  */
 public class ArchiveSourceDestinationComposite extends Composite {
 	private Text text;
-	private Label pathImage, translatedPath, translatedPathImage, relativeTo;
+	private Label pathImage, relativeTo;
 	private Button workspaceButton, filesystemButton, variablesButton,
 			wsRadioButton, fsRadioButton;
 
@@ -68,8 +68,8 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	private boolean workspaceRelative = false;
 	private IArchiveNode destinationNode;
 	private String path;
-	private boolean error;
-	private String errorString;
+	private int statusType;
+	private String message;
 	private double version;
 	private ArrayList<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
@@ -87,8 +87,6 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	protected void createWidgets() {
 		text = new Text(this, SWT.SINGLE | SWT.BORDER);
 		pathImage = new Label(this, SWT.NONE);
-		translatedPath = new Label(this, SWT.NONE);
-		translatedPathImage = new Label(this, SWT.NONE);
 		workspaceButton = new Button(this, SWT.PUSH);
 		filesystemButton = new Button(this, SWT.PUSH);
 		variablesButton = new Button(this, SWT.PUSH);
@@ -106,8 +104,6 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		fsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,variablesButton,-5));
 		wsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,fsRadioButton,-5));
 		relativeTo.setLayoutData(createFormData(text,8,null,0,null,0,wsRadioButton,-5));
-		translatedPathImage.setLayoutData(createFormData(filesystemButton,5,null,0,0,0,0,20));
-		translatedPath.setLayoutData(createFormData(filesystemButton,5,null,0,translatedPathImage,5,100,-5));
 	}
 
 	protected void setWidgetData() {
@@ -118,12 +114,6 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		fsRadioButton.setText(ArchivesUIMessages.Filesystem2);
 		relativeTo.setText(ArchivesUIMessages.RelativeTo);
 		pathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
-		FontData[] translatedPathData = translatedPath.getFont().getFontData();
-		for( int i = 0; i < translatedPathData.length; i++ )
-			translatedPathData[i].setHeight(7);
-		Font newFont = new Font(Display.getDefault(), translatedPathData);
-		translatedPath.setFont(newFont);
-		translatedPathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK));
 	}
 
 	protected void addListeners() {
@@ -225,8 +215,8 @@ public class ArchiveSourceDestinationComposite extends Composite {
 
 	protected void validateAndUpdateWidgets() {
 		// clear old status
-		error = false;
-		errorString = null;
+		statusType = IStatus.OK;
+		message = null;
 
 
 		wsRadioButton.setEnabled(destinationNode == null);
@@ -254,6 +244,8 @@ public class ArchiveSourceDestinationComposite extends Composite {
 				if( translated == null || !new Path(translated).toFile().exists()) {
 					translated= NLS.bind(ArchivesUIMessages.PathDoesNotExistInFilesystem,translated);
 					img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+					statusType = IStatus.WARNING;
+					message = translated;
 				} else {
 					img = null;
 				}
@@ -262,14 +254,17 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			translated = ce.getMessage();
 			if( ce.getStatus().getSeverity() == IStatus.ERROR) {
 				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-				error = true;
-				errorString = ce.getMessage();
-			} else if( ce.getStatus().getSeverity() == IStatus.WARNING)
+				statusType = IStatus.ERROR;
+				message = ce.getMessage();
+			} else if( ce.getStatus().getSeverity() == IStatus.WARNING) {
 				img = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+				statusType = IStatus.WARNING;
+				message = ce.getMessage();
+			}
 		}
 
-		translatedPathImage.setImage(img);
-		translatedPath.setText(translated);
+//		translatedPathImage.setImage(img);
+//		translatedPath.setText(translated);
 		fireChange();
 	}
 
@@ -354,13 +349,17 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	}
 
 	public boolean isValid() {
-		return !error;
+		return statusType != IStatus.ERROR;
 	}
 
-	public String getErrorMessage() {
-		return errorString;
+	public String getMessage() {
+		return message;
 	}
 
+	public int getStatusType() {
+		return statusType;
+	}
+	
 	public boolean isWorkspaceRelative() {
 		return workspaceRelative;
 	}

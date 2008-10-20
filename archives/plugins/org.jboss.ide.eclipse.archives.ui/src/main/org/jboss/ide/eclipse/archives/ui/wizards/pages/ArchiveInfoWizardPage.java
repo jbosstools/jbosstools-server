@@ -16,6 +16,7 @@ import java.util.Arrays;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -30,7 +31,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -176,12 +176,15 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 	}
 
 	private boolean validate () {
-		String errorMessage = null;
-		if (packageNameText.getText() == null || packageNameText.getText().length() == 0)
-			errorMessage = ArchivesUIMessages.PackageInfoWizardPage_error_noPackageName;
-		else if( !destinationComposite.isValid() )
-			errorMessage = destinationComposite.getErrorMessage();
-		else if( destinationComposite.getDestinationNode() != null ) {
+		String message = null;
+		int messageType = IStatus.OK;
+		if (packageNameText.getText() == null || packageNameText.getText().length() == 0) {
+			message = ArchivesUIMessages.PackageInfoWizardPage_error_noPackageName;
+			messageType = IStatus.ERROR;
+		} else if( destinationComposite.getMessage() != null ) {
+			message = destinationComposite.getMessage();
+			messageType = destinationComposite.getStatusType();
+		} else if( destinationComposite.getDestinationNode() != null ) {
 				IArchiveNode parentNode = destinationComposite.getDestinationNode();
 				// verify no child has the same name
 				IArchiveNode subPackages[] = parentNode.getChildren(IArchiveNode.TYPE_ARCHIVE);
@@ -189,9 +192,10 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 					IArchive subPackage = (IArchive) subPackages[i];
 					if (subPackage.getName().equals(packageNameText.getText())
 						&& (!subPackage.equals(this.archive))) {
-							errorMessage =  ArchivesUIMessages.bind(
+							message =  ArchivesUIMessages.bind(
 								ArchivesUIMessages.PackageInfoWizardPage_error_packageAlreadyExists,
 								packageNameText.getText());
+							messageType = IStatus.ERROR;
 					}
 				}
 		} else if( destinationComposite.getPath() != null ) {
@@ -213,18 +217,19 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 					if (pkg.getName().equals(packageNameText.getText())
 						&& (PathUtils.getGlobalLocation(pkg)!= null && PathUtils.getGlobalLocation(pkg).equals(destinationLocation))
 						&& (!pkg.equals(this.archive))) {
-						errorMessage = ArchivesUIMessages.bind(
+						message = ArchivesUIMessages.bind(
 									ArchivesUIMessages.PackageInfoWizardPage_error_packageAlreadyExists, packageNameText.getText());
+						messageType = IStatus.ERROR;
 					}
 				}
 			}
 		} else {
-			errorMessage = (ArchivesUIMessages.PackageInfoWizardPage_error_noDestination);
+			message = (ArchivesUIMessages.PackageInfoWizardPage_error_noDestination);
 		}
 
-		setErrorMessage(errorMessage);
-		setPageComplete(errorMessage == null);
-		return errorMessage == null;
+		setPageComplete(message == null || messageType <= IStatus.WARNING);
+		setMessage(message, messageType);
+		return messageType <= IStatus.WARNING;
 	}
 
 
