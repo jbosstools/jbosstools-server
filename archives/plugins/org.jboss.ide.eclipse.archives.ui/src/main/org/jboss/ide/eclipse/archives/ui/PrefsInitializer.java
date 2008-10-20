@@ -32,6 +32,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	public static final String PREF_SHOW_PROJECT_ROOT = "showProjectRoot";//$NON-NLS-1$
 	public static final String PREF_SHOW_ALL_PROJECTS = "showAllProjects";//$NON-NLS-1$
 	public static final String PREF_SHOW_BUILD_ERROR_DIALOG = "showBuildErrorDialog";//$NON-NLS-1$
+	public static final String PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE = "alwaysShowProjectExplorerNode";//$NON-NLS-1$
 	public static final ArrayList<IArchivesPreferenceListener> listeners = new ArrayList<IArchivesPreferenceListener>();
 
 	public static interface IArchivesPreferenceListener {
@@ -45,6 +46,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		prefs.putBoolean(PREF_SHOW_PROJECT_ROOT, true);
 		prefs.putBoolean(PREF_SHOW_ALL_PROJECTS, false);
 		prefs.putBoolean(PREF_SHOW_BUILD_ERROR_DIALOG, true);
+		prefs.putBoolean(PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, false);
 		try {
 			prefs.flush();
 		} catch (org.osgi.service.prefs.BackingStoreException e) {

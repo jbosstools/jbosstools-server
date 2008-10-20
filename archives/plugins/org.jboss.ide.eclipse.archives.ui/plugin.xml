@@ -54,7 +54,7 @@
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.archivesPreferencePage"
-            name="Packaging Archives"/>
+            name="Project Archives"/>
    </extension>
    
    
@@ -63,12 +63,12 @@
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.projectProperties"
-            name="Packaging Archives"
+            name="Project Archives"
             objectClass="org.eclipse.core.resources.IProject"/>
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.projectProperties2"
-            name="Packaging Archives"
+            name="Project Archives"
             objectClass="org.eclipse.jdt.core.IJavaProject"/>
    </extension>
    <extension

@@ -50,11 +50,13 @@ public class ExtensionManager {
 	public static NodeContribution[] findNodePopupMenuContributions () {
 		ArrayList<NodeContribution> contributions = new ArrayList<NodeContribution>();
 		IExtension[] extensions = findExtension(NODE_POPUP_MENUS_EXTENSION_ID);
-
+		NodeContribution tmp;
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement[] elements = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
-				contributions.add(new NodeContribution(elements[j]));
+				tmp = new NodeContribution(elements[j]);
+				if( tmp.getActionDelegate() != null ) 
+					contributions.add(tmp);
 			}
 		}
 
@@ -64,11 +66,13 @@ public class ExtensionManager {
 	public static NewArchiveAction[] findNewArchiveActions () {
 		ArrayList<NewArchiveAction> contributions = new ArrayList<NewArchiveAction>();
 		IExtension[] extensions = findExtension(NEW_PACKAGE_ACTIONS_EXTENSION_ID);
-
+		NewArchiveAction tmp;
 		for (int i = 0; i < extensions.length; i++) {
 			IConfigurationElement[] elements = extensions[i].getConfigurationElements();
 			for (int j = 0; j < elements.length; j++) {
-				contributions.add(new NewArchiveAction(elements[j]));
+				tmp = new NewArchiveAction(elements[j]);
+				if( tmp.getAction() != null)
+					contributions.add(tmp);
 			}
 		}
 

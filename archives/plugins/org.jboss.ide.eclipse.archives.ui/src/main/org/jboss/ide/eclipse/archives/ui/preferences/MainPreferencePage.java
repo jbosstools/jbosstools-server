@@ -43,7 +43,8 @@ public class MainPreferencePage extends PropertyPage implements
 	private Button showPackageOutputPath, showFullFilesetRootDir;
 	private Button showProjectRoot, showAllProjects;
 	private Button automaticBuilder, showErrorDialog, overrideButton;
-	private Group corePrefGroup, viewPrefGroup;
+	private Button showNodeOnAllProjects;
+	private Group corePrefGroup, viewPrefGroup, packageExplorerGroup;
 	private Composite overrideComp;
 
 
@@ -60,6 +61,7 @@ public class MainPreferencePage extends PropertyPage implements
 		createOverridePrefs(main);
 		createCorePrefs(main);
 		createViewPrefs(main);
+		createProjectExplorerPrefs(main);
 		fillValues();
 		return main;
 	}
@@ -136,6 +138,16 @@ public class MainPreferencePage extends PropertyPage implements
 		showErrorDialog = new Button(corePrefGroup, SWT.CHECK);
 		showErrorDialog.setText(ArchivesUIMessages.ShowBuildErrorDialog);
 	}
+	
+	protected void createProjectExplorerPrefs(Composite main) {
+		packageExplorerGroup = new Group(main, SWT.NONE);
+		packageExplorerGroup.setText(ArchivesUIMessages.ProjectExplorerPreferences);
+		packageExplorerGroup.setLayout(new GridLayout(1, false));
+		packageExplorerGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		showNodeOnAllProjects = new Button(packageExplorerGroup, SWT.CHECK);
+		showNodeOnAllProjects.setText(ArchivesUIMessages.EnableNodeAlways);
+	}
 
 	protected void createViewPrefs(Composite main) {
 
@@ -185,6 +197,7 @@ public class MainPreferencePage extends PropertyPage implements
 		showFullFilesetRootDir.setSelection(true);
 		showProjectRoot.setSelection(true);
 		showAllProjects.setSelection(false);
+		showNodeOnAllProjects.setSelection(false);
 		if( getResourceLocationIfExists() != null ) {
 			overrideButton.setSelection(false);
 			setWidgetsEnabled(overrideButton.getSelection());
@@ -203,6 +216,7 @@ public class MainPreferencePage extends PropertyPage implements
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR, showFullFilesetRootDir.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, showProjectRoot.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_ALL_PROJECTS, showAllProjects.getSelection(), getElement());
+		PrefsInitializer.setBoolean(PrefsInitializer.PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, showNodeOnAllProjects.getSelection(), getElement());
 		return true;
 	}
 }
