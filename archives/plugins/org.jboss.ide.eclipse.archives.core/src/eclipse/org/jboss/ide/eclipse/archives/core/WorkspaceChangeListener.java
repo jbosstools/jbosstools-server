@@ -69,7 +69,8 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 						// TODO modify to make sure this file is a descriptor in use / registered
 						if( delta.getResource() != null && delta.getResource().getLocation() != null &&
 								delta.getResource().getLocation().lastSegment().equals(IArchiveModel.DEFAULT_PACKAGES_FILE)) {
-							projects.add(delta.getResource().getProject());
+							if( delta.getResource().getProject() != null ) 
+								projects.add(delta.getResource().getProject());
 						}
 						return true;
 					}
