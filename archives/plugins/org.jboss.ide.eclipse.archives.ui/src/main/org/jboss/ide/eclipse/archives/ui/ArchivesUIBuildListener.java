@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -40,7 +41,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
  */
 public class ArchivesUIBuildListener extends AbstractBuildListener {
 
-	public void error(IArchiveNode node, final IStatus[] multi) {
+	public void error(final IArchiveNode node, final IStatus[] multi) {
 		final MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesUIMessages.BuildError, null);
 		for( int i = 0; i < multi.length; i++ ) {
 			ms.add(multi[i]);
@@ -48,7 +49,10 @@ public class ArchivesUIBuildListener extends AbstractBuildListener {
 		if( PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG)) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {
-					ErrorDialog ed = new ErrorDialogWithPreference(new Shell(), ArchivesUIMessages.BuildError, ArchivesUIMessages.BuildError, ms, IStatus.ERROR );
+					ErrorDialog ed = new ErrorDialogWithPreference(
+							new Shell(), ArchivesUIMessages.BuildError, 
+							NLS.bind(ArchivesUIMessages.BuildError2, node.toString()), 
+							ms, IStatus.ERROR );
 					ed.open();
 				}
 			} );

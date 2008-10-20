@@ -14,6 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class ArchivesUIMessages extends NLS {
 	public static String BuildError;
+	public static String BuildError2;
 	public static String DoNotShowThisAgain;
 	public static String BuildArchivesNode;
 	public static String SelectAProject;
