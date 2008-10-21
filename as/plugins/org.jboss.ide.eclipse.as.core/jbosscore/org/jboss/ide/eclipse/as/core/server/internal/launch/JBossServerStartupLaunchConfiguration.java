@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -97,6 +98,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, "org.jboss.ide.eclipse.as.core.launch.classpathProvider");
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, jrePath);
+		wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, getDefaultEnvVars(jbs));
 		wc.setAttribute(DEFAULTS_SET, true);
 	}
 
@@ -116,6 +118,13 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
 	}
 
+	public static HashMap<String, String> getDefaultEnvVars(JBossServer jbs) throws CoreException {
+		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
+		if (rt != null) {
+			return rt.getDefaultRunEnvVars();
+		}
+		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+	}
 
 	protected void preLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) {

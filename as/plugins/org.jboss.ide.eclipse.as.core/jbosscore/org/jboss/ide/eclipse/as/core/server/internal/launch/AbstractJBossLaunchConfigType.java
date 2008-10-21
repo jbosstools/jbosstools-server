@@ -87,6 +87,9 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		// Classpath
 		String[] classpath = getClasspath(configuration);
 		
+		// Environment
+		String[] environment = getEnvironment(configuration);
+		
 		// Create VM config
 		String mainType = getMainTypeName(configuration);
 		VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainType, classpath);
@@ -94,6 +97,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		runConfig.setVMArguments(execArgs.getVMArgumentsArray());
 		runConfig.setWorkingDirectory(workingDirName);
 		runConfig.setVMSpecificAttributesMap(vmAttributesMap);
+		runConfig.setEnvironment(environment);
 
 		// Bootpath
 		String[] bootpath = getBootpath(configuration);

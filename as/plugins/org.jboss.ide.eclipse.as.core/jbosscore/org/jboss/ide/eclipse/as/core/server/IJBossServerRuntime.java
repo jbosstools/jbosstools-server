@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+import java.util.HashMap;
+
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IRuntime;
 
@@ -43,4 +45,5 @@ public interface IJBossServerRuntime {
 	// for startup
 	public String getDefaultRunArgs();
 	public String getDefaultRunVMArgs();
+	public HashMap<String, String> getDefaultRunEnvVars();
 }

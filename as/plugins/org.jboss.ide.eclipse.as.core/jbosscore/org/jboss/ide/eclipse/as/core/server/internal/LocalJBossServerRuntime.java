@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.HashMap;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -126,5 +128,11 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 			ret +=  "-Djava.library.path=\"" + getRuntime().getLocation().append("bin").append("native") + "\" ";
 		
 		return ret;
+	}
+	
+	public HashMap<String, String> getDefaultRunEnvVars(){
+		HashMap<String, String> envVars = new HashMap<String, String>(1);
+		envVars.put("Path", "native");
+		return envVars;
 	}
 }
