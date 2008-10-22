@@ -123,7 +123,7 @@ public abstract class AbstractDeploymentTest extends TestCase {
 				while( !done ) {
 					srcKey = "copy" + i + "src";
 					destKey = "copy" + i + "dest";
-					done = copy(props.getProperty(srcKey), props.getProperty(destKey));
+					done = copy(props.getProperty(srcKey), props.getProperty(destKey),i);
 					i++;
 				}
 			} catch (FileNotFoundException e) {
@@ -134,14 +134,14 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		}
 	}
 
-	protected boolean copy(String src, String dest) throws CoreException {
+	protected boolean copy(String src, String dest,int i) throws CoreException {
 		if( src == null || dest == null ) 
 			return true;
 		
 		// do the copy
 		File srcFile, destFile, tmp;
 		srcFile = getFileLocation("projectPieces/" + src);
-		tmp = getFileLocation("projects/TempProject/" + sourceProjectName);
+		tmp = getFileLocation("projects/TempProject/" + sourceProjectName[i-1]);
 		destFile = new File(tmp, dest);
 		FileUtil.fileSafeCopy(srcFile, destFile);
 		
