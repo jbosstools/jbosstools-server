@@ -51,7 +51,7 @@ public class ArchivesUIBuildListener extends AbstractBuildListener {
 				public void run() {
 					ErrorDialog ed = new ErrorDialogWithPreference(
 							new Shell(), ArchivesUIMessages.BuildError, 
-							NLS.bind(ArchivesUIMessages.BuildError2, node.toString()), 
+							NLS.bind(ArchivesUIMessages.BuildError2, node == null ? node : node.toString()), 
 							ms, IStatus.ERROR );
 					ed.open();
 				}
