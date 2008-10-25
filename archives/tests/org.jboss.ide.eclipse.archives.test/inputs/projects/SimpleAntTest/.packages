@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages version="1.2">
+   <package name="SimpleAntTest.jar" type="jar" todir="output" exploded="false" inWorkspace="false">
+      <fileset dir="" includes="**" excludes="**/*jar" inWorkspace="true" flatten="false">
+         <properties></properties>
+      </fileset>
+      <properties>
+         <property name="org.jboss.ide.eclipse.as.core.packages.ModuleIDPropertyKey" value="1224926072579"></property>
+      </properties>
+   </package>
+   <properties></properties>
+</packages>

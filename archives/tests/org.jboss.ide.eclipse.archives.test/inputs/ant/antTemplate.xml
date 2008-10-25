@@ -1,0 +1,24 @@
+<project>
+	<property name="eclipse.home" location="${UNIT_TEST_ECLIPSE_LOC}" />
+	<property name="archives.home" location="${UNIT_TEST_ARCHIVES_HOME}"/>
+	<property name="example_variable" value="test" />
+	
+	<path id="generate-archives-classpath">
+		<fileset dir="${eclipse.home}">
+			<include name="plugins/org.eclipse.equinox.common_*.jar" />
+		</fileset>
+		<fileset dir="${archives.home}">
+			<include
+				name="plugins/org.jboss.ide.eclipse.archives.core**/archivescore.jar" />
+			<include name="plugins/org.jboss.ide.eclipse.archives.core**/lib/*.jar" />
+		</fileset>
+	</path>
+	
+	<taskdef name="generate-archives" classpathref="generate-archives-classpath"
+		classname="org.jboss.ide.eclipse.archives.core.ant.GenerateArchivesTask" />
+
+	<target name="run-packaging">
+		<property name="${UNIT_TEST_PROJECT_NAME}.dir" value="${UNIT_TEST_PROJECT_DIR}" />
+		<generate-archives projectPath="${${UNIT_TEST_PROJECT_NAME}.dir}" />
+	</target>
+</project>
