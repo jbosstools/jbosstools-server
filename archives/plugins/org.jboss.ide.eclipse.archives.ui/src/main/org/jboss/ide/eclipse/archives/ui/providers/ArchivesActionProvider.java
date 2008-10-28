@@ -70,7 +70,6 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		site = aSite.getViewSite();
 		createActions();
 		newPackageManager = new MenuManager(ArchivesUIMessages.ProjectPackagesView_newPackageMenu_label, NEW_PACKAGE_MENU_ID);
-		newPackageManager.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	public void fillContextMenu(IMenuManager manager) {
@@ -192,6 +191,10 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	 * @param manager
 	 */
 	private void addNewPackageActions (IMenuManager manager) {
+          	//workaround for JBIDE-3016
+                if( manager.getItems().length > 0)
+                	return;
+                		 							
 		for( int i = 0; i < newPackageActions.length; i++ ) {
 			NewArchiveAction action = newPackageActions[i];
 			ActionWrapper wrapped = new ActionWrapper(action);
