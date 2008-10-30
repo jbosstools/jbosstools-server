@@ -53,9 +53,8 @@
             in <ulink
                 url="http://www.eclipse.org/tptp/home/downloads/4.5.0/documents/quicktour/quick_tour.html"
                 >eclipse documentation</ulink>.</para>
-    </section>
-
-    <para>In summary, this reference should help you to start with <ulink
+        <para>In summary, this reference should help you to start with <ulink
             url="http://www.jboss.org/jbossas">JBoss AS</ulink> and get to know with functionality
-        for work with it.</para>
+            for work with it.</para>
+    </section>
 </chapter>

@@ -177,8 +177,7 @@
 			</emphasis> file, is to enable the builder for that project. This is done by either
 			changing the global preferences for the <property>Archives View</property>, or by
 			enabling project-specific preferences and ensuring the builder is on.</para>
-	</section>
-
 		<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
-		server.</para>
+			server.</para>
+	</section>
 </chapter>
