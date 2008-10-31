@@ -94,15 +94,6 @@
             typeIds="jboss.singlefile"/>
    </extension>
 
-   <extension
-         point="org.eclipse.ui.preferencePages">
-
-      <page
-            category="org.eclipse.wst.server.ui.preferencePage"
-            class="org.jboss.tools.as.wst.server.ui.views.server.preferencepages.ViewPreferencePage"
-            id="org.jboss.ide.eclipse.as.ui.jbossServerViewPrefPage"
-            name="JBoss Server View"/>
-   </extension>
 
    <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
     <adapter>
@@ -112,6 +103,7 @@
     </adapter>
    </extension> 
 
+<!--
    <extension
          point="org.eclipse.ui.views">
       <view
@@ -122,7 +114,7 @@
             id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
             name="JBoss Server View"/>
    </extension>
-
+-->
 
 
 
@@ -301,15 +293,15 @@
 
    <extension point="org.eclipse.ui.actionSets">
       <actionSet description="%actionSets.serverActions.description" id="org.jboss.tools.jst.web.ui.server.actionSet" label="%actionSets.serverActions.label" visible="true">
-         <action class="org.jboss.tools.as.wst.server.ui.action.SelectServerActionDelegate" icon="icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.SelectServerActionDelegate" icon="icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
          </action>
-         <action class="org.jboss.tools.as.wst.server.ui.action.ChangeTimeStampActionDelegate" icon="icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.ChangeTimeStampActionDelegate" icon="icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
          </action>
-         <action class="org.jboss.tools.as.wst.server.ui.action.StopServerActionDelegate" icon="icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.StopServerActionDelegate" icon="icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
          </action>
-         <action class="org.jboss.tools.as.wst.server.ui.action.DebugServerActionDelegate" icon="icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.DebugServerActionDelegate" icon="icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
-         <action class="org.jboss.tools.as.wst.server.ui.action.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
       </actionSet>
    </extension>
@@ -329,18 +321,18 @@
 
    <extension point="org.eclipse.ui.views"> 
    	  <view
-         id="org.eclipse.wst.server.ui.ServersViewProvisional"
-         name="JBoss Servers View 2 (beta)"
+         id="org.jboss.tools.as.wst.server.ui.ServersView"
+         name="JBoss Server View"
          category="org.eclipse.wst.server.ui"
-         class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServersView"
+         class="org.jboss.tools.as.wst.server.ui.ServersView"
          icon="icons/jboss.gif"/>
    </extension>
    
    <extension point="org.eclipse.ui.decorators">
       <decorator
-            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerDecorator"
-            icon="icons/obj16/server.gif"
-            id="org.eclipse.wst.server.ui.navigatorDecorator"
+            class="org.jboss.tools.as.wst.server.ui.ServerDecorator"
+            icon="icons/cview16/servers_view.gif"
+            id="org.jboss.tools.as.wst.server.ui.navigatorDecorator"
             label="Server State Decorator"
             lightweight="true"
             location="BOTTOM_RIGHT">
@@ -361,10 +353,10 @@
       point="org.eclipse.ui.navigator.navigatorContent">
 	   <navigatorContent
 	         activeByDefault="true"
-	         contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerContentProvider"
+	         contentProvider="org.jboss.tools.as.wst.server.ui.ServerContentProvider"
 	         icon="icons/cview16/servers_view.gif"
-	         id="org.eclipse.wst.server.ui.ServersView.content.root"
-	         labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerLabelProvider"
+	         id="org.jboss.tools.as.wst.server.ui.ServersView.content.root"
+	         labelProvider="org.jboss.tools.as.wst.server.ui.ServerLabelProvider"
 	         name="Servers View Default Content"
 	         priority="highest">
 	      <triggerPoints>
@@ -382,20 +374,36 @@
 	            </instanceof>
 	         </or></possibleChildren>
 	      <actionProvider
-	            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerActionProvider"
-	            id="org.eclipse.wst.server.ui.internal.view.servers.provisional.ServerActionProvider"
+	            class="org.jboss.tools.as.wst.server.ui.ServerActionProvider"
+	            id="org.jboss.tools.as.wst.server.ui.ServersView.ServerActionProvider"
 	            priority="highest">
+			<enablement>
+             <or>
+                <instanceof
+                      value="org.eclipse.wst.server.core.IServer">
+                </instanceof>
+                <instanceof
+                      value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+                </instanceof>
+               <adapt
+                     type="java.util.Collection">
+                  <count
+                        value="0">
+                  </count>
+               </adapt>
+             </or>
+            </enablement>
 	      </actionProvider>
 	   </navigatorContent>
 	</extension>
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.eclipse.wst.server.ui.ServersViewProvisional">
+	         viewerId="org.jboss.tools.as.wst.server.ui.ServersView">
 	      <includes>
 	         <contentExtension
 	               isRoot="true"
-	               pattern="org.eclipse.wst.server.ui.ServersView.content.root">
+	               pattern="org.jboss.tools.as.wst.server.ui.ServersView.content.root">
 	         </contentExtension>
 	      </includes>
 	   </viewerContentBinding>
@@ -411,8 +419,8 @@
 	         id="org.jboss.ide.eclipse.as.ui.extensions.eventLog"
 	         activeByDefault="true"
 	         icon="icons/info_obj.gif"
-	         contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogContentProvider"
-	         labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogLabelProvider"
+	         contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogContentProvider"
+	         labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogLabelProvider"
 	         name="JBoss Server Event Log"
 	         priority="normal">
 	      <triggerPoints>
@@ -430,17 +438,17 @@
              </instanceof>
 	         </or></possibleChildren>
 	      <actionProvider
-	            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.EventLogActionProvider"
+	            class="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogActionProvider"
 	            id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
 	            priority="highest">
 	      </actionProvider>
 	   </navigatorContent>
     <navigatorContent
           activeByDefault="true"
-          contentProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathTreeContentProvider"
+          contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider"
           icon="icons/XMLFile.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.xml"
-          labelProvider="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathTreeLabelProvider"
+          labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeLabelProvider"
           name="XML Configuration"
           priority="normal">
        <triggerPoints>
@@ -451,10 +459,10 @@
        <possibleChildren>
           <or>
              <instanceof
-                   value="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider$ServerWrapper">
+                   value="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider$ServerWrapper">
              </instanceof>
              <instanceof
-                   value="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathProvider$XPathTreeContentProvider$DelayProxy">
+                   value="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider$DelayProxy">
              </instanceof>
              <instanceof
                    value="org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory">
@@ -470,8 +478,8 @@
              </instanceof></or>
        </possibleChildren>
        <actionProvider
-             class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathActionProvider"
-             id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
+             class="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathActionProvider"
+             id="org.jboss.ide.eclipse.as.ui.extensions.xml.actions"
              priority="highest">
        </actionProvider>
     </navigatorContent>
@@ -479,7 +487,7 @@
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.eclipse.wst.server.ui.ServersViewProvisional">
+	         viewerId="org.jboss.tools.as.wst.server.ui.ServersView">
 	      <includes>
 	         <contentExtension
 	               isRoot="false"
@@ -498,7 +506,7 @@
 	<!-- Decorator for xpaths / xml-->
 	<extension point="org.eclipse.ui.decorators">
       <decorator
-            class="org.eclipse.wst.server.ui.internal.view.servers.provisional.extensions.XPathDecorator"
+            class="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathDecorator"
             id="org.jboss.ide.eclipse.as.ui.extensions.xml.decorator"
             label="JBoss Server XML Configuration Decorator"
             lightweight="true"

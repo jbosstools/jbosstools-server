@@ -37,7 +37,9 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -45,6 +47,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -73,7 +76,6 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPat
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.views.server.providers.descriptors.XPathPropertyLabelProvider;
 
 
 /**
@@ -891,4 +893,49 @@ public class XPathDialogs {
 		return server.getRuntime().getLocation().toOSString();
 		//return null;
 	}
+	
+	public static class XPathPropertyLabelProvider extends LabelProvider implements ITableLabelProvider {
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+		public String getColumnText(Object element, int columnIndex) {
+			if( element instanceof XPathQuery) {
+				if( columnIndex == 0 ) return ((XPathQuery)element).getName();
+				if( columnIndex == 1 ) {
+					XPathResultNode[] nodes = getResultNodes(((XPathQuery)element));
+					if( nodes.length == 1 )
+					return nodes[0].getText();
+				}
+			}
+
+			if( element instanceof XPathFileResult ) {
+				XPathFileResult result = (XPathFileResult)element;
+				if( columnIndex == 0 ) {
+					return result.getFileLocation().substring(result.getQuery().getBaseDir().length());
+				}
+				if( result.getChildren().length == 1 ) {
+					element = result.getChildren()[0];
+				}
+			}
+			
+			if( element instanceof XPathResultNode ) {
+				XPathResultNode element2 = (XPathResultNode)element;
+				if( columnIndex == 0 ) return Messages.DescriptorXPathMatch + element2.getIndex();
+				if( columnIndex == 1 ) return element2.getText().trim();
+			}
+			
+			return null; 
+		}
+
+		public XPathResultNode[] getResultNodes(XPathQuery query) {
+			ArrayList<XPathResultNode> l = new ArrayList<XPathResultNode>();
+			XPathFileResult[] files = query.getResults();
+			for( int i = 0; i < files.length; i++ ) {
+				l.addAll(Arrays.asList(files[i].getChildren()));
+			}
+			return l.toArray(new XPathResultNode[l.size()]);
+		}
+
+	}
+
 }

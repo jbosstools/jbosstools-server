@@ -45,7 +45,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.tools.as.wst.server.ui.views.server.ExtensionTableViewer.ContentWrapper;
 
 /**
  * 
@@ -161,9 +160,6 @@ public class PropertySheetFactory {
 		}
 	
 		public Object[] getElements(Object inputElement) {
-			if( inputElement instanceof ContentWrapper ) {
-				inputElement = ((ContentWrapper)inputElement).getElement();
-			}
 			if( properties != null ) 
 				return properties.keySet().toArray();
 
@@ -174,9 +170,6 @@ public class PropertySheetFactory {
 		}
 	
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			if( newInput instanceof ContentWrapper ) 
-				newInput = ((ContentWrapper)newInput).getElement();
-			
 			input = newInput;
 			properties = holder.getProperties(newInput);
 		}
@@ -198,9 +191,6 @@ public class PropertySheetFactory {
 		}
 	
 		public String getColumnText(Object element, int columnIndex) {
-			if( element instanceof ContentWrapper ) 
-				element = ((ContentWrapper)element).getElement();
-			
 			if( columnIndex == 0 ) return element.toString();
 			if( columnIndex == 1 && element instanceof String && properties != null ) {
 				return properties.getProperty((String)element);
