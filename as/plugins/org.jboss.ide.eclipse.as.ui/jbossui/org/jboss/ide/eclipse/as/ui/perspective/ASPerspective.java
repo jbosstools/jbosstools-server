@@ -60,7 +60,7 @@ public class ASPerspective implements IPerspectiveFactory {
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, (float)0.75, editorArea);
 		
 		IFolderLayout serverFolder = layout.createFolder("leftBottom", IPageLayout.BOTTOM, (float)0.60, "left"); //$NON-NLS-1$ //$NON-NLS-2$
-		serverFolder.addView("org.jboss.tools.as.wst.server.ui.ServersView"); //$NON-NLS-1$
+		serverFolder.addView("org.jboss.ide.eclipse.as.ui.views.JBossServerView"); //$NON-NLS-1$
 		
 		
 		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);

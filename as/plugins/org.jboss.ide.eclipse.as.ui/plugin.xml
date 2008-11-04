@@ -165,7 +165,7 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
          <view
-               id="org.jboss.tools.as.wst.server.ui.ServersView"
+               id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
                ratio="0.5"
                relationship="right"
                relative="org.eclipse.ui.views.TaskList"/>
@@ -321,7 +321,7 @@
 
    <extension point="org.eclipse.ui.views"> 
    	  <view
-         id="org.jboss.tools.as.wst.server.ui.ServersView"
+         id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
          name="JBoss Server View"
          category="org.eclipse.wst.server.ui"
          class="org.jboss.tools.as.wst.server.ui.ServersView"
@@ -399,7 +399,7 @@
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.jboss.tools.as.wst.server.ui.ServersView">
+	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
 	      <includes>
 	         <contentExtension
 	               isRoot="true"
@@ -487,7 +487,7 @@
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.jboss.tools.as.wst.server.ui.ServersView">
+	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
 	      <includes>
 	         <contentExtension
 	               isRoot="false"

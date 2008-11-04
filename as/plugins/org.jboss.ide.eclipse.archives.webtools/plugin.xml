@@ -134,7 +134,7 @@
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.jboss.tools.as.wst.server.ui.ServersView">
+	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
 	      <includes>
 	         <contentExtension
 	               isRoot="false"
