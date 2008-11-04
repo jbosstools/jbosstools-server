@@ -483,7 +483,19 @@
              priority="highest">
        </actionProvider>
     </navigatorContent>
+    <actionProvider
+          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ModuleActionProvider"
+          id="org.jboss.ide.eclipse.as.ui.extensions.modules">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+          </instanceof>
+       </enablement>
+    </actionProvider>
 	</extension>
+
+
+
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
@@ -499,6 +511,14 @@
           </contentExtension>
 	      </includes>
 	   </viewerContentBinding>
+    <viewerActionBinding
+          viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+       <includes>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.modules">
+          </actionExtension>
+       </includes>
+    </viewerActionBinding>
 	</extension>
 	
 	
