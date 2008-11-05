@@ -13,7 +13,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -40,7 +45,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
-public class FilesetActionProvider extends CommonActionProvider {
+public class FilesetActionProvider extends CommonActionProvider implements IDoubleClickListener {
 	private ICommonActionExtensionSite actionSite;
 	private Action createFilter, deleteFilter, editFilter, 
 					deleteFileAction, editFileAction;
@@ -54,10 +59,38 @@ public class FilesetActionProvider extends CommonActionProvider {
 	public void init(ICommonActionExtensionSite aSite) {
 		super.init(aSite);
 		this.actionSite = aSite;
+		ICommonViewerSite site = aSite.getViewSite();
+		if( site instanceof ICommonViewerWorkbenchSite ) {
+			StructuredViewer v = aSite.getStructuredViewer();
+			v.addDoubleClickListener(this);
+		}
 		createActions();
 	}
+	
+    public void dispose() {
+		ICommonViewerSite site = actionSite.getViewSite();
+		if( site instanceof ICommonViewerWorkbenchSite ) {
+			StructuredViewer v = actionSite.getStructuredViewer();
+			v.removeDoubleClickListener(this);
+		}
+    	super.dispose();
+    }
 
 	public void fillContextMenu(IMenuManager menu) {
+		if( selected[0] instanceof ServerWrapper ) {
+			menu.add(createFilter);
+		}else if( selected.length == 1 && selected[0] instanceof Fileset ) {
+			menu.add(deleteFilter);
+			menu.add(editFilter);
+		} else if( allPathWrappers(selected) ) {
+			editFileAction.setEnabled(canEdit(selected));
+			deleteFileAction.setEnabled(canDelete(selected));
+			menu.add(editFileAction);
+			menu.add(deleteFileAction);
+		}
+	}
+	
+	protected void setSelection() {
 		ICommonViewerSite site = actionSite.getViewSite();
 		if (site instanceof ICommonViewerWorkbenchSite) {
 			ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite) site;
@@ -65,17 +98,6 @@ public class FilesetActionProvider extends CommonActionProvider {
 					.getSelection();
 			this.treeSelection = selection;
 			selected = selection.toArray();
-			if( selected[0] instanceof ServerWrapper ) {
-				menu.add(createFilter);
-			}else if( selected.length == 1 && selected[0] instanceof Fileset ) {
-				menu.add(deleteFilter);
-				menu.add(editFilter);
-			} else if( allPathWrappers(selected) ) {
-				editFileAction.setEnabled(canEdit(selected));
-				deleteFileAction.setEnabled(canDelete(selected));
-				menu.add(editFileAction);
-				menu.add(deleteFileAction);
-			}
 		}
 	}
 	
@@ -265,6 +287,11 @@ public class FilesetActionProvider extends CommonActionProvider {
 	
 	protected void refreshViewer() {
 		actionSite.getStructuredViewer().refresh();
+	}
+
+	public void doubleClick(DoubleClickEvent event) {
+		setSelection();
+		editFileAction.run();
 	}
 
 }
