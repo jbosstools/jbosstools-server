@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="ServerViewExtension" name="org.jboss.ide.eclipse.as.ui.serverViewExtension" schema="schema/ServerViewExtension.exsd"/>
    <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
    <extension-point id="EventLogMajorType" name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd"/>
    <extension-point id="ServerEditorPortSection" name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd"/>
@@ -103,63 +102,6 @@
     </adapter>
    </extension> 
 
-<!--
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            allowMultiple="false"
-            category="org.eclipse.wst.server.ui"
-            class="org.jboss.tools.as.wst.server.ui.views.server.JBossServerView"
-            icon="icons/jboss.gif"
-            id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-            name="JBoss Server View"/>
-   </extension>
--->
-
-
-
-      <extension
-         point="org.jboss.ide.eclipse.as.ui.ServerViewExtension">
-      <ViewProvider
-            description="Allow modules to be included in the tree."
-            icon="icons/jar_obj.gif"
-            id="org.jboss.ide.eclipse.as.ui.ModulesViewProvider"
-            name="Modules"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.ModuleViewProvider"/>
-      <ViewProvider
-            description="A place to view server-related events"
-            icon="icons/info_obj.gif"
-            id="org.jboss.ide.eclipse.as.ui.EventLogViewProvider"
-            name="Event Log"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.EventLogViewProvider"/>
-      <ViewProvider
-            description="An extension that lets you quickly change often-used fields or ports"
-            icon="icons/XMLFile.gif"
-            id="org.jboss.ide.eclipse.as.ui.XPathDescriptors"
-            name="XML Configuration"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.DescriptorXPathViewProvider"/>
-      <ViewProvider
-            description="Lists inactive categories and allows you to turn them back on."
-            icon="icons/ignore.gif"
-            id="org.jboss.ide.eclipse.as.ui.InactiveExtensionsProvider"
-            name="Inactive Categories"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.InactiveExtensionViewProvider"/>
-      <ViewProvider
-            description="A clone of the JMX view in the web browser"
-            icon="icons/jmxIcon.JPG"
-            id="org.jboss.ide.eclipse.as.ui.JMXProvider"
-            name="JMX Console"
-            providerClass="org.jboss.ide.eclipse.as.ui.views.server.providers.jmx.JMXViewProvider">
-      </ViewProvider>
-   </extension>
-   <!--
-      <extension
-            point="org.jboss.ide.eclipse.as.core.pollerTimeoutListener">
-         <pollerTimeoutListener
-               listener="org.jboss.ide.eclipse.as.ui.views.server.TwiddlePollerListener"
-               pollerType="org.jboss.ide.eclipse.as.core.runtime.server.internal.TwiddlePoller"/>
-      </extension>
-	-->
 
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
