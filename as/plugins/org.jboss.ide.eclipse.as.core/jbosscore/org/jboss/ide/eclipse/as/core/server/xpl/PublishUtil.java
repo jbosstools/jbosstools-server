@@ -44,6 +44,7 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 /**
  * Utility class with an assortment of useful file methods.
  * <p>
@@ -772,9 +773,7 @@ public final class PublishUtil {
 	
 	protected File getTempFolder() {
 		if( server == null ) return tempDir;
-		String path = 
-			ServerAttributeHelper.createHelper(server)
-				.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, tempDir.getAbsolutePath());
+		String path = ServerConverter.getDeployableServer(server).getTempDeployFolder();
 		File f = new File(path);
 		if( !f.exists() )
 			f.mkdirs();
