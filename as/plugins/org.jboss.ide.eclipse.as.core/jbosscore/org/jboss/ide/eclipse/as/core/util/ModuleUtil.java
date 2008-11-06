@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.ModuleDelegate;
 
 public class ModuleUtil {
 	public static ArrayList<IModule[]> getShallowChildren(IServer server, IModule[] root) {
@@ -32,4 +36,30 @@ public class ModuleUtil {
 		}
 		return deep;
 	}
+	
+	public static IModule[] getChildModules(IModule[] module) {
+		int last = module.length-1;
+		if (module[last] != null && module[last].getModuleType() != null) {
+			IModuleType moduleType = module[last].getModuleType();
+			if("jst.ear".equals(moduleType.getId())) { //$NON-NLS-1$
+				IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
+						.loadAdapter(IEnterpriseApplication.class, null);
+				if (enterpriseApplication != null) {
+					IModule[] earModules = enterpriseApplication.getModules(); 
+					if ( earModules != null) {
+						return earModules;
+					}
+				}
+			}
+			else if ("jst.web".equals(moduleType.getId())) { //$NON-NLS-1$
+				IWebModule webModule = (IWebModule) module[last].loadAdapter(IWebModule.class, null);
+				if (webModule != null) {
+					IModule[] modules = webModule.getModules();
+					return modules;
+				}
+			}
+		}
+		return new IModule[0];
+	}
+	
 }
