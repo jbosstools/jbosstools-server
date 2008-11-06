@@ -32,7 +32,11 @@ public interface IDeployableServer {
 	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory";
 	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory";
 	
-	public String getDeployDirectory();
+	public String getDeployFolder();
+	public void setDeployFolder(String folder);
+	public String getTempDeployFolder();
+	public void setTempDeployFolder(String folder);
+
 	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();
 	public IServer getServer();

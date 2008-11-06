@@ -21,7 +21,6 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 /**

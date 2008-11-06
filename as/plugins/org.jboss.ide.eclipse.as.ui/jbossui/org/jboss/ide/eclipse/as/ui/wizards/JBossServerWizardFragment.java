@@ -24,8 +24,10 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -54,6 +56,7 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -287,35 +290,30 @@ public class JBossServerWizardFragment extends WizardFragment {
 		deployBrowseButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {}
 			public void widgetSelected(SelectionEvent e) {
-				File file = new File(deployText.getText());
-				if (!file.exists()) {
-					file = null;
+				String directory = getDirectory(deployText.getText(), deployGroup.getShell());
+				if (directory != null) {
+					deployText.setText(directory);
+					deployVal = deployText.getText();
 				}
-
-				File directory = getDirectory(file, deployGroup.getShell());
-				if (directory == null) {
-					return;
-				}
-
-				deployText.setText(directory.getAbsolutePath());
-				deployVal = deployText.getText();
 			}
 		});
 		
 		deployText.setEditable(false);
 	}
 	
-	protected File getDirectory(File startingDirectory, Shell shell) {
+	protected String getDirectory(String startingDirectory, Shell shell) {
 		DirectoryDialog fileDialog = new DirectoryDialog(shell, SWT.OPEN);
-		if (startingDirectory != null) {
-			fileDialog.setFilterPath(startingDirectory.getPath());
-		}
+
+		if( startingDirectory == null )
+			startingDirectory = getRuntime().getRuntime().getLocation().toString();
+		IPath sp = DeployableServer.makeGlobal(getRuntime(), new Path(startingDirectory));
+		fileDialog.setFilterPath(sp.toString());
 
 		String dir = fileDialog.open();
 		if (dir != null) {
 			dir = dir.trim();
 			if (dir.length() > 0) {
-				return new File(dir);
+				return DeployableServer.makeRelative(getRuntime(), new Path(dir)).toString();
 			}
 		}
 		return null;
@@ -357,7 +355,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configValLabel.setText(srt.getJBossConfiguration());
 		IVMInstall install = srt.getVM();
 		jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
-		String deployFolder = srt.getRuntime().getLocation().append( "server").append(configValLabel.getText()).append("deploy").toOSString();
+		String deployFolder = new Path("server").append(configValLabel.getText()).append("deploy").toString();
 		deployTmpFolderVal = srt.getRuntime().getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("jbosstoolsTemp").toOSString();
 		deployText.setText(deployFolder);
 		deployVal = deployFolder;

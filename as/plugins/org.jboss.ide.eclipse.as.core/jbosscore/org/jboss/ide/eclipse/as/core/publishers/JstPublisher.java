@@ -185,7 +185,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	}
 
 	protected IPath getDeployPath(IModule[] moduleTree) {
-		IPath root = new Path( server.getDeployDirectory() );
+		IPath root = new Path( server.getDeployFolder() );
 		String type, name;
 		for( int i = 0; i < moduleTree.length; i++ ) {
 			type = moduleTree[i].getModuleType().getId();
@@ -275,7 +275,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	 * @return  returns whether an error was found
 	 */
 	protected boolean localSafeDelete(IPath deployPath, final EventLogTreeItem event) {
-        String serverDeployFolder = server.getDeployDirectory();
+        String serverDeployFolder = server.getDeployFolder();
         Assert.isTrue(!deployPath.toFile().equals(new Path(serverDeployFolder).toFile()), "An attempt to delete your entire deploy folder has been prevented. This should never happen");
 
 		final Boolean[] errorFound = new Boolean[] { new Boolean(false)};

@@ -24,8 +24,11 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.jst.server.core.IWebModule;
@@ -38,6 +41,7 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
@@ -123,12 +127,20 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	public void modifyModules(IModule[] add, IModule[] remove,
 			IProgressMonitor monitor) throws CoreException {
 	}
-
-	/* (non-Javadoc)
-	 * @see org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer#getDeployDirectory()
-	 */
-	public String getDeployDirectory() {
-		return getAttribute(DEPLOY_DIRECTORY, "");
+	
+	
+	public String getDeployFolder() {
+		return makeGlobal(getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
+	}
+	public void setDeployFolder(String folder) {
+		setAttribute(DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
+	}
+	
+	public String getTempDeployFolder() {
+		return makeGlobal(getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+	}
+	public void setTempDeployFolder(String folder) {
+		setAttribute(TEMP_DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
 	}
 	
 	/*
@@ -145,6 +157,28 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 	// only used for xpaths and is a complete crap hack ;) misleading, too
 	public String getConfigDirectory() {
-		return getDeployDirectory();
+		return getDeployFolder();
+	}
+	
+	public IJBossServerRuntime getRuntime() {
+		IJBossServerRuntime ajbsrt = (IJBossServerRuntime) getServer().getRuntime()
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+		return ajbsrt;
+	}
+	
+	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
+		if( p.isAbsolute()) {
+			if(rt.getRuntime().getLocation().isPrefixOf(p))
+				return p.removeFirstSegments(rt.getRuntime().getLocation().segmentCount()).makeRelative();
+		}
+		return p;
+	}
+	
+	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
+		if( !p.isAbsolute()) {
+			return rt.getRuntime().getLocation().append(p).makeAbsolute();
+		}
+		return p;
 	}
 }

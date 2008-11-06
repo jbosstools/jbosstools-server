@@ -149,7 +149,7 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
 				sourcePath = topLevelPackage.getArchiveFilePath();
 				depServer = getDeployableServerFromBehavior(serverBehaviors[i]);
-				destPath = new Path(depServer.getDeployDirectory()).append(sourcePath.lastSegment());
+				destPath = new Path(depServer.getDeployFolder()).append(sourcePath.lastSegment());
 				FileUtil.safeDelete(destPath.toFile());
 				FileUtil.fileSafeCopy(sourcePath.toFile(), destPath.toFile());
 			}

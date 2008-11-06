@@ -74,7 +74,7 @@ public class JBossServer extends DeployableServer
 				String config = runtime.getJBossConfiguration();
 				startArgs = ArgsUtil.setArg(startArgs, "-c", "--configuration", config);
 				
-				if( startArgs != null && !startArgs.equals(originalArgs)) {
+				if( startArgs != null && !startArgs.trim().equals(originalArgs)) {
 					ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
 					wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, startArgs);
 					wc.doSave();
@@ -125,12 +125,12 @@ public class JBossServer extends DeployableServer
 		return new Path(configDir).toOSString();
 	}
 	
-	public String getDeployDirectory() {
-		String folder = super.getDeployDirectory();
-		return folder != null ? folder : getDeployDirectory(true);
+	public String getDeployFolder() {
+		String folder = super.getDeployFolder();
+		return folder != null ? folder : getDeployFolder(true);
 	}
 	
-	protected String getDeployDirectory(boolean checkLaunchConfig) {
+	protected String getDeployFolder(boolean checkLaunchConfig) {
 		return new Path(getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY).toOSString();
 	}
 
@@ -239,18 +239,5 @@ public class JBossServer extends DeployableServer
 	public void setPassword(String pass) {
 		setAttribute(SERVER_PASSWORD, pass);
 	}
-	
-	public String getDeployFolder() {
-		return getAttribute(DEPLOY_DIRECTORY, "");
-	}
-	public void setDeployFolder(String folder) {
-		setAttribute(DEPLOY_DIRECTORY, folder);
-	}
-	
-	public String getTempDeployFolder() {
-		return getAttribute(TEMP_DEPLOY_DIRECTORY, "");
-	}
-	public void setTempDeployFolder(String folder) {
-		setAttribute(TEMP_DEPLOY_DIRECTORY, folder);
-	}
+
 }

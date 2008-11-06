@@ -104,7 +104,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		// remove all of the deployed items
 		if( pack != null ) {
 			IPath sourcePath = pack.getArchiveFilePath();
-			IPath destPath = new Path(server.getDeployDirectory()).append(sourcePath.lastSegment());
+			IPath destPath = new Path(server.getDeployFolder()).append(sourcePath.lastSegment());
 			// remove the entire file or folder
 			PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
 			FileUtil.safeDelete(destPath.toFile(), listener);
@@ -116,7 +116,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	protected void publishModule(IModule module, boolean incremental, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
-		IPath destPathRoot = new Path(server.getDeployDirectory());
+		IPath destPathRoot = new Path(server.getDeployFolder());
 
 		// if destination is deploy directory... no need to re-copy!
 		if( destPathRoot.toOSString().equals(PathUtils.getGlobalLocation(pack).toOSString())) {

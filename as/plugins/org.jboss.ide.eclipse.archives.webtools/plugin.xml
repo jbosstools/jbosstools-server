@@ -126,7 +126,7 @@
 	         </or></possibleChildren>
 	      <actionProvider
 	            class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetActionProvider"
-	            id="rg.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets.actions"
+	            id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets.actions"
 	            priority="highest">
 	      </actionProvider>
 	   </navigatorContent>

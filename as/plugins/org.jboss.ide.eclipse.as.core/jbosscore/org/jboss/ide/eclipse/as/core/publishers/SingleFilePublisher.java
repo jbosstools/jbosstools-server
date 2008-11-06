@@ -72,7 +72,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
-			IPath destFolder = new Path(server.getDeployDirectory());
+			IPath destFolder = new Path(server.getDeployFolder());
 			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
 			FileUtilListener l = new FileUtilListener(root);
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destFile, l);
@@ -96,7 +96,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
-			IPath destFolder = new Path(server.getDeployDirectory());
+			IPath destFolder = new Path(server.getDeployFolder());
 			FileUtilListener l = new FileUtilListener(root);
 			FileUtil.safeDelete(destFolder.append(sourcePath.lastSegment()).toFile(), l);
 			if( l.errorFound ) {

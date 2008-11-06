@@ -21,10 +21,12 @@
  */
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
@@ -48,12 +50,13 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -107,10 +110,11 @@ public class DeploySection extends ServerEditorSection {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(deployText.getText());
+				d.setFilterPath(makeGlobal(deployText.getText()));
 				String x = d.open();
-				if( x != null ) 
-					deployText.setText(x);
+				if( x != null ) {
+					deployText.setText(makeRelative(x));
+				}
 			} 
 		});
 		
@@ -130,10 +134,10 @@ public class DeploySection extends ServerEditorSection {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(tempDeployText.getText());
+				d.setFilterPath(makeGlobal(tempDeployText.getText()));
 				String x = d.open();
 				if( x != null ) 
-					tempDeployText.setText(x);
+					tempDeployText.setText(makeRelative(x));
 			} 
 		});
 
@@ -196,16 +200,14 @@ public class DeploySection extends ServerEditorSection {
 	public IStatus[] getSaveStatus() {
 		String error = "";
 		List<Status> status = new ArrayList<Status>();
-		if(!new Path(deployText.getText()).toFile().exists()) {
+		if(!new File(makeGlobal(deployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorDeployDNE, deployText.getText()); 
-//				"The deploy directory \"" + deployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = msg + "\n"; 
 		}
 		
-		if(!new Path(tempDeployText.getText()).toFile().exists()) {
+		if(!new File(makeGlobal(tempDeployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorTempDeployDNE, tempDeployText.getText());
-				//"The temporary deploy directory \"" + tempDeployText.getText() + "\" does not exist.";
 			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n";
 		}
@@ -226,14 +228,14 @@ public class DeploySection extends ServerEditorSection {
 			this.text = deployText;
 			this.newDir = deployText.getText();
 			this.listener = deployListener;
-			this.oldDir = helper.getAttribute(DeployableServer.DEPLOY_DIRECTORY, "");
+			this.oldDir = helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
 		}
 		public void execute() {
-			helper.setAttribute(DeployableServer.DEPLOY_DIRECTORY, newDir);
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
-			helper.setAttribute(DeployableServer.DEPLOY_DIRECTORY, oldDir);
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
 		}
@@ -261,8 +263,27 @@ public class DeploySection extends ServerEditorSection {
 			text.addModifyListener(listener);
 		}
 	}
-
+	
 	public void dispose() {
 		// ignore
+	}
+	
+	private String makeGlobal(String path) {
+		return DeployableServer.makeGlobal(getRuntime(), new Path(path)).toString();
+	}
+	
+	private String makeRelative(String path) {
+		return DeployableServer.makeRelative(getRuntime(), new Path(path)).toString();
+	}
+	
+	private IJBossServerRuntime getRuntime() {
+		IRuntime r = server.getRuntime();
+		IJBossServerRuntime ajbsrt = null;
+		if (r != null) {
+			ajbsrt = (IJBossServerRuntime) r
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+		}
+		return ajbsrt;
 	}
 }
