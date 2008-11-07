@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -148,22 +149,18 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 	
 	protected static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
-		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(getServerHome(jbs)).append(relative)));
+		addCPEntry(list, new Path(getServerHome(jbs)).append(relative));
+	}
+	protected static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, IPath path) {
+		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(path));
 	}
 	
-	@Deprecated
-	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
-		addJREEntry(cp, vmInstall);
-		return convertClasspath(cp);
-	}
-
 	protected static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
 					new Path(JavaRuntime.JRE_CONTAINER)
 						.append(vmInstall.getVMInstallType().getId()).append(vmInstall.getName()),
-//						"org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType")
 						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
 			} catch (CoreException e) {
 				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
@@ -172,6 +169,15 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 			}
 		}
 	}
+	
+	protected static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
+		File f = vmInstall.getInstallLocation();
+		File c1 = new File(f, "lib");
+		File c2 = new File(c1, "tools.jar");
+		if( c2.exists()) 
+			addCPEntry(cp, new Path(c2.getAbsolutePath()));
+	}
+
 	
 	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
@@ -206,7 +212,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 			classpath.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(
 					libPath + File.separator + libs[i].getName())));
 		}
-	} // end method
+	}
 
 	
 	public static String getServerHome(JBossServer jbs) {

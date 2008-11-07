@@ -22,7 +22,6 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -41,7 +40,6 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
-import org.eclipse.jdt.launching.StandardClasspathProvider;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
@@ -83,47 +81,51 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		
 		IRuntime rt = jbs.getServer().getRuntime();
 		String jrePath = null;
+		IJBossServerRuntime jbrt = null;
 		if( rt != null ) {
-			IJBossServerRuntime jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
-			if( jbrt != null ) {
-				IVMInstall install = jbrt.getVM();
-				IPath path = JavaRuntime.newJREContainerPath(install);
-				jrePath = path.toPortableString();
-			}
+			jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
 		}
 		
+		if( jbrt == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+			
+		IVMInstall install = jbrt.getVM();
+		IPath path = JavaRuntime.newJREContainerPath(install);
+		jrePath = path.toPortableString();
+
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, getDefaultVMArgs(jbs));
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jbrt.getDefaultRunVMArgs());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, "org.jboss.ide.eclipse.as.core.launch.classpathProvider");
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, jrePath);
-		wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, getDefaultEnvVars(jbs));
+		wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, jbrt.getDefaultRunEnvVars());
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath(jbs));
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+		
 		wc.setAttribute(DEFAULTS_SET, true);
 	}
 
+	public static ArrayList<String> getClasspath(JBossServer jbs) throws CoreException {
+		IJBossServerRuntime jbrt = findJBossServerRuntime(jbs.getServer());
+		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
+		addCPEntry(classpath, jbs, START_JAR_LOC);
+		addJREEntry(classpath, jbrt.getVM());
+		
+		String version = jbs.getServer().getRuntime().getRuntimeType().getVersion();
+		if( version.equals("4.0")) 
+			addToolsJar(classpath, jbrt.getVM());
+		
+		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
+		return runtimeClassPaths;
+
+	}
+	
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
 			return rt.getDefaultRunArgs() + " -b " + jbs.getServer().getHost();
 		}
-		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
-	}
-	
-	public static String getDefaultVMArgs(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
-		if (rt != null) {
-			return rt.getDefaultRunVMArgs();
-		}
-		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
-	}
-
-	public static HashMap<String, String> getDefaultEnvVars(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
-		if (rt != null) {
-			return rt.getDefaultRunEnvVars();
-		}
-		throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+		return null;
 	}
 
 	protected void preLaunch(ILaunchConfiguration configuration, 
@@ -201,31 +203,5 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
 		wc.setAttribute(SERVER_ID, server.getId());
 		return wc;
-	}
-
-	
-	public static class StartupClasspathProvider extends StandardClasspathProvider {
-
-		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration) throws CoreException {
-			boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
-			if (useDefault) {
-				return computeUnresolvedDefaultClasspath(configuration);
-			}
-			// recover persisted classpath
-			return recoverRuntimePath(configuration, IJavaLaunchConfigurationConstants.ATTR_CLASSPATH);
-		}
-		
-		protected IRuntimeClasspathEntry[] computeUnresolvedDefaultClasspath(ILaunchConfiguration configuration) throws CoreException {
-			String serverId = configuration.getAttribute(SERVER_ID, (String)null);
-			JBossServer jbs = findJBossServer(serverId);
-			IJBossServerRuntime jbrt = findJBossServerRuntime(jbs.getServer());
-			ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-			addCPEntry(classpath, jbs, START_JAR_LOC);
-			addJREEntry(classpath, jbrt.getVM());
-			return (IRuntimeClasspathEntry[]) classpath
-					.toArray(new IRuntimeClasspathEntry[classpath.size()]);
-		}
-		
-	}
-	
+	}	
 }

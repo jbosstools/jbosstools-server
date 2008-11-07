@@ -90,7 +90,8 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		addCPEntry(classpath, jbs, STOP_JAR_LOC);
-		ArrayList runtimeClassPaths = convertClasspath(classpath, jbrt.getVM());
+		addJREEntry(classpath, jbrt.getVM());
+		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
 		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
 		wc.setAttribute(cpKey, runtimeClassPaths);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
