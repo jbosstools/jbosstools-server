@@ -504,13 +504,7 @@
          </facet>
       </default-facets>
    </extension>
-   <extension
-         point="org.eclipse.jdt.launching.classpathProviders">
-      <classpathProvider
-            class="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration$StartupClasspathProvider"
-            id="org.jboss.ide.eclipse.as.core.launch.classpathProvider">
-      </classpathProvider>
-   </extension>
+
    <extension
          point="org.eclipse.wst.xml.core.catalogContributions">
      <catalogContribution>
@@ -558,22 +552,6 @@
                webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd">
          </public>
      </catalogContribution>
-   </extension>
-
-   <extension
-         point="org.jboss.ide.eclipse.as.core.publishers">
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"
-            priority="5">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
-            priority="5">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
-            priority="0">
-      </publisher>
    </extension>
 
    <extension
