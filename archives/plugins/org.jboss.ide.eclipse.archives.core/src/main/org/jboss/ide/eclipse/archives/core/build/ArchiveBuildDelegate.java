@@ -29,11 +29,13 @@ import java.util.Set;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
+import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -67,7 +69,7 @@ public class ArchiveBuildDelegate {
 	 * A full project build has been requested.
 	 * @param project The project containing the archive model
 	 */
-	public void fullProjectBuild(IPath project, IProgressMonitor monitor) {
+	public IStatus fullProjectBuild(IPath project, IProgressMonitor monitor) {
 		EventManager.cleanProjectBuild(project);
 		EventManager.startedBuild(project);
 
@@ -77,6 +79,7 @@ public class ArchiveBuildDelegate {
 					ArchivesCore.bind(ArchivesCoreMessages.ErrorLocatingRootNode, project.toOSString()), null);
 			EventManager.error(null, new IStatus[]{s});
 			monitor.done();
+			return s;
 		} else {
 			IArchiveNode[] nodes = root.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			ArrayList<IStatus> errors = new ArrayList<IStatus>();
@@ -91,7 +94,11 @@ public class ArchiveBuildDelegate {
 
 			EventManager.finishedBuild(project);
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
+			MultiStatus ms = new MultiStatus(ArchivesCorePlugin.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+			for( int i = 0; i < errors.size(); i++ )
+				ms.add(errors.get(i));
 			monitor.done();
+			return ms;
 		}
 	}
 
@@ -99,17 +106,17 @@ public class ArchiveBuildDelegate {
 	 * Builds an archive entirely, overwriting whatever was in the output destination.
 	 * @param pkg The archive to build
 	 */
-	public IStatus[] fullArchiveBuild(IArchive pkg, IProgressMonitor monitor) {
+	public IStatus fullArchiveBuild(IArchive pkg, IProgressMonitor monitor) {
 		return fullArchiveBuild(pkg, monitor, true);
 	}
-	protected IStatus[] fullArchiveBuild(IArchive pkg, IProgressMonitor monitor, boolean log) {
+	protected IStatus fullArchiveBuild(IArchive pkg, IProgressMonitor monitor, boolean log) {
 		if( !pkg.canBuild() ) {
 			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
 					ArchivesCore.bind(ArchivesCoreMessages.CannotBuildBadConfiguration, pkg.getName()), null);
 			if( log )
 				EventManager.error(pkg, new IStatus[]{s});
 			monitor.done();
-			return new IStatus[]{s};
+			return s;
 		}
 
 		EventManager.cleanArchiveBuild(pkg);
@@ -125,7 +132,7 @@ public class ArchiveBuildDelegate {
 				if( log )
 					EventManager.error(pkg, new IStatus[]{s});
 				monitor.done();
-				return new IStatus[]{s};
+				return s;
 			}
 		}
 
@@ -189,8 +196,11 @@ public class ArchiveBuildDelegate {
 		IStatus[] errors2 = errors.toArray(new IStatus[errors.size()]);
 		if( log )
 			EventManager.error(pkg, errors2 );
+		MultiStatus ms = new MultiStatus(ArchivesCorePlugin.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+		for( int i = 0; i < errors.size(); i++ )
+			ms.add(errors.get(i));
 		monitor.done();
-		return errors2;
+		return ms;
 	}
 
 	/**

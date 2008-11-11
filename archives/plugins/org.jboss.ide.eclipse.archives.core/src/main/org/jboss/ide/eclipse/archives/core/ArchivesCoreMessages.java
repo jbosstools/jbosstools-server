@@ -18,6 +18,7 @@ public class ArchivesCoreMessages {
 	public static String RuntimeErrorDuringBuild;
 	public static String ProjectCannotBeBuilt;
 
+	public static String ErrorBuilding;
 	public static String ErrorLocatingRootNode;
 	public static String BuildingProject;
 	public static String BuildingArchive;

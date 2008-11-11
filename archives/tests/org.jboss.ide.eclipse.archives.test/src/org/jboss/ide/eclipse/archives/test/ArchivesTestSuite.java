@@ -16,6 +16,7 @@ import org.jboss.ide.eclipse.archives.test.projects.JBIDE2296Test;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE2311Test;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE2315Test;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE2439Test;
+import org.jboss.ide.eclipse.archives.test.ui.BuildActionTest;
 import org.jboss.ide.eclipse.archives.test.util.TruezipUtilTest;
 
 public class ArchivesTestSuite extends TestSuite {
@@ -38,6 +39,9 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(JBIDE2315Test.class);
         suite.addTestSuite(JBIDE2439Test.class);
         
+        
+        // UI
+        suite.addTestSuite(BuildActionTest.class);
         return suite; 
    }
 

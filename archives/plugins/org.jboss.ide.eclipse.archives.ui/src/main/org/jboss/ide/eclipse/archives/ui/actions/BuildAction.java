@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
+import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 
 /**
  * Fire off a build of the archives or project / resource selected
@@ -33,7 +34,7 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
  *
  */
 public class BuildAction implements IWorkbenchWindowActionDelegate {
-	private IProject selectedProject;
+	private Object selected;
 	public void dispose() {
 	}
 
@@ -41,44 +42,51 @@ public class BuildAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-		if( selectedProject != null )
-			buildSelectedNode(selectedProject);
+		if( selected != null )
+			buildSelectedNode(selected);
 	}
 
-	public void run(Object node) {
-		buildSelectedNode(node);
+	public Job run(Object node) {
+		return buildSelectedNode(node);
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
 		if( !selection.isEmpty() && selection instanceof IStructuredSelection ) {
 			Object o = ((IStructuredSelection)selection).getFirstElement();
+			if(o instanceof WrappedProject )
+				o = ((WrappedProject)o).getElement();
 			if( o instanceof IAdaptable ) {
 				IResource res = (IResource)  ((IAdaptable)o).getAdapter(IResource.class);
 				if( res != null ) {
-					selectedProject = res.getProject();
-					return;
+					selected = res.getProject();
 				}
 			}
+			if( o instanceof IArchiveNode )
+				selected = o;
+			return;
 		}
-		selectedProject = null;
+		selected = null;
 	}
 
-	private void buildSelectedNode(final Object selected) {
-		new Job(ArchivesUIMessages.BuildArchivesNode) {
+	private Job buildSelectedNode(final Object selected) {
+		Job j = new Job(ArchivesUIMessages.BuildArchivesNode) {
 			// TODO actually get the status object
 			protected IStatus run(IProgressMonitor monitor) {
 				if( selected == null ) return Status.OK_STATUS;
-				if (selected instanceof IArchiveNode &&
-						((IArchiveNode)selected).getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
-					new ArchiveBuildDelegate().fullArchiveBuild((IArchive)selected, monitor);
-				} else if( selected != null && selected instanceof IProject ){
-					new ArchiveBuildDelegate().fullProjectBuild(((IProject)selected).getProject().getLocation(), monitor);
-				} else {
-					new ArchiveBuildDelegate().fullArchiveBuild(((IArchiveNode)selected).getRootArchive(), monitor);
+				if( selected instanceof IArchiveNode ) {
+					IArchiveNode archive = (IArchiveNode)selected;
+					if( archive.getNodeType() != IArchiveNode.TYPE_ARCHIVE) 
+						archive = archive.getRootArchive();
+					return new ArchiveBuildDelegate().fullArchiveBuild((IArchive)archive, monitor);
+				} else if( selected instanceof IProject || selected instanceof WrappedProject ) {
+					IProject p = selected instanceof IProject ? (IProject)selected : ((WrappedProject)selected).getElement();
+					return new ArchiveBuildDelegate().fullProjectBuild(p.getLocation(), monitor);
 				}
 				return Status.OK_STATUS;
 			}
-		}.schedule();
+		};
+		j.schedule();
+		return j;
 	}
 
 }
