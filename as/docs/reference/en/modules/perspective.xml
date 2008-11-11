@@ -16,11 +16,11 @@
             Perspective</property>.</para>
 
     <para>The <property>JBoss AS Perspective</property> is similar to the <property>Java
-        Perspective</property>, but it contains a few additional views. Two of the additional views
-        are standard views, specifically the <property>Console View</property> and the
+            Perspective</property>, but it contains a few additional views. Two of the additional
+        views are standard views, specifically the <property>Console View</property> and the
             <property>Properties View</property>. The other two views that are added are the
             <property>Project Archives View</property> and the <property>JBoss Server
-        View</property>.</para>
+            View</property>.</para>
 
     <section id="JBossServerView">
         <?dbhtml filename="JBossServerView.html"?>
@@ -69,10 +69,11 @@
                 <property>Publish to the server</property>
             </emphasis> button on the extreme right will republish any modules where it has
             determined the workspace is out of sync with the server. It will attempt to do an
-            incremental publish if it turns out that the module in question is capable of doing one.</para>
+            incremental publish if it turns out that the module in question is capable of doing
+            one.</para>
 
         <para>Now, let&apos;s get to know with both of the <property>JBoss Server
-            View</property> parts.</para>
+                View</property> parts.</para>
 
         <section role="updated">
             <title>Top Part of the JBoss Server View</title>
@@ -114,7 +115,7 @@
 
                             <entry align="center">
                                 <para>The status which allows you to see if changes are
-                                awaiting</para>
+                                    awaiting</para>
                             </entry>
                         </row>
                         <row>
@@ -133,7 +134,7 @@
 
                             <entry align="center">
                                 <para>The status which allows you to see if changes are
-                                in-sync</para>
+                                    in-sync</para>
                             </entry>
                         </row>
                     </tbody>
@@ -144,7 +145,8 @@
                 edit parts of that server. On the figure you can see that a username/password is
                 available in the UI when configuring the server. If you get an SecurityException
                 when trying to launch the server, it is most likely because your server is protected
-                and hence you need to fill the username/password fields with appropriate values.</para>
+                and hence you need to fill the username/password fields with appropriate
+                values.</para>
 
             <figure>
                 <title>Preferences Page for the Chosen Server</title>
@@ -161,19 +163,43 @@
                 using some custom configuration. For this purposes the <emphasis>
                     <property>Server Ports</property>
                 </emphasis> section in the <property>Server editor</property> is provided where the
-                port settings are configurable.</para>
+                port settings are configurable. Click the <emphasis>
+                    <property>Configure...</property>
+                </emphasis> link to bring up the wizard for adjusting the settings for the
+                Ports.</para>
 
-            <para>The settings relating to <emphasis>
+            <figure>
+                <title>Server Ports Preferences</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_20_a.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>Press <emphasis>
+                    <property>Edit XPath</property>
+                </emphasis> button for the chosen Port to configure its XPath's values.</para>
+
+            <figure>
+                <title>XPath Pattern for a Server Port</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_20_b.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>The settings related to <emphasis>
                     <property>Publishing</property>
                 </emphasis>, <emphasis>
                     <property>Timeouts</property>
                 </emphasis> or <emphasis>
                     <property>Server Polling</property>
-                </emphasis> can also be adjusted here.</para>
+                </emphasis> can be also adjusted in the <property>Server editor</property>.</para>
 
-            <para id="com_line_arg">In the <property>Server editor</property> it&apos;s possible
-                to modify the server&apos;s launch configuration as well. It&apos;s just
-                after clicking <emphasis>
+            <para id="com_line_arg"><property>Server editor</property> makes it also possible to
+                modify the server&apos;s launch configuration. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
                 arguments and other things that are relevant to launching the server.</para>
@@ -329,13 +355,14 @@
         <section>
             <title>Bottom Part of the JBoss Server View</title>
 
-            <para>Here, we dwell on the bottom part of the <property>JBoss Server View</property>.</para>
+            <para>Here, we dwell on the bottom part of the <property>JBoss Server
+                View</property>.</para>
             <para>First, we should say that the bottom part is meant to provide additional
                 functionality relevant to the server selected in the top part of the view. If a
                 standard server element is selected from above, some of the extensions may still
                 provide the additional information. Others may not. So, let&apos;s look at the
                 currently available extensions to the bottom part of the <property>JBoss Server
-                View</property>.</para>
+                    View</property>.</para>
 
             <figure>
                 <title>View Extensions</title>
@@ -574,7 +601,8 @@
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
             Tools comes with our own Archives tool with a bit easier and less-verbose XML and a
             handy user interface. The Project Archives plugin consists primarily of a view, that is
-                <property>Project Archives View</property>, to set up each packaging configuration.</para>
+                <property>Project Archives View</property>, to set up each packaging
+            configuration.</para>
         <para>So far, let&apos;s look through all functionality that the <property>Project
                 Archives View</property> provides.</para>
 
@@ -633,9 +661,9 @@
             <note>
                 <title>Note:</title>
                 <para>If you see only JAR from the list of available archive types, you should
-                    verify whether AS Tools plugins/features are in place. EAR, EJB JAR and WAR options are
-                    contributed by the AS Tools independently from webtools and the virtual
-                    project model. Thus, without them only JAR will show up.</para>
+                    verify whether AS Tools plugins/features are in place. EAR, EJB JAR and WAR
+                    options are contributed by the AS Tools independently from webtools and the
+                    virtual project model. Thus, without them only JAR will show up.</para>
             </note>
 
             <para><property>JAR</property> is the standard archive type, and does very little
@@ -773,7 +801,7 @@
 
                             <entry>
                                 <para>The action means the ability to publish to a declared
-                                server</para>
+                                    server</para>
                             </entry>
                         </row>
 
@@ -817,7 +845,7 @@
                 to find more on how to build your applications with help of Ant.</para>
 
             <para>At this point, you are guessed to be familiar with <property>JBoss AS
-                Perspective</property> and your next step now is to explore how to work with
+                    Perspective</property> and your next step now is to explore how to work with
                 different kinds of projects.</para>
         </section>
 
