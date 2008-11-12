@@ -35,7 +35,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
-import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -94,7 +93,7 @@ public class ArchiveBuildDelegate {
 
 			EventManager.finishedBuild(project);
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
-			MultiStatus ms = new MultiStatus(ArchivesCorePlugin.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+			MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
 			for( int i = 0; i < errors.size(); i++ )
 				ms.add(errors.get(i));
 			monitor.done();
@@ -196,7 +195,7 @@ public class ArchiveBuildDelegate {
 		IStatus[] errors2 = errors.toArray(new IStatus[errors.size()]);
 		if( log )
 			EventManager.error(pkg, errors2 );
-		MultiStatus ms = new MultiStatus(ArchivesCorePlugin.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+		MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
 		for( int i = 0; i < errors.size(); i++ )
 			ms.add(errors.get(i));
 		monitor.done();
