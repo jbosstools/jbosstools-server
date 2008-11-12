@@ -77,16 +77,26 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
     }
 
 	public void fillContextMenu(IMenuManager menu) {
-		if( selected.length == 1 && selected[0] instanceof ServerWrapper ) {
-			menu.add(createFilter);
-		}else if( selected.length == 1 && selected[0] instanceof Fileset ) {
-			menu.add(deleteFilter);
-			menu.add(editFilter);
-		} else if( allPathWrappers(selected) ) {
-			editFileAction.setEnabled(canEdit(selected));
-			deleteFileAction.setEnabled(canDelete(selected));
-			menu.add(editFileAction);
-			menu.add(deleteFileAction);
+		ICommonViewerSite site = actionSite.getViewSite();
+		IStructuredSelection selection = null;
+		if (site instanceof ICommonViewerWorkbenchSite) {
+			ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite) site;
+			selection = (IStructuredSelection) wsSite.getSelectionProvider()
+					.getSelection();
+			selected = selection.toArray();
+			if( selected == null )
+				return;
+			if( selected.length == 1 && selected[0] instanceof ServerWrapper ) {
+				menu.add(createFilter);
+			}else if( selected.length == 1 && selected[0] instanceof Fileset ) {
+				menu.add(deleteFilter);
+				menu.add(editFilter);
+			} else if( allPathWrappers(selected) ) {
+				editFileAction.setEnabled(canEdit(selected));
+				deleteFileAction.setEnabled(canDelete(selected));
+				menu.add(editFileAction);
+				menu.add(deleteFileAction);
+			}
 		}
 	}
 	
