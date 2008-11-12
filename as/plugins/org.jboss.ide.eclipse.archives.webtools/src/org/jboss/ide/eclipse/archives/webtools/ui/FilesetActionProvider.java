@@ -77,7 +77,7 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
     }
 
 	public void fillContextMenu(IMenuManager menu) {
-		if( selected[0] instanceof ServerWrapper ) {
+		if( selected.length == 1 && selected[0] instanceof ServerWrapper ) {
 			menu.add(createFilter);
 		}else if( selected.length == 1 && selected[0] instanceof Fileset ) {
 			menu.add(deleteFilter);
