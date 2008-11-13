@@ -69,8 +69,13 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			forceDefaultsSet(workingCopy, server);
 		}
 		
-		// Cleanup legacy keys
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
+		// Upgrade old launch configs
+		JBossServer jbs = findJBossServer(server.getId());
+		if( workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null) != null ) {
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath(jbs));
+			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+		}
 	}
 
 	public static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
