@@ -327,6 +327,9 @@
                 <instanceof
                       value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
                 </instanceof>
+                <instanceof
+                      value="org.eclipse.core.resources.IWorkspaceRoot">
+                </instanceof>
                <adapt
                      type="java.util.Collection">
                   <count
