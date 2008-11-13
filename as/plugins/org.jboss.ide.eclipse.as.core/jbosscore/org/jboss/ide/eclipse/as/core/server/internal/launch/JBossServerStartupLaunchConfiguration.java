@@ -68,6 +68,9 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		if(!workingCopy.getAttributes().containsKey(DEFAULTS_SET)) {
 			forceDefaultsSet(workingCopy, server);
 		}
+		
+		// Cleanup legacy keys
+		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
 	}
 
 	public static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
