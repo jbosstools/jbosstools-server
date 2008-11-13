@@ -157,10 +157,10 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	protected void variablesPressed() {
 		StringVariableSelectionDialog d = new StringVariableSelectionDialog(Display.getDefault().getActiveShell());
 		if(d.open() == Window.OK) {
-			Object o = d.getFirstResult();
-			if( o != null && o instanceof IStringVariable) {
+			String expr = d.getVariableExpression();
+			if( expr != null ) {
 				destinationNode = null;
-				path = path + "${" + ((IStringVariable)o).getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+				path = path + expr;
 				validateAndUpdateWidgets();;
 			}
 		}
