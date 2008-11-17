@@ -34,7 +34,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
  *
  */
 public interface IServerStatePoller {
-	
+	public static final int POLLING_CODE = 1 << 24;
+
 	public static final boolean SERVER_UP = true;
 	public static final boolean SERVER_DOWN = false;
 	

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
@@ -32,6 +33,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -46,15 +48,13 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DeletedEvent;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 
 /**
@@ -65,12 +65,9 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
  */
 public class JstPublisher implements IJBossServerPublisher {
 
-	public static final int BUILD_FAILED_CODE = 100;
-	public static final int PACKAGE_UNDETERMINED_CODE = 101;
 
 	protected IModuleResourceDelta[] delta;
 	protected IDeployableServer server;
-	protected EventLogTreeItem eventRoot;
 	protected int publishState = IServer.PUBLISH_STATE_NONE;
 
 
@@ -87,11 +84,9 @@ public class JstPublisher implements IJBossServerPublisher {
 	}
 	
 	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, 
-			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException {
+			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
 		IStatus status = null;
 		this.server = ServerConverter.getDeployableServer(server);
-		this.eventRoot = log;
 		this.delta = delta;
 		
 		boolean deleted = false;
@@ -118,27 +113,29 @@ public class JstPublisher implements IJBossServerPublisher {
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IPath deployPath = getDeployPath(moduleTree);
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
 		IModuleResource[] members = md.members();
  
+		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		// if the module we're publishing is a project, not a binary, clean it's folder
 		if( !(new Path(module.getName()).segmentCount() > 1 ))
-			localSafeDelete(deployPath, eventRoot);
+			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
-		IStatus[] results;
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			results = new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor);
+			list.addAll(Arrays.asList(new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor)));
 		else if( isBinaryObject(moduleTree))
-			results = copyBinaryModule(moduleTree);
+			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
 		else
-			results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);
+			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
 		
-		int length = results == null ? 0 : results.length;
-		for( int i = 0; i < length; i++ ) {
-			new PublisherEventLogger.PublishUtilStatusWrapper(eventRoot, results[i]);
+		if( list.size() > 0 ) {
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Full Publish Failed for module " + module.getName(), null);
+			for( int i = 0; i < list.size(); i++ )
+				ms.add(list.get(i));
+			return ms;
 		}
+
 		
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {
@@ -150,11 +147,12 @@ public class JstPublisher implements IJBossServerPublisher {
 		};
 		FileUtil.touch(filter, deployPath.toFile(), true);
 		publishState = IServer.PUBLISH_STATE_NONE;
-		return null;
+		
+		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, countMembers(module) + " files modified in module " + module.getName(), null);
+		return ret;
 	}
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree);
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
@@ -165,21 +163,26 @@ public class JstPublisher implements IJBossServerPublisher {
 			else
 				results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);
 		}
-		int length = results == null ? 0 : results.length;
-		for( int i = 0; i < length; i++ ) {
-			new PublisherEventLogger.PublishUtilStatusWrapper(eventRoot, results[i]);
+		if( results != null && results.length > 0 ) {
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Incremental Publish Failed for module " + module.getName(), null);
+			for( int i = 0; i < results.length; i++ )
+				ms.add(results[i]);
+			return ms;
 		}
-		
-		return null;
+		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, countChanges(delta) + " files modified in module " + module.getName(), null);
+		return ret;
 	}
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countMembers(module[module.length-1]));
-		boolean error = localSafeDelete(getDeployPath(module), eventRoot);
-		if( error ) {
+		IStatus[] errors = localSafeDelete(getDeployPath(module));
+		if( errors.length > 0 ) {
+			IModule mod = module[module.length-1];
 			publishState = IServer.PUBLISH_STATE_FULL;
-			throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server. (" + getModulePath(module) + ")", new Exception("Some files were not removed from the server")));
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Unable to delete module " + mod.getName(), new Exception("Some files were not removed from the server"));
+			for( int i = 0; i < errors.length; i++ )
+				ms.addAll(errors[i]);
+			throw new CoreException(ms);
 		}
 		return null;
 	}
@@ -220,28 +223,6 @@ public class JstPublisher implements IJBossServerPublisher {
 		return false;
 	}
 	
-	
-	protected class FileUtilListener implements IFileUtilListener {
-		protected ArrayList<IStatus> errors = new ArrayList<IStatus>();
-		public void fileCoppied(File source, File dest, boolean result,
-				Exception e) {
-			if(!result)
-				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error copying file " + source.toString() + " to " + dest.toString(), e));
-		}
-		public void fileDeleted(File file, boolean result, Exception e) {
-			if(!result)
-				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting file " + file.toString(), e));
-		}
-
-		public void folderDeleted(File file, boolean result, Exception e) {
-			if(!result)
-				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting folder " + file.toString(), e));
-		} 
-		
-		public IStatus[] getStatuses() {
-			return (IStatus[]) errors.toArray(new IStatus[errors.size()]);
-		}
-	}
 	protected IStatus[] copyBinaryModule(IModule[] moduleTree) {
 		try {
 			IPath deployPath = getDeployPath(moduleTree);
@@ -274,30 +255,25 @@ public class JstPublisher implements IJBossServerPublisher {
 	 * @param event
 	 * @return  returns whether an error was found
 	 */
-	protected boolean localSafeDelete(IPath deployPath, final EventLogTreeItem event) {
+	protected IStatus[] localSafeDelete(IPath deployPath) {
         String serverDeployFolder = server.getDeployFolder();
         Assert.isTrue(!deployPath.toFile().equals(new Path(serverDeployFolder).toFile()), "An attempt to delete your entire deploy folder has been prevented. This should never happen");
-
-		final Boolean[] errorFound = new Boolean[] { new Boolean(false)};
+        final ArrayList<IStatus> status = new ArrayList<IStatus>();
 		IFileUtilListener listener = new IFileUtilListener() {
 			public void fileCoppied(File source, File dest, boolean result,Exception e) {}
 			public void fileDeleted(File file, boolean result, Exception e) {
 				if( result == false || e != null ) {
-					errorFound[0] = new Boolean(true);
-					new DeletedEvent(event, file, result, e);
-					EventLogModel.markChanged(event);
+					status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Attempt to delete " + file.getAbsolutePath() + " failed",e));
 				}
 			}
 			public void folderDeleted(File file, boolean result, Exception e) {
 				if( result == false || e != null ) {
-					errorFound[0] = new Boolean(true);
-					new DeletedEvent(event, file, result, e);
-					EventLogModel.markChanged(event);
+					status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Attempt to delete " + file.getAbsolutePath() + " failed",e));
 				}
 			} 
 		};
 		FileUtil.safeDelete(deployPath.toFile(), listener);
-		return errorFound[0].booleanValue();
+		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
 	protected boolean deployPackaged(IModule[] moduleTree) {
 		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.utility")) return true;
@@ -325,7 +301,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,
 					"unable to assemble module", e); //$NON-NLS-1$
-			throw new CoreException(status);
+			return new IStatus[]{status};
 		}
 		finally{
 			try{
@@ -334,10 +310,10 @@ public class JstPublisher implements IJBossServerPublisher {
 			catch(IOException e){
 				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,
 						"unable to assemble module", e); //$NON-NLS-1$
-				throw new CoreException(status);
+				return new IStatus[]{status};
 			}
 		}
-		return null;
+		return new IStatus[]{};
 	}
 
 	

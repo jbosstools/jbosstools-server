@@ -36,8 +36,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -52,6 +51,10 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
 public class JBossServerBehavior extends DeployableServerBehavior {
 	private static final String STOP_FAILED_MESSAGE = 
 		"Command to stop server failed. The next attempt will forcefully terminate the process.";
+	private static final String FORCE_TERMINATED = "The server was shutdown forcefully. All processes were terminated.";
+	private static final String TERMINATED = "Server processes have been terminated.";
+	private static final String FORCE_TERMINATE_FAILED = "Killing the server process has failed. The process may still be running.";
+	
 	private PollThread pollThread = null;
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
@@ -80,11 +83,6 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			if( !success ) {
 				if( process != null && !process.isTerminated() ) { 
 					setServerStarted();
-					
-					// report it to error log
-					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"", null);
-					JBossServerCorePlugin.getDefault().getLog().log(s);
 					pollThread.cancel(STOP_FAILED_MESSAGE);
 					nextStopRequiresForce = true;
 				}
@@ -93,30 +91,37 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	public void forceStop() {
-		forceStop(true);
-	}
-	
-	public void forceStop(boolean addEvent) {
 		// just terminate the process.
-		if( process != null ) 
+		if( process != null && !process.isTerminated()) {
 			try {
 				process.terminate();
+				addForceStopEvent();
 			} catch( DebugException e ) {
-				e.printStackTrace();
+				addForceStopFailedEvent(e);
 			}
+		}
 		process = null;
 		setServerStopped();
-		if( addEvent ) {
-			EventLogTreeItem tpe = new ForceShutdownEvent();
-			EventLogModel.markChanged(tpe.getEventRoot());
-		}
 	}
-
-	public static final String FORCE_SHUTDOWN_EVENT_KEY = "org.jboss.ide.eclipse.as.core.server.JBossServerBehavior.forceShutdown";
-	public class ForceShutdownEvent extends EventLogTreeItem {
-		public ForceShutdownEvent() {
-			super(EventLogModel.getModel(getServer()).getRoot(), PollThread.SERVER_STATE_MAJOR_TYPE, FORCE_SHUTDOWN_EVENT_KEY);
-		}
+	
+	protected void addForceStopFailedEvent(DebugException e) {
+		IStatus status = new Status(IStatus.ERROR,
+				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				FORCE_TERMINATE_FAILED, e);
+		ServerLogger.getDefault().log(getServer(), status);
+	}
+	protected void addForceStopEvent() {
+		IStatus status = new Status(IStatus.ERROR,
+				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				FORCE_TERMINATED, null);
+		ServerLogger.getDefault().log(getServer(), status);
+	}
+	
+	protected void addProcessTerminatedEvent() {
+		IStatus status = new Status(IStatus.INFO,
+				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				TERMINATED, null);
+		ServerLogger.getDefault().log(getServer(), status);
 	}
 	
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
@@ -126,9 +131,10 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	protected transient IDebugEventSetListener processListener;
 	public void setProcess(final IProcess newProcess) {
-		if (process != null)
+		if (process != null) { 
+			System.out.println(process.isTerminated());
 			return;
-
+		}
 		process = newProcess;
 		if (processListener != null)
 			DebugPlugin.getDefault().removeDebugEventListener(processListener);
@@ -142,7 +148,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 					for (int i = 0; i < size; i++) {
 						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
 							DebugPlugin.getDefault().removeDebugEventListener(this);
-							forceStop(false);
+							forceStop();
+							addProcessTerminatedEvent();
 						}
 					}
 				}

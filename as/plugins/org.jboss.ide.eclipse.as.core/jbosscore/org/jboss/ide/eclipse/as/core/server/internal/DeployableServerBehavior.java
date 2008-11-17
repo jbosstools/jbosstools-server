@@ -23,6 +23,8 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -30,10 +32,8 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublishEvent;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 
@@ -50,9 +50,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
 	
-	protected PublishEvent publishRootEvent;
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
-		publishRootEvent = new PublishEvent(null, PublisherEventLogger.ROOT_EVENT);
 	}
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
@@ -64,12 +62,6 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
         }
         if(allpublished)
             setServerPublishState(IServer.PUBLISH_STATE_NONE);
-        
-        if( publishRootEvent.getChildren().length != 0 ) {
-    		EventLogTreeItem root = EventLogModel.getModel(getServer()).getRoot();
-    		root.addChild(publishRootEvent);
-        }
-		publishRootEvent = null;
 	}
 
 	
@@ -90,28 +82,18 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		IJBossServerPublisher publisher;
 		
 		if( module.length > 0 && publishType != IJBossServerPublisher.NO_PUBLISH) {
-			Integer i,j;
-			i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_MODULE_COUNT);
-			publishRootEvent.setProperty(PublisherEventLogger.CHANGED_MODULE_COUNT, new Integer(i == null ? 1 : i.intValue()+1));
-			PublishEvent modulePublishEvent = PublisherEventLogger.createModuleRootEvent(publishRootEvent, module, kind, deltaKind, modulePublishState);
-			
 			publisher = ExtensionManager.getDefault().getPublisher(getServer(), module);
 			if( publisher != null ) {
 				try {
-					publisher.publishModule(getServer(), module, publishType,  
-							getPublishedResourceDelta(module), 
-							modulePublishEvent, monitor);
+					IStatus result = publisher.publishModule(getServer(), module, publishType,  
+							getPublishedResourceDelta(module), monitor);
+					if( result != null )
+				        ServerLogger.getDefault().log(getServer(), result);
 				} catch( CoreException ce ) {
 					throw ce;
 				} finally {
 					setModulePublishState(module, publisher.getPublishState());
 				}
-				// add file changed count to top level element
-				i = (Integer)publishRootEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
-				j = (Integer)modulePublishEvent.getProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT);
-				j = j == null ? new Integer(0) : j;
-				int count = (i == null ? 0 : i.intValue()) + j.intValue();
-				publishRootEvent.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, count);
 			}
 		}
 	}

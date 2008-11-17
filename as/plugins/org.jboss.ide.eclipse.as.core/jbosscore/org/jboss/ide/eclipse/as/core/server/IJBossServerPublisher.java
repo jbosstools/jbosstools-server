@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 
 /**
  * 
@@ -39,14 +38,15 @@ public interface IJBossServerPublisher {
 	public static final int INCREMENTAL_PUBLISH = 1;
 	public static final int FULL_PUBLISH = 2;
 	public static final int REMOVE_PUBLISH = 3;
+	public static final int POLLING_CODE = 1 << 24;
+	
 
 	// pre-publish
 	public boolean accepts(IServer server, IModule[] module);
 	
 	
 	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, 
-			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException;
+			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException;
 	
 	// post publish
 	public int getPublishState();

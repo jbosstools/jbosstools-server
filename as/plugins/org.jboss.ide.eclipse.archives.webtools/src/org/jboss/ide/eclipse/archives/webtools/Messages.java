@@ -8,6 +8,7 @@ public class Messages extends NLS {
 	public static String ExceptionUnexpectedException;
 	public static String ExceptionCannotDeployFile;
 	public static String ErrorDuringPublish;
+	public static String PublishSuccessful;
 	public static String ArchivePublishSettings;
 	public static String SelectServerWizard;
 	public static String SelectServerWizardDescription;

@@ -27,9 +27,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -43,13 +45,11 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.PublisherFileUtilListener;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 
 /**
  *
@@ -59,8 +59,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	protected IDeployableServer server;
 	protected IModuleResourceDelta[] delta;
-	protected EventLogTreeItem eventRoot;
-
+	protected FileUtilListener listener = new FileUtilListener();
 	public PackagesPublisher() {
 	}
 
@@ -76,14 +75,13 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 	public IStatus publishModule(IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
-			EventLogTreeItem log, IProgressMonitor monitor)
+			IProgressMonitor monitor)
 			throws CoreException {
 		this.server = ServerConverter.getDeployableServer(server);
-		eventRoot = log;
 		this.delta = delta;
+		IModule module2 = module[0];
 
 		try {
-			IModule module2 = module[0];
 	    	// if it's being removed
 	    	if( publishType == REMOVE_PUBLISH ) {
 	    		removeModule(module2, monitor);
@@ -93,10 +91,23 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	    		publishModule(module2, true, monitor);
 	    	}
 		}catch(Exception e) {
-			IStatus status = new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, Messages.ErrorDuringPublish, e);
-			IntegrationPlugin.getDefault().getLog().log(status);
+			IStatus status = new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, 
+					NLS.bind(Messages.ErrorDuringPublish, module2.getName()), e);
+			return status;
 		}
-		return null;
+		
+		if( listener.getStatuses().length > 0 ) {
+			MultiStatus ms = new MultiStatus(IntegrationPlugin.PLUGIN_ID, IStatus.ERROR, 
+					NLS.bind(Messages.ErrorDuringPublish, module2.getName()), null);
+			for( int i = 0; i < listener.getStatuses().length; i++ ) {
+				ms.add(listener.getStatuses()[i]);
+			}
+			return ms;
+		}
+		
+		IStatus ret = new Status(IStatus.OK, IntegrationPlugin.PLUGIN_ID, 
+				NLS.bind(Messages.PublishSuccessful, module2.getName()));
+		return ret;
 	}
 
 	protected void removeModule(IModule module, IProgressMonitor monitor) {
@@ -106,7 +117,6 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			IPath sourcePath = pack.getArchiveFilePath();
 			IPath destPath = new Path(server.getDeployFolder()).append(sourcePath.lastSegment());
 			// remove the entire file or folder
-			PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
 			FileUtil.safeDelete(destPath.toFile(), listener);
 		}
 	}
@@ -124,10 +134,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			return;
 		}
 
-		PublisherFileUtilListener listener = new PublisherFileUtilListener(eventRoot);
-		eventRoot.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, countChanges(delta));
 		if( incremental ) {
-			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta, listener);
+			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta);
 		} else {
 			// full publish, copy whole folder or file
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
@@ -135,10 +143,10 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 
 	protected void publishFromDelta(IModule module, IPath destPathRoot, IPath sourcePrefix,
-								IModuleResourceDelta[] delta, PublisherFileUtilListener listener) {
+								IModuleResourceDelta[] delta) {
 		ArrayList<IPath> changedFiles = new ArrayList<IPath>();
 		for( int i = 0; i < delta.length; i++ ) {
-			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles, listener);
+			publishFromDeltaHandle(delta[i], destPathRoot, sourcePrefix, changedFiles);
 		}
 	}
 
@@ -183,7 +191,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 
 	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot,
-			IPath sourcePrefix, ArrayList<IPath> changedFiles, PublisherFileUtilListener listener) {
+			IPath sourcePrefix, ArrayList<IPath> changedFiles) {
 		switch( delta.getKind()) {
 		case IModuleResourceDelta.REMOVED:
 			// removed might not be IExtendedModuleResource
@@ -244,7 +252,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		IModuleResourceDelta[] children = delta.getAffectedChildren();
 		if( children != null ) {
 			for( int i = 0; i < children.length; i++ ) {
-				publishFromDeltaHandle(children[i], destRoot, sourcePrefix, changedFiles, listener);
+				publishFromDeltaHandle(children[i], destRoot, sourcePrefix, changedFiles);
 			}
 		}
 	}
@@ -253,5 +261,4 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 		return delegate == null ? null : delegate.getPackage();
 	}
-
 }

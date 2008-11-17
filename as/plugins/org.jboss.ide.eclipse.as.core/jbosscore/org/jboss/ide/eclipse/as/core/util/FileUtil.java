@@ -25,7 +25,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 public class FileUtil {
 
@@ -142,4 +147,27 @@ public class FileUtil {
 			}
 		}
 	}
+	
+	public static class FileUtilListener implements IFileUtilListener {
+		protected ArrayList<IStatus> errors = new ArrayList<IStatus>();
+		public void fileCoppied(File source, File dest, boolean result,
+				Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error copying file " + source.toString() + " to " + dest.toString(), e));
+		}
+		public void fileDeleted(File file, boolean result, Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting file " + file.toString(), e));
+		}
+
+		public void folderDeleted(File file, boolean result, Exception e) {
+			if(!result)
+				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error deleting folder " + file.toString(), e));
+		} 
+		
+		public IStatus[] getStatuses() {
+			return (IStatus[]) errors.toArray(new IStatus[errors.size()]);
+		}
+	}
+	
 }

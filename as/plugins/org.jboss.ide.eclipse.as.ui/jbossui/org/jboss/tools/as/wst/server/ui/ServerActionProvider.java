@@ -215,7 +215,7 @@ public class ServerActionProvider extends CommonActionProvider {
 				text += "\t" + activeBindings[0].format();
 			}
 			
-			MenuManager showInMenu = new MenuManager(text);
+			MenuManager showInMenu = new MenuManager(text, "org.eclipse.ui.navigate.showInQuickMenu");
 			showInMenu.add(showInConsoleAction);
 			showInMenu.add(showInDebugAction);
 			//IActionBars actionBars = getViewSite().getActionBars();

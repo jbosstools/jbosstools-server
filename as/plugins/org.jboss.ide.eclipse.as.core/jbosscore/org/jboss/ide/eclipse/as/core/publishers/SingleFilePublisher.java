@@ -14,11 +14,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel;
-import org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel.EventLogTreeItem;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.CoppiedEvent;
-import org.jboss.ide.eclipse.as.core.publishers.PublisherEventLogger.DeletedEvent;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -28,7 +24,6 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 public class SingleFilePublisher implements IJBossServerPublisher {
 
 	private IDeployableServer server;
-	private EventLogTreeItem root;
 	private int publishState = IServer.PUBLISH_STATE_NONE;
 	public SingleFilePublisher() {
 	}
@@ -46,11 +41,9 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 	}
 
 	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, 
-			EventLogTreeItem log, IProgressMonitor monitor) throws CoreException {
+			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
 
 		this.server = ServerConverter.getDeployableServer(server);
-		this.root = log;
 
 		IModule module2 = module[0];
 		
@@ -63,7 +56,6 @@ public class SingleFilePublisher implements IJBossServerPublisher {
         } else if( publishType == INCREMENTAL_PUBLISH ) {
         	status = publish(this.server, module2, false, monitor);
         }
-		root.setProperty(PublisherEventLogger.CHANGED_RESOURCE_COUNT, new Integer(1));
 		return status;
 
 	}
@@ -73,22 +65,28 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
 			IPath destFolder = new Path(server.getDeployFolder());
+			IPath tempDestFolder = new Path(server.getTempDeployFolder());
+			File tempDestFile = tempDestFolder.append(sourcePath.lastSegment()).toFile();
 			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
-			FileUtilListener l = new FileUtilListener(root);
-			FileUtil.fileSafeCopy(sourcePath.toFile(), destFile, l);
+			FileUtilListener l = new FileUtilListener();
+			FileUtil.fileSafeCopy(sourcePath.toFile(), tempDestFile, l);
+			boolean success = tempDestFile.renameTo(destFile);
 			if( updateTimestamp )
 				destFile.setLastModified(new Date().getTime());
-			if( l.errorFound ) {
-				publishState = IServer.PUBLISH_STATE_FULL;				
+			if( l.errorFound || !success ) {
+				publishState = IServer.PUBLISH_STATE_FULL;
+				Exception e = l.e != null ? l.e : new Exception("Move from " + tempDestFile + " to " + destFile + " failed.");
+				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published.", e);
 			}
 		} else {
 			// deleted module. o noes. Ignore it. We can't re-publish it, so just ignore it.
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
-			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + module.getName() + ")");			
-			throw new CoreException(status);			
+			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + module.getName() + ")");
+			return status;
 		}
 		
-		return null;
+		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, "Module " + module.getName() + " coppied.");
+		return status;
 	}
 
 	protected IStatus unpublish(IDeployableServer server, IModule module, IProgressMonitor monitor) throws CoreException {
@@ -97,42 +95,37 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
 			IPath destFolder = new Path(server.getDeployFolder());
-			FileUtilListener l = new FileUtilListener(root);
-			FileUtil.safeDelete(destFolder.append(sourcePath.lastSegment()).toFile(), l);
+			FileUtilListener l = new FileUtilListener();
+			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
+			FileUtil.safeDelete(destFile, l);
 			if( l.errorFound ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
-				throw new CoreException(new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module from server.", new Exception("Some files were not removed from the server")));
+				return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module " + module.getName() + " from server.", l.e);
 			}
 		}
-		
-		return null;
+		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, "Module " + module.getName() + " removed.");
+		return status;
 	}
 
 	public static class FileUtilListener implements IFileUtilListener {
-		protected EventLogTreeItem root;
 		protected boolean errorFound = false;
-		public FileUtilListener(EventLogTreeItem root) { 
-			this.root = root;
-		}
+		protected Exception e;
 		public void fileCoppied(File source, File dest, boolean result,Exception e) {
 			if( result == false || e != null ) {
 				errorFound = true;
-				new CoppiedEvent(root, source, dest, result, e);
-				EventLogModel.markChanged(root);
+				this.e = e;
 			}
 		}
 		public void fileDeleted(File file, boolean result, Exception e) {
 			if( result == false || e != null ) {
 				errorFound = true;
-				new DeletedEvent(root, file, result, e);
-				EventLogModel.markChanged(root);
+				this.e = e;
 			}
 		}
 		public void folderDeleted(File file, boolean result, Exception e) {
 			if( result == false || e != null ) {
 				errorFound = true;
-				new DeletedEvent(root, file, result, e);
-				EventLogModel.markChanged(root);
+				this.e = e;
 			}
 		} 
 	}

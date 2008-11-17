@@ -9,7 +9,6 @@ import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 
 public class ModuleUtil {
 	public static ArrayList<IModule[]> getShallowChildren(IServer server, IModule[] root) {

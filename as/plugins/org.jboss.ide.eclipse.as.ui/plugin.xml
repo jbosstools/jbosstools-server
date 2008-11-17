@@ -268,6 +268,14 @@
          category="org.eclipse.wst.server.ui"
          class="org.jboss.tools.as.wst.server.ui.ServersView"
          icon="icons/jboss.gif"/>
+      <view
+            category="org.eclipse.wst.server.ui"
+            class="org.jboss.ide.eclipse.as.ui.views.ServerLogView"
+            icon="icons/console.gif"
+            id="org.jboss.ide.eclipse.as.ui.view.serverLogView"
+            name="Server Log"
+            restorable="true">
+      </view>
    </extension>
    
    <extension point="org.eclipse.ui.decorators">
@@ -360,34 +368,6 @@
 	
 	<extension
       point="org.eclipse.ui.navigator.navigatorContent">
-	   <navigatorContent
-	         id="org.jboss.ide.eclipse.as.ui.extensions.eventLog"
-	         activeByDefault="true"
-	         icon="icons/info_obj.gif"
-	         contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogContentProvider"
-	         labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogLabelProvider"
-	         name="JBoss Server Event Log"
-	         priority="normal">
-	      <triggerPoints>
-	         <instanceof
-	               value="org.eclipse.wst.server.core.IServer">
-	         </instanceof>
-	      </triggerPoints>
-	      <possibleChildren>
-	         <or>
-	            <instanceof
-	                  value="org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel$EventLogTreeItem">
-	            </instanceof>
-             <instanceof
-                   value="org.jboss.ide.eclipse.as.core.extensions.events.EventLogModel$ServerEventModel">
-             </instanceof>
-	         </or></possibleChildren>
-	      <actionProvider
-	            class="org.jboss.ide.eclipse.as.ui.views.server.extensions.EventLogActionProvider"
-	            id="org.jboss.ide.eclipse.as.ui.extensions.eventLog.actions"
-	            priority="highest">
-	      </actionProvider>
-	   </navigatorContent>
     <navigatorContent
           activeByDefault="true"
           contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider"
@@ -437,6 +417,15 @@
           </instanceof>
        </enablement>
     </actionProvider>
+    <actionProvider
+          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.ServerLogActionProvider"
+          id="org.jboss.ide.eclipse.as.ui.extensions.serverLog">
+       <enablement>
+          <instanceof
+                value="org.eclipse.wst.server.core.IServer">
+          </instanceof>
+       </enablement>
+    </actionProvider>
 	</extension>
 
 
@@ -446,22 +435,19 @@
 	   <viewerContentBinding
 	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
 	      <includes>
-	         <contentExtension
-	               isRoot="false"
-	               pattern="org.jboss.ide.eclipse.as.ui.extensions.eventLog">
-	         </contentExtension>
-          <contentExtension
+             <contentExtension
                 isRoot="false"
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.xml">
-          </contentExtension>
+             </contentExtension>
 	      </includes>
 	   </viewerContentBinding>
     <viewerActionBinding
           viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
        <includes>
           <actionExtension
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.modules">
-          </actionExtension>
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.modules"/>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog"/>
        </includes>
     </viewerActionBinding>
 	</extension>
