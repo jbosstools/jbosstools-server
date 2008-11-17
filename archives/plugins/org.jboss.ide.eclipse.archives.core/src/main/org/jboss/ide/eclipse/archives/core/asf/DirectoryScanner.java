@@ -892,7 +892,7 @@ public class DirectoryScanner
                     continue;
                 }
                 String originalpattern = (String) entry.getValue();
-                File myfile = new File(basedir, currentelement);
+                File myfile = getChild(basedir, currentelement);
 
                 if (myfile.exists()) {
                     // may be on a case insensitive file system.  We want
@@ -1032,7 +1032,7 @@ public class DirectoryScanner
     private void processSlowScan(String[] arr) {
         for (int i = 0; i < arr.length; i++) {
             if (!couldHoldIncluded(arr[i])) {
-                scandir(new File(basedir, arr[i]),
+                scandir(getChild(basedir, arr[i]),
                         arr[i] + File.separator, false);
             }
         }
@@ -1721,5 +1721,10 @@ public class DirectoryScanner
         return set.size() == 0 ? patterns
             : al.toArray(new String[al.size()]);
     }
+    
+    protected File getChild(File file, String element) {
+    	return new File(file, element);
+    }
+
 
 }
