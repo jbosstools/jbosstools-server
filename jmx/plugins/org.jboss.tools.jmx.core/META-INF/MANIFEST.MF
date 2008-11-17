@@ -13,7 +13,6 @@ Export-Package: org.jboss.tools.jmx.core,
    org.jboss.tools.jmx.ui",
  org.jboss.tools.jmx.core.tree
 Bundle-Localization: plugin
-Bundle-Vendor: %BundleProvider
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
