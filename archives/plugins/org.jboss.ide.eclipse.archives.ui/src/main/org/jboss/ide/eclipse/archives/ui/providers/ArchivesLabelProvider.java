@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.providers;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -124,7 +125,7 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 	private String getPackageText (IArchive pkg) {
 		String text = pkg.getName();
 		if (PrefsInitializer.getBoolean( PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH)) {
-			text += " [" + PathUtils.getGlobalLocation(pkg) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+			text += " [" + PathUtils.getAbsoluteLocation(pkg) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return text;
 	}
@@ -147,11 +148,11 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		}
 
 		if (showFullPath) {
-			text += PathUtils.getGlobalLocation(fileset);
+			text += PathUtils.getAbsoluteLocation(fileset);
 		} else if( inWorkspace ){
 			text += fileset.getRawSourcePath();
 		} else {
-			text += PathUtils.getGlobalLocation(fileset).lastSegment();
+			text += new Path(PathUtils.getAbsoluteLocation(fileset)).lastSegment();
 		}
 
 		return text;

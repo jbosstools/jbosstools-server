@@ -157,10 +157,10 @@ public class MainPreferencePage extends PropertyPage implements
 		viewPrefGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		showPackageOutputPath = new Button(viewPrefGroup, SWT.CHECK);
-		showPackageOutputPath.setText(ArchivesUIMessages.ShowFullOutputPath);
+		showPackageOutputPath.setText(ArchivesUIMessages.ShowOutputPath);
 
 		showFullFilesetRootDir = new Button(viewPrefGroup, SWT.CHECK);
-		showFullFilesetRootDir.setText(ArchivesUIMessages.ShowFullRootDirectory);
+		showFullFilesetRootDir.setText(ArchivesUIMessages.ShowRootDirectory);
 
 		showProjectRoot = new Button(viewPrefGroup, SWT.CHECK);
 		showProjectRoot.setText(ArchivesUIMessages.ShowRootProject);

@@ -132,8 +132,8 @@ public class ArchivesUIMessages extends NLS {
 	public static String ShowBuildErrorDialog;
 	public static String EnableNodeAlways;
 	public static String ProjectPackagesView;
-	public static String ShowFullOutputPath;
-	public static String ShowFullRootDirectory;
+	public static String ShowOutputPath;
+	public static String ShowRootDirectory;
 	public static String ShowRootProject;
 	public static String ShowAllProjects;
 	public static String ArchivesVariables;
