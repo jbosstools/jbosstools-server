@@ -19,8 +19,8 @@ public class JMXSafeRunner {
 	
 	public JMXSafeRunner(IServer s) {
 		this.server = s;
-		String user = ServerConverter.getJBossServer(s).getUsername();
-		String pass = ServerConverter.getJBossServer(s).getPassword();
+		user = ServerConverter.getJBossServer(s).getUsername();
+		pass = ServerConverter.getJBossServer(s).getPassword();
 	}
 	
 	public void setUser(String user) {
