@@ -569,4 +569,10 @@
             priority="0">
       </publisher>
    </extension>
+   <extension
+         point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
+      <connectionProvider
+            class="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider">
+      </connectionProvider>
+   </extension>
 </plugin>

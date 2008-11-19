@@ -55,7 +55,7 @@ public class ActionProvider extends CommonActionProvider {
 
     public void fillContextMenu(IMenuManager menu) {
     	IConnectionWrapper[] connections = getWrappersFromSelection();
-    	if( connections != null ) {
+    	if( connections != null && connections.length > 0) {
 	    	if( !anyConnected(connections) && allControlable(connections))
 	    		menu.add(new MBeanServerConnectAction(connections));
 	    	else if( allControlable(connections))

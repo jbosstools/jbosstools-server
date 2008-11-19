@@ -17,5 +17,5 @@ import javax.management.MBeanServerConnection;
  */
 public interface IJMXRunnable {
 	public void run(MBeanServerConnection connection)
-		throws JMXException;
+		throws Exception;
 }

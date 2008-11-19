@@ -14,7 +14,7 @@
       <view
             category="org.jboss.tools.jmx.ui.views"
             class="org.jboss.tools.jmx.ui.internal.views.navigator.Navigator"
-            icon="icons/sample.gif"
+            icon="icons/full/obj16/jmeth_obj.gif"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer"
             name="%MBeanExplorer.name"
             restorable="true">

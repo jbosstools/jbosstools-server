@@ -37,11 +37,11 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXRunnable;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXModel.JMXSafeRunner;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
  * 
@@ -208,23 +208,27 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	protected void suspendDeployment() {
-		JMXRunnable r = new JMXRunnable() {
+		IJMXRunnable r = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
 				connection.invoke(name, "stop", new Object[] {  }, new String[] {});
 			}
 		};
-		JMXSafeRunner.run(getServer(), r);
+		try {
+			JBossServerConnectionProvider.run(getServer(), r);
+		} catch( CoreException ce) {} // ignore
 	}
 	
 	protected void resumeDeployment() {
-		JMXRunnable r = new JMXRunnable() {
+		IJMXRunnable r = new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
 				ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
 				connection.invoke(name, "start", new Object[] {  }, new String[] {});
 			}
 		};
-		JMXSafeRunner.run(getServer(), r);
+		try {
+			JBossServerConnectionProvider.run(getServer(), r);
+		} catch( CoreException ce) {} // ignore
 	}
 		
 

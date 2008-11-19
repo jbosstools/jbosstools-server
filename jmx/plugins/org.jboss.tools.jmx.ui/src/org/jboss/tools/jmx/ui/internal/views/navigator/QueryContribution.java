@@ -13,11 +13,11 @@ package org.jboss.tools.jmx.ui.internal.views.navigator;
 import java.util.HashMap;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.widgets.Display;
 
 public class QueryContribution {
 	
@@ -54,6 +54,7 @@ public class QueryContribution {
 	private HashMap<Object, Boolean> cache = new HashMap<Object, Boolean>();
 	private Navigator navigator;
 	private boolean requiresRefine;
+	private RefineThread refineThread = null;
 	public QueryContribution(final Navigator navigator) {
 		this.navigator = navigator;
 		map.put(navigator.getCommonViewer(), this);
@@ -73,60 +74,83 @@ public class QueryContribution {
 				}  else if(neww.startsWith(old) && !neww.equals(old)) {
 					requiresRefine = true;
 				}
-				cacheEntry(requiresRefine, (ITreeContentProvider)navigator.getCommonViewer().getContentProvider());
-				navigator.getCommonViewer().refresh();
+				if( refineThread != null )
+					refineThread.cancel();
+				refineThread = new RefineThread();
+				refineThread.start();
 			} 
 		});
 	}
 	
+	protected class RefineThread extends Thread {
+		private boolean canceled = false;
+		public void run() {
+			cacheEntry(requiresRefine, (ITreeContentProvider)navigator.getCommonViewer().getContentProvider());
+			refineThread = null;
+			Display.getDefault().asyncExec(new Runnable() { 
+				public void run() {
+					navigator.getCommonViewer().refresh();
+				}
+			} );
+		}
+		
+		public void cancel() {
+			canceled = true;
+		}
+		
+		protected void cacheEntry(boolean refine, ITreeContentProvider provider) {
+			Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
+			for( int i = 0; i < elements.length; i++ )
+				if( !canceled )
+					cache(elements[i], refine, provider);
+		}
+
+		protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
+			if( !refine ) {
+				if( cache.get(o) != null ) {
+					return cache.get(o).booleanValue();
+				}
+			}
+			
+			// If I match, all my children and grandchildren must match
+			String elementAsString = MBeanExplorerLabelProvider.getText2(o);
+			if( elementAsString.contains(filterText)) {
+					recurseTrue(o, provider);
+				return true;
+			}
+
+			// if I don't match, then if ANY of my children match, I also match
+			boolean belongs = false;
+			Object tmp;
+			Object[] children = provider.getChildren(o);
+			for( int i = 0; i < children.length; i++ ) {
+				if( !canceled ) {
+					tmp = cache.get(children[i]);
+					if( !refine || (tmp != null && ((Boolean)tmp).booleanValue())) {
+						belongs |= cache(children[i], refine, provider);
+					}
+				}
+			}
+			cache.put(o, new Boolean(canceled || belongs));
+			return belongs;
+		}
+			
+		protected void recurseTrue(Object o, ITreeContentProvider provider) {
+			cache.put(o, new Boolean(true));
+			Object[] children = provider.getChildren(o);
+			for( int i = 0; i < children.length; i++ )
+				recurseTrue(children[i], provider);
+		}
+	}
+
 	protected void clearCache() {
 		cache = new HashMap<Object,Boolean>();
 		requiresRefine = false;
 	}
 	
-	protected void cacheEntry(boolean refine, ITreeContentProvider provider) {
-		Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
-		for( int i = 0; i < elements.length; i++ )
-			cache(elements[i], refine, provider);
-	}
-	protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
-		if( !refine ) {
-			if( cache.get(o) != null ) {
-				return cache.get(o).booleanValue();
-			}
-		}
-		
-		// If I match, all my children and grandchildren must match
-		String elementAsString = MBeanExplorerLabelProvider.getText2(o);
-		if( elementAsString.contains(filterText)) {
-				recurseTrue(o, provider);
-			return true;
-		}
-
-		// if I don't match, then if ANY of my children match, I also match
-		boolean belongs = false;
-		Object tmp;
-		Object[] children = provider.getChildren(o);
-		for( int i = 0; i < children.length; i++ ) {
-			tmp = cache.get(children[i]);
-			if( !refine || (tmp != null && ((Boolean)tmp).booleanValue())) {
-				belongs |= cache(children[i], refine, provider);
-			}
-		}
-		cache.put(o, new Boolean(belongs));
-		return belongs;
-	}
-		
-	protected void recurseTrue(Object o, ITreeContentProvider provider) {
-		cache.put(o, new Boolean(true));
-		Object[] children = provider.getChildren(o);
-		for( int i = 0; i < children.length; i++ )
-			recurseTrue(children[i], provider);
-	}
-	
 	public boolean shouldShow(Object element, Object parentElement) {
 		String filterText = this.filterText;
-		if( filterText != null && !("".equals(filterText))) {
+		if( filterText != null && filterText.length() > 0 ) {
 			boolean tmp = cache.get(element) != null && cache.get(element).booleanValue();
 			return tmp;
 		}

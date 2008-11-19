@@ -21,31 +21,27 @@
  */
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.OperationsException;
-import javax.management.ReflectionException;
 import javax.naming.CommunicationException;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXUtil.CredentialException;
+import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
  * A poller dedicated to server startup, checks via JMX
@@ -78,6 +74,9 @@ public class JMXPoller implements IServerStatePoller {
 	private RequiresInfoException requiresInfoException = null;
 	private Properties requiredPropertiesReturned = null;
 
+	private JMXPollerRunnable runnable;
+	private JMXSafeRunner runner;
+	
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {
 		ceFound = nnfeFound = startingFound = canceled = done = false;
@@ -85,118 +84,90 @@ public class JMXPoller implements IServerStatePoller {
 		launchJMXPoller();
 	}
 
-	private class PollerRunnable implements Runnable {
-		public void run() {
-			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
-			ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
-			ClassLoader twiddleLoader = JMXClassLoaderRepository.getDefault().getClassLoader(server);
-			if( pollingException != null ) {done = true; return;}
-			if (twiddleLoader != null) {
-
-				Thread.currentThread().setContextClassLoader(twiddleLoader);
-				Properties props = JMXUtil.getDefaultProperties(server);
-				setCredentials();
-				if( pollingException != null ) {done = true; return;}
-
-				Exception failingException = null;
-				while (!done && !canceled) {
-					InitialContext ic;
-					try {
-						ic = new InitialContext(props);
-						Object obj = ic.lookup("jmx/invoker/RMIAdaptor");
-						ic.close();
-						if (obj instanceof MBeanServerConnection) {
-							MBeanServerConnection connection = (MBeanServerConnection) obj;
-							Object attInfo = connection.getAttribute(
-									new ObjectName("jboss.system:type=Server"),
-									"Started");
-							boolean b = ((Boolean) attInfo).booleanValue();
-							started = b ? STATE_STARTED : STATE_TRANSITION;
-							done = b;
-							if( !startingFound ) {
-								startingFound = true;
-								IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, CODE|started, "Server is starting", null);
-								log(s);
-							}
-						}
-					} catch (SecurityException se) {
-						synchronized(this) {
-							if( !waitingForCredentials ) {
-								waitingForCredentials = true;
-								requiresInfoException = new PollingSecurityException(
-										"Security Exception: " + se.getMessage());
-							} else {
-								// we're waiting. are they back yet?
-								if( requiredPropertiesReturned != null ) {
-									requiresInfoException = null;
-									String user, pass;
-									user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
-									pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
-									requiredPropertiesReturned = null;
-									setCredentials(user, pass);
-									waitingForCredentials = false;
-								}
-							}
-						}
-					} catch (CommunicationException ce) {
-						started = STATE_STOPPED;
-						if( !ceFound ) {
-							ceFound = true;
-							IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, ce.getMessage(), ce);
-							log(s);
-						}
-					} catch (NamingException nnfe) {
-						started = STATE_STOPPED;
-						if( !nnfeFound ) {
-							nnfeFound = true;
-							IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, nnfe.getMessage(), nnfe);
-							log(s);
-						}
-					} catch( OperationsException e ) {
-						failingException = e;
-					} catch (MBeanException e) {
-						failingException = e;
-					} catch (ReflectionException e) {
-						failingException = e;
-					} catch (NullPointerException e) {
-						failingException = e;
-					} catch (IOException e) {
-						failingException = e;
-					}
-					
-					if( failingException != null ) {
-						pollingException = new PollingException(failingException.getMessage());
-						done = true;
-					}
-
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-					}
-				} // end while
-			}
-
-			Thread.currentThread().setContextClassLoader(currentLoader);
-			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
-		}
-		
-		protected void setCredentials() {
-			try {
-				JMXUtil.setCredentials(server);
-			} catch( CredentialException ce ) {
-				pollingException = new PollingException(ce.getWrapped().getMessage());
-			}
-		}
-		
-		protected void setCredentials(String user, String pass) {
-			try {
-				JMXUtil.setCredentials(server, user, pass);
-			} catch( CredentialException ce ) {
-				pollingException = new PollingException(ce.getWrapped().getMessage());
+	private class JMXPollerRunnable implements IJMXRunnable {
+		public void run(MBeanServerConnection connection) throws Exception {
+			Object attInfo = connection.getAttribute(
+					new ObjectName("jboss.system:type=Server"),
+					"Started");
+			boolean b = ((Boolean) attInfo).booleanValue();
+			started = b ? STATE_STARTED : STATE_TRANSITION;
+			done = b;
+			if( !startingFound ) {
+				startingFound = true;
+				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, CODE|started, "Server is starting", null);
+				log(s);
 			}
 		}
 	}
+	
+	private class PollerRunnable implements Runnable {
+		public void run() {
+			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
+			runnable = new JMXPollerRunnable();
+			runner = new JMXSafeRunner(server);
+			while( !done && !canceled) {
+				try {
+					runner.run(runnable);
+				} catch(CoreException ce) {
+					handleException(ce.getCause());
+				} 
 
+				try { Thread.sleep(500);} 
+				catch (InterruptedException e) {}
+			}
+			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+		}
+		
+		protected void handleException(Throwable t) {
+			if( t instanceof SecurityException ) {
+				synchronized(this) {
+					if( !waitingForCredentials ) {
+						waitingForCredentials = true;
+						requiresInfoException = new PollingSecurityException(
+								"Security Exception: " + t.getMessage());
+					} else {
+						// we're waiting. are they back yet?
+						if( requiredPropertiesReturned != null ) {
+							requiresInfoException = null;
+							String user, pass;
+							user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
+							pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
+							requiredPropertiesReturned = null;
+							runner.setUser(user);
+							runner.setPass(pass);
+							waitingForCredentials = false;
+						}
+					}
+				}
+				return;
+			}
+			
+			if( t instanceof CommunicationException ) {
+				started = STATE_STOPPED;
+				if( !ceFound ) {
+					ceFound = true;
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, t.getMessage(), t);
+					log(s);
+				}
+				return;
+			}
+			
+			if( t instanceof NamingException ) {
+				started = STATE_STOPPED;
+				if( !nnfeFound ) {
+					nnfeFound = true;
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, t.getMessage(), t);
+					log(s);
+				}
+				return;
+			}
+		
+			if( t != null ) {
+				pollingException = new PollingException(t.getMessage());
+				done = true;
+			}
+		}
+	}
 
 	
 	private void launchJMXPoller() {

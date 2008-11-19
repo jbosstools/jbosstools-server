@@ -7,19 +7,12 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.core.tree;
 
-import java.io.IOException;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import javax.management.ReflectionException;
-
 
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 
 public class ObjectNameNode extends PropertyNode {
@@ -37,22 +30,8 @@ public class ObjectNameNode extends PropertyNode {
     	final ObjectName on2 = on;
     	try {
 	    	connectionWrapper.run(new IJMXRunnable() {
-	    		public void run(MBeanServerConnection mbsc) throws JMXException {
-					try {
-						array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc);
-					} catch (InstanceNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IntrospectionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ReflectionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+	    		public void run(MBeanServerConnection mbsc) throws Exception {
+					array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc);
 	    		}
 	    	});
     	} catch( CoreException ce ) {

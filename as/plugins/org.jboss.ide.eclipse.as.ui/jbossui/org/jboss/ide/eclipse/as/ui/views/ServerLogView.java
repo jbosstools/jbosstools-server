@@ -21,6 +21,7 @@ public class ServerLogView extends LogView implements IServerLogListener {
 	
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		Platform.removeLogListener(this);
 		setLogFile(ServerLogger.getDefault().getServerLogFile(null));
 	}
 

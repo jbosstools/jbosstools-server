@@ -476,6 +476,17 @@
       </decorator>
    </extension>
 	
-	
+	<!-- JMX Stuff -->
+	   <extension
+         point="org.jboss.tools.jmx.ui.providerUI">
+      <providerUI
+            icon="icons/jboss.gif"
+            id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
+            name="JBoss Server">
+         <wizardPage
+               class="org.jboss.tools.jmx.ui.internal.wizards.DefaultConnectionWizardPage">
+         </wizardPage>
+      </providerUI>
+   </extension>
 	
 </plugin>

@@ -7,20 +7,16 @@
  *******************************************************************************/
 package org.jboss.tools.jmx.core.tree;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 
 public class NodeUtils {
 
@@ -50,20 +46,14 @@ public class NodeUtils {
             throws CoreException {
     	final Root[] _root = new Root[1];
     	connectionWrapper.run(new IJMXRunnable() {
-			public void run(MBeanServerConnection connection) throws JMXException {
-				try {
-			        Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
-			        _root[0] = NodeBuilder.createRoot(connectionWrapper);
-			        Iterator iter = beanInfo.iterator();
-			        while (iter.hasNext()) {
-			            ObjectName on = (ObjectName) iter.next();
-			            NodeBuilder.addToTree(_root[0], on);
-			        }
-				} catch( IOException ioe ) {
-					// TODO throw coreexception
-				} catch( MalformedObjectNameException mone) {
-					// TODO throw coreexception
-				}
+			public void run(MBeanServerConnection connection) throws Exception {
+		        Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
+		        _root[0] = NodeBuilder.createRoot(connectionWrapper);
+		        Iterator iter = beanInfo.iterator();
+		        while (iter.hasNext()) {
+		            ObjectName on = (ObjectName) iter.next();
+		            NodeBuilder.addToTree(_root[0], on);
+		        }
 			}
     	});
         return _root[0];
