@@ -24,11 +24,16 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
+import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDelegate {
 
@@ -67,10 +72,11 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 
 	protected boolean computeEnabled() {
 		if(project == null || !project.isAccessible()) return false;
-		boolean isWar = J2EEProjectUtilities.isDynamicWebProject(project);
-		boolean isEar = J2EEProjectUtilities.isEARProject(project);
-		boolean isEJB = J2EEProjectUtilities.isEJBProject(project);
-		return isEar || isEJB || isWar;
+		boolean isWar = JavaEEProjectUtilities.isDynamicWebProject(project);
+		boolean isEar = JavaEEProjectUtilities.isEARProject(project);
+		boolean isEJB = JavaEEProjectUtilities.isEJBProject(project);
+		boolean isEsb = isESBProject(project);
+		return isEar || isEJB || isWar || isEsb;
 	}
 
 	public void run(IAction action) {
@@ -98,8 +104,8 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 	private static List<IFile> getFilesToTouch(IProject project) {
 		List<IFile> fs = new ArrayList<IFile>();
 		if(project == null || !project.isAccessible()) return fs;
-		boolean isWar = J2EEProjectUtilities.isDynamicWebProject(project);
-		boolean isEar = J2EEProjectUtilities.isEARProject(project);
+		boolean isWar = JavaEEProjectUtilities.isDynamicWebProject(project);
+		boolean isEar = JavaEEProjectUtilities.isEARProject(project);
 
 		boolean isReferencedByEar = false;
 		if(!isEar) {
@@ -125,6 +131,32 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 				fs.add(f);
 			}
 		}
+		if(isESBProject(project)) {
+			IVirtualComponent component = ComponentCore.createComponent(project);
+			IPath path = component.getRootFolder().getProjectRelativePath();
+			IFile f = project.getFile(path.append("META-INF").append("jboss-esb.xml"));
+			if(f != null && f.exists()) {
+				fs.add(f);
+			}
+		}
+
 		return fs;
-	}	
+	}
+
+	private final static String ESB_PROJECT_FACET = "jst.jboss.esb";
+
+	private static boolean isESBProject(IProject project) {
+		IFacetedProject facetedProject = null;
+		try {
+			facetedProject = ProjectFacetsManager.create(project);
+		} catch (CoreException e) {
+			JBossServerUIPlugin.log(e.getMessage(), e);
+			return false;
+		}
+		if (facetedProject != null && ProjectFacetsManager.isProjectFacetDefined(ESB_PROJECT_FACET)) {
+			IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(ESB_PROJECT_FACET);
+			return projectFacet != null && facetedProject.hasProjectFacet(projectFacet);
+		}
+		return false;
+	}
 }
