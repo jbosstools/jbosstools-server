@@ -99,7 +99,7 @@ public class DefaultProviderTest extends TestCase {
 			Root root = wrapper.getRoot();
 			assertTrue("Root was not null", root == null);
 			
-			wrapper.loadRoot();
+			wrapper.loadRoot(new NullProgressMonitor());
 			root = wrapper.getRoot();
 			assertTrue("Root was null", root != null);
 			

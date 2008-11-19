@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.management.MBeanServerConnection;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
@@ -47,14 +48,14 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		return root;
 	}
 	
-	public void loadRoot() {
+	public void loadRoot(IProgressMonitor monitor) {
 		if( isConnected()) {
 			// saferunner just adds itself as a concern and then removes, after each call.
 			// This will ensure the classloader does not need to make multiple loads
 			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
 			try {
 				if( root == null ) {
-					root = NodeUtils.createObjectNameTree(this);
+					root = NodeUtils.createObjectNameTree(this, monitor);
 				}
 			} catch( CoreException ce ) {
 				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ce.getMessage(), ce);

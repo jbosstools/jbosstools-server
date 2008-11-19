@@ -13,6 +13,7 @@ package org.jboss.tools.jmx.core;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.tools.jmx.core.tree.Root;
 
 
@@ -30,7 +31,7 @@ public interface IConnectionWrapper {
 	 * Loads the root object in the current thread if it is not loaded.
 	 * If it is loaded, does nothing.
 	 */
-	public void loadRoot();
+	public void loadRoot(IProgressMonitor monitor);
 	
 	/**
 	 * Gets the current root object, or null if its not yet loaded.

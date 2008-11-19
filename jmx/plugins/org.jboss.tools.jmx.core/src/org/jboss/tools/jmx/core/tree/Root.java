@@ -27,9 +27,6 @@ public class Root extends Node {
         return 0;
     }
 
-//    MBeanServerConnection getMBeanServerConnection() {
-//        return mbsc;
-//    }
     public IConnectionWrapper getConnection() {
     	return connection;
     }

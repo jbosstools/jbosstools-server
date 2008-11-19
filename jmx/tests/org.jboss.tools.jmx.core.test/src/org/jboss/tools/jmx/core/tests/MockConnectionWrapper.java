@@ -3,6 +3,7 @@ package org.jboss.tools.jmx.core.tests;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
@@ -36,7 +37,7 @@ public class MockConnectionWrapper implements IConnectionWrapper {
     public void run(IJMXRunnable runnable) throws CoreException {
     }
 
-	public void loadRoot() {
+	public void loadRoot(IProgressMonitor monitor) {
 	}
 
 }

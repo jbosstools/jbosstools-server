@@ -12,7 +12,10 @@ package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.HashMap;
 
-
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -101,10 +104,10 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 			return getChildren(w.getRoot());
 		
 		// Must load the model
-		Thread t = new Thread() {
-			public void run() {
+		Job job = new Job("Loading JMX Nodes") {
+			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					w.loadRoot();
+					w.loadRoot(monitor);
 				} catch( RuntimeException re ) {
 				}
 				loading.remove(w);
@@ -116,7 +119,9 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 							viewer.refresh();
 					}
 				});
+				return Status.OK_STATUS;
 			}
+
 		};
 		
 		if( loading.containsKey(((IConnectionWrapper)parent))) {
@@ -124,7 +129,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		}
 		DelayProxy p = new DelayProxy(w);
 		loading.put(w, p);
-		t.start();
+		job.schedule();
 		return new Object[] { p };
     }
 
@@ -143,6 +148,8 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
         if( parent instanceof IConnectionWrapper ) {
         	return ((IConnectionWrapper)parent).isConnected();
         }
+        if( parent instanceof DelayProxy)
+        	return false;
         return true;
     }
 

@@ -21,6 +21,7 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.tools.jmx.core.ExtensionManager;
@@ -101,10 +102,10 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		return root;
 	}
 
-	public void loadRoot() {
+	public void loadRoot(IProgressMonitor monitor) {
 		if( isConnected && root == null ) {
 			try {
-				root = NodeUtils.createObjectNameTree(this);
+				root = NodeUtils.createObjectNameTree(this, monitor);
 			} catch( CoreException ce ) {
 				// TODO LOG
 			}

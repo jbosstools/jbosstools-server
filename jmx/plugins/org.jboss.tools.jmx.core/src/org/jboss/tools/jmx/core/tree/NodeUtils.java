@@ -15,6 +15,8 @@ import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
@@ -42,18 +44,25 @@ public class NodeUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static Root createObjectNameTree(final IConnectionWrapper connectionWrapper)
+    public static Root createObjectNameTree(final IConnectionWrapper connectionWrapper, final IProgressMonitor monitor)
             throws CoreException {
     	final Root[] _root = new Root[1];
     	connectionWrapper.run(new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {
-		        Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
+		        monitor.beginTask("Load MBeans", 1000);
+				Set beanInfo = connection.queryNames(new ObjectName("*:*"), null); //$NON-NLS-1$
+				monitor.worked(100);
+				SubProgressMonitor subMon = new SubProgressMonitor(monitor, 900);
+				subMon.beginTask("Inspect MBeans", beanInfo.size() * 100);
 		        _root[0] = NodeBuilder.createRoot(connectionWrapper);
 		        Iterator iter = beanInfo.iterator();
 		        while (iter.hasNext()) {
 		            ObjectName on = (ObjectName) iter.next();
 		            NodeBuilder.addToTree(_root[0], on);
+		        	subMon.worked(100);
 		        }
+		        subMon.done();
+		        monitor.done();
 			}
     	});
         return _root[0];
