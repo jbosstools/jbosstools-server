@@ -161,7 +161,8 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         String type = attrInfo.getType();
         nameLabel.setText(attrInfo.getName());
         typeLabel.setText(StringUtils.toString(type));
-        descriptionText.setText(attrInfo.getDescription());
+        if( attrInfo.getDescription() != null)
+        	descriptionText.setText(attrInfo.getDescription());
 
         boolean writable = attrInfo.isWritable();
         boolean readable = attrInfo.isReadable();
