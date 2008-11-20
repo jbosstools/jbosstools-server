@@ -31,7 +31,7 @@ public interface IConnectionWrapper {
 	 * Loads the root object in the current thread if it is not loaded.
 	 * If it is loaded, does nothing.
 	 */
-	public void loadRoot(IProgressMonitor monitor);
+	public void loadRoot(IProgressMonitor monitor) throws CoreException;
 	
 	/**
 	 * Gets the current root object, or null if its not yet loaded.

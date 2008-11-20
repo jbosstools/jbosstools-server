@@ -98,6 +98,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	}
 
 	public IConnectionWrapper findConnection(IServer s) {
+		getConnections();
 		return idToConnection.get(s.getId());
 	}
 	

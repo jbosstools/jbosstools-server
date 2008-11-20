@@ -24,9 +24,11 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	private IServer server;
 	private Root root;
 	private boolean isConnected;
+	private boolean isLoading;
 	public JBossServerConnection(IServer server) {
 		this.server = server;
 		this.isConnected = false;
+		this.isLoading = false;
 		checkState(); // prime the state
 		((JBossServerConnectionProvider)getProvider()).addListener(this);
 		server.addServerListener(this);
@@ -49,7 +51,8 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 	
 	public void loadRoot(IProgressMonitor monitor) {
-		if( isConnected()) {
+		if( isConnected() && !isLoading) {
+			isLoading = true;
 			// saferunner just adds itself as a concern and then removes, after each call.
 			// This will ensure the classloader does not need to make multiple loads
 			JMXClassLoaderRepository.getDefault().addConcerned(server, this);
@@ -62,6 +65,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 				JBossServerCorePlugin.getDefault().getLog().log(status);
 			} finally {
 				JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+				isLoading = false;
 			}
 		}
 	}
@@ -89,7 +93,6 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 
 	public void serverChanged(ServerEvent event) {
 		int eventKind = event.getKind();
-		IServer server = event.getServer();
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {

@@ -38,7 +38,7 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 	private JMXConnector connector;
 	private MBeanServerConnection connection;
 	private Root root;
-
+	private boolean isLoading;
 	private boolean isConnected;
 	private Map<String, String[]> environment;
 
@@ -47,6 +47,7 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 	public DefaultConnectionWrapper(MBeanServerConnectionDescriptor descriptor) throws MalformedURLException {
 		this.descriptor = descriptor;
 		this.isConnected = false;
+		this.isLoading = false;
         String username = descriptor.getUserName();
         environment = new HashMap<String, String[]>();
         if (username != null && username.length() > 0) {
@@ -102,12 +103,13 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		return root;
 	}
 
-	public void loadRoot(IProgressMonitor monitor) {
-		if( isConnected && root == null ) {
+	public void loadRoot(IProgressMonitor monitor) throws CoreException {
+		if( isConnected && root == null && !isLoading) {
 			try {
+				isLoading = true;
 				root = NodeUtils.createObjectNameTree(this, monitor);
-			} catch( CoreException ce ) {
-				// TODO LOG
+			} finally {
+				isLoading = false;
 			}
 		}
 	}

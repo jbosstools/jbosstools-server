@@ -12,6 +12,7 @@ package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -108,9 +109,11 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					w.loadRoot(monitor);
-				} catch( RuntimeException re ) {
+				} catch( CoreException ce ) {
+					return ce.getStatus();
+				} finally {
+					loading.remove(w);
 				}
-				loading.remove(w);
 				Display.getDefault().asyncExec(new Runnable() { 
 					public void run() {
 						if( viewer instanceof StructuredViewer) 

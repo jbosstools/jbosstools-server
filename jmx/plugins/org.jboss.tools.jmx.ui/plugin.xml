@@ -81,7 +81,7 @@
       <navigatorContent
             activeByDefault="true"
             contentProvider="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider"
-            icon="icons/sample.gif"
+            icon="icons/full/obj16/jmeth_obj.gif"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.root"
             labelProvider="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerLabelProvider"
             name="MBeans"

@@ -65,8 +65,11 @@ public class ActionProvider extends CommonActionProvider {
     	}
 
     	// Finish up
-    	menu.add(new Separator());
-    	menu.add(newConnectionAction);
+    	int size = getSelectionSize();
+    	if( size == 0 || (size == 1 && getWrappersFromSelection().length == 1)) {
+	    	menu.add(new Separator());
+	    	menu.add(newConnectionAction);
+    	}
     }
 
     protected boolean anyConnected(IConnectionWrapper[] connections) {
@@ -80,6 +83,16 @@ public class ActionProvider extends CommonActionProvider {
     		if( !connections[i].canControl() )
     			return false;
     	return true;
+    }
+    
+    protected int getSelectionSize() {
+    	if( getContext() != null && getContext().getSelection() != null ) {
+    		ISelection sel = getContext().getSelection();
+    		if( sel instanceof IStructuredSelection ) {
+    			return ((IStructuredSelection)sel).size();
+    		}
+    	}
+    	return -1;
     }
     
     protected IConnectionWrapper[] getWrappersFromSelection() {
