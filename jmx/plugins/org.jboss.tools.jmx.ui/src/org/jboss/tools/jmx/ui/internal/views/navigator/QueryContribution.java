@@ -11,6 +11,7 @@
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -51,7 +52,7 @@ public class QueryContribution {
 
 	
 	private String filterText, oldFilterText;
-	private HashMap<Object, Boolean> cache = new HashMap<Object, Boolean>();
+	private ConcurrentHashMap<Object, Boolean> cache = new ConcurrentHashMap<Object, Boolean>();
 	private Navigator navigator;
 	private boolean requiresRefine;
 	private RefineThread refineThread = null;
@@ -107,8 +108,9 @@ public class QueryContribution {
 
 		protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
 			if( !refine ) {
-				if( cache.get(o) != null ) {
-					return cache.get(o).booleanValue();
+				Boolean val = cache.get(o);
+				if( val != null ) {
+					return val.booleanValue();
 				}
 			}
 			
@@ -144,7 +146,7 @@ public class QueryContribution {
 	}
 
 	protected void clearCache() {
-		cache = new HashMap<Object,Boolean>();
+		cache = new ConcurrentHashMap<Object,Boolean>();
 		requiresRefine = false;
 	}
 	
