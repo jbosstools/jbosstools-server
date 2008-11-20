@@ -17,6 +17,7 @@ import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
 
@@ -74,7 +75,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		return isConnected;
 	}
 
-	public void run(IJMXRunnable runnable) throws CoreException {
+	public void run(IJMXRunnable runnable) throws JMXException {
 		// do nothing if the server is down.
 		if( server.getServerState() != IServer.STATE_STARTED ) 
 			return;

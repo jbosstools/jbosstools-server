@@ -12,6 +12,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 
 public class JMXSafeRunner {
 	private String user, pass;
@@ -34,13 +35,13 @@ public class JMXSafeRunner {
 		run(server,r,user,pass);
 	}
 	
-	public static void run(IServer s, IJMXRunnable r) throws CoreException {
+	public static void run(IServer s, IJMXRunnable r) throws JMXException {
 		String user = ServerConverter.getJBossServer(s).getUsername();
 		String pass = ServerConverter.getJBossServer(s).getPassword();
 		run(s,r,user,pass);
 	}
 	
-	public static void run(IServer s, IJMXRunnable r, String user, String pass) throws CoreException {
+	public static void run(IServer s, IJMXRunnable r, String user, String pass) throws JMXException {
 		JMXClassLoaderRepository.getDefault().addConcerned(s, r);
 		ClassLoader currentLoader = Thread.currentThread()
 				.getContextClassLoader();
@@ -59,7 +60,7 @@ public class JMXSafeRunner {
 				r.run(connection);
 			}
 		} catch( Exception e ) {  
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e));
+			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e));
 		} finally {
 			JMXClassLoaderRepository.getDefault().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);

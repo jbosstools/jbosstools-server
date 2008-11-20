@@ -38,5 +38,5 @@ public interface IConnectionWrapper {
 	 * @return
 	 */
 	public Root getRoot();
-	public void run(IJMXRunnable runnable) throws CoreException;
+	public void run(IJMXRunnable runnable) throws JMXException;
 }

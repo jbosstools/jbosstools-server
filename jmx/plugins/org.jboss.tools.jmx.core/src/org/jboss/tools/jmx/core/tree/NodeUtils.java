@@ -14,11 +14,11 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 
 public class NodeUtils {
 
@@ -45,7 +45,7 @@ public class NodeUtils {
 
     @SuppressWarnings("unchecked")
     public static Root createObjectNameTree(final IConnectionWrapper connectionWrapper, final IProgressMonitor monitor)
-            throws CoreException {
+            throws JMXException {
     	final Root[] _root = new Root[1];
     	connectionWrapper.run(new IJMXRunnable() {
 			public void run(MBeanServerConnection connection) throws Exception {

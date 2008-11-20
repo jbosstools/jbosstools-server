@@ -30,6 +30,7 @@ import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXActivator;
 import org.jboss.tools.jmx.core.JMXCoreMessages;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
 
@@ -114,12 +115,12 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 		}
 	}
 	
-	public void run(IJMXRunnable runnable) throws CoreException {
+	public void run(IJMXRunnable runnable) throws JMXException {
 		try {
 			runnable.run(connection);
 		} catch( Exception e ) {
 			IStatus s = new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DefaultConnection_ErrorRunningJMXCode, e);
-			throw new CoreException(s);
+			throw new JMXException(s);
 		}
 	}
 }

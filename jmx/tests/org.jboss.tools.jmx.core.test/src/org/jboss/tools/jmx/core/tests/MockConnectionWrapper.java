@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.tree.Root;
 
 
@@ -34,7 +35,7 @@ public class MockConnectionWrapper implements IConnectionWrapper {
         return false;
     }
 
-    public void run(IJMXRunnable runnable) throws CoreException {
+    public void run(IJMXRunnable runnable) throws JMXException {
     }
 
 	public void loadRoot(IProgressMonitor monitor) {

@@ -18,6 +18,7 @@ import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 
 public class JBossServerConnectionProvider implements IConnectionProvider, IServerLifecycleListener {
 	public static final String PROVIDER_ID = "org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"; //$NON-NLS-1$
@@ -32,7 +33,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	
 	// Run this action on the server. 
 	// If the connection doesn't exist, make a new one
-	public static void run(IServer s, IJMXRunnable r) throws CoreException {
+	public static void run(IServer s, IJMXRunnable r) throws JMXException {
 		JBossServerConnection c = getConnection(s);
 		if( c == null )
 			c = getConnection(s);

@@ -10,9 +10,9 @@ package org.jboss.tools.jmx.core.tree;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import org.eclipse.core.runtime.CoreException;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 
 public class ObjectNameNode extends PropertyNode {
@@ -34,7 +34,7 @@ public class ObjectNameNode extends PropertyNode {
 					array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc);
 	    		}
 	    	});
-    	} catch( CoreException ce ) {
+    	} catch( JMXException ce ) {
     		// TODO LOG
     	}
     	wrapper = array[0];
