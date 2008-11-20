@@ -427,7 +427,7 @@
        </enablement>
     </actionProvider>
     <navigatorContent
-          activeByDefault="true"
+          activeByDefault="false"
           contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$ContentProvider"
           icon="icons/jmeth_obj.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
