@@ -11,10 +11,10 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.FolderWrapper;
 import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.PathWrapper;
 import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.ServerWrapper;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class FilesetLabelProvider extends LabelProvider {
 
@@ -23,7 +23,7 @@ public class FilesetLabelProvider extends LabelProvider {
 	public FilesetLabelProvider() {
 		super();
 		this.resourceManager = new LocalResourceManager(JFaceResources.getResources());
-		ImageDescriptor des = ImageDescriptor.createFromURL(JBossServerUIPlugin.getDefault().getBundle().getEntry("icons/multiple_files.gif")); //$NON-NLS-1$
+		ImageDescriptor des = ImageDescriptor.createFromURL(IntegrationPlugin.getDefault().getBundle().getEntry("icons/multiple_files.gif")); //$NON-NLS-1$
 		rootImage = des.createImage();
 	}
 
