@@ -82,7 +82,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
                 while (iter.hasNext()) {
                     ObjectName objectName = (ObjectName) iter.next();
                     MBeanInfo info = mbsc.getMBeanInfo(objectName);
-                    mbeans.add(new MBeanInfoWrapper(objectName, info, mbsc));
+                    mbeans.add(new MBeanInfoWrapper(objectName, info, mbsc, null));
                 }
                 Collections.sort(mbeans);
                 viewer.setInput(mbeans);

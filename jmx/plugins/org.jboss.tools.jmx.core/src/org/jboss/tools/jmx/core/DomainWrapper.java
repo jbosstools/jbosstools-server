@@ -47,7 +47,7 @@ public class DomainWrapper {
             for (Iterator iter = set.iterator(); iter.hasNext();) {
                 ObjectName on = (ObjectName) iter.next();
                 MBeanInfo info = mbsc.getMBeanInfo(on);
-                instances[i] = new MBeanInfoWrapper(on, info, mbsc);
+                instances[i] = new MBeanInfoWrapper(on, info, mbsc, this);
                 i++;
             }
             return instances;

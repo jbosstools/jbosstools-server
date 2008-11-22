@@ -27,6 +27,7 @@ import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
+import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
@@ -64,10 +65,12 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     }
 
     public Object getParent(Object child) {
-        if (child instanceof Node) {
-            Node node = (Node) child;
-            return node.getParent();
-        }
+    	if( child instanceof Root )
+    		return ((Root)child).getConnection();
+        if (child instanceof Node) 
+            return ((Node) child).getParent();
+        if( child instanceof MBeanFeatureInfoWrapper ) 
+        	return ((MBeanFeatureInfoWrapper)child).getMBeanInfoWrapper().getParent();
         return null;
     }
 
@@ -79,14 +82,6 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 		if( parent instanceof IConnectionWrapper && ((IConnectionWrapper)parent).isConnected()) {
 			return loadAndGetRootChildren(parent);
 		}
-        if (parent instanceof Root) {
-            Root root = (Root) parent;
-            return root.getChildren();
-        }
-        if (parent instanceof DomainNode) {
-            DomainNode node = (DomainNode) parent;
-            return node.getChildren();
-        }
         if (parent instanceof ObjectNameNode) {
             ObjectNameNode node = (ObjectNameNode) parent;
             return node.getMbeanInfoWrapper().getMBeanFeatureInfos();

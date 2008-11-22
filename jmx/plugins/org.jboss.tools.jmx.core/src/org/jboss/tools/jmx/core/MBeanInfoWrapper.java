@@ -20,21 +20,25 @@ import org.eclipse.core.runtime.Assert;
 
 public class MBeanInfoWrapper implements Comparable {
     private final ObjectName on;
-
     private final MBeanInfo info;
-
     private final MBeanServerConnection mbsc;
+    private final Object parent;
 
     public MBeanInfoWrapper(ObjectName on, MBeanInfo info,
-            MBeanServerConnection mbsc) {
+            MBeanServerConnection mbsc, Object parent) {
         Assert.isNotNull(on);
         Assert.isNotNull(info);
         Assert.isNotNull(mbsc);
         this.on = on;
         this.info = info;
         this.mbsc = mbsc;
+        this.parent = parent;
     }
 
+    public Object getParent() {
+    	return parent;
+    }
+    
     public ObjectName getObjectName() {
         return on;
     }

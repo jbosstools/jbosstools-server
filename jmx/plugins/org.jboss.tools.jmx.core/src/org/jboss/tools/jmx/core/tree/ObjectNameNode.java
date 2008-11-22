@@ -31,7 +31,7 @@ public class ObjectNameNode extends PropertyNode {
     	try {
 	    	connectionWrapper.run(new IJMXRunnable() {
 	    		public void run(MBeanServerConnection mbsc) throws Exception {
-					array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc);
+					array[0] = new MBeanInfoWrapper(on2, mbsc.getMBeanInfo(on2), mbsc, ObjectNameNode.this);
 	    		}
 	    	});
     	} catch( JMXException ce ) {

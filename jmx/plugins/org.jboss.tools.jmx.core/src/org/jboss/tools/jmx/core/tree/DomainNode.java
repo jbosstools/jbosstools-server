@@ -43,8 +43,7 @@ public class DomainNode extends Node {
             return false;
         final DomainNode other = (DomainNode) obj;
         if (domain == null) {
-            if (other.domain != null)
-                return false;
+        	return other.domain == null;
         } else if (!domain.equals(other.domain))
             return false;
         return true;

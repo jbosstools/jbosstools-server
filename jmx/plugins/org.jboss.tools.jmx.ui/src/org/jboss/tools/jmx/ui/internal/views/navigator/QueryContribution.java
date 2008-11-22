@@ -11,7 +11,9 @@
 package org.jboss.tools.jmx.ui.internal.views.navigator;
 
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -21,7 +23,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Display;
 
 public class QueryContribution {
-	
+	private static Boolean TRUE_BOOL = new Boolean(true);
 	private static HashMap<Viewer, QueryContribution> map = 
 			new HashMap<Viewer, QueryContribution>();
 	
@@ -51,11 +53,12 @@ public class QueryContribution {
 	}
 
 	
-	private String filterText, oldFilterText;
-	private ConcurrentHashMap<Object, Boolean> cache = new ConcurrentHashMap<Object, Boolean>();
+	private String filterText;
 	private Navigator navigator;
-	private boolean requiresRefine;
-	private RefineThread refineThread = null;
+	private HashMap<Object, Boolean> matches = null;
+	private HashMap<Object, Boolean> shouldShow = null;
+	private RefineThread refineThread;
+	
 	public QueryContribution(final Navigator navigator) {
 		this.navigator = navigator;
 		map.put(navigator.getCommonViewer(), this);
@@ -65,104 +68,248 @@ public class QueryContribution {
 	protected void addListener() {
 		navigator.getFilterText().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				oldFilterText = filterText;
-				filterText = navigator.getFilterText().getText();
-				final String old = oldFilterText == null ? "" : oldFilterText;
-				final String neww = filterText == null ? "" : filterText;
-				
-				if( old.equals("") || neww.equals("") || !neww.startsWith(old)) {
-					clearCache();
-				}  else if(neww.startsWith(old) && !neww.equals(old)) {
-					requiresRefine = true;
+				boolean searchNew = matches == null || filterText == null || filterText.equals("") 
+								|| !navigator.getFilterText().getText().startsWith(filterText);
+				RefineThread thread = new RefineThread(searchNew,
+						navigator.getFilterText().getText(), 
+						matches, shouldShow);
+				if( !navigator.getFilterText().getText().equals("")) {
+					if( refineThread != null )
+						refineThread.cancel();
+					refineThread = thread;
+					refineThread.start();
+				} else {
+					matches = null;
+					shouldShow = null;
+					refreshView();
 				}
-				if( refineThread != null )
-					refineThread.cancel();
-				refineThread = new RefineThread();
-				refineThread.start();
 			} 
 		});
 	}
 	
-	protected class RefineThread extends Thread {
+	protected void refreshView() {
+		Display.getDefault().asyncExec(new Runnable() { 
+			public void run() {
+				navigator.getCommonViewer().refresh();
+			}
+		});
+	}
+	
+	public class RefineThread extends Thread {
 		private boolean canceled = false;
+		private boolean searchNew;
+		private String newFilter;
+		private HashMap<Object, Boolean> matchClone;
+		private HashMap<Object, Boolean> showClone;
+		public RefineThread(
+				boolean searchNew, String newFilter,
+				HashMap<Object, Boolean> matches,
+				HashMap<Object, Boolean> shouldShow) {
+			this.searchNew = searchNew;
+			this.newFilter = newFilter;
+			this.matchClone = matches == null ? 
+					new HashMap<Object, Boolean>() :
+					(HashMap<Object, Boolean>) matches.clone();
+			this.showClone = shouldShow == null ? 
+					new HashMap<Object, Boolean>() :
+					(HashMap<Object, Boolean>) shouldShow.clone();
+		}
+		
+		
+		/*
+		 * TODO MAKE SURE YOU FIX THE CONTENT PROVIDER
+		 * IT IS NOT RETURNING GETPARENT AS IT SHOULD!!!
+		 * 
+		 */
 		public void run() {
-			cacheEntry(requiresRefine, (ITreeContentProvider)navigator.getCommonViewer().getContentProvider());
-			refineThread = null;
-			Display.getDefault().asyncExec(new Runnable() { 
-				public void run() {
-					navigator.getCommonViewer().refresh();
+			if( searchNew ) 
+				searchNew();
+			else
+				refine();
+			
+			if( !canceled ) {
+				threadFinished(matchClone, showClone, newFilter);
+			}
+		}
+		
+		protected void searchNew() {
+			ITreeContentProvider provider = (ITreeContentProvider)navigator.getCommonViewer().getContentProvider();
+			Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
+			for( int i = 0; i < elements.length; i++ )
+				if( !canceled )
+					fullCache(elements[i], provider);
+		}
+		
+		protected void fullCache(Object o, ITreeContentProvider provider) {
+			boolean found = false;
+			String elementAsString = MBeanExplorerLabelProvider.getText2(o);
+			if( elementAsString.contains(newFilter)) {
+				matchClone.put(o, TRUE_BOOL);
+				recurse(o, provider, true);
+			} else {
+				// if I don't match, then if ANY of my children match, I also match
+				Object[] children = provider.getChildren(o);
+				for( int i = 0; i < children.length; i++ ) 
+					if( !canceled ) 
+						fullCache(children[i], provider);
+
+				if( found ) {
+					showClone.put(o, TRUE_BOOL);
+					found = true;
 				}
-			} );
+			}
+		}
+		
+		protected void recurse(Object o, ITreeContentProvider provider, boolean match) {
+			Object[] children = provider.getChildren(o);
+			for( int i = 0; i < children.length; i++ ) {
+				if( match )
+					showClone.put(children[i], TRUE_BOOL);
+				else
+					showClone.remove(children[i]);
+				recurse(children[i], provider, match);
+			}
+			Object parent = provider.getParent(o);
+			if( match ) {
+				while( parent != null ) {
+					showClone.put(parent, TRUE_BOOL);
+					parent = provider.getParent(parent);
+				}
+			} else {
+				while( parent != null ) {
+					showClone.remove(parent);
+					parent = provider.getParent(parent);
+				}
+			}
+		}
+
+		
+		protected void refine() {
+			ITreeContentProvider provider = (ITreeContentProvider)navigator.getCommonViewer().getContentProvider();
+			Iterator i = matchClone.keySet().iterator();
+			Set<Object> toRemove = new HashSet<Object>();
+			Set<Object> mustRemain = new HashSet<Object>();
+			
+			Object o;
+			String elementAsString;
+
+			while(i.hasNext() && !canceled) {
+				o = i.next();
+				elementAsString = MBeanExplorerLabelProvider.getText2(o);
+				if( !elementAsString.contains(newFilter)) {
+					toRemove.add(o);
+				} else {
+					mustRemain.add(o);
+				}
+			}
+
+			for( Object o2 : toRemove ) {
+				matchClone.remove(o2);
+				recurse(o2, provider, false);
+			}
+			
+			for( Object o2 : mustRemain ) {
+				matchClone.put(o2, TRUE_BOOL);
+				recurse(o2, provider, true);
+			}
 		}
 		
 		public void cancel() {
 			canceled = true;
 		}
-		
-		protected void cacheEntry(boolean refine, ITreeContentProvider provider) {
-			Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
-			for( int i = 0; i < elements.length; i++ )
-				if( !canceled )
-					cache(elements[i], refine, provider);
-		}
-
-		protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
-			if( !refine ) {
-				Boolean val = cache.get(o);
-				if( val != null ) {
-					return val.booleanValue();
-				}
-			}
-			
-			// If I match, all my children and grandchildren must match
-			String elementAsString = MBeanExplorerLabelProvider.getText2(o);
-			if( elementAsString.contains(filterText)) {
-					recurseTrue(o, provider);
-				return true;
-			}
-
-			// if I don't match, then if ANY of my children match, I also match
-			boolean belongs = false;
-			Object tmp;
-			Object[] children = provider.getChildren(o);
-			for( int i = 0; i < children.length; i++ ) {
-				if( !canceled ) {
-					tmp = cache.get(children[i]);
-					if( !refine || (tmp != null && ((Boolean)tmp).booleanValue())) {
-						belongs |= cache(children[i], refine, provider);
-					}
-				}
-			}
-			cache.put(o, new Boolean(canceled || belongs));
-			return belongs;
-		}
-			
-		protected void recurseTrue(Object o, ITreeContentProvider provider) {
-			cache.put(o, new Boolean(true));
-			Object[] children = provider.getChildren(o);
-			for( int i = 0; i < children.length; i++ )
-				recurseTrue(children[i], provider);
-		}
 	}
-
-	protected void clearCache() {
-		cache = new ConcurrentHashMap<Object,Boolean>();
-		requiresRefine = false;
+	
+	protected synchronized void threadFinished(
+			HashMap<Object, Boolean> newMatches, 
+			HashMap<Object, Boolean> newShow, String filter) {
+		matches = newMatches;
+		shouldShow = newShow;
+		filterText = filter;
+		refineThread = null;
+		refreshView();
 	}
 	
 	public boolean shouldShow(Object element, Object parentElement) {
-		String filterText = this.filterText;
-		if( filterText != null && filterText.length() > 0 ) {
-			boolean tmp = cache.get(element) != null && cache.get(element).booleanValue();
-			return tmp;
-		}
-		return true;
+		return matches == null || matches.containsKey(element)
+			|| shouldShow.containsKey(element);
 	}
 	
     public void dispose() {
-    	clearCache();
-    	oldFilterText = null;
-    	filterText = null;
     }
+    
+    
+    
+    
+    
+    
+    
+    
+//	
+//	protected class RefineThread extends Thread {
+//		private boolean canceled = false;
+//		public void run() {
+//			cacheEntry(requiresRefine, (ITreeContentProvider)navigator.getCommonViewer().getContentProvider());
+//			refineThread = null;
+//			Display.getDefault().asyncExec(new Runnable() { 
+//				public void run() {
+//					navigator.getCommonViewer().refresh();
+//				}
+//			} );
+//		}
+//		
+//		public void cancel() {
+//			canceled = true;
+//		}
+//		
+//		protected void cacheEntry(boolean refine, ITreeContentProvider provider) {
+//			Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
+//			for( int i = 0; i < elements.length; i++ )
+//				if( !canceled )
+//					cache(elements[i], refine, provider);
+//		}
+//
+//		protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
+//			if( !refine ) {
+//				Boolean val = cache.get(o);
+//				if( val != null ) {
+//					return val.booleanValue();
+//				}
+//			}
+//			
+//			// If I match, all my children and grandchildren must match
+//			String elementAsString = MBeanExplorerLabelProvider.getText2(o);
+//			if( elementAsString.contains(filterText)) {
+//					recurseTrue(o, provider);
+//				return true;
+//			}
+//
+//			// if I don't match, then if ANY of my children match, I also match
+//			boolean belongs = false;
+//			Object tmp;
+//			Object[] children = provider.getChildren(o);
+//			for( int i = 0; i < children.length; i++ ) {
+//				if( !canceled ) {
+//					tmp = cache.get(children[i]);
+//					if( !refine || (tmp != null && ((Boolean)tmp).booleanValue())) {
+//						belongs |= cache(children[i], refine, provider);
+//					}
+//				}
+//			}
+//			cache.put(o, new Boolean(canceled || belongs));
+//			return belongs;
+//		}
+//			
+//		protected void recurseTrue(Object o, ITreeContentProvider provider) {
+//			cache.put(o, new Boolean(true));
+//			Object[] children = provider.getChildren(o);
+//			for( int i = 0; i < children.length; i++ )
+//				recurseTrue(children[i], provider);
+//		}
+//	}
+//
+//	protected void clearCache() {
+////		cache = new ConcurrentHashMap<Object,Boolean>();
+////		requiresRefine = false;
+//	}
     
 }

@@ -38,12 +38,9 @@ public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper {
     }
 
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if( !super.equals(obj))
+        	return false;
+        
         final MBeanAttributeInfoWrapper other = (MBeanAttributeInfoWrapper) obj;
         if (info == null) {
             if (other.info != null)
