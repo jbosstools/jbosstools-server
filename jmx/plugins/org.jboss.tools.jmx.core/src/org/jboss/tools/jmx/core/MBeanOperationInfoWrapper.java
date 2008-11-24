@@ -67,8 +67,8 @@ public class MBeanOperationInfoWrapper extends MBeanFeatureInfoWrapper {
     		p.getReturnType().equals(info.getReturnType()) &&
     		p.getDescription().equals(info.getDescription()) &&
     		p.getImpact() == info.getImpact() &&
-    		arrayEquals(p.getSignature(), info.getSignature()) &&
-                    p.getDescriptor().equals(info.getDescriptor()));
+    		arrayEquals(p.getSignature(), info.getSignature()) /*&&
+                    p.getDescriptor().equals(info.getDescriptor()*/);
 
     }
     
@@ -97,8 +97,8 @@ public class MBeanOperationInfoWrapper extends MBeanFeatureInfoWrapper {
 		    return true;
 		return (o1.getName().equals(o2.getName()) &&
 			o1.getType().equals(o2.getType()) &&
-			safeEquals(o1.getDescription(), o2.getDescription()) &&
-	                o1.getDescriptor().equals(o2.getDescriptor()));
+			safeEquals(o1.getDescription(), o2.getDescription()) /*&&
+	                o1.getDescriptor().equals(o2.getDescriptor())*/);
 	}
 	
 	private boolean safeEquals(Object o1, Object o2) {
