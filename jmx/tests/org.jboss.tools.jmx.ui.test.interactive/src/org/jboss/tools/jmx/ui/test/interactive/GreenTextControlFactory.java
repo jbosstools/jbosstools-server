@@ -9,6 +9,7 @@
 package org.jboss.tools.jmx.ui.test.interactive;
 
 
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -23,8 +24,14 @@ public class GreenTextControlFactory implements IAttributeControlFactory {
             boolean writable, String type, Object value,
             IWritableAttributeHandler handler) {
 
-        final Text text = toolkit.createText(parent, value.toString(),
-                SWT.BORDER);
+    	Text text;
+    	if( toolkit != null ) { 
+    		text = toolkit.createText(parent, value.toString(), SWT.BORDER);
+    	} else {
+    		text = new Text(parent, SWT.BORDER | Window.getDefaultOrientation());
+    		text.setText(value.toString());
+    	}
+    	
         text.setEditable(false);
         text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_GREEN));
         return text;

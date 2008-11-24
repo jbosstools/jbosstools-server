@@ -224,10 +224,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                     OperationInvocationResultDialog.open(container.getShell(), result);
                 }
             } catch (Exception e) {
-                String message = e.getLocalizedMessage();
-                if (message == null) {
-                    message = e.getClass().getName();
-                }
+                String message = e.getClass().getName() + ": " + e.getLocalizedMessage();
                 JMXUIActivator.log(IStatus.ERROR, e.getClass().getName(), e);
                 // if the exception has a cause, it is likely more interesting
                 // since it may be the exception thrown by the mbean
@@ -235,7 +232,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 // rather than the exception thrown by the mbean server
                 // connection
                 if (e.getCause() != null) {
-                    message = e.getCause().getLocalizedMessage();
+                    message = e.getCause().getClass().getName() + ": " + e.getCause().getLocalizedMessage();
                 }
                 MessageDialog.openError(container.getShell(),
                         Messages.OperationDetails_invocationError, message);
