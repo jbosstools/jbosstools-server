@@ -202,14 +202,12 @@ public class QueryContribution {
 					mustRemain.add(o);
 				}
 			}
-
+			
 			for( Object o2 : toRemove ) {
 				matchClone.remove(o2);
-				recurse(o2, provider, false);
 			}
-			
+			showClone = new HashMap<Object, Boolean>();
 			for( Object o2 : mustRemain ) {
-				matchClone.put(o2, TRUE_BOOL);
 				recurse(o2, provider, true);
 			}
 		}
@@ -235,81 +233,5 @@ public class QueryContribution {
 	}
 	
     public void dispose() {
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-//	
-//	protected class RefineThread extends Thread {
-//		private boolean canceled = false;
-//		public void run() {
-//			cacheEntry(requiresRefine, (ITreeContentProvider)navigator.getCommonViewer().getContentProvider());
-//			refineThread = null;
-//			Display.getDefault().asyncExec(new Runnable() { 
-//				public void run() {
-//					navigator.getCommonViewer().refresh();
-//				}
-//			} );
-//		}
-//		
-//		public void cancel() {
-//			canceled = true;
-//		}
-//		
-//		protected void cacheEntry(boolean refine, ITreeContentProvider provider) {
-//			Object[] elements = provider.getElements(navigator.getCommonViewer().getInput());
-//			for( int i = 0; i < elements.length; i++ )
-//				if( !canceled )
-//					cache(elements[i], refine, provider);
-//		}
-//
-//		protected boolean cache(Object o, boolean refine, ITreeContentProvider provider) {
-//			if( !refine ) {
-//				Boolean val = cache.get(o);
-//				if( val != null ) {
-//					return val.booleanValue();
-//				}
-//			}
-//			
-//			// If I match, all my children and grandchildren must match
-//			String elementAsString = MBeanExplorerLabelProvider.getText2(o);
-//			if( elementAsString.contains(filterText)) {
-//					recurseTrue(o, provider);
-//				return true;
-//			}
-//
-//			// if I don't match, then if ANY of my children match, I also match
-//			boolean belongs = false;
-//			Object tmp;
-//			Object[] children = provider.getChildren(o);
-//			for( int i = 0; i < children.length; i++ ) {
-//				if( !canceled ) {
-//					tmp = cache.get(children[i]);
-//					if( !refine || (tmp != null && ((Boolean)tmp).booleanValue())) {
-//						belongs |= cache(children[i], refine, provider);
-//					}
-//				}
-//			}
-//			cache.put(o, new Boolean(canceled || belongs));
-//			return belongs;
-//		}
-//			
-//		protected void recurseTrue(Object o, ITreeContentProvider provider) {
-//			cache.put(o, new Boolean(true));
-//			Object[] children = provider.getChildren(o);
-//			for( int i = 0; i < children.length; i++ )
-//				recurseTrue(children[i], provider);
-//		}
-//	}
-//
-//	protected void clearCache() {
-////		cache = new ConcurrentHashMap<Object,Boolean>();
-////		requiresRefine = false;
-//	}
-    
+    }    
 }

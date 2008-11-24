@@ -102,6 +102,9 @@
                <instanceof
                      value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$DelayProxy">
                </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
+               </instanceof>
             </or>
          </possibleChildren>
       </navigatorContent>
