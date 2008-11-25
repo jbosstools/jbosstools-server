@@ -34,7 +34,6 @@ public class ServerLogView extends LogView implements IServerLogListener {
 	}
 	
 	public void dispose() {
-		setLogFile(null);
 		super.dispose();
 	}
 	
