@@ -38,9 +38,11 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
@@ -189,13 +191,26 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		super.publishStart(monitor);
-		if( shouldSuspendScanner() )
-			suspendDeployment();
+		suspendDeployment();
+		ensureDeployLocationAdded();
+	}
+	
+	protected void ensureDeployLocationAdded() {
+		final IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
+		IJMXRunnable r = new IJMXRunnable() {
+			public void run(MBeanServerConnection connection) throws Exception {
+				ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
+				connection.invoke(name, "addURL", new Object[] { "file:" + ds.getDeployFolder() }, new String[] {String.class.getName()});
+			}
+		};
+		try {
+			if( getServer().getServerState() == IServer.STATE_STARTED)
+				JBossServerConnectionProvider.run(getServer(), r);
+		} catch( CoreException ce) {}
 	}
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-		if( shouldSuspendScanner() )
-			resumeDeployment();
+		resumeDeployment();
 		super.publishFinish(monitor);
 	}
 	
@@ -215,7 +230,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			}
 		};
 		try {
-			JBossServerConnectionProvider.run(getServer(), r);
+			if( shouldSuspendScanner() )
+				JBossServerConnectionProvider.run(getServer(), r);
 		} catch( CoreException ce) {} // ignore
 	}
 	
@@ -227,7 +243,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			}
 		};
 		try {
-			JBossServerConnectionProvider.run(getServer(), r);
+			if( shouldSuspendScanner() )
+				JBossServerConnectionProvider.run(getServer(), r);
 		} catch( CoreException ce) {} // ignore
 	}
 		
