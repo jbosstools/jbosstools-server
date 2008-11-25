@@ -49,6 +49,9 @@ public class XPathTreeLabelProvider extends LabelProvider {
 		if( element instanceof XPathFileResult )
 			return ((XPathFileResult)element).getFileLocation();
 		
+		if( element instanceof XPathResultNode ) 
+			return "Match " + ((XPathResultNode)element).getIndex();
+		
 		return "";
 	}
 	

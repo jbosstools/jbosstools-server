@@ -31,7 +31,7 @@ public class XPathDecorator extends LabelProvider implements ILightweightLabelDe
 		}
 		
 		if( element instanceof XPathResultNode ) {
-			return ((XPathResultNode)element).getText();
+			return "   " + ((XPathResultNode)element).getText();
 		}
 		return null;
 	}

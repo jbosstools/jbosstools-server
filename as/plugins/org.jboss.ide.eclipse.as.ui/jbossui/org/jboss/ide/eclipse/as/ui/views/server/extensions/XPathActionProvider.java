@@ -218,12 +218,14 @@ public class XPathActionProvider extends CommonActionProvider {
 				return;
 
 			if (first instanceof ServerWrapper) {
+				selectedNode = first;
 				menu.add(newXPathCategoryAction);
 				menu.add(new Separator());
 				return;
 			}
 
 			if (first instanceof XPathCategory) {
+				selectedNode = first;
 				menu.add(newXPathAction);
 				menu.add(deleteXPathCategoryAction);
 				menu.add(new Separator());

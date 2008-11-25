@@ -18,8 +18,11 @@ public class JMXProvider {
 			delegate = new MBeanExplorerContentProvider();
 		}
 		public Object[] getChildren(Object parentElement) {
-			if( parentElement instanceof IServer ) 
-				return new Object[] { JBossServerConnectionProvider.getConnection((IServer)parentElement)};
+			if( parentElement instanceof IServer ) {
+				Object sel = JBossServerConnectionProvider.getConnection((IServer)parentElement);
+				if( sel != null )
+					return new Object[] { sel };
+			}
 			return delegate.getChildren(parentElement);
 		}
 		public Object getParent(Object element) {
