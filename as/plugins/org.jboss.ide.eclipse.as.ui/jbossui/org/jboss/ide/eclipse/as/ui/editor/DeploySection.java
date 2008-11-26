@@ -337,12 +337,15 @@ public class DeploySection extends ServerEditorSection {
 			oldDir = deployText.getText();
 			oldTemp = tempDeployText.getText();
 			
+			String type;
+			
 			
 			if( newSelection == metadataRadio  ) {
 				newDir = IJBossServerConstants.PLUGIN_LOCATION.append(name).
 					append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 				newTemp = IJBossServerConstants.PLUGIN_LOCATION.append(name).
 					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+				type = IDeployableServer.DEPLOY_METADATA;
 				new File(newDir).mkdirs();
 				new File(newTemp).mkdirs();
 			} else if( newSelection == serverRadio ) {
@@ -355,9 +358,11 @@ public class DeploySection extends ServerEditorSection {
 				newTemp = new Path(IJBossServerConstants.SERVER).append(config)
 					.append(IJBossServerConstants.TMP)
 					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+				type = IDeployableServer.DEPLOY_SERVER;
 			} else {
 				newDir = lastCustomDeploy;
 				newTemp = lastCustomTemp;
+				type = IDeployableServer.DEPLOY_CUSTOM;
 			}
 			
 			newDir = newDir == null ? oldDir : newDir;
@@ -372,6 +377,8 @@ public class DeploySection extends ServerEditorSection {
 			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
 			tempDeployText.setText(newTemp);
 			tempDeployText.addModifyListener(tempDeployListener);
+			
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, type);
 			getSaveStatus();
 		}
 		public void undo() {
@@ -388,6 +395,11 @@ public class DeploySection extends ServerEditorSection {
 			oldSelection.removeSelectionListener(radioListener);
 			oldSelection.setSelection(true);
 			oldSelection.addSelectionListener(radioListener);
+			
+			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
+				 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
+				 				IDeployableServer.DEPLOY_METADATA;
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, oldType);
 			getSaveStatus();
 		}
 	}
