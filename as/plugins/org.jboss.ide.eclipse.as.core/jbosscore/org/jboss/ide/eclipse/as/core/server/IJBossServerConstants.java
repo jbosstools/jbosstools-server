@@ -21,7 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 /**
  * 
@@ -29,6 +31,11 @@ import org.eclipse.core.runtime.Path;
  *
  */
 public interface IJBossServerConstants {
+	public static final IPath PLUGIN_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation();
+	public static final String LOG = "log";
+	public static final String TEMP_DEPLOY = "tempDeploy";
+	public static final String JBOSSTOOLS_TMP = "jbosstoolsTemp";
+	public static final String TMP = "tmp";
 	
 	// Launch configuration constants
 	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir";

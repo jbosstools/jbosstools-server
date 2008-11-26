@@ -201,8 +201,12 @@ public class Messages {
 
 
 	/* Editor Strings */
+	public static String EditorUseWorkspaceMetadata;
+	public static String EditorUseServersDeployFolder;
+	public static String EditorUseCustomDeployFolder;
 	public static String EditorSetDeployLabel;
 	public static String EditorSetTempDeployLabel;
+	public static String EditorSetRadioClicked;
 	public static String EditorDeployDNE;
 	public static String EditorTempDeployDNE;
 	public static String EditorStartupPollerLabel;

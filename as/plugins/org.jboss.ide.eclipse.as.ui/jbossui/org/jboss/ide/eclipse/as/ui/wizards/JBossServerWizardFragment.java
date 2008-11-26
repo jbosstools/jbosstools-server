@@ -24,29 +24,21 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -55,8 +47,9 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -68,17 +61,15 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private String name, authUser, authPass, deployVal, deployTmpFolderVal;
+	private String name;
 	private Label nameLabel, serverExplanationLabel, 
-					runtimeExplanationLabel, authenticationExplanationLabel; 
+					runtimeExplanationLabel; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
 	private Label homeValLabel, jreValLabel, configValLabel;
-	private Label usernameLabel, passLabel, deployLabel;
 	
 	private Composite nameComposite;
-	private Group runtimeGroup, authenticationGroup, deployGroup;
-	private Text nameText, userText, passText, deployText;
-	private Button deployBrowseButton;
+	private Group runtimeGroup;
+	private Text nameText;
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
@@ -89,9 +80,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		createExplanationLabel(main);
 		createNameComposite(main);
 		createRuntimeGroup(main);
-		createAuthenticationGroup(main);
-		createDeployGroup(main);
-		
+
 		// make modifications to parent
 		handle.setTitle(Messages.swf_Title);
 		handle.setDescription(Messages.swf_Description);
@@ -225,100 +214,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configValLabel.setLayoutData(d);
 	}
 	
-	protected void createAuthenticationGroup(Composite main) {
-		authenticationGroup = new Group(main, SWT.NONE);
-		authenticationGroup.setText(Messages.swf_AuthenticationGroup);
-		FormData groupData = new FormData();
-		groupData.left = new FormAttachment(0,5);
-		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(runtimeGroup, 5);
-		authenticationGroup.setLayoutData(groupData);
-
-		authenticationGroup.setLayout(new GridLayout(2, false));
-		GridData d;
-
-		authenticationExplanationLabel = new Label(authenticationGroup, SWT.NONE);
-		authenticationExplanationLabel.setText("JMX Console Access");
-		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
-		d.horizontalSpan = 2;
-		authenticationExplanationLabel.setLayoutData(d);
-		
-		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
-		d.minimumWidth = 200;
-		usernameLabel = new Label(authenticationGroup, SWT.NONE);
-		usernameLabel.setText(Messages.swf_Username);
-		userText = new Text(authenticationGroup, SWT.BORDER);
-		userText.setLayoutData(d);
-
-		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
-		d.minimumWidth = 200;
-		passLabel = new Label(authenticationGroup, SWT.NONE);
-		passLabel.setText(Messages.swf_Password);
-		passText = new Text(authenticationGroup, SWT.BORDER);
-		passText.setLayoutData(d);
-		
-		// listeners
-		passText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				authPass = passText.getText();
-			} 
-		});
-		userText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				authUser = userText.getText();
-			} 
-		});
-	}
-	
-	protected void createDeployGroup(Composite main) {
-		deployGroup = new Group(main, SWT.NONE);
-		deployGroup.setText(Messages.swf_DeployGroup);
-		FormData groupData = new FormData();
-		groupData.left = new FormAttachment(0,5);
-		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(authenticationGroup, 5);
-		deployGroup.setLayoutData(groupData);
-
-		deployGroup.setLayout(new GridLayout(3, false));
-		deployLabel = new Label(deployGroup, SWT.NONE);
-		deployText = new Text(deployGroup, SWT.BORDER);
-		deployLabel.setText(Messages.swf_DeployDirectory);
-		
-		deployBrowseButton = new Button(deployGroup, SWT.PUSH);
-		deployBrowseButton.setText(Messages.browse);
-		
-		deployBrowseButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {}
-			public void widgetSelected(SelectionEvent e) {
-				String directory = getDirectory(deployText.getText(), deployGroup.getShell());
-				if (directory != null) {
-					deployText.setText(directory);
-					deployVal = deployText.getText();
-				}
-			}
-		});
-		
-		deployText.setEditable(false);
-	}
-	
-	protected String getDirectory(String startingDirectory, Shell shell) {
-		DirectoryDialog fileDialog = new DirectoryDialog(shell, SWT.OPEN);
-
-		if( startingDirectory == null )
-			startingDirectory = getRuntime().getRuntime().getLocation().toString();
-		IPath sp = DeployableServer.makeGlobal(getRuntime(), new Path(startingDirectory));
-		fileDialog.setFilterPath(sp.toString());
-
-		String dir = fileDialog.open();
-		if (dir != null) {
-			dir = dir.trim();
-			if (dir.length() > 0) {
-				return DeployableServer.makeRelative(getRuntime(), new Path(dir)).toString();
-			}
-		}
-		return null;
-	}
-
 	private void updateErrorMessage() {
 		String error = getErrorString();
 		if( error == null ) {
@@ -331,15 +226,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private String getErrorString() {
 		if( findServer(name) != null ) 
 			return Messages.swf_NameInUse;
-		
-		if(deployVal==null || deployVal.trim().length()==0) {
-			return "Deploy folder not specified";
-		}
-
-		if(deployTmpFolderVal==null || deployTmpFolderVal.trim().length()==0) {
-			return "Temporary deploy folder not specified";
-		}
-				
 		return null;
 	}
 		
@@ -353,14 +239,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		nameText.setText(name);
 		homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 		configValLabel.setText(srt.getJBossConfiguration());
-		IVMInstall install = srt.getVM();
-		jreValLabel.setText(install.getInstallLocation().getAbsolutePath() + " (" + install.getName() + ")");
-		String deployFolder = new Path("server").append(configValLabel.getText()).append("deploy").toString();
-		deployTmpFolderVal = srt.getRuntime().getLocation().append( "server").append(configValLabel.getText()).append("tmp").append("jbosstoolsTemp").toOSString();
-		deployText.setText(deployFolder);
-		deployVal = deployFolder;
+		jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
 		runtimeGroup.layout();
-		deployGroup.layout();
 		updateErrorMessage();
 	}
 
@@ -372,11 +252,23 @@ public class JBossServerWizardFragment extends WizardFragment {
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
 		serverWC.setServerConfiguration(null); // no inside jboss folder
-		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		jbs.setUsername(authUser);
-		jbs.setPassword(authPass);
+		handleDefaults(serverWC);
+	}
+	
+	protected void handleDefaults(IServerWorkingCopy wc) {
+		String deployVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+		String deployTmpFolderVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+			append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+		
+		
+		JBossServer jbs = (JBossServer)wc.loadAdapter(JBossServer.class, new NullProgressMonitor());
+		jbs.setUsername("admin");
+		jbs.setPassword("admin");
+		jbs.setDeployLocationType(IDeployableServer.DEPLOY_METADATA);
 		jbs.setDeployFolder(deployVal);
 		jbs.setTempDeployFolder(deployTmpFolderVal);
+		new File(deployVal).mkdirs();
 		new File(deployTmpFolderVal).mkdirs();
 	}
 

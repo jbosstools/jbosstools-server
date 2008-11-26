@@ -122,6 +122,14 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		setAttribute(TEMP_DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
 	}
 	
+	public void setDeployLocationType(String type) {
+		setAttribute(DEPLOY_DIRECTORY_TYPE, type);
+	}
+	
+	public String getDeployLocationType() {
+		return getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_CUSTOM);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer#getAttributeHelper()

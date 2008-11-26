@@ -25,20 +25,16 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
-public class ServerLogger {
-	private static final IPath LOG_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation().append("logs");
+public class ServerLogger implements IJBossServerConstants {
 	
 	private static ServerLogger instance;
 	public static ServerLogger getDefault() {
 		if( instance == null ) {
 			instance = new ServerLogger();
-			if( !LOG_LOCATION.toFile().exists())
-				LOG_LOCATION.toFile().mkdirs();
 		}
 		return instance;
 	}
@@ -81,6 +77,10 @@ public class ServerLogger {
 	}
 	
 	public File getServerLogFile(IServer server) {
-		return server == null ? LOG_LOCATION.toFile() : LOG_LOCATION.append(server.getId()).toFile();
+		File f = server == null ? PLUGIN_LOCATION.toFile() : 
+			PLUGIN_LOCATION.append(server.getId()).append(LOG).toFile();
+		if( !f.getParentFile().exists() ) 
+			f.getParentFile().mkdirs();
+		return f;
 	}
 }

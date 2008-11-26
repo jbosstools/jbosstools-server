@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -47,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -56,8 +58,10 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -69,8 +73,13 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 public class DeploySection extends ServerEditorSection {
 
 	private Text deployText, tempDeployText;
+	private Button metadataRadio, serverRadio, customRadio, currentSelection;
+	private Button deployButton, tempDeployButton;
 	private ModifyListener deployListener, tempDeployListener;
+	private SelectionListener radioListener;
 	private ServerAttributeHelper helper;
+	
+	private String lastCustomDeploy, lastCustomTemp;
 	public DeploySection() {
 	}
 
@@ -94,18 +103,42 @@ public class DeploySection extends ServerEditorSection {
 		
 		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
 		
+		Composite inner = toolkit.createComposite(composite);
+		inner.setLayout(new GridLayout(1, false));
+		metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
+		serverRadio = toolkit.createButton(inner, Messages.EditorUseServersDeployFolder, SWT.RADIO);
+		customRadio = toolkit.createButton(inner, Messages.EditorUseCustomDeployFolder, SWT.RADIO);
+		
+		metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
+		serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
+		customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		
+		radioListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				if( e.getSource() == currentSelection )
+					return; // do nothing
+				execute(new RadioClickedCommand((Button)e.getSource(), currentSelection));
+				currentSelection = (Button)e.getSource();
+			} };
+		metadataRadio.addSelectionListener(radioListener);
+		serverRadio.addSelectionListener(radioListener);
+		customRadio.addSelectionListener(radioListener);
+		
 		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
+		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		deployText = toolkit.createText(composite, getDeployDir(), SWT.BORDER);
 		deployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				execute(new SetDeployDirCommand());
-				getSaveStatus();
 			}
 		};
 		deployText.addModifyListener(deployListener);
 
-		Button button = toolkit.createButton(composite, Messages.browse, SWT.PUSH);
-		button.addSelectionListener(new SelectionListener() {
+		deployButton = toolkit.createButton(composite, Messages.browse, SWT.PUSH);
+		deployButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
 			public void widgetSelected(SelectionEvent e) {
@@ -119,16 +152,17 @@ public class DeploySection extends ServerEditorSection {
 		});
 		
 		Label tempDeployLabel = toolkit.createLabel(composite, Messages.swf_TempDeployDirectory);
+		tempDeployLabel.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
+
 		tempDeployText = toolkit.createText(composite, getTempDeployDir(), SWT.BORDER);
 		tempDeployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				execute(new SetTempDeployDirCommand());
-				getSaveStatus();
 			}
 		};
 		tempDeployText.addModifyListener(tempDeployListener);
 
-		Button tempDeployButton = toolkit.createButton(composite, Messages.browse, SWT.PUSH);
+		tempDeployButton = toolkit.createButton(composite, Messages.browse, SWT.PUSH);
 		tempDeployButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -141,30 +175,36 @@ public class DeploySection extends ServerEditorSection {
 			} 
 		});
 
-		
 		FormData descriptionLabelData = new FormData();
 		descriptionLabelData.left = new FormAttachment(0,5);
 		descriptionLabelData.top = new FormAttachment(0,5);
 		descriptionLabel.setLayoutData(descriptionLabelData);
 
+		FormData radios = new FormData();
+		radios.top = new FormAttachment(descriptionLabel,5);
+		radios.left = new FormAttachment(0,5);
+		radios.right = new FormAttachment(100,-5);
+		inner.setLayoutData(radios);
+
+		
 		// first row
 		FormData labelData = new FormData();
 		labelData.left = new FormAttachment(0,5);
 		labelData.right = new FormAttachment(deployText,-5);
-		labelData.top = new FormAttachment(descriptionLabel,5);
+		labelData.top = new FormAttachment(inner,5);
 		label.setLayoutData(labelData);
 		
 		FormData textData = new FormData();
-		textData.left = new FormAttachment(button, -305);
-		textData.top = new FormAttachment(descriptionLabel,5);
-		textData.right = new FormAttachment(button, -5);
+		textData.left = new FormAttachment(deployButton, -305);
+		textData.top = new FormAttachment(inner,5);
+		textData.right = new FormAttachment(deployButton, -5);
 		deployText.setLayoutData(textData);
 		
 		FormData buttonData = new FormData();
 		buttonData.right = new FormAttachment(100,-5);
 		buttonData.left = new FormAttachment(100, -100);
-		buttonData.top = new FormAttachment(descriptionLabel,2);
-		button.setLayoutData(buttonData);
+		buttonData.top = new FormAttachment(inner,2);
+		deployButton.setLayoutData(buttonData);
 		
 		// second row
 		FormData tempLabelData = new FormData();
@@ -187,6 +227,10 @@ public class DeploySection extends ServerEditorSection {
 		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
+	}
+	
+	private String getDeployType() {
+		return helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 	}
 	
 	private String getDeployDir() {
@@ -232,12 +276,15 @@ public class DeploySection extends ServerEditorSection {
 		}
 		public void execute() {
 			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
+			lastCustomDeploy = newDir;
+			getSaveStatus();
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
 			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
+			getSaveStatus();
 		}
 	}
 
@@ -255,12 +302,90 @@ public class DeploySection extends ServerEditorSection {
 		}
 		public void execute() {
 			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
+			lastCustomTemp = newDir;
+			getSaveStatus();
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
 			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
+			getSaveStatus();
+		}
+	}
+	
+	public class RadioClickedCommand extends ServerCommand {
+		private Button newSelection, oldSelection;
+		private String oldDir, newDir;
+		private String oldTemp, newTemp;
+		private String name;
+		public RadioClickedCommand(Button clicked, Button previous) {
+			super(DeploySection.this.server, Messages.EditorSetRadioClicked);
+			newSelection = clicked;
+			oldSelection = previous;
+			name = DeploySection.this.server.getName();
+		}
+		public void execute() {
+			boolean custom = newSelection == customRadio;
+			deployText.setEnabled(custom);
+			tempDeployText.setEnabled(custom);
+			deployButton.setEnabled(custom);
+			tempDeployButton.setEnabled(custom);
+			oldDir = deployText.getText();
+			oldTemp = tempDeployText.getText();
+			
+			
+			if( newSelection == metadataRadio  ) {
+				newDir = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+					append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+				newTemp = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+				new File(newDir).mkdirs();
+				new File(newTemp).mkdirs();
+			} else if( newSelection == serverRadio ) {
+				IRuntime rt = DeploySection.this.server.getRuntime();
+				IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+				String config = jbsrt.getJBossConfiguration();
+				newDir = new Path(IJBossServerConstants.SERVER)
+					.append(config)
+					.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
+				newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+					.append(IJBossServerConstants.TMP)
+					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+			} else {
+				newDir = lastCustomDeploy;
+				newTemp = lastCustomTemp;
+			}
+			
+			newDir = newDir == null ? oldDir : newDir;
+			newTemp = newTemp == null ? oldTemp : newTemp; 
+			
+			deployText.removeModifyListener(deployListener);
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
+			deployText.setText(newDir);
+			deployText.addModifyListener(deployListener);
+
+			tempDeployText.removeModifyListener(tempDeployListener);
+			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
+			tempDeployText.setText(newTemp);
+			tempDeployText.addModifyListener(tempDeployListener);
+			getSaveStatus();
+		}
+		public void undo() {
+			deployText.removeModifyListener(deployListener);
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
+			deployText.setText(oldDir);
+			deployText.addModifyListener(deployListener);
+
+			tempDeployText.removeModifyListener(tempDeployListener);
+			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
+			tempDeployText.setText(oldTemp);
+			tempDeployText.addModifyListener(tempDeployListener);
+			
+			oldSelection.removeSelectionListener(radioListener);
+			oldSelection.setSelection(true);
+			oldSelection.addSelectionListener(radioListener);
+			getSaveStatus();
 		}
 	}
 	

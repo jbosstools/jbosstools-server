@@ -28,15 +28,23 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  *
  * @author rob.stryker@jboss.com
  */
-public interface IDeployableServer {
+public interface IDeployableServer extends IJBossServerConstants {
 	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory";
 	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory";
+	public static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType";
+
+	public static final String DEPLOY_METADATA = "metadata";
+	public static final String DEPLOY_CUSTOM = "custom";
+	public static final String DEPLOY_SERVER = "server";
 	
 	public String getDeployFolder();
 	public void setDeployFolder(String folder);
 	public String getTempDeployFolder();
 	public void setTempDeployFolder(String folder);
-
+	public String getDeployLocationType();
+	public void setDeployLocationType(String type);
+	
+	
 	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();
 	public IServer getServer();
