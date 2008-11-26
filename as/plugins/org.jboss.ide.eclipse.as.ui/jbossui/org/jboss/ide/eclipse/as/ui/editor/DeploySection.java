@@ -174,6 +174,9 @@ public class DeploySection extends ServerEditorSection {
 					tempDeployText.setText(makeRelative(x));
 			} 
 		});
+		
+		deployText.setEnabled(customRadio.getSelection());
+		tempDeployText.setEnabled(customRadio.getSelection());
 
 		FormData descriptionLabelData = new FormData();
 		descriptionLabelData.left = new FormAttachment(0,5);
