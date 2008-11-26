@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -70,11 +71,13 @@ public class ServerPasswordSection extends ServerEditorSection {
 		GridData d = new GridData(); d.horizontalSpan = 2;
 		explanation.setLayoutData(d);
 		
-		toolkit.createLabel(composite, Messages.swf_Username);
+		Label username = toolkit.createLabel(composite, Messages.swf_Username);
+		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		String n = helper.getAttribute(JBossServer.SERVER_USERNAME, "");
 		String p = helper.getAttribute(JBossServer.SERVER_PASSWORD, "");
 		nameText = toolkit.createText(composite, n); 
-		toolkit.createLabel(composite, Messages.swf_Password);
+		Label password = toolkit.createLabel(composite, Messages.swf_Password);
+		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
 		passText = toolkit.createText(composite, p);
 		
 		d = new GridData(); d.grabExcessHorizontalSpace = true; d.widthHint = 100;
