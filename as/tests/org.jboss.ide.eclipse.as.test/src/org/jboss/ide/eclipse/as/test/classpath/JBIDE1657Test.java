@@ -35,7 +35,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ProjectRuntimeUtil;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
 
 /**
  * This test will test whether the old classpath container, 
