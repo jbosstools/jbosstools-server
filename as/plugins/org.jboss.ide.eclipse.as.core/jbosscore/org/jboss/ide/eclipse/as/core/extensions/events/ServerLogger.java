@@ -27,10 +27,11 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 public class ServerLogger implements IJBossServerConstants {
-	
+	public static final int MAJOR_TYPE_MASK = 0x11111111 << 24;
 	private static ServerLogger instance;
 	public static ServerLogger getDefault() {
 		if( instance == null ) {
@@ -76,11 +77,21 @@ public class ServerLogger implements IJBossServerConstants {
 		}
 	}
 	
-	public File getServerLogFile(IServer server) {
+	public static File getServerLogFile(IServer server) {
 		File f = server == null ? PLUGIN_LOCATION.toFile() : 
 			PLUGIN_LOCATION.append(server.getId()).append(LOG).toFile();
 		if( !f.getParentFile().exists() ) 
 			f.getParentFile().mkdirs();
 		return f;
+	}
+	
+	public static IServer findServerForFile(File file) {
+		if( file == null )
+			return null;
+		IServer[] servers = ServerCore.getServers();
+		for( int i = 0; i < servers.length; i++ )
+			if(getServerLogFile(servers[i]).equals(file))
+				return servers[i];
+		return null;
 	}
 }
