@@ -7,7 +7,7 @@
       plugin="org.jboss.ide.eclipse.as.ui">
 
    <description url="http://www.jboss.org/tools">
-      JBossAS Tools Feature
+      Provides a WTP adapter for JBoss AS 4.x and 5.x. Supports incremental and exploded deployment. 
    </description>
 
    <copyright>

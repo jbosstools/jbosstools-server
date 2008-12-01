@@ -7,7 +7,8 @@
       plugin="org.jboss.ide.eclipse.archives.ui">
 
    <description url="http://www.jboss.org/tools">
-      JBoss Tools Archives Feature
+      Project Archives provides a way to define archives based on include/exclude filesets which then
+      gets incrementally updated allowing for fluent deployment for any type of Eclipse project. 
    </description>
 
    <copyright>
