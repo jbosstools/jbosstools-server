@@ -94,7 +94,7 @@ public class JMXPoller implements IServerStatePoller {
 			done = b;
 			if( !startingFound ) {
 				startingFound = true;
-				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, CODE|started, "Server is starting", null);
+				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, "Server is starting", null);
 				log(s);
 			}
 		}
@@ -146,7 +146,7 @@ public class JMXPoller implements IServerStatePoller {
 				started = STATE_STOPPED;
 				if( !ceFound ) {
 					ceFound = true;
-					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, t.getMessage(), t);
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, t.getMessage(), t);
 					log(s);
 				}
 				return;
@@ -156,7 +156,7 @@ public class JMXPoller implements IServerStatePoller {
 				started = STATE_STOPPED;
 				if( !nnfeFound ) {
 					nnfeFound = true;
-					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, CODE|started, t.getMessage(), t);
+					IStatus s = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, t.getMessage(), t);
 					log(s);
 				}
 				return;
