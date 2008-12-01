@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JMX UI Test Fragment
 Bundle-SymbolicName: org.jboss.tools.jmx.ui.test
-Bundle-Version: 0.2.1.qualifier
+Bundle-Version: 0.2.1
 Fragment-Host: org.jboss.tools.jmx.ui
 Require-Bundle: org.junit
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

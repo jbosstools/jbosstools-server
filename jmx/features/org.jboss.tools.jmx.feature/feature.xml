@@ -2,7 +2,7 @@
 <feature
       id="org.jboss.tools.jmx.feature"
       label="%featureName"
-      version="0.2.2.qualifier"
+      version="0.2.2"
       provider-name="%featureProvider">
 
    <description url="http://code.google.com/p/eclipse-jmx/">
