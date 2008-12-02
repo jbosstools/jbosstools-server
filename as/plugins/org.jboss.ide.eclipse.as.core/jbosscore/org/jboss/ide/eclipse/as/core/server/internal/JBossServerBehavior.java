@@ -36,6 +36,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -108,20 +109,20 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	protected void addForceStopFailedEvent(DebugException e) {
 		IStatus status = new Status(IStatus.ERROR,
-				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP_FAILED, 
 				FORCE_TERMINATE_FAILED, e);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	protected void addForceStopEvent() {
 		IStatus status = new Status(IStatus.ERROR,
-				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP, 
 				FORCE_TERMINATED, null);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	
 	protected void addProcessTerminatedEvent() {
 		IStatus status = new Status(IStatus.INFO,
-				JBossServerCorePlugin.PLUGIN_ID, 0, 
+				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_PROCESS_TERMINATED, 
 				TERMINATED, null);
 		ServerLogger.getDefault().log(getServer(), status);
 	}

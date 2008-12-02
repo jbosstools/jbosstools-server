@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
@@ -44,11 +45,11 @@ public class PollThread extends Thread {
 	// PollThread status objects look like this:
 	// 00000001xxxxxxxxaaaaaaaaaaaaaaaa  
 	// 00000001000000010000000000xxx00x
-	public static final int POLLING_ROOT_CODE = IServerStatePoller.POLLING_CODE | 1 << 16;
+	public static final int POLLING_ROOT_CODE = IEventCodes.POLLING_ROOT_CODE;
 	public static final int SUCCESS = 0x1;
 	public static final int FAIL = 0;
 	public static final int POLLING_FAIL_CODE = POLLING_ROOT_CODE | FAIL;
-	public static final int STATE_MASK = 0x111000;
+	public static final int STATE_MASK = 0x38;   // 0b111000;
 	public static final int STATE_UNKNOWN = IServer.STATE_UNKNOWN << 3;
 	public static final int STATE_STARTING = IServer.STATE_STARTING << 3;
 	public static final int STATE_STARTED = IServer.STATE_STARTED << 3;

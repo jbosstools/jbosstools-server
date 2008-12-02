@@ -38,7 +38,6 @@ public interface IJBossServerPublisher {
 	public static final int INCREMENTAL_PUBLISH = 1;
 	public static final int FULL_PUBLISH = 2;
 	public static final int REMOVE_PUBLISH = 3;
-	public static final int POLLING_CODE = 1 << 24;
 	
 
 	// pre-publish

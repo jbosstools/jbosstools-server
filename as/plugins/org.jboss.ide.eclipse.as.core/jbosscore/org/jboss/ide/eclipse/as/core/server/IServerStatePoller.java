@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -34,8 +35,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
  *
  */
 public interface IServerStatePoller {
-	public static final int POLLING_CODE = 1 << 24;
-
+	public static final int POLLING_CODE = IEventCodes.POLLING_CODE;
+	public static final int POLLER_MASK = IEventCodes.POLLER_MASK;
+	
 	public static final boolean SERVER_UP = true;
 	public static final boolean SERVER_DOWN = false;
 	

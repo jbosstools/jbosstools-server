@@ -31,7 +31,6 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 public class ServerLogger implements IJBossServerConstants {
-	public static final int MAJOR_TYPE_MASK = 0x11111111 << 24;
 	private static ServerLogger instance;
 	public static ServerLogger getDefault() {
 		if( instance == null ) {

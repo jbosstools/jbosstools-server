@@ -37,7 +37,7 @@ public class FileUtil {
 	public static interface IFileUtilListener {
 		public void fileDeleted(File file, boolean result, Exception e);
 		public void folderDeleted(File file, boolean result, Exception e);
-		public void fileCoppied(File source, File dest, boolean result, Exception e);
+		public void fileCopied(File source, File dest, boolean result, Exception e);
 	}
 	
 	
@@ -126,10 +126,10 @@ public class FileUtil {
 			      }
 			    fis.close();
 			    fos.close();
-			    if( listener != null ) listener.fileCoppied(src, dest, true, null);
+			    if( listener != null ) listener.fileCopied(src, dest, true, null);
 				return true;
 			} catch( Exception e ) {
-			    if( listener != null ) listener.fileCoppied(src, dest, false, e);
+			    if( listener != null ) listener.fileCopied(src, dest, false, e);
 				return false;
 			}
 		}
@@ -150,7 +150,7 @@ public class FileUtil {
 	
 	public static class FileUtilListener implements IFileUtilListener {
 		protected ArrayList<IStatus> errors = new ArrayList<IStatus>();
-		public void fileCoppied(File source, File dest, boolean result,
+		public void fileCopied(File source, File dest, boolean result,
 				Exception e) {
 			if(!result)
 				errors.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Error copying file " + source.toString() + " to " + dest.toString(), e));

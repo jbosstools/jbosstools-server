@@ -69,6 +69,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			IDecoratorManager manager = WorkbenchPlugin.getDefault().getDecoratorManager();
 			manager.setEnabled("org.jboss.tools.as.wst.server.ui.navigatorDecorator", true);
 			manager.setEnabled("org.jboss.ide.eclipse.as.ui.extensions.xml.decorator", true);
+			manager.setEnabled("org.jboss.ide.eclipse.as.ui.views.ServerLogView.decorator", true);
 			prefs.setValue(IPreferenceKeys.ENABLED_DECORATORS, true);
 			savePluginPreferences();
 		}

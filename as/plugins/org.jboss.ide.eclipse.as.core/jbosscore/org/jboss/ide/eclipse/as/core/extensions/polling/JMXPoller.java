@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXSafeRunner;
@@ -51,9 +52,7 @@ import org.jboss.tools.jmx.core.IJMXRunnable;
 public class JMXPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller";
-
-	public static final int CODE = 2 << 16;
-	public static final int JMXPOLLER_CODE = POLLING_CODE | CODE; 
+	public static final int JMXPOLLER_CODE = IEventCodes.JMXPOLLER_CODE;
 	
 	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER";
 	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS";

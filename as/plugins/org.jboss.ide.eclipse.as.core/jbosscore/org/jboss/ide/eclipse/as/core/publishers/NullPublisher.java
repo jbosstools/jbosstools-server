@@ -24,9 +24,11 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 
 /**
@@ -44,6 +46,6 @@ public class NullPublisher implements IJBossServerPublisher {
 
 	public IStatus publishModule(IServer server, IModule[] module, 
 			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
-		return null;
+		return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,  "No publisher found for module " + module[module.length-1]);
 	}
 }

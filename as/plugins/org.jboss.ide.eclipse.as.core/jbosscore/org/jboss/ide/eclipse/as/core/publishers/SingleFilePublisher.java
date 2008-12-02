@@ -14,6 +14,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -76,16 +77,19 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			if( l.errorFound || !success ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
 				Exception e = l.e != null ? l.e : new Exception("Move from " + tempDestFile + " to " + destFile + " failed.");
-				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published.", e);
+				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_FAIL, 
+						"The module cannot be published.", e);
 			}
 		} else {
 			// deleted module. o noes. Ignore it. We can't re-publish it, so just ignore it.
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
-			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "The module cannot be published because it cannot be located. (" + module.getName() + ")");
+			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_MNF, 
+					"The module cannot be published because it cannot be located. (" + module.getName() + ")", null);
 			return status;
 		}
 		
-		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, "Module " + module.getName() + " coppied.");
+		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
+				IEventCodes.SINGLE_FILE_PUBLISH_SUCCESS, "Module " + module.getName() + " copied.", null);
 		return status;
 	}
 
@@ -100,17 +104,25 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			FileUtil.safeDelete(destFile, l);
 			if( l.errorFound ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
-				return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, "Unable to delete module " + module.getName() + " from server.", l.e);
+				return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_FAIL,
+						"Unable to delete module " + module.getName() + " from server.", l.e);
 			}
+		} else {
+			// deleted module. o noes. Ignore it. 
+			publishState = IServer.PUBLISH_STATE_UNKNOWN;
+			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_MNF, 
+					"The module cannot be removed because it cannot be located. (" + module.getName() + ")", null);
+			return status;
 		}
-		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, "Module " + module.getName() + " removed.");
+		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_SUCCESS,
+				"Module " + module.getName() + " removed.", null);
 		return status;
 	}
 
 	public static class FileUtilListener implements IFileUtilListener {
 		protected boolean errorFound = false;
 		protected Exception e;
-		public void fileCoppied(File source, File dest, boolean result,Exception e) {
+		public void fileCopied(File source, File dest, boolean result,Exception e) {
 			if( result == false || e != null ) {
 				errorFound = true;
 				this.e = e;

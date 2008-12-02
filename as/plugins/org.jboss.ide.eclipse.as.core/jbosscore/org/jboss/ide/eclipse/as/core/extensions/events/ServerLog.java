@@ -17,7 +17,7 @@ public class ServerLog extends EclipseLog {
 		log(getLog(status));
 	}
 	
-	// Hard Coppied from PlatformLogWriter. You'd think 
+	// Hard Copied from PlatformLogWriter. You'd think 
 	// they'd make that method static or some shit. 
 	protected FrameworkLogEntry getLog(IStatus status) {
 		Throwable t = status.getException();
