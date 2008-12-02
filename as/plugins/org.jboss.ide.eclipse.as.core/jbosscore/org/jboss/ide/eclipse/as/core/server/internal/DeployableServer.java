@@ -156,8 +156,10 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
 		if( p.isAbsolute()) {
-			if(rt.getRuntime().getLocation().isPrefixOf(p))
-				return p.removeFirstSegments(rt.getRuntime().getLocation().segmentCount()).makeRelative();
+			if(rt.getRuntime().getLocation().isPrefixOf(p)) {
+				int size = rt.getRuntime().getLocation().toOSString().length();
+				return new Path(p.toOSString().substring(size)).makeRelative();
+			}
 		}
 		return p;
 	}
