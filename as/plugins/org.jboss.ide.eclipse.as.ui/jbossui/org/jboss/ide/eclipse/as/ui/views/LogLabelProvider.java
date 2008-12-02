@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
@@ -16,7 +17,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.ServerLogView.EventCategory;
 
-public class LogLabelProvider extends LabelProvider {
+public class LogLabelProvider extends LabelProvider implements ITableLabelProvider {
 	public Image getImage(Object element) {
 		if( element instanceof EventCategory ) {
 			int type = ((EventCategory)element).getType();
@@ -80,38 +81,54 @@ public class LogLabelProvider extends LabelProvider {
 	public String getText(Object element) {
 		if( element instanceof EventCategory ) {
 			int type = ((EventCategory)element).getType();
+			if( type == 0 ) 
+				return "Unknown Event Type";
 			if( type == IEventCodes.POLLING_CODE)
 				return "Server Startup / Shutdown";
 			if( type == IEventCodes.PUBLISHING_CODE)
 				return "Publishing";
 		}
 
-		
 		if( element instanceof LogEntry ) {
-			// queue for Decoration
-			String message = ((LogEntry)element).getMessage();
-			return message + addSuffix((LogEntry)element);
+			return ((LogEntry)element).getMessage();
 		}
 		return element == null ? "" : element.toString();//$NON-NLS-1$
 	}
 	
-	protected String addSuffix(LogEntry entry) {
-		long diff = new Date().getTime() - entry.getDate().getTime();
-		long sec = diff / 1000;
-		long minutes = sec / 60;
-		if( minutes > 0 )
-			sec -= (minutes * 60);
-		long hours = minutes / 60;
-		if( hours > 0 ) {
-			minutes -= (hours * 60);
-			sec -= (hours * 60 * 60);
+	protected String getSuffix(Object entry2) {
+		if( entry2 instanceof LogEntry ) {
+			LogEntry entry = (LogEntry)entry2;
+			long diff = new Date().getTime() - entry.getDate().getTime();
+			long sec = diff / 1000;
+			long minutes = sec / 60;
+			if( minutes > 0 )
+				sec -= (minutes * 60);
+			long hours = minutes / 60;
+			if( hours > 0 ) {
+				minutes -= (hours * 60);
+				sec -= (hours * 60 * 60);
+			}
+			if( hours > 0 ) {
+				return hours + " hours, " + minutes + " minutes ago";
+			} else if( minutes > 0 ) {
+				return minutes + " minutes, " + sec + " seconds ago";
+			} else {
+				return sec + " seconds ago";
+			}
 		}
-		if( hours > 0 ) {
-			return "  [" + hours + " hours, " + minutes + " minutes ago]";
-		} else if( minutes > 0 ) {
-			return "  [" + minutes + " minutes, " + sec + " seconds ago]";
-		} else {
-			return "  [" + sec + " seconds ago]";
-		}
+		return "";
+	}
+
+	public Image getColumnImage(Object element, int columnIndex) {
+		if( columnIndex == 0 ) 
+			return getImage(element);
+		return null;
+	}
+
+	public String getColumnText(Object element, int columnIndex) {
+		if(columnIndex == 0)
+			return getText(element);
+		else
+			return getSuffix(element);
 	}
 }
