@@ -15,9 +15,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.window.Window;
@@ -78,12 +76,8 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 
 	public void fillContextMenu(IMenuManager menu) {
 		ICommonViewerSite site = actionSite.getViewSite();
-		IStructuredSelection selection = null;
 		if (site instanceof ICommonViewerWorkbenchSite) {
-			ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite) site;
-			selection = (IStructuredSelection) wsSite.getSelectionProvider()
-					.getSelection();
-			selected = selection.toArray();
+			setSelection();
 			if( selected == null )
 				return;
 			if( selected.length == 1 && selected[0] instanceof ServerWrapper ) {
