@@ -144,6 +144,8 @@ public class MBeanInfoWrapper implements Comparable {
         if (info == null) {
             if (other.info != null)
                 return false;
+        } else if (other.info == null ) {
+        	return false;
         } else if (!info.equals(other.info))
             return false;
         if (mbsc == null) {
