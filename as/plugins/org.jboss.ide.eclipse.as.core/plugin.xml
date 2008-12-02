@@ -528,14 +528,13 @@
 	        <public publicId="-//JBoss//DTD Web Application 4.2//EN"
 				uri="dtd/jboss-web_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"/>
-         <public
-               publicId="http://www.jboss.com/ws-security/config"
-               uri="dtd/jboss-ws-security_1_0.xsd">
-         </public>
-         <public
-               publicId="urn:jboss:jaxws-config:2.0"
-               uri="dtd/jaxws-config_2_0.xsd">
-         </public>
+
+			<uri 
+			    name="http://www.jboss.com/ws-security/schema/jboss-ws-security_1_0.xsd"
+			    uri="dtd/jboss-ws-security_1_0.xsd"/>
+			<uri 
+			    name="jaxws-config_2_0.xsd"
+                uri="dtd/jaxws-config_2_0.xsd"/>
          <public
                publicId="-//JBoss//DTD JBOSS JCA Config 1.5//EN"
                uri="dtd/jboss-ds_1_5.dtd"
