@@ -26,8 +26,12 @@ public class MBeanAttributeInfoWrapper extends MBeanFeatureInfoWrapper {
     }
 
     public Object getValue() throws Exception {
-        MBeanServerConnection mbsc = getMBeanServerConnection();
-        return mbsc.getAttribute(getObjectName(), info.getName());
+    	try {
+	        MBeanServerConnection mbsc = getMBeanServerConnection();
+	        return mbsc.getAttribute(getObjectName(), info.getName());
+    	} catch( Exception e ) {
+    		return e;
+    	}
     }
 
     public int hashCode() {
