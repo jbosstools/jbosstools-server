@@ -58,6 +58,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
     }
 
     public void dispose() {
+    	ExtensionManager.removeConnectionProviderListener(this);
     }
 
     public Object[] getElements(Object parent) {
