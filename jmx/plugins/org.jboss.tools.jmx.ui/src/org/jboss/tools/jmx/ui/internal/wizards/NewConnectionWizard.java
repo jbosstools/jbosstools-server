@@ -40,6 +40,7 @@ import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.ui.ConnectionWizardPage;
+import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
@@ -56,6 +57,11 @@ public class NewConnectionWizard extends Wizard {
 	private HashMap<String, ConnectionWizardPage[]> pageMap;
 
 	private IWizardPage firstPage;
+	
+	public String getWindowTitle() {
+		return Messages.DefaultConnectionWizardPage_Title;
+	}
+	
     public void addPages() {
     	firstPage = createFirstPage();
     	addPage(firstPage);
@@ -99,7 +105,7 @@ public class NewConnectionWizard extends Wizard {
 	    		try {
 	    			wrap = active[i].getConnection();
 	    		} catch( CoreException ce ) {
-	    			// TODO LOG
+	    			JMXUIActivator.getDefault().getLog().log(ce.getStatus());
 	    		}
 	    	}
 
