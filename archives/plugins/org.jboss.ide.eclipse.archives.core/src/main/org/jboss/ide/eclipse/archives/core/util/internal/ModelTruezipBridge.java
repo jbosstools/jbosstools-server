@@ -212,7 +212,7 @@ public class ModelTruezipBridge {
 	}
 	public static boolean createFile(final IArchiveNode node, boolean sync) {
 		File f = getFile(node);
-		boolean b = true;
+		boolean b = false;
 		if( f != null ) {
 			b = f.mkdirs();
 		}
@@ -297,4 +297,8 @@ public class ModelTruezipBridge {
 		return null;
 	}
 
+	public static String getFilePath(IArchiveNode node) {
+		File f = getFile(node);
+		return f == null ? null : f.getAbsolutePath();
+	}
 }

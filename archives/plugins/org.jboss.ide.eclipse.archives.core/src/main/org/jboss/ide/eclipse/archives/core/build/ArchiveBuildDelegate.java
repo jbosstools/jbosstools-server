@@ -156,7 +156,9 @@ public class ArchiveBuildDelegate {
 
 		if( !ModelTruezipBridge.createFile(pkg) ) {
 			IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
-					ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,pkg.toString()));
+					ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,
+							ModelTruezipBridge.getFilePath(pkg),
+							pkg.toString()));
 			errors.add(e);
 		}
 		monitor.worked(200);
@@ -167,7 +169,10 @@ public class ArchiveBuildDelegate {
 		folderMonitor.beginTask(ArchivesCoreMessages.CreatingFolders, folders.length * 100);
 		for( int i = 0; i < folders.length; i++ ) {
 			if( !ModelTruezipBridge.createFile(folders[i])) {
-				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,folders[i].toString()));
+				IStatus e = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, 
+						ArchivesCore.bind(ArchivesCoreMessages.ErrorCreatingOutputFile,
+						ModelTruezipBridge.getFilePath(folders[i]),
+						folders[i].toString()));
 				errors.add(e);
 			}
 			folderMonitor.worked(100);
