@@ -192,9 +192,6 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
             attrControl.setLayoutData(gd);
             attrControl.pack(true);
         } catch (Throwable t) {
-            JMXUIActivator.log(IStatus.ERROR, NLS.bind(
-                    Messages.MBeanAttributeValue_Warning, attrInfo.getName()),
-                    t);
             Label errorLabel = toolkit.createLabel(valueComposite,
                     Messages.unavailable);
             errorLabel.setForeground(valueComposite.getDisplay()

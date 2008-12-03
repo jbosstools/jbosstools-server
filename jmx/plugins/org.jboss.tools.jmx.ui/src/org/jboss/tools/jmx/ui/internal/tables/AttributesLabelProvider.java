@@ -36,9 +36,6 @@ class AttributesLabelProvider extends LabelProvider implements
             try {
                 return StringUtils.toString(wrapper.getValue(), false);
             } catch (Throwable t) {
-                JMXUIActivator.log(IStatus.ERROR, NLS.bind(
-			Messages.MBeanAttributeValue_Warning,
-			attrInfo.getName()), t);
                 return Messages.unavailable;
             }
         }
