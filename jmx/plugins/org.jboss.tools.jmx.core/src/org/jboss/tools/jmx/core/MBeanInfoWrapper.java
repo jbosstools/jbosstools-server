@@ -8,6 +8,8 @@
 
 package org.jboss.tools.jmx.core;
 
+import java.util.Arrays;
+
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
@@ -17,6 +19,7 @@ import javax.management.NotificationBroadcaster;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
+import org.jboss.tools.jmx.core.util.EqualsUtil;
 
 public class MBeanInfoWrapper implements Comparable {
     private final ObjectName on;
@@ -142,22 +145,24 @@ public class MBeanInfoWrapper implements Comparable {
             return false;
         final MBeanInfoWrapper other = (MBeanInfoWrapper) obj;
         if (info == null) {
-            if (other.info != null)
-                return false;
+            return other.info == null;
         } else if (other.info == null ) {
         	return false;
-        } else if (!info.equals(other.info))
-            return false;
+        } 
         if (mbsc == null) {
-            if (other.mbsc != null)
-                return false;
+            return other.mbsc == null;
         } else if (!mbsc.equals(other.mbsc))
             return false;
         if (on == null) {
-            if (other.on != null)
-                return false;
+           return other.on == null;
         } else if (!on.equals(other.on))
             return false;
-        return true;
+        try {
+        	return info.equals(other.info);
+        } catch( NullPointerException npe ) {
+        	return EqualsUtil.infoEquals(info, other.info);
+        }
     }
+    
+ 
 }
