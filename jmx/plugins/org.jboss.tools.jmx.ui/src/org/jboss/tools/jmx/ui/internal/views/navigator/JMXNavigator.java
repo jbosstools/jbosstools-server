@@ -26,12 +26,12 @@ import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 /**
  * The view itself
  */
-public class Navigator extends CommonNavigator {
+public class JMXNavigator extends CommonNavigator {
 	public static final String VIEW_ID = "org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorer"; //$NON-NLS-1$
 	private Text filterText;
 	private QueryContribution query;
 	
-	public Navigator() {
+	public JMXNavigator() {
 		super();
 	}
 	protected IAdaptable getInitialInput() {
@@ -63,7 +63,7 @@ public class Navigator extends CommonNavigator {
 		
 		Display.getDefault().asyncExec(new Runnable() { 
 			public void run() {
-				query = new QueryContribution(Navigator.this);
+				query = new QueryContribution(JMXNavigator.this);
 			}
 		});
 	}

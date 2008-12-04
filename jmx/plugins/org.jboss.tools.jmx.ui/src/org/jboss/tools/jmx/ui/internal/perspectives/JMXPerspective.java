@@ -11,7 +11,7 @@ package org.jboss.tools.jmx.ui.internal.perspectives;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.jboss.tools.jmx.ui.internal.views.navigator.Navigator;
+import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 
 public class JMXPerspective implements IPerspectiveFactory {
 
@@ -31,11 +31,11 @@ public class JMXPerspective implements IPerspectiveFactory {
     private void addViews() {
         IFolderLayout left = factory.createFolder("left", //$NON-NLS-1$
                 IPageLayout.LEFT, 0.2f, factory.getEditorArea());
-        left.addView(Navigator.VIEW_ID);
+        left.addView(JMXNavigator.VIEW_ID);
     }
 
     private void addViewShortcuts() {
-        factory.addShowViewShortcut(Navigator.VIEW_ID);
+        factory.addShowViewShortcut(JMXNavigator.VIEW_ID);
         factory.addShowViewShortcut("org.eclipse.ui.views.PropertySheet"); //$NON-NLS-1$
     }
 

@@ -54,12 +54,12 @@ public class QueryContribution {
 
 	
 	private String filterText;
-	private Navigator navigator;
+	private JMXNavigator navigator;
 	private HashMap<Object, Boolean> matches = null;
 	private HashMap<Object, Boolean> shouldShow = null;
 	private RefineThread refineThread;
 	
-	public QueryContribution(final Navigator navigator) {
+	public QueryContribution(final JMXNavigator navigator) {
 		this.navigator = navigator;
 		map.put(navigator.getCommonViewer(), this);
 		addListener();

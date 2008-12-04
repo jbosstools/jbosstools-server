@@ -24,7 +24,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.ui.Messages;
-import org.jboss.tools.jmx.ui.internal.views.navigator.Navigator;
+import org.jboss.tools.jmx.ui.internal.views.navigator.JMXNavigator;
 import org.jboss.tools.jmx.ui.internal.views.navigator.UpdateSelectionJob;
 
 public class AttributesPage extends FormPage {
@@ -89,7 +89,7 @@ public class AttributesPage extends FormPage {
         block.createContent(managedForm);
         block.masterSection.getTableViewer().addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				UpdateSelectionJob.launchJob(Navigator.VIEW_ID);
+				UpdateSelectionJob.launchJob(JMXNavigator.VIEW_ID);
 			} 
         });
     }
