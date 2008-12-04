@@ -261,8 +261,9 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	protected void ensureDeployLocationAdded(MBeanServerConnection connection) throws Exception {
 		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
 		String deployFolder = ds.getDeployFolder();
+		String asURL = new File(deployFolder).toURL().toString(); 
 		ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
-		connection.invoke(name, "addURL", new Object[] { "file:" + deployFolder }, new String[] {String.class.getName()});
+		connection.invoke(name, "addURL", new Object[] { asURL }, new String[] {String.class.getName()});
 	}
 
 	protected boolean shouldSuspendScanner() {
