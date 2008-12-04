@@ -32,6 +32,8 @@ import org.eclipse.ui.IStartup;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.decorators.DecoratorDefinition;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
+import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.osgi.framework.BundleContext;
 
@@ -70,8 +72,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			manager.setEnabled("org.jboss.tools.as.wst.server.ui.navigatorDecorator", true);
 			manager.setEnabled("org.jboss.ide.eclipse.as.ui.extensions.xml.decorator", true);
 			prefs.setValue(IPreferenceKeys.ENABLED_DECORATORS, true);
-			savePluginPreferences();
 		}
+		
+		if( !prefs.getBoolean(IPreferenceKeys.DISABLE_SHOW_SERVER_VIEW)) {
+			new ServerUIPreferences().setShowOnActivity(false);
+			prefs.setValue(IPreferenceKeys.DISABLE_SHOW_SERVER_VIEW, true);
+		}
+		
+		savePluginPreferences();
 	}
 
 	/**
