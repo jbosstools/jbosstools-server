@@ -74,7 +74,7 @@ public class ServerLogActionProvider extends CommonActionProvider {
 	
 	public class ShowInServerLogAction extends AbstractServerAction {
 		public ShowInServerLogAction(ISelectionProvider sp) {
-			super(sp, "Server Log");
+			super(sp, null);
 			
 			IViewRegistry reg = PlatformUI.getWorkbench().getViewRegistry();
 			IViewDescriptor desc = reg.find(ServerLogView.VIEW_ID);
@@ -98,8 +98,7 @@ public class ServerLogActionProvider extends CommonActionProvider {
 							part = page.showView(ServerLogView.VIEW_ID);
 						} catch (PartInitException e) {
 						}
-					}
-					if (part != null) {
+					} else /* if (part != null) */ {
 						ServerLogView view = (ServerLogView) part.getAdapter(ServerLogView.class);
 						if (view != null) {
 							view.setFocus();
