@@ -6,6 +6,10 @@
 
    <extension
          point="org.eclipse.ui.views">
+      <category
+            name="JBoss Tools"
+            id="org.jboss.tools.common.model.ui.views">
+      </category>
       <view
             allowMultiple="false"
             category="org.jboss.tools.common.model.ui.views"

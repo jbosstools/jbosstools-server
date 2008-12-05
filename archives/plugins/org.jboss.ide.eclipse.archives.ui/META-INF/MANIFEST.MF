@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JBossTools Archives UI Plugin
+Bundle-Name: JBoss Archives Tools
 Bundle-SymbolicName: org.jboss.ide.eclipse.archives.ui;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin
