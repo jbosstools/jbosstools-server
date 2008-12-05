@@ -50,7 +50,7 @@
             <title>The JBoss Server View Toolbar</title>
             <mediaobject>
                 <imageobject>
-                    <imagedata fileref="images/perspective/perspective_19.png"/>
+                    <imagedata fileref="images/perspective/perspective_2.png"/>
                 </imageobject>
             </mediaobject>
         </figure>
@@ -84,7 +84,7 @@
                 <title>Server Publish Status</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_18.png"/>
+                        <imagedata fileref="images/perspective/perspective_3.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -152,7 +152,7 @@
                 <title>Preferences Page for the Chosen Server</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_20.png"/>
+                        <imagedata fileref="images/perspective/perspective_4.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -172,7 +172,7 @@
                 <title>Server Ports Preferences</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_20_a.png"/>
+                        <imagedata fileref="images/perspective/perspective_5.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -185,7 +185,7 @@
                 <title>XPath Pattern for a Server Port</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_20_b.png"/>
+                        <imagedata fileref="images/perspective/perspective_6.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -208,7 +208,7 @@
                 <title>Launch Configuration Properties</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_22.png"/>
+                        <imagedata fileref="images/perspective/perspective_7.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -226,7 +226,7 @@
                 <title>Twiddle Server</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_21.png"/>
+                        <imagedata fileref="images/perspective/perspective_8.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -368,7 +368,7 @@
                 <title>View Extensions</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_3.png"/>
+                        <imagedata fileref="images/perspective/perspective_9.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -384,7 +384,7 @@
                 <title>View Preferences</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_2.png" scale="75"/>
+                        <imagedata fileref="images/perspective/perspective_10.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -400,7 +400,7 @@
                 <title>Modules Action</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_4.png"/>
+                        <imagedata fileref="images/perspective/perspective_11.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -421,7 +421,7 @@
                 <title>Event Log Actions</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_5.png"/>
+                        <imagedata fileref="images/perspective/perspective_12.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -430,7 +430,7 @@
                 <title>Starting the Server</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_6.png"/>
+                        <imagedata fileref="images/perspective/perspective_13.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -448,7 +448,7 @@
                 <title>XML Configuration and Properties View</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_7.png"/>
+                        <imagedata fileref="images/perspective/perspective_14.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -484,7 +484,7 @@
                 <title>Adding New Category</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_8.png"/>
+                        <imagedata fileref="images/perspective/perspective_15.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -499,7 +499,7 @@
                 <title>Adding New XPath</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_9.png"/>
+                        <imagedata fileref="images/perspective/perspective_16.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -510,7 +510,7 @@
                 <title>Adding New XPath</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_10.png"/>
+                        <imagedata fileref="images/perspective/perspective_17.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -544,7 +544,7 @@
                 <title>XPath Preview</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_23.png"/>
+                        <imagedata fileref="images/perspective/perspective_18.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -568,7 +568,7 @@
                 <title>XPath Preview</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_24.png"/>
+                        <imagedata fileref="images/perspective/perspective_19.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -581,7 +581,7 @@
                 <title>JMX Console</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_17.png" scale="75"/>
+                        <imagedata fileref="images/perspective/perspective_20.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -620,7 +620,7 @@
                 <title>Archives View</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_25.png"/>
+                        <imagedata fileref="images/perspective/perspective_21.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -653,7 +653,7 @@
                 <title>Create an Archive</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_12.png"/>
+                        <imagedata fileref="images/perspective/perspective_22.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -681,7 +681,7 @@
                 <title>New JAR Wizard</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_13.png"/>
+                        <imagedata fileref="images/perspective/perspective_23.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -717,7 +717,7 @@
                     <title>Adding a New FileSet</title>
                     <mediaobject>
                         <imageobject>
-                            <imagedata fileref="images/perspective/perspective_26.png"/>
+                            <imagedata fileref="images/perspective/perspective_24.png"/>
                         </imageobject>
                     </mediaobject>
                 </figure>
@@ -733,7 +733,7 @@
                 <title>Context Menu on the Item</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_14.png"/>
+                        <imagedata fileref="images/perspective/perspective_25.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
@@ -821,7 +821,7 @@
                 <title>Context Menu on the Item</title>
                 <mediaobject>
                     <imageobject>
-                        <imagedata fileref="images/perspective/perspective_15.png"/>
+                        <imagedata fileref="images/perspective/perspective_26.png"/>
                     </imageobject>
                 </mediaobject>
             </figure>
