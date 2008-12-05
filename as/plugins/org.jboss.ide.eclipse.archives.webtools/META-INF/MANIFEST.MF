@@ -26,3 +26,4 @@ Export-Package: org.jboss.ide.eclipse.archives.webtools,
  org.jboss.ide.eclipse.archives.webtools.archivetypes,
  org.jboss.ide.eclipse.archives.webtools.modules,
  org.jboss.ide.eclipse.archives.webtools.ui
+Bundle-Vendor: JBoss, a division of Red Hat
