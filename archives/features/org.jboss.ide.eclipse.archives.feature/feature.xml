@@ -3,12 +3,12 @@
       id="org.jboss.ide.eclipse.archives.feature"
       label="JBoss Archives Tools"
       version="1.0.0"
-      provider-name="JBoss, a division of Red Hat."
+      provider-name="JBoss, a division of Red Hat"
       plugin="org.jboss.ide.eclipse.archives.ui">
 
    <description url="http://www.jboss.org/tools">
       Project Archives provides a way to define archives based on include/exclude filesets which then
-      gets incrementally updated allowing for fluent deployment for any type of Eclipse project. 
+      gets incrementally updated allowing for fluent deployment for any type of Eclipse project.
    </description>
 
    <copyright>
