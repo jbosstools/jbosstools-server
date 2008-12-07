@@ -24,3 +24,4 @@ Export-Package: org.jboss.ide.eclipse.archives.test,
  org.jboss.ide.eclipse.archives.test.model,
  org.jboss.ide.eclipse.archives.test.projects,
  org.jboss.ide.eclipse.archives.test.util
+Bundle-Vendor: JBoss, a division of Red Hat
