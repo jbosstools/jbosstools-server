@@ -21,3 +21,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.jmx.core.test
 Eclipse-LazyStart: true
 Bundle-ClassPath: jbossastest.jar
+Bundle-Vendor: JBoss, a division of Red Hat
