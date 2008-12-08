@@ -320,12 +320,12 @@ public class DeploySection extends ServerEditorSection {
 		private Button newSelection, oldSelection;
 		private String oldDir, newDir;
 		private String oldTemp, newTemp;
-		private String name;
+		private String id;
 		public RadioClickedCommand(Button clicked, Button previous) {
 			super(DeploySection.this.server, Messages.EditorSetRadioClicked);
 			newSelection = clicked;
 			oldSelection = previous;
-			name = DeploySection.this.server.getName();
+			id = DeploySection.this.server.getId();
 		}
 		public void execute() {
 			boolean custom = newSelection == customRadio;
@@ -340,9 +340,9 @@ public class DeploySection extends ServerEditorSection {
 			
 			
 			if( newSelection == metadataRadio  ) {
-				newDir = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+				newDir = IJBossServerConstants.PLUGIN_LOCATION.append(id.replace(' ', '_')).
 					append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-				newTemp = IJBossServerConstants.PLUGIN_LOCATION.append(name).
+				newTemp = IJBossServerConstants.PLUGIN_LOCATION.append(id.replace(' ', '_')).
 					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 				type = IDeployableServer.DEPLOY_METADATA;
 				new File(newDir).mkdirs();

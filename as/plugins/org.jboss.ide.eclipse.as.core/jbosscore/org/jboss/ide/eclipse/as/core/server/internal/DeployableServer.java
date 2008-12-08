@@ -39,6 +39,7 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 
@@ -109,13 +110,41 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	
 	public String getDeployFolder() {
+		String type = getDeployLocationType();
+		if( type.equals(DEPLOY_CUSTOM))
+			return makeGlobal(getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
+		if( type.equals(DEPLOY_METADATA)) {
+			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
+			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+		} else if( type.equals(DEPLOY_SERVER)){
+			IJBossServerRuntime jbsrt = getRuntime();
+			String config = jbsrt.getJBossConfiguration();
+			return new Path(IJBossServerConstants.SERVER)
+				.append(config)
+				.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
+		}
 		return makeGlobal(getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
 	}
+	
 	public void setDeployFolder(String folder) {
 		setAttribute(DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
 	}
 	
 	public String getTempDeployFolder() {
+		String type = getDeployLocationType();
+		if( type.equals(DEPLOY_CUSTOM))
+			return makeGlobal(getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+		if( type.equals(DEPLOY_METADATA)) {
+			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
+				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+		} else if( type.equals(DEPLOY_SERVER)){
+			IJBossServerRuntime jbsrt = getRuntime();
+			String config = jbsrt.getJBossConfiguration();
+			return new Path(IJBossServerConstants.SERVER)
+				.append(config)
+				.append(IJBossServerConstants.TMP)
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+		}
 		return makeGlobal(getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
 	}
 	public void setTempDeployFolder(String folder) {
