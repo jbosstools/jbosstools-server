@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerStartupListener;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -73,9 +73,9 @@ public class JBossServerCorePlugin extends Plugin  {
 		super.start(context);
 		
 		// Start the array of models that need to be started
-		XPathModel.getDefault();
 		UnitedServerListenerManager.getDefault();
-		UnitedServerListenerManager.getDefault().addListener(ServerStartupListener.getDefault());
+		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
+		UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
-		UnitedServerListenerManager.getDefault().removeListener(ServerStartupListener.getDefault());
+		UnitedServerListenerManager.getDefault().removeListener(ServerListener.getDefault());
 	}
 
 	/**

@@ -34,15 +34,13 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerLifecycleListener;
-import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
@@ -52,7 +50,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  * @author rob.stryker@redhat.com
  *
  */
-public class XPathModel {
+public class XPathModel extends UnitedServerListener {
 	
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
 	public static final String PORTS_CATEGORY_NAME = "Ports";
@@ -74,45 +72,37 @@ public class XPathModel {
 	}
 	
 	protected HashMap<String, ArrayList<XPathCategory>> serverToCategories;
-	
-	/* Constructor. Adds lifecycle listener to know when there's a new server and 
-	 * properly add the default XPaths to that server object. 
-	 */
+
 	public XPathModel() {
 		serverToCategories = new HashMap<String, ArrayList<XPathCategory>>();
-		ServerCore.addServerLifecycleListener(new IServerLifecycleListener() {
-			public void serverAdded(IServer server) {
-				final ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
-				if( !helper.getAttribute(DEFAULTS_SET, false)) {
-					final IServer server2 = server;
-					new Job("Add Server XPath Details") {
-						protected IStatus run(IProgressMonitor monitor) {
-							
-							if(server2==null || server2.getRuntime()==null) {
-								return Status.OK_STATUS; // server has no runtime so we can't set this up.
-							}
-							
-							LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
-							server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
-							if(ajbsr != null ) {
-								IPath loc = server2.getRuntime().getLocation();
-								IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
-								loadDefaults(server2, configFolder.toOSString());
-								helper.setAttribute(DEFAULTS_SET, true);
-								helper.save();
-								save(server2);
-							}
-							return Status.OK_STATUS;
-						}
-						
-					}.schedule();
+	}
+	
+	public void serverAdded(IServer server) {
+		final ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
+		if( !helper.getAttribute(DEFAULTS_SET, false)) {
+			final IServer server2 = server;
+			new Job("Add Server XPath Details") {
+				protected IStatus run(IProgressMonitor monitor) {
+					
+					if(server2==null || server2.getRuntime()==null) {
+						return Status.OK_STATUS; // server has no runtime so we can't set this up.
+					}
+					
+					LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
+					server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
+					if(ajbsr != null ) {
+						IPath loc = server2.getRuntime().getLocation();
+						IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
+						loadDefaults(server2, configFolder.toOSString());
+						helper.setAttribute(DEFAULTS_SET, true);
+						helper.save();
+						save(server2);
+					}
+					return Status.OK_STATUS;
 				}
-			}
-			public void serverChanged(IServer server) {
-			}
-			public void serverRemoved(IServer server) {
-			}
-		});
+				
+			}.schedule();
+		}
 	}
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
@@ -241,7 +231,7 @@ public class XPathModel {
 			return new XPathQuery[] {};
 		String[] queriesByName = list.split(DELIMITER);
 		List<String> queryAsStringValues;
-		ArrayList<XPathQuery> returnList = new ArrayList();
+		ArrayList<XPathQuery> returnList = new ArrayList<XPathQuery>();
 		for( int i = 0; i < queriesByName.length; i++ ) {
 			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
 			if( queryAsStringValues != null ) {
@@ -272,8 +262,6 @@ public class XPathModel {
 
 	public void loadDefaults(IServer server, String configFolder) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
-		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
-			server.getRuntime().loadAdapter(LocalJBossServerRuntime.class, new NullProgressMonitor());
 		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getVersion());
 		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
