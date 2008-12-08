@@ -357,6 +357,7 @@ public class DeploySection extends ServerEditorSection {
 				newTemp = new Path(IJBossServerConstants.SERVER).append(config)
 					.append(IJBossServerConstants.TMP)
 					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+				new File(newTemp).mkdirs();
 				type = IDeployableServer.DEPLOY_SERVER;
 			} else {
 				newDir = lastCustomDeploy;
