@@ -21,17 +21,12 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.io.File;
-
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
@@ -39,20 +34,15 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
@@ -203,14 +193,11 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		super.publishStart(monitor);
 		JMXClassLoaderRepository.getDefault().addConcerned(getServer(), this);
 		final boolean suspend = shouldSuspendScanner();
-		final boolean add = shouldAddDeployLocation();
-		if( suspend || add) {
+		if( suspend ) {
 			IJMXRunnable r = new IJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
 					if( suspend )
 						suspendDeployment(connection);
-					if( add )
-						ensureDeployLocationAdded(connection);
 				}
 			};
 			JBossServerConnectionProvider.run(getServer(), r);
@@ -228,42 +215,6 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		}
 		JMXClassLoaderRepository.getDefault().removeConcerned(getServer(), this);
 		super.publishFinish(monitor);
-	}
-
-	
-	protected boolean shouldAddDeployLocation() {
-		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
-		boolean shouldAdd = getServer().getServerState() == IServer.STATE_STARTED;
-		String type = ds.getDeployLocationType();
-		String deployFolder = ds.getDeployFolder();
-		if( type.equals(IDeployableServer.DEPLOY_SERVER))
-			shouldAdd = false;
-		else if( type.equals(IDeployableServer.DEPLOY_METADATA))
-			shouldAdd = true;
-		else if( type.equals( IDeployableServer.DEPLOY_CUSTOM )) {
-			if( !new File(deployFolder).exists())
-				shouldAdd = false;
-			else {
-				IRuntime rt = getServer().getRuntime();
-				IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-				String config = jbsrt.getJBossConfiguration();
-				IPath deploy = new Path(IJBossServerConstants.SERVER)
-						.append(config)
-						.append(IJBossServerConstants.DEPLOY).makeRelative();
-				IPath deployGlobal = DeployableServer.makeGlobal(jbsrt, deploy);
-				if( new Path(deployFolder).equals(deployGlobal))
-					shouldAdd = false;
-			}
-		}
-		return shouldAdd;
-	}
-	
-	protected void ensureDeployLocationAdded(MBeanServerConnection connection) throws Exception {
-		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
-		String deployFolder = ds.getDeployFolder();
-		String asURL = new File(deployFolder).toURL().toString(); 
-		ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
-		connection.invoke(name, "addURL", new Object[] { asURL }, new String[] {String.class.getName()});
 	}
 
 	protected boolean shouldSuspendScanner() {
