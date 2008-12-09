@@ -66,7 +66,8 @@ public class ActionProvider extends CommonActionProvider {
 
     	// Finish up
     	int size = getSelectionSize();
-    	if( size == 0 || (size == 1 && getWrappersFromSelection().length == 1)) {
+    	Object input = getActionSite().getStructuredViewer().getInput();
+    	if( input instanceof JMXNavigator && (size == 0 || (size == 1 && getWrappersFromSelection().length == 1))) {
 	    	menu.add(new Separator());
 	    	menu.add(newConnectionAction);
     	}
