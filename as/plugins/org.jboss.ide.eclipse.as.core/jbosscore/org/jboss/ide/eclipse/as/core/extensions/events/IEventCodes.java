@@ -24,6 +24,7 @@ public interface IEventCodes {
 	public static final int PUBLISHING_ROOT_CODE = PUBLISHING_CODE | (1 << 16);
 	public static final int JST_PUBLISHER_CODE = PUBLISHING_CODE | (2 << 16); 
 	public static final int SINGLE_FILE_PUBLISHER_CODE = PUBLISHING_CODE | (3 << 16);
+	public static final int ADD_DEPLOYMENT_FOLDER = PUBLISHING_CODE | (4<<16);
 
 	// Publishing.JST
 	public static final int JST_PUB_FULL_SUCCESS = JST_PUBLISHER_CODE | 1;
@@ -45,4 +46,7 @@ public interface IEventCodes {
 	public static final int SINGLE_FILE_UNPUBLISH_SUCCESS = SINGLE_FILE_PUBLISHER_CODE | 3;
 	public static final int SINGLE_FILE_PUBLISH_MNF = SINGLE_FILE_PUBLISH_FAIL | 16;
 	public static final int SINGLE_FILE_UNPUBLISH_MNF = SINGLE_FILE_UNPUBLISH_FAIL | 16;
+	
+	// Add deployment folder
+	public static final int ADD_DEPLOYMENT_FOLDER_FAIL = ADD_DEPLOYMENT_FOLDER | 1;
 }

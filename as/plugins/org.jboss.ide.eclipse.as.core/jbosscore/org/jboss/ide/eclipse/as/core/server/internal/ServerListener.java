@@ -6,11 +6,15 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -76,7 +80,10 @@ public class ServerListener extends UnitedServerListener {
 						try {
 							JBossServerConnectionProvider.run(event.getServer(), r);
 						} catch( JMXException jmxe ) {
-							// TODO log
+							IStatus s = jmxe.getStatus();
+							IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
+									"Error adding deployment folder to Deployment Scanner", s.getException());
+							ServerLogger.getDefault().log(event.getServer(), newStatus);
 						}
 					}
 				}

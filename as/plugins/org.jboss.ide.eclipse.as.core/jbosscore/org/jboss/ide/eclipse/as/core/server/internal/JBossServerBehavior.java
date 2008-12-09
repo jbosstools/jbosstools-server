@@ -134,7 +134,6 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	protected transient IDebugEventSetListener processListener;
 	public void setProcess(final IProcess newProcess) {
 		if (process != null) { 
-			System.out.println(process.isTerminated());
 			return;
 		}
 		process = newProcess;

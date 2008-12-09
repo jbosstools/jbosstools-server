@@ -60,7 +60,8 @@ public class JMXSafeRunner {
 				r.run(connection);
 			}
 		} catch( Exception e ) {  
-			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e));
+			throw new JMXException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					e.getMessage() == null ? e.getClass().getName() : e.getMessage(), e));
 		} finally {
 			JMXClassLoaderRepository.getDefault().removeConcerned(s, r);
 			Thread.currentThread().setContextClassLoader(currentLoader);

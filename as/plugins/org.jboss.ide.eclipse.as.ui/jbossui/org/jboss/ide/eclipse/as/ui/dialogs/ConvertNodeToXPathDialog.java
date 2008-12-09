@@ -182,7 +182,6 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			
 			// fill the combo
 			NamedNodeMap map = node.getAttributes();
-			System.out.println(map.getLength());
 			ArrayList list = new ArrayList();
 			list.add(NO_ATTRIBUTE);
 			int selectedIndex = 0;
