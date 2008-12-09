@@ -31,7 +31,10 @@ public class ServerListener extends UnitedServerListener {
 	
 	public void serverAdded(IServer server) {
 		// create metadata area
-		IJBossServerConstants.PLUGIN_LOCATION.append(server.getId()).toFile().mkdirs();
+		File location = IJBossServerConstants.PLUGIN_LOCATION.append(server.getId().replace(' ', '_')).toFile();
+		location.mkdirs();
+		new File(location, IJBossServerConstants.DEPLOY).mkdir();
+		new File(location, IJBossServerConstants.TEMP_DEPLOY).mkdir();
 		
 		// create temp deploy folder
 		IRuntime rt = server.getRuntime();
@@ -46,10 +49,8 @@ public class ServerListener extends UnitedServerListener {
 
 	public void serverRemoved(IServer server) {
 		// delete metadata area
-		File f = IJBossServerConstants.PLUGIN_LOCATION.append(server.getId()).toFile();
+		File f = IJBossServerConstants.PLUGIN_LOCATION.append(server.getId().replace(' ', '_')).toFile();
 		FileUtil.safeDelete(f);
-		
-		// delete temp folder
 	}
 	
 	public void serverChanged(ServerEvent event) {
