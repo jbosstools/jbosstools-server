@@ -77,6 +77,9 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	public IVMInstall getVM() {
+		if (getVMInstallTypeId() == null) {
+			return JavaRuntime.getDefaultVMInstall();
+		}
 		String id = getAttribute(PROPERTY_VM_ID, (String)null);
 		String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
 
@@ -93,12 +96,14 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	public void setVM(IVMInstall selectedVM) {
-		if( selectedVM == null )
-			selectedVM = JavaRuntime.getDefaultVMInstall();
-		
-		setAttribute(IJBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
-		setAttribute(IJBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM
-						.getVMInstallType().getId());
+		if (selectedVM == null) {
+			setAttribute(IJBossServerRuntime.PROPERTY_VM_ID, (String) null);
+			setAttribute(IJBossServerRuntime.PROPERTY_VM_TYPE_ID, (String) null);
+		} else {
+			setAttribute(IJBossServerRuntime.PROPERTY_VM_ID, selectedVM.getId());
+			setAttribute(IJBossServerRuntime.PROPERTY_VM_TYPE_ID, selectedVM
+					.getVMInstallType().getId());
+		}
 	}
 	
 	public String getJBossConfiguration() {
@@ -134,5 +139,13 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
 		envVars.put("Path", "native");
 		return envVars;
+	}
+
+	public boolean isUsingDefaultJRE() {
+		return getVMInstallTypeId() == null;
+	}
+	
+	protected String getVMInstallTypeId() {
+		return getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
 	}
 }

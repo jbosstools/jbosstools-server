@@ -46,4 +46,5 @@ public interface IJBossServerRuntime {
 	public String getDefaultRunArgs();
 	public String getDefaultRunVMArgs();
 	public HashMap<String, String> getDefaultRunEnvVars();
+	public boolean isUsingDefaultJRE();
 }
