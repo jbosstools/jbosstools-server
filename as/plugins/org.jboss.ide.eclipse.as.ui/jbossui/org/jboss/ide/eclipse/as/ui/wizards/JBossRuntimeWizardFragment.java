@@ -79,6 +79,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			explanationLabel;
 	private Text nameText, homeDirText;
 	private Combo jreCombo;
+	private int jreComboIndex;
 	private Button homeDirButton, jreButton;
 	private Composite nameComposite, homeDirComposite, jreComposite,
 			configComposite;
@@ -144,14 +145,18 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.setConfiguration(config);
 			configLabel.setText(Messages.wf_ConfigLabel);
 
-			IVMInstall install = rt.getVM();
-			String vmName = install.getName();
-			String[] jres = jreCombo.getItems();
-			for (int i = 0; i < jres.length; i++) {
-				if (vmName.equals(jres[i]))
-					jreCombo.select(i);
+			if (rt.isUsingDefaultJRE()) {
+				jreCombo.select(0);
+			} else {
+				IVMInstall install = rt.getVM();
+				String vmName = install.getName();
+				String[] jres = jreCombo.getItems();
+				for (int i = 0; i < jres.length; i++) {
+					if (vmName.equals(jres[i]))
+						jreCombo.select(i);
+				}
 			}
-
+			jreComboIndex = jreCombo.getSelectionIndex();
 			homeDirText.setEditable(canEdit);
 			homeDirButton.setEnabled(canEdit);
 			configurations.getTable().setVisible(canEdit);
@@ -305,6 +310,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 					jreCombo.setText(currentVM);
 					if (jreCombo.getSelectionIndex() == -1)
 						jreCombo.select(defaultVMIndex);
+					jreComboIndex = jreCombo.getSelectionIndex();
 				}
 			}
 		});
@@ -396,8 +402,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		}
 
 		int sel = jreCombo.getSelectionIndex();
-		if (sel != -1)
-			selectedVM = installedJREs.get(sel);
+		if (sel > 0)
+			selectedVM = installedJREs.get(sel-1);
 		else
 			selectedVM = null;
 	}
@@ -429,7 +435,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if (homeDir == null || homeDir.equals(""))
 			return Messages.rwf_homeDirBlank;
 
-		if (selectedVM == null)
+		if (jreComboIndex < 0)
 			return "No VM selected";
 
 		return null;
@@ -509,14 +515,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		// get names
 		size = installedJREs.size();
-		jreNames = new String[size];
+		jreNames = new String[size+1];
+		jreNames[0] = "Default JRE";
 		for (int i = 0; i < size; i++) {
 			IVMInstall vmInstall = installedJREs.get(i);
-			jreNames[i] = vmInstall.getName();
+			jreNames[i+1] = vmInstall.getName();
 		}
 
-		selectedVM = JavaRuntime.getDefaultVMInstall();
-		defaultVMIndex = installedJREs.indexOf(selectedVM);
+		//selectedVM = JavaRuntime.getDefaultVMInstall();
+		//defaultVMIndex = installedJREs.indexOf(selectedVM);
+		defaultVMIndex = 0;
 	}
 
 	// WST API methods
