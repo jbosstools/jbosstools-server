@@ -1,10 +1,13 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,12 +24,21 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
+import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
 
 public class ModuleActionProvider extends CommonActionProvider {
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
+	private Action exploreAction;
 	private ModuleServer[] selection;
 
 	private ICommonActionExtensionSite actionSite;
@@ -57,6 +69,15 @@ public class ModuleActionProvider extends CommonActionProvider {
 			menu.add(deleteModuleAction);
 			menu.add(fullPublishModuleAction);
 			menu.add(incrementalPublishModuleAction);
+			if (selection.size() == 1) {
+				ModuleServer moduleServer = (ModuleServer) selection.getFirstElement();
+				IServer server = moduleServer.getServer();
+				if (ExploreUtils.canExplore(server)) {
+					if (getDeployPath() != null) {
+						menu.add(exploreAction);
+					}
+				}
+			}
 		}
 	}
 	
@@ -100,6 +121,20 @@ public class ModuleActionProvider extends CommonActionProvider {
 		incrementalPublishModuleAction.setDescription(Messages.PublishModuleDescription);
 		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 
+		exploreAction = new Action() {
+			public void run() {
+				IPath path = getDeployPath();
+				if (path != null) {
+					File file = path.toFile();
+					if (file.exists()) {
+						ExploreUtils.explore(file.getAbsolutePath());
+					}
+				}
+			}
+		};
+		exploreAction.setText(ExploreUtils.EXPLORE);
+		exploreAction.setDescription(ExploreUtils.EXPLORE_DESCRIPTION);
+		exploreAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.EXPLORE_IMAGE));
 	}
 
 	protected void actionPublish(int type) {
@@ -143,5 +178,33 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}};
 			t.start();
 		}
+	}
+	
+	private IPath getDeployPath() {
+		ModuleServer ms = selection[0];
+		IModule[] module = ms.module;
+		IJBossServerPublisher publisher = ExtensionManager.getDefault()
+				.getPublisher(ms.getServer(), module);
+		IPath path = null;
+		IDeployableServer deployableServer = ServerConverter
+				.getDeployableServer(ms.server);
+		if (deployableServer != null) {
+			if (publisher instanceof JstPublisher) {
+				path = ExploreUtils.getDeployPath(deployableServer,
+						module);
+			} else if (publisher instanceof SingleFilePublisher) {
+				SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module[0].loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
+				if (delegate != null) {
+					IPath sourcePath = delegate.getGlobalSourcePath();
+					IPath destFolder = new Path(deployableServer.getDeployFolder());
+					path = destFolder.append(sourcePath.lastSegment());
+				} else {
+					path = new Path(deployableServer.getDeployFolder());
+				}
+			} else {
+				path = new Path(deployableServer.getDeployFolder());
+			}
+		}
+		return path;
 	}
 }

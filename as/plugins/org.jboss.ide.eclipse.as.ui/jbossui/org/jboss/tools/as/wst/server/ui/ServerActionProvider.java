@@ -57,6 +57,7 @@ import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartModuleAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopModuleAction;
+import org.jboss.ide.eclipse.as.ui.actions.ExploreAction;
 
 public class ServerActionProvider extends CommonActionProvider {
 	private ICommonActionExtensionSite actionSite;
@@ -111,7 +112,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		clipboard = new Clipboard(tableViewer.getTree().getDisplay());
 		Shell shell = tableViewer.getTree().getShell();
 		
-		actions = new Action[6];
+		actions = new Action[7];
 		// create the start actions
 		actions[0] = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
 		actions[1] = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
@@ -123,6 +124,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		// create the publish actions
 		actions[4] = new PublishAction(shell, provider);
 		actions[5] = new PublishCleanAction(shell, provider);
+		actions[6] = new ExploreAction(shell,provider);
 		
 		// create the open action
 		openAction = new OpenAction(provider);

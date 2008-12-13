@@ -52,6 +52,7 @@ public class JBossServerUISharedImages {
 	public static final String PUBLISH_IMAGE = "PUBLISH_IMAGE";
 	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE";
 	public static final String JMX_IMAGE = "JMX_IMAGE";
+	public static final String EXPLORE_IMAGE = "EXPLORE_IMAGE";
 	
 	private static JBossServerUISharedImages instance;
 	
@@ -76,6 +77,7 @@ public class JBossServerUISharedImages {
 		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
 		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
 		descriptors.put(JMX_IMAGE, createImageDescriptor(pluginBundle, "/icons/jmeth_obj.gif"));
+		descriptors.put(EXPLORE_IMAGE, createImageDescriptor(pluginBundle, "/icons/actions/xpl/explore.gif"));
 		Iterator<String> iter = descriptors.keySet().iterator();
 
 		while (iter.hasNext()) {
