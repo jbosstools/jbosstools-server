@@ -7,7 +7,7 @@ import org.jboss.tools.jmx.core.tests.DefaultProviderTest;
 import org.jboss.tools.jmx.core.tests.NodeBuilderTestCase;
 
 
-public class AllTests {
+public class JMXCoreAllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
 		suite.addTestSuite(DefaultMBeanServerConnectionFactoryTest.class);
