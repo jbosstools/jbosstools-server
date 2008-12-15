@@ -61,6 +61,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -111,6 +112,9 @@ public class DeploySection extends ServerEditorSection {
 		metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
 		serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
 		customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		currentSelection = metadataRadio.getSelection() ? metadataRadio :
+							serverRadio.getSelection() ? serverRadio : 
+								customRadio;
 		
 		radioListener = new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -232,15 +236,18 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String getDeployType() {
-		return helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
+		return getServer().getDeployLocationType();
 	}
 	
 	private String getDeployDir() {
-		return helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
+		return makeRelative(getServer().getDeployFolder());
 	}
 	private String getTempDeployDir() {
-		String defaultt = ServerPlugin.getInstance().getStateLocation().toFile().getAbsolutePath();
-		return helper.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, defaultt);
+		return makeRelative(getServer().getTempDeployFolder());
+	}
+	
+	private IDeployableServer getServer() {
+		return (IDeployableServer)server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
 	}
 	
 	public IStatus[] getSaveStatus() {

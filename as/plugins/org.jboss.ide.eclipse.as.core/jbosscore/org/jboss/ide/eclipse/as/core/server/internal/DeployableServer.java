@@ -116,14 +116,13 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		if( type.equals(DEPLOY_METADATA)) {
 			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
 			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-		} else if( type.equals(DEPLOY_SERVER)){
+		} else /* if( type.equals(DEPLOY_SERVER)) */ {
 			IJBossServerRuntime jbsrt = getRuntime();
 			String config = jbsrt.getJBossConfiguration();
-			return new Path(IJBossServerConstants.SERVER)
-				.append(config)
-				.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
+			IPath p = new Path(IJBossServerConstants.SERVER).append(config)
+				.append(IJBossServerConstants.DEPLOY).makeRelative();
+			return makeGlobal(getRuntime(), p).toString();
 		}
-		return makeGlobal(getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
 	}
 	
 	public void setDeployFolder(String folder) {
@@ -137,15 +136,14 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		if( type.equals(DEPLOY_METADATA)) {
 			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-		} else if( type.equals(DEPLOY_SERVER)){
+		} else /* if( type.equals(DEPLOY_SERVER)) */{
 			IJBossServerRuntime jbsrt = getRuntime();
 			String config = jbsrt.getJBossConfiguration();
-			return new Path(IJBossServerConstants.SERVER)
-				.append(config)
-				.append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+			IPath p = new Path(IJBossServerConstants.SERVER)
+				.append(config).append(IJBossServerConstants.TMP)
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+			return makeGlobal(getRuntime(), p).toString();
 		}
-		return makeGlobal(getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
 	}
 	public void setTempDeployFolder(String folder) {
 		setAttribute(TEMP_DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());

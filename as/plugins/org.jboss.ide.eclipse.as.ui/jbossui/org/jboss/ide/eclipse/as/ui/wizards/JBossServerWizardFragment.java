@@ -26,6 +26,7 @@ import java.io.File;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -261,13 +262,15 @@ public class JBossServerWizardFragment extends WizardFragment {
 		String deployTmpFolderVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
 			append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 		
-		
 		JBossServer jbs = (JBossServer)wc.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		jbs.setUsername("admin");
 		jbs.setPassword("admin");
-		jbs.setDeployLocationType(IDeployableServer.DEPLOY_METADATA);
+		
+		boolean as5 = isAS5();
+		String as5TmpDeployFolderVal = new Path(IJBossServerConstants.SERVER).append(getRuntime().getJBossConfiguration()).append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+		jbs.setDeployLocationType(as5 ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		jbs.setDeployFolder(deployVal);
-		jbs.setTempDeployFolder(deployTmpFolderVal);
+		jbs.setTempDeployFolder(as5 ? as5TmpDeployFolderVal : deployTmpFolderVal);
 		new File(deployVal).mkdirs();
 		new File(deployTmpFolderVal).mkdirs();
 	}
@@ -284,6 +287,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 		return ajbsrt;
 	}
 
+	protected boolean isAS5() {
+		return getRuntime().getRuntime().getRuntimeType().
+				getVersion().equals("5.0");
+	}
+	
 	public boolean isComplete() {
 		return getErrorString() == null ? true : false;
 	}
