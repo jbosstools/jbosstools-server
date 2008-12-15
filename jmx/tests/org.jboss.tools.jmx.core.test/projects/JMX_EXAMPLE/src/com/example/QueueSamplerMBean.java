@@ -6,7 +6,7 @@
 
 package com.example;
 
-public interface QueueSamplerMXBean {
+public interface QueueSamplerMBean {
     public QueueSample getQueueSample();
     public void clearQueue();
 }

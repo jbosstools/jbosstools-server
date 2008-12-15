@@ -9,7 +9,7 @@ package com.example;
 import java.util.Date;
 import java.util.Queue;
 
-public class QueueSampler implements QueueSamplerMXBean {
+public class QueueSampler implements QueueSamplerMBean {
 
     private Queue<String> queue;
 

@@ -20,12 +20,16 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
 import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.Root;
 
@@ -81,6 +85,20 @@ public class DefaultProviderTest extends TestCase {
 		ILaunchConfigurationWorkingCopy wc = createLaunch();
 		ILaunch launch = wc.launch("run", new NullProgressMonitor());
 		
+		/* */
+		IProcess p = launch.getProcesses()[0];
+		p.getStreamsProxy().getErrorStreamMonitor().addListener(new IStreamListener() {
+			public void streamAppended(String text, IStreamMonitor monitor) {
+				System.out.println("[error] " + text);
+			} 
+		});
+		p.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener() {
+			public void streamAppended(String text, IStreamMonitor monitor) {
+				System.out.println("[out] " + text);
+			} 
+		});
+		
+		 /* */
 		Thread.sleep(10000);
 		
 		try {
@@ -105,7 +123,14 @@ public class DefaultProviderTest extends TestCase {
 			
 			Node[] children = root.getChildren();
 			assertTrue("children were null", children != null);
-			assertEquals("Example had the wrong number of domains", 5, children.length);
+			assertTrue("children length was less than 1", children.length >= 0);
+			
+			boolean found = false;
+			for( int i = 0; i < children.length; i++ )
+				if( children[i] instanceof DomainNode && ((DomainNode)children[i]).getDomain().equals("com.example"))
+					found = true;
+			
+			assertTrue("Domain \"com.example\" not found", found);
 		} finally {
  			projectProvider.dispose();
 			launch.terminate();
