@@ -118,6 +118,7 @@ public class ClientAllRuntimeClasspathProvider extends
 		IPath deployPath = configPath.append("deploy");
 		addEntries(location.append("client"), list);
 		addEntries(location.append("lib"), list);
+		addEntries(location.append("common").append("lib"), list);
 		addEntries(configPath.append("lib"), list);
 		addEntries(deployPath.append("jbossweb.sar").append("jsf-libs"),list);
 		addEntries(deployerPath.append("jboss-aop-jboss5.deployer"), list);
