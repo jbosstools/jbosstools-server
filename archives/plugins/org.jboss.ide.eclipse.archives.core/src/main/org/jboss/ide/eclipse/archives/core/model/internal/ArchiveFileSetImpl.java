@@ -27,6 +27,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
@@ -146,7 +147,8 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 					matchingMap = scanner.getMatchedMap();
 				}
 			} catch( IllegalStateException ise ) {
-				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, ArchivesCoreMessages.CouldNotCreateScanner, ise);
+				ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, 
+						NLS.bind(ArchivesCoreMessages.CouldNotCreateScanner, ise.getMessage()), ise);
 				matchingPaths = new FileWrapper[0];
 				matchingMap = new HashMap<String, ArrayList<FileWrapper>>();
 			}
