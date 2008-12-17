@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="mbean_editor"  xreflabel="mbean_editor">
+    <?dbhtml filename="mbean_editor.html"?>
+    
+    <title>MBean Editor</title>
+    <!-- images -http://code.google.com/p/eclipse-jmx/wiki/NewAndNoteworthy_0_2_0  -->
+    
+    <para>The MBean Editor is composed of several pages:</para>
+        <orderedlist><listitem><para>the Attributes page</para></listitem>
+        <listitem><para>the Operations page</para></listitem>
+        <listitem><para>the Info page </para></listitem>
+        </orderedlist>
+    
+   <para> The Attributes &amp; Operations pages display a list for either the MBean attributes or operations as well as details for the selection.</para>
+    
+   <para> It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally.</para>
+    
+    <section>
+        <title>Notifications Page</title> 
+        <!-- images could be found here - http://code.google.com/p/eclipse-jmx/wiki/NewAndNoteworthy_0_2_1--> 
+        <!-- also so usefull info could be found here http://code.google.com/p/eclipse-jmx/wiki/ReleaseNotes_0_2_1 -->
+        <para>One more page in MBean Editor is a Notifications Page, which gives the possibility to subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp. unchecking) the Subscribe checkbox. </para>
+        <para>The list of notifications is refreshed every time a new notification is received:</para>
+        
+        <note><title>Note</title>
+            <para>It is only possible to subscribe to MBean which emits notifications (they must be NotificationBroadcaster).</para></note>
+        
+        </section>
+    <section id="AttributeDisplayExtensionPoints">
+        <title>Attribute Display Extension Points</title>
+        
+        <para>The value of the MBean attributes which are displayed in the MBean Editor is now contributed through 2 extension points:</para>
+        <orderedlist>
+            <listitem><para>net.jmesnil.jmx.ui.attribute.controls</para></listitem>
+            <listitem><para>net.jmesnil.jmx.ui.attribute.bindings</para> </listitem>
+        </orderedlist>
+        <para>This means that you can now contribute new display for MBean attributes (see some use cases and a simple example in net.jmesnil.jmx.ui.test.interactive plugin.xml)</para> 
+        
+    </section>
+    </chapter>
