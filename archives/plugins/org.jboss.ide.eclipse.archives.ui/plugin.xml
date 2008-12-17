@@ -143,6 +143,9 @@
                <instanceof
                      value="org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate$DelayProxy">
                </instanceof>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate$WrappedProject">
+               </instanceof>
             </or>
          </possibleChildren>
       </navigatorContent>
