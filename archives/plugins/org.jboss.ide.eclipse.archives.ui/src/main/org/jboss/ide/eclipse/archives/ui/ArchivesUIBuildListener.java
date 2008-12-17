@@ -46,6 +46,9 @@ public class ArchivesUIBuildListener extends AbstractBuildListener {
 		for( int i = 0; i < multi.length; i++ ) {
 			ms.add(multi[i]);
 		}
+		if( ms.getSeverity() == IStatus.OK)
+			return;
+		
 		if( PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG)) {
 			Display.getDefault().asyncExec(new Runnable() {
 				public void run() {

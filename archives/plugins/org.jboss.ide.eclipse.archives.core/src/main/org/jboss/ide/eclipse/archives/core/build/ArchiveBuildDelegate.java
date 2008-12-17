@@ -90,6 +90,13 @@ public class ArchiveBuildDelegate {
 				errors.addAll(Arrays.asList(fullArchiveBuild(((IArchive)nodes[i]),
 						new SubProgressMonitor(monitor, 1000), false)));
 			}
+//			IStatus result;
+//			for( int i = 0; i < nodes.length; i++ ) {
+//				result = fullArchiveBuild(((IArchive)nodes[i]),
+//						new SubProgressMonitor(monitor, 1000), false);
+//				if( !result.isOK())
+//					errors.addAll(Arrays.asList(result.getChildren()));
+//			}
 
 			EventManager.finishedBuild(project);
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
