@@ -112,7 +112,7 @@ public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
 			if( result.size() > 0 )
 				return true;
 
-		return getScanner().couldBeIncluded(path.toString(), inWorkspace);
+		return getScanner() == null ? false : getScanner().couldBeIncluded(path.toString(), inWorkspace);
 	}
 
 	public FileWrapper[] getMatches(IPath path) {
