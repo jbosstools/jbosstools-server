@@ -93,10 +93,13 @@ public class ArchiveBuildDelegate {
 
 			EventManager.finishedBuild(project);
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
-			MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+			monitor.done();
+			if( errors.size() == 0 )
+				return Status.OK_STATUS;
+			
+			MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, IStatus.ERROR, ArchivesCoreMessages.ErrorBuilding, null);
 			for( int i = 0; i < errors.size(); i++ )
 				ms.add(errors.get(i));
-			monitor.done();
 			return ms;
 		}
 	}
