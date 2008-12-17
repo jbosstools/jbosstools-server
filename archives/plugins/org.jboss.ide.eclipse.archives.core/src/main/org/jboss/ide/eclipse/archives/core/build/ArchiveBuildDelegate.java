@@ -203,10 +203,13 @@ public class ArchiveBuildDelegate {
 		IStatus[] errors2 = errors.toArray(new IStatus[errors.size()]);
 		if( log )
 			EventManager.error(pkg, errors2 );
-		MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, 0, ArchivesCoreMessages.ErrorBuilding, null);
+		monitor.done();
+		if( errors2.length == 0)
+			return Status.OK_STATUS;
+		
+		MultiStatus ms = new MultiStatus(ArchivesCore.PLUGIN_ID, IStatus.ERROR, ArchivesCoreMessages.ErrorBuilding, null);
 		for( int i = 0; i < errors.size(); i++ )
 			ms.add(errors.get(i));
-		monitor.done();
 		return ms;
 	}
 
