@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -92,7 +93,7 @@ public class XPathModel extends UnitedServerListener {
 					server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
 					if(ajbsr != null ) {
 						IPath loc = server2.getRuntime().getLocation();
-						IPath configFolder = loc.append("server").append(ajbsr.getJBossConfiguration());
+						IPath configFolder = loc.append(IJBossServerConstants.SERVER).append(ajbsr.getJBossConfiguration());
 						loadDefaults(server2, configFolder.toOSString());
 						helper.setAttribute(DEFAULTS_SET, true);
 						helper.save();
@@ -294,6 +295,38 @@ public class XPathModel extends UnitedServerListener {
 		serverToCategories.put(server.getId(), retVal);
 	}
 	
+	
+	/*
+	 * Namespace map
+	 */
+	public Properties namespaceMap = null;
+	public Properties getNamespaceMap() {
+		if( namespaceMap == null )
+			loadNamespaceMap();
+		return (Properties)namespaceMap.clone();
+	}
+	protected void loadNamespaceMap() {
+		// TODO load from preferenes. 
+		//If nothing's there, load from default
+		IPath p = new Path("properties").append("namespaceMap.properties");
+		if( p != null ) {
+			URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
+			if( url != null ) {
+				Properties pr = new Properties();
+				try {
+					pr.load(url.openStream());
+					namespaceMap = pr;
+					return;
+				} catch(IOException ioe) {
+				}
+			}
+		}
+		namespaceMap = new Properties();
+	}
+	public void setNamespaceMap(Properties map) {
+		namespaceMap = map;
+		// TODO  save to preferences
+	}
 	
 	/* 
 	 * Static utility methods

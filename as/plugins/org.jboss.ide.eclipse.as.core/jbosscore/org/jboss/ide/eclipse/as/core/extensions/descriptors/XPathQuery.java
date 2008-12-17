@@ -24,10 +24,15 @@ package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.eclipse.core.runtime.Path;
+import org.jaxen.JaxenException;
+import org.jaxen.SimpleNamespaceContext;
+import org.jaxen.XPath;
+import org.jaxen.dom4j.Dom4jXPath;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 
 /**
@@ -109,13 +114,21 @@ public class XPathQuery implements Serializable {
 			for( int i = 0; i < files.length; i++ ) {
 				fileLoc = new Path(baseDir).append(files[i]).toOSString();
 				Document d = getRepository().getDocument(fileLoc);
-				if( d != null )
-					nodeList = d.selectNodes(xpathPattern);
+				if( d != null ) {
+					XPath xpath = new Dom4jXPath( xpathPattern );
+					Map map = XPathModel.getDefault().getNamespaceMap();
+					xpath.setNamespaceContext( new SimpleNamespaceContext( map));
+					List nodes = xpath.selectNodes(d);
+					nodeList = xpath.selectNodes(d);
+				}
 				if( nodeList != null && nodeList.size() > 0 ) 
 					resultList.add(new XPathFileResult(this, fileLoc, nodeList));
 			}
 			results = resultList.toArray(new XPathFileResult[resultList.size()]);
 		} catch( IllegalStateException ise ) {
+			// cannot load  TODO log?
+			results = new XPathFileResult[0];
+		} catch( JaxenException je ) {
 			// cannot load  TODO log?
 			results = new XPathFileResult[0];
 		}
