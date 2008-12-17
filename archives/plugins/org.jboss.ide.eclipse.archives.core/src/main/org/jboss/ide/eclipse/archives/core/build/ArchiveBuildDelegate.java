@@ -60,6 +60,7 @@ import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.File
  */
 public class ArchiveBuildDelegate {
 
+	public static int CANNOT_REGISTER_CODE = 31415;
 	public ArchiveBuildDelegate() {
 	}
 
@@ -74,11 +75,17 @@ public class ArchiveBuildDelegate {
 
 		IArchiveModelRootNode root = ArchivesModel.instance().getRoot(project);
 		if( root == null ) {
-			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID,
+			// Adding a code here. If the project isn't registered yet, 
+			// the eclipse code can launch a registration job
+			if(ArchivesModel.instance().canReregister(project)) {
+				ArchivesModel.instance().registerProject(project, monitor);
+				return Status.OK_STATUS;
+			}
+			IStatus s = new Status(IStatus.ERROR, ArchivesCore.PLUGIN_ID, CANNOT_REGISTER_CODE,
 					ArchivesCore.bind(ArchivesCoreMessages.ErrorLocatingRootNode, project.toOSString()), null);
 			EventManager.error(null, new IStatus[]{s});
 			monitor.done();
-			return s;
+			return Status.OK_STATUS;
 		} else {
 			IArchiveNode[] nodes = root.getChildren(IArchiveNode.TYPE_ARCHIVE);
 			ArrayList<IStatus> errors = new ArrayList<IStatus>();

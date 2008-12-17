@@ -184,7 +184,8 @@ public class EventManager {
 		for( int i = 0; i < listeners.length; i++ ) {
 			try {
 				listeners[i].modelChanged(delta);
-			} catch(Exception e ) {logError(e);}		}
+			} catch(Exception e ) {logError(e);}		
+		}
 	}
 
 
