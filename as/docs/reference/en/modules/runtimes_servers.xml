@@ -187,7 +187,7 @@
         arguments</link>. They are often backed by a runtime object representing that server's
         location.</para>
     
-    <section revisionflag="changed">
+    <section>
       <title>Creating a New Server</title>
       
       <para>There are many ways to get to the new server wizard. One way is to use the old standard <emphasis>

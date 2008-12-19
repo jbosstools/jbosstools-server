@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="quick_start" revisionflag="added">
+<chapter id="quick_start">
   <title>Quick Start with JBoss Server</title>
 
   <para>This chapter covers the basics of working with the JBoss server. If you already have

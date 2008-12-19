@@ -30,7 +30,7 @@
 	</section>
 
 
-	<section revisionflag="changed">
+	<section>
 		<title>Adding Facets to a Project</title>
 
 		<para>In this section we&apos;re going to consider the facets added by <property>JBoss
