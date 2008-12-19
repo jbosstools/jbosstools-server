@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="tptp_support" role="new">
+<chapter id="tptp_support">
     <title>TPTP Support</title>
     <para>This chapter provides an overview on how to enable TPTP Profiling for <property>JBoss
         AS</property> adapters in <property>JBoss Tools</property>.</para>

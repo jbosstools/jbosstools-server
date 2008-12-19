@@ -75,7 +75,7 @@
         <para>Now, let&apos;s get to know with both of the <property>JBoss Server
                 View</property> parts.</para>
 
-        <section role="updated">
+        <section>
             <title>Top Part of the JBoss Server View</title>
             <para>In the top part of the <property>JBoss Server View</property> all declared servers
                 are represented as well as their current states, that is, whether they are started
