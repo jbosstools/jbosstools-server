@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="perspective" xreflabel="perspective">
+<chapter id="perspective" xreflabel="perspective" role="updated">
     <?dbhtml filename="perspective.html"?>
     <chapterinfo>
         <keywordset>
@@ -22,7 +22,7 @@
             <property>Project Archives View</property> and the <property>JBoss Server
             View</property>.</para>
 
-    <section id="JBossServerView">
+    <section id="JBossServerView" role="updated">
         <?dbhtml filename="JBossServerView.html"?>
         <title>The JBoss Server View</title>
         <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect
@@ -595,7 +595,7 @@
 
     </section>
 
-    <section id="Project_archivesView">
+    <section id="Project_archivesView" role="updated">
         <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
