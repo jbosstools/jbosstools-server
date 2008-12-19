@@ -212,10 +212,9 @@ public class ModelTruezipBridge {
 	}
 	public static boolean createFile(final IArchiveNode node, boolean sync) {
 		File f = getFile(node);
-		boolean b = false;
-		if( f != null ) {
-			b = f.mkdirs();
-		}
+		if( f == null ) return false;
+		if( f.exists() ) return true;
+		boolean b = f.mkdirs();
 		if( sync )
 			TrueZipUtil.sync();
 		return b;
