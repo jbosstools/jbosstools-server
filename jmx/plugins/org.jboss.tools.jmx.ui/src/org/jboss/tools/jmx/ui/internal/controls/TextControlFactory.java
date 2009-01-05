@@ -51,7 +51,7 @@ public class TextControlFactory implements IAttributeControlFactory {
         if (value instanceof Number || value instanceof Character) {
             style |= SWT.SINGLE;
         } else {
-            style |= SWT.MULTI | SWT.WRAP;
+            style |= SWT.MULTI | SWT.WRAP | SWT.V_SCROLL | SWT.H_SCROLL;
         }
 
         if (!writable) {
