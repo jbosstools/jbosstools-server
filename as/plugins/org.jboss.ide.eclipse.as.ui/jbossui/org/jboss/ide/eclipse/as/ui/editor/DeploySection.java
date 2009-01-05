@@ -372,6 +372,17 @@ public class DeploySection extends ServerEditorSection {
 				type = IDeployableServer.DEPLOY_CUSTOM;
 			}
 			
+			if( !newSelection.getSelection() ) {
+				// REDO, so no one actually clicked the radio. UGH!
+				oldSelection.removeSelectionListener(radioListener);
+				oldSelection.setSelection(false);
+				oldSelection.addSelectionListener(radioListener);
+				
+				newSelection.removeSelectionListener(radioListener);
+				newSelection.setSelection(true);
+				newSelection.addSelectionListener(radioListener);
+			}
+			
 			newDir = newDir == null ? oldDir : newDir;
 			newTemp = newTemp == null ? oldTemp : newTemp; 
 			
@@ -402,6 +413,13 @@ public class DeploySection extends ServerEditorSection {
 			oldSelection.removeSelectionListener(radioListener);
 			oldSelection.setSelection(true);
 			oldSelection.addSelectionListener(radioListener);
+			
+			newSelection.removeSelectionListener(radioListener);
+			newSelection.setSelection(false);
+			newSelection.addSelectionListener(radioListener);
+			
+			deployText.setEnabled(customRadio.getSelection());
+			tempDeployText.setEnabled(customRadio.getSelection());
 			
 			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
 				 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
