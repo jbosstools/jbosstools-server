@@ -236,7 +236,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			return;
 		
 		IJBossServerRuntime srt = getRuntime();
-		name = getDefaultNameText();
+		name = name == null ? getDefaultNameText() : name;
 		nameText.setText(name);
 		homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 		configValLabel.setText(srt.getJBossConfiguration());
@@ -250,13 +250,14 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		handleDefaults(serverWC);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
 		serverWC.setServerConfiguration(null); // no inside jboss folder
-		handleDefaults(serverWC);
 	}
 	
 	protected void handleDefaults(IServerWorkingCopy wc) {
+		name = name == null ? getDefaultNameText() : name;
 		String deployVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
 			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 		String deployTmpFolderVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
