@@ -218,6 +218,7 @@ public class Messages {
 	public static String EditorJNDIPort;
 	public static String EditorWebPort;
 	public static String EditorAutomaticallyDetectPort;
+	public static String EditorPortInvalid;
 	public static String EditorChangeJNDICommandName;
 	public static String EditorChangeWebCommandName;
 	public static String EditorChangeUsernameCommandName;
