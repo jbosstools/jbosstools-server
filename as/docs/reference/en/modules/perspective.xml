@@ -598,13 +598,13 @@
     <section id="Project_archivesView" role="updated">
         <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
-            needs to be packaged in some way. In Java-related projects, many people use ANT. JBoss
-            Tools comes with our own Archives tool with a bit easier and less-verbose XML and a
-            handy user interface. The Project Archives plugin consists primarily of a view, that is
-                <property>Project Archives View</property>, to set up each packaging
-            configuration.</para>
+            needs to be packaged in some way. In Java-related projects, many people use ANT.
+                <property>JBoss Tools</property> comes with our own Archives tool with a bit easier
+            and less-verbose XML and a handy user interface. The Project Archives plugin consists
+            primarily of a view, that is <property>Project Archives view</property>, to set up each
+            packaging configuration.</para>
         <para>So far, let&apos;s look through all functionality that the <property>Project
-                Archives View</property> provides.</para>
+                Archives view</property> provides.</para>
 
         <section id="archives_overview">
             <title>Overview</title>
@@ -625,11 +625,9 @@
                 </mediaobject>
             </figure>
 
-            <para>A project&apos;s configuration contains archives. On the image above there is
-                only one archive, but a project can contain many. Inside the archive folders
-                (testFolder), filesets, or other internal archives can be located. Internal archives
-                and filesets may be directly inside of an archive, or in some sub-folder of that
-                archive.</para>
+            <para>A project&apos;s configuration contains archives. As you can see on the image
+                above a project can contain more than one archive. Internal archives and filesets
+                can be directly inside of an archive, or in some sub-folder of that archive.</para>
 
             <para>In the upper right corner of the view you can see an icon which, when clicked,
                 will build the selected top-level archive. Additionally, you can select <emphasis>
@@ -642,13 +640,24 @@
 
         <section id="Creating_Archive">
             <title>Creating an Archive</title>
-            <para>When creating a new archive, you have some different options at your disposal. If
-                the project has no <emphasis>
-                    <property>.packages</property>
-                </emphasis> file, your options will be presented to you all at once to choose from.
-                Otherwise you will right-click inside the view and select <emphasis>
+
+            <para>When you open the <property>Project archives view</property> for the first time,
+                it asks you to select the project for what you want to create an archive.</para>
+
+            <figure>
+                <title>Archives View</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_21a.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>When creating a new archive for selected project, you have some different options
+                at your disposal. You need right-click inside the view and select <emphasis>
                     <property>New Archive</property>
                 </emphasis> to see your archive type options.</para>
+
             <figure>
                 <title>Create an Archive</title>
                 <mediaobject>
@@ -669,6 +678,7 @@
             <para><property>JAR</property> is the standard archive type, and does very little
                 configuration, leaving most of the work up to you. You can customize the name, add
                 folders, filesets, and inner jars to it.</para>
+
             <para>The other types, for the most part, simply start off with a default setting,
                 usually the jar with some specific children based on an expected structure of the
                 project. For example, if the project is a Dynamic Web Project, and you create a
@@ -676,9 +686,9 @@
                 filesets relevant to the known structure of the project.</para>
 
             <para>Here is the first page of all New archive wizards. It is the same for any archive
-                type and the only page in the <property>New Jar Wizard</property>.</para>
+                type and the only page in the <property>New Jar wizard</property>.</para>
             <figure>
-                <title>New JAR Wizard</title>
+                <title>New WAR Wizard</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_23.png"/>
@@ -686,17 +696,61 @@
                 </mediaobject>
             </figure>
 
-            <para>The page is pretty simple. All it asks for is the name of your new archive, a
-                destination, which we'll get to in a moment, and whether the archive is exploded or
-                packaged up.</para>
-            <para>The destination of an archive can be anywhere on the filesystem, anywhere in the
+            <para>The page is pretty simple. First it asks is setting the name of your new archive
+                and a destination.</para>
+
+            <para>The destination of an archive can be anywhere on the file system, anywhere in the
                 workspace, inside some other archive, or inside a folder declared inside an archive.
-                You can browse to workspace or filesystem destinations by clicking on their
+                Select the necessary checkbox (either <emphasis>
+                    <property>workspace</property>
+                </emphasis> or <emphasis>
+                    <property> file system</property>
+                </emphasis>) for marking the destination as related to either workspace or file
+                system. You can browse to workspace or filesystem destinations by clicking on their
                 respective buttons. To select a destination inside some other archive, you'll need
                 to press the <emphasis>
-                    <property>Workspace...</property>
+                    <property>Workspace</property>
                 </emphasis> button. At the bottom of the list, you&apos;ll see archives that
                 have been declared in the workspace.</para>
+
+            <figure>
+                <title>Selecting the destination in the workspace</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_23a.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>Also in the wizard for creating a new archive you can choose whether an archive to
+                be compressed or exploded into a folder (without compression). You need just select
+                proper chechbox in the <emphasis>
+                    <property>Archive type</property>
+                </emphasis> section.</para>
+
+            <para>In the <property>Package Explorer</property> you can observe the created
+                archive.</para>
+            <figure>
+                <title>The Archive in the Package Explorer</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_23b.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>If you use the exploded type of archiving, instead of a single file archive the result put into a
+                folder is displayed in the <property>Package
+                    Explorer</property>.</para>
+            <figure>
+                <title>The Exploded Archive in the Package Explorer</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_23c.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
             <section id="CreatingaFolder">
                 <title>Creating a Folder</title>
                 <para>Creating a folder is much easier. You simply right-click on an archive or
@@ -707,9 +761,8 @@
                 <title>Creating a FileSet</title>
                 <para>To create a new fileset, you click on an available target location such as an
                     archive, a nested archive, or a folder within an archive, and select <emphasis>
-                        <property>New Fileset</property>
-                    </emphasis>.</para>
-                <para>The <property>New Fileset Wizard</property> requires a destination (where the
+                        <property>New Fileset</property>. </emphasis></para>
+                <para>The <property>New Fileset wizard</property> requires a destination (where the
                     files will go), and a root directory (or where the files are coming from). The
                     source can be anywhere in the workspace or from the filesystem at large.</para>
 
@@ -725,8 +778,21 @@
                 <para>Below that, the fileset requires only an includes pattern and an excludes
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
+
+                <para>You can create a Fileset with flattenning or without it. Look at the difference on the figure below.</para>
+
+                <figure>
+                    <title>The FileSet with flattenning and without it</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_24a.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
             </section>
         </section>
+
         <section id="View_Actions">
             <title>Archive Actions</title>
             <figure>
@@ -805,6 +871,16 @@
                             </entry>
                         </row>
 
+                        <row>
+                            <entry>
+                                <para>Edit publish settings</para>
+                            </entry>
+
+                            <entry>
+                                <para>Gives possibility to edit an archive publish settings</para>
+                            </entry>
+                        </row>
+
                     </tbody>
                 </tgroup>
             </table>
@@ -814,8 +890,7 @@
             <title>Publishing to Server</title>
             <para>Finally, you&apos;ll need to publish your application to a server. Here, we
                 show you how to do it with the help of <emphasis>
-                    <property>Archives View</property>
-                </emphasis>.</para>
+                    <property>Archives View</property>. </emphasis></para>
 
             <figure>
                 <title>Context Menu on the Item</title>
@@ -826,9 +901,8 @@
                 </mediaobject>
             </figure>
             <para>The dialog above appears after selecting <emphasis>
-                    <property>Publish To Server</property>
-                </emphasis>. To simply publish once, you just select the server(s) that you want,
-                and finish. If you want the <emphasis>
+                    <property>Publish To Server</property>. </emphasis> To simply publish once, you
+                just select the server(s) that you want, and finish. If you want the <emphasis>
                     <property>Publish to Server</property>
                 </emphasis> action on that particular Archive to publish always to that set of
                 servers, then check the appropriate checkbox. And finally, to enable automatic
@@ -839,13 +913,18 @@
                 server, it might be easier to have the archive's destination folder be the deploy
                 folder of the server.</para>
         </section>
-        <section>
+        <section id="rel_res_links_archiving">
             <title>Relevant Resources Links</title>
             <para>Refer to <ulink url="http://ant.apache.org/manual/index.html">Ant manual</ulink>
                 to find more on how to build your applications with help of Ant.</para>
 
+            <para>We also recommend you to watch the <ulink
+                    url="http://docs.jboss.org/tools/movies/demos/archiving/archiving.htm"
+                    >movie</ulink> which demonstrates a powerful archiving functionality in
+                    <property>JBoss Tools</property>.</para>
+
             <para>At this point, you are guessed to be familiar with <property>JBoss AS
-                    Perspective</property> and your next step now is to explore how to work with
+                    perspective</property> and your next step now is to explore how to work with
                 different kinds of projects.</para>
         </section>
 
