@@ -696,8 +696,8 @@
                 </mediaobject>
             </figure>
 
-            <para>The page is pretty simple. First it asks is setting the name of your new archive
-                and a destination.</para>
+            <para>The page is pretty simple. First it asks to set the name of your new archive
+                and a destination.</para> 
 
             <para>The destination of an archive can be anywhere on the file system, anywhere in the
                 workspace, inside some other archive, or inside a folder declared inside an archive.
@@ -727,6 +727,16 @@
                 proper chechbox in the <emphasis>
                     <property>Archive type</property>
                 </emphasis> section.</para>
+            <para>If  a build or incremental update fails Project Archives  will show an error dialog:</para>
+            <figure>
+                <title>Selecting the destination in the workspace</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/projectarchives_error.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>Click in <emphasis><property>Details</property></emphasis> to see detailed information about what caused the error.</para>
 
             <para>In the <property>Package Explorer</property> you can observe the created
                 archive.</para>
