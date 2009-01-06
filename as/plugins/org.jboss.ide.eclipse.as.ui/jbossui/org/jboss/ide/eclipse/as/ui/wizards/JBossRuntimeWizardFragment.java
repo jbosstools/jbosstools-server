@@ -63,6 +63,8 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.JBossServerType;
+import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -442,9 +444,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected boolean isHomeValid() {
-		return homeDir != null
-				&& new Path(homeDir).append("bin").append("run.jar").toFile()
-						.exists();
+		if( homeDir == null  || !(new File(homeDir).exists())) return false;
+		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
+		IRuntime rt = (IRuntime) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		String v = rt.getRuntimeType().getVersion();
+		return new Path(homeDir).append("bin").append("run.jar").toFile().exists() 
+				&& version.startsWith(v);
 	}
 
 	private void browseHomeDirClicked() {
