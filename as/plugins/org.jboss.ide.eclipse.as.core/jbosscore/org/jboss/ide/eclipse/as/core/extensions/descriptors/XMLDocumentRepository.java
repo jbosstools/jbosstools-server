@@ -110,7 +110,8 @@ public class XMLDocumentRepository {
 	 * @return whether the document was re-read
 	 */
 	public boolean refresh(String fullPath) {
-		if (new File(fullPath).lastModified() != ((Long) pathToTimestamp
+		boolean found = pathToTimestamp.get(fullPath) != null;
+		if (!found || new File(fullPath).lastModified() != ((Long) pathToTimestamp
 				.get(fullPath)).longValue()) {
 			pathToDocument.put(fullPath, loadDocument(fullPath));
 			pathToTimestamp.put(fullPath, new Long(new File(fullPath)
