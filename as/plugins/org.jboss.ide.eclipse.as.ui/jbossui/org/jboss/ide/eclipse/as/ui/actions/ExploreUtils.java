@@ -63,7 +63,7 @@ public class ExploreUtils {
 					+ PATH + "\"";
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
 			if (new File("/usr/bin/nautilus").exists()) {
-				exploreFolderCommand = "/usr/bin/nautilus \"" + PATH + "\"";
+				exploreFolderCommand = "/usr/bin/nautilus --no-desktop \"" + PATH + "\"";
 			} else if (new File("/usr/bin/konqueror").exists()) {
 				exploreFolderCommand = "/usr/bin/konqueror \"" + PATH
 						+ "\"";
