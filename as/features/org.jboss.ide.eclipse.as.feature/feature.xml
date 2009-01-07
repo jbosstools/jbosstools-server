@@ -7,7 +7,7 @@
       plugin="org.jboss.ide.eclipse.as.ui">
 
    <description url="http://www.jboss.org/tools">
-      Provides a WTP adapter for JBoss AS 4.x and 5.x. Supports incremental and exploded deployment. 
+      Provides a WTP adapter for JBoss AS 4.x and 5.x. Supports incremental and exploded deployment.
    </description>
 
    <copyright>
@@ -423,7 +423,6 @@ END OF TERMS AND CONDITIONS
 
    <url>
       <update label="JBossTools Update Site" url="http://download.jboss.org/jbosstools/updates/stable"/>
-      <discovery label="JBossTools Development Update Site" url="http://download.jboss.org/updates/development"/>
    </url>
 
    <requires>
