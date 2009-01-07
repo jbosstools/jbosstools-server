@@ -35,6 +35,7 @@ public class ExploreUtils {
 	public final static String EXPLORE = "Explore";
 	public final static String EXPLORE_DESCRIPTION = "Explore deploy directory";
 	private static String exploreFolderCommand;
+	private static String[] exploreFolderCommandArray;
 	private static String exploreFileCommand;
 	
 	public static String getExploreCommand() {
@@ -62,11 +63,16 @@ public class ExploreUtils {
 			exploreFileCommand = "cmd /C start explorer /select,/e,\""
 					+ PATH + "\"";
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
+			
 			if (new File("/usr/bin/nautilus").exists()) {
-				exploreFolderCommand = "/usr/bin/nautilus --no-desktop \"" + PATH + "\"";
+				exploreFolderCommandArray = new String[3];
+				exploreFolderCommandArray[0]="/usr/bin/nautilus";
+				exploreFolderCommandArray[1]="--no-desktop";
+				exploreFolderCommand = "";
 			} else if (new File("/usr/bin/konqueror").exists()) {
-				exploreFolderCommand = "/usr/bin/konqueror \"" + PATH
-						+ "\"";
+				exploreFolderCommandArray = new String[2];
+				exploreFolderCommandArray[0]="/usr/bin/konqueror";
+				exploreFolderCommand = "";
 			}
 			exploreFileCommand = exploreFolderCommand;
 		}
@@ -108,9 +114,16 @@ public class ExploreUtils {
 			if (Platform.getOS().equals(Platform.OS_WIN32)) {
 				name = name.replace('/', '\\');
 			}
-			command = command.replace(ExploreUtils.PATH, name);
+			
 			try {
-				Runtime.getRuntime().exec(command);
+				if (Platform.OS_LINUX.equals(Platform.getOS())) {
+					int len = exploreFolderCommandArray.length;
+					exploreFolderCommandArray[len-1] = name;
+					Runtime.getRuntime().exec(exploreFolderCommandArray);
+				} else {
+					command = command.replace(ExploreUtils.PATH, name);
+					Runtime.getRuntime().exec(command);
+				}
 			} catch (IOException e) {
 				JBossServerUIPlugin.log(e.getMessage(),e);
 			}
