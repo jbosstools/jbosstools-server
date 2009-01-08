@@ -8,6 +8,22 @@
   applications through JMX and its RMI Connector.</para>
   
   <section>
+    <title> Requirements </title>
+    <para> Requirements to use eclipse-jmx are the following: </para>
+    
+    <itemizedlist>
+      <listitem>
+        <para> eclipse-jmx is developed on Eclipse 3.3 milestones. It is also tested on latest
+          stable 3.2 release.</para>
+      </listitem>
+      <listitem>
+        <para> eclipse-jmx requires that Eclipse is run on a JDK 1.5.0 or above (due to dependencies
+          on JMX packages which were introduced in Java 1.5.0)</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  
+  <section>
     <title>Installation</title>
     
    <para>eclipse-jmx can be installed either by using Eclipse update manager or by downloading it and installing it manually in Eclipse.</para>
@@ -48,6 +64,9 @@
     
   </section>
   
+  <section>
+    <title>Quick Start</title>
+ 
   
   <para>To start using it, it's necessary to open JMX perspective. Go to Window > Open Perspective >
     Other... and then select JMX and click OK </para>
@@ -72,22 +91,9 @@
   </itemizedlist>
 
   <para>There is a button to update the MBean attribute value (if it is writable)</para>
+  </section> 
+  
 
-  <section>
-    <title> Requirements </title>
-    <para> Requirements to use eclipse-jmx are the following: </para>
-
-    <itemizedlist>
-      <listitem>
-        <para> eclipse-jmx is developed on Eclipse 3.3 milestones. It is also tested on latest
-          stable 3.2 release.</para>
-      </listitem>
-      <listitem>
-        <para> eclipse-jmx requires that Eclipse is run on a JDK 1.5.0 or above (due to dependencies
-          on JMX packages which were introduced in Java 1.5.0)</para>
-      </listitem>
-    </itemizedlist>
- </section>
 
 <section>
   <title>How to Manage Tomcat   </title>
@@ -99,6 +105,24 @@
   <para>  Instructions to manage remotely Tomcat are available in Tomcat's monitoring documentation.</para>
   
 </section>
+  
+  <section>
+    <title>How to manage Eclipse Equinox using eclipse-jmx</title>
+
+  
+<para> You can manage Equinox using eclipse-jmx through Equinox monitoring framework.</para>  
+<para>  Once you have installed Equinox monitoring framework and restarted Eclipse:</para>  
+<itemizedlist>
+  <listitem><para>   Go to Window > Open Perspective > Other... and select the JMX Resource Management perspective</para></listitem>    
+<listitem><para>  Select JMX Server > Open Connection and click on OK</para></listitem> 
+  <listitem><para>    Switch to eclipse-jmx perspective by going to Window > Open Perspective > Other... and selecting the JMX perspective</para></listitem>    
+  <listitem><para>   click on the Connect... icon () in the MBean Explorer menu bar </para></listitem>   
+<listitem><para>   select the Advanced tab and set the JMX URL to  service:jmx:rmi:///jndi/rmi://:8118/jmxserver </para></listitem>   
+</itemizedlist>
+<para>  You now have access to the MBeans exposed by Equinox. </para>  
+  </section>
+  
+  
    
   <section id="Connection">
     <title>Connection</title>
