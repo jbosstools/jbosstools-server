@@ -604,7 +604,7 @@
             <para>Those who use ANT will appreciate how the Project Archives Ant task is now improved: it supports variables and gives more informative error/logging messages when something goes wrong.</para>
         </note>
         
-              <para>But <property>JBoss Tools</property> comes with our own Archives tool with a bit easier
+              <para>But <property>JBoss Tools</property> come with our own Archives tool with a bit easier
             and less-verbose XML and a handy user interface. The Project Archives plugin consists
             primarily of a view, that is <property>Project Archives view</property>, to set up each
             packaging configuration.</para>
