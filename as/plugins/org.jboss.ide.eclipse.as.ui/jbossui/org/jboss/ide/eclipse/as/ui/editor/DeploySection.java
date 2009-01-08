@@ -438,6 +438,9 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String makeRelative(String path) {
+		if (getRuntime() == null) {
+			return "";
+		}
 		return DeployableServer.makeRelative(getRuntime(), new Path(path)).toString();
 	}
 	
