@@ -598,8 +598,13 @@
     <section id="Project_archivesView" role="updated">
         <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
-            needs to be packaged in some way. In Java-related projects, many people use ANT.
-                <property>JBoss Tools</property> comes with our own Archives tool with a bit easier
+        needs to be packaged in some way. In Java-related projects, many people use ANT. </para>
+        <note>
+            <title>Note:</title>
+            <para>Those who use ANT will appreciate how the Project Archives Ant task is now improved: it supports variables and gives more informative error/logging messages when something goes wrong.</para>
+        </note>
+        
+              <para>But <property>JBoss Tools</property> comes with our own Archives tool with a bit easier
             and less-verbose XML and a handy user interface. The Project Archives plugin consists
             primarily of a view, that is <property>Project Archives view</property>, to set up each
             packaging configuration.</para>
