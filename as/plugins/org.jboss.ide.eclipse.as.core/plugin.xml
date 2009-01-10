@@ -550,6 +550,38 @@
                uri="dtd/service-ref_4_2.dtd"
                webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd">
          </public>
+         
+         <public
+               publicId="-//JBoss//DTD Java EE Application 5.0//EN"
+               uri="dtd/jboss-app_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd">
+         </public>
+         <public
+               publicId="-//JBoss//DTD JBOSS 5.0//EN"
+               uri="dtd/jboss_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss_5_0.dtd">
+         </public>
+         <public
+               publicId="-//JBoss//DTD Web Application 5.0//EN"
+               uri="dtd/jboss-web_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd">
+         </public>
+         <public
+               publicId="-//JBoss//DTD JBOSS JCA Config 5.0//EN"
+               uri="dtd/jboss-ds_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd">
+         </public>
+         <public
+               publicId="-//JBoss//DTD MBean Service 5.0//EN"
+               uri="dtd/jboss-service_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_5_0.dtd">
+         </public>
+         <public
+               publicId="-//JBoss//DTD Web Service Reference 5.0//EN"
+               uri="dtd/service-ref_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/service-ref_5_0.dtd">
+         </public>
+			
      </catalogContribution>
    </extension>
 
