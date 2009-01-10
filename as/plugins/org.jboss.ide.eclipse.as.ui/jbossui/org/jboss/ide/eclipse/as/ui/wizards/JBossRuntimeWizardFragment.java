@@ -446,6 +446,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected boolean isHomeValid() {
 		if( homeDir == null  || !(new File(homeDir).exists())) return false;
 		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
+		if (version.startsWith("4.3.0")) {
+			version="4.2";
+		}
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
