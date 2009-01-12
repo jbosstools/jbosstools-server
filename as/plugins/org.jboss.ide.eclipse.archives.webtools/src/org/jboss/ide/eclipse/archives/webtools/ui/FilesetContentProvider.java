@@ -38,6 +38,16 @@ public class FilesetContentProvider implements ITreeContentProvider {
 		public String getLocalizedResourceName() {
 			return path.toOSString();
 		}
+		
+		public boolean equals(Object o) {
+			return o == null ? false :
+						!(o instanceof PathWrapper) ? false :
+							((PathWrapper)o).folder.equals(folder) && ((PathWrapper)o).path.equals(path);
+		}
+		
+		public int hashCode() {
+			return path.hashCode() + folder.hashCode();
+		}
 	}
 
 	public static class FolderWrapper extends PathWrapper {

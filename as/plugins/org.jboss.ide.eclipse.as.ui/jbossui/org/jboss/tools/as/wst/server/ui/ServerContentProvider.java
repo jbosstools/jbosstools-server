@@ -257,6 +257,21 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 		job.schedule();
 	}
 	
+	protected void updateServerLabel(final IServer server) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				try {
+					if( viewer != null && !viewer.getControl().isDisposed()) {
+						viewer.update(server, null);
+						ServerDecorator.getDefault().redecorate(server);
+					}
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		});
+	}
+	
 	protected void refreshServer(final IServer server) {
 		refreshServer(server, false);
 	}
@@ -315,7 +330,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 							IServer server = ServerCore.findServer(servers[i]);
 							if (server != null ) {
 								ServerDecorator.animate();
-								refreshServer(server);
+								updateServerLabel(server);
 							}
 						}
 					} catch (Exception e) {
