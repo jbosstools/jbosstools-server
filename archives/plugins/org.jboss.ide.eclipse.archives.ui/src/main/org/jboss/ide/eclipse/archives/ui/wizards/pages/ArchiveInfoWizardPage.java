@@ -131,7 +131,11 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 		packageTypeGroup.setText(ArchivesUIMessages.PackageInfoWizardPage_packageTypeGroup_label);
 		expand(packageTypeGroup);
 
-		packageExploded = false;
+		if (archive != null) {
+			packageExploded = archive.isExploded();
+		} else {
+			packageExploded = false;
+		}
 		compressedButton = new Button(packageTypeGroup, SWT.RADIO);
 		compressedButton.setText(ArchivesUIMessages.PackageInfoWizardPage_compressedButton_label);
 		compressedButton.addSelectionListener(new SelectionAdapter() {
@@ -139,7 +143,7 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 				packageExploded = false;
 			}
 		});
-		compressedButton.setSelection(true);
+		compressedButton.setSelection(!packageExploded);
 		explodedButton = new Button(packageTypeGroup, SWT.RADIO);
 		explodedButton.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
