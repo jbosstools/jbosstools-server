@@ -80,7 +80,7 @@ public class ExploreUtils {
 	
 	public static String getDeployDirectory(IServer server) {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		if (deployableServer != null) {
+		if (server.getRuntime() != null && deployableServer != null) {
 			return deployableServer.getDeployFolder();
 		}
 		IServerWorkingCopy swc = server.createWorkingCopy();

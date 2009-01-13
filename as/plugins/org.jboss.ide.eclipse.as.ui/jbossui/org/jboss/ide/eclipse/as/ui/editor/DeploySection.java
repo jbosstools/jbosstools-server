@@ -240,10 +240,10 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String getDeployDir() {
-		return makeRelative(getServer().getDeployFolder());
+		return server.getRuntime() == null ? "" : makeRelative(getServer().getDeployFolder());
 	}
 	private String getTempDeployDir() {
-		return makeRelative(getServer().getTempDeployFolder());
+		return server.getRuntime() == null ? "" : makeRelative(getServer().getTempDeployFolder());
 	}
 	
 	private IDeployableServer getServer() {
