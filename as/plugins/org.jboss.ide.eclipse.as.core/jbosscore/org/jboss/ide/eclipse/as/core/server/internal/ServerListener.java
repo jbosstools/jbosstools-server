@@ -43,13 +43,12 @@ public class ServerListener extends UnitedServerListener {
 		// create temp deploy folder
 		IRuntime rt = server.getRuntime();
 		IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		if( jbsrt != null ) {
-			String config = jbsrt.getJBossConfiguration();
-			String newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-				.append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-			new File(newTemp).mkdirs();
-		}
+		String config = jbsrt.getJBossConfiguration();
+		String newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+			.append(IJBossServerConstants.TMP)
+			.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+		new File(newTemp).mkdirs();
+
 	}
 
 	public void serverRemoved(IServer server) {
