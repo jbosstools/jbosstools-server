@@ -12,7 +12,7 @@
 
    <copyright>
       JBoss, Home of Professional Open Source
-Copyright 2006, JBoss Inc., and individual contributors as indicated
+      Copyright 2006, JBoss Inc., and individual contributors as indicated
 by the @authors tag. See the copyright.txt in the distribution
 for a full listing of individual contributors.
    </copyright>
@@ -420,7 +420,7 @@ WITH ANY OTHER SOFTWARE), EVEN IF SUCH HOLDER OR OTHER PARTY
 HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
 END OF TERMS AND CONDITIONS
    </license>
-
+   
    <url>
       <update label="JBossTools Update Site" url="http://download.jboss.org/jbosstools/updates/stable"/>
    </url>
@@ -510,13 +510,6 @@ END OF TERMS AND CONDITIONS
 
    <plugin
          id="org.jboss.ide.eclipse.as.classpath.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.tools.eclipse.as.tptp"
          download-size="0"
          install-size="0"
          version="0.0.0"
