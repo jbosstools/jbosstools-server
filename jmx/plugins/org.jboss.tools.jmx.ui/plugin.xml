@@ -8,7 +8,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="JMX"
+            name="%ViewCategory_JMX"
             id="org.jboss.tools.jmx.ui.views">
       </category>
       <view
@@ -172,7 +172,7 @@
             class="org.jboss.tools.jmx.ui.internal.perspectives.JMXPerspective"
             icon="icons/releng_gears.gif"
             id="org.jboss.tools.jmx.ui.perspectives.JMXPerspective"
-            name="JMX">
+            name="%perspective.name">
       </perspective>
    </extension>
    <extension

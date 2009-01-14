@@ -7,7 +7,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="JBoss Tools"
+            name="%ViewCategory_JBossTools"
             id="org.jboss.tools.common.model.ui.views">
       </category>
       <view
@@ -16,7 +16,7 @@
             class="org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView"
             icon="icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView"
-            name="Project archives"/>
+            name="%ViewName_ProjectArchives"/>
    </extension>
 
    <extension
@@ -58,7 +58,7 @@
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.archivesPreferencePage"
-            name="Project Archives"/>
+            name="%PreferencePage_ProjectArchives"/>
    </extension>
    
    
@@ -67,12 +67,12 @@
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.projectProperties"
-            name="Project Archives"
+            name="%ProjectPropertiesPage_ProjectArchives"
             objectClass="org.eclipse.core.resources.IProject"/>
       <page
             class="org.jboss.ide.eclipse.archives.ui.preferences.MainPreferencePage"
             id="org.jboss.ide.eclipse.archives.ui.projectProperties2"
-            name="Project Archives"
+            name="%ProjectPropertiesPage_ProjectArchives"
             objectClass="org.eclipse.jdt.core.IJavaProject"/>
    </extension>
    <extension

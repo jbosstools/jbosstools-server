@@ -142,7 +142,7 @@ public class NewConnectionWizard extends Wizard {
 		TreeViewer viewer;
 		public FirstPage() {
 			super(Messages.NewConnectionWizard);
-			setDescription("Create a new JMX Connection");
+			setDescription(Messages.NewConnectionWizard_CreateNewConnection);
 		}
 		public void createControl(Composite parent) {
 			Composite main = new Composite(parent, SWT.NONE);

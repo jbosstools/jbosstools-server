@@ -120,7 +120,7 @@
             class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
             icon="icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.ASPerspective"
-            name="JBoss AS"/>
+            name="%perspective.name"/>
    </extension>
       <extension
             point="org.eclipse.wst.server.ui.initialSelectionProvider">
@@ -264,7 +264,7 @@
    <extension point="org.eclipse.ui.views"> 
    	  <view
          id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-         name="JBoss Server View"
+         name="%ViewName_JBossServerView"
          category="org.eclipse.wst.server.ui"
          class="org.jboss.tools.as.wst.server.ui.ServersView"
          icon="icons/jboss.gif"/>
@@ -273,7 +273,7 @@
             class="org.jboss.ide.eclipse.as.ui.views.ServerLogView"
             icon="icons/console.gif"
             id="org.jboss.ide.eclipse.as.ui.view.serverLogView"
-            name="Server Log"
+            name="%ViewName_ServerLog"
             restorable="true">
       </view>
    </extension>
