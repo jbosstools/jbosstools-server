@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="jbosscore"/>
-	<classpathentry exported="true" kind="lib" path="log/"/>
 	<classpathentry exported="true" kind="lib" path="dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="jaxen-1.1-beta-6.jar"/>
 	<classpathentry exported="true" kind="lib" path="getopt.jar"/>

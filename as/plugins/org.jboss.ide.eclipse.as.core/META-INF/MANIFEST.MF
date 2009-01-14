@@ -38,6 +38,5 @@ Export-Package: org.jboss.ide.eclipse.as.core,
 Bundle-ClassPath: dom4j-1.6.1.jar,
  jaxen-1.1-beta-6.jar,
  jbossascore.jar,
- getopt.jar,
- log/
+ getopt.jar
 Bundle-Vendor: JBoss, a division of Red Hat
