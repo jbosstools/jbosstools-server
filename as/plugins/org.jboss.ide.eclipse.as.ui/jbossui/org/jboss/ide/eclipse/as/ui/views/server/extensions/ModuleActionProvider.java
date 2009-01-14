@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -35,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
+import org.jboss.tools.as.wst.server.ui.ServerActionProvider;
 
 public class ModuleActionProvider extends CommonActionProvider {
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
@@ -66,15 +68,15 @@ public class ModuleActionProvider extends CommonActionProvider {
 			for( int i = 0; i < arr.length; i++ ) 
 				ms[i] = (ModuleServer)arr[i];
 			this.selection = ms;
-			menu.add(deleteModuleAction);
-			menu.add(fullPublishModuleAction);
-			menu.add(incrementalPublishModuleAction);
+			
+			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, incrementalPublishModuleAction);
+			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, fullPublishModuleAction);
 			if (selection.size() == 1) {
 				ModuleServer moduleServer = (ModuleServer) selection.getFirstElement();
 				IServer server = moduleServer.getServer();
 				if (ExploreUtils.canExplore(server)) {
 					if (getDeployPath() != null) {
-						menu.add(exploreAction);
+						menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
 					}
 				}
 			}
@@ -82,8 +84,9 @@ public class ModuleActionProvider extends CommonActionProvider {
 	}
 	
 	protected boolean allAre(IStructuredSelection sel, Class c) {
-		if( sel == null )
+		if( sel == null || sel.isEmpty())
 			return false;
+		
 		Iterator i = sel.iterator();
 		while(i.hasNext()) 
 			if(!i.next().getClass().equals(c))

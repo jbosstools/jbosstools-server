@@ -12,7 +12,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.viewers.IOpenListener;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
@@ -60,6 +59,19 @@ import org.eclipse.wst.server.ui.internal.view.servers.StopModuleAction;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreAction;
 
 public class ServerActionProvider extends CommonActionProvider {
+	public static final String NEW_MENU_ID = "org.jboss.tools.as.wst.server.ui.internal.cnf.newMenuId";
+	public static final String SHOW_IN_MENU_ID = "org.jboss.tools.as.wst.server.ui.internal.cnf.showInMenuId";
+	public static final String TOP_SECTION_START_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.topSectionStart";
+	public static final String TOP_SECTION_END_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.topSectionEnd";
+	public static final String EDIT_SECTION_START_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnfeditSectionStart";
+	public static final String EDIT_SECTION_END_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.editSectionEnd";
+	public static final String CONTROL_SERVER_SECTION_START_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.controlServerSectionStart";
+	public static final String CONTROL_SERVER_SECTION_END_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.controlServerSectionEnd";
+	public static final String SERVER_ERATA_SECTION_START_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.serverErataSectionStart";
+	public static final String SERVER_ERATA_SECTION_END_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.serverErataSectionEnd";
+	public static final String CONTROL_MODULE_SECTION_START_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.controlModuleSectionStart";
+	public static final String CONTROL_MODULE_SECTION_END_SEPARATOR = "org.jboss.tools.as.wst.server.ui.internal.cnf.controlModuleSectionEnd";
+	
 	private ICommonActionExtensionSite actionSite;
 	private Clipboard clipboard;
 	public ServerActionProvider() {
@@ -125,7 +137,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		actions[4] = new PublishAction(shell, provider);
 		actions[5] = new PublishCleanAction(shell, provider);
 		actions[6] = new ExploreAction(shell,provider);
-		
+
 		// create the open action
 		openAction = new OpenAction(provider);
 
@@ -165,12 +177,6 @@ public class ServerActionProvider extends CommonActionProvider {
 			cm.add(actions[i]);
 	}
 	
-	private static void fillNewContextMenu(Shell shell, ISelection selection, IMenuManager menu) {
-		IAction newServerAction = new NewServerWizardAction();
-		newServerAction.setText(Messages.actionNewServer);
-		menu.add(newServerAction);
-	}
-
 	public void fillContextMenu(IMenuManager menu) {
 		ICommonViewerSite site = actionSite.getViewSite();
 		IStructuredSelection selection = null;
@@ -198,9 +204,56 @@ public class ServerActionProvider extends CommonActionProvider {
 			}
 		}
 		
-		// new action
-		MenuManager newMenu = new MenuManager(Messages.actionNew);
-		fillNewContextMenu(null, selection, newMenu);
+		menu.add(invisibleSeparator(TOP_SECTION_START_SEPARATOR));
+		addTopSection(menu, server, module);
+		menu.add(invisibleSeparator(TOP_SECTION_END_SEPARATOR));
+		menu.add(new Separator());
+
+		if (server != null && module == null) {
+			menu.add(invisibleSeparator(EDIT_SECTION_START_SEPARATOR));
+			menu.add(copyAction);
+			menu.add(pasteAction);
+			menu.add(deleteAction);
+			menu.add(renameAction);
+			menu.add(invisibleSeparator(EDIT_SECTION_END_SEPARATOR));
+
+			menu.add(new Separator());
+			
+			menu.add(invisibleSeparator(CONTROL_SERVER_SECTION_START_SEPARATOR));
+			for (int i = 0; i < actions.length; i++)
+				menu.add(actions[i]);
+			menu.add(invisibleSeparator(CONTROL_SERVER_SECTION_END_SEPARATOR));
+			
+			menu.add(new Separator());
+			
+			menu.add(invisibleSeparator(SERVER_ERATA_SECTION_START_SEPARATOR));
+			menu.add(actionModifyModules);
+			addMonitor(server, menu, shell);
+			menu.add(invisibleSeparator(SERVER_ERATA_SECTION_END_SEPARATOR));
+			menu.add(new Separator());
+			menu.add(propertiesAction);
+			
+		} else if (server != null && module != null) {
+			
+			menu.add(invisibleSeparator(CONTROL_MODULE_SECTION_START_SEPARATOR));
+			menu.add(new StartModuleAction(server, module));
+			menu.add(new StopModuleAction(server, module));			
+			menu.add(new RestartModuleAction(server, module));
+			if(module.length == 1) {
+				menu.add(new RemoveModuleAction(shell, server, module[0]));
+			}
+			menu.add(invisibleSeparator(CONTROL_MODULE_SECTION_END_SEPARATOR));
+		}
+		
+		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS+"-end"));
+	}
+
+	protected void addTopSection(IMenuManager menu, IServer server, IModule[] module) {
+		MenuManager newMenu = new MenuManager(Messages.actionNew, NEW_MENU_ID);
+		IAction newServerAction = new NewServerWizardAction();
+		newServerAction.setText(Messages.actionNewServer);
+		newMenu.add(newServerAction);
 		menu.add(newMenu);
 		
 		// open action
@@ -220,80 +273,50 @@ public class ServerActionProvider extends CommonActionProvider {
 			MenuManager showInMenu = new MenuManager(text, "org.eclipse.ui.navigate.showInQuickMenu");
 			showInMenu.add(showInConsoleAction);
 			showInMenu.add(showInDebugAction);
-			//IActionBars actionBars = getViewSite().getActionBars();
-			//actionBars.setGlobalActionHandler("group.show", showInMenu);
 			menu.add(showInMenu);
-			menu.add(new Separator());
-		} else
-			menu.add(new Separator());
-		
-		if (server != null) {
-			if (module == null) {
-				menu.add(copyAction);
-				menu.add(pasteAction);
-				menu.add(deleteAction);
-				menu.add(renameAction);
-			} else if (module.length == 1)
-				menu.add(new RemoveModuleAction(shell, server, module[0]));
-			menu.add(new Separator());
 		}
-		
-		if (server != null && module == null) {
-			// server actions
-			for (int i = 0; i < actions.length; i++)
-				menu.add(actions[i]);
+	}
+	
+	protected void addMonitor(IServer server, IMenuManager menu, Shell shell) {
+
+		if (server.getServerType() != null) {
+			final MenuManager menuManager = new MenuManager(Messages.actionMonitor);
 			
-			menu.add(new Separator());
-			menu.add(actionModifyModules);
-			
-			// monitor
-			if (server.getServerType() != null) {
-				final MenuManager menuManager = new MenuManager(Messages.actionMonitor);
-				
-				final IServer server2 = server;
-				final Shell shell2 = shell;
-				menuManager.addMenuListener(new IMenuListener() {
-					public void menuAboutToShow(IMenuManager manager) {
-						menuManager.removeAll();
-						if (server2.getAdapter(ServerDelegate.class) != null) {
-							ServerPort[] ports = server2.getServerPorts(null);
-							if (ports != null) {
-								int size = ports.length;
-								for (int i = 0; i < size; i++) {
-									if (!ports[i].isAdvanced())
-										menuManager.add(new MonitorServerPortAction(shell2, server2, ports[i]));
-								}
+			final IServer server2 = server;
+			final Shell shell2 = shell;
+			menuManager.addMenuListener(new IMenuListener() {
+				public void menuAboutToShow(IMenuManager manager) {
+					menuManager.removeAll();
+					if (server2.getAdapter(ServerDelegate.class) != null) {
+						ServerPort[] ports = server2.getServerPorts(null);
+						if (ports != null) {
+							int size = ports.length;
+							for (int i = 0; i < size; i++) {
+								if (!ports[i].isAdvanced())
+									menuManager.add(new MonitorServerPortAction(shell2, server2, ports[i]));
 							}
 						}
-						
-						if (menuManager.isEmpty())
-							menuManager.add(noneAction);
-						
-						menuManager.add(new Separator());
-						menuManager.add(monitorPropertiesAction);
 					}
-				});
-				
-				// add an initial menu item so that the menu appears correctly
-				noneAction.setEnabled(false);
-				menuManager.add(noneAction);
-				menu.add(menuManager);
-			}
+					
+					if (menuManager.isEmpty())
+						menuManager.add(noneAction);
+					
+					menuManager.add(new Separator());
+					menuManager.add(monitorPropertiesAction);
+				}
+			});
+			
+			// add an initial menu item so that the menu appears correctly
+			noneAction.setEnabled(false);
+			menuManager.add(noneAction);
+			menu.add(menuManager);
 		}
-		
-		if (server != null && module != null) {
-			menu.add(new Separator());
-			menu.add(new StartModuleAction(server, module));
-			menu.add(new StopModuleAction(server, module));			
-			menu.add(new RestartModuleAction(server, module));
-		}
-		
-		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS+"-end"));
-		
-		if (server != null) {
-			menu.add(new Separator());
-			menu.add(propertiesAction);
-		}
+	}
+	
+	
+	private Separator invisibleSeparator(String s) {
+		Separator sep = new Separator(s);
+		sep.setVisible(false);
+		return sep;
 	}
 }
