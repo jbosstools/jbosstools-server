@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.jboss.ide.eclipse.archives.feature"
-      label="JBoss Archives Tools"
+      label="%featureName"
       version="1.0.0"
-      provider-name="JBoss, a division of Red Hat"
+      provider-name="%providerName"
       plugin="org.jboss.ide.eclipse.archives.ui">
 
    <description url="http://www.jboss.org/tools">
-      Project Archives provides a way to define archives based on include/exclude filesets which then
-      gets incrementally updated allowing for fluent deployment for any type of Eclipse project.
+      %description
    </description>
 
    <copyright>
-      JBoss, Home of Professional Open Source
-Copyright 2006, JBoss Inc., and individual contributors as indicated
-by the @authors tag. See the copyright.txt in the distribution
-for a full listing of individual contributors.
+      %copyright
    </copyright>
 
    <license url="http://osdn.dl.sourceforge.net/sourceforge/jboss/LGPL.html">
@@ -423,7 +419,7 @@ END OF TERMS AND CONDITIONS
    </license>
 
    <url>
-      <update label="JBossTools Update Site" url="http://download.jboss.org/jbosstools/updates/stable"/>
+      <update label="%updateSiteName" url="http://download.jboss.org/jbosstools/updates/stable"/>
    </url>
 
    <requires>

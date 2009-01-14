@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.jboss.ide.eclipse.as.feature"
-      label="JBossAS Tools"
+      label="%featureName"
       version="1.0.0"
-      provider-name="JBoss, a division of Red Hat"
+      provider-name="%providerName"
       plugin="org.jboss.ide.eclipse.as.ui">
 
    <description url="http://www.jboss.org/tools">
-      Provides a WTP adapter for JBoss AS 4.x and 5.x. Supports incremental and exploded deployment.
+      %description
    </description>
 
    <copyright>
-      JBoss, Home of Professional Open Source
-      Copyright 2006, JBoss Inc., and individual contributors as indicated
-by the @authors tag. See the copyright.txt in the distribution
-for a full listing of individual contributors.
+      %copyright
    </copyright>
 
    <license url="http://osdn.dl.sourceforge.net/sourceforge/jboss/LGPL.html">
@@ -422,7 +419,7 @@ END OF TERMS AND CONDITIONS
    </license>
    
    <url>
-      <update label="JBossTools Update Site" url="http://download.jboss.org/jbosstools/updates/stable"/>
+      <update label="%updateSiteName" url="http://download.jboss.org/jbosstools/updates/stable"/>
    </url>
 
    <requires>
