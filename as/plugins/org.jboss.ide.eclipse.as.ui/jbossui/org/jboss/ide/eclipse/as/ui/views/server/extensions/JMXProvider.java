@@ -72,16 +72,12 @@ public class JMXProvider {
 				selection = (IStructuredSelection) wsSite.getSelectionProvider()
 						.getSelection();
 			}
-			if( selection != null && selection.toArray().length == 1 ) {
+
+			IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu");
+			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
 					if( menu instanceof MenuManager ) {
-						MenuManager mgr = (MenuManager)menu;
-						IContributionItem[] items = mgr.getItems();
-						for( int i = 0; i < items.length; i++ ) {
-							if( "org.eclipse.ui.navigate.showInQuickMenu".equals(items[i].getId())) {
-								((MenuManager)items[i]).add(showInJMXViewAction);
-							}
-						}
+						((MenuManager)quick).add(showInJMXViewAction);
 					}
 				}
 			}
