@@ -53,6 +53,7 @@ public class JMXPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller";
 	public static final int JMXPOLLER_CODE = IEventCodes.JMXPOLLER_CODE;
+	public static final Properties IGNORED_PROPERTIES = new Properties();
 	
 	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER";
 	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS";
@@ -127,14 +128,20 @@ public class JMXPoller implements IServerStatePoller {
 					} else {
 						// we're waiting. are they back yet?
 						if( requiredPropertiesReturned != null ) {
-							requiresInfoException = null;
-							String user, pass;
-							user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
-							pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
-							requiredPropertiesReturned = null;
-							runner.setUser(user);
-							runner.setPass(pass);
-							waitingForCredentials = false;
+							if( requiredPropertiesReturned == IGNORED_PROPERTIES) {
+								requiresInfoException = null;
+								done = true;
+								started = STATE_STARTED;
+							} else {
+								requiresInfoException = null;
+								String user, pass;
+								user = (String)requiredPropertiesReturned.get(REQUIRED_USER);
+								pass = (String)requiredPropertiesReturned.get(REQUIRED_PASS);
+								requiredPropertiesReturned = null;
+								runner.setUser(user);
+								runner.setPass(pass);
+								waitingForCredentials = false;
+							}
 						}
 					}
 				}
@@ -216,8 +223,7 @@ public class JMXPoller implements IServerStatePoller {
 	
 	public void failureHandled(Properties properties) {
 		if( properties == null ) {
-			done = true;
-			pollingException = new PollingException("Request for more information ignored");
+			requiredPropertiesReturned = IGNORED_PROPERTIES;
 		} else
 			requiredPropertiesReturned = properties;
 	}

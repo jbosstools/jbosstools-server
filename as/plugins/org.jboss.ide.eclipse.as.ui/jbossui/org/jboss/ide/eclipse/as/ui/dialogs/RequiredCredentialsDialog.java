@@ -22,6 +22,7 @@
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -45,7 +46,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  * 
  */
 public class RequiredCredentialsDialog extends Dialog {
-
+	public static final int IGNORE_ID = IDialogConstants.CLIENT_ID | 3;
 	private String user, pass;
 	private boolean save;
 	private JBossServer jbs;
@@ -118,6 +119,14 @@ public class RequiredCredentialsDialog extends Dialog {
 		saveCredentials.setSelection(true);
 		return c;
 	}
+	
+	protected void createButtonsForButtonBar(Composite parent) {
+		// create OK and Cancel buttons by default
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+				true);
+		createButton(parent, IDialogConstants.CANCEL_ID, "Ignore", false);
+	}
+
 
 	private FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
 			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
