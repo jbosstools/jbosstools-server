@@ -159,29 +159,6 @@ public class Messages {
 	public static String ViewExtensionEnablementDescription;
 	public static String ViewExtensionPreferenceDescription;
 
-	/* Upgrade Wizard to 2.0.0 */
-	public static String UpgradeWizardTitle;
-	public static String UpgradeWizardDescription;
-	public static String UpgradeWizardNoConvertableConfigs;
-	public static String UpgradeWizardDetails;
-	public static String UpgradeWizardLaunchConfigName;
-	public static String UpgradeWizardLaunchHomeDir;
-	public static String UpgradeWizardLaunchJBossConfig;
-	public static String UpgradeWizardLaunchStartArgs;
-	public static String UpgradeWizardLaunchShutdownArgs;
-	public static String UpgradeWizardLaunchJRE;
-	public static String UpgradeWizardLaunchConvert;
-	public static String UpgradeWizardLaunchConfigName2;
-	public static String UpgradeWizardLaunchRuntimeName;
-	public static String UpgradeWizardLaunchServerName;
-	public static String UpgradeWizardLaunchMonitorMainTask;
-	public static String UpgradeWizardLaunchMonitorConverting;
-	public static String UpgradeWizardLaunchRuntimeNamesInUse;
-	public static String UpgradeWizardLaunchServerNamesInUse;
-
-	/* Inactive Categories */
-	public static String InactiveCategoriesReEnable;
-
 	public static String DescriptorXPathRemoveCategory;
 	public static String DescriptorXPathRemoveCategoryDesc;
 	public static String DescriptorXPathNewXPath;
