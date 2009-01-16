@@ -47,6 +47,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 
 public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
@@ -71,11 +72,62 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		
 		// Upgrade old launch configs
 		JBossServer jbs = findJBossServer(server.getId());
+		if( jbs == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is not a proper JBoss Server"));
+
 		if( workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null) != null ) {
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath(jbs));
 			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
 		}
+		
+		// Force the launch to get certain fields from the runtime
+		updateMandatedFields(workingCopy, jbs);
+	}
+
+	/*
+	 * Ensures that the working directory and classpath are 100% accurate.
+	 * Merges proper required params into args and vm args
+	 */
+	
+	protected static void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs) throws CoreException{
+		String serverHome = getServerHome(jbs);
+		if( serverHome == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + jbs.getServer().getName() + " is corrupt and the server home is unable to be located."));
+		
+		IRuntime rt = jbs.getServer().getRuntime();
+		IJBossServerRuntime jbrt = null;
+		if( rt != null )
+			jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
+		
+		if( jbrt == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+
+		String args = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
+		String vmArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+		String h = jbs.getServer().getHost();
+		String h2 = ArgsUtil.getValue(args, "-b", "--host");
+		if( !jbs.getServer().getHost().equals(ArgsUtil.getValue(args, "-b", "--host")))
+			args = ArgsUtil.setArg(args, "-b", "--host", jbs.getServer().getHost());
+		
+		IJBossServerRuntime runtime = (IJBossServerRuntime)
+			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+		String config = runtime.getJBossConfiguration();
+		args = ArgsUtil.setArg(args, "-c", "--configuration", config);
+
+		vmArgs= ArgsUtil.setArg(vmArgs, null, "-Djava.endorsed.dirs", 
+				"\"" + runtime.getRuntime().getLocation().append("lib").append("endorsed") + "\"");
+		
+		if( runtime.getRuntime().getLocation().append("bin").append("native").toFile().exists() ) 
+			vmArgs = ArgsUtil.setArg(vmArgs, "", "-Djava.library.path",  
+				"\"" + runtime.getRuntime().getLocation().append("bin").append("native") + "\"");
+		
+		
+		
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs);
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath(jbs));
 	}
 
 	public static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
