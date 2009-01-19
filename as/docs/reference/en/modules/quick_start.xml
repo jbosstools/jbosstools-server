@@ -2,21 +2,32 @@
 <chapter id="quick_start">
   <title>Quick Start with JBoss Server</title>
 
-  <para>This chapter covers the basics of working with the JBoss server. If you already have
-    installed JBoss server and runtime you can quickly learn how to configure, start, stop the
-    server, to know deployment and archiving processes. How to install runtimes and servers read in
-    the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link> chapter.</para>
+  <para>This chapter covers the basics of working with the <property>JBoss Server</property>. If you
+    already have installed JBoss server and runtime you can quickly learn how to configure, start,
+    stop the server, to know deployment and archiving processes. How to install runtimes and servers
+    read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
+    chapter.</para>
 
   <para>To start working with JBoss AS, select a <property>JBoss AS Perspective</property> via
-        <emphasis><property>Window > Open Perspective > Other > JBoss AS</property>.</emphasis></para>
+        <emphasis><property>Window > Open Perspective > Other > JBoss
+    AS</property>.</emphasis></para>
 
   <section id="starting">
-    <title>Starting JBoss server</title>
+    <title>Starting JBoss Server</title>
 
-    <para>Starting JBoss server is quite simple. You can control the server behaviour with the help
-      of a special toolbar in the <property>JBoss Server View</property> where you could
-        <property>start</property> it in a regular or debug mode, <property>stop</property> it or
-        <property>restart</property> it, <property>publish</property> to the server.</para>
+    <para>Starting <property>JBoss Server</property> is quite simple. You can control the server
+      behaviour with the help of a special toolbar in the <property>JBoss Server View</property>
+      where you could <emphasis>
+        <property>start</property>
+      </emphasis> it in a regular or debug mode, <emphasis>
+        <property>stop</property>
+      </emphasis> it or <emphasis>
+        <property>restart</property>
+      </emphasis> it, <emphasis>
+        <property>publish</property>
+      </emphasis> to the server, <emphasis>
+        <property>clean</property>
+      </emphasis> the server.</para>
 
     <figure>
       <title>JBoss Server Toolbar</title>
@@ -29,9 +40,9 @@
 
     <para>To launch the server click the green-with-white-arrow icon on the <property>JBoss Server
         View </property>or right click server name in this view and select <emphasis>
-        <property>Start</property>
-      </emphasis>. If this view is not open, select <emphasis><property>Window &gt; Show View
-          &gt; Other &gt; Server &gt; JBoss Server View</property>.</emphasis></para>
+        <property>Start</property>. </emphasis> If this view is not open, select
+          <emphasis><property>Window &gt; Show View &gt; Other &gt; Server &gt;
+          JBoss Server View</property>.</emphasis></para>
 
     <figure>
       <title>Start JBoss Server</title>
@@ -47,8 +58,10 @@
   <section id="stopping">
     <title>Stopping JBoss Server</title>
 
-    <para>To stop the server, click the <property>Stop</property> icon in JBoss Server View or right
-      click the server name and press <property>Stop</property>.</para>
+    <para>To stop the server, click the <emphasis>
+        <property>Stop</property>
+      </emphasis> icon in the <property>JBoss Server View</property> or right click the server name
+      and press <emphasis><property>Stop</property>.</emphasis></para>
 
     <figure>
       <title>Stop JBoss Server</title>
@@ -59,21 +72,23 @@
       </mediaobject>
     </figure>
 
-    <para>When the server is stopped you will see <property>Stopped</property> next to its name in
-      the State column.</para>
-    <para>Learn more about the JBoss Server View <link linkend="JBossServerView">here</link>.</para>
+    <para>When the server is stopped you will see <emphasis>
+        <property>Stopped</property>
+      </emphasis> state next to its name in the square brackets.</para>
+    <para>Learn more about the <property>JBoss Server View</property>
+      <link linkend="JBossServerView">here</link>.</para>
   </section>
 
   <section id="archiving">
 
     <title>Project Archiving</title>
 
-    <para>JBoss Tools comes with our own archives tool. The Project Archives plugin consists
-      primarily of a view to set up each packaging configuration (<emphasis>
-        <property>Window > Show View > Other > JBoss Tools > Project archives</property>
-      </emphasis>).</para>
-    <para>Right clicking in the <property>Project Archives View</property> you can create War, EJB
-      War or EAR archive.</para>
+    <para><property>JBoss Tools</property> comes with our own archives tool. The Project Archives
+      plugin consists primarily of a view to set up each packaging configuration <emphasis>(
+          <property>Window > Show View > Other > JBoss Tools > Project archives</property>).
+      </emphasis></para>
+    <para>Right clicking in the <property>Project archives view</property> you can create War,
+      EJB War, EAR or JAR archive.</para>
 
     <figure>
       <title>Archive Creating</title>
@@ -84,9 +99,9 @@
       </mediaobject>
     </figure>
 
-    <para>Using the context menu on the item you can initiate a full <property>build</property> on
-      archive, <property>edit</property>, <property>delete</property> or
-      <property>publish</property> it.</para>
+    <para>Using the context menu on the item you can initiate a <emphasis><property>full build</property></emphasis> on
+      archive, <emphasis><property>edit</property>,</emphasis> <emphasis><property>delete</property></emphasis> or
+      <emphasis><property>publish</property></emphasis> it.</para>
 
     <figure>
       <title>Context Menu on the Item</title>
@@ -130,7 +145,7 @@
         </imageobject>
       </mediaobject>
     </figure>
-    
+
     <figure>
       <title>Runtime and Server Sections in the Import Project Wizard</title>
       <mediaobject>
@@ -141,8 +156,8 @@
     </figure>
 
     <para>You can deploy an existing application to a server by right-clicking the target defined
-      server in the <property>JBoss Servers View</property> and then selecting <property>Add and
-        Remove Projects</property> from the context menu.</para>
+      server in the <property>JBoss Servers View</property> and then selecting <emphasis><property>Add and
+        Remove Projects</property></emphasis> from the context menu.</para>
 
     <figure>
       <title>Add and Remove Projects From the Context Menu.</title>
@@ -167,16 +182,19 @@
     </figure>
 
     <para>Here, we have just performed the basic steps you should know to quick start with JBoss
-      server. In fact, there are more functionalities which you can make use of. Further we will talk about them in detail.</para>
+      server. In fact, there are more functionalities which you can make use of. Further we will
+      talk about them in detail.</para>
   </section>
-  
-  
+
+
   <section>
     <title>Other relevant resources on the topic</title>
-    
-    <para>All JBoss Developer Studio/JBoss Tools documentation you can find <ulink url="http://docs.jboss.org/tools/2.1.0.GA">here</ulink>.</para>
-    <para>The latest documentation builds are available <ulink url="http://download.jboss.org/jbosstools/nightly-docs/">here</ulink>.</para>
-    
+
+    <para>All JBoss Developer Studio/JBoss Tools documentation you can find <ulink
+        url="http://docs.jboss.org/tools/2.1.0.GA">here</ulink>.</para>
+    <para>The latest documentation builds are available <ulink
+        url="http://download.jboss.org/jbosstools/nightly-docs/">here</ulink>.</para>
+
   </section>
-  
+
 </chapter>
