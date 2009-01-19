@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JBossTools Archives Core Plugin
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.archives.core;singleton:=true
 Bundle-Version: 2.0.0
 Bundle-Activator: org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin
-Bundle-Vendor: JBoss, a division of Red Hat
+Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Require-Bundle: org.apache.ant,
  org.eclipse.core.commands,

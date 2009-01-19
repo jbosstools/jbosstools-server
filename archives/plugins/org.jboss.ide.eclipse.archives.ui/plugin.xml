@@ -25,7 +25,7 @@
             class="org.jboss.ide.eclipse.archives.ui.actions.NewJARAction"
             icon="icons/new_package.gif"
             id="org.jboss.ide.eclipse.archives.ui.newJARAction"
-            label="JAR"/>
+            label="%newPackageAction.label.jar"/>
    </extension>
    
    <extension

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: AS Adapter Test Plug-in
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.test
 Bundle-Version: 1.0.0
 Bundle-Activator: org.jboss.ide.eclipse.as.test.ASTest
@@ -21,4 +21,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.jmx.core.test
 Eclipse-LazyStart: true
 Bundle-ClassPath: jbossastest.jar
-Bundle-Vendor: JBoss, a division of Red Hat
+Bundle-Vendor: %Bundle-Vendor.0
+Bundle-Localization: plugin

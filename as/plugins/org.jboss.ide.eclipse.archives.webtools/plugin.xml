@@ -57,13 +57,13 @@
             class="org.jboss.ide.eclipse.archives.webtools.ui.PublishAction"
             icon="icons/publish.gif"
             id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
-            label="Publish To Server"
+            label="%nodeContribution.label.publishToServer"
             weight="1"/>
       <nodeContribution
             class="org.jboss.ide.eclipse.archives.webtools.ui.EditPublishAction"
             icon="icons/publishDetails.gif "
             id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
-            label="Edit publish settings...">
+            label="%nodeContribution.label.editPublishSettings">
       </nodeContribution>
    </extension>
    <extension
@@ -72,17 +72,17 @@
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewWARAction"
             icon="icons/war.gif"
             id="org.jboss.ide.eclipse.packages.ui.newWARAction"
-            label="WAR"/>
+            label="%newPackageAction.label.war"/>
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewEJBJARAction"
             icon="icons/EJBJar.gif"
             id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
-            label="EJB JAR"/>
+            label="%newPackageAction.label.ejbJar"/>
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewEARAction"
             icon="icons/ear.gif"
             id="org.jboss.ide.eclipse.packages.ui.newEARAction"
-            label="EAR"/>
+            label="%newPackageAction.label.ear"/>
    </extension>
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
