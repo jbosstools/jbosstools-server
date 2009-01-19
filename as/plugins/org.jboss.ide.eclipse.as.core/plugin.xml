@@ -317,6 +317,20 @@
          </moduleType>
       </moduleFactory>
    </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.as.core.modules.SingleDeployableAdapter"
+            id="org.jboss.ide.eclipse.as.core.modules.SingleDeployableAdapter"
+            priority="0">
+         <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IFile"/>
+            </or>
+         </enablement>
+	  </moduleArtifactAdapter>
+   </extension>
 
    <extension
          point="org.eclipse.wst.server.core.launchableAdapters">
