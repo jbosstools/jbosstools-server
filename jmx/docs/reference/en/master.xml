@@ -3,6 +3,12 @@
 "http://www.docbook.org/xml/4.3/docbookx.dtd"
 
 [<!ENTITY introduction SYSTEM "modules/introduction.xml">
+<!ENTITY mbean_editor SYSTEM "modules/mbean_editor.xml">
+<!ENTITY mbean_explorer SYSTEM "modules/mbean_explorer.xml">
+<!ENTITY connection SYSTEM "modules/connection.xml">
+<!ENTITY how_to SYSTEM "modules/how_to.xml">
+        
+ 
 <!--ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
 <!ENTITY perspective SYSTEM "modules/perspective.xml">
 <!ENTITY webtools SYSTEM "modules/webtools.xml">
@@ -55,10 +61,9 @@
     
     <toc/> 
     &introduction;
-   <!-- &runtimes_servers;
-    &perspective;
-    &webtools;
-    &modules;
-    &tptp_support; -->
+    &mbean_editor;
+    &mbean_explorer;
+    &connection;
+    &how_to;
     
 </book>    

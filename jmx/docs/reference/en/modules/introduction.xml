@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="intruduction" xreflabel="introduction">
   <?dbhtml filename="introduction.html"?>
-
+  
   <title>Introduction</title>
-
+  
   <para>This chapter covers the basics of working with JMX plugin, which is used to manage Java
-  applications through JMX and its RMI Connector.</para>
+    applications through JMX and its RMI Connector.</para>
+  
+  <figure>
+    <title>Eclipse JMX</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/eclipse-jmx_0.2.png"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
   
   <section>
     <title> Requirements </title>
@@ -26,151 +35,70 @@
   <section>
     <title>Installation</title>
     
-   <para>eclipse-jmx can be installed either by using Eclipse update manager or by downloading it and installing it manually in Eclipse.</para>
+    <para>eclipse-jmx can be installed either by using Eclipse update manager or by downloading it and installing it manually in Eclipse.</para>
     
-  <tip><title>Tip</title>
-    <para>Check Requirements to see what is required to install and use eclipse-jmx. </para></tip>
+    <tip><title>Tip</title>
+      <para>Check Requirements to see what is required to install and use eclipse-jmx. </para></tip>
     
- <section> <title>Manual Installation</title>
-  <para> Follow the next steps to install the plugin manually: </para>
+    <section> <title>Manual Installation</title>
+      <para> Follow the next steps to install the plugin manually: </para>
+      
+      <itemizedlist>  
+        <listitem> <para>Download the latest release from http://code.google.com/p/eclipse-jmx/downloads/list</para></listitem>
+        <listitem> <para>   Unzip the file in you Eclipse installation</para></listitem>
+        <listitem><para>(Re)Start Eclipse </para></listitem>
+      </itemizedlist>   
+    </section>
     
- <itemizedlist>  
-   <listitem> <para>Download the latest release from http://code.google.com/p/eclipse-jmx/downloads/list</para></listitem>
-<listitem> <para>   Unzip the file in you Eclipse installation</para></listitem>
-    <listitem><para>(Re)Start Eclipse </para></listitem>
- </itemizedlist>   
- </section>
-    
-  <section> <title> Installation using Eclipes update manager</title>
-    
-    <para>In Eclipse:</para>
-    
-  <itemizedlist>  
-    <listitem> <para>  go to Help > Software Updates > Find and Install...</para></listitem>
-<listitem> <para> check Search for new features to install and click Next </para></listitem>
-<listitem> <para>  click on New Remote Site...</para></listitem>
-<listitem> <para>    in the New Update Site window, type:</para></listitem>
-<listitem> <para>    Name: eclipse-jmx</para></listitem>
-<listitem> <para>     URL: http://eclipse-jmx.googlecode.com/svn/trunk/net.jmesnil.jmx.update/ </para></listitem>
-<listitem> <para>    click on OK</para></listitem>
-<listitem> <para>     check eclipse-jmx and click on Finish</para></listitem>
-<listitem> <para>     expand the features and select the latest one. Then click on Next </para></listitem>
-<listitem> <para>     check I accept the terms in the license agreement and click on Next </para></listitem>
-<listitem> <para>     click on Finish</para></listitem>
-<listitem> <para>     once all the plug-ins are downloaded, click on Install All</para></listitem>
-<listitem> <para>     finally, when ask to restart Eclipse, click on Yes</para></listitem>
-  </itemizedlist>
-  </section>  
+    <section> <title> Installation using Eclipes update manager</title>
+      
+      <para>In Eclipse:</para>
+      
+      <itemizedlist>  
+        <listitem> <para>  go to Help > Software Updates > Find and Install...</para></listitem>
+        <listitem> <para> check Search for new features to install and click Next </para></listitem>
+        <listitem> <para>  click on New Remote Site...</para></listitem>
+        <listitem> <para>    in the New Update Site window, type:</para></listitem>
+        <listitem> <para>    Name: eclipse-jmx</para></listitem>
+        <listitem> <para>     URL: http://eclipse-jmx.googlecode.com/svn/trunk/net.jmesnil.jmx.update/ </para></listitem>
+        <listitem> <para>    click on OK</para></listitem>
+        <listitem> <para>     check eclipse-jmx and click on Finish</para></listitem>
+        <listitem> <para>     expand the features and select the latest one. Then click on Next </para></listitem>
+        <listitem> <para>     check I accept the terms in the license agreement and click on Next </para></listitem>
+        <listitem> <para>     click on Finish</para></listitem>
+        <listitem> <para>     once all the plug-ins are downloaded, click on Install All</para></listitem>
+        <listitem> <para>     finally, when ask to restart Eclipse, click on Yes</para></listitem>
+      </itemizedlist>
+    </section>  
     
   </section>
   
   <section>
-    <title>Quick Start</title>
- 
-  
-  <para>To start using it, it's necessary to open JMX perspective. Go to Window > Open Perspective >
-    Other... and then select JMX and click OK </para>
-
-  <para>The JMX perspective is composed of a single view - MBean Explorer which lists the mbeans.
-    When you double-click on a MBean in the MBean Explorer view, it opens a multi-page editor to
-    manage the MBean. The MBeanEditor is composed of these pages:</para>
-
-  <itemizedlist>
-    <listitem>
-      <para> Attributes to get/set the attributes of the MBean</para>
-    </listitem>
-    <listitem>
-      <para>Operations to invoke operations on the MBean</para>
-    </listitem>
-    <listitem>
-      <para> Notifications to receive notifications from the MBean</para>
-    </listitem>
-    <listitem>
-      <para> Info which displays general information about the MBean </para>
-    </listitem>
-  </itemizedlist>
-
-  <para>There is a button to update the MBean attribute value (if it is writable)</para>
+    <title>Quick Start</title> 
+    
+    <para>To start using it, it's necessary to open JMX perspective. Go to Window > Open Perspective >
+      Other... and then select JMX and click OK </para>
+    
+    <para>The JMX perspective is composed of a single view - MBean Explorer which lists the mbeans.
+      When you double-click on a MBean in the MBean Explorer view, it opens a multi-page editor to
+      manage the MBean. The MBeanEditor is composed of these pages:</para>
+    
+    <itemizedlist>
+      <listitem>
+        <para> Attributes to get/set the attributes of the MBean</para>
+      </listitem>
+      <listitem>
+        <para>Operations to invoke operations on the MBean</para>
+      </listitem>
+      <listitem>
+        <para> Notifications to receive notifications from the MBean</para>
+      </listitem>
+      <listitem>
+        <para> Info which displays general information about the MBean </para>
+      </listitem>
+    </itemizedlist>
+    
+    <para>There is a button to update the MBean attribute value (if it is writable)</para>
   </section> 
   
-
-
-<section>
-  <title>How to Manage Tomcat   </title>
-  <para>It's possible to manage Tomcat using eclipse-jmx</para>
-    <para>  Currently, eclipse-jmx is able to connect to Tomcat without authentication or with password-based authentication.</para>
-  <para> Using SSL for authentication is not supported: you need to make sure that the System property com.sun.management.jmxremote.ssl is set to false.
-  </para>
-  <para>  More information to manage Tomcat can be found in Tomcat management documentation </para>
-  <para>  Instructions to manage remotely Tomcat are available in Tomcat's monitoring documentation.</para>
-  
-</section>
-  
-  <section>
-    <title>How to manage Eclipse Equinox using eclipse-jmx</title>
-
-  
-<para> You can manage Equinox using eclipse-jmx through Equinox monitoring framework.</para>  
-<para>  Once you have installed Equinox monitoring framework and restarted Eclipse:</para>  
-<itemizedlist>
-  <listitem><para>   Go to Window > Open Perspective > Other... and select the JMX Resource Management perspective</para></listitem>    
-<listitem><para>  Select JMX Server > Open Connection and click on OK</para></listitem> 
-  <listitem><para>    Switch to eclipse-jmx perspective by going to Window > Open Perspective > Other... and selecting the JMX perspective</para></listitem>    
-  <listitem><para>   click on the Connect... icon () in the MBean Explorer menu bar </para></listitem>   
-<listitem><para>   select the Advanced tab and set the JMX URL to  service:jmx:rmi:///jndi/rmi://:8118/jmxserver </para></listitem>   
-</itemizedlist>
-<para>  You now have access to the MBeans exposed by Equinox. </para>  
-  </section>
-  
-  
-   
-  <section id="Connection">
-    <title>Connection</title>
-    <para> There are two ways to connect to an application with remote management enabled:</para>
-    <para> The first step is the same for both - to connect to a MBean Server - click on the
-      Connect... icon () in the MBean Explorer menu bar, </para>
-    <para>Then to follow the simple one you just need to specify host, port (and optionally user
-      name &amp; password) and click OK</para>
-    <para>The default JMX URL is service:jmx:rmi:///jndi/rmi://localhost:3000/jmxrmi </para>
-
-    <para> In case you need to connect to an application which has not used the "standard" JMX URL
-      (e.g. Eclipse Equinox), you need chose more advance way, where it's necessary to specify
-      explicitly a JMX URL in the Advanced Tab of the JMX Connection window </para>
-
-    <note>
-      <title>Note</title>
-      <para>only JMX URL based on RMI are supported </para>
-    </note>
-  </section>
-
-  <section id="MBeanExporter">
-
-    <title>MBean Explorer</title>
-    <para>The MBean explorer displays the MBean features (both attributes and operations) in its
-      hierarchy. Double-clicking on a feature will open a MBean Editor, display the page
-      corresponding to the feature type and select the feature.</para>
-    <para>Since It's possible to have many MBean Editors opened at the same time, the MBean Explorer
-      has a Link With Editor checkbox to synchronize selections between the active MBean Editor and
-      the MBean explorer(and vice versa) </para>
-
-    <!-- screens -http://code.google.com/p/eclipse-jmx/wiki/NewAndNoteworthy_0_1_2  -->
-    <para>The MBean Explorer has also a filter text that can be used to filter among all the MBeans
-      the few ones, which interest you.</para>
-
-    <para>For example, if you are only interested by MBeans related to memory, typing memo will show
-      only the MBeans registered under an ObjectName, which contains memo: </para>
-
-    <para>A Collapse All button on the MBean Explorer toolbar is used to collapse all the MBeans and
-      display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
-
-  </section>
-
-  <section id="OpenMBeanAction">
-    <title>Open MBean Action </title>
-    <para>A Navigation action helps opening MBeans in a MBean Editor. This action is available
-      either through the menu Navigate > Open MBean... or using the key shortcut Ctrl + Shift + M
-      (&#8984;+ Shift + M on Mac OS X)</para>
-  </section>
-
-
 </chapter>

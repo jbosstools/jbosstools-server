@@ -3,33 +3,57 @@
     <?dbhtml filename="mbean_editor.html"?>
     
     <title>MBean Editor</title>
-    <!-- images -http://code.google.com/p/eclipse-jmx/wiki/NewAndNoteworthy_0_2_0  -->
+    
+    <figure>
+        <title>MBean Editor Pages</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/mbean-editor_0.2.0.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
     
     <para>The MBean Editor is composed of several pages:</para>
-        <orderedlist><listitem><para>the Attributes page</para></listitem>
+    <orderedlist><listitem><para>the Attributes page</para></listitem>
         <listitem><para>the Operations page</para></listitem>
         <listitem><para>the Info page </para></listitem>
-        </orderedlist>
+    </orderedlist>
     
-   <para> The Attributes &amp; Operations pages display a list for either the MBean attributes or operations as well as details for the selection.</para>
+    <para> The Attributes &amp; Operations pages display a list for either the MBean attributes or operations as well as details for the selection.</para>
     
-   <para> It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally.</para>
+    <para> It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally.</para>
+    
+    <figure>
+        <title>Layout Buttons</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    
+    <figure>
+        <title>MBean Editor Horizontal Layout</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/mbean-editor-horizontal-layout_0.2.0.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
     
     <section>
         <title>Notifications Page</title> 
-        <!-- images could be found here - http://code.google.com/p/eclipse-jmx/wiki/NewAndNoteworthy_0_2_1--> 
-        <!-- also so usefull info could be found here http://code.google.com/p/eclipse-jmx/wiki/ReleaseNotes_0_2_1 -->
         <para>One more page in MBean Editor is a Notifications Page, which gives the possibility to subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp. unchecking) the Subscribe checkbox. </para>
         <para>The list of notifications is refreshed every time a new notification is received:</para>
         
         <note><title>Note</title>
-            <para>It is only possible to subscribe to MBean which emits notifications (they must be NotificationBroadcaster).</para></note>
+            <para>It is only possible to subscribe to MBean, which emits notifications (they must be NotificationBroadcaster).</para></note>
         
-        </section>
+    </section>
     <section id="AttributeDisplayExtensionPoints">
         <title>Attribute Display Extension Points</title>
         
-        <para>The value of the MBean attributes which are displayed in the MBean Editor is now contributed through 2 extension points:</para>
+        <para>The value of the MBean attributes that are displayed in the MBean Editor is now contributed through 2 extension points:</para>
         <orderedlist>
             <listitem><para>net.jmesnil.jmx.ui.attribute.controls</para></listitem>
             <listitem><para>net.jmesnil.jmx.ui.attribute.bindings</para> </listitem>
@@ -37,4 +61,23 @@
         <para>This means that you can now contribute new display for MBean attributes (see some use cases and a simple example in net.jmesnil.jmx.ui.test.interactive plugin.xml)</para> 
         
     </section>
-    </chapter>
+    
+    
+    <section id="OpenMBeanAction">
+        <title>Open MBean Action </title>
+        <para>A Navigation action helps opening MBeans in a MBean Editor. This action is available
+            either through the menu Navigate > Open MBean... or using the key shortcut Ctrl + Shift + M
+            (&#8984;+ Shift + M on Mac OS X)</para>
+        
+        <figure>
+            <title>Opening MBean Dialog</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/open-mbean-dialog_0.2.0.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>        
+        
+    </section>
+    
+</chapter>
