@@ -62,8 +62,8 @@
     <toc/> 
     &introduction;
     &mbean_editor;
-    &mbean_explorer;
+<!-- &mbean_explorer;
     &connection;
     &how_to;
-    
+-->
 </book>    
