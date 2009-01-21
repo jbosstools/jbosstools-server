@@ -4,12 +4,12 @@
 
 [<!ENTITY introduction SYSTEM "modules/introduction.xml">
 <!ENTITY mbean_editor SYSTEM "modules/mbean_editor.xml">
-<!ENTITY mbean_explorer SYSTEM "modules/mbean_explorer.xml">
+<!--ENTITY mbean_explorer SYSTEM "modules/mbean_explorer.xml">
 <!ENTITY connection SYSTEM "modules/connection.xml">
 <!ENTITY how_to SYSTEM "modules/how_to.xml">
         
  
-<!--ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
+<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
 <!ENTITY perspective SYSTEM "modules/perspective.xml">
 <!ENTITY webtools SYSTEM "modules/webtools.xml">
 <!ENTITY modules SYSTEM "modules/modules.xml">
