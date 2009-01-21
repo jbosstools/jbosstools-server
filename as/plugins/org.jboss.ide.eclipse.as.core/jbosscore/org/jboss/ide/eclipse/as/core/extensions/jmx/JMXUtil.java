@@ -124,6 +124,7 @@ public class JMXUtil {
 					"org.jboss.naming:org.jnp.interfaces");
 			props.put("java.naming.provider.url", "jnp://" + jbs.getHost() + ":"
 					+ port);
+			props.put("jnp.disableDiscovery", "true");
 		} 
 		return props;
 	}
