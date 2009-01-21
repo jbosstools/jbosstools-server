@@ -58,10 +58,12 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 			ILaunchConfigurationWorkingCopy wc = createLaunchConfiguration(server);
 			ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 			IProcess stopProcess = launch.getProcesses()[0];
-			while( !stopProcess.isTerminated() && server.getServerState() == IServer.STATE_STOPPING) {}
-			if( !stopProcess.isTerminated()) {
-				stopProcess.terminate();
-				return false;
+			while( !stopProcess.isTerminated()) {
+				try {
+					Thread.yield();
+					Thread.sleep(100);
+				} catch(InterruptedException ie) {
+				}
 			}
 			return stopProcess.getExitValue() == 0 ? true : false;
 		} catch( CoreException ce ) {
