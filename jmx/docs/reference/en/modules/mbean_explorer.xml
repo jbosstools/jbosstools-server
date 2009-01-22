@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="mbean_explorer"  xreflabel="mbean_explorer">
+    <?dbhtml filename="mbean_explorer.html"?>
+    
+    <title>MBean Explorer</title>
+    <para>The MBean explorer displays the MBean features (both attributes and operations) in its
+        hierarchy. Double-clicking on a feature will open a MBean Editor, display the page
+        corresponding to the feature type and select the feature.</para>
+    
+    <figure>
+        <title>MBean Explorer Features</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/mbean-explorer-features.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    
+    <para>Since It's possible to have many MBean Editors opened at the same time, the MBean Explorer
+        has a Link With Editor checkbox to synchronize selections between the active MBean Editor and
+        the MBean explorer(and vice versa) </para>
+    
+    <figure>
+        <title>Linking with Editor</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/link-with-editor_0.2.0.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+    
+    <para>The MBean Explorer has also a filter text that can be used to filter among all the MBeans
+        the few ones, which interest you.</para>
+    
+    <para>For example, if you are only interested by MBeans related to memory, typing memo will show
+        only the MBeans registered under an ObjectName, which contains memo: </para>
+    
+    <para>A Collapse All button on the MBean Explorer toolbar is used to collapse all the MBeans and
+        display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
+    
+</chapter>

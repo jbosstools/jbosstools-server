@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="connection"  xreflabel="connection">
+    <?dbhtml filename="connection.html"?>
+    
+    <title>Connection</title>
+    <para> There are two ways to connect to an application with remote management enabled:</para>
+    <para> The first step is the same for both - to connect to a MBean Server - click on the
+        Connect... icon () in the MBean Explorer menu bar, </para>
+    <para>Then to follow the simple one you just need to specify host, port (and optionally user
+        name &amp; password) and click OK</para>
+    <para>The default JMX URL is service:jmx:rmi:///jndi/rmi://localhost:3000/jmxrmi </para>
+    
+    <para> In case you need to connect to an application which has not used the "standard" JMX URL
+        (e.g. Eclipse Equinox), you need chose more advance way, where it's necessary to specify
+        explicitly a JMX URL in the Advanced Tab of the JMX Connection window </para>
+    
+    <note>
+        <title>Note</title>
+        <para>only JMX URL based on RMI are supported </para>
+    </note>
+</chapter>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="how_to"  xreflabel="how_to">
+    <?dbhtml filename="how_to.html"?>
+    <title>How to ...</title>
+    <para>This chapter will give you answers on most popular questions asked by JMX plugin users</para>
+    
+    <section>
+        <title>How to Manage Tomcat   </title>
+        <para>It's possible to manage Tomcat using eclipse-jmx</para>
+        <para>  Currently, eclipse-jmx is able to connect to Tomcat without authentication or with password-based authentication.</para>
+        <para> Using SSL for authentication is not supported: you need to make sure that the System property com.sun.management.jmxremote.ssl is set to false.
+        </para>
+        <para>  More information to manage Tomcat can be found in Tomcat management documentation </para>
+        <para>  Instructions to manage remotely Tomcat are available in Tomcat's monitoring documentation.</para>
+        
+    </section>
+    
+    <section>
+        <title>How to manage Eclipse Equinox using eclipse-jmx</title>
+        
+        <para> You can manage Equinox using eclipse-jmx through Equinox monitoring framework.</para>  
+        <para>  Once you have installed Equinox monitoring framework and restarted Eclipse:</para>  
+        <itemizedlist>
+            <listitem><para>   Go to Window > Open Perspective > Other... and select the JMX Resource Management perspective</para></listitem>    
+            <listitem><para>  Select JMX Server > Open Connection and click on OK</para></listitem> 
+            <listitem><para>    Switch to eclipse-jmx perspective by going to Window > Open Perspective > Other... and selecting the JMX perspective</para></listitem>    
+            <listitem><para>   click on the Connect... icon () in the MBean Explorer menu bar </para></listitem>   
+            <listitem><para>   select the Advanced tab and set the JMX URL to  service:jmx:rmi:///jndi/rmi://:8118/jmxserver </para></listitem>   
+        </itemizedlist>
+        <para>  You now have access to the MBeans exposed by Equinox. </para>  
+    </section>
+    
+    
+    
+    
+</chapter>
