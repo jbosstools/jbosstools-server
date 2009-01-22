@@ -148,13 +148,11 @@ public final class ServersDropAdapter extends PluginDropAdapter {
 							
 			CommonDropAdapterAssistant[] assistants = 
 				findCommonDropAdapterAssistants(target, getCurrentTransfer());
-			System.out.println("got " +assistants.length + " assistants: " + assistants);
 			IStatus valid = null;
 			for (int i = 0; i < assistants.length; i++) {
 				try {
 					valid = assistants[i].validateDrop(getCurrentTarget(),
 							getCurrentOperation(), getCurrentTransfer());
-					System.out.println("assistant " + i + "=" + assistants[i] + " returns " + valid);
 					if (valid != null && valid.isOK()) {
 						assistants[i].handleDrop(null, event,
 								getCurrentTarget());
@@ -188,7 +186,6 @@ public final class ServersDropAdapter extends PluginDropAdapter {
 				try { 
 					valid = assistants[i].validateDrop(target,
 							theDropOperation, theTransferData); 
-					System.out.println("assistant " + i + "=" + assistants[i] + " returns " + valid);
 				} catch (Throwable t) {
 					NavigatorPlugin.logError(0, t.getMessage(), t);
 				}
@@ -199,7 +196,6 @@ public final class ServersDropAdapter extends PluginDropAdapter {
 			}
 		}
 		setScrollExpandEnabled(true);
-		System.out.println("validate returns " + result);
 		return result;
 
 	}
