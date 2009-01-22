@@ -9,7 +9,7 @@
  * IBM Corporation - initial API and implementation
  * ken.ryall@nokia.com - 157506 drop from external sources does not work on Linux/Mac
  *******************************************************************************/
-package org.jboss.tools.as.wst.server.ui;
+package org.jboss.tools.as.wst.server.ui.xpl;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;

@@ -266,7 +266,7 @@
          id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
          name="%ViewName_JBossServerView"
          category="org.eclipse.wst.server.ui"
-         class="org.jboss.tools.as.wst.server.ui.ServersView"
+         class="org.jboss.tools.as.wst.server.ui.xpl.ServersView"
          icon="icons/jboss.gif"/>
       <view
             category="org.eclipse.wst.server.ui"
@@ -280,7 +280,7 @@
    
    <extension point="org.eclipse.ui.decorators">
       <decorator
-            class="org.jboss.tools.as.wst.server.ui.ServerDecorator"
+            class="org.jboss.tools.as.wst.server.ui.xpl.ServerDecorator"
             icon="icons/cview16/servers_view.gif"
             id="org.jboss.tools.as.wst.server.ui.navigatorDecorator"
             label="Server State Decorator"
@@ -303,10 +303,10 @@
       point="org.eclipse.ui.navigator.navigatorContent">
 	   <navigatorContent
 	         activeByDefault="true"
-	         contentProvider="org.jboss.tools.as.wst.server.ui.ServerContentProvider"
+	         contentProvider="org.jboss.tools.as.wst.server.ui.xpl.ServerContentProvider"
 	         icon="icons/cview16/servers_view.gif"
 	         id="org.jboss.tools.as.wst.server.ui.ServersView.content.root"
-	         labelProvider="org.jboss.tools.as.wst.server.ui.ServerLabelProvider"
+	         labelProvider="org.jboss.tools.as.wst.server.ui.xpl.ServerLabelProvider"
 	         name="Servers View Default Content"
 	         priority="highest">
 	      <triggerPoints>
@@ -324,7 +324,7 @@
 	            </instanceof>
 	         </or></possibleChildren>
 	      <actionProvider
-	            class="org.jboss.tools.as.wst.server.ui.ServerActionProvider"
+	            class="org.jboss.tools.as.wst.server.ui.xpl.ServerActionProvider"
 	            id="org.jboss.tools.as.wst.server.ui.ServersView.ServerActionProvider"
 	            priority="highest">
 			<enablement>
@@ -348,7 +348,7 @@
             </enablement>
 	      </actionProvider>
        <dropAssistant
-             class="org.jboss.tools.as.wst.server.ui.ServersViewDropAdapterAssistant"
+             class="org.jboss.tools.as.wst.server.ui.xpl.ServersViewDropAdapterAssistant"
              id="org.jboss.tools.as.wst.server.ui.ServersView.DropAssistant">
           <possibleDropTargets>
              <instanceof

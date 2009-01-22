@@ -6,9 +6,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - Initial API and implementation
+ *     IBM Corporation - Base Code
+ *     Red Hat - Refactor for CNF
  *******************************************************************************/
-package org.jboss.tools.as.wst.server.ui;
+package org.jboss.tools.as.wst.server.ui.xpl;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

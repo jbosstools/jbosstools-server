@@ -36,7 +36,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
-import org.jboss.tools.as.wst.server.ui.ServerActionProvider;
+import org.jboss.tools.as.wst.server.ui.xpl.ServerActionProvider;
 
 public class ModuleActionProvider extends CommonActionProvider {
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;

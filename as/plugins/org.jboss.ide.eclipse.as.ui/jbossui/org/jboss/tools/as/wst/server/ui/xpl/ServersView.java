@@ -6,9 +6,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - Initial API and implementation
+ *     IBM Corporation - Code taken from Superclass
+ *     Red Hat Inc - Refactor
  *******************************************************************************/
-package org.jboss.tools.as.wst.server.ui;
+package org.jboss.tools.as.wst.server.ui.xpl;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
