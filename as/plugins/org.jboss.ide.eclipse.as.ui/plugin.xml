@@ -347,6 +347,14 @@
              </or>
             </enablement>
 	      </actionProvider>
+       <dropAssistant
+             class="org.jboss.tools.as.wst.server.ui.ServersViewDropAdapterAssistant"
+             id="org.jboss.tools.as.wst.server.ui.ServersView.DropAssistant">
+          <possibleDropTargets>
+             <instanceof
+                   value="org.eclipse.wst.server.core.IServer">
+             </instanceof></possibleDropTargets>
+       </dropAssistant>
 	   </navigatorContent>
 	</extension>
 	<extension
