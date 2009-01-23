@@ -63,10 +63,10 @@ public class StrippedServerWizardFragment extends WizardFragment {
 
 	private IWizardHandle handle;
 	
-	private Label deployLabel, nameLabel;
-	private Text deployText, nameText;
-	private Button browse;
-	private String name, deployLoc;
+	private Label deployLabel, tempDeployLabel, nameLabel;
+	private Text deployText, tempDeployText, nameText;
+	private Button browse, tempBrowse;
+	private String name, deployLoc, tempDeployLoc;
 
 	public StrippedServerWizardFragment() {
 	}
@@ -75,7 +75,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		this.handle = handle;
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
-				
+
 		nameLabel = new Label(main, SWT.NONE);
 		nameText = new Text(main, SWT.BORDER);
 		nameLabel.setText(Messages.serverName);
@@ -85,6 +85,23 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		browse = new Button(main, SWT.PUSH);
 		deployLabel.setText(Messages.swf_DeployDirectory);
 		browse.setText(Messages.browse);
+		
+		tempDeployLabel = new Label(main, SWT.NONE);
+		tempDeployText = new Text(main, SWT.BORDER);
+		tempBrowse = new Button(main, SWT.PUSH);
+		tempDeployLabel.setText(Messages.swf_TempDeployDirectory);
+		tempBrowse.setText(Messages.browse);
+		
+		FormData namelData = new FormData();
+		namelData.top = new FormAttachment(0,5);
+		namelData.left = new FormAttachment(0,5);
+		nameLabel.setLayoutData(namelData);
+		
+		FormData nametData = new FormData();
+		nametData.top = new FormAttachment(0,5);
+		nametData.left = new FormAttachment(deployLabel,5);
+		nametData.right = new FormAttachment(100,-5);
+		nameText.setLayoutData(nametData);
 		
 		FormData lData = new FormData();
 		lData.top = new FormAttachment(nameText,5);
@@ -97,21 +114,28 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		tData.right = new FormAttachment(browse, -5);
 		deployText.setLayoutData(tData);
 
-		FormData namelData = new FormData();
-		namelData.top = new FormAttachment(0,5);
-		namelData.left = new FormAttachment(0,5);
-		nameLabel.setLayoutData(namelData);
-		
-		FormData nametData = new FormData();
-		nametData.top = new FormAttachment(0,5);
-		nametData.left = new FormAttachment(deployLabel,5);
-		nametData.right = new FormAttachment(100,-5);
-		nameText.setLayoutData(nametData);
-		
 		FormData bData = new FormData();
 		bData.right = new FormAttachment(100,-5);
 		bData.top = new FormAttachment(nameText,5);
 		browse.setLayoutData(bData);
+
+		
+		FormData templData = new FormData();
+		templData.top = new FormAttachment(deployText,5);
+		templData.left = new FormAttachment(0,5);
+		tempDeployLabel.setLayoutData(templData);
+		
+		FormData temptData = new FormData();
+		temptData.top = new FormAttachment(deployText,5);
+		temptData.left = new FormAttachment(tempDeployLabel,5);
+		temptData.right = new FormAttachment(tempBrowse, -5);
+		tempDeployText.setLayoutData(temptData);
+
+		FormData tempbData = new FormData();
+		tempbData.right = new FormAttachment(100,-5);
+		tempbData.top = new FormAttachment(deployText,5);
+		tempBrowse.setLayoutData(tempbData);
+
 		
 		ModifyListener ml = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -131,7 +155,21 @@ public class StrippedServerWizardFragment extends WizardFragment {
 			} 
 		});
 
+		tempBrowse.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+			public void widgetSelected(SelectionEvent e) {
+				DirectoryDialog d = new DirectoryDialog(new Shell());
+				d.setFilterPath(tempDeployText.getText());
+				String x = d.open();
+				if( x != null ) 
+					tempDeployText.setText(x);
+			} 
+		});
+
+		
 		deployText.addModifyListener(ml);
+		tempDeployText.addModifyListener(ml);
 		nameText.addModifyListener(ml);
 		nameText.setText(getDefaultNameText());
 		handle.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_DEPLOY_ONLY_LOGO));
@@ -142,6 +180,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		IStatus status = checkErrors();
 		if( status.isOK() ) {
 			deployLoc = deployText.getText();
+			tempDeployLoc = tempDeployText.getText();
 			name = nameText.getText();
 			handle.setMessage("", IStatus.OK);
 			handle.update();
@@ -156,7 +195,11 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		}
 		File f = new File(deployText.getText());
 		if( !f.exists() || !f.isDirectory() ) {
-			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Folder does not exist", null);
+			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Deploy Folder does not exist", null);
+		}
+		f = new File(tempDeployText.getText());
+		if( !f.exists() || !f.isDirectory() ) {
+			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Temporary Deploy Folder does not exist", null);
 		}
 		return new Status(IStatus.OK, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "", null);
 	}
@@ -191,6 +234,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 			swcInternal = (ServerWorkingCopy)swc;
 			swcInternal.setName(name);
 			swcInternal.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLoc);
+			swcInternal.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLoc);
 			getTaskModel().putObject(TaskModel.TASK_SERVER, swcInternal);
 		}
 	}

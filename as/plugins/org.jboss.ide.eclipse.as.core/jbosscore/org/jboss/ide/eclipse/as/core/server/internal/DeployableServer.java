@@ -182,7 +182,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
-		if( p.isAbsolute()) {
+		if( p.isAbsolute() && rt != null) {
 			if(rt.getRuntime().getLocation().isPrefixOf(p)) {
 				int size = rt.getRuntime().getLocation().toOSString().length();
 				return new Path(p.toOSString().substring(size)).makeRelative();
@@ -192,7 +192,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( !p.isAbsolute()) {
+		if( !p.isAbsolute() && rt != null) {
 			return rt.getRuntime().getLocation().append(p).makeAbsolute();
 		}
 		return p;

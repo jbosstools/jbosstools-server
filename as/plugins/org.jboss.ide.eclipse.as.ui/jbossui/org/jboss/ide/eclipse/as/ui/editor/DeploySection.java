@@ -42,6 +42,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -53,7 +54,6 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -61,7 +61,6 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -102,33 +101,43 @@ public class DeploySection extends ServerEditorSection {
 		composite.setLayout(new FormLayout());
 		
 		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
+		Control top = descriptionLabel;
+		if( getRuntime() != null ) {
+			Composite inner = toolkit.createComposite(composite);
+			inner.setLayout(new GridLayout(1, false));
+			metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
+			serverRadio = toolkit.createButton(inner, Messages.EditorUseServersDeployFolder, SWT.RADIO);
+			customRadio = toolkit.createButton(inner, Messages.EditorUseCustomDeployFolder, SWT.RADIO);
+			
+			metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
+			serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
+			customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+			currentSelection = metadataRadio.getSelection() ? metadataRadio :
+								serverRadio.getSelection() ? serverRadio : 
+									customRadio;
+			
+			radioListener = new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+					widgetSelected(e);
+				}
+				public void widgetSelected(SelectionEvent e) {
+					if( e.getSource() == currentSelection )
+						return; // do nothing
+					execute(new RadioClickedCommand((Button)e.getSource(), currentSelection));
+					currentSelection = (Button)e.getSource();
+				} };
+			metadataRadio.addSelectionListener(radioListener);
+			serverRadio.addSelectionListener(radioListener);
+			customRadio.addSelectionListener(radioListener);
+			
+			FormData radios = new FormData();
+			radios.top = new FormAttachment(descriptionLabel,5);
+			radios.left = new FormAttachment(0,5);
+			radios.right = new FormAttachment(100,-5);
+			inner.setLayoutData(radios);
+			top = inner;
+		}
 		
-		Composite inner = toolkit.createComposite(composite);
-		inner.setLayout(new GridLayout(1, false));
-		metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
-		serverRadio = toolkit.createButton(inner, Messages.EditorUseServersDeployFolder, SWT.RADIO);
-		customRadio = toolkit.createButton(inner, Messages.EditorUseCustomDeployFolder, SWT.RADIO);
-		
-		metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
-		serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
-		customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
-		currentSelection = metadataRadio.getSelection() ? metadataRadio :
-							serverRadio.getSelection() ? serverRadio : 
-								customRadio;
-		
-		radioListener = new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-			public void widgetSelected(SelectionEvent e) {
-				if( e.getSource() == currentSelection )
-					return; // do nothing
-				execute(new RadioClickedCommand((Button)e.getSource(), currentSelection));
-				currentSelection = (Button)e.getSource();
-			} };
-		metadataRadio.addSelectionListener(radioListener);
-		serverRadio.addSelectionListener(radioListener);
-		customRadio.addSelectionListener(radioListener);
 		
 		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
 		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
@@ -178,38 +187,31 @@ public class DeploySection extends ServerEditorSection {
 			} 
 		});
 		
-		deployText.setEnabled(customRadio.getSelection());
-		tempDeployText.setEnabled(customRadio.getSelection());
+		deployText.setEnabled(customRadio == null || customRadio.getSelection());
+		tempDeployText.setEnabled(customRadio == null || customRadio.getSelection());
 
 		FormData descriptionLabelData = new FormData();
 		descriptionLabelData.left = new FormAttachment(0,5);
 		descriptionLabelData.top = new FormAttachment(0,5);
 		descriptionLabel.setLayoutData(descriptionLabelData);
 
-		FormData radios = new FormData();
-		radios.top = new FormAttachment(descriptionLabel,5);
-		radios.left = new FormAttachment(0,5);
-		radios.right = new FormAttachment(100,-5);
-		inner.setLayoutData(radios);
-
-		
 		// first row
 		FormData labelData = new FormData();
 		labelData.left = new FormAttachment(0,5);
 		labelData.right = new FormAttachment(deployText,-5);
-		labelData.top = new FormAttachment(inner,5);
+		labelData.top = new FormAttachment(top,5);
 		label.setLayoutData(labelData);
 		
 		FormData textData = new FormData();
 		textData.left = new FormAttachment(deployButton, -305);
-		textData.top = new FormAttachment(inner,5);
+		textData.top = new FormAttachment(top,5);
 		textData.right = new FormAttachment(deployButton, -5);
 		deployText.setLayoutData(textData);
 		
 		FormData buttonData = new FormData();
 		buttonData.right = new FormAttachment(100,-5);
 		buttonData.left = new FormAttachment(100, -100);
-		buttonData.top = new FormAttachment(inner,2);
+		buttonData.top = new FormAttachment(top,2);
 		deployButton.setLayoutData(buttonData);
 		
 		// second row
@@ -439,7 +441,7 @@ public class DeploySection extends ServerEditorSection {
 	
 	private String makeRelative(String path) {
 		if (getRuntime() == null) {
-			return "";
+			return path;
 		}
 		return DeployableServer.makeRelative(getRuntime(), new Path(path)).toString();
 	}
