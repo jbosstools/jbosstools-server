@@ -7,7 +7,8 @@
 <!ENTITY mbean_editor SYSTEM "modules/mbean_editor.xml">
 <!ENTITY connection SYSTEM "modules/connection.xml">
 <!ENTITY how_to SYSTEM "modules/how_to.xml">
-        
+<!ENTITY extensions SYSTEM "modules/extensions.xml">
+
  
 <!ENTITY seamlink "../../seam/html_single/index.html">
 <!ENTITY aslink "../../as/html_single/index.html">
@@ -59,5 +60,5 @@
     &mbean_editor;
     &connection;
     &how_to;
-
+    &extensions;
 </book>    
