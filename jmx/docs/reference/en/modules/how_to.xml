@@ -16,14 +16,14 @@
     </section>
     
     <section>
-        <title>How to manage Eclipse Equinox using eclipse-jmx</title>
+        <title>How to manage Eclipse Equinox</title>
         
-        <para> You can manage Equinox using eclipse-jmx through Equinox monitoring framework.</para>  
-        <para>  Once you have installed Equinox monitoring framework and restarted Eclipse:</para>  
+        <para> You can manage Equinox through the Equinox monitoring framework.</para>  
+        <para>  Once you have installed the Equinox monitoring framework and restarted Eclipse:</para>  
         <itemizedlist>
             <listitem><para>   Go to Window > Open Perspective > Other... and select the JMX Resource Management perspective</para></listitem>    
             <listitem><para>  Select JMX Server > Open Connection and click on OK</para></listitem> 
-            <listitem><para>    Switch to eclipse-jmx perspective by going to Window > Open Perspective > Other... and selecting the JMX perspective</para></listitem>    
+            <listitem><para>    Switch to the MBean explorer by going to Window > Show View > Other... and selecting the MBean Explorer</para></listitem>    
             <listitem><para>   click on the Connect... icon () in the MBean Explorer menu bar </para></listitem>   
             <listitem><para>   select the Advanced tab and set the JMX URL to  service:jmx:rmi:///jndi/rmi://:8118/jmxserver </para></listitem>   
         </itemizedlist>
@@ -31,6 +31,25 @@
     </section>
     
     
-    
+   <section>
+      <title>Managing JBoss Instances</title>
+      <para>Managing JBoss instnaces is not supported with the JMX Tools alone. 
+            You must also download and install the ASTools portion of the JBossTools distribution. 
+            Even after installing the proper tooling, you cannot create a JBoss JMX connection yourself 
+            or through the Connection Wizard. The first step is to create a JBoss Server. 
+            The full instructions for this can be found in the AS Tools section, however, 
+            the short summary is: </para>
+      <itemizedlist>
+          <listitem><para>Open the JBoss Servers View or the Servers View</para></listitem>
+          <listitem><para>Right-click in the view and select New -> Server</para></listitem>
+          <listitem><para>In the "JBoss, a division of Red Hat" section, select a server version</para></listitem>
+          <listitem><para>If a runtime has not yet been created, you'll be prompted for the server's home directory, JDK, and configuration.</para></listitem>
+          <listitem><para>Finish the wizard and note that you have a new entry in both the Server View and the MBean Explorer</para></listitem>
+          <listitem><para>Start the server by right-clicking it and selecting Start</para></listitem>
+          <listitem><para>Note that once the server is started, the JMX connection can be expanded</para></listitem>
+       </itemizedlist>
+       
+       <para>Now you can explore MBeans exposed by a JBoss instance</para>
+   </section> 
     
 </chapter>

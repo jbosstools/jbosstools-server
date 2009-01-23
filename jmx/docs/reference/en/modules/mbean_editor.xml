@@ -50,34 +50,5 @@
             <para>It is only possible to subscribe to MBean, which emits notifications (they must be NotificationBroadcaster).</para></note>
         
     </section>
-    <section id="AttributeDisplayExtensionPoints">
-        <title>Attribute Display Extension Points</title>
-        
-        <para>The value of the MBean attributes that are displayed in the MBean Editor is now contributed through 2 extension points:</para>
-        <orderedlist>
-            <listitem><para>net.jmesnil.jmx.ui.attribute.controls</para></listitem>
-            <listitem><para>net.jmesnil.jmx.ui.attribute.bindings</para> </listitem>
-        </orderedlist>
-        <para>This means that you can now contribute new display for MBean attributes (see some use cases and a simple example in net.jmesnil.jmx.ui.test.interactive plugin.xml)</para> 
-        
-    </section>
-    
-    
-    <section id="OpenMBeanAction">
-        <title>Open MBean Action </title>
-        <para>A Navigation action helps opening MBeans in a MBean Editor. This action is available
-            either through the menu Navigate > Open MBean... or using the key shortcut Ctrl + Shift + M
-            (&#8984;+ Shift + M on Mac OS X)</para>
-        
-        <figure>
-            <title>Opening MBean Dialog</title>
-            <mediaobject>
-                <imageobject>
-                    <imagedata fileref="images/open-mbean-dialog_0.2.0.png"/>
-                </imageobject>
-            </mediaobject>
-        </figure>        
-        
-    </section>
-    
+
 </chapter>

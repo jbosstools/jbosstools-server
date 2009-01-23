@@ -33,7 +33,20 @@
         the few ones, which interest you.</para>
     
     <para>For example, if you are only interested by MBeans related to memory, typing memo will show
-        only the MBeans registered under an ObjectName, which contains memo: </para>
+        any node (domain, mbean, attribute, or operation) that matches that text, as well as 
+        that node's parents and children. So if an MBean matches, all attributes and operations from 
+        that bean will show.  If, however, an attribute or operation name (a leaf node) matches, 
+        only that node and its parents in the tree will show.</para>
+
+    <figure>
+        <title>Query Filter</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="images/mbean-explorer-query.png"/>
+            </imageobject>
+        </mediaobject>
+    </figure>
+
     
     <para>A Collapse All button on the MBean Explorer toolbar is used to collapse all the MBeans and
         display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
