@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
@@ -126,7 +127,27 @@ public abstract class AbstractArchiveWizard extends WizardWithNotification imple
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		if (selection == null) return;
+		if (selection == null) {
+			ISelection sel = ProjectArchivesCommonView.getInstance().getCommonViewer().getSelection();
+			if ( !(sel instanceof IStructuredSelection)) {
+				return;
+			}
+			selection = (IStructuredSelection) sel;
+		}
+		init(selection);
+
+		if (initialDestinationPath == null) {
+			ISelection sel = ProjectArchivesCommonView.getInstance().getCommonViewer().getSelection();
+			if ( !(sel instanceof IStructuredSelection)) {
+				return;
+			}
+			selection = (IStructuredSelection) sel;
+			init(selection);
+		}
+		setNeedsProgressMonitor(true);
+	}
+
+	private void init(IStructuredSelection selection) {
 		project = null;
 
 		Object selected = (selection.isEmpty() ? project : selection.getFirstElement());
@@ -152,8 +173,6 @@ public abstract class AbstractArchiveWizard extends WizardWithNotification imple
 				isPathWorkspaceRelative = true;
 			}
 		}
-
-		setNeedsProgressMonitor(true);
 	}
 
 	public IArchiveNode getInitialNode() {
