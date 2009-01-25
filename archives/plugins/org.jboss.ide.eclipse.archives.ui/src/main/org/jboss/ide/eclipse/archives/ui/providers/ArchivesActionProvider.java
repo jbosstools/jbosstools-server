@@ -14,7 +14,10 @@ import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -191,9 +194,8 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	 * @param manager
 	 */
 	private void addNewPackageActions (IMenuManager manager) {
-          	//workaround for JBIDE-3016
-                if( manager.getItems().length > 0)
-                	return;
+       //workaround for JBIDE-3016
+       manager.removeAll();
                 		 							
 		for( int i = 0; i < newPackageActions.length; i++ ) {
 			NewArchiveAction action = newPackageActions[i];
