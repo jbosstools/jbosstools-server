@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
@@ -69,6 +70,12 @@ public class ModuleActionProvider extends CommonActionProvider {
 				ms[i] = (ModuleServer)arr[i];
 			this.selection = ms;
 			
+			IContributionItem sep = menu.find(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR);
+			if( sep == null ) {
+				sep = new Separator(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR);
+				sep.setVisible(false);
+				menu.add(sep);
+			}
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, incrementalPublishModuleAction);
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, fullPublishModuleAction);
 			if (selection.size() == 1) {
