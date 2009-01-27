@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.archives.core;
 
 public class ArchivesCoreMessages {
 
+	public static String UnregisterProject;
 	public static String CleanedArchiveTrace;
 	public static String CleanedProjectTrace;
 	public static String FileRemovedTrace;

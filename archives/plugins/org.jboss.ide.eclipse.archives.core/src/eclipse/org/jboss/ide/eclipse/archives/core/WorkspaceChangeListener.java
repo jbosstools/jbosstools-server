@@ -32,6 +32,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -59,8 +60,28 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 				return 0;
 			}
 		};
-		final Set<IProject> projects = new TreeSet<IProject>(c);
+		if (event.getType() == IResourceChangeEvent.PRE_DELETE || event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+			IResource resource = event.getResource();
+			if (resource instanceof IProject) {
+				final IProject project = (IProject) resource;
+				IResource packages = project.findMember(IArchiveModel.DEFAULT_PACKAGES_FILE);
+				if (ArchivesModel.instance().isProjectRegistered(project.getLocation()) || packages != null) {
+					WorkspaceJob job = new WorkspaceJob(ArchivesCoreMessages.UnregisterProject) {
 
+						@Override
+						public IStatus runInWorkspace(IProgressMonitor monitor)
+								throws CoreException {
+							ArchivesModel.instance().unregisterProject(project.getLocation(), new NullProgressMonitor());
+							return Status.OK_STATUS;
+						}
+						
+					};
+					job.schedule();
+				}
+			}
+		}
+		
+		final Set<IProject> projects = new TreeSet<IProject>(c);
 		IResourceDelta delta = event.getDelta();
 		try {
 			if(delta!=null) {
@@ -78,31 +99,39 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 			}
 		} catch( CoreException ce ) {
 		}
-		Iterator<IProject> i = projects.iterator();
-		while(i.hasNext()) {
-			final IProject p = i.next();
-			try {
-				if( p.getSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname")) == null ) { //$NON-NLS-1$
-					try {
-						ArchivesModel.instance().registerProject(p.getLocation(), new NullProgressMonitor());
-						new Job(ArchivesCore.bind(ArchivesCoreMessages.RefreshProject, p.getName())) {
+		if (event.getType() == IResourceChangeEvent.PRE_DELETE || event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+			Iterator<IProject> i = projects.iterator();
+			while(i.hasNext()) {
+				final IProject p = i.next();
+				ArchivesModel.instance().unregisterProject(p.getLocation(), new NullProgressMonitor());
+			}
+		} else {
+			Iterator<IProject> i = projects.iterator();
+			while(i.hasNext()) {
+				final IProject p = i.next();
+				try {
+					if( p.getSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname")) == null ) { //$NON-NLS-1$
+						try {
+							ArchivesModel.instance().registerProject(p.getLocation(), new NullProgressMonitor());
+							new Job(ArchivesCore.bind(ArchivesCoreMessages.RefreshProject, p.getName())) {
 							protected IStatus run(IProgressMonitor monitor) {
 								try {
 									p.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-								} catch( CoreException e ) {
-									IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID,
+									} catch( CoreException e ) {
+										IStatus status = new Status(IStatus.WARNING, ArchivesCorePlugin.PLUGIN_ID,
 											ArchivesCore.bind(ArchivesCoreMessages.RefreshProjectFailed, p.getName()),e);
-									return status;
+										return status;
+									}
+									return Status.OK_STATUS;
 								}
-								return Status.OK_STATUS;
-							}
-						}.schedule();
-					} catch( ArchivesModelException ame ) {
+							}.schedule();
+						} catch( ArchivesModelException ame ) {
 						ArchivesCore.getInstance().getLogger().log(IStatus.ERROR,
 								ArchivesCore.bind(ArchivesCoreMessages.RegisterProjectFailed, p.getName()), ame);
+						}
 					}
+				} catch( CoreException ce ) {
 				}
-			} catch( CoreException ce ) {
 			}
 		}
 	}
