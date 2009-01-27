@@ -78,6 +78,10 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if( part == instance )
 					return;
+				if (selection == null || selection.isEmpty()) {
+					getInitialInput();
+					jiggleViewerInput();
+				}
 				if (!(selection instanceof IStructuredSelection))
 					return;
 
