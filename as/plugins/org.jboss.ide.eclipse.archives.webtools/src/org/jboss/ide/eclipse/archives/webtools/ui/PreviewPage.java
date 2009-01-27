@@ -94,7 +94,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		previewGroup.setLayoutData(previewData);
 		previewGroup.setLayout(new FormLayout());
 		previewViewer = new TreeViewer(previewGroup);
-		previewViewer.setLabelProvider(new ArchivesLabelProvider());
+		previewViewer.setLabelProvider(new ArchivesLabelProvider(ArchivesLabelProvider.IGNORE_FULL_PATHS));
 		previewViewer.setContentProvider(new ArchivesContentProviderDelegate(false));
 		FormData warPreviewData = new FormData();
 		warPreviewData.left = new FormAttachment(0,5);

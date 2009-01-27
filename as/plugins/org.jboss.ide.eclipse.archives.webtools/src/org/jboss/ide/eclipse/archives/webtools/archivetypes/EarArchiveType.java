@@ -109,6 +109,8 @@ public class EarArchiveType extends J2EEArchiveType {
 				if( type == null ) {
 					childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + JAR_EXTENSION);
 				} else {
+					if( new Path(childModules[i].getName()).segmentCount() > 1 )
+						continue;
 					childPack = type.createDefaultConfiguration(child.getProject().getName(), new NullProgressMonitor());
 				}
 				topLevel.addChild(childPack);

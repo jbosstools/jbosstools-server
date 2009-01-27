@@ -34,7 +34,18 @@ import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelega
  *
  */
 public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelProvider {
-
+	public static final int IGNORE_FULL_PATHS = 1;
+	public static final int SHOW_FULL_PATHS = 2;
+	public static final int FOLLOW_PREFS_FULL_PATHS = 3;
+	
+	private int showFullPaths;
+	public ArchivesLabelProvider() {
+		this(FOLLOW_PREFS_FULL_PATHS);
+	}
+	
+	public ArchivesLabelProvider(int showFullPaths) {
+		this.showFullPaths = showFullPaths;
+	}
 
 	/*
 	 * Important snippets to save
@@ -124,7 +135,9 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 	}
 	private String getPackageText (IArchive pkg) {
 		String text = pkg.getName();
-		if (PrefsInitializer.getBoolean( PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH)) {
+		if (showFullPaths == SHOW_FULL_PATHS || 
+				(showFullPaths == FOLLOW_PREFS_FULL_PATHS &&
+						PrefsInitializer.getBoolean( PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH))) {
 			text += " [" + PathUtils.getAbsoluteLocation(pkg) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return text;
@@ -135,8 +148,10 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 	}
 
 	private String getPackageFileSetText (IArchiveFileSet fileset) {
-		boolean showFullPath = PrefsInitializer.getBoolean(
-				PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR);
+		boolean showFullPath = showFullPaths == SHOW_FULL_PATHS || 
+				(showFullPaths == FOLLOW_PREFS_FULL_PATHS && 
+			PrefsInitializer.getBoolean(
+				PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR));
 		boolean inWorkspace = fileset.isInWorkspace();
 
 		String text = ""; //$NON-NLS-1$
