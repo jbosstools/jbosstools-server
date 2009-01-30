@@ -78,7 +78,7 @@ public class ServerLogger implements IJBossServerConstants {
 	
 	public static File getServerLogFile(IServer server) {
 		File f = server == null ? PLUGIN_LOCATION.toFile() : 
-			PLUGIN_LOCATION.append(server.getId()).append(LOG).toFile();
+			PLUGIN_LOCATION.append(server.getId().replace(' ', '_')).append(LOG).toFile();
 		if( !f.getParentFile().exists() ) 
 			f.getParentFile().mkdirs();
 		return f;

@@ -37,18 +37,26 @@ public class ServerListener extends UnitedServerListener {
 		// create metadata area
 		File location = IJBossServerConstants.PLUGIN_LOCATION.append(server.getId().replace(' ', '_')).toFile();
 		location.mkdirs();
-		new File(location, IJBossServerConstants.DEPLOY).mkdir();
-		new File(location, IJBossServerConstants.TEMP_DEPLOY).mkdir();
 		
 		// create temp deploy folder
-		IRuntime rt = server.getRuntime();
-		IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		String config = jbsrt.getJBossConfiguration();
-		String newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-			.append(IJBossServerConstants.TMP)
-			.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-		new File(newTemp).mkdirs();
-
+		IDeployableServer ds = (IDeployableServer)server.loadAdapter(IDeployableServer.class, null);
+		if( ds != null ) {
+			File d1 = new File(location, IJBossServerConstants.DEPLOY);
+			File d2 = new File(location, IJBossServerConstants.TEMP_DEPLOY);
+			d1.mkdirs();
+			d2.mkdirs();
+			if( !new File(ds.getDeployFolder()).equals(d1)) 
+				new File(ds.getDeployFolder()).mkdirs();
+			if( !new File(ds.getTempDeployFolder()).equals(d2))
+				new File(ds.getTempDeployFolder()).mkdirs();
+			IRuntime rt = server.getRuntime();
+			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+			String config = jbsrt.getJBossConfiguration();
+			String newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+				.append(IJBossServerConstants.TMP)
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+			new File(newTemp).mkdirs();
+		}
 	}
 
 	public void serverRemoved(IServer server) {

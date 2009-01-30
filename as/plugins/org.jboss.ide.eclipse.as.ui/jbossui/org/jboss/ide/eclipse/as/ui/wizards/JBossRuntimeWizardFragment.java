@@ -121,7 +121,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String id = rt.getRuntimeType().getId();
-		String imageKey = "";
+		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		if (id.equals("org.jboss.ide.eclipse.as.runtime.32"))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
 		else if (id.equals("org.jboss.ide.eclipse.as.runtime.40"))
@@ -446,9 +446,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	protected boolean isHomeValid() {
 		if( homeDir == null  || !(new File(homeDir).exists())) return false;
 		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
-		if (version.startsWith("4.3.0")) {
-			version="4.2";
-		}
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();

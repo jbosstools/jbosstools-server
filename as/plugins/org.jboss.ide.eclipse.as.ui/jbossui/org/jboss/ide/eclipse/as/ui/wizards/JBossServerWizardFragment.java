@@ -21,12 +21,9 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
-import java.io.File;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -49,7 +46,6 @@ import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -98,6 +94,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO; // TODO until we have a proper image
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	
@@ -250,32 +247,16 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		handleDefaults(serverWC);
+		name = name == null ? getDefaultNameText() : name;
+		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
+		jbs.setUsername("admin");
+		jbs.setPassword("admin");
+		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
 		serverWC.setServerConfiguration(null); // no inside jboss folder
 	}
 	
-	protected void handleDefaults(IServerWorkingCopy wc) {
-		name = name == null ? getDefaultNameText() : name;
-		String deployVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
-			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-		String deployTmpFolderVal = IJBossServerConstants.PLUGIN_LOCATION.append(name).
-			append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-		
-		JBossServer jbs = (JBossServer)wc.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		jbs.setUsername("admin");
-		jbs.setPassword("admin");
-		
-		boolean as5 = isAS5();
-		String as5TmpDeployFolderVal = new Path(IJBossServerConstants.SERVER).append(getRuntime().getJBossConfiguration()).append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-		jbs.setDeployLocationType(as5 ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
-		jbs.setDeployFolder(deployVal);
-		jbs.setTempDeployFolder(as5 ? as5TmpDeployFolderVal : deployTmpFolderVal);
-		new File(deployVal).mkdirs();
-		new File(deployTmpFolderVal).mkdirs();
-	}
-
 	private IJBossServerRuntime getRuntime() {
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);

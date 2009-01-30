@@ -255,15 +255,16 @@ public class XPathModel extends UnitedServerListener {
 	private static final String FILE_SUFFIX = "_FILE";
 	static {
 		rtToPortsFile = new HashMap<String, IPath>();
-		rtToPortsFile.put("3.2", new Path("properties").append("jboss.32.default.ports.properties"));
-		rtToPortsFile.put("4.0", new Path("properties").append("jboss.40.default.ports.properties"));
-		rtToPortsFile.put("4.2", new Path("properties").append("jboss.42.default.ports.properties"));
-		rtToPortsFile.put("5.0", new Path("properties").append("jboss.50.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.32", new Path("properties").append("jboss.32.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.40", new Path("properties").append("jboss.40.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.42", new Path("properties").append("jboss.42.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.50", new Path("properties").append("jboss.50.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.43", new Path("properties").append("jboss.eap.43.default.ports.properties"));
 	}
 
 	public void loadDefaults(IServer server, String configFolder) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
-		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getVersion());
+		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
 		if( p == null ) return;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
 		if( url == null ) return;

@@ -64,15 +64,12 @@ public class ClientAllRuntimeClasspathProvider extends
 		
 		IPath loc = runtime.getLocation();
 		String config = jbsrt.getJBossConfiguration();
-		String version = runtime.getRuntimeType().getVersion();
-		if( "3.2".equals(version))
-			return get32(loc, config);
-		if( "4.0".equals(version))
-			return get40(loc,config);
-		if("4.2".equals(version))
-			return get42(loc,config);
-		if("5.0".equals(version))
-			return get50(loc,config);
+		String rtID  = runtime.getRuntimeType().getId();
+		if("org.jboss.ide.eclipse.as.runtime.32".equals(rtID)) return get32(loc, config);
+		if("org.jboss.ide.eclipse.as.runtime.40".equals(rtID)) return get40(loc,config);
+		if("org.jboss.ide.eclipse.as.runtime.42".equals(rtID)) return get42(loc,config);
+		if("org.jboss.ide.eclipse.as.runtime.50".equals(rtID)) return get50(loc,config);
+		if("org.jboss.ide.eclipse.as.runtime.eap.43".equals(rtID)) return getEAP43(loc,config);
 		return null;
 	}
 	
@@ -99,18 +96,13 @@ public class ClientAllRuntimeClasspathProvider extends
 	}
 
 	protected IClasspathEntry[] get42(IPath location, String config) {
-		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append("server").append(config);
-		IPath deployPath = configPath.append("deploy");
-		addEntries(location.append("client"), list);
-		addEntries(location.append("lib"), list);
-		addEntries(configPath.append("lib"), list);
-		addEntries(deployPath.append("jboss-web.deployer").append("jsf-libs"), list);
-		addEntries(deployPath.append("jboss-aop-jdk50.deployer"), list);
-		addEntries(deployPath.append("ejb3.deployer"), list);
-		return list.toArray(new IClasspathEntry[list.size()]);
+		return get40(location, config);
 	}
 
+	protected IClasspathEntry[] getEAP43(IPath location, String config) {
+		return get40(location, config);
+	}
+	
 	protected IClasspathEntry[] get50(IPath location, String config) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		IPath configPath = location.append("server").append(config);
