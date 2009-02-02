@@ -24,6 +24,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.TransferData;
@@ -110,7 +111,10 @@ public class ServersViewDropAdapterAssistant extends CommonDropAdapterAssistant 
 
 	public IStatus handleDrop(CommonDropAdapter dropAdapter,
 			DropTargetEvent dropTargetEvent, Object target) {
-		return internalHandleDrop(target, fElements);
+		IStatus ret = internalHandleDrop(target, fElements);
+		if( ret.isOK())
+			dropTargetEvent.detail = DND.DROP_NONE;
+		return ret;
 	}
 	
 	public IStatus handlePluginTransferDrop(

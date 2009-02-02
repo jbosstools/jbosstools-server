@@ -156,14 +156,12 @@ public final class ServersDropAdapter extends PluginDropAdapter {
 					if (valid != null && valid.isOK()) {
 						assistants[i].handleDrop(null, event,
 								getCurrentTarget());
-	                    event.detail = DND.DROP_NONE;
 						return;
 					} 
 				} catch (Throwable t) {
 					NavigatorPlugin.logError(0, t.getMessage(), t);
 				}
 			}
-            event.detail = DND.DROP_NONE;
 		}
 	}
 
