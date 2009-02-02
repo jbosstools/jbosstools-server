@@ -277,7 +277,7 @@
                                 <para>Monitoring</para>
                             </entry>
                             <entry>
-                                <para>Possibility to add ports to be monitored on the currant
+                                <para>Possibility to add ports to be monitored on the current
                                     server</para>
                             </entry>
                         </row>
@@ -287,7 +287,7 @@
                                 <para>Properties</para>
                             </entry>
                             <entry>
-                                <para>Opens the window to adjust the currant server
+                                <para>Opens the window to adjust the current server
                                     preferences</para>
                             </entry>
                         </row>
@@ -457,7 +457,7 @@
         <section id="server_log">
             <title>Server Log View</title>
 
-            <para>You can monitor the currant server behavior with the help of the <property>Server
+            <para>You can monitor the current server behavior with the help of the <property>Server
                     Log</property>. To open a server in the <property>Server Log
                         view</property> you should right-click on the server and follow to <emphasis>
                             <property>Open in > Server Log</property>.</emphasis></para>
@@ -512,7 +512,7 @@
                                 <para>Clear Log Viewer</para>
                             </entry>
                             <entry>
-                                <para>The option clears the currant server log</para>
+                                <para>The option clears the current server log</para>
                             </entry>
                         </row>
                         
