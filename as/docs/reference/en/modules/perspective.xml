@@ -151,7 +151,7 @@
                 the help of the context menu commands.</para>
 
             <figure>
-                <title>Twiddle Server</title>
+                <title>Context Menu Commands</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_8.png"/>
@@ -202,8 +202,7 @@
                                 <para>Show in</para>
                             </entry>
                             <entry>
-                                <para>You can monitor the currant server behavior with the help of
-                                    the other views: Console, Debug view, Server Log or MBean
+                                <para>This option gives an easy access to the next views: Console, Debug view, Server Log or MBean
                                     Explorer</para>
                             </entry>
                         </row>
