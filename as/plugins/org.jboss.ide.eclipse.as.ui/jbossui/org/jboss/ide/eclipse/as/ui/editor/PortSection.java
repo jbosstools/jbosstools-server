@@ -375,12 +375,13 @@ public class PortSection extends ServerEditorSection {
 		XPathQuery query = XPathModel.getDefault().getQuery(server, path);
 		String result = "";
 		if(query!=null) {
-			query.refresh();
-			result = query.getFirstResult();
-			result = result == null ? "" : result;
 			try {
+				query.refresh();
+				result = query.getFirstResult();
+				result = result == null ? "" : result;
 				return new Integer(Integer.parseInt(result)).toString();
 			} catch(NumberFormatException nfe) {
+			} catch( IllegalStateException ise ) {
 			}
 		}
 		return result;
