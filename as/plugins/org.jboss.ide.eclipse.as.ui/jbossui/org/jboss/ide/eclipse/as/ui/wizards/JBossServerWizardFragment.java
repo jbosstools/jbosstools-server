@@ -94,7 +94,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if( id.equals("org.jboss.ide.eclipse.as.runtime.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO; // TODO until we have a proper image
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_43_LOGO;
+
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	

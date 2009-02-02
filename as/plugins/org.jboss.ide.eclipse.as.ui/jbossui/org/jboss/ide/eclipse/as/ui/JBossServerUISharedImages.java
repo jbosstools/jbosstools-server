@@ -39,10 +39,12 @@ public class JBossServerUISharedImages {
 	public static final String IMG_JBOSS = "jboss";
 	public static final String IMG_JBOSS_CONFIGURATION = "jbossconfiguration";
 
-	public static final String WIZBAN_JBOSS32_LOGO = "jboss32logo";
-	public static final String WIZBAN_JBOSS40_LOGO = "jboss40logo";
-	public static final String WIZBAN_JBOSS42_LOGO = "jboss42logo";
-	public static final String WIZBAN_JBOSS50_LOGO = "jboss50logo";
+	public static final String WIZBAN_JBOSS32_LOGO = "jboss3.2logo";
+	public static final String WIZBAN_JBOSS40_LOGO = "jboss4.0logo";
+	public static final String WIZBAN_JBOSS42_LOGO = "jboss4.2logo";
+	public static final String WIZBAN_JBOSS50_LOGO = "jboss5.0logo";
+	public static final String WIZBAN_JBOSS_EAP_43_LOGO = "jbossEAP4.3logo";
+	
 	public static final String WIZBAN_DEPLOY_ONLY_LOGO = "jbossdeployerlogo";
 	
 	
@@ -71,6 +73,7 @@ public class JBossServerUISharedImages {
 		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif"));
 		descriptors.put(WIZBAN_JBOSS42_LOGO, createImageDescriptor(pluginBundle, "/icons/logo42.gif"));
 		descriptors.put(WIZBAN_JBOSS50_LOGO, createImageDescriptor(pluginBundle, "/icons/logo50.gif"));
+		descriptors.put(WIZBAN_JBOSS_EAP_43_LOGO, createImageDescriptor(pluginBundle, "/icons/logoEAP43.gif"));
 		descriptors.put(WIZBAN_DEPLOY_ONLY_LOGO, createImageDescriptor(pluginBundle, "/icons/blank.gif"));
 		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
 		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
