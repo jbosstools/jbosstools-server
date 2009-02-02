@@ -26,7 +26,8 @@ public class DisconnectJob extends ChainedJob {
 	protected IStatus run(IProgressMonitor monitor) {
 		try {
 			for( int i = 0; i < connection.length; i++ )
-				connection[i].disconnect();
+				if( connection[i].isConnected() )
+					connection[i].disconnect();
 			return Status.OK_STATUS;
 		} catch( IOException ioe ) {
 			return new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DisconnectJobFailed, ioe);
