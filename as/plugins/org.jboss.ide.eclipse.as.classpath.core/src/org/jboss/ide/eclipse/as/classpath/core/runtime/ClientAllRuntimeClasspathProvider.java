@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
@@ -113,6 +114,7 @@ public class ClientAllRuntimeClasspathProvider extends
 		addEntries(location.append("common").append("lib"), list);
 		addEntries(configPath.append("lib"), list);
 		addEntries(deployPath.append("jbossweb.sar").append("jsf-libs"),list);
+		addEntries(deployPath.append("jbossweb.sar").append("jboss-web-service.jar"),list);
 		addEntries(deployerPath.append("jboss-aop-jboss5.deployer"), list);
 		addEntries(deployerPath.append("ejb3.deployer"), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
@@ -123,11 +125,16 @@ public class ClientAllRuntimeClasspathProvider extends
 	}
 	protected void addEntries(IPath folder, ArrayList<IClasspathEntry> list) {
 		if( folder.toFile().exists()) {
-			String[] files = folder.toFile().list();
-			for( int i = 0; i < files.length; i++ ) {
-				if( files[i].endsWith(".jar")) {
-					list.add(getEntry(folder.append(files[i])));
+			File f = folder.toFile();
+			if(f.isDirectory()) {
+				String[] files = f.list();
+				for( int i = 0; i < files.length; i++ ) {
+					if( files[i].endsWith(".jar")) {
+						list.add(getEntry(folder.append(files[i])));
+					}
 				}
+			} else {
+				list.add(getEntry(folder));
 			}
 		}
 	}
