@@ -53,7 +53,7 @@ public class ArgsUtil {
 	
 	public static String getValue(String[] args, String shortOpt, String longOpt ) {
 		for( int i = 0; i < args.length; i++ ) {
-			if( args[i].equals(shortOpt))
+			if( args[i].equals(shortOpt) && i+1 < args.length)
 				return args[i+1];
 			if( longOpt != null && args[i].startsWith(longOpt + "=")) 
 				return args[i].substring(args[i].indexOf('=') + 1);
