@@ -122,6 +122,11 @@
     </adapter>
    </extension>  
 
+   <extension point="org.eclipse.ui.ide.markerResolution">
+  		<markerResolutionGenerator
+     class="org.jboss.ide.eclipse.as.ui.marker.MarkerResolutionGenerator"
+     markerType="org.eclipse.wst.common.project.facet.core.validation.marker"/>
+   </extension>
 
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
