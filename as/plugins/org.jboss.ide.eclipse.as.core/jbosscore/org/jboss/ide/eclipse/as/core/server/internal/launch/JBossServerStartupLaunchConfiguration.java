@@ -116,11 +116,11 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		args = ArgsUtil.setArg(args, "-c", "--configuration", config);
 
 		vmArgs= ArgsUtil.setArg(vmArgs, null, "-Djava.endorsed.dirs", 
-				"\"" + runtime.getRuntime().getLocation().append("lib").append("endorsed") + "\"");
+				"\"" + runtime.getRuntime().getLocation().append("lib").append("endorsed") + "\"", false);
 		
 		if( runtime.getRuntime().getLocation().append("bin").append("native").toFile().exists() ) 
-			vmArgs = ArgsUtil.setArg(vmArgs, "", "-Djava.library.path",  
-				"\"" + runtime.getRuntime().getLocation().append("bin").append("native") + "\"");
+			vmArgs = ArgsUtil.setArg(vmArgs, null, "-Djava.library.path",  
+				"\"" + runtime.getRuntime().getLocation().append("bin").append("native") + "\"", false);
 		
 		
 		

@@ -112,7 +112,12 @@ public class ArgsUtil {
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value ) {
 		if( value.contains(" "))
 			value = "\"" + value + "\"";
-		
+		return setArg(allArgs, shortOpt, longOpt, value, false);
+	}
+	
+	public static String setArg(String allArgs, String shortOpt, String longOpt, String value, boolean addQuotes ) {
+		if( addQuotes ) 
+			value = "\"" + value + "\"";
 		String[] args = parse(allArgs);
 		String retVal = "";
 		for( int i = 0; i < args.length; i++ ) {
