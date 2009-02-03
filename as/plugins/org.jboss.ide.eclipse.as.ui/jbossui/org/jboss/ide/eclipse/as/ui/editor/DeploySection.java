@@ -235,6 +235,7 @@ public class DeploySection extends ServerEditorSection {
 		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
+		getSaveStatus();
 	}
 	
 	private String getDeployType() {
