@@ -150,9 +150,6 @@ public class FilesetDialog extends TitleAreaDialog {
 		Group previewWrapper = new Group(main, SWT.NONE);
 
 		previewWrapper.setLayout(new GridLayout());
-		GridLayout gridLayout = new GridLayout();
-		//gridLayout.numColumns = 3;
-		//gridLayout.verticalSpacing = 9;
 
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.grabExcessHorizontalSpace = true;

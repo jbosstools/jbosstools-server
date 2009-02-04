@@ -151,11 +151,11 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    	}
 
    	 private void setupDestinationList () {
-   		 List projects = Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects());
+   		 List<IProject> projects = Arrays.asList(ResourcesPlugin.getWorkspace().getRoot().getProjects());
    		 setInput(projects);
    	 }
    	 private void setupInitialSelections(String initialSelection) {
-   		 ArrayList resources = new ArrayList();
+   		 ArrayList<IResource> resources = new ArrayList<IResource>();
    		 String[] paths = initialSelection.split(","); //$NON-NLS-1$
    		 // find IResources
    		 IResource res;
@@ -163,7 +163,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    			 res = ResourcesPlugin.getWorkspace().getRoot().findMember(paths[i]);
    			 resources.add(res);
    		 }
-   		 setInitialSelections((IResource[]) resources.toArray(new IResource[resources.size()]));
+   		 setInitialSelections(resources.toArray(new IResource[resources.size()]));
    	 }
 
    	 private static class FolderContentProvider implements ITreeContentProvider {
@@ -173,7 +173,7 @@ public abstract class PreviewPage extends WizardPageWithNotification {
    				IContainer container = (IContainer) parentElement;
    				try {
    					IResource members[] = container.members();
-   					List folders = new ArrayList();
+   					List<IResource> folders = new ArrayList<IResource>();
    					for (int i = 0; i < members.length; i++) {
    						if (members[i].getType() == IResource.FOLDER) folders.add(members[i]);
    					}

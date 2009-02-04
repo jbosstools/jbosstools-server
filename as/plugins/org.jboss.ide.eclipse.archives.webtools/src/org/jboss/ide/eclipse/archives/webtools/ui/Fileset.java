@@ -13,13 +13,14 @@ package org.jboss.ide.eclipse.archives.webtools.ui;
 
 public class Fileset implements Cloneable {
 	private static final String HASH_SEPARATOR = "::_::"; //$NON-NLS-1$
+	private static final String SEP = "\n"; //$NON-NLS-1$
 	private String name, folder, includesPattern, excludesPattern;
 	public Fileset() {
 	}
 	public Fileset(String string) {
 		try {
 			name = folder = includesPattern =excludesPattern = ""; //$NON-NLS-1$
-			String[] parts = string.split("\n"); //$NON-NLS-1$
+			String[] parts = string.split(SEP);
 			name = parts[0];
 			folder = parts[1];
 			includesPattern = parts[2];
@@ -34,7 +35,7 @@ public class Fileset implements Cloneable {
 		excludesPattern = exc;
 	}
 	public String toString() {
-		return name + "\n" + folder + "\n" + includesPattern + "\n" + excludesPattern;   //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+		return name + SEP + folder + SEP + includesPattern + SEP + excludesPattern;
 	}
 	/**
 	 * @return the folder

@@ -58,7 +58,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	public boolean accepts(IServer server, IModule[] module) {
 		if( module != null && module.length > 0
-				&& "jboss.package".equals(module[0].getModuleType().getId()))//$NON-NLS-1$
+				&& PackageModuleFactory.MODULE_TYPE.equals(module[0].getModuleType().getId()))
 			return true;
 		return false;
 	}
@@ -155,7 +155,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	protected int countConcreteFiles(IModule module) {
 		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 		try {
-			ArrayList list = new ArrayList();
+			ArrayList<IPath> list = new ArrayList<IPath>();
 			countConcreteFiles(delegate.members()[0], list);
 			return list.size();
 		} catch( CoreException ce ) {
@@ -163,7 +163,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 		return -1;
 	}
-	protected void countConcreteFiles(IModuleResource mr, ArrayList list) {
+	protected void countConcreteFiles(IModuleResource mr, ArrayList<IPath> list) {
 		if( mr instanceof IExtendedModuleResource) {
 			IExtendedModuleResource emr = ((IExtendedModuleResource)mr);
 			if( mr instanceof IModuleFile ) {
