@@ -55,6 +55,9 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 	}
 
 	public boolean isBuilderEnabled(IPath path) {
+		if( !ResourcesPlugin.getWorkspace().isAutoBuilding())
+			return false;
+		
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, AUTOMATIC_BUILDER_ENABLED);
 		IResource res = getResource(path);
 		if( res != null && areProjectSpecificPrefsEnabled(res)) {

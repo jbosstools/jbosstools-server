@@ -43,12 +43,6 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
  *
  */
 public class ModelChangeListenerWithRefresh extends ModelChangeListener {
-	
-	protected boolean shouldRun(IArchiveNodeDelta delta) {
-		return ( ResourcesPlugin.getWorkspace().isAutoBuilding()
-				&& super.shouldRun(delta));
-	}
-	
 	protected void executeAndLog(IArchiveNodeDelta delta) {
 		final IArchiveNodeDelta delta2 = delta;
 		
