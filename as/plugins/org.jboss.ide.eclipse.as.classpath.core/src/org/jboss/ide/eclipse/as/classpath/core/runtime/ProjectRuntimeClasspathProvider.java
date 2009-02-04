@@ -41,6 +41,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
 
@@ -52,6 +53,7 @@ import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClass
  *
  */
 public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
+	public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectInitializer"; //$NON-NLS-1$
 	private IRuntimeComponent rc;
 
 	public ProjectRuntimeClasspathProvider() {
@@ -63,17 +65,17 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 
 	public List getClasspathEntries(final IProjectFacetVersion fv) {
 		IPath path;
-		if( fv.getProjectFacet().getId().equals("jst.java") ) {
-			path = new Path("org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectInitializer");
-			path = path.append(rc.getProperty("id"));
+		if( fv.getProjectFacet().getId().equals(ClasspathConstants.FACET_JST_JAVA) ) {
+			path = new Path(CONTAINER_ID);
+			path = path.append(rc.getProperty("id")); //$NON-NLS-1$
 			path = path.append(fv.getProjectFacet().getId());
 			path = path.append(fv.getVersionString());
 			IClasspathEntry[] entries =
 				new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
 			return Arrays.asList(entries);
 		} else {
-			String id = rc.getProperty("id");
-			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget");
+			String id = rc.getProperty("id"); //$NON-NLS-1$
+			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$ //$NON-NLS-2$
 			path = containerPath.append(id);
 		}
 

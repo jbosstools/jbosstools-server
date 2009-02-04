@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core;
 
 import java.util.ArrayList;
@@ -18,7 +28,7 @@ import org.eclipse.jdt.core.JavaCore;
 // TODO: need to implement resource change listeners like done in FlexibleProjectContainer to be usefull.
 public class DirectoryLibraryContainerInitializer extends ClasspathContainerInitializer {
 
-	public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainer";
+	public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.DirectoryLibraryContainer"; //$NON-NLS-1$
 
 	@Override
 	public void initialize(IPath containerPath, IJavaProject project)
@@ -69,7 +79,7 @@ public class DirectoryLibraryContainerInitializer extends ClasspathContainerInit
 						public boolean visit(IResourceProxy proxy) /* throws CoreException */{
 							switch(proxy.getType()) {
 							case IResource.FILE :
-								if (proxy.getName().endsWith(".jar") || proxy.getName().endsWith(".zip")) {
+								if (proxy.getName().endsWith(".jar") || proxy.getName().endsWith(".zip")) { //$NON-NLS-1$ //$NON-NLS-2$
 									libraries.add(JavaCore.newLibraryEntry(proxy.requestFullPath(), null, null));									
 								}
 								return false;

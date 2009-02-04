@@ -37,9 +37,9 @@ import org.xml.sax.InputSource;
  */
 
 public final class ClasspathDecorationsManager {
-	private static final String CLASSPATH_PREFERENCES = "classpathPreferences";
+	private static final String CLASSPATH_PREFERENCES = "classpathPreferences"; //$NON-NLS-1$
 	private static final String SEPARATOR = System
-			.getProperty("line.separator");
+			.getProperty("line.separator"); //$NON-NLS-1$
 	private final HashMap decorations;
 
 	public ClasspathDecorationsManager() {
@@ -108,7 +108,7 @@ public final class ClasspathDecorationsManager {
 				buffer.append("\">"); //$NON-NLS-1$
 				buffer.append(SEPARATOR);
 
-				String src = "";
+				String src = ""; //$NON-NLS-1$
 				if (dec.getSourceAttachmentPath() != null) {
 					src = dec.getSourceAttachmentPath().toString();
 				}

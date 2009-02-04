@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
@@ -44,8 +45,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
  * @author Rob Stryker
  *
  */
-public class ClientAllRuntimeClasspathProvider extends
-		RuntimeClasspathProviderDelegate {
+public class ClientAllRuntimeClasspathProvider 
+		extends RuntimeClasspathProviderDelegate
+		implements ClasspathConstants {
 
 	public ClientAllRuntimeClasspathProvider() {
 		// TODO Auto-generated constructor stub
@@ -66,33 +68,33 @@ public class ClientAllRuntimeClasspathProvider extends
 		IPath loc = runtime.getLocation();
 		String config = jbsrt.getJBossConfiguration();
 		String rtID  = runtime.getRuntimeType().getId();
-		if("org.jboss.ide.eclipse.as.runtime.32".equals(rtID)) return get32(loc, config);
-		if("org.jboss.ide.eclipse.as.runtime.40".equals(rtID)) return get40(loc,config);
-		if("org.jboss.ide.eclipse.as.runtime.42".equals(rtID)) return get42(loc,config);
-		if("org.jboss.ide.eclipse.as.runtime.50".equals(rtID)) return get50(loc,config);
-		if("org.jboss.ide.eclipse.as.runtime.eap.43".equals(rtID)) return getEAP43(loc,config);
+		if(AS_32.equals(rtID)) return get32(loc, config);
+		if(AS_40.equals(rtID)) return get40(loc,config);
+		if(AS_42.equals(rtID)) return get42(loc,config);
+		if(AS_50.equals(rtID)) return get50(loc,config);
+		if(EAP_43.equals(rtID)) return getEAP43(loc,config);
 		return null;
 	}
 	
 	protected IClasspathEntry[] get32(IPath location, String config) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append("server").append(config);
-		addEntries(location.append("client"), list);
-		addEntries(location.append("lib"), list);
-		addEntries(configPath.append("lib"), list);
+		IPath configPath = location.append(SERVER).append(config);
+		addEntries(location.append(CLIENT), list);
+		addEntries(location.append(LIB), list);
+		addEntries(configPath.append(LIB), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 	
 	protected IClasspathEntry[] get40(IPath location, String config) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append("server").append(config);
-		IPath deployPath = configPath.append("deploy");
-		addEntries(location.append("client"), list);
-		addEntries(location.append("lib"), list);
-		addEntries(configPath.append("lib"), list);
-		addEntries(deployPath.append("jboss-web.deployer").append("jsf-libs"), list);
-		addEntries(deployPath.append("jboss-aop-jdk50.deployer"), list);
-		addEntries(deployPath.append("ejb3.deployer"), list);
+		IPath configPath = location.append(SERVER).append(config);
+		IPath deployPath = configPath.append(DEPLOY);
+		addEntries(location.append(CLIENT), list);
+		addEntries(location.append(LIB), list);
+		addEntries(configPath.append(LIB), list);
+		addEntries(deployPath.append(JBOSS_WEB_DEPLOYER).append(JSF_LIB), list);
+		addEntries(deployPath.append(AOP_JDK5_DEPLOYER), list);
+		addEntries(deployPath.append(EJB3_DEPLOYER), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 
@@ -106,17 +108,17 @@ public class ClientAllRuntimeClasspathProvider extends
 	
 	protected IClasspathEntry[] get50(IPath location, String config) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append("server").append(config);
-		IPath deployerPath = configPath.append("deployers");
-		IPath deployPath = configPath.append("deploy");
-		addEntries(location.append("client"), list);
-		addEntries(location.append("lib"), list);
-		addEntries(location.append("common").append("lib"), list);
-		addEntries(configPath.append("lib"), list);
-		addEntries(deployPath.append("jbossweb.sar").append("jsf-libs"),list);
-		addEntries(deployPath.append("jbossweb.sar").append("jboss-web-service.jar"),list);
-		addEntries(deployerPath.append("jboss-aop-jboss5.deployer"), list);
-		addEntries(deployerPath.append("ejb3.deployer"), list);
+		IPath configPath = location.append(SERVER).append(config);
+		IPath deployerPath = configPath.append(DEPLOYERS);
+		IPath deployPath = configPath.append(DEPLOY);
+		addEntries(location.append(CLIENT), list);
+		addEntries(location.append(LIB), list);
+		addEntries(location.append(COMMON).append(LIB), list);
+		addEntries(configPath.append(LIB), list);
+		addEntries(deployPath.append(JBOSSWEB_SAR).append(JSF_LIB),list);
+		addEntries(deployPath.append(JBOSSWEB_SAR).append(JBOSS_WEB_SERVICE_JAR),list);
+		addEntries(deployerPath.append(AS5_AOP_DEPLOYER), list);
+		addEntries(deployerPath.append(EJB3_DEPLOYER), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 	
@@ -129,7 +131,7 @@ public class ClientAllRuntimeClasspathProvider extends
 			if(f.isDirectory()) {
 				String[] files = f.list();
 				for( int i = 0; i < files.length; i++ ) {
-					if( files[i].endsWith(".jar")) {
+					if( files[i].endsWith(JAR_EXT)) {
 						list.add(getEntry(folder.append(files[i])));
 					}
 				}

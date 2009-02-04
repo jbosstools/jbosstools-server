@@ -54,6 +54,6 @@ public class EJB3ClasspathContainerInitializer extends ClasspathContainerInitial
          return EJB3ClasspathContainer.DESCRIPTION;
       }
 
-      return "";
+      return ""; //$NON-NLS-1$
    }
 }

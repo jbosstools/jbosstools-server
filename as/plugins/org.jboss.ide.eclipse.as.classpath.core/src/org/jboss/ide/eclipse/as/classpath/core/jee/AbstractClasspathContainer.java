@@ -48,9 +48,9 @@ import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorationsManager;
  */
 public abstract class AbstractClasspathContainer implements IClasspathContainer {
 
-	public static final String LIB_FOLDER = "lib";
-	public static final String LIB_SOURCE_FOLDER = "libsrc";
-	public final static String CLASSPATH_CONTAINER_PREFIX = "org.jboss.ide.eclipse.as.classpath.core";
+	public static final String LIB_FOLDER = "lib"; //$NON-NLS-1$
+	public static final String LIB_SOURCE_FOLDER = "libsrc"; //$NON-NLS-1$
+	public final static String CLASSPATH_CONTAINER_PREFIX = "org.jboss.ide.eclipse.as.classpath.core"; //$NON-NLS-1$
 	
 	protected IClasspathEntry[] entries;
 	protected IPath path;
@@ -150,7 +150,7 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 	protected String getBaseDir() {
 		try {
 			URL installURL = FileLocator.toFileURL(ClasspathCorePlugin
-					.getDefault().getBundle().getEntry("/"));
+					.getDefault().getBundle().getEntry("/")); //$NON-NLS-1$
 			return installURL.getFile().toString();
 		} catch (IOException ioe) {
 			// LOG THE ERROR (one day)

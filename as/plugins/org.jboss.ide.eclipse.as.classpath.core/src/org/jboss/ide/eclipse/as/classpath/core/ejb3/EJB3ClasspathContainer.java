@@ -34,26 +34,27 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 /**
  * @author Marshall
  * @author Rob Stryker 
  */
-public class EJB3ClasspathContainer implements IClasspathContainer {
-   public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer";
+public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathConstants {
+   public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"; //$NON-NLS-1$
 
    public static final String DESCRIPTION = "JBoss EJB3 Libraries";
 
    public static final QualifiedName JBOSS_EJB3_CONFIGURATION = new QualifiedName(
-         "org.jboss.ide.eclipse.ejb3.wizards.core.classpath", "jboss-ejb3-configuration");
+         "org.jboss.ide.eclipse.ejb3.wizards.core.classpath", "jboss-ejb3-configuration"); //$NON-NLS-1$ //$NON-NLS-2$
 
    protected IJavaProject javaProject;
    protected JBossServer jbossServer;
    protected IPath path;
 
-   protected IPath configPath = new Path("");
-   protected IPath homePath = new Path("home");
+   protected IPath configPath = new Path(""); //$NON-NLS-1$
+   protected IPath homePath = null;
    
 
    public EJB3ClasspathContainer(IPath path, IJavaProject project) {
@@ -110,9 +111,9 @@ public class EJB3ClasspathContainer implements IClasspathContainer {
 
    public IClasspathEntry[] getClasspathEntries() {
       ArrayList entries = new ArrayList();
-      String id = jbossServer.getServer().getServerType().getId();
-      if( id.equals("org.jboss.ide.eclipse.as.40")) return get40Jars();
-      if( id.equals("org.jboss.ide.eclipse.as.42")) return get42Jars();
+      String id = jbossServer.getServer().getServerType().getRuntimeType().getId();
+      if( id.equals(AS_40)) return get40Jars();
+      if( id.equals(AS_42)) return get42Jars();
       return (IClasspathEntry[]) entries.toArray(new IClasspathEntry[entries.size()]);
    }
 
@@ -120,21 +121,21 @@ public class EJB3ClasspathContainer implements IClasspathContainer {
 		ArrayList list = new ArrayList();
 
 		// path roots
-		IPath deploy = configPath.append("deploy");
-		IPath deployer = deploy.append("ejb3.deployer");
-		IPath aopDeployer = deploy.append("jboss-aop-jdk50.deployer");
+		IPath deploy = configPath.append(DEPLOY);
+		IPath deployer = deploy.append(EJB3_DEPLOYER);
+		IPath aopDeployer = deploy.append(AOP_JDK5_DEPLOYER);
 		
 		// ejb3
-		list.add(getEntry(deployer.append("jboss-ejb3x.jar")));
-		list.add(getEntry(deployer.append("jboss-ejb3.jar")));
-		list.add(getEntry(deployer.append("jboss-annotations-ejb3.jar")));
+		list.add(getEntry(deployer.append(JBOSS_EJB3X_JAR)));
+		list.add(getEntry(deployer.append(JBOSS_EJB3_JAR)));
+		list.add(getEntry(deployer.append(JBOSS_ANNOTATIONS_EJB3_JAR)));
 		
 		// aop
-		list.add(getEntry(aopDeployer.append("jboss-aop-jdk50.jar")));
-		list.add(getEntry(aopDeployer.append("jboss-aspect-library-jdk50.jar")));
+		list.add(getEntry(aopDeployer.append(JBOSS_AOP_JDK5_JAR)));
+		list.add(getEntry(aopDeployer.append(JBOSS_ASPECT_LIBRARY_JDK5_0)));
 		
 		// hibernate
-		list.add(getEntry(homePath.append("client").append("hibernate-client.jar")));
+		list.add(getEntry(homePath.append(CLIENT).append(HIBERNATE_CLIENT_JAR)));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
    }
    
@@ -142,24 +143,24 @@ public class EJB3ClasspathContainer implements IClasspathContainer {
 		ArrayList list = new ArrayList();
 
 		// path roots
-		IPath deploy = configPath.append("deploy");
-		IPath deployer = deploy.append("ejb3.deployer");
-		IPath aopDeployer = deploy.append("jboss-aop-jdk50.deployer");
-		IPath client = homePath.append("client");
+		IPath deploy = configPath.append(DEPLOY);
+		IPath deployer = deploy.append(EJB3_DEPLOYER);
+		IPath aopDeployer = deploy.append(AOP_JDK5_DEPLOYER);
+		IPath client = homePath.append(CLIENT);
 		
-		list.add(getEntry(configPath.append("lib").append("jboss-ejb3x.jar")));
-		list.add(getEntry(deployer.append("jboss-ejb3.jar")));
-		list.add(getEntry(deployer.append("jboss-annotations-ejb3.jar")));
+		list.add(getEntry(configPath.append(LIB).append(JBOSS_EJB3X_JAR)));
+		list.add(getEntry(deployer.append(JBOSS_EJB3_JAR)));
+		list.add(getEntry(deployer.append(JBOSS_ANNOTATIONS_EJB3_JAR)));
 		
 		// aop
-		list.add(getEntry(aopDeployer.append("jboss-aop-jdk50.jar")));
-		list.add(getEntry(aopDeployer.append("jboss-aspect-library-jdk50.jar")));
+		list.add(getEntry(aopDeployer.append(JBOSS_AOP_JDK5_JAR)));
+		list.add(getEntry(aopDeployer.append(JBOSS_ASPECT_LIBRARY_JDK5_0)));
 		
 		// hibernate
-		list.add(getEntry(homePath.append("client").append("hibernate-client.jar")));
+		list.add(getEntry(homePath.append(CLIENT).append(HIBERNATE_CLIENT_JAR)));
 		
 		// persistence jar
-		list.add(getEntry(client.append("ejb3-persistence.jar")));
+		list.add(getEntry(client.append(EJB3_PERSISTENCE_JAR)));
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
    }
    
