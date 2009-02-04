@@ -16,13 +16,19 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 
 /**
  * This class responds to model change events.
@@ -37,7 +43,24 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
  *
  */
 public class ModelChangeListenerWithRefresh extends ModelChangeListener {
+	
+	protected boolean shouldRun(IArchiveNodeDelta delta) {
+		return ( ResourcesPlugin.getWorkspace().isAutoBuilding()
+				&& super.shouldRun(delta));
+	}
+	
+	protected void executeAndLog(IArchiveNodeDelta delta) {
+		final IArchiveNodeDelta delta2 = delta;
+		
+		new Job(ArchivesCoreMessages.UpdatingModelJob) {
+			public IStatus run(IProgressMonitor monitor) {
+				ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
+				return Status.OK_STATUS;
+			}
+		}.schedule();
+	}
 
+	
 	protected void postChange(IArchiveNode node) {
 		IArchive pack = node.getRootArchive();
 		if( pack != null ) {

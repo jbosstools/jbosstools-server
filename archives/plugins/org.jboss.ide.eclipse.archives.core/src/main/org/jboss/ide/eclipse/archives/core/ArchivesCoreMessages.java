@@ -69,4 +69,5 @@ public class ArchivesCoreMessages {
 	public static String ErrorPreSave;
 	public static String SaveArchivesJob;
 	public static String CreatingDefaultJarConfig;
+	public static String UpdatingModelJob;
 }

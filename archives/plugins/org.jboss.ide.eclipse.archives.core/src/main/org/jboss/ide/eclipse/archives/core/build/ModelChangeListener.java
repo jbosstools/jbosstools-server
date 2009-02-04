@@ -51,13 +51,21 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 * It immediately passes the delta to be handled.
 	 */
 	public void modelChanged(IArchiveNodeDelta delta) {
+		if( shouldRun(delta)) 
+			executeAndLog(delta);
+	}
+
+	protected boolean shouldRun(IArchiveNodeDelta delta) {
 		// if we're not building, get out
 		if (delta == null || delta.getPostNode() == null) {
-			return;
+			return false;
 		}
 		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(delta.getPostNode().getProjectPath()))
-			return;
-
+			return false;
+		return true;
+	}
+	
+	protected void executeAndLog(IArchiveNodeDelta delta) {
 		IStatus[] errors;
 		try {
 			errors = handle(delta);
@@ -68,7 +76,8 @@ public class ModelChangeListener implements IArchiveModelListener {
 		IArchiveNode node = delta.getPreNode() == null ? delta.getPostNode() : delta.getPreNode();
 		EventManager.error(node, errors);
 	}
-
+	
+	
 	/**
 	 * This can handle any type of node / delta, not just
 	 * root elements. If the node is added or removed, it
@@ -81,7 +90,7 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 *
 	 * @param delta
 	 */
-	private IStatus[] handle(IArchiveNodeDelta delta) {
+	protected IStatus[] handle(IArchiveNodeDelta delta) {
 		ArrayList<IStatus> errors = new ArrayList<IStatus>();
 		if( isTopLevelArchive(delta.getPostNode())) {
 			EventManager.startedBuildingArchive((IArchive)delta.getPostNode());
