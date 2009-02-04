@@ -37,7 +37,7 @@ public class J2EE13ClasspathContainerInitializer extends
 	}
 
 	protected AbstractClasspathContainer createClasspathContainer(IPath path) {
-		return new J2EE13ClasspathContainer(path);
+		return new J2EE13ClasspathContainer(path, javaProject);
 	}
 
 	protected String getClasspathContainerID() {
@@ -50,8 +50,13 @@ public class J2EE13ClasspathContainerInitializer extends
 				+ "." + J2EE13ClasspathContainer.SUFFIX;//$NON-NLS-1$
 		public final static String DESCRIPTION = "J2EE 1.3 Libraries (JBoss Tools)";
 
-		public J2EE13ClasspathContainer(IPath path) {
-			super(path, DESCRIPTION, SUFFIX);
+		public J2EE13ClasspathContainer(IPath path, IJavaProject javaProject) {
+			super(path, DESCRIPTION, SUFFIX, javaProject);
+		}
+
+		@Override
+		public void refresh() {
+			new J2EE13ClasspathContainer(path,javaProject).install();
 		}
 	}
 }

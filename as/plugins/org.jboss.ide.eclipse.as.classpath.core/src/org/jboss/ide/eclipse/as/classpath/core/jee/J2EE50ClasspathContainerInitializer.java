@@ -23,6 +23,7 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
+import org.jboss.ide.eclipse.as.classpath.core.jee.J2EE13ClasspathContainerInitializer.J2EE13ClasspathContainer;
 
 /**
  * 
@@ -37,7 +38,7 @@ public class J2EE50ClasspathContainerInitializer extends
 	}
 
 	protected AbstractClasspathContainer createClasspathContainer(IPath path) {
-		return new J2EE50ClasspathContainer(path);
+		return new J2EE50ClasspathContainer(path, javaProject);
 	}
 
 	protected String getClasspathContainerID() {
@@ -50,8 +51,13 @@ public class J2EE50ClasspathContainerInitializer extends
 				+ "." + J2EE50ClasspathContainer.SUFFIX;//$NON-NLS-1$
 		public final static String DESCRIPTION = "J2EE 5.0 Libraries (JBoss Tools)";
 
-		public J2EE50ClasspathContainer(IPath path) {
-			super(path, DESCRIPTION, SUFFIX);
+		public J2EE50ClasspathContainer(IPath path, IJavaProject javaProject) {
+			super(path, DESCRIPTION, SUFFIX, javaProject);
+		}
+		
+		@Override
+		public void refresh() {
+			new J2EE50ClasspathContainer(path,javaProject).install();
 		}
 	}
 }

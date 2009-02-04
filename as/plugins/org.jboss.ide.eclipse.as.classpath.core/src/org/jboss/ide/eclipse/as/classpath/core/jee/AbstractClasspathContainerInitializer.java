@@ -40,6 +40,7 @@ import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorationsManager;
 public abstract class AbstractClasspathContainerInitializer extends
 		ClasspathContainerInitializer {
 	
+	protected IJavaProject javaProject;
 	public AbstractClasspathContainerInitializer() {
 	}
 
@@ -55,6 +56,7 @@ public abstract class AbstractClasspathContainerInitializer extends
 	 */
 	public void initialize(IPath containerPath, IJavaProject project)
 			throws CoreException {
+		this.javaProject = project;
 		int size = containerPath.segmentCount();
 		if (size > 0) {
 			AbstractClasspathContainer container = createClasspathContainer(containerPath);

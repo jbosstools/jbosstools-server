@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -36,6 +37,7 @@ import org.eclipse.jdt.core.IAccessRule;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorations;
@@ -56,6 +58,7 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 	protected IPath path;
 	protected String description;
 	protected String libFolder;
+	protected IJavaProject javaProject;
 
 	protected static ClasspathDecorationsManager decorations;
 	static {
@@ -64,10 +67,11 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 	}
 	
 	public AbstractClasspathContainer(IPath path, String description,
-			String libFolder) {
+			String libFolder, IJavaProject project) {
 		this.path = path;
 		this.description = description;
 		this.libFolder = libFolder;
+		this.javaProject = project;
 	}
 
 	public IClasspathEntry[] getClasspathEntries() {
@@ -168,8 +172,17 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
         return decorations;
     }
 
-	public void refresh() {
+	public void install() {
 		entries = computeEntries();
+		IJavaProject[] javaProjects = new IJavaProject[] {javaProject};
+		final IClasspathContainer[] conts = new IClasspathContainer[] { this };
+		try {
+			JavaCore.setClasspathContainer(path, javaProjects, conts, null);
+		} catch (CoreException e) {
+			ClasspathCorePlugin.log(e.getMessage(), e);
+		}
 	}
+	
+	public abstract void refresh();
 
 }
