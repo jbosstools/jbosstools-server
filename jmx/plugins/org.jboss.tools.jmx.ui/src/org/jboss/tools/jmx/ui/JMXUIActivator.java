@@ -9,7 +9,6 @@ package org.jboss.tools.jmx.ui;
 
 import javax.management.MBeanServerConnection;
 
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -17,7 +16,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jboss.tools.jmx.core.DomainWrapper;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
@@ -115,8 +113,6 @@ public class JMXUIActivator extends AbstractUIPlugin {
     private void registerAdapters() {
         adapterFactory = new JMXAdapterFactory();
         Platform.getAdapterManager().registerAdapters(adapterFactory,
-                DomainWrapper.class);
-        Platform.getAdapterManager().registerAdapters(adapterFactory,
                 MBeanInfoWrapper.class);
         Platform.getAdapterManager().registerAdapters(adapterFactory,
                 MBeanAttributeInfoWrapper.class);
@@ -125,8 +121,6 @@ public class JMXUIActivator extends AbstractUIPlugin {
     }
 
     private void unregisterAdapters() {
-        Platform.getAdapterManager().unregisterAdapters(adapterFactory,
-                DomainWrapper.class);
         Platform.getAdapterManager().unregisterAdapters(adapterFactory,
                 MBeanInfoWrapper.class);
         Platform.getAdapterManager().unregisterAdapters(adapterFactory,

@@ -11,7 +11,6 @@ package org.jboss.tools.jmx.ui.internal.adapters;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.views.properties.IPropertySource;
-import org.jboss.tools.jmx.core.DomainWrapper;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanInfoWrapper;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
@@ -39,10 +38,6 @@ public class JMXAdapterFactory implements IAdapterFactory {
     }
 
     private IPropertySource adaptToPropertySource(Object adaptableObject) {
-        if (adaptableObject instanceof DomainWrapper) {
-            DomainWrapper domain = (DomainWrapper) adaptableObject;
-            return new DomainPropertySourceAdapter(domain.getName());
-        }
         if (adaptableObject instanceof MBeanInfoWrapper) {
             MBeanInfoWrapper wrapper = (MBeanInfoWrapper) adaptableObject;
             return new MBeanInfoPropertySourceAdapter(wrapper.getObjectName(),

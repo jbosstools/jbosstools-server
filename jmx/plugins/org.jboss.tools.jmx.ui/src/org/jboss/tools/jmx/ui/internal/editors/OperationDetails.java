@@ -35,6 +35,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
@@ -194,12 +197,20 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
         	}
         	new Thread() {
         		public void run() {
-        			widgetSelected2(strs);
+        			IConnectionWrapper connection = opInfoWrapper.getMBeanInfoWrapper().getParent().getConnection();
+        			try {
+	        			connection.run(new IJMXRunnable() {
+							public void run(MBeanServerConnection connection)
+									throws Exception {
+			        			widgetSelected2(connection, strs);
+							} });
+        			} catch( JMXException jmxe) {
+        			}
         		}
         	}.start();
         }
         
-        protected void widgetSelected2(String[] strs) {
+        protected void widgetSelected2(MBeanServerConnection connection, String[] strs) {
             try {
                 MBeanParameterInfo[] paramInfos = opInfoWrapper
                         .getMBeanOperationInfo().getSignature();
@@ -207,8 +218,6 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 if (textParams != null) {
                     paramList = MBeanUtils.getParameters(strs, paramInfos);
                 }
-                MBeanServerConnection mbsc = opInfoWrapper
-                        .getMBeanServerConnection();
                 ObjectName objectName = opInfoWrapper.getObjectName();
                 String methodName = opInfoWrapper.getMBeanOperationInfo()
                         .getName();
@@ -218,10 +227,10 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                     for (int i = 0; i < paramSig.length; i++) {
                         paramSig[i] = paramInfos[i].getType();
                     }
-                    result = mbsc.invoke(objectName, methodName, paramList,
+                    result = connection.invoke(objectName, methodName, paramList,
                             paramSig);
                 } else {
-                    result = mbsc.invoke(objectName, methodName, new Object[0],
+                    result = connection.invoke(objectName, methodName, new Object[0],
                             new String[0]);
                 }
                 if ("void".equals(opInfoWrapper.getMBeanOperationInfo() //$NON-NLS-1$

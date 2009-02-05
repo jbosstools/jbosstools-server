@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jboss.tools.jmx.core.IConnectionWrapper;
+
 @SuppressWarnings("unchecked")
 public abstract class Node implements Comparable {
 
@@ -49,5 +51,10 @@ public abstract class Node implements Comparable {
         }
 	    return getRoot(parent.getParent());
     }
+	
+	public IConnectionWrapper getConnection() {
+		Root r = getRoot(this);
+		return r.getConnection();
+	}
 
 }

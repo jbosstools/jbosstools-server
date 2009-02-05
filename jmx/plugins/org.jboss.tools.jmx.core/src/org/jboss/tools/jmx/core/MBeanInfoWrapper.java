@@ -8,8 +8,6 @@
 
 package org.jboss.tools.jmx.core;
 
-import java.util.Arrays;
-
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanNotificationInfo;
@@ -19,16 +17,17 @@ import javax.management.NotificationBroadcaster;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.Assert;
+import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.util.EqualsUtil;
 
 public class MBeanInfoWrapper implements Comparable {
     private final ObjectName on;
     private final MBeanInfo info;
     private final MBeanServerConnection mbsc;
-    private final Object parent;
+    private final ObjectNameNode parent;
 
     public MBeanInfoWrapper(ObjectName on, MBeanInfo info,
-            MBeanServerConnection mbsc, Object parent) {
+            MBeanServerConnection mbsc, ObjectNameNode parent) {
         Assert.isNotNull(on);
         Assert.isNotNull(info);
         Assert.isNotNull(mbsc);
@@ -38,7 +37,7 @@ public class MBeanInfoWrapper implements Comparable {
         this.parent = parent;
     }
 
-    public Object getParent() {
+    public ObjectNameNode getParent() {
     	return parent;
     }
     

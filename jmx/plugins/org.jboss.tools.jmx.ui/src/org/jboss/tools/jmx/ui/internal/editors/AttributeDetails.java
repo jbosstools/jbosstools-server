@@ -38,6 +38,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
+import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
@@ -67,27 +70,38 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
         public void write(final Object newValue) {
         	new Thread() {
         		public void run() {
-		            try {
-		                MBeanServerConnection mbsc = wrapper.getMBeanServerConnection();
-		                String attrName = wrapper.getMBeanAttributeInfo().getName();
-		                Attribute attr = new Attribute(attrName, newValue);
-		                mbsc.setAttribute(wrapper.getObjectName(), attr);
-		            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-		            		masterSection.refresh();
-		            	}});
-		            } catch (final Exception e) {
-		            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
-			                MessageDialog.openError(getManagedForm().getForm().getDisplay()
-			                        .getActiveShell(),
-			                        Messages.AttributeDetailsSection_errorTitle, e
-			                                .getLocalizedMessage());
-		            	}});
-		            }
+                	IConnectionWrapper connection = wrapper.getMBeanInfoWrapper().getParent().getConnection();
+                	try {
+	                	connection.run(new IJMXRunnable() {
+							public void run(MBeanServerConnection connection)
+									throws Exception {
+			        			execAttributeUpdate(connection, newValue);
+							} });
+                	} catch(JMXException jmxe) {
+                	}
         		}
 	        }.start();
         }
     };
 
+    protected void execAttributeUpdate(MBeanServerConnection connection, Object newValue) {
+        try {
+            String attrName = wrapper.getMBeanAttributeInfo().getName();
+            Attribute attr = new Attribute(attrName, newValue);
+            connection.setAttribute(wrapper.getObjectName(), attr);
+        	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+        		masterSection.refresh();
+        	}});
+        } catch (final Exception e) {
+        	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+                MessageDialog.openError(getManagedForm().getForm().getDisplay()
+                        .getActiveShell(),
+                        Messages.AttributeDetailsSection_errorTitle, e
+                                .getLocalizedMessage());
+        	}});
+        }
+    }
+    
     public AttributeDetails(IFormPart masterSection) {
         this.masterSection = masterSection;
     }
