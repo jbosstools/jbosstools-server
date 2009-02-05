@@ -13,7 +13,6 @@ import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -26,6 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -185,16 +185,26 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
         }
 
         @Override
-        public void widgetSelected(SelectionEvent event) {
+        public void widgetSelected(final SelectionEvent event) {
+            final String[] strs = textParams == null ? null : new String[textParams.length];
+        	if (textParams != null) {
+                for (int i = 0; i < strs.length; i++) {
+                    strs[i] = textParams[i].getText();
+                }
+        	}
+        	new Thread() {
+        		public void run() {
+        			widgetSelected2(strs);
+        		}
+        	}.start();
+        }
+        
+        protected void widgetSelected2(String[] strs) {
             try {
                 MBeanParameterInfo[] paramInfos = opInfoWrapper
                         .getMBeanOperationInfo().getSignature();
                 Object[] paramList = null;
                 if (textParams != null) {
-                    String[] strs = new String[textParams.length];
-                    for (int i = 0; i < strs.length; i++) {
-                        strs[i] = textParams[i].getText();
-                    }
                     paramList = MBeanUtils.getParameters(strs, paramInfos);
                 }
                 MBeanServerConnection mbsc = opInfoWrapper
@@ -216,12 +226,17 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 }
                 if ("void".equals(opInfoWrapper.getMBeanOperationInfo() //$NON-NLS-1$
                         .getReturnType())) {
-                    MessageDialog.openInformation(container.getShell(),
-                            Messages.OperationDetails_invocationResult,
-                            Messages.OperationDetails_invocationSuccess);
+                	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+	                    MessageDialog.openInformation(container.getShell(),
+	                            Messages.OperationDetails_invocationResult,
+	                            Messages.OperationDetails_invocationSuccess);
+                	}});
                     return;
                 } else {
-                    OperationInvocationResultDialog.open(container.getShell(), result);
+                	final Object result2 = result;
+                	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+                		OperationInvocationResultDialog.open(container.getShell(), result2);
+                	}});
                 }
             } catch (Exception e) {
                 String message = e.getClass().getName() + ": " + e.getLocalizedMessage();
@@ -234,8 +249,11 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 if (e.getCause() != null) {
                     message = e.getCause().getClass().getName() + ": " + e.getCause().getLocalizedMessage();
                 }
-                MessageDialog.openError(container.getShell(),
-                        Messages.OperationDetails_invocationError, message);
+                final String message2 = message;
+            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+	                MessageDialog.openError(container.getShell(),
+	                        Messages.OperationDetails_invocationError, message2);
+            	}});
             }
         }
     }

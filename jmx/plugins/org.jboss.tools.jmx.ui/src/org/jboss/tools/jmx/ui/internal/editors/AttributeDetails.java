@@ -18,12 +18,9 @@ import javax.management.Attribute;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
 
-
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -31,6 +28,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
@@ -41,7 +39,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.jboss.tools.jmx.core.MBeanAttributeInfoWrapper;
-import org.jboss.tools.jmx.ui.JMXUIActivator;
 import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.extensions.IWritableAttributeHandler;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
@@ -67,19 +64,27 @@ public class AttributeDetails extends AbstractFormPart implements IDetailsPage {
     private MBeanAttributeInfoWrapper wrapper;
 
     private final IWritableAttributeHandler updateAttributeHandler = new IWritableAttributeHandler() {
-        public void write(Object newValue) {
-            try {
-                MBeanServerConnection mbsc = wrapper.getMBeanServerConnection();
-                String attrName = wrapper.getMBeanAttributeInfo().getName();
-                Attribute attr = new Attribute(attrName, newValue);
-                mbsc.setAttribute(wrapper.getObjectName(), attr);
-                masterSection.refresh();
-            } catch (Exception e) {
-                MessageDialog.openError(getManagedForm().getForm().getDisplay()
-                        .getActiveShell(),
-                        Messages.AttributeDetailsSection_errorTitle, e
-                                .getLocalizedMessage());
-            }
+        public void write(final Object newValue) {
+        	new Thread() {
+        		public void run() {
+		            try {
+		                MBeanServerConnection mbsc = wrapper.getMBeanServerConnection();
+		                String attrName = wrapper.getMBeanAttributeInfo().getName();
+		                Attribute attr = new Attribute(attrName, newValue);
+		                mbsc.setAttribute(wrapper.getObjectName(), attr);
+		            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+		            		masterSection.refresh();
+		            	}});
+		            } catch (final Exception e) {
+		            	Display.getDefault().asyncExec(new Runnable() { public void run() { 
+			                MessageDialog.openError(getManagedForm().getForm().getDisplay()
+			                        .getActiveShell(),
+			                        Messages.AttributeDetailsSection_errorTitle, e
+			                                .getLocalizedMessage());
+		            	}});
+		            }
+        		}
+	        }.start();
         }
     };
 
