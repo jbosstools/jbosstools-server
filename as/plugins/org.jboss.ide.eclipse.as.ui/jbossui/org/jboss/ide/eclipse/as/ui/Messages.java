@@ -34,6 +34,8 @@ public class Messages {
 	public static String wf_HomeDirLabel;
 	public static String wf_JRELabel;
 	public static String wf_ConfigLabel;
+	public static String JBAS_version;
+	public static String JBEAP_version;
 	public static String rwf_Title;
 	public static String rwf_Explanation;
 	public static String rwf_BaseName;
@@ -42,7 +44,6 @@ public class Messages {
 	public static String rwf_nameTextBlank;
 	public static String rwf_homeDirBlank;
 	public static String swf_Title;
-	public static String swf_Description;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;
 	public static String swf_Explanation;

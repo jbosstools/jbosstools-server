@@ -37,6 +37,7 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
@@ -111,12 +112,25 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		fillWidgets();
 
 		// make modifications to parent
+		IRuntime r = (IRuntime) getTaskModel()
+			.getObject(TaskModel.TASK_RUNTIME);
+		String version = r.getRuntimeType().getVersion();
 		handle.setTitle(Messages.rwf_Title);
+		String description = NLS.bind(
+				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
+				version);
 		handle.setImageDescriptor(getImageDescriptor());
+		handle.setDescription(description);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime");
 		return main;
 	}
 
+	protected boolean isEAP() {
+		IRuntime rt = (IRuntime) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.");
+	}
+	
 	protected ImageDescriptor getImageDescriptor() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
@@ -130,7 +144,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if (id.equals("org.jboss.ide.eclipse.as.runtime.50"))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO; // TODO until we have a proper image
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_43_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
@@ -138,6 +152,15 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private void fillWidgets() {
 		boolean canEdit = true;
 
+		// STUPID ECLIPSE BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=263928
+		IRuntime r = (IRuntime) getTaskModel()
+			.getObject(TaskModel.TASK_RUNTIME);
+		String oldName = r.getName();
+		if( r.isWorkingCopy() ) {
+			String newName = oldName.replace("Enterprise Application Platform", "EAP");
+			((IRuntimeWorkingCopy)r).setName(newName);
+		}
+		
 		IJBossServerRuntime rt = getRuntime();
 		if (rt != null) {
 			originalName = rt.getRuntime().getName();

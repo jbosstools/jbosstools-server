@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -80,10 +81,22 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 		// make modifications to parent
 		handle.setTitle(Messages.swf_Title);
-		handle.setDescription(Messages.swf_Description);
 		handle.setImageDescriptor (getImageDescriptor());
+		IRuntime r = (IRuntime) getTaskModel()
+			.getObject(TaskModel.TASK_RUNTIME);
+		String version = r.getRuntimeType().getVersion();
+		String description = NLS.bind(
+				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
+				version);
+		handle.setDescription(description);
 		
 		return main;
+	}
+
+	protected boolean isEAP() {
+		IRuntime rt = (IRuntime) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.");
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
