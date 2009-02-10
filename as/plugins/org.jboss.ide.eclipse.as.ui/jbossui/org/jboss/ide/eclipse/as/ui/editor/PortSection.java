@@ -57,14 +57,18 @@ public class PortSection extends ServerEditorSection {
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection");
-		for( int i = 0; i < cf.length; i++ ) {
-			try {
-				Object o = cf[i].createExecutableExtension("class");
-				if( o != null && o instanceof IPortEditorExtension)
-					sectionList.add((IPortEditorExtension)o);
-			} catch( CoreException ce) { /* ignore */ }
+		if (sectionList.size() <= 0) {
+			IExtensionRegistry registry = Platform.getExtensionRegistry();
+			IConfigurationElement[] cf = registry.getConfigurationElementsFor(
+					JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection");
+			for (int i = 0; i < cf.length; i++) {
+				try {
+					Object o = cf[i].createExecutableExtension("class");
+					if (o != null && o instanceof IPortEditorExtension)
+						sectionList.add((IPortEditorExtension) o);
+				} catch (CoreException ce) { /* ignore */
+				}
+			}
 		}
 	}
 
