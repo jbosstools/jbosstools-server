@@ -202,8 +202,8 @@
                                 <para>Show in</para>
                             </entry>
                             <entry>
-                                <para>This option gives an easy access to the next views: Console, Debug view, Server Log or MBean
-                                    Explorer</para>
+                                <para>This option gives an easy access to the next views: Console,
+                                    Debug view, Server Log or MBean Explorer</para>
                             </entry>
                         </row>
 
@@ -312,98 +312,169 @@
                 </mediaobject>
             </figure>
 
-            <para>The <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis> category allows you to quickly browse to descriptor files in your
-                server's deploy directory and check or change the values. Basically, <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis> includes XML XPaths where a xpath is a path used to access some specific
-                part of an xml document. </para>
+            <section id="filesets">
+                <title>Filesets</title>
 
-            <note>
-                <title>Note:</title>
-                <para>You are assumed to be familiar with XPath. If not, we highly suggested that
-                    you look through an appropriate manual or tutorial on the topic.</para>
-            </note>
+                <para>The <emphasis>
+                        <property>Filesets</property>
+                    </emphasis> category in the <property>JBoss Server View</property> is intended
+                    for files filtering.</para>
 
-            <para>The <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis> category itself contains only a list of categories. <emphasis>
-                    <property>Ports</property>
-                </emphasis> are provided by default and is filled with many of the most commonly
-                used ports in the <property>JBoss Server</property>.</para>
+                <para>To add a new file filter, right-click the <emphasis>
+                        <property>Filesets</property>
+                    </emphasis> category and select <emphasis>
+                        <property>Create File Filter</property>.</emphasis>The 
+                    <property>New File Filter wizard</property> should appear.</para>
 
-            <figure>
+                <figure>
+                    <title>Creating a New File Filter</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets1.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
+                <para>The wizard asks you to enter the filter name and add includes and excludes
+                    patterns. The preview box underneath gives a list of files matched to the
+                    defined patterns.</para>
+
+                <figure>
+                    <title>New File Filter Wizard</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets2.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
+                <para>After the filter is created, you can observe it by expanding the <emphasis>
+                        <property>Filesets</property>
+                    </emphasis> category in the <property>JBoss Server View</property>.</para>
+
+                <para>It&apos;s possible now to edit files directly from the <emphasis>
+                    <property>Filesets</property></emphasis> category. Double clicking on a file from <emphasis>
+                        <property>Filesets</property></emphasis> opens up
+                    the editor automatically or you can use the <emphasis>
+                        <property>Edit File</property></emphasis> context menu command.</para>
+
+                <figure>
+                    <title>Direct Editing from the Filesets</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets3.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+
+                <para>To delete a file filter (or just a file) from the <emphasis>
+                    <property>Filesets</property>,</emphasis> right-click a file filter (or the unnecessary file) and select the <emphasis>
+                        <property>Delete File Filter</property></emphasis> <emphasis>(<property>Delete File</property>)</emphasis> command.</para>
+                
+                <figure>
+                    <title>Deleting the File from the Filesets</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets4.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+            </section>
+
+            <section id="xml_configuration">
                 <title>XML Configuration</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_14.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <para>The <emphasis>
+                        <property>XML Configuration</property>
+                    </emphasis> category allows you to quickly browse to descriptor files in your
+                    server's deploy directory and check or change the values. Basically, <emphasis>
+                        <property>XML Configuration</property>
+                    </emphasis> includes XML XPaths where a xpath is a path used to access some
+                    specific part of an xml document. </para>
+
+                <note>
+                    <title>Note:</title>
+                    <para>You are assumed to be familiar with XPath. If not, we highly suggested
+                        that you look through an appropriate manual or tutorial on the topic.</para>
+                </note>
+
+                <para>The <emphasis>
+                        <property>XML Configuration</property>
+                    </emphasis> category itself contains only a list of categories. <emphasis>
+                        <property>Ports</property>
+                    </emphasis> are provided by default and is filled with many of the most commonly
+                    used ports in the <property>JBoss Server</property>.</para>
+
+                <figure>
+                    <title>XML Configuration</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_14.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
 
-            <!--para>In the <property>Properties
+                <!--para>In the <property>Properties
                     view</property> you can see an identifier and nested files underneath in which
                 that xpath can be found as well as its current value. The details of the xpath are
                 hidden as all you need to see is only which file you&apos;re referring to and
                 what its current value is.</para-->
 
-            <para>By right-clicking on <emphasis>
-                    <property>XML Configuration</property>, </emphasis> you can create a new
-                category. Besides, context menu for <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis> category makes possible to disable it. You can disable any category in
-                the bottom part of the <emphasis>
-                    <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
-                    <property>Inactive Categories</property>
-                </emphasis> afterwards to re-enable.</para>
+                <para>By right-clicking on <emphasis>
+                        <property>XML Configuration</property>, </emphasis> you can create a new
+                    category. Besides, context menu for <emphasis>
+                        <property>XML Configuration</property>
+                    </emphasis> category makes possible to disable it. You can disable any category
+                    in the bottom part of the <emphasis>
+                        <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                        <property>Inactive Categories</property>
+                    </emphasis> afterwards to re-enable.</para>
 
-            <figure>
-                <title>Adding New Category</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_15.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <figure>
+                    <title>Adding New Category</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_15.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
-            <para>By right-clicking on <emphasis>
-                    <property>Ports</property>
-                </emphasis> or any other category in <emphasis>
-                    <property>XML Configuration</property>
-                </emphasis>, you can create a new xpath.</para>
+                <para>By right-clicking on <emphasis>
+                        <property>Ports</property>
+                    </emphasis> or any other category in <emphasis>
+                        <property>XML Configuration</property>
+                    </emphasis>, you can create a new xpath.</para>
 
-            <figure>
-                <title>Adding New XPath</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_16.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <figure>
+                    <title>Adding New XPath</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_16.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
-            <para>After that, the dialog shown below will appear.</para>
+                <para>After that, the dialog shown below will appear.</para>
 
-            <figure>
-                <title>Adding New XPath</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_17.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <figure>
+                    <title>Adding New XPath</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_17.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
-            <para>The goal here is to get an end result where the XPath matches up with a necessary
-                property. With that in mind, let&apos;s look how it works. If the property you
-                want to reach is the value of the <emphasis>name</emphasis> attribute in the element
-                    <emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
-                    <property>XPath Patten</property>
-                </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
-                    <property>Attribute Name</property>
-                </emphasis> should be <emphasis>name</emphasis> like on the next figure.</para>
+                <para>The goal here is to get an end result where the XPath matches up with a
+                    necessary property. With that in mind, let&apos;s look how it works. If the
+                    property you want to reach is the value of the <emphasis>name</emphasis>
+                    attribute in the element <emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
+                        <property>XPath Patten</property>
+                    </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
+                        <property>Attribute Name</property>
+                    </emphasis> should be <emphasis>name</emphasis> like on the next figure.</para>
 
-            <programlisting role="XML"><![CDATA[...
+                <programlisting role="XML"><![CDATA[...
 <server>
 ...
     <mbean code="org.jboss.ejb.EJBDeployer" 
@@ -419,54 +490,55 @@
 </server>
 ]]></programlisting>
 
-            <figure>
-                <title>XPath Preview</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_18.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <figure>
+                    <title>XPath Preview</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_18.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
-            <tip>
-                <title>Tip:</title>
-                <para>Notice, when you type the fields autocomplete to help you locate exactly what
-                    xpath you&apos;re looking for.</para>
-            </tip>
+                <tip>
+                    <title>Tip:</title>
+                    <para>Notice, when you type the fields autocomplete to help you locate exactly
+                        what xpath you&apos;re looking for.</para>
+                </tip>
 
-            <para>Then, on the other hand, if your desired field is the text of an element
-                    <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
-                    <property>XPath Patten</property>
-                </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
-                    <property>Attribute Name</property>
-                </emphasis> field should be left blank. When finished, click <emphasis>
-                    <property>Preview</property>
-                </emphasis> to see how many matches you have for that particular XPath.</para>
+                <para>Then, on the other hand, if your desired field is the text of an element
+                        <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
+                        <property>XPath Patten</property>
+                    </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
+                        <property>Attribute Name</property>
+                    </emphasis> field should be left blank. When finished, click <emphasis>
+                        <property>Preview</property>
+                    </emphasis> to see how many matches you have for that particular XPath.</para>
 
-            <figure>
-                <title>XPath Preview</title>
-                <mediaobject>
-                    <imageobject>
-                        <imagedata fileref="images/perspective/perspective_19.png"/>
-                    </imageobject>
-                </mediaobject>
-            </figure>
+                <figure>
+                    <title>XPath Preview</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_19.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
 
+            </section>
         </section>
 
         <section id="server_log">
             <title>Server Log View</title>
 
             <para>You can monitor the current server behavior with the help of the <property>Server
-                    Log</property>. To open a server in the <property>Server Log
-                        view</property> you should right-click on the server and follow to <emphasis>
-                            <property>Open in > Server Log</property>.</emphasis></para>
-            
+                    Log</property>. To open a server in the <property>Server Log view</property> you
+                should right-click on the server and follow to <emphasis>
+                    <property>Open in > Server Log</property>.</emphasis></para>
+
             <para>The <emphasis>
                     <property>Server Log</property>
-                </emphasis> shows relevant information to your server&apos;s startup,
-                shutdown, and publish processes. This allows you to keep an eye on what&apos;s
-                going on (such as automatic incremental deployment if you have it enabled).</para>
+                </emphasis> shows relevant information to your server&apos;s startup, shutdown,
+                and publish processes. This allows you to keep an eye on what&apos;s going on
+                (such as automatic incremental deployment if you have it enabled).</para>
 
             <figure>
                 <title>Event Log Actions</title>
@@ -477,26 +549,27 @@
                 </mediaobject>
             </figure>
 
-            <para>The <property>Server Log</property> toolbar contains several icons that perform the following actions:</para>
-            
+            <para>The <property>Server Log</property> toolbar contains several icons that perform
+                the following actions:</para>
+
             <table>
                 <title>Server Log Toolbar Icons</title>
                 <tgroup cols="2">
                     <colspec colnum="1" align="left" colwidth="1*"/>
                     <colspec colnum="2" colwidth="3*"/>
-                    
+
                     <thead>
                         <row>
                             <entry align="center">
                                 <para>Name</para>
                             </entry>
-                            
+
                             <entry align="center">
                                 <para>Description</para>
                             </entry>
                         </row>
                     </thead>
-                    
+
                     <tbody>
                         <row>
                             <entry>
@@ -506,7 +579,7 @@
                                 <para>Possibility to export the log into a text file</para>
                             </entry>
                         </row>
-                        
+
                         <row>
                             <entry>
                                 <para>Clear Log Viewer</para>
@@ -515,7 +588,7 @@
                                 <para>The option clears the current server log</para>
                             </entry>
                         </row>
-                        
+
                         <row>
                             <entry>
                                 <para>Delete Log</para>
@@ -524,7 +597,7 @@
                                 <para>Click to delete the server log</para>
                             </entry>
                         </row>
-                        
+
                         <row>
                             <entry>
                                 <para>Open Log</para>
@@ -533,7 +606,7 @@
                                 <para>Click to open the server log text file</para>
                             </entry>
                         </row>
-                        
+
                         <row>
                             <entry>
                                 <para>Restore Log</para>
@@ -542,11 +615,11 @@
                                 <para>Click to restore the server log</para>
                             </entry>
                         </row>
-                        
+
                     </tbody>
                 </tgroup>
             </table>
-            
+
         </section>
 
         <section id="server_editor">
