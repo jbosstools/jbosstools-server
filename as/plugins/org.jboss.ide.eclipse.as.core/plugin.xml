@@ -706,4 +706,26 @@
             class="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider">
       </connectionProvider>
    </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarContainerInitializer"
+            id="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.launching.runtimeClasspathEntryResolvers">
+      <runtimeClasspathEntryResolver
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarResolver"
+            container="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer"
+            id="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer.resolver">
+      </runtimeClasspathEntryResolver>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.launching.classpathProviders">
+      <classpathProvider
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration$JBossServerDefaultClasspathProvider"
+            id="org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider">
+      </classpathProvider>
+   </extension>
 </plugin>
