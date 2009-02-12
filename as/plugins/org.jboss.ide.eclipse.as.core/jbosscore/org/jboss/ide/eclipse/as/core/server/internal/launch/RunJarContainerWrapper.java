@@ -83,7 +83,7 @@ public class RunJarContainerWrapper {
 		}
 
 		public String getDescription() {
-			return "Test Desc";
+			return null;
 		}
 
 		public int getKind() {
