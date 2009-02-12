@@ -264,6 +264,17 @@
 
                         <row>
                             <entry>
+                                <para>Explore</para>
+                            </entry>
+                            <entry>
+                                <para>This action uses the native OS file explorer to browse the
+                                    deploy destination. Note: The option is also available for
+                                    deployed resources/projects (see the figure below).</para>
+                            </entry>
+                        </row>
+
+                        <row>
+                            <entry>
                                 <para>Add and Remove Projects</para>
                             </entry>
                             <entry>
@@ -323,8 +334,8 @@
                 <para>To add a new file filter, right-click the <emphasis>
                         <property>Filesets</property>
                     </emphasis> category and select <emphasis>
-                        <property>Create File Filter</property>.</emphasis>The 
-                    <property>New File Filter wizard</property> should appear.</para>
+                        <property>Create File Filter</property>.</emphasis>The <property>New File
+                        Filter wizard</property> should appear.</para>
 
                 <figure>
                     <title>Creating a New File Filter</title>
@@ -353,10 +364,12 @@
                     </emphasis> category in the <property>JBoss Server View</property>.</para>
 
                 <para>It&apos;s possible now to edit files directly from the <emphasis>
-                    <property>Filesets</property></emphasis> category. Double clicking on a file from <emphasis>
-                        <property>Filesets</property></emphasis> opens up
-                    the editor automatically or you can use the <emphasis>
-                        <property>Edit File</property></emphasis> context menu command.</para>
+                        <property>Filesets</property>
+                    </emphasis> category. Double clicking on a file from <emphasis>
+                        <property>Filesets</property>
+                    </emphasis> opens up the editor automatically or you can use the <emphasis>
+                        <property>Edit File</property>
+                    </emphasis> context menu command.</para>
 
                 <figure>
                     <title>Direct Editing from the Filesets</title>
@@ -368,9 +381,12 @@
                 </figure>
 
                 <para>To delete a file filter (or just a file) from the <emphasis>
-                    <property>Filesets</property>,</emphasis> right-click a file filter (or the unnecessary file) and select the <emphasis>
-                        <property>Delete File Filter</property></emphasis> <emphasis>(<property>Delete File</property>)</emphasis> command.</para>
-                
+                        <property>Filesets</property>,</emphasis> right-click a file filter (or the
+                    unnecessary file) and select the <emphasis>
+                        <property>Delete File Filter</property>
+                    </emphasis>
+                    <emphasis>(<property>Delete File</property>)</emphasis> command.</para>
+
                 <figure>
                     <title>Deleting the File from the Filesets</title>
                     <mediaobject>
