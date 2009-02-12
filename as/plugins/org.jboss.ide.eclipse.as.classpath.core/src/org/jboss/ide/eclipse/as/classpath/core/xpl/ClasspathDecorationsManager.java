@@ -1,5 +1,3 @@
-package org.jboss.ide.eclipse.as.classpath.core.xpl;
-
 /******************************************************************************
  * Copyright (c) 2005 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
@@ -10,6 +8,7 @@ package org.jboss.ide.eclipse.as.classpath.core.xpl;
  * Contributors:
  *    Konstantin Komissarchik - initial API and implementation
  ******************************************************************************/
+package org.jboss.ide.eclipse.as.classpath.core.xpl;
 
 import java.io.StringReader;
 import java.util.HashMap;
