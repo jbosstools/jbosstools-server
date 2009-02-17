@@ -201,7 +201,7 @@
                versions="1.0"/>
           <moduleType
                 types="jst.jboss.esb"
-                versions="4.2,4.3,4.4,5.0">
+                versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
       </runtimeType>
       <runtimeType
@@ -234,7 +234,7 @@
                versions="1.0"/>
           <moduleType
                 types="jst.jboss.esb"
-                versions="4.2,4.3,4.4,5.0">
+                versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
       </runtimeType>
 
@@ -268,7 +268,7 @@
                versions="1.0"/>
           <moduleType
                 types="jst.jboss.esb"
-                versions="4.2,4.3,4.4,5.0">
+                versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
       </runtimeType>
 
@@ -304,7 +304,7 @@
                versions="1.0"/>
           <moduleType
                 types="jst.jboss.esb"
-                versions="4.2,4.3,4.4,5.0">
+                versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
       </runtimeType>
    </extension>
