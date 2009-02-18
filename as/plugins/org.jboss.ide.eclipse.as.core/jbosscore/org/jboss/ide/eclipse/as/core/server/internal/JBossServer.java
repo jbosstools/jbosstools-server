@@ -97,10 +97,13 @@ public class JBossServer extends DeployableServer
 			try {
 				Server s = (Server)getServer();
 				ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-				String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-				String val = ArgsUtil.getValue(startArgs, "-b", "--host");
-				if( val != null )
-					host = val;
+				if(lc!=null) {
+					String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
+					String val = ArgsUtil.getValue(startArgs, "-b", "--host");
+					if( val != null ) {
+						host = val;
+					}
+				}
 			} catch( CoreException ce )  {}
 		}
 		return host;
