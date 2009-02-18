@@ -73,7 +73,7 @@ public class JBossServerUISharedImages {
 		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif"));
 		descriptors.put(WIZBAN_JBOSS42_LOGO, createImageDescriptor(pluginBundle, "/icons/logo42.gif"));
 		descriptors.put(WIZBAN_JBOSS50_LOGO, createImageDescriptor(pluginBundle, "/icons/logo50.gif"));
-		descriptors.put(WIZBAN_JBOSS_EAP_LOGO, createImageDescriptor(pluginBundle, "/icons/logoEAP.jpg"));
+		descriptors.put(WIZBAN_JBOSS_EAP_LOGO, createImageDescriptor(pluginBundle, "/icons/logoEAP.gif"));
 		descriptors.put(WIZBAN_DEPLOY_ONLY_LOGO, createImageDescriptor(pluginBundle, "/icons/blank.gif"));
 		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
 		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
