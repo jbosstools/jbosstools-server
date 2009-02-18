@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Test Plug-in
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui.test;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit,
  org.eclipse.ui,
  org.jboss.tools.tests;bundle-version="2.0.0",
@@ -13,3 +12,5 @@ Require-Bundle: org.junit,
  org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.4.2",
  org.jboss.ide.eclipse.as.ui;bundle-version="1.0.0"
+Export-Package: org.jboss.ide.eclipse.as.ui.test,
+ org.jboss.ide.eclipse.as.ui.wizards.test

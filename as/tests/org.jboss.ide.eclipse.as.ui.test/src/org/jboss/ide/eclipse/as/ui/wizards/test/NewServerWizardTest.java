@@ -116,7 +116,6 @@ public class NewServerWizardTest extends TestCase implements ILogListener {
 		
 	}
 
-	@Override
 	public void logging(IStatus status, String plugin) {
 		StringWriter out = new StringWriter();
 		out.append(status.getMessage()).append('\n');
