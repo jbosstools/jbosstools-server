@@ -5,12 +5,12 @@ Bundle-SymbolicName: org.jboss.ide.eclipse.as.ui.test;singleton:=true
 Bundle-Version: 1.0.0
 Require-Bundle: org.junit,
  org.eclipse.ui,
- org.jboss.tools.tests;bundle-version="2.0.0",
- org.eclipse.wst.server.core;bundle-version="1.1.3",
- org.eclipse.equinox.common;bundle-version="3.4.0",
- org.eclipse.jdt.launching;bundle-version="3.4.1",
- org.eclipse.core.runtime;bundle-version="3.4.0",
- org.eclipse.core.resources;bundle-version="3.4.2",
- org.jboss.ide.eclipse.as.ui;bundle-version="1.0.0"
+ org.jboss.tools.tests,
+ org.eclipse.wst.server.core,
+ org.eclipse.equinox.common,
+ org.eclipse.jdt.launching,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.jboss.ide.eclipse.as.ui
 Export-Package: org.jboss.ide.eclipse.as.ui.test,
  org.jboss.ide.eclipse.as.ui.wizards.test
