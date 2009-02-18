@@ -243,17 +243,16 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 	// WST API methods
 	public void enter() {
-		if(homeValLabel==null) 
-			return;
-		
-		IJBossServerRuntime srt = getRuntime();
-		name = name == null ? getDefaultNameText() : name;
-		nameText.setText(name);
-		homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
-		configValLabel.setText(srt.getJBossConfiguration());
-		jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
-		runtimeGroup.layout();
-		updateErrorMessage();
+		if(homeValLabel !=null && !homeValLabel.isDisposed()) {
+			IJBossServerRuntime srt = getRuntime();
+			name = name == null ? getDefaultNameText() : name;
+			nameText.setText(name);
+			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
+			configValLabel.setText(srt.getJBossConfiguration());
+			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
+			runtimeGroup.layout();
+			updateErrorMessage();
+		}
 	}
 
 	public void exit() {

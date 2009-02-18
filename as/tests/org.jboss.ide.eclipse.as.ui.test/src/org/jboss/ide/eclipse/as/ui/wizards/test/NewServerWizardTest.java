@@ -44,7 +44,7 @@ public class NewServerWizardTest extends TestCase implements ILogListener {
 		 Platform.addLogListener(this);
 	}
 
-	public void testJbide() throws CoreException {
+	public void testJbide3824() throws CoreException {
 		
 		String jbossPath = System.getProperty(JBOSS_PATH_PROP_NAME);
 		if(jbossPath==null) {
