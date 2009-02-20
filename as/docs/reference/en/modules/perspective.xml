@@ -10,6 +10,7 @@
             <keyword>JBoss</keyword>
         </keywordset>
     </chapterinfo>
+
     <title>JBoss AS Perspective</title>
 
     <para>This chapter tells how to manage installed <property>JBoss Server</property> via
@@ -540,6 +541,54 @@
                 </figure>
 
             </section>
+        </section>
+
+        <section id="dragndrop_to_jboss_server_view">
+            <title>Drag-n-Drop to JBoss Server View</title>
+
+            <para>Starting from 2.0.0.CR2 version of <property>JBoss AS Tools</property> the
+                    <property>JBoss Server View</property> supports drag-n-drop of deployable and
+                    runnable projects/resources.</para>
+            
+            <figure>
+                <title>Dragging to the JBoss Server View</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/dnd_toJBossServerView.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            
+            <para>With drag-n-drop the following actions can be performed:</para>
+            
+            <itemizedlist>
+                <listitem>
+                    <para>dragging a project to a server will deploy it to the server and run it by
+                        showing the main page in a browser</para>
+                </listitem>
+
+                <listitem>
+                    <para>dragging an <emphasis>
+                            <property>.xhtml</property>
+                        </emphasis> file from <emphasis>
+                            <property>WebContent</property>
+                        </emphasis> will do the same and show the corresponding page in a
+                        browser</para>
+                </listitem>
+
+                <listitem>
+                    <para>dragging a deployable resource (i.e. a datasource (<emphasis>
+                        <property>-ds.xml</property></emphasis>) file that has
+                        been made deployable) will simply deploy that resource directly to the
+                        server</para>
+                </listitem>
+            </itemizedlist>
+
+            <para>In short, the feature does the same thing as if you used the <emphasis>
+                    <property>Run On Server</property>
+                </emphasis> option or <emphasis>
+                    <property>Add and Remove Projects</property>
+                </emphasis> option in the context menu of the server.</para>
         </section>
 
         <section id="server_log">
