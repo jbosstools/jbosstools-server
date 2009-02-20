@@ -3,8 +3,8 @@
     <?dbhtml filename="mbean_explorer.html"?>
     
     <title>MBean Explorer</title>
-    <para>The MBean explorer displays the MBean features (both attributes and operations) in its
-        hierarchy. Double-clicking on a feature will open a MBean Editor, display the page
+    <para>The <property>MBean Explorer</property> displays the MBean features (both attributes and operations) in its
+        hierarchy. Double-clicking on a feature will open a <property>MBean Editor</property>, display the page
         corresponding to the feature type and select the feature.</para>
     
     <figure>
@@ -16,25 +16,24 @@
         </mediaobject>
     </figure>
     
-    <para>Since It's possible to have many MBean Editors opened at the same time, the MBean Explorer
-        has a Link With Editor checkbox to synchronize selections between the active MBean Editor and
-        the MBean explorer(and vice versa) </para>
-    
-    <figure>
-        <title>Linking with Editor</title>
-        <mediaobject>
+    <para>Since it&apos;s possible to have many MBean Editors opened at the same time, the <property>MBean Explorer</property>
+        has the Link With Editor button 
+        
+        <inlinemediaobject>   
             <imageobject>
                 <imagedata fileref="images/link-with-editor_0.2.0.png"/>
             </imageobject>
-        </mediaobject>
-    </figure>
+        </inlinemediaobject>
+        
+        to synchronize selections between the active <property>MBean Editor</property> and
+        the <property>MBean Explorer</property> (and vice versa).</para>
     
-    <para>The MBean Explorer has also a filter text that can be used to filter among all the MBeans
+    <para>The <property>MBean Explorer</property> has also a filter text that can be used to filter among all the MBeans
         the few ones, which interest you.</para>
     
     <para>For example, if you are only interested by MBeans related to memory, typing memo will show
         any node (domain, mbean, attribute, or operation) that matches that text, as well as 
-        that node's parents and children. So if an MBean matches, all attributes and operations from 
+        that node&apos;s parents and children. So if an MBean matches, all attributes and operations from 
         that bean will show.  If, however, an attribute or operation name (a leaf node) matches, 
         only that node and its parents in the tree will show.</para>
 
@@ -48,7 +47,16 @@
     </figure>
 
     
-    <para>A Collapse All button on the MBean Explorer toolbar is used to collapse all the MBeans and
+    <para>The <emphasis>
+        <property>Collapse All</property></emphasis> button 
+        
+        <inlinemediaobject>   
+            <imageobject>
+                <imagedata fileref="images/collaps_all.png"/>
+            </imageobject>
+        </inlinemediaobject>
+        
+        on the <property>MBean Explorer</property> toolbar is used to collapse all the MBeans and
         display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
     
 </chapter>

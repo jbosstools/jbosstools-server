@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="mbean_editor"  xreflabel="mbean_editor">
+<chapter id="mbean_editor" xreflabel="mbean_editor">
     <?dbhtml filename="mbean_editor.html"?>
-    
+
     <title>MBean Editor</title>
-    
+
     <figure>
         <title>MBean Editor Pages</title>
         <mediaobject>
@@ -12,26 +12,39 @@
             </imageobject>
         </mediaobject>
     </figure>
-    
-    <para>The MBean Editor is composed of several pages:</para>
-    <orderedlist><listitem><para>the Attributes page</para></listitem>
-        <listitem><para>the Operations page</para></listitem>
-        <listitem><para>the Info page </para></listitem>
-    </orderedlist>
-    
-    <para> The Attributes &amp; Operations pages display a list for either the MBean attributes or operations as well as details for the selection.</para>
-    
-    <para> It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally.</para>
-    
-    <figure>
-        <title>Layout Buttons</title>
-        <mediaobject>
+
+    <para>The <property>MBean Editor</property> is composed of several pages:</para>
+
+    <itemizedlist>
+        <listitem>
+            <para>the Attributes page</para>
+        </listitem>
+        <listitem>
+            <para>the Operations page</para>
+        </listitem>
+        <listitem>
+            <para>the Info page </para>
+        </listitem>
+    </itemizedlist>
+
+    <para> The <emphasis>
+            <property>Attributes</property>
+        </emphasis> and <emphasis>
+            <property>Operations</property>
+        </emphasis> pages display a list for either the MBean attributes or operations as well as
+        details for the selection.</para>
+
+    <para> It is possible to toggle the layout between the list and the details either vertically
+        (by default) or horizontally with the help of the special icons 
+        
+        <inlinemediaobject>   
             <imageobject>
                 <imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"/>
             </imageobject>
-        </mediaobject>
-    </figure>
-    
+        </inlinemediaobject>
+        
+        in the right top corner of the editor.</para>
+
     <figure>
         <title>MBean Editor Horizontal Layout</title>
         <mediaobject>
@@ -40,15 +53,21 @@
             </imageobject>
         </mediaobject>
     </figure>
-    
+
     <section>
-        <title>Notifications Page</title> 
-        <para>One more page in MBean Editor is a Notifications Page, which gives the possibility to subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp. unchecking) the Subscribe checkbox. </para>
-        <para>The list of notifications is refreshed every time a new notification is received:</para>
-        
-        <note><title>Note</title>
-            <para>It is only possible to subscribe to MBean, which emits notifications (they must be NotificationBroadcaster).</para></note>
-        
+        <title>Notifications Page</title>
+        <para>One more page in the <property>MBean Editor</property> is a Notifications Page, which gives the possibility to
+            subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
+            unchecking) the Subscribe checkbox. </para>
+        <para>The list of notifications is refreshed every time a new notification is
+            received:</para>
+
+        <note>
+            <title>Note</title>
+            <para>It is only possible to subscribe to MBean, which emits notifications (they must be
+                NotificationBroadcaster).</para>
+        </note>
+
     </section>
 
 </chapter>

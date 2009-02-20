@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <chapter id="intruduction" xreflabel="introduction">
   <?dbhtml filename="introduction.html"?>
-  
+
   <title>Introduction</title>
-  
-  <para>This chapter covers the basics of working with JMX plugin, which is used to manage Java
-    applications through JMX and its RMI Connector.</para>
-  
+
+  <para><property>JMX Tools</property> allows to setup multiple JMX connections and provides view
+    for exploring the JMX tree and execute operations directly from Eclipse.</para>
+
+  <para>This chapter covers the basics of working with <property>JMX plugin</property>, which is
+    used to manage Java applications through JMX and its RMI Connector.</para>
+
   <figure>
     <title>JMX Tools</title>
     <mediaobject>
@@ -15,62 +18,76 @@
       </imageobject>
     </mediaobject>
   </figure>
-  
+
   <section>
     <title> Requirements </title>
-    <para> Requirements to use JMX Tools are the following: </para>
-    
+    <para>Requirements to use <property>JMX Tools</property> are the following:</para>
+
     <itemizedlist>
       <listitem>
-        <para> JMX Tools is developed on Eclipse 3.4.x milestones.</para>
+        <para><property>JMX Tools</property> is developed on Eclipse 3.4.x milestones</para>
       </listitem>
       <listitem>
-        <para> JMX Tools requires that Eclipse is run on a JDK 1.5.0 or above (due to dependencies
-          on JMX packages which were introduced in Java 1.5.0)</para>
+        <para><property>JMX Tools</property> requires that Eclipse is run on a JDK 1.5.0 or above
+          (due to dependencies on JMX packages which were introduced in Java 1.5.0)</para>
       </listitem>
     </itemizedlist>
   </section>
-  
-  <section><title>History</title>
-      <para>JBossTools' JMX Tools project is a fork of <ulink url="http://code.google.com/p/eclipse-jmx/">eclipse-jmx</ulink>, a project by Jeff Mesnil. It was forked with permission. </para>
+
+  <section>
+    <title>History</title>
+    <para><property>JBoss Tools</property>&apos; JMX project is a fork of <ulink
+        url="http://code.google.com/p/eclipse-jmx/">eclipse-jmx</ulink>, a project by Jeff Mesnil.
+      It was forked with permission. </para>
   </section>
 
   <section>
     <title>Installation</title>
-        <para>Here, we are going to explain how to install the JMX plugins into Eclipse.</para>
+    <para>Here, we are going to explain how to install the <property>JMX plugin</property> into
+      Eclipse.</para>
 
-        <para>JMX Tools is one module of the JBoss Tools project. JMX Tools has no dependency on any other part of JBossTools, and can be downloaded standalone. Even though the JMX Tools have no dependencies, other plugins, such as ASTools, do depend on the JMX Tooling and even extend it. </para>
+    <para><property>JMX Tools</property> is one module of the <property>JBoss Tools</property>
+      project. <property>JMX Tools</property> has no dependency on any other part of <property>JBoss
+        Tools</property>, and can be downloaded standalone. Even though the <property>JMX
+        Tools</property> have no dependencies, other plugins, such as <property>AS Tools</property>,
+      do depend on the JMX Tooling and even extend it. </para>
 
-        <para>You can find the JBossTools plugins over at the  <ulink url="http://labs.jboss.com/tools/download/index.html">download pages</ulink>. The only package you'll need to get is the JMX Tooling, however the AS Tools would give you a more full experience when using JMX with JBoss Servers.
-You can find further download and installation instructions on the JBoss Wiki in the <ulink url="http://labs.jboss.com/wiki/InstallingJBossTools">InstallingJBossTools</ulink> section.</para>
+    <para>You can find the <property>JBoss Tools</property> plugins over at the <ulink
+        url="http://labs.jboss.com/tools/download/index.html">download pages</ulink>. The only
+      package you&apos;ll need to get is the JMX Tooling, however the <property>AS
+        Tools</property> would give you a more full experience when using JMX with JBoss Servers.
+      You can find further download and installation instructions on the JBoss Wiki in the <ulink
+        url="http://labs.jboss.com/wiki/InstallingJBossTools">InstallingJBossTools</ulink>
+      section.</para>
   </section>
 
- 
+
   <section>
-    <title>Quick Start</title> 
-    
-    <para>To start using the JMX Tools, it's necessary to open MBean explorer. Go to Window > Show View >
-      Other... and then select MBean Explorer and click OK </para>
-    
-    <para>The MBean Explorer lists all of the domains, mbeans, attributes, and operations inside a connection.
-      When you double-click on a MBean in the MBean Explorer view, it opens a multi-page editor to
-      manage the MBean. The MBeanEditor is composed of these pages:</para>
-    
+    <title>Quick Start</title>
+
+    <para>To start using the <property>JMX Tools</property>, it&apos;s necessary to open
+      <property>MBean Explorer</property>. Go to <emphasis><property>Window &gt; Show View &gt; Other</property></emphasis> and then select
+      <property>MBean Explorer</property> and click <emphasis><property>OK</property>.</emphasis></para>
+
+    <para>The <property>MBean Explorer</property> lists all of the domains, mbeans, attributes, and operations inside a
+      connection. When you double-click on a MBean in the <emphasis><property>MBean Explorer</property>,</emphasis> it opens a multi-page
+      editor to manage the MBean. The <property>MBean Editor</property> is composed of these pages:</para>
+
     <itemizedlist>
       <listitem>
-        <para> Attributes page, to get/set the attributes of the MBean</para>
+        <para><emphasis><property>Attributes page</property>,</emphasis> to get/set the attributes of the MBean</para>
       </listitem>
       <listitem>
-        <para>Operations page, to invoke operations on the MBean</para>
+        <para><emphasis><property>Operations page</property>,</emphasis> to invoke operations on the MBean</para>
       </listitem>
       <listitem>
-        <para> Notifications page, to receive notifications from the MBean</para>
+        <para><emphasis><property>Notifications page</property>,</emphasis> to receive notifications from the MBean</para>
       </listitem>
       <listitem>
-        <para> Info page, which displays general information about the MBean </para>
+        <para><emphasis><property>Info page</property>,</emphasis> which displays general information about the MBean </para>
       </listitem>
     </itemizedlist>
-    
-  </section> 
-  
+
+  </section>
+
 </chapter>
