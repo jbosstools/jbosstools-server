@@ -152,6 +152,6 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 		else
 			p = delta.getPreNode().getProjectPath();
 
-		ArchivesModelModuleContributor.getInstance().refreshProject(p);
+		PackageModuleFactory.getFactory().refreshProject(p);
 	}
 }

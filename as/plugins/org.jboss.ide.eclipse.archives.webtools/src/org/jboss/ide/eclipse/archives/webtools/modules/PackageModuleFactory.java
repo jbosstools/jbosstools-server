@@ -146,13 +146,14 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 
 
-	protected ArchivesModelModuleContributor moduleContributor;
+	protected final ArchivesModelModuleContributor moduleContributor
+			= new ArchivesModelModuleContributor(this);
 	public PackageModuleFactory() {
 		super();
 	}
-
-	public void initialize() {
-		moduleContributor = ArchivesModelModuleContributor.getInstance();
+	
+	public void refreshProject(IPath projectLoc) {
+		moduleContributor.refreshProject(projectLoc);
 	}
 
 	protected IModule createModule2(IArchive pack, IProject project) {
@@ -169,12 +170,6 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 	public ModuleDelegate getModuleDelegate(IModule module) {
 		return moduleContributor.getModuleDelegate(module);
-	}
-
-	public static interface IModuleContributor {
-		public IModule[] getModules();
-		public boolean containsModule(IModule module);
-		public PackagedModuleDelegate getModuleDelegate(IModule module);
 	}
 
 	public static interface IExtendedModuleResource extends IModuleResource {

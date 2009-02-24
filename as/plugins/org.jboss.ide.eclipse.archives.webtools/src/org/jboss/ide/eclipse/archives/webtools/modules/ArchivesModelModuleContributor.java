@@ -26,7 +26,6 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
-import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IModuleContributor;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
 
 /**
@@ -34,23 +33,15 @@ import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.Pack
  * @author Rob Stryker rob.stryker@jboss.com
  *
  */
-public class ArchivesModelModuleContributor implements IModuleContributor {
+public class ArchivesModelModuleContributor {
 
-	private static ArchivesModelModuleContributor instance;
-	public static ArchivesModelModuleContributor getInstance() {
-		if( instance == null ) {
-			instance = new ArchivesModelModuleContributor(PackageModuleFactory.getFactory());
-		}
-		return instance;
-	}
-	
 	private PackageModuleFactory factory;
 	protected ArrayList<IModule> modules = null;
 	protected HashMap<IPath, ArrayList<IModule>> projectToModules = new HashMap<IPath, ArrayList<IModule>>(5); //IPath to IModule
 	protected HashMap<IModule, Object> moduleDelegates = new HashMap<IModule, Object>(5);
 	protected HashMap<IArchive, IModule> packageToModule = new HashMap<IArchive, IModule>(5);	
 	
-	private ArchivesModelModuleContributor(PackageModuleFactory factory) {
+	ArchivesModelModuleContributor(PackageModuleFactory factory) {
 		this.factory = factory;
 	}
 	
@@ -169,8 +160,8 @@ public class ArchivesModelModuleContributor implements IModuleContributor {
 		for( int i = 0; i < archives.length; i++ ) {
 			if( PackageModuleFactory.getStamp(archives[i]) == null ) {
 				requiresSave = true;
-				archives[i].setProperty(PackageModuleFactory.MODULE_ID_PROPERTY_KEY, 
-										PackageModuleFactory.getStamp(archives[i], true));
+				archives[i].setProperty(factory.MODULE_ID_PROPERTY_KEY, 
+										factory.getStamp(archives[i], true));
 			}
 		}
 		return requiresSave;
