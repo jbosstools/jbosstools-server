@@ -710,15 +710,15 @@
          point="org.eclipse.jdt.core.classpathContainerInitializer">
       <classpathContainerInitializer
             class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarContainerInitializer"
-            id="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer">
+            id="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer">
       </classpathContainerInitializer>
    </extension>
    <extension
          point="org.eclipse.jdt.launching.runtimeClasspathEntryResolvers">
       <runtimeClasspathEntryResolver
             class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarResolver"
-            container="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer"
-            id="org.jboss.ide.eclipse.as.core.server.internal.launch.runJarContainer.resolver">
+            container="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer"
+            id="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer.resolver">
       </runtimeClasspathEntryResolver>
    </extension>
    <extension

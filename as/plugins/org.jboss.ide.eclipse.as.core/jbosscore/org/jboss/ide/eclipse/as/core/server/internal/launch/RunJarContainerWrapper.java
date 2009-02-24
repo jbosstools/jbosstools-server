@@ -17,7 +17,7 @@ import org.eclipse.wst.server.core.ServerCore;
 
 public class RunJarContainerWrapper {
 	public static final String ID = "org.jboss.ide.eclipse.as.core.server.launch.runJarContainer";
-	public static final String RESOLVER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.runtimeCPEResolver";
+	public static final String RESOLVER_ID = "org.jboss.ide.eclipse.as.core.server.launch.runJarContainer.resolver";
 
 	public static class RunJarContainerInitializer extends ClasspathContainerInitializer { 
 		public void initialize(IPath containerPath, IJavaProject project)
