@@ -146,8 +146,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		
 		// create the publish actions
 		actions[4] = new PublishAction(shell, provider);
-		actions[5] = new PublishCleanAction(shell, provider);
-		actions[6] = new ExploreAction(shell,provider);
+		actions[5] = new ExploreAction(shell,provider);
 
 		// create the open action
 		openAction = new OpenAction(provider);
