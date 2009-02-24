@@ -13,6 +13,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider.ServerWrapper;
 
 public class XPathTreeLabelProvider extends LabelProvider {
@@ -30,6 +31,15 @@ public class XPathTreeLabelProvider extends LabelProvider {
 		if (element instanceof XPathCategory)
 			return PlatformUI.getWorkbench().getSharedImages().getImage(
 					ISharedImages.IMG_OBJ_FOLDER);
+
+		if( element instanceof XPathQuery ) 
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.XPATH_LEVEL_1);
+		
+		if( element instanceof XPathFileResult )
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.XPATH_LEVEL_2);
+		
+		if( element instanceof XPathResultNode ) 
+			return JBossServerUISharedImages.getImage(JBossServerUISharedImages.XPATH_LEVEL_3);
 
 		return null;
 	}

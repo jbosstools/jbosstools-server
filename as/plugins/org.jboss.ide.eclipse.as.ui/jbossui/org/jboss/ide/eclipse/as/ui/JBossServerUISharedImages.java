@@ -44,10 +44,7 @@ public class JBossServerUISharedImages {
 	public static final String WIZBAN_JBOSS42_LOGO = "jboss4.2logo";
 	public static final String WIZBAN_JBOSS50_LOGO = "jboss5.0logo";
 	public static final String WIZBAN_JBOSS_EAP_LOGO = "jbossEAPlogo";
-	
 	public static final String WIZBAN_DEPLOY_ONLY_LOGO = "jbossdeployerlogo";
-	
-	
 	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE";
 	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE";
 	public static final String GENERIC_SERVER_IMAGE = "GENERIC_SERVER_IMAGE";
@@ -55,6 +52,11 @@ public class JBossServerUISharedImages {
 	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE";
 	public static final String JMX_IMAGE = "JMX_IMAGE";
 	public static final String EXPLORE_IMAGE = "EXPLORE_IMAGE";
+	public static final String XPATH_LEVEL_1 = "xpath_level_1";
+	public static final String XPATH_LEVEL_2 = "xpath_level_2";
+	public static final String XPATH_LEVEL_3 = "xpath_level_3";
+	
+	
 	
 	private static JBossServerUISharedImages instance;
 	
@@ -81,8 +83,12 @@ public class JBossServerUISharedImages {
 		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
 		descriptors.put(JMX_IMAGE, createImageDescriptor(pluginBundle, "/icons/jmeth_obj.gif"));
 		descriptors.put(EXPLORE_IMAGE, createImageDescriptor(pluginBundle, "/icons/actions/xpl/explore.gif"));
+		descriptors.put(XPATH_LEVEL_1, createImageDescriptor(pluginBundle, "icons/xpath_level_1.gif"));
+		descriptors.put(XPATH_LEVEL_2, createImageDescriptor(pluginBundle, "icons/xpath_level_2.gif"));
+		descriptors.put(XPATH_LEVEL_3, createImageDescriptor(pluginBundle, "icons/xpath_level_3.gif"));
+		
+		
 		Iterator<String> iter = descriptors.keySet().iterator();
-
 		while (iter.hasNext()) {
 			String key = iter.next();
 			ImageDescriptor descriptor = descriptor(key);
