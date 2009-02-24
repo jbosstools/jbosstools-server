@@ -130,7 +130,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 				"\"" + runtime.getRuntime().getLocation().append("bin").append("native") + "\"", false);
 		
 		/* Claspath */
-		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, (List<String>)null);
+		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 		List<String> newCP = fixCP(cp, jbs);
 		
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
@@ -143,13 +143,19 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 
 	protected static List<String> fixCP(List<String> list, JBossServer jbs) {
 		try {
+			boolean found = false;
 			String[] asString = (String[]) list.toArray(new String[list.size()]);
 			for( int i = 0; i < asString.length; i++ ) {
 				if( asString[i].contains(RunJarContainerWrapper.ID)) {
+					found = true;
 					asString[i] = getRunJarRuntimeCPEntry(jbs).getMemento();
 				}
 			}
-			return Arrays.asList(asString);
+			ArrayList<String> result = new ArrayList<String>();
+			result.addAll(Arrays.asList(asString));
+			if( !found )
+				result.add(getRunJarRuntimeCPEntry(jbs).getMemento());
+			return result;
 		} catch( CoreException ce) {
 			return list;
 		}
