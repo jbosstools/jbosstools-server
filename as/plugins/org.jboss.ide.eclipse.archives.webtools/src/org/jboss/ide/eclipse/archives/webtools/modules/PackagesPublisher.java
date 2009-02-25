@@ -27,6 +27,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
@@ -75,6 +76,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	    	if( publishType == REMOVE_PUBLISH ) {
 	    		removeModule(module2, monitor);
 	    	} else if( publishType == FULL_PUBLISH ) {
+	    		IArchive pack = getPackage(module2);
+	    		new ArchiveBuildDelegate().fullArchiveBuild(pack, monitor);
 	    		publishModule(module2, false, monitor);
 	    	} else if( publishType == INCREMENTAL_PUBLISH ) {
 	    		publishModule(module2, true, monitor);

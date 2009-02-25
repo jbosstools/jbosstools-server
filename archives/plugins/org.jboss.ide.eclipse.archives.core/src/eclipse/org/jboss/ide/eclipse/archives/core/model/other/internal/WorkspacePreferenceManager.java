@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -54,10 +53,14 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		return null;
 	}
 
-	public boolean isBuilderEnabled(IPath path) {
+	
+	public boolean shouldBuild(IPath path) {
 		if( !ResourcesPlugin.getWorkspace().isAutoBuilding())
 			return false;
-		
+		return isArchivesBuilderEnabled(path);
+	}
+	
+	public boolean isArchivesBuilderEnabled(IPath path) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, AUTOMATIC_BUILDER_ENABLED);
 		IResource res = getResource(path);
 		if( res != null && areProjectSpecificPrefsEnabled(res)) {
@@ -70,7 +73,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 		return new InstanceScope().getNode(ArchivesCorePlugin.PLUGIN_ID).getBoolean(AUTOMATIC_BUILDER_ENABLED, true);
 	}
 
-	public void setBuilderEnabled(IPath path, boolean value) {
+	public void setArchivesBuilderEnabled(IPath path, boolean value) {
 		QualifiedName name = new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, AUTOMATIC_BUILDER_ENABLED);
 		IResource resource = getResource(path);
 		// if the resource is null or the resource has no preference val, use global val

@@ -123,16 +123,19 @@ public class AntArchivesCore extends ArchivesCore {
 		public boolean areProjectSpecificPrefsEnabled(IPath path) {
 			return false;
 		}
-
-		public boolean isBuilderEnabled(IPath path) {
-			return true;
-		}
-
-		public void setBuilderEnabled(IPath path, boolean val) {
+		public void setProjectSpecificPrefsEnabled(IPath path, boolean val) {
 			// not implemented
 		}
 
-		public void setProjectSpecificPrefsEnabled(IPath path, boolean val) {
+		public boolean shouldBuild(IPath path) {
+			return true;
+		}
+
+		public boolean isArchivesBuilderEnabled(IPath path) {
+			return true;
+		}
+
+		public void setArchivesBuilderEnabled(IPath path, boolean val) {
 			// not implemented
 		}
 	}

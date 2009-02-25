@@ -55,7 +55,7 @@ public class ArchivesBuilder extends IncrementalProjectBuilder {
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 
 		// if we're not to build, get out of here
-		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(getProject().getLocation()))
+		if( !ArchivesCore.getInstance().getPreferenceManager().isArchivesBuilderEnabled(getProject().getLocation()))
 			return new IProject[]{};
 
 		IProject[] interestingProjects = getInterestingProjectsInternal();

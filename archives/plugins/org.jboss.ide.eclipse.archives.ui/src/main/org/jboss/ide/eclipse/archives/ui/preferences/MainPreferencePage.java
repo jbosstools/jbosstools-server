@@ -79,7 +79,7 @@ public class MainPreferencePage extends PropertyPage implements
 		if( getResourceLocationIfExists() != null ) {
 			overrideButton.setSelection(getPrefManager().areProjectSpecificPrefsEnabled(getResourceLocationIfExists()));
 		}
-		automaticBuilder.setSelection(getPrefManager().isBuilderEnabled(getResourceLocationIfExists()));
+		automaticBuilder.setSelection(getPrefManager().isArchivesBuilderEnabled(getResourceLocationIfExists()));
 		showErrorDialog.setSelection(PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG, getElement(), true));
 		showAllProjects.setSelection(
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_ALL_PROJECTS, getElement(), false));
@@ -210,7 +210,7 @@ public class MainPreferencePage extends PropertyPage implements
 		if( getResourceLocationIfExists() != null ) {
 			getPrefManager().setProjectSpecificPrefsEnabled(getResourceLocationIfExists(), overrideButton.getSelection());
 		}
-		getPrefManager().setBuilderEnabled(getResourceLocationIfExists(), automaticBuilder.getSelection());
+		getPrefManager().setArchivesBuilderEnabled(getResourceLocationIfExists(), automaticBuilder.getSelection());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_BUILD_ERROR_DIALOG, showErrorDialog.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_PACKAGE_OUTPUT_PATH, showPackageOutputPath.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR, showFullFilesetRootDir.getSelection(), getElement());

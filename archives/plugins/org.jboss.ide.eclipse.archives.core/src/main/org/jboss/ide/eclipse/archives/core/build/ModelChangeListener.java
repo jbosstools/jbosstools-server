@@ -60,7 +60,8 @@ public class ModelChangeListener implements IArchiveModelListener {
 		if (delta == null || delta.getPostNode() == null) {
 			return false;
 		}
-		if( !ArchivesCore.getInstance().getPreferenceManager().isBuilderEnabled(delta.getPostNode().getProjectPath()))
+		IPath projectPath = delta.getPostNode().getProjectPath();
+		if( !ArchivesCore.getInstance().getPreferenceManager().shouldBuild(projectPath))
 			return false;
 		return true;
 	}
