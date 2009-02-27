@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -66,6 +67,8 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
+import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -166,8 +169,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			originalName = rt.getRuntime().getName();
 			nameText.setText(rt.getRuntime().getName());
 			name = rt.getRuntime().getName();
-			homeDirText.setText(rt.getRuntime().getLocation().toOSString());
-			homeDir = rt.getRuntime().getLocation().toOSString();
+			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
+			homeDir = (value != null && value.length() != 0) ? value : rt.getRuntime().getLocation().toOSString();
+			homeDirText.setText(homeDir);
+			((IRuntimeWorkingCopy)r).setLocation(new Path(homeDir));
 			config = rt.getJBossConfiguration();
 			configurations.setConfiguration(config);
 			configLabel.setText(Messages.wf_ConfigLabel);
@@ -583,6 +589,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		IRuntime saved = r.save(false, new NullProgressMonitor());
+		Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+		prefs.setValue(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + saved.getRuntimeType().getId(), homeDir);
+
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
 	}
 
