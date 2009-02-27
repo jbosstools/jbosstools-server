@@ -319,7 +319,7 @@
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"
-            public="true"
+            public="false"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.eclipse.jst.server.tomcat.core.sourcePathComputer"/>
       <launchConfigurationType
