@@ -55,6 +55,10 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	private String getNextRuntimeName() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
 		String base = Messages.jboss + " " + version + " " + Messages.runtime;
+		return getNextRuntimeName(base);
+	}
+	
+	public static String getNextRuntimeName(String base) {
 		IRuntime rt = ServerCore.findRuntime(base);
 		if (rt == null)
 			return base;
