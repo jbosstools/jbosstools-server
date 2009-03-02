@@ -65,6 +65,7 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
@@ -161,6 +162,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		String oldName = r.getName();
 		if( r.isWorkingCopy() ) {
 			String newName = oldName.replace("Enterprise Application Platform", "EAP");
+			newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
 			((IRuntimeWorkingCopy)r).setName(newName);
 		}
 		
