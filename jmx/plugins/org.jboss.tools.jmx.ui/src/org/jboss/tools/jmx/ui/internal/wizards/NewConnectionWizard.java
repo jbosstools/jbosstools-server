@@ -86,7 +86,7 @@ public class NewConnectionWizard extends Wizard {
     	if( active != null ) {
     		if( active.length > 0 ) {
     			if( active[active.length-1] == getContainer().getCurrentPage())
-    				return true;
+    				return super.canFinish();
     			return false;
     		}
     	}
@@ -142,7 +142,7 @@ public class NewConnectionWizard extends Wizard {
 		TreeViewer viewer;
 		public FirstPage() {
 			super(Messages.NewConnectionWizard);
-			setDescription(Messages.NewConnectionWizard_CreateNewConnection);
+			setTitle(Messages.NewConnectionWizard_CreateNewConnection);
 		}
 		public void createControl(Composite parent) {
 			Composite main = new Composite(parent, SWT.NONE);

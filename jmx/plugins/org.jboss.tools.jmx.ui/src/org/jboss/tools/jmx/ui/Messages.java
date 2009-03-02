@@ -24,6 +24,9 @@ public class Messages extends NLS {
 	public static String DefaultConnectionWizardPage_Username;
 	public static String DefaultConnectionWizardPage_Password;
 	public static String DefaultConnectionWizardPage_JMX_URL;
+	public static String DefaultConnectionWizardPage_Blank_Invalid;
+	public static String DefaultConnectionWizardPage_Invalid_Connection;
+	public static String DefaultConnectionWizardPage_Name_In_Use;
 	public static String DeleteConnection;
 
 

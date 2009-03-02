@@ -88,6 +88,7 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	}
 	public DefaultConnectionWizardPage() {
 		super(_BLANK_);
+		setTitle(Messages.NewConnectionWizard_CreateNewConnection);
 		setDescription(Messages.DefaultConnectionWizardPage_Description);
 	}
 
@@ -246,32 +247,24 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 			userName = userNameText.getText();
 			password = passwordText.getText();
 			if (hostText.getText().equals(_BLANK_)) {
-				showError("",
-						"");
+				showError(Messages.DefaultConnectionWizardPage_Blank_Invalid);
 				return;
 			}
 			try {
 				InetAddress.getByName(hostText.getText());
 			} catch (UnknownHostException e) {
-				showError("",
-						"");
+				showError(e.getMessage());
 				return;
 			}
 			String host = hostText.getText();
 			if (portText.getText().equals(_BLANK_)) {
-				showError("",
-						"");
+				showError(Messages.DefaultConnectionWizardPage_Blank_Invalid);
 				return;
 			}
 			int port;
-			try {
-				port = Integer.parseInt(portText.getText());
-				if (port < 1 || port > 0xffff) {
-					throw new NumberFormatException();
-				}
-			} catch (NumberFormatException e) {
-				showError("",
-						"");
+			port = Integer.parseInt(portText.getText());
+			if (port < 1 || port > 0xffff) {
+				showError(Messages.DefaultConnectionWizardPage_Blank_Invalid);
 				return;
 			}
 			url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -281,8 +274,7 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 			password = advancedPasswordText.getText();
 
 			if (urlText.getText().equals(_BLANK_)) {
-				showError("",
-						"");
+				showError(Messages.DefaultConnectionWizardPage_Blank_Invalid);
 				return;
 			}
 			url = urlText.getText();
@@ -290,7 +282,14 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// now validate name
 		if( name == null || nameTaken(name)) {
-			showError("", "");
+			showError(Messages.DefaultConnectionWizardPage_Name_In_Use);
+			return;
+		}
+		
+		try {
+			getConnection();
+		} catch( CoreException ce ) {
+			showError(ce.getMessage());
 			return;
 		}
 		clearMessage();
@@ -298,12 +297,16 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 	protected void clearMessage() {
 		setErrorMessage(null);
+		setPageComplete(true);
 		getContainer().updateMessage();
+		getContainer().updateButtons();
 	}
 
-	protected void showError(String one, String two) {
-		setErrorMessage("There's an error somewhere");
+	protected void showError(String message) {
+		setErrorMessage(message);
+		setPageComplete(false);
 		getContainer().updateMessage();
+		getContainer().updateButtons();
 	}
 
 	protected boolean nameTaken(String s) {
