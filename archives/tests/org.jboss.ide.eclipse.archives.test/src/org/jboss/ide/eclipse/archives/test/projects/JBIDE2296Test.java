@@ -41,6 +41,7 @@ public class JBIDE2296Test extends TestCase {
 	public void testJBIDE2296() {
 		IPath p = project.getLocation().append("output");
 		File pFile = p.toFile();
+		assertTrue(pFile.toString() + " does not exist", pFile.exists());
 		assertFalse(pFile.isFile());
 		assertTrue(pFile.isDirectory());
 	}

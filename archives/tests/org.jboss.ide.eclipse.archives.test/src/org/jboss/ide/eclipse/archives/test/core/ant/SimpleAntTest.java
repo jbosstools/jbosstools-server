@@ -86,7 +86,7 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 	
 	public void testOne() {
 		try {
-			assertTrue(outputFolder.toFile().list().length == 0);
+			assertTrue(outputFolder.toFile().exists());
 			launcher.launch();
 		} catch( CoreException ce) {
 			fail(ce.getMessage());
