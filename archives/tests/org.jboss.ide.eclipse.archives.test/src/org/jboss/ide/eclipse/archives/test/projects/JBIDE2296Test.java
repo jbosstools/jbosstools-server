@@ -38,7 +38,7 @@ public class JBIDE2296Test extends TestCase {
 		provider.dispose();
 	}
 
-	public void testJBIDE2311() {
+	public void testJBIDE2296() {
 		IPath p = project.getLocation().append("output");
 		File pFile = p.toFile();
 		assertFalse(pFile.isFile());
