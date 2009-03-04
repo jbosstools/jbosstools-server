@@ -12,6 +12,10 @@
 				name="plugins/org.jboss.ide.eclipse.archives.core**/archivescore.jar" />
 			<include name="plugins/org.jboss.ide.eclipse.archives.core**/lib/*.jar" />
 		</fileset>
+		<!-- in case of using emma during tests it is put in eclipse home -->
+		<fileset dir="${eclipse.home}">
+			<include name="emma.jar" />
+		</fileset>
 	</path>
 	
 	<taskdef name="generate-archives" classpathref="generate-archives-classpath"
