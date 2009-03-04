@@ -80,6 +80,9 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	}
 
 	public void menuAboutToShow2(IMenuManager manager) {
+		if (ProjectArchivesCommonView.getInstance() == null) {
+			return;
+		}
 		IProject currentProject = ProjectArchivesCommonView.getInstance().getCurrentProject();
 		if (currentProject == null || !currentProject.exists() || !currentProject.isOpen()) {
 			return;
