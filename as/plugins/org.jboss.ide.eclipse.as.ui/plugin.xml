@@ -570,5 +570,13 @@
             name="JBoss Server">
       </providerUI>
    </extension>
-	
+
+   <extension
+ 	point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      	<launchConfigurationTypeImage
+           	configTypeID="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+               	icon="icons/jboss.gif"
+                id="org.jboss.ide.eclipse.as.ui.launchConfigurationTypeImage1">
+	</launchConfigurationTypeImage>
+   </extension>	
 </plugin>
