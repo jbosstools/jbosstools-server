@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -93,16 +94,20 @@ public class EarArchiveType extends J2EEArchiveType {
 			IModule[] childModules = earModule.getModules();
 			for( int i = 0; i < childModules.length; i++ ) {
 				IModule child = childModules[i];
-				IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(child);
-				IArchive childPack;
-				if( type == null ) {
-					childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + JAR_EXTENSION);
-				} else {
-					if( new Path(childModules[i].getName()).segmentCount() > 1 )
-						continue;
-					childPack = type.createDefaultConfiguration(child.getProject().getName(), new NullProgressMonitor());
+				IJ2EEModule j2eeChild = (IJ2EEModule)child.loadAdapter(IJ2EEModule.class, new NullProgressMonitor());
+				if( j2eeChild != null && !j2eeChild.isBinary()) {
+					IArchiveType type = ModulePackageTypeConverter.getPackageTypeFor(child);
+					IArchive childPack;
+					if( type == null ) {
+						childPack = createGenericIArchive(child.getProject(), null, child.getProject().getName() + JAR_EXTENSION);
+					} else {
+						if( new Path(childModules[i].getName()).segmentCount() > 1 )
+							continue;
+						childPack = type.createDefaultConfiguration(child.getProject().getName(), new NullProgressMonitor());
+					}
+					if( childPack != null )
+						topLevel.addChild(childPack);
 				}
-				topLevel.addChild(childPack);
 			}
 		}
 
