@@ -18,12 +18,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -217,7 +219,10 @@ public class WarArchiveType extends J2EEArchiveType {
 			IModule[] childModules = webModule.getModules();
 			for (int i = 0; i < childModules.length; i++) {
 				IModule child = childModules[i];
-				lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));//$NON-NLS-1$
+				IJ2EEModule j2eeChild = (IJ2EEModule)child.loadAdapter(IJ2EEModule.class, new NullProgressMonitor());
+				if( j2eeChild != null && !j2eeChild.isBinary()) {
+					lib.addChild(createGenericIArchive(child.getProject(), null, child.getProject().getName() + ".jar"));//$NON-NLS-1$
+				}
 			}
 			return topLevel;
 		} catch( Exception e ) {
