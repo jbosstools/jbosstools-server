@@ -144,17 +144,21 @@ public class DirectoryScannerFactory {
 
 	    protected File[] list2absolute(File file) {
 	    	File[] children = file.listFiles();
-	    	FileWrapper[] children2 = new FileWrapper[children.length];
-	    	for( int i = 0; i < children.length; i++ )
-	    		children2[i] = new FileWrapper(children[i], new Path(children[i].getAbsolutePath()));
-	    	return children2;
+	    	if( children != null ) {
+		    	FileWrapper[] children2 = new FileWrapper[children.length];
+		    	for( int i = 0; i < children.length; i++ )
+		    		children2[i] = new FileWrapper(children[i], new Path(children[i].getAbsolutePath()));
+		    	return children2;
+	    	} 
+	    	return new FileWrapper[]{};
 	    }
 
 	    protected void postInclude(File f, String relative) {
-	    	if( f.isFile() ) {
-		    	if( f instanceof FileWrapper ) {
-		    		FileWrapper f2 = ((FileWrapper)f);
-		    		f2.setFilesetRelative(relative);
+	    	super.postInclude(f, relative);
+	    	if( f instanceof FileWrapper ) {
+	    		FileWrapper f2 = ((FileWrapper)f);
+	    		f2.setFilesetRelative(relative);
+		    	if( f.isFile() ) {
 		    		matches.add(f2);
 		    		ArrayList<FileWrapper> l = matchesMap.get(f2);
 		    		if( l == null ) {
@@ -165,6 +169,11 @@ public class DirectoryScannerFactory {
 		    	}
 	    	}
 	    }
+	    
+	    protected boolean isSelected(String name, File file) {
+	    	return super.isSelected(name, file) && file.isFile();
+	    }
+
 
 	    // what files are being added
 	    public FileWrapper[] getMatchedArray() {

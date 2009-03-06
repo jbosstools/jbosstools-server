@@ -40,13 +40,10 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.FileScanner;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.apache.tools.ant.types.Resource;
-import org.apache.tools.ant.types.ResourceFactory;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.apache.tools.ant.types.selectors.FileSelector;
-import org.apache.tools.ant.types.selectors.SelectorScanner;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.apache.tools.ant.util.FileUtils;
 
@@ -138,25 +135,14 @@ import org.apache.tools.ant.util.FileUtils;
  * Note: This class ideally should be translated, but since
  * it was stolen from ant, I'd rather leave it as close to the ant
  * version as possible.
+ * 
+ * Started to diverge quite a bit in preparation for 
  */
-public class DirectoryScanner
-       implements FileScanner, SelectorScanner, ResourceFactory {
+public class DirectoryScanner {
 
     /** Is OpenVMS the operating system we're running on? */
     private static final boolean ON_VMS = Os.isFamily("openvms");//$NON-NLS-1$
 
-    /**
-     * Patterns which should be excluded by default.
-     *
-     * <p>Note that you can now add patterns to the list of default
-     * excludes.  Added patterns will not become part of this array
-     * that has only been kept around for backwards compatibility
-     * reasons.</p>
-     *
-     * @deprecated since 1.6.x.
-     *             Use the {@link #getDefaultExcludes getDefaultExcludes}
-     *             method instead.
-     */
     protected static final String[] DEFAULTEXCLUDES = {
         // Miscellaneous typical temporary files
         "**/*~", //$NON-NLS-1$
@@ -260,21 +246,12 @@ public class DirectoryScanner
      */
     protected Vector<String> dirsDeselected;
 
-    /** Whether or not our results were built by a slow scan. */
-    protected boolean haveSlowResults = false;
-
     /**
      * Whether or not the file system should be treated as a case sensitive
      * one.
      */
     protected boolean isCaseSensitive = true;
 
-    /**
-     * Whether or not symbolic links should be followed.
-     *
-     * @since Ant 1.5
-     */
-    private boolean followSymlinks = true;
 
     /** Whether or not everything tested so far has been included. */
     protected boolean everythingIncluded = true;
@@ -363,6 +340,11 @@ public class DirectoryScanner
     private boolean scanning = false;
 
     /**
+     * Has this scan finished?
+     */
+    private boolean complete = false;
+
+    /**
      * Scanning lock.
      *
      * @since Ant 1.6.3
@@ -370,173 +352,56 @@ public class DirectoryScanner
     private Object scanLock = new Object();
 
     /**
-     * Slow scanning flag.
-     *
-     * @since Ant 1.6.3
-     */
-    private boolean slowScanning = false;
-
-    /**
-     * Slow scanning lock.
-     *
-     * @since Ant 1.6.3
-     */
-    private Object slowScanLock = new Object();
-
-    /**
      * Exception thrown during scan.
      *
      * @since Ant 1.6.3
      */
     private IllegalStateException illegal = null;
-
+    
+    private DirectoryScannerIterator iterator = null;
+    
     /**
      * Sole constructor.
      */
     public DirectoryScanner() {
     }
 
-    /**
-     * Test whether or not a given path matches the start of a given
-     * pattern up to the first "**".
-     * <p>
-     * This is not a general purpose test and should only be used if you
-     * can live with false positives. For example, <code>pattern=**\a</code>
-     * and <code>str=b</code> will yield <code>true</code>.
-     *
-     * @param pattern The pattern to match against. Must not be
-     *                <code>null</code>.
-     * @param str     The path to match, as a String. Must not be
-     *                <code>null</code>.
-     *
-     * @return whether or not a given path matches the start of a given
-     * pattern up to the first "**".
-     */
+    /* Protected static class delegators to SelectorUtils */
+    
     protected static boolean matchPatternStart(String pattern, String str) {
         return SelectorUtils.matchPatternStart(pattern, str);
     }
 
-    /**
-     * Test whether or not a given path matches the start of a given
-     * pattern up to the first "**".
-     * <p>
-     * This is not a general purpose test and should only be used if you
-     * can live with false positives. For example, <code>pattern=**\a</code>
-     * and <code>str=b</code> will yield <code>true</code>.
-     *
-     * @param pattern The pattern to match against. Must not be
-     *                <code>null</code>.
-     * @param str     The path to match, as a String. Must not be
-     *                <code>null</code>.
-     * @param isCaseSensitive Whether or not matching should be performed
-     *                        case sensitively.
-     *
-     * @return whether or not a given path matches the start of a given
-     * pattern up to the first "**".
-     */
     protected static boolean matchPatternStart(String pattern, String str,
                                                boolean isCaseSensitive) {
         return SelectorUtils.matchPatternStart(pattern, str, isCaseSensitive);
     }
 
-    /**
-     * Test whether or not a given path matches a given pattern.
-     *
-     * @param pattern The pattern to match against. Must not be
-     *                <code>null</code>.
-     * @param str     The path to match, as a String. Must not be
-     *                <code>null</code>.
-     *
-     * @return <code>true</code> if the pattern matches against the string,
-     *         or <code>false</code> otherwise.
-     */
     protected static boolean matchPath(String pattern, String str) {
         return SelectorUtils.matchPath(pattern, str);
     }
 
-    /**
-     * Test whether or not a given path matches a given pattern.
-     *
-     * @param pattern The pattern to match against. Must not be
-     *                <code>null</code>.
-     * @param str     The path to match, as a String. Must not be
-     *                <code>null</code>.
-     * @param isCaseSensitive Whether or not matching should be performed
-     *                        case sensitively.
-     *
-     * @return <code>true</code> if the pattern matches against the string,
-     *         or <code>false</code> otherwise.
-     */
     protected static boolean matchPath(String pattern, String str,
                                        boolean isCaseSensitive) {
         return SelectorUtils.matchPath(pattern, str, isCaseSensitive);
     }
 
-    /**
-     * Test whether or not a string matches against a pattern.
-     * The pattern may contain two special characters:<br>
-     * '*' means zero or more characters<br>
-     * '?' means one and only one character
-     *
-     * @param pattern The pattern to match against.
-     *                Must not be <code>null</code>.
-     * @param str     The string which must be matched against the pattern.
-     *                Must not be <code>null</code>.
-     *
-     * @return <code>true</code> if the string matches against the pattern,
-     *         or <code>false</code> otherwise.
-     */
     public static boolean match(String pattern, String str) {
         return SelectorUtils.match(pattern, str);
     }
 
-    /**
-     * Test whether or not a string matches against a pattern.
-     * The pattern may contain two special characters:<br>
-     * '*' means zero or more characters<br>
-     * '?' means one and only one character
-     *
-     * @param pattern The pattern to match against.
-     *                Must not be <code>null</code>.
-     * @param str     The string which must be matched against the pattern.
-     *                Must not be <code>null</code>.
-     * @param isCaseSensitive Whether or not matching should be performed
-     *                        case sensitively.
-     *
-     *
-     * @return <code>true</code> if the string matches against the pattern,
-     *         or <code>false</code> otherwise.
-     */
     protected static boolean match(String pattern, String str,
                                    boolean isCaseSensitive) {
         return SelectorUtils.match(pattern, str, isCaseSensitive);
     }
 
 
-    /**
-     * Get the list of patterns that should be excluded by default.
-     *
-     * @return An array of <code>String</code> based on the current
-     *         contents of the <code>defaultExcludes</code>
-     *         <code>Vector</code>.
-     *
-     * @since Ant 1.6
-     */
+    /* Working with default excludes */
     public static String[] getDefaultExcludes() {
-        return defaultExcludes.toArray(new String[defaultExcludes
-                                                             .size()]);
+        return defaultExcludes.toArray(
+        		new String[defaultExcludes.size()]);
     }
 
-    /**
-     * Add a pattern to the default excludes unless it is already a
-     * default exclude.
-     *
-     * @param s   A string to add as an exclude pattern.
-     * @return    <code>true</code> if the string was added;
-     *            <code>false</code> if it already existed.
-     *
-     * @since Ant 1.6
-     */
     public static boolean addDefaultExclude(String s) {
         if (defaultExcludes.indexOf(s) == -1) {
             defaultExcludes.add(s);
@@ -545,121 +410,44 @@ public class DirectoryScanner
         return false;
     }
 
-    /**
-     * Remove a string if it is a default exclude.
-     *
-     * @param s   The string to attempt to remove.
-     * @return    <code>true</code> if <code>s</code> was a default
-     *            exclude (and thus was removed);
-     *            <code>false</code> if <code>s</code> was not
-     *            in the default excludes list to begin with.
-     *
-     * @since Ant 1.6
-     */
     public static boolean removeDefaultExclude(String s) {
         return defaultExcludes.remove(s);
     }
 
-    /**
-     * Go back to the hardwired default exclude patterns.
-     *
-     * @since Ant 1.6
-     */
     public static void resetDefaultExcludes() {
         defaultExcludes = new Vector<String>();
         for (int i = 0; i < DEFAULTEXCLUDES.length; i++) {
             defaultExcludes.add(DEFAULTEXCLUDES[i]);
         }
     }
+    /* End default excludes */
 
-    /**
-     * Set the base directory to be scanned. This is the directory which is
-     * scanned recursively. All '/' and '\' characters are replaced by
-     * <code>File.separatorChar</code>, so the separator used need not match
-     * <code>File.separatorChar</code>.
-     *
-     * @param basedir The base directory to scan.
-     */
+    
+    /* Base dir */
     public void setBasedir(String basedir) {
         setBasedir(basedir == null ? (File) null
             : new File(basedir.replace('/', File.separatorChar).replace(
             '\\', File.separatorChar)));
     }
 
-    /**
-     * Set the base directory to be scanned. This is the directory which is
-     * scanned recursively.
-     *
-     * @param basedir The base directory for scanning.
-     */
     public synchronized void setBasedir(File basedir) {
         this.basedir = basedir;
     }
 
-    /**
-     * Return the base directory to be scanned.
-     * This is the directory which is scanned recursively.
-     *
-     * @return the base directory to be scanned.
-     */
     public synchronized File getBasedir() {
         return basedir;
     }
+    /* end Base dir */
 
-    /**
-     * Find out whether include exclude patterns are matched in a
-     * case sensitive way.
-     * @return whether or not the scanning is case sensitive.
-     * @since Ant 1.6
-     */
+
     public synchronized boolean isCaseSensitive() {
         return isCaseSensitive;
     }
 
-    /**
-     * Set whether or not include and exclude patterns are matched
-     * in a case sensitive way.
-     *
-     * @param isCaseSensitive whether or not the file system should be
-     *                        regarded as a case sensitive one.
-     */
     public synchronized void setCaseSensitive(boolean isCaseSensitive) {
         this.isCaseSensitive = isCaseSensitive;
     }
 
-    /**
-     * Get whether or not a DirectoryScanner follows symbolic links.
-     *
-     * @return flag indicating whether symbolic links should be followed.
-     *
-     * @since Ant 1.6
-     */
-    public synchronized boolean isFollowSymlinks() {
-        return followSymlinks;
-    }
-
-    /**
-     * Set whether or not symbolic links should be followed.
-     *
-     * @param followSymlinks whether or not symbolic links should be followed.
-     */
-    public synchronized void setFollowSymlinks(boolean followSymlinks) {
-        this.followSymlinks = followSymlinks;
-    }
-
-    /**
-     * Set the list of include patterns to use. All '/' and '\' characters
-     * are replaced by <code>File.separatorChar</code>, so the separator used
-     * need not match <code>File.separatorChar</code>.
-     * <p>
-     * When a pattern ends with a '/' or '\', "**" is appended.
-     *
-     * @param includes A list of include patterns.
-     *                 May be <code>null</code>, indicating that all files
-     *                 should be included. If a non-<code>null</code>
-     *                 list is given, all elements must be
-     *                 non-<code>null</code>.
-     */
     public synchronized void setIncludes(String[] includes) {
         if (includes == null) {
             this.includes = null;
@@ -671,18 +459,6 @@ public class DirectoryScanner
         }
     }
 
-    /**
-     * Set the list of exclude patterns to use. All '/' and '\' characters
-     * are replaced by <code>File.separatorChar</code>, so the separator used
-     * need not match <code>File.separatorChar</code>.
-     * <p>
-     * When a pattern ends with a '/' or '\', "**" is appended.
-     *
-     * @param excludes A list of exclude patterns.
-     *                 May be <code>null</code>, indicating that no files
-     *                 should be excluded. If a non-<code>null</code> list is
-     *                 given, all elements must be non-<code>null</code>.
-     */
     public synchronized void setExcludes(String[] excludes) {
         if (excludes == null) {
             this.excludes = null;
@@ -694,19 +470,6 @@ public class DirectoryScanner
         }
     }
 
-    /**
-     * Add to the list of exclude patterns to use. All '/' and '\'
-     * characters are replaced by <code>File.separatorChar</code>, so
-     * the separator used need not match <code>File.separatorChar</code>.
-     * <p>
-     * When a pattern ends with a '/' or '\', "**" is appended.
-     *
-     * @param excludes A list of exclude patterns.
-     *                 May be <code>null</code>, in which case the
-     *                 exclude patterns don't get changed at all.
-     *
-     * @since Ant 1.6.3
-     */
     public synchronized void addExcludes(String[] excludes) {
         if (excludes != null && excludes.length > 0) {
             if (this.excludes != null && this.excludes.length > 0) {
@@ -725,15 +488,6 @@ public class DirectoryScanner
         }
     }
 
-    /**
-     * All '/' and '\' characters are replaced by
-     * <code>File.separatorChar</code>, so the separator used need not
-     * match <code>File.separatorChar</code>.
-     *
-     * <p> When a pattern ends with a '/' or '\', "**" is appended.
-     *
-     * @since Ant 1.6.3
-     */
     private static String normalizePattern(String p) {
         String pattern = p.replace('/', File.separatorChar)
             .replace('\\', File.separatorChar);
@@ -743,37 +497,11 @@ public class DirectoryScanner
         return pattern;
     }
 
-    /**
-     * Set the selectors that will select the filelist.
-     *
-     * @param selectors specifies the selectors to be invoked on a scan.
-     */
-    public synchronized void setSelectors(FileSelector[] selectors) {
-        this.selectors = selectors;
-    }
-
-    /**
-     * Return whether or not the scanner has included all the files or
-     * directories it has come across so far.
-     *
-     * @return <code>true</code> if all files and directories which have
-     *         been found so far have been included.
-     */
     public synchronized boolean isEverythingIncluded() {
         return everythingIncluded;
     }
-
-    /**
-     * Scan for files which match at least one include pattern and don't match
-     * any exclude patterns. If there are selectors then the files must pass
-     * muster there, as well.  Scans under basedir, if set; otherwise the
-     * include patterns without leading wildcards specify the absolute paths of
-     * the files that may be included.
-     *
-     * @exception IllegalStateException if the base directory was set
-     *            incorrectly (i.e. if it doesn't exist or isn't a directory).
-     */
-    public void scan() throws IllegalStateException {
+    
+    protected void scanWait() {
         synchronized (scanLock) {
             if (scanning) {
                 while (scanning) {
@@ -789,68 +517,197 @@ public class DirectoryScanner
                 return;
             }
             scanning = true;
+        	complete = false;
         }
+    }
+
+    protected void scanPrepare() {
+        tmpNullIncludes = (includes == null);
+        tmpNullExcludes = (excludes == null);
+        illegal = null;
+        clearResults();
+        boolean nullIncludes = includes == null;
+        includes = includes == null ? new String[] {"**"} : includes;//$NON-NLS-1$
+        excludes = excludes == null ? new String[0] : excludes;
+
+        if (basedir == null ) {
+            // if no basedir and no includes, nothing to do:
+            if (nullIncludes) {
+                return;
+            }
+        } else {
+            if (!basedir.exists()) {
+                illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
+                                                    + " does not exist");//$NON-NLS-1$
+            }
+            if (!basedir.isDirectory()) {
+                illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
+                                                    + " is not a directory");//$NON-NLS-1$
+            }
+            if (illegal != null) {
+                throw illegal;
+            }
+        }
+        if (isIncluded("")) {//$NON-NLS-1$
+            if (!isExcluded("")) {//$NON-NLS-1$
+                if (isSelected("", basedir)) {//$NON-NLS-1$
+                    dirsIncluded.addElement("");//$NON-NLS-1$
+                } else {
+                    dirsDeselected.addElement("");//$NON-NLS-1$
+                }
+            } else {
+                dirsExcluded.addElement("");//$NON-NLS-1$
+            }
+        } else {
+            dirsNotIncluded.addElement("");//$NON-NLS-1$
+        }
+    }
+    
+    private boolean tmpNullIncludes, tmpNullExcludes;
+    /**
+     * Scan for files which match at least one include pattern and don't match
+     * any exclude patterns. If there are selectors then the files must pass
+     * muster there, as well.  Scans under basedir, if set; otherwise the
+     * include patterns without leading wildcards specify the absolute paths of
+     * the files that may be included.
+     *
+     * @exception IllegalStateException if the base directory was set
+     *            incorrectly (i.e. if it doesn't exist or isn't a directory).
+     */
+    public void scan() throws IllegalStateException {
+    	scanWait();
         try {
             synchronized (this) {
-                illegal = null;
-                clearResults();
-
-                // set in/excludes to reasonable defaults if needed:
-                boolean nullIncludes = (includes == null);
-                includes = nullIncludes ? new String[] {"**"} : includes;//$NON-NLS-1$
-                boolean nullExcludes = (excludes == null);
-                excludes = nullExcludes ? new String[0] : excludes;
-
-                if (basedir == null) {
-                    // if no basedir and no includes, nothing to do:
-                    if (nullIncludes) {
-                        return;
-                    }
-                } else {
-                    if (!basedir.exists()) {
-                        illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
-                                                            + " does not exist");//$NON-NLS-1$
-                    }
-                    if (!basedir.isDirectory()) {
-                        illegal = new IllegalStateException("basedir " + basedir//$NON-NLS-1$
-                                                            + " is not a directory");//$NON-NLS-1$
-                    }
-                    if (illegal != null) {
-                        throw illegal;
-                    }
-                }
-                if (isIncluded("")) {//$NON-NLS-1$
-                    if (!isExcluded("")) {//$NON-NLS-1$
-                        if (isSelected("", basedir)) {//$NON-NLS-1$
-                            dirsIncluded.addElement("");//$NON-NLS-1$
-                        } else {
-                            dirsDeselected.addElement("");//$NON-NLS-1$
-                        }
-                    } else {
-                        dirsExcluded.addElement("");//$NON-NLS-1$
-                    }
-                } else {
-                    dirsNotIncluded.addElement("");//$NON-NLS-1$
-                }
-                checkIncludePatterns();
-                clearCaches();
-                includes = nullIncludes ? null : includes;
-                excludes = nullExcludes ? null : excludes;
+                scanPrepare();
+                runScan();
             }
         } finally {
-            synchronized (scanLock) {
-                scanning = false;
-                scanLock.notifyAll();
+           	release();
+        }
+    }
+    
+    protected void release() {
+        synchronized (scanLock) {
+	        clearCaches();
+	        iterator = null;
+	        includes = tmpNullIncludes ? null : includes;
+	        excludes = tmpNullExcludes ? null : excludes;
+	    	complete = true;
+	        scanning = false;
+	        scanLock.notifyAll();
+        }
+    }
+    
+    /**
+     * This routine is actually checking all the include patterns in
+     * order to avoid scanning everything under base dir.
+     * 
+     * if a pattern says scan it all, though, we scan it all
+     */
+    private void runScan() {
+        Map<String, String> newroots = getNewRoots();
+        if (newroots.containsKey("") && basedir != null) {//$NON-NLS-1$
+            // we are going to scan everything anyway
+            scandirWrap(basedir, "");//$NON-NLS-1$
+        } else {
+            // only scan directories that can include matched files or
+            // directories
+            File canonBase = null;
+            if (basedir != null) {
+                try {
+                    canonBase = basedir.getCanonicalFile();
+                } catch (IOException ex) {
+                    throw new BuildException(ex);
+                }
+            }
+
+            Iterator it = newroots.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry = (Map.Entry) it.next();
+                handleOneEntry(entry, canonBase);
             }
         }
     }
 
-    /**
-     * This routine is actually checking all the include patterns in
-     * order to avoid scanning everything under base dir.
-     * @since Ant 1.6
-     */
-    private void checkIncludePatterns() {
+    protected void handleOneEntry(Map.Entry entry, File canonBase) {
+        String[] currentelement_ = new String[] { (String) entry.getKey() };
+        if (basedir == null && !FileUtils.isAbsolutePath(currentelement_[0])) {
+            return;
+        }
+        String originalpattern = (String) entry.getValue();
+        File[] myfile_ = new File[] { getChild(basedir, currentelement_[0])};
+        perfectOneEntry(canonBase, myfile_, currentelement_);
+        File myfile = myfile_[0];
+        String currentelement = currentelement_[0];
+
+        if (myfile != null && myfile.exists()) {
+            if (myfile.isDirectory()) {
+                if (isIncluded(currentelement)
+                    && currentelement.length() > 0) {
+                    accountForIncludedDir(currentelement, myfile);
+                }  else {
+                    if (currentelement.length() > 0) {
+                        if (currentelement.charAt(currentelement
+                                                  .length() - 1)
+                            != File.separatorChar) {
+                            currentelement =
+                                currentelement + File.separatorChar;
+                        }
+                    }
+                    scandirWrap(myfile, currentelement);
+                }
+            } else {
+                boolean included = isCaseSensitive()
+                    ? originalpattern.equals(currentelement)
+                    : originalpattern.equalsIgnoreCase(currentelement);
+                if (included) {
+                    accountForIncludedFile(currentelement, myfile);
+                }
+            }
+        }
+    }
+    
+    protected void perfectOneEntry(File canonBase, File[] myfile_, String[] currentelement_) {
+    	File myfile = myfile_[0];
+    	String currentelement = currentelement_[0];
+    	
+        if (myfile.exists()) {
+            // may be on a case insensitive file system.  We want
+            // the results to show what's really on the disk, so
+            // we need to double check.
+            try {
+                String path = (basedir == null)
+                    ? myfile.getCanonicalPath()
+                    : FILE_UTILS.removeLeadingPath(canonBase,
+                    myfile.getCanonicalFile());
+                if (!path.equals(currentelement) || ON_VMS) {
+                    myfile = findFile(basedir, currentelement, true);
+                    if (myfile != null && basedir != null) {
+                        currentelement = FILE_UTILS.removeLeadingPath(
+                            basedir, myfile);
+                    }
+                }
+            } catch (IOException ex) {
+                throw new BuildException(ex);
+            }
+        }
+        if ((myfile == null || !myfile.exists()) && !isCaseSensitive()) {
+            File f = findFile(basedir, currentelement, false);
+            if (f != null && f.exists()) {
+                // adapt currentelement to the case we've
+                // actually found
+                currentelement = (basedir == null)
+                    ? f.getAbsolutePath()
+                    : FILE_UTILS.removeLeadingPath(basedir, f);
+                myfile = f;
+            }
+        }
+        
+        myfile_[0] = myfile;
+        currentelement_[0] = currentelement;
+    }
+    
+    protected Map<String, String> getNewRoots() {
         Map<String, String> newroots = new HashMap<String, String>();
         // put in the newroots map the include patterns without
         // wildcard tokens
@@ -869,95 +726,9 @@ public class DirectoryScanner
             newroots.put(SelectorUtils.rtrimWildcardTokens(
                 includes[i]), includes[i]);
         }
-        if (newroots.containsKey("") && basedir != null) {//$NON-NLS-1$
-            // we are going to scan everything anyway
-            scandir(basedir, "", true);//$NON-NLS-1$
-        } else {
-            // only scan directories that can include matched files or
-            // directories
-            Iterator it = newroots.entrySet().iterator();
-
-            File canonBase = null;
-            if (basedir != null) {
-                try {
-                    canonBase = basedir.getCanonicalFile();
-                } catch (IOException ex) {
-                    throw new BuildException(ex);
-                }
-            }
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                String currentelement = (String) entry.getKey();
-                if (basedir == null && !FileUtils.isAbsolutePath(currentelement)) {
-                    continue;
-                }
-                String originalpattern = (String) entry.getValue();
-                File myfile = getChild(basedir, currentelement);
-
-                if (myfile.exists()) {
-                    // may be on a case insensitive file system.  We want
-                    // the results to show what's really on the disk, so
-                    // we need to double check.
-                    try {
-                        String path = (basedir == null)
-                            ? myfile.getCanonicalPath()
-                            : FILE_UTILS.removeLeadingPath(canonBase,
-                            myfile.getCanonicalFile());
-                        if (!path.equals(currentelement) || ON_VMS) {
-                            myfile = findFile(basedir, currentelement, true);
-                            if (myfile != null && basedir != null) {
-                                currentelement = FILE_UTILS.removeLeadingPath(
-                                    basedir, myfile);
-                            }
-                        }
-                    } catch (IOException ex) {
-                        throw new BuildException(ex);
-                    }
-                }
-                if ((myfile == null || !myfile.exists()) && !isCaseSensitive()) {
-                    File f = findFile(basedir, currentelement, false);
-                    if (f != null && f.exists()) {
-                        // adapt currentelement to the case we've
-                        // actually found
-                        currentelement = (basedir == null)
-                            ? f.getAbsolutePath()
-                            : FILE_UTILS.removeLeadingPath(basedir, f);
-                        myfile = f;
-                    }
-                }
-                if (myfile != null && myfile.exists()) {
-                    if (!followSymlinks
-                        && isSymlink(basedir, currentelement)) {
-                        continue;
-                    }
-                    if (myfile.isDirectory()) {
-                        if (isIncluded(currentelement)
-                            && currentelement.length() > 0) {
-                            accountForIncludedDir(currentelement, myfile, true);
-                        }  else {
-                            if (currentelement.length() > 0) {
-                                if (currentelement.charAt(currentelement
-                                                          .length() - 1)
-                                    != File.separatorChar) {
-                                    currentelement =
-                                        currentelement + File.separatorChar;
-                                }
-                            }
-                            scandir(myfile, currentelement, true);
-                        }
-                    } else {
-                        boolean included = isCaseSensitive()
-                            ? originalpattern.equals(currentelement)
-                            : originalpattern.equalsIgnoreCase(currentelement);
-                        if (included) {
-                            accountForIncludedFile(currentelement, myfile);
-                        }
-                    }
-                }
-            }
-        }
+        return newroots;
     }
-
+    
     /**
      * Clear the result caches for a scan.
      */
@@ -974,70 +745,14 @@ public class DirectoryScanner
         scannedDirs.clear();
     }
 
-    /**
-     * Top level invocation for a slow scan. A slow scan builds up a full
-     * list of excluded/included files/directories, whereas a fast scan
-     * will only have full results for included files, as it ignores
-     * directories which can't possibly hold any included files/directories.
-     * <p>
-     * Returns immediately if a slow scan has already been completed.
-     */
-    protected void slowScan() {
-        synchronized (slowScanLock) {
-            if (haveSlowResults) {
-                return;
-            }
-            if (slowScanning) {
-                while (slowScanning) {
-                    try {
-                        slowScanLock.wait();
-                    } catch (InterruptedException e) {
-                        // Empty
-                    }
-                }
-                return;
-            }
-            slowScanning = true;
-        }
-        try {
-            synchronized (this) {
-
-                // set in/excludes to reasonable defaults if needed:
-                boolean nullIncludes = (includes == null);
-                includes = nullIncludes ? new String[] {"**"} : includes;//$NON-NLS-1$
-                boolean nullExcludes = (excludes == null);
-                excludes = nullExcludes ? new String[0] : excludes;
-
-                String[] excl = new String[dirsExcluded.size()];
-                dirsExcluded.copyInto(excl);
-
-                String[] notIncl = new String[dirsNotIncluded.size()];
-                dirsNotIncluded.copyInto(notIncl);
-
-                processSlowScan(excl);
-                processSlowScan(notIncl);
-                clearCaches();
-                includes = nullIncludes ? null : includes;
-                excludes = nullExcludes ? null : excludes;
-            }
-        } finally {
-            synchronized (slowScanLock) {
-                haveSlowResults = true;
-                slowScanning = false;
-                slowScanLock.notifyAll();
-            }
-        }
+    
+    protected void scandirWrap(File dir, String vpath) {
+    	if( iterator == null )
+    		scandirImpl(dir,vpath);
+    	else
+    		iterator.addFileToScanList(dir, vpath);
     }
-
-    private void processSlowScan(String[] arr) {
-        for (int i = 0; i < arr.length; i++) {
-            if (!couldHoldIncluded(arr[i])) {
-                scandir(getChild(basedir, arr[i]),
-                        arr[i] + File.separator, false);
-            }
-        }
-    }
-
+    
     /**
      * Scan the given directory for files and directories. Found files and
      * directories are placed in their respective collections, based on the
@@ -1058,7 +773,7 @@ public class DirectoryScanner
      * @see #dirsExcluded
      * @see #slowScan
      */
-    protected void scandir(File dir, String vpath, boolean fast) {
+    protected void scandirImpl(File dir, String vpath) {
         if (dir == null) {
             throw new BuildException("dir must not be null.");//$NON-NLS-1$
         } else if (!dir.exists()) {
@@ -1067,7 +782,7 @@ public class DirectoryScanner
             throw new BuildException(dir + " is not a directory.");//$NON-NLS-1$
         }
         // avoid double scanning of directories, can only happen in fast mode
-        if (fast && hasBeenScanned(vpath)) {
+        if (hasBeenScanned(vpath)) {
             return;
         }
 
@@ -1085,43 +800,18 @@ public class DirectoryScanner
             throw new BuildException("IO error scanning directory '"//$NON-NLS-1$
                                      + dir.getAbsolutePath() + "'");//$NON-NLS-1$
         }
-        if (!followSymlinks) {
-            Vector<File> noLinks = new Vector<File>();
-            for (int i = 0; i < newfiles.length; i++) {
-                try {
-                    if (FILE_UTILS.isSymbolicLink(dir, newfiles[i].getName())) {
-                        String name = vpath + newfiles[i].getName();
-                        File file = newfiles[i];
-                        (file.isDirectory()
-                            ? dirsExcluded : filesExcluded).addElement(name);
-                    } else {
-                        noLinks.addElement(newfiles[i]);
-                    }
-                } catch (IOException ioe) {
-                    String msg = "IOException caught while checking "//$NON-NLS-1$
-                        + "for links, couldn't get canonical path!";//$NON-NLS-1$
-                    // will be caught and redirected to Ant's logging system
-                    System.err.println(msg);
-                    noLinks.addElement(newfiles[i]);
-                }
-            }
-            newfiles = (noLinks.toArray(new File[noLinks.size()]));
-        }
         for (int i = 0; i < newfiles.length; i++) {
             String name = vpath + getName(newfiles[i]);
             File file = newfiles[i];
             if (file.isDirectory()) {
                 if (isIncluded(name)) {
-                    accountForIncludedDir(name, file, fast);
+                    accountForIncludedDir(name, file);
                 } else {
                     everythingIncluded = false;
                     dirsNotIncluded.addElement(name);
-                    if (fast && couldHoldIncluded(name)) {
-                        scandir(file, name + File.separator, fast);
+                    if (couldHoldIncluded(name)) {
+                        scandirWrap(file, name + File.separator);
                     }
-                }
-                if (!fast) {
-                    scandir(file, name + File.separator, fast);
                 }
             } else if (file.isFile()) {
                 if (isIncluded(name)) {
@@ -1154,10 +844,10 @@ public class DirectoryScanner
      * @param file directory as File.
      * @param fast whether to perform fast scans.
      */
-    private void accountForIncludedDir(String name, File file, boolean fast) {
+    private void accountForIncludedDir(String name, File file) {
         processIncluded(name, file, dirsIncluded, dirsExcluded, dirsDeselected);
-        if (fast && couldHoldIncluded(name) && !contentsExcluded(name)) {
-            scandir(file, name + File.separator, fast);
+        if (couldHoldIncluded(name) && !contentsExcluded(name)) {
+            scandirWrap(file, name + File.separator);
         }
     }
 
@@ -1180,7 +870,9 @@ public class DirectoryScanner
     }
 
     protected void postInclude(File f, String name) {
-    	// do nothing
+    	if( iterator != null ) {
+    		iterator.addMatch(f, name);
+    	}
     }
 
     protected void postExclude(File f, String name) {
@@ -1360,59 +1052,6 @@ public class DirectoryScanner
     }
 
     /**
-     * Return the names of the files which matched none of the include
-     * patterns. The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.
-     *
-     * @return the names of the files which matched none of the include
-     *         patterns.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getNotIncludedFiles() {
-        slowScan();
-        String[] files = new String[filesNotIncluded.size()];
-        filesNotIncluded.copyInto(files);
-        return files;
-    }
-
-    /**
-     * Return the names of the files which matched at least one of the
-     * include patterns and at least one of the exclude patterns.
-     * The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.
-     *
-     * @return the names of the files which matched at least one of the
-     *         include patterns and at least one of the exclude patterns.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getExcludedFiles() {
-        slowScan();
-        String[] files = new String[filesExcluded.size()];
-        filesExcluded.copyInto(files);
-        return files;
-    }
-
-    /**
-     * <p>Return the names of the files which were selected out and
-     * therefore not ultimately included.</p>
-     *
-     * <p>The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.</p>
-     *
-     * @return the names of the files which were deselected.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getDeselectedFiles() {
-        slowScan();
-        String[] files = new String[filesDeselected.size()];
-        filesDeselected.copyInto(files);
-        return files;
-    }
-
-    /**
      * Return the names of the directories which matched at least one of the
      * include patterns and none of the exclude patterns.
      * The names are relative to the base directory.
@@ -1440,59 +1079,6 @@ public class DirectoryScanner
             throw new IllegalStateException("Must call scan() first");//$NON-NLS-1$
         }
         return dirsIncluded.size();
-    }
-
-    /**
-     * Return the names of the directories which matched none of the include
-     * patterns. The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.
-     *
-     * @return the names of the directories which matched none of the include
-     * patterns.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getNotIncludedDirectories() {
-        slowScan();
-        String[] directories = new String[dirsNotIncluded.size()];
-        dirsNotIncluded.copyInto(directories);
-        return directories;
-    }
-
-    /**
-     * Return the names of the directories which matched at least one of the
-     * include patterns and at least one of the exclude patterns.
-     * The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.
-     *
-     * @return the names of the directories which matched at least one of the
-     * include patterns and at least one of the exclude patterns.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getExcludedDirectories() {
-        slowScan();
-        String[] directories = new String[dirsExcluded.size()];
-        dirsExcluded.copyInto(directories);
-        return directories;
-    }
-
-    /**
-     * <p>Return the names of the directories which were selected out and
-     * therefore not ultimately included.</p>
-     *
-     * <p>The names are relative to the base directory. This involves
-     * performing a slow scan if one has not already been completed.</p>
-     *
-     * @return the names of the directories which were deselected.
-     *
-     * @see #slowScan
-     */
-    public synchronized String[] getDeselectedDirectories() {
-        slowScan();
-        String[] directories = new String[dirsDeselected.size()];
-        dirsDeselected.copyInto(directories);
-        return directories;
     }
 
     /**
@@ -1725,6 +1311,68 @@ public class DirectoryScanner
     protected File getChild(File file, String element) {
     	return new File(file, element);
     }
+    
+    public Iterator<File> iterator() {
+    	iterator = new DirectoryScannerIterator();
+    	return iterator;
+    }
+    
+    public class DirectoryScannerIterator implements Iterator<File> {
+    	protected ArrayList<DSPair> matches;
+    	protected ArrayList<DSPair> toScan;
+    	protected DirectoryScanner scanner;
+    	protected int pointer;
+    	public DirectoryScannerIterator() {
+    		this.matches = new ArrayList<DSPair>();
+    		this.toScan = new ArrayList<DSPair>();
+    		pointer = 0;
+    		iterator = this;
+            scanPrepare();
+            runScan();
+    	}
+    	
+    	protected void addFileToScanList(File file, String vpath) {
+    		toScan.add(0, new DSPair(file, vpath));
+    	}
+    	
+    	protected void addMatch(File file, String vpath) {
+    		matches.add(pointer, new DSPair(file, vpath));
+    	}
+    	
+		public boolean hasNext() {
+			if( pointer <= matches.size() -1 ) return true;
+			if( toScan.isEmpty()) return false;
+			
+			while( !toScan.isEmpty() && pointer == matches.size()) {
+				DSPair pair = toScan.remove(0);
+				scandirImpl(pair.file, pair.vpath);
+			}
+			
+			boolean hasNext =  pointer <= matches.size() -1 ||
+				(pointer == matches.size() && !toScan.isEmpty());
+			if( !hasNext )
+				release();
+			return hasNext;
+		}
 
+		public File next() {
+			if( pointer <= (matches.size()-1))
+				return matches.get(pointer++).file;
+			return null;
+		}
 
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+    	
+    }
+    
+    protected class DSPair {
+    	private File file;
+    	private String vpath;
+    	public DSPair(File file, String vpath) {
+    		this.file = file;
+    		this.vpath = vpath;
+    	}
+    }
 }

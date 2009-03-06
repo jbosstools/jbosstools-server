@@ -15,6 +15,7 @@ import junit.framework.TestSuite;
 
 import org.jboss.ide.eclipse.archives.test.core.ArchivesCoreTest;
 import org.jboss.ide.eclipse.archives.test.core.ant.SimpleAntTest;
+import org.jboss.ide.eclipse.archives.test.model.DirectoryScannerTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelCreationTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelTruezipBridgeTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelUtilTest;
@@ -37,6 +38,7 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(XBUnmarshallTest.class);
         suite.addTestSuite(TruezipUtilTest.class);
         suite.addTestSuite(ModelUtilTest.class);
+        suite.addTestSuite(DirectoryScannerTest.class);
         suite.addTestSuite(ModelCreationTest.class);
         suite.addTestSuite(ModelTruezipBridgeTest.class);
         suite.addTestSuite(SimpleAntTest.class);

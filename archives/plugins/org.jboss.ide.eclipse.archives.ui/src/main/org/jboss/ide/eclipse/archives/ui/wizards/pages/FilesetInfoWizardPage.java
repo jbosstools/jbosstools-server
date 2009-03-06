@@ -10,7 +10,9 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.wizards.pages;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -39,6 +41,7 @@ import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.util.composites.ArchiveFilesetDestinationComposite;
@@ -340,15 +343,20 @@ public class FilesetInfoWizardPage extends WizardPage {
 			try {
 				ds = DirectoryScannerFactory.createDirectoryScanner(
 						replaceVariables(), null, includes, excludes, parentNode.getProjectName(),
-						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), true);
-				String[] fsRelative = ds.getIncludedFiles();
+						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), false);
+				Iterator<File> it = ds.iterator();
+				ArrayList<String> paths2 = new ArrayList<String>();
+				while(it.hasNext() && paths2.size() < 30) {
+					FileWrapper fw = (FileWrapper)it.next();
+					paths2.add(fw.getFilesetRelative());
+				}
 				IPath filesetRelative;
 				final ArrayList<IPath> list = new ArrayList<IPath>();
-				for( int i = 0; i < fsRelative.length; i++ ) {
+				for( int i = 0; i < paths2.size(); i++ ) {
 					if( flattened )
-						filesetRelative = new Path(new Path(fsRelative[i]).lastSegment());
+						filesetRelative = new Path(new Path(paths2.get(i)).lastSegment());
 					else
-						filesetRelative = new Path(fsRelative[i]);
+						filesetRelative = new Path(paths2.get(i));
 					if( !list.contains(filesetRelative))
 						list.add(filesetRelative);
 				}

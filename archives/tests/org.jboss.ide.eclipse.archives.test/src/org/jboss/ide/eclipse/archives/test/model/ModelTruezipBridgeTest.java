@@ -61,7 +61,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		proj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
 	protected void tearDown() throws Exception {
-		proj.delete(true,true,null);
+		ResourcesUtils.deleteProject(proj.getName());
 		File out = outputs.toFile();
 		File[] children = out.listFiles();
 		for( int i = 0; i < children.length; i++ ) {
