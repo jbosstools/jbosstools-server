@@ -53,7 +53,7 @@
     
     <toc></toc> 
     
-<chapter id="quick_start" role="updated" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/as/docs/reference/en/modules/quick_start.xml">
+<chapter id="quick_start"  xml:base="file:///home/ochikvina/WORK/for_compare/trunk/as/docs/reference/en/modules/quick_start.xml">
   <title>Quick Start with JBoss Server</title>
 
   <para>This chapter covers the basics of working with the <property moreinfo="none">JBoss Server</property>. If you
@@ -522,7 +522,7 @@
 </chapter>
 
     
-<chapter id="perspective" role="updated" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/as/docs/reference/en/modules/perspective.xml" xreflabel="perspective">
+<chapter id="perspective"  xml:base="file:///home/ochikvina/WORK/for_compare/trunk/as/docs/reference/en/modules/perspective.xml" xreflabel="perspective">
     <?dbhtml filename="perspective.html"?>
     <chapterinfo>
         <keywordset>
@@ -546,7 +546,7 @@
             <property moreinfo="none">Project archives view</property> and the <property moreinfo="none">JBoss Server
             View</property>.</para>
 
-    <section id="JBossServerView" role="updated">
+    <section id="JBossServerView" >
         <?dbhtml filename="JBossServerView.html"?>
         <title>The JBoss Server View</title>
 
@@ -1299,7 +1299,7 @@
         </section>
     </section>
 
-    <section id="Project_archivesView" role="updated">
+    <section id="Project_archivesView" >
         <title>Project Archives View</title>
         <para>Every application, whether Plain Old Java, J2EE, or some other language altogether,
             needs to be packaged in some way. In Java-related projects, many people use ANT. </para>
