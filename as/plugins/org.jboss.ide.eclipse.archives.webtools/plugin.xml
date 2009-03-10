@@ -102,7 +102,7 @@
 	         icon="icons/multiple_files.gif"
 	         contentProvider="org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider"
 	         labelProvider="org.jboss.ide.eclipse.archives.webtools.ui.FilesetLabelProvider"
-	         name="Filesets"
+	         name="%NavigatorContent_Filesets"
 	         priority="normal">
 	      <triggerPoints>
 	         <instanceof

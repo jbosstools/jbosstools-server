@@ -127,7 +127,7 @@
             icon="icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.archivesContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
-            name="Archives Content"
+            name="%NavigatorContent_ArchivesContent"
             priority="normal"
             providesSaveables="true">
          <triggerPoints>
@@ -154,7 +154,7 @@
             icon="icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.archivesRootBridgeContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
-            name="Project Archives"
+            name="%NavigatorContent_ProjectArchives"
             priority="highest">
          <triggerPoints>
             <instanceof

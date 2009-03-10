@@ -84,7 +84,7 @@
             icon="icons/full/obj16/jmeth_obj.gif"
             id="org.jboss.tools.jmx.ui.internal.views.navigator.root"
             labelProvider="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerLabelProvider"
-            name="MBeans"
+            name="%NavigatorContent_MBeans"
             priority="normal">
          <triggerPoints>
             <instanceof

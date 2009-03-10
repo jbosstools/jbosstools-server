@@ -332,7 +332,7 @@
 	         icon="icons/cview16/servers_view.gif"
 	         id="org.jboss.tools.as.wst.server.ui.ServersView.content.root"
 	         labelProvider="org.jboss.tools.as.wst.server.ui.xpl.ServerLabelProvider"
-	         name="Servers View Default Content"
+	         name="%NavigatorContent_ServersViewDefaultContent"
 	         priority="highest">
 	      <triggerPoints>
 	         <instanceof
@@ -407,7 +407,7 @@
           icon="icons/XMLFile.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.xml"
           labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeLabelProvider"
-          name="XML Configuration"
+          name="%NavigatorContent_XMLConfiguration"
           priority="normal">
        <triggerPoints>
           <instanceof
@@ -474,7 +474,7 @@
           icon="icons/jmeth_obj.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
           labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$LabelProvider"
-          name="JMX"
+          name="%NavigatorContent_JMX"
           priority="low">
        <triggerPoints>
           <instanceof
