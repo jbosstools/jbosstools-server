@@ -131,9 +131,20 @@
             priority="normal"
             providesSaveables="true">
          <triggerPoints>
-            <instanceof
-                  value="org.eclipse.core.resources.IWorkspaceRoot">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.core.model.IArchiveNode">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate$DelayProxy">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate$WrappedProject">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.core.resources.IWorkspaceRoot">
+               </instanceof>
+            </or>
          </triggerPoints>
          <possibleChildren>
             <or>
@@ -157,9 +168,17 @@
             name="%NavigatorContent_ProjectArchives"
             priority="highest">
          <triggerPoints>
-            <instanceof
-                  value="org.eclipse.core.resources.IProject">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.eclipse.core.resources.IProject">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.core.model.IArchiveNode">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate$DelayProxy">
+               </instanceof>
+            </or>
          </triggerPoints>
          <possibleChildren>
             <or>

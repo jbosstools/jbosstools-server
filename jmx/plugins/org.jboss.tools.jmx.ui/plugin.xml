@@ -87,9 +87,26 @@
             name="%NavigatorContent_MBeans"
             priority="normal">
          <triggerPoints>
-            <instanceof
-                  value="org.eclipse.ui.IViewPart">
-            </instanceof>
+            <or>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.tree.Node">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.IConnectionProvider">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$DelayProxy">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.ui.IViewPart">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.IConnectionWrapper">
+               </instanceof>
+            </or>
          </triggerPoints>
          <possibleChildren>
             <or>
@@ -104,6 +121,9 @@
                </instanceof>
                <instanceof
                      value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
+               </instanceof>
+               <instanceof
+                     value="org.jboss.tools.jmx.core.IConnectionWrapper">
                </instanceof>
             </or>
          </possibleChildren>

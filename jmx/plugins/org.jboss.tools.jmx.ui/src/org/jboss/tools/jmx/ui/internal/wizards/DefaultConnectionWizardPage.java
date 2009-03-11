@@ -298,15 +298,19 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	protected void clearMessage() {
 		setErrorMessage(null);
 		setPageComplete(true);
-		getContainer().updateMessage();
-		getContainer().updateButtons();
+		if( getContainer().getCurrentPage() != null ) {
+			getContainer().updateMessage();
+			getContainer().updateButtons();
+		}
 	}
 
 	protected void showError(String message) {
 		setErrorMessage(message);
 		setPageComplete(false);
-		getContainer().updateMessage();
-		getContainer().updateButtons();
+		if( getContainer().getCurrentPage() != null ) {
+			getContainer().updateMessage();
+			getContainer().updateButtons();
+		}
 	}
 
 	protected boolean nameTaken(String s) {
