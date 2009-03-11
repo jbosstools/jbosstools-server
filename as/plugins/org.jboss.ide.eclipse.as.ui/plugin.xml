@@ -336,18 +336,13 @@
 	         priority="highest">
 	      <triggerPoints>
 	         <instanceof
-	               value="org.eclipse.wst.server.core.internal.ServerPlugin">
+	               value="java.lang.Object">
 	         </instanceof>
 	      </triggerPoints>
 	      <possibleChildren>
-	         <or>
-	            <instanceof
-	                  value="org.eclipse.wst.server.core.IServer">
-	            </instanceof>
-	            <instanceof
-	                  value="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
-	            </instanceof>
-	         </or></possibleChildren>
+          <instanceof
+                value="java.lang.Object">
+          </instanceof></possibleChildren>
 	      <actionProvider
 	            class="org.jboss.tools.as.wst.server.ui.xpl.ServerActionProvider"
 	            id="org.jboss.tools.as.wst.server.ui.ServersView.ServerActionProvider"

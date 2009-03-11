@@ -46,34 +46,4 @@ public class ServersView extends CommonNavigator {
 		this.memento = memento;
 		super.init(aSite, aMemento);
 	}
-	
-	protected CommonViewer createCommonViewer(Composite aParent) {
-		CommonViewer aViewer = new CommonViewerExtension(getViewSite().getId(), aParent,
-				SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		initListeners(aViewer);
-		aViewer.getNavigatorContentService().restoreState(memento);
-		return aViewer;
-	}
-
-	
-	public class CommonViewerExtension extends CommonViewer {
-		public CommonViewerExtension(String aViewerId, Composite aParent, int aStyle) {
-			super(aViewerId, aParent, aStyle);
-		}
-		
-		protected void initDragAndDrop() {
-			/* Handle Drag and Drop */
-			int operations = DND.DROP_COPY | DND.DROP_MOVE;
-	
-			CommonDragAdapter dragAdapter = new CommonDragAdapter(
-					getNavigatorContentService(), this);
-			addDragSupport(operations, dragAdapter.getSupportedDragTransfers(),
-					dragAdapter);
-	
-			ServersDropAdapter dropAdapter = new ServersDropAdapter(
-					getNavigatorContentService(), this);
-			addDropSupport(operations, dropAdapter.getSupportedDropTransfers(),
-					dropAdapter);
-		}
-	}
 }
