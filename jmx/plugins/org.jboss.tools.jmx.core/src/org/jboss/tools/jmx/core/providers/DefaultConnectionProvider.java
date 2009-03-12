@@ -92,7 +92,7 @@ public class DefaultConnectionProvider implements IConnectionProvider {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
 
-	public IConnectionWrapper createConnection(Map map) throws CoreException {
+	public DefaultConnectionWrapper createConnection(Map map) throws CoreException {
 		String id = (String)map.get(ID);
 		String url = (String)map.get(URL);
 		String username = (String)map.get(USERNAME);
@@ -111,6 +111,15 @@ public class DefaultConnectionProvider implements IConnectionProvider {
 		if( connections == null )
 			loadConnections();
 		return connections.values().toArray(new IConnectionWrapper[connections.values().size()]);
+	}
+	
+	public DefaultConnectionWrapper getConnection(String id) {
+		IConnectionWrapper[] wraps = getConnections();
+		for( int i = 0; i < wraps.length; i++ ) {
+			if( ((DefaultConnectionWrapper)wraps[i]).getDescriptor().getID().equals(id))
+				return (DefaultConnectionWrapper)wraps[i];
+		}
+		return null;
 	}
 
 	public void addConnection(IConnectionWrapper connection) {
