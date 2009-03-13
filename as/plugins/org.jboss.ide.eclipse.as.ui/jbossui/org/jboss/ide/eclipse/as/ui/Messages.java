@@ -40,9 +40,11 @@ public class Messages {
 	public static String rwf_Explanation;
 	public static String rwf_BaseName;
 	public static String rwf_NameInUse;
-	public static String rwf_invalidDirectory;
+	public static String rwf_homeMissingFiles;
+	public static String rwf_homeIncorrectVersion;
 	public static String rwf_nameTextBlank;
 	public static String rwf_homeDirBlank;
+	public static String rwf_NoVMSelected;
 	public static String swf_Title;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;

@@ -445,9 +445,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	private void updateErrorMessage() {
 		String error = getErrorString();
-		if (error == null)
-			handle.setMessage(null, IMessageProvider.NONE);
-		else
+		if (error == null) {
+			String warn = getWarningString();
+			if( warn != null )
+				handle.setMessage(warn, IMessageProvider.WARNING);
+			else
+				handle.setMessage(null, IMessageProvider.NONE);
+		} else
 			handle.setMessage(error, IMessageProvider.ERROR);
 	}
 
@@ -462,7 +466,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		}
 
 		if (!isHomeValid())
-			return Messages.rwf_invalidDirectory;
+			return Messages.rwf_homeMissingFiles;
 
 		if (name == null || name.equals(""))
 			return Messages.rwf_nameTextBlank;
@@ -471,19 +475,31 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			return Messages.rwf_homeDirBlank;
 
 		if (jreComboIndex < 0)
-			return "No VM selected";
+			return Messages.rwf_NoVMSelected;
 
+		return null;
+	}
+	
+	private String getWarningString() {
+		if( !isHomeVersionValid())
+			return Messages.rwf_homeIncorrectVersion;
 		return null;
 	}
 
 	protected boolean isHomeValid() {
 		if( homeDir == null  || !(new File(homeDir).exists())) return false;
+		IRuntime rt = (IRuntime) getTaskModel().getObject(
+				TaskModel.TASK_RUNTIME);
+		String v = rt.getRuntimeType().getVersion();
+		return new Path(homeDir).append("bin").append("run.jar").toFile().exists();
+	}
+	
+	protected boolean isHomeVersionValid() {
 		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
-		return new Path(homeDir).append("bin").append("run.jar").toFile().exists() 
-				&& version.startsWith(v);
+		return version.startsWith(v);
 	}
 
 	private void browseHomeDirClicked() {
