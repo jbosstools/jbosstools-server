@@ -49,7 +49,7 @@ public class ServerLabelProvider extends LabelProvider {
 		if( element == ServerContentProvider.INITIALIZING)
 			return Messages.viewInitializing;
 
-		return "-";
+		return null;
 	}
 	public Image getImage(Object element) {
 		Image image = null;
