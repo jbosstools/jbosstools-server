@@ -41,6 +41,7 @@ public interface ClasspathConstants {
 	public static final String JBOSSWEB_SAR = "jbossweb.sar"; //$NON-NLS-1$
 	public static final String JBOSS_WEB_SERVICE_JAR = "jboss-web-service.jar";  //$NON-NLS-1$
 	public static final String EJB3_DEPLOYER = "ejb3.deployer"; //$NON-NLS-1$
+	public static final String WEBBEANS_DEPLOYER = "webbeans.deployer"; //$NON-NLS-1$
 	public static final String AS5_AOP_DEPLOYER = "jboss-aop-jboss5.deployer"; //$NON-NLS-1$
 	public static final String AOP_JDK5_DEPLOYER = "jboss-aop-jdk50.deployer"; //$NON-NLS-1$
 	public static final String JBOSS_AOP_JDK5_JAR = "jboss-aop-jdk50.jar"; //$NON-NLS-1$
@@ -58,6 +59,7 @@ public interface ClasspathConstants {
 	public static final String HIBERNATE_CLIENT_JAR = "hibernate-client.jar";  //$NON-NLS-1$
 	public static final String JBOSSALL_CLIENT_JAR = "jbossall-client.jar"; //$NON-NLS-1$
 	public static final String JBOSSWEB_TOMCAT_50_SAR = "jbossweb-tomcat50.sar"; //$NON-NLS-1$
+	public static final String JSR299_API_JAR = "jsr299-api.jar"; //$NON-NLS-1$
 	
 	public static final String JAVAX_SERVLET_JAR = "javax.servlet.jar"; //$NON-NLS-1$
 	public static final String JAVAX_SERVLET_JSP_JAR = "javax.servlet.jsp.jar"; //$NON-NLS-1$
