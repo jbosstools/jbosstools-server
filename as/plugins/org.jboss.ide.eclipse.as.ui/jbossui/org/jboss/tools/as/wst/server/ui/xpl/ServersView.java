@@ -11,16 +11,10 @@
  *******************************************************************************/
 package org.jboss.tools.as.wst.server.ui.xpl;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.navigator.CommonDragAdapter;
-import org.eclipse.ui.navigator.CommonDropAdapter;
 import org.eclipse.ui.navigator.CommonNavigator;
-import org.eclipse.ui.navigator.CommonViewer;
 /**
  * A view of servers, their modules, and status.
  */
@@ -33,12 +27,6 @@ public class ServersView extends CommonNavigator {
 		super();
 	}
 	
-	/*
-	 *  Stuff that shouldn't even be here but CNF is kinda lame
-	 *  Must override currently to overcome the bug below: 
-	 *  
-	 *  https://bugs.eclipse.org/bugs/show_bug.cgi?id=261606
-	 */
 	private IMemento memento;
 	
 	public void init(IViewSite aSite, IMemento aMemento)
