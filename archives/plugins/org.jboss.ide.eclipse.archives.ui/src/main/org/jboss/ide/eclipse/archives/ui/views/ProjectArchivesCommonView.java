@@ -167,4 +167,7 @@ public class ProjectArchivesCommonView extends CommonNavigator implements IArchi
 	public void preferenceChanged(String key, boolean val) {
 		jiggleViewerInput();
 	}
+	public void preferenceChanged(String key, String val) {
+		jiggleViewerInput();
+	}
 }

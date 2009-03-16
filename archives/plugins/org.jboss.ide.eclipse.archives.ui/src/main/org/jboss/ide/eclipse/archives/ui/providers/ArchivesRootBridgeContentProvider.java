@@ -72,4 +72,7 @@ public class ArchivesRootBridgeContentProvider
 		viewer.refresh();
 	}
 
+	public void preferenceChanged(String key, String val) {
+		viewer.refresh();
+	}
 }

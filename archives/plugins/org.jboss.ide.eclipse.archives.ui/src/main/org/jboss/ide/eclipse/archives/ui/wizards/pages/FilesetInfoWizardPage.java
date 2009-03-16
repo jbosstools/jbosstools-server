@@ -44,6 +44,7 @@ import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.Directo
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
+import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.util.composites.ArchiveFilesetDestinationComposite;
 import org.jboss.ide.eclipse.archives.ui.util.composites.ArchiveSourceDestinationComposite;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
@@ -96,9 +97,18 @@ public class FilesetInfoWizardPage extends WizardPage {
 		mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		mainComposite.setLayout(new FormLayout());
-		Group info = createInfoGroup(mainComposite);
-		createPreviewGroup(mainComposite, info);
-
+		Composite restrainer = new Composite(mainComposite, SWT.NONE);
+		restrainer.setLayout(new FormLayout());
+		FormData restrainerData = new FormData();
+		restrainerData.left = new FormAttachment(0,5);
+		restrainerData.top = new FormAttachment(0,5);
+		restrainerData.bottom = new FormAttachment(100,-5);
+		restrainerData.right = new FormAttachment(0,600);
+		restrainer.setLayoutData(restrainerData);
+		
+		Group info = createInfoGroup(restrainer);
+		createPreviewGroup(restrainer, info);
+		mainComposite.layout();
 		fillDefaults();
 		addListeners();
 		changePreview();
@@ -322,6 +332,9 @@ public class FilesetInfoWizardPage extends WizardPage {
 			flattenedNo.setSelection(!flattened);
 			includes = "**"; //$NON-NLS-1$
 			includesText.setText(includes);
+			boolean useDefaultExcludes = PrefsInitializer.getBoolean(PrefsInitializer.PREF_USE_DEFAULT_EXCLUDES);
+			if( useDefaultExcludes)
+				excludesText.setText(PrefsInitializer.getString(PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST));
 		}
 
 	}

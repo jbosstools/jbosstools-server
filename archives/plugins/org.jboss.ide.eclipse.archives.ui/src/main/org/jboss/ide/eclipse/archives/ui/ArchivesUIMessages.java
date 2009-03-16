@@ -136,6 +136,9 @@ public class ArchivesUIMessages extends NLS {
 	public static String ShowRootDirectory;
 	public static String ShowRootProject;
 	public static String ShowAllProjects;
+	public static String FilesetPreferences;
+	public static String EnableDefaultExcludes;
+
 	public static String ArchivesVariables;
 	public static String VariablesGroup;
 	public static String Add;

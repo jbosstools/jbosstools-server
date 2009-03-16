@@ -17,16 +17,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
@@ -44,7 +49,9 @@ public class MainPreferencePage extends PropertyPage implements
 	private Button showProjectRoot, showAllProjects;
 	private Button automaticBuilder, showErrorDialog, overrideButton;
 	private Button showNodeOnAllProjects;
-	private Group corePrefGroup, viewPrefGroup, packageExplorerGroup;
+	private Button enableDefaultExcludes;
+	private Text defaultExcludes;
+	private Group corePrefGroup, viewPrefGroup, packageExplorerGroup, filesetGroup;
 	private Composite overrideComp;
 
 
@@ -62,6 +69,7 @@ public class MainPreferencePage extends PropertyPage implements
 		createCorePrefs(main);
 		createViewPrefs(main);
 		createProjectExplorerPrefs(main);
+		createFilesetPrefs(main);
 		fillValues();
 		return main;
 	}
@@ -89,7 +97,8 @@ public class MainPreferencePage extends PropertyPage implements
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR, getElement(), false));
 		showProjectRoot.setSelection(
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, getElement(), false));
-
+		enableDefaultExcludes.setSelection(PrefsInitializer.getBoolean(PrefsInitializer.PREF_USE_DEFAULT_EXCLUDES, getElement(), false));
+		defaultExcludes.setText(PrefsInitializer.getString(PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST, getElement(), true));
 		showAllProjects.setEnabled(showProjectRoot.getSelection());
 		if (!showProjectRoot.getSelection())
 			showAllProjects.setSelection(false);
@@ -148,6 +157,29 @@ public class MainPreferencePage extends PropertyPage implements
 		showNodeOnAllProjects = new Button(packageExplorerGroup, SWT.CHECK);
 		showNodeOnAllProjects.setText(ArchivesUIMessages.EnableNodeAlways);
 	}
+	
+	protected void createFilesetPrefs(Composite main) {
+		filesetGroup = new Group(main, SWT.NONE);
+		filesetGroup.setText(ArchivesUIMessages.FilesetPreferences);
+		filesetGroup.setLayout(new FormLayout());
+		filesetGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		enableDefaultExcludes = new Button(filesetGroup, SWT.CHECK);
+		enableDefaultExcludes.setText(ArchivesUIMessages.EnableDefaultExcludes);
+		defaultExcludes = new Text(filesetGroup, SWT.DEFAULT);
+		FormData fd = new FormData();
+		fd.top = new FormAttachment(0,5);
+		fd.left = new FormAttachment(0,5);
+		enableDefaultExcludes.setLayoutData(fd);
+		
+		fd = new FormData();
+		fd.left = new FormAttachment(0,5);
+		fd.top = new FormAttachment(enableDefaultExcludes, 5);
+		fd.right = new FormAttachment(0,350);
+		fd.bottom = new FormAttachment(100,-10);
+		defaultExcludes.setLayoutData(fd);
+		
+	}
 
 	protected void createViewPrefs(Composite main) {
 
@@ -198,6 +230,8 @@ public class MainPreferencePage extends PropertyPage implements
 		showProjectRoot.setSelection(true);
 		showAllProjects.setSelection(false);
 		showNodeOnAllProjects.setSelection(false);
+		enableDefaultExcludes.setSelection(false);
+		defaultExcludes.setText(DirectoryScanner.implodeStrings(DirectoryScanner.getDefaultExcludes()));
 		if( getResourceLocationIfExists() != null ) {
 			overrideButton.setSelection(false);
 			setWidgetsEnabled(overrideButton.getSelection());
@@ -217,6 +251,8 @@ public class MainPreferencePage extends PropertyPage implements
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, showProjectRoot.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_SHOW_ALL_PROJECTS, showAllProjects.getSelection(), getElement());
 		PrefsInitializer.setBoolean(PrefsInitializer.PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, showNodeOnAllProjects.getSelection(), getElement());
+		PrefsInitializer.setBoolean(PrefsInitializer.PREF_USE_DEFAULT_EXCLUDES, enableDefaultExcludes.getSelection(), getElement());
+		PrefsInitializer.setString(PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST, defaultExcludes.getText(), getElement());
 		return true;
 	}
 }

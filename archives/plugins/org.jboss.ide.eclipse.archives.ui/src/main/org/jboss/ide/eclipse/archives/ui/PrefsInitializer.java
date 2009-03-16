@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 
 public class PrefsInitializer extends AbstractPreferenceInitializer {
 
@@ -33,10 +34,14 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 	public static final String PREF_SHOW_ALL_PROJECTS = "showAllProjects";//$NON-NLS-1$
 	public static final String PREF_SHOW_BUILD_ERROR_DIALOG = "showBuildErrorDialog";//$NON-NLS-1$
 	public static final String PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE = "alwaysShowProjectExplorerNode";//$NON-NLS-1$
+	public static final String PREF_USE_DEFAULT_EXCLUDES = "useDefaultExcludes";//$NON-NLS-1$
+	public static final String PREF_DEFAULT_EXCLUDE_LIST = "defaultExcludesList";//$NON-NLS-1$
+	
 	public static final ArrayList<IArchivesPreferenceListener> listeners = new ArrayList<IArchivesPreferenceListener>();
 
 	public static interface IArchivesPreferenceListener {
 		public void preferenceChanged(String key, boolean val);
+		public void preferenceChanged(String key, String val);
 	}
 
 	public void initializeDefaultPreferences() {
@@ -47,6 +52,9 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		prefs.putBoolean(PREF_SHOW_ALL_PROJECTS, false);
 		prefs.putBoolean(PREF_SHOW_BUILD_ERROR_DIALOG, true);
 		prefs.putBoolean(PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, false);
+		prefs.putBoolean(PREF_USE_DEFAULT_EXCLUDES, true);
+		prefs.put(PREF_DEFAULT_EXCLUDE_LIST, DirectoryScanner.implodeStrings(DirectoryScanner.getDefaultExcludes()));
+		
 		try {
 			prefs.flush();
 		} catch (org.osgi.service.prefs.BackingStoreException e) {
@@ -76,13 +84,45 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		} catch (org.osgi.service.prefs.BackingStoreException e) { } // swallow
 		fireChanged(key, val);
 	}
+	
+	public static void setString(String key, String val) {
+		setString(key, val, null);
+	}
 
+	public static void setString(String key, String val, IAdaptable adaptable) {
+		QualifiedName name = new QualifiedName(PackagesUIPlugin.PLUGIN_ID, key);
+		if( adaptable != null ) {
+			IResource project = (IResource)adaptable.getAdapter(IResource.class);
+			try {
+				if( project != null && project.getPersistentProperty(name) != null) {
+					project.setPersistentProperty(name, val);
+					return;
+				}
+			} catch(CoreException ce) {}
+		}
+		IEclipsePreferences prefs = new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID);
+		prefs.put(key, val);
+		try {
+			prefs.flush();
+		} catch (org.osgi.service.prefs.BackingStoreException e) { } // swallow
+		fireChanged(key, val);
+	}
+	
 	protected static void fireChanged(String key, boolean val) {
 		Iterator<IArchivesPreferenceListener> i = listeners.iterator();
 		while(i.hasNext()) {
 			i.next().preferenceChanged(key, val);
 		}
 	}
+	
+	protected static void fireChanged(String key, String val) {
+		Iterator<IArchivesPreferenceListener> i = listeners.iterator();
+		while(i.hasNext()) {
+			i.next().preferenceChanged(key, val);
+		}
+	}
+	
+	
 
 	public static void addListener(IArchivesPreferenceListener listener) {
 		if( !listeners.contains(listener))
@@ -126,5 +166,27 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		}
 		boolean defaultVal = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, false);
 		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).getBoolean(key, defaultVal);
+	}
+	
+	public static String getString(String key) { 
+		return getString(key, null, true);
+	}
+	
+	public static String getString(String key, IAdaptable adaptable, boolean effective ) {
+		QualifiedName name = new QualifiedName(PackagesUIPlugin.PLUGIN_ID, key);
+		if( adaptable != null ) {
+			IResource project = (IResource)adaptable.getAdapter(IResource.class);
+			boolean specific = ArchivesCore.getInstance().getPreferenceManager().areProjectSpecificPrefsEnabled(project.getLocation());
+			//if( adaptable != null && WorkspacePreferenceManager.areProjectSpecificPrefsEnabled(project.getLocation())) {
+			if( specific ) {
+				try {
+					if( project != null && project.getPersistentProperty(name) != null) {
+						return project.getPersistentProperty(name);
+					}
+				} catch(CoreException ce) {}
+			}
+		}
+		String defaultVal = new DefaultScope().getNode(PackagesUIPlugin.PLUGIN_ID).get(key, ""); //$NON-NLS-1$
+		return new InstanceScope().getNode(PackagesUIPlugin.PLUGIN_ID).get(key, defaultVal);
 	}
 }
