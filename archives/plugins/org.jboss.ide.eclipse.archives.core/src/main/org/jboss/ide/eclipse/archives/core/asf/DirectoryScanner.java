@@ -402,6 +402,13 @@ public class DirectoryScanner {
         		new String[defaultExcludes.size()]);
     }
 
+	public static String implodeStrings(String[] strings) {
+		StringBuffer buffer = new StringBuffer();
+		for( int i = 0; i < strings.length; i++ )
+			buffer.append(strings[i]).append(',');
+		return buffer.toString();
+	}
+    
     public static boolean addDefaultExclude(String s) {
         if (defaultExcludes.indexOf(s) == -1) {
             defaultExcludes.add(s);
