@@ -481,25 +481,22 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	private String getWarningString() {
-		if( !isHomeVersionValid())
-			return Messages.rwf_homeIncorrectVersion;
+		if( getHomeVersionWarning() != null )
+			return getHomeVersionWarning();
 		return null;
 	}
 
 	protected boolean isHomeValid() {
 		if( homeDir == null  || !(new File(homeDir).exists())) return false;
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String v = rt.getRuntimeType().getVersion();
 		return new Path(homeDir).append("bin").append("run.jar").toFile().exists();
 	}
 	
-	protected boolean isHomeVersionValid() {
+	protected String getHomeVersionWarning() {
 		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
-		return version.startsWith(v);
+		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 
 	private void browseHomeDirClicked() {
