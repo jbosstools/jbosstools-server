@@ -548,8 +548,8 @@
 
             <para>Starting from 2.0.0.CR2 version of <property>JBoss AS Tools</property> the
                     <property>JBoss Server View</property> supports drag-n-drop of deployable and
-                    runnable projects/resources.</para>
-            
+                runnable projects/resources.</para>
+
             <figure>
                 <title>Dragging to the JBoss Server View</title>
                 <mediaobject>
@@ -558,9 +558,9 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            
+
             <para>With drag-n-drop the following actions can be performed:</para>
-            
+
             <itemizedlist>
                 <listitem>
                     <para>dragging a project to a server will deploy it to the server and run it by
@@ -578,9 +578,9 @@
 
                 <listitem>
                     <para>dragging a deployable resource (i.e. a datasource (<emphasis>
-                        <property>-ds.xml</property></emphasis>) file that has
-                        been made deployable) will simply deploy that resource directly to the
-                        server</para>
+                            <property>-ds.xml</property>
+                        </emphasis>) file that has been made deployable) will simply deploy that
+                        resource directly to the server</para>
                 </listitem>
             </itemizedlist>
 
@@ -769,6 +769,21 @@
                     url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"
                     >here</ulink> to find parameters which can be specified for <property>JBoss
                     Server</property>.</para>
+
+            <note>
+                <title>Note:</title>
+                <para>The Launch Configurations for JBoss Servers are enough strict in enforcing the
+                    configured values in the server in order to avoid inconsistencies between
+                    server&apos;s and their configured runtime.</para>
+
+                <para>For example, if you change the launch configuration program arguments to <emphasis>&quot;-c
+                    myConfig&quot;</emphasis> but do not change the targeted runtime configuration, then your program
+                    arguments will be ignored. The server runtime &quot;wins&quot; so to speak. This ensures
+                    consistency and if you change the location of the runtime, your launch
+                    configurations will automatically pick that up.</para>
+                
+                <para>Values are not controlled by the server and its runtime setup will be passed on unaltered.</para>
+            </note>
         </section>
 
         <section>
