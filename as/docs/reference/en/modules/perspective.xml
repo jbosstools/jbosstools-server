@@ -249,7 +249,7 @@
                                 <para>Publish</para>
                             </entry>
                             <entry>
-                                <para>The action for synching the publish information between the
+                                <para>The action for synchronizing the publish information between the
                                     server and workspace</para>
                             </entry>
                         </row>
@@ -405,7 +405,7 @@
                     </emphasis> category allows you to quickly browse to descriptor files in your
                     server's deploy directory and check or change the values. Basically, <emphasis>
                         <property>XML Configuration</property>
-                    </emphasis> includes XML XPaths where a xpath is a path used to access some
+                    </emphasis> includes XML XPaths where an xpath is a path used to access some
                     specific part of an xml document. </para>
 
                 <note>
@@ -704,7 +704,7 @@
             <tip>
                 <title>Tip:</title>
                 <para>On the figure you can see that a username/password is available in the UI when
-                    configuring the server. If you get an SecurityException when trying to launch
+                    configuring the server. If you get a SecurityException when trying to launch
                     the server, it is most likely because your server is protected and hence you
                     need to fill the username/password fields with appropriate values.</para>
             </tip>
@@ -997,11 +997,11 @@
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
 
-                <para>You can create a Fileset with flattenning or without it. Look at the
+                <para>You can create a Fileset with flattening or without it. Look at the
                     difference on the figure below.</para>
 
                 <figure>
-                    <title>The FileSet with flattenning and without it</title>
+                    <title>The FileSet with flattening and without it</title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="images/perspective/perspective_24a.png"/>

@@ -57,7 +57,7 @@
 
 		<para> The first page of most WTP projects allows you to target a specific runtime,
 			representing a server's library location. It will also provide you the ability to add
-			this project to an EAR project, and select a pre-selected default set of facets, called
+			this project to an EAR project, and select a preselected default set of facets, called
 			a configuration, rather than manually select each facet you might want.</para>
 		<para> Selecting the runtime, again, allows the project to install the proper classpaths to
 			the project so it knows what code to compile against.</para>
