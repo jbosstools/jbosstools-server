@@ -24,7 +24,7 @@
          one child, a connectionProvider with a class that implements
          org.jboss.tools.jmx.core.IConnectionProvider.</para>
       
-      <para>An IConnectionProvider is resposnbile for creation and deletion of IConnectionWrapper
+      <para>An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
          objects. It must also keep a list of listeners that it is expected to inform when a
          connection is added or removed from its list. </para>
       
