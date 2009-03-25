@@ -249,8 +249,8 @@
                                 <para>Publish</para>
                             </entry>
                             <entry>
-                                <para>The action for synchronizing the publish information between the
-                                    server and workspace</para>
+                                <para>The action for synchronizing the publish information between
+                                    the server and workspace</para>
                             </entry>
                         </row>
 
@@ -704,9 +704,9 @@
             <tip>
                 <title>Tip:</title>
                 <para>On the figure you can see that a username/password is available in the UI when
-                    configuring the server. If you get a SecurityException when trying to launch
-                    the server, it is most likely because your server is protected and hence you
-                    need to fill the username/password fields with appropriate values.</para>
+                    configuring the server. If you get a SecurityException when trying to launch the
+                    server, it is most likely because your server is protected and hence you need to
+                    fill the username/password fields with appropriate values.</para>
             </tip>
 
             <para>It should be pointed out that our server adapter by default tries to automatically
@@ -754,7 +754,8 @@
                 modify the server&apos;s launch configuration. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
-                arguments and other things that are relevant to launching the server.</para>
+                arguments, classpaths and other things that are relevant to launching the
+                server.</para>
 
             <figure>
                 <title>Launch Configuration Properties</title>
@@ -772,18 +773,46 @@
 
             <note>
                 <title>Note:</title>
-                <para>The Launch Configurations for JBoss Servers are enough strict in enforcing the
-                    configured values in the server in order to avoid inconsistencies between
-                    server&apos;s and their configured runtime.</para>
+                <para>Please note, that the Launch Configurations for JBoss Servers are enough
+                    strict in enforcing the configured values in the server in order to avoid
+                    inconsistencies between server&apos;s and their configured runtime.</para>
 
-                <para>For example, if you change the launch configuration program arguments to <emphasis>&quot;-c
-                    myConfig&quot;</emphasis> but do not change the targeted runtime configuration, then your program
-                    arguments will be ignored. The server runtime &quot;wins&quot; so to speak. This ensures
-                    consistency and if you change the location of the runtime, your launch
-                    configurations will automatically pick that up.</para>
-                
-                <para>Values are not controlled by the server and its runtime setup will be passed on unaltered.</para>
+                <para>For example, if you change the launch configuration program arguments to
+                        <emphasis>&quot;-c myConfig&quot;</emphasis> but do not change the
+                    targeted runtime configuration, then your program arguments will be ignored. The
+                    server runtime &quot;wins&quot; so to speak. This ensures consistency
+                    and if you change the location of the runtime, your launch configurations will
+                    automatically pick that up.</para>
+
+                <para>Values are not controlled by the server and its runtime setup will be passed
+                    on unaltered.</para>
             </note>
+
+            <para>Until 3.0.0.GA release of <property>JBoss Tools</property>, the servers classpath was readonly, but that caused
+                problems for users wanting to add their own jars in the startup classpath. That is
+                relevant if you need to patch the server, add a custom charset or other tweaks that
+                require early access to the classpath.</para>
+
+            <para>Now all servers have a custom &apos;server runtime classpath
+                container&apos;, which is there by default and point to the default jars in
+                JBoss. You can now adjust the classpath. Then just make sure this container is there
+                if you want the classpath to be picked up.</para>
+
+            <figure>
+                <title>Server Classpaths</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/server_classpaths.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>If for some reason you have a launch configuration without this container, <emphasis>
+                <property>Restore
+                    Default Entries</property></emphasis> should add it properly. Also, <emphasis>
+                        <property>Restore
+                            Default Entries</property></emphasis> will also remove any
+                extra entries you added yourself.</para>
         </section>
 
         <section>
@@ -997,8 +1026,8 @@
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
 
-                <para>You can create a Fileset with flattening or without it. Look at the
-                    difference on the figure below.</para>
+                <para>You can create a Fileset with flattening or without it. Look at the difference
+                    on the figure below.</para>
 
                 <figure>
                     <title>The FileSet with flattening and without it</title>
