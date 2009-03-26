@@ -17,13 +17,20 @@
 
     <itemizedlist>
         <listitem>
-            <para>the Attributes page</para>
+            <para>the <emphasis>
+                <property>Attributes</property></emphasis> page</para>
         </listitem>
         <listitem>
-            <para>the Operations page</para>
+            <para>the <emphasis>
+                <property>Operations</property></emphasis> page</para>
         </listitem>
         <listitem>
-            <para>the Info page </para>
+            <para>the <emphasis>
+                <property>Notifications</property></emphasis> page </para>
+        </listitem>
+        <listitem>
+            <para>the <emphasis>
+                <property>Info</property></emphasis> page </para>
         </listitem>
     </itemizedlist>
 
@@ -56,11 +63,22 @@
 
     <section>
         <title>Notifications Page</title>
-        <para>One more page in the <property>MBean Editor</property> is a Notifications Page, which gives the possibility to
+        <para>One more page in the <property>MBean Editor</property> is the <emphasis>
+            <property>Notifications</property></emphasis> page, which gives the possibility to
             subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
-            unchecking) the Subscribe checkbox. </para>
+            unchecking) the <emphasis>
+                <property>Subscribe</property></emphasis> button in the right top corner. </para>
         <para>The list of notifications is refreshed every time a new notification is
-            received:</para>
+        received:</para>
+        
+        <figure>
+            <title>MBean Editor Notifications Page</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/notifications.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
 
         <note>
             <title>Note</title>
