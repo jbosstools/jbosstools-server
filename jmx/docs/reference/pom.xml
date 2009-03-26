@@ -156,7 +156,9 @@
     </distributionManagement>
     
     <properties>
-        <stylesdir>../../../documentation/jbosstools-docbook-xslt/src/main/resources/</stylesdir>
+        <xsl-single>classpath:/xslt/org/jboss/tools/xhtml-single.xsl</xsl-single>
+        <xsl-chunked>classpath:/xslt/org/jboss/tools/xhtml.xsl</xsl-chunked>
+        <xsl-pdf>classpath:/xslt/org/jboss/tools/pdf.xsl</xsl-pdf> 
         <cssdir>../../../documentation/jbosstools-jdocbook-style/src/main/org/css/</cssdir>
 	<master>master.xml</master>
         <translation>en-US</translation>
