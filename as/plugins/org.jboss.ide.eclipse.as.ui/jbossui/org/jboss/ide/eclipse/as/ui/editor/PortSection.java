@@ -178,13 +178,13 @@ public class PortSection extends ServerEditorSection {
 			detect.setLayoutData(data);
 
 			data = new FormData();
-			data.left = new FormAttachment(detect, -200);
 			data.right = new FormAttachment(detect, -5);
+			data.left = new FormAttachment(0, 100);
 			data.top = new FormAttachment(0,5);
 			text.setLayoutData(data);
 
 			data = new FormData();
-			data.right = new FormAttachment(text,-5);
+			data.left = new FormAttachment(0,5);
 			data.top = new FormAttachment(0,8);
 			label.setLayoutData(data);
 
@@ -274,6 +274,7 @@ public class PortSection extends ServerEditorSection {
 		data = new FormData();
 		data.top = new FormAttachment(top,0);
 		data.left = new FormAttachment(0,0);
+		data.right = new FormAttachment(100,-5);
 		wrapper.setLayoutData(data);
 		top = null;
 		for( int i = 0; i < extensions.length; i++ ) {
