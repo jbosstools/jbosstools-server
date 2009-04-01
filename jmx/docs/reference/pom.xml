@@ -88,6 +88,11 @@
                         <version>1.1.0</version>
                         <type>jdocbook-style</type>
                     </dependency>
+                    <dependency> 
+                        <groupId>org.apache.xmlgraphics</groupId> 
+                        <artifactId>fop</artifactId> 
+                        <version>0.95</version> 
+                    </dependency> 
                 </dependencies>
                 
                 <configuration>
