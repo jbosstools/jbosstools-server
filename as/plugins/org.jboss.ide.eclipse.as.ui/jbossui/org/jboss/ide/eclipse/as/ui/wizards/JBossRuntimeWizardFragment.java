@@ -119,7 +119,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
-		handle.setTitle(Messages.rwf_Title);
+		handle.setTitle( getRuntime() == null ? 
+				Messages.rwf_TitleCreate : Messages.rwf_TitleEdit);
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
 				version);
@@ -156,16 +157,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private void fillWidgets() {
 		boolean canEdit = true;
 
-		// STUPID ECLIPSE BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=263928
-		IRuntime r = (IRuntime) getTaskModel()
-			.getObject(TaskModel.TASK_RUNTIME);
-		String oldName = r.getName();
-		if( r.isWorkingCopy() ) {
-			String newName = oldName.replace("Enterprise Application Platform", "EAP");
-			newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
-			((IRuntimeWorkingCopy)r).setName(newName);
-		}
-		
 		IJBossServerRuntime rt = getRuntime();
 		if (rt != null) {
 			originalName = rt.getRuntime().getName();
@@ -175,7 +166,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
 			homeDir = (value != null && value.length() != 0) ? value : rt.getRuntime().getLocation().toOSString();
 			homeDirText.setText(homeDir);
-			((IRuntimeWorkingCopy)r).setLocation(new Path(homeDir));
+			((IRuntimeWorkingCopy)rt.getRuntime()).setLocation(new Path(homeDir));
 			config = rt.getJBossConfiguration();
 			configurations.setConfiguration(config);
 			configLabel.setText(Messages.wf_ConfigLabel);
@@ -195,6 +186,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			homeDirText.setEditable(canEdit);
 			homeDirButton.setEnabled(canEdit);
 			configurations.getTable().setVisible(canEdit);
+		} else {
+			// STUPID ECLIPSE BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=263928
+			IRuntime r = (IRuntime) getTaskModel()
+				.getObject(TaskModel.TASK_RUNTIME);
+			String oldName = r.getName();
+			if( r.isWorkingCopy() ) {
+				String newName = oldName.replace("Enterprise Application Platform", "EAP");
+				newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
+				((IRuntimeWorkingCopy)r).setName(newName);
+			}
 		}
 	}
 
