@@ -20,11 +20,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IPublishListener;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.archives.core.model.AbstractBuildListener;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
@@ -40,7 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
  *
  * @author rob.stryker@jboss.com
  */
-public class ArchivesModuleModelListener implements IArchiveModelListener {
+public class ArchivesModuleModelListener extends AbstractBuildListener implements IArchiveModelListener {
 
 	public static ArchivesModuleModelListener instance;
 	public static final String DEPLOY_SERVERS = "org.jboss.ide.eclipse.as.core.model.PackagesListener.DeployServers";//$NON-NLS-1$
@@ -53,33 +55,49 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 		return instance;
 	}
 
+	private IPublishListener publishListener;
+	private ArrayList<IServer> publishing;
 	public ArchivesModuleModelListener() {
 		ArchivesModel.instance().addModelListener(this);
-	}
-
-	public void finishedBuildingArchive(IArchive pkg) {
-		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
-			publish(pkg);
-		}
+		ArchivesModel.instance().addBuildListener(this);
+		publishing = new ArrayList<IServer>();
+		publishListener = new IPublishListener() {
+			public void publishFinished(IServer server, IStatus status) {
+				publishing.remove(server);
+			}
+			public void publishStarted(IServer server) {
+				publishing.add(server);
+			} 
+		};
 	}
 
 	// If we're supposed to auto-deploy, get on it
-	protected static void publish(IArchive pkg) {
-		String servers = pkg.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
-		publish(pkg, servers, IServer.PUBLISH_INCREMENTAL);
+	public void finishedBuildingArchive(IArchive pkg) {
+		if( pkg.isTopLevel() && new Boolean(pkg.getProperty(DEPLOY_AFTER_BUILD)).booleanValue()) {
+			String servers = pkg.getProperty(ArchivesModuleModelListener.DEPLOY_SERVERS);
+			publish(pkg, servers, IServer.PUBLISH_INCREMENTAL);
+		}
 	}
-	public static void publish(IArchive pkg, String servers, int publishType) {
+
+	public void publish(IArchive pkg, String servers, int publishType) {
 		IModule[] module = getModule(pkg);
 		if( module[0] == null ) return;
 		DeployableServerBehavior[] serverBehaviors = ArchivesModuleModelListener.getServers(servers);
 		if( serverBehaviors != null ) {
 			for( int i = 0; i < serverBehaviors.length; i++ ) {
-				publish(serverBehaviors[i].getServer(), publishType, module );
+				if( !publishing.contains(serverBehaviors[i].getServer())) {
+					try {
+						serverBehaviors[i].getServer().addPublishListener(publishListener);
+						publish(serverBehaviors[i].getServer(), publishType, module );
+					} finally {
+						serverBehaviors[i].getServer().removePublishListener(publishListener);
+					}
+				}
 			}
 		}
 	}
 
-	protected static IStatus publish(IServer server, int publishType, IModule[] module ) {
+	protected IStatus publish(IServer server, int publishType, IModule[] module ) {
 		try {
 			IServerWorkingCopy copy = server.createWorkingCopy();
 			copy.modifyModules(module, new IModule[0], new NullProgressMonitor());
@@ -92,12 +110,12 @@ public class ArchivesModuleModelListener implements IArchiveModelListener {
 		return Status.OK_STATUS;
 
 	}
-	protected static IModule[] getModule(IArchive node) {
+	protected IModule[] getModule(IArchive node) {
 		ModuleFactory factory = ServerPlugin.findModuleFactory(PackageModuleFactory.FACTORY_TYPE_ID);
 		IModule mod = factory.findModule(PackageModuleFactory.getId(node), new NullProgressMonitor());
 		return new IModule[] { mod };
 	}
-	protected static PackagedModuleDelegate getModuleDelegate(IArchive node) {
+	protected PackagedModuleDelegate getModuleDelegate(IArchive node) {
 		IModule mod = getModule(node)[0];
 		return (PackagedModuleDelegate)mod.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
 	}

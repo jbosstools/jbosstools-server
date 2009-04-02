@@ -49,7 +49,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	protected IDeployableServer server;
 	protected IModuleResourceDelta[] delta;
-	protected FileUtilListener listener = new FileUtilListener();
+	protected FileUtilListener listener;
 	public PackagesPublisher() {
 	}
 
@@ -67,6 +67,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor)
 			throws CoreException {
+		listener = new FileUtilListener();
 		this.server = ServerConverter.getDeployableServer(server);
 		this.delta = delta;
 		IModule module2 = module[0];
@@ -76,8 +77,6 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	    	if( publishType == REMOVE_PUBLISH ) {
 	    		removeModule(module2, monitor);
 	    	} else if( publishType == FULL_PUBLISH ) {
-	    		IArchive pack = getPackage(module2);
-	    		new ArchiveBuildDelegate().fullArchiveBuild(pack, monitor);
 	    		publishModule(module2, false, monitor);
 	    	} else if( publishType == INCREMENTAL_PUBLISH ) {
 	    		publishModule(module2, true, monitor);
