@@ -164,7 +164,7 @@ public class ArchiveImpl extends ArchiveNodeImpl implements IArchive {
 	public void setDestinationPath(IPath path) {
 		String destPath = getRawDestinationPath();
 		attributeChanged(DESTINATION_ATTRIBUTE, destPath == null ? null : destPath.toString(), path == null ? null : path.toString());
-		packageDelegate.setToDir(path.toString());
+		packageDelegate.setToDir(path == null ? null : path.toString());
 	}
 
 	/*
