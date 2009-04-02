@@ -263,7 +263,10 @@
           <property>Finish</property>
         </emphasis> to complete the process of the server creation.</para>
       <para>Now that we&apos;ve created our runtimes and servers, we can dwell on all services
-        and tools that JBoss Server Manager provides.</para>
+      and tools that JBoss Server Manager provides.</para>
+      
+      <para>We hope, this guide helped you to get started with the JBoss Tools server manager. Besides, for additional information you are welcome on <ulink
+        url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
     </section>
 
   </section>
