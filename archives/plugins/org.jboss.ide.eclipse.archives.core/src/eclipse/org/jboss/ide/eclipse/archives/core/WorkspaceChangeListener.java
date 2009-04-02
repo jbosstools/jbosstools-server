@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 public class WorkspaceChangeListener implements IResourceChangeListener {
 
 	public void resourceChanged(IResourceChangeEvent event) {
+		// The comparator
 		Comparator c = new Comparator() {
 			public int compare(Object o1, Object o2) {
 				if( o1 instanceof IProject && o2 instanceof IProject)
@@ -49,27 +50,20 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 				return 0;
 			}
 		};
+		
+		// Unregister a project if a project is being deleted
 		if (event.getType() == IResourceChangeEvent.PRE_DELETE || event.getType() == IResourceChangeEvent.PRE_CLOSE) {
 			IResource resource = event.getResource();
 			if (resource instanceof IProject) {
 				final IProject project = (IProject) resource;
 				IResource packages = project.findMember(IArchiveModel.DEFAULT_PACKAGES_FILE);
 				if (ArchivesModel.instance().isProjectRegistered(project.getLocation()) || packages != null) {
-					WorkspaceJob job = new WorkspaceJob(ArchivesCoreMessages.UnregisterProject) {
-
-						@Override
-						public IStatus runInWorkspace(IProgressMonitor monitor)
-								throws CoreException {
-							ArchivesModel.instance().unregisterProject(project.getLocation(), new NullProgressMonitor());
-							return Status.OK_STATUS;
-						}
-						
-					};
-					job.schedule();
+					unregister(project);
 				}
 			}
 		}
 		
+		// Recurse delta to find a packages file, add to set
 		final Set<IProject> projects = new TreeSet<IProject>(c);
 		IResourceDelta delta = event.getDelta();
 		try {
@@ -88,11 +82,13 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 			}
 		} catch( CoreException ce ) {
 		}
+		
+		// If we're deleting the .packages file or closing the project, unregister
 		if (event.getType() == IResourceChangeEvent.PRE_DELETE || event.getType() == IResourceChangeEvent.PRE_CLOSE) {
 			Iterator<IProject> i = projects.iterator();
 			while(i.hasNext()) {
 				final IProject p = i.next();
-				ArchivesModel.instance().unregisterProject(p.getLocation(), new NullProgressMonitor());
+				unregister(p);
 			}
 		} else {
 			Iterator<IProject> i = projects.iterator();
@@ -125,4 +121,16 @@ public class WorkspaceChangeListener implements IResourceChangeListener {
 		}
 	}
 
+	protected void unregister(final IProject project) {
+		WorkspaceJob job = new WorkspaceJob(ArchivesCoreMessages.UnregisterProject) {
+			public IStatus runInWorkspace(IProgressMonitor monitor)
+					throws CoreException {
+				ArchivesModel.instance().unregisterProject(
+						project.getLocation(), new NullProgressMonitor());
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+	}
+	
 }

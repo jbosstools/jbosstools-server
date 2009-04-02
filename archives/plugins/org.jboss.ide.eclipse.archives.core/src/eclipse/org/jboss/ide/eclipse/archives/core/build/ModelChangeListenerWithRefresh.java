@@ -80,12 +80,6 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 				}
 			} catch( CoreException ce ) {
 			}
-
-			try {
-				proj.setSessionProperty(new QualifiedName(ArchivesCorePlugin.PLUGIN_ID, "localname"), null); //$NON-NLS-1$
-			} catch( CoreException ce ) {
-			}
-
 		}
 	}
 }

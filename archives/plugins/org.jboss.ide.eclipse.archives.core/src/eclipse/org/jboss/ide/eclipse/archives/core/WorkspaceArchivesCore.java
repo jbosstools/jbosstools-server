@@ -12,13 +12,13 @@ package org.jboss.ide.eclipse.archives.core;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.osgi.util.NLS;
-import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.ModelChangeListenerWithRefresh;
+import org.jboss.ide.eclipse.archives.core.build.PostBuildRefresher;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
+import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.ArchivesWorkspaceLogger;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspacePreferenceManager;
@@ -34,6 +34,7 @@ public class WorkspaceArchivesCore extends ArchivesCore {
 		super(WORKSPACE);
 		ArchivesCore.setInstance(this);
 		ArchivesModel.instance().addModelListener(new ModelChangeListenerWithRefresh());
+		ArchivesModel.instance().addBuildListener(new PostBuildRefresher());
 	}
 
 	protected IExtensionManager createExtensionManager() {
