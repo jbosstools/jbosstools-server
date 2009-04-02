@@ -199,11 +199,14 @@ public class ArchivesModel implements IArchiveModel {
 	}
 
 	public void registerProject(IArchiveModelRootNode model, IProgressMonitor monitor) {
-		ArchivesCore.getInstance().preRegisterProject(model.getProjectPath());
-		xbPackages.put(model.getProjectPath(), ((ArchiveModelNode)model).getXbPackages());
-		archivesRoot.put(model.getProjectPath(), (ArchiveModelNode)model);
-		model.setModel(this);
-		fireRegisterProjectEvent((ArchiveModelNode)model);
+		// If we're already registered, ignore this
+		if(!isProjectRegistered(model.getProjectPath())) {
+			ArchivesCore.getInstance().preRegisterProject(model.getProjectPath());
+			xbPackages.put(model.getProjectPath(), ((ArchiveModelNode)model).getXbPackages());
+			archivesRoot.put(model.getProjectPath(), (ArchiveModelNode)model);
+			model.setModel(this);
+			fireRegisterProjectEvent((ArchiveModelNode)model);
+		}
 	}
 
 	public void unregisterProject(IPath projectPath, IProgressMonitor monitor) {
