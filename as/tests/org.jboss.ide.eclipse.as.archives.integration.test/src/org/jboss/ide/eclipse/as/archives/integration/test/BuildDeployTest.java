@@ -35,6 +35,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
@@ -63,7 +64,9 @@ public class BuildDeployTest extends TestCase {
 	private IFile textBuildArchiveFile;
 	private File textDeployedFile;
 	private IArchive rootArchive;
-	public void testOne() throws Exception {
+	
+	
+	public void testAll() throws Exception {
 		// Builder is off, auto-deploy is off
 		enableAutomaticBuilder(false);
 		createProject();
@@ -79,8 +82,8 @@ public class BuildDeployTest extends TestCase {
 		enableAutomaticBuilder(true);
 		int count = ++index;
 		setContents(count);
+		callBuild(); // just to speed the test
 		assertSourceContents(count);
-		JobUtils.waitForIdle(); 
 		assertBinContents(count);
 		assertBuiltArchiveContents(count);
 		try {
@@ -92,7 +95,13 @@ public class BuildDeployTest extends TestCase {
 		// Builder is on, auto-deploy is on
 		changeArchivesDeployPrefs(true, server.getId());
 		count = ++index;
+		try {
+			Thread.sleep(3000);
+		} catch( InterruptedException ie) {}
+		JobUtils.waitForIdle();
+		
 		setContents(count);
+		callBuild(); // just to speed the test
 		assertSourceContents(count);
 		assertBinContents(count);
 		assertBuiltArchiveContents(count);
@@ -224,6 +233,8 @@ public class BuildDeployTest extends TestCase {
 			swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deploy.toOSString());
 			swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeploy.toOSString());
 			swc.setRuntime(runtime);
+			swc.setAutoPublishTime(1);
+			swc.setAutoPublishSetting(Server.AUTO_PUBLISH_ENABLE);
 		}
 		server = wc.save(true, new NullProgressMonitor());
 		
@@ -264,11 +275,7 @@ public class BuildDeployTest extends TestCase {
 	
 	protected void buildArchive()  {
 		Job j = new BuildAction().run(rootArchive);
-		while(j.getResult() == null ) {
-			try {
-				Thread.sleep(100);
-			} catch( InterruptedException ie) {}
-		}
+		JobUtils.waitForIdle();
 		assertTrue(j.getResult().isOK());
 	}
 	
@@ -279,8 +286,10 @@ public class BuildDeployTest extends TestCase {
 	
 	protected void setContents(int val) throws IOException , CoreException{
 		textFile.setContents(new ByteArrayInputStream(new String(VALUE_PREFIX + (val)).getBytes()), false, false, new NullProgressMonitor());
+		try {
+			Thread.sleep(2000);
+		} catch( InterruptedException ie) {}
 		JobUtils.waitForIdle(); 
-		System.out.println("finish setContents");
 	}
 	
 	protected void assertContents(InputStream is, int val) throws IOException {
@@ -293,9 +302,6 @@ public class BuildDeployTest extends TestCase {
 	}
 	
 	protected void assertBinContents(int val) throws IOException, CoreException {
-		try {
-			Thread.sleep(20000);
-		} catch( InterruptedException ie) {}
 		assertContents(textOutputFile.getContents(), val);
 	}
 	
