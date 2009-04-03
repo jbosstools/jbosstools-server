@@ -43,7 +43,7 @@ public class PublishAction implements INodeActionDelegate {
 			if( servers != null ) {
 				Job j = new Job(Messages.BuildArchive) {
 					protected IStatus run(IProgressMonitor monitor) {
-						ArchivesModuleModelListener.publish(pkg, servers2, IServer.PUBLISH_FULL);
+						ArchivesModuleModelListener.getInstance().publish(pkg, servers2, IServer.PUBLISH_FULL);
 						return Status.OK_STATUS;
 					} };
 				j.schedule();
