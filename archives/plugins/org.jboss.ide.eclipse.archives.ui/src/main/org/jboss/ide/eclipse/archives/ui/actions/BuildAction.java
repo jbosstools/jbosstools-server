@@ -70,7 +70,6 @@ public class BuildAction implements IWorkbenchWindowActionDelegate {
 
 	private Job buildSelectedNode(final Object selected) {
 		Job j = new Job(ArchivesUIMessages.BuildArchivesNode) {
-			// TODO actually get the status object
 			protected IStatus run(IProgressMonitor monitor) {
 				if( selected == null ) return Status.OK_STATUS;
 				if( selected instanceof IArchiveNode ) {
