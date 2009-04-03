@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -259,7 +260,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				}
 
 				if (folderExists) {
-					return ArchivesUIMessages.bind(
+					return NLS.bind(
 						ArchivesUIMessages.ProjectPackagesView_createFolderDialog_warnFolderExists, newText);
 
 				}

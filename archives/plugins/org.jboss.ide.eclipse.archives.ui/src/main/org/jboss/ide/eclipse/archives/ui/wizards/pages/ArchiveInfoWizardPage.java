@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -196,7 +197,7 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 					IArchive subPackage = (IArchive) subPackages[i];
 					if (subPackage.getName().equals(packageNameText.getText())
 						&& (!subPackage.equals(this.archive))) {
-							message =  ArchivesUIMessages.bind(
+							message =  NLS.bind(
 								ArchivesUIMessages.PackageInfoWizardPage_error_packageAlreadyExists,
 								packageNameText.getText());
 							messageType = IStatus.ERROR;
@@ -221,7 +222,7 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 					if (pkg.getName().equals(packageNameText.getText())
 						&& (PathUtils.getGlobalLocation(pkg)!= null && PathUtils.getGlobalLocation(pkg).equals(destinationLocation))
 						&& (!pkg.equals(this.archive))) {
-						message = ArchivesUIMessages.bind(
+						message = NLS.bind(
 									ArchivesUIMessages.PackageInfoWizardPage_error_packageAlreadyExists, packageNameText.getText());
 						messageType = IStatus.ERROR;
 					}
