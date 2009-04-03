@@ -14,6 +14,10 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
+	static {
+		initializeMessages("org.jboss.ide.eclipse.archives.webtools.Messages", Messages.class); //$NON-NLS-1$
+	}
+	
 	public static String ExceptionCannotScanDirectory;
 	public static String ExceptionUnexpectedException;
 	public static String ExceptionCannotDeployFile;
@@ -58,8 +62,4 @@ public class Messages extends NLS {
 	public static String EjbJarPreview;
 	public static String EjbJarDescription;
 
-
-	static {
-		initializeMessages("org.jboss.ide.eclipse.archives.webtools.Messages", Messages.class); //$NON-NLS-1$
-	}
 }
