@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -50,7 +51,7 @@ public abstract class ClasspathContainerPage extends WizardPage implements
 		super(PAGE_NAME);
 		this.containerId = id;
 		this.description = description;
-		this.setTitle(Messages.jeeClasspathAdding + description);
+		this.setTitle(NLS.bind(Messages.jeeClasspathAdding, description));
 		this.setDescription(Messages.jeeClasspathDescription);
 		this.setImageDescriptor(JavaPluginImages.DESC_WIZBAN_ADD_LIBRARY);
 	}
@@ -67,9 +68,8 @@ public abstract class ClasspathContainerPage extends WizardPage implements
 		top.setLayout(layout);
 
 		Label lbl = new Label(top, SWT.NONE);
-		lbl.setText(Messages.jeeClasspathBody1 + 
-				this.getClasspathEntryDescription() + 
-				Messages.jeeClasspathBody2);
+		lbl.setText(NLS.bind(Messages.jeeClasspathBody,
+				this.getClasspathEntryDescription()));
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		lbl.setLayoutData(gd);
 
