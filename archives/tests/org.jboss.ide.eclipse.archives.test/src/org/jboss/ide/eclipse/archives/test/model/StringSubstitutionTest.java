@@ -12,9 +12,12 @@ package org.jboss.ide.eclipse.archives.test.model;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.internal.variables.ValueVariable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.variables.IValueVariable;
+import org.eclipse.core.variables.VariablesPlugin;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceVFS;
 
@@ -55,11 +58,14 @@ public class StringSubstitutionTest extends TestCase {
 
 	public void testSetVariable() {
 		try {
-			ResourcesPlugin.getWorkspace().getPathVariableManager().setValue("test_variable", new Path("/here"));
+			IValueVariable[] variables = new IValueVariable[] { 
+					new ValueVariable("test_variable", null, false, "/here")
+			};
+			VariablesPlugin.getDefault().getStringVariableManager().addVariables(variables);
 			WorkspaceVFS vfs = (WorkspaceVFS)ArchivesCore.getInstance().getVFS();
 			String out = vfs.performStringSubstitution("${test_variable}",null, true);
 			assertEquals("/here", out);
-			ResourcesPlugin.getWorkspace().getPathVariableManager().setValue("test_variable", null);
+			VariablesPlugin.getDefault().getStringVariableManager().removeVariables(variables);
 		} catch( CoreException ce ) {
 			fail(ce.getMessage());
 		}
