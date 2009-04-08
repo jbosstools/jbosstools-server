@@ -49,7 +49,7 @@ public class StringSubstitutionTest extends TestCase {
 			String out2 = vfs.performStringSubstitution(TWO, null, false);
 			assertEquals(TWO, out2);
 		} catch( CoreException ce ) {
-			fail();
+			fail(ce.getMessage());
 		}
 	}
 
@@ -61,7 +61,7 @@ public class StringSubstitutionTest extends TestCase {
 			assertEquals("/here", out);
 			ResourcesPlugin.getWorkspace().getPathVariableManager().setValue("test_variable", null);
 		} catch( CoreException ce ) {
-			fail();
+			fail(ce.getMessage());
 		}
 	}
 }

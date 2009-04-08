@@ -76,7 +76,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 
 		currentProject = projectName;
 		try {
-			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(expression);
+			return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(expression, reportUndefinedVariables);
 		} finally {
 			currentProject = null;
 		}
