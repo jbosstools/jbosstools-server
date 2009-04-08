@@ -54,7 +54,7 @@ public class Messages {
 	
 
 	static {
-		NLS.initializeMessages(Activator.PLUGIN_ID + ".Messages",
+		NLS.initializeMessages("org.jboss.ide.eclipse.as.ui.mbeans.Messages",
 				Messages.class);
 	}
 }
