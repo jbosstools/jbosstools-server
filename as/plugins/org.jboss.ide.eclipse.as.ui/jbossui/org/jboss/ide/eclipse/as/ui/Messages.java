@@ -39,7 +39,6 @@ public class Messages {
 	public static String rwf_TitleCreate;
 	public static String rwf_TitleEdit;
 	public static String rwf_Explanation;
-	public static String rwf_BaseName;
 	public static String rwf_NameInUse;
 	public static String rwf_homeMissingFiles;
 	public static String rwf_homeIncorrectVersion;
@@ -52,7 +51,6 @@ public class Messages {
 	public static String swf_Explanation;
 	public static String swf_Explanation2;
 	public static String swf_AuthenticationGroup;
-	public static String swf_DeployGroup;
 	public static String swf_Username;
 	public static String swf_Password;
 	public static String swf_BaseName;
@@ -69,30 +67,6 @@ public class Messages {
 	public static String credentials_save;
 
 
-	/* Module extension properties */
-	public static String ModulePropertyType;
-	public static String ModulePropertyProject;
-	public static String ModulePropertyModuleFactory;
-	public static String ModulePropertyName;
-
-	public static String RefreshViewerAction;
-	public static String DisableCategoryAction;
-	public static String EditLaunchConfigurationAction;
-	public static String TwiddleServerAction;
-	public static String CloneServerAction;
-
-	/* Properties of view extenders (categories) */
-	public static String ExtensionID;
-	public static String ExtensionName;
-	public static String ExtensionDescription;
-	public static String ExtensionProviderClass;
-
-	/* Properties of JBoss Servers in the view Properties */
-	public static String ServerRuntimeVersion;
-	public static String ServerHome;
-	public static String ServerConfigurationName;
-	public static String ServerDeployDir;
-
 	public static String property;
 	public static String value;
 
@@ -106,12 +80,6 @@ public class Messages {
 
 	/* Action Delegate */
 
-	public static String ActionDelegateStartServer;
-	public static String ActionDelegateStopServer;
-	public static String ActionDelegateDebugServer;
-	public static String ActionDelegateNew;
-	public static String ActionDelegateNewMBeanStubs;
-	public static String ActionDelegateNewServer;
 	public static String ActionDelegateMakeDeployable;
 	public static String ActionDelegateMakeUndeployable;
 	public static String ActionDelegateDeployableServersNotFoundTitle;
@@ -131,7 +99,6 @@ public class Messages {
 	public static String TwiddleDialogExecute;
 	public static String TwiddleDialogDone;
 	public static String TwiddleDialogArguments;
-	public static String TwiddleDialogTutorial;
 
 	/* XPath Dialog */
 	public static String XPathNewCategory;
@@ -147,36 +114,12 @@ public class Messages {
 	public static String XPathPattern;
 	public static String XPathAttribute;
 
-	/* Preference Page */
-	public static String PreferencePageServerTimeouts;
-	public static String PreferencePageStartTimeouts;
-	public static String PreferencePageStopTimeouts;
-	public static String PreferencePageUponTimeout;
-	public static String PreferencePageUponTimeoutAbort;
-	public static String PreferencePageUponTimeoutIgnore;
-
-	/* View Preference Page */
-	public static String ViewPreferencePageName;
-	public static String ViewPreferencePageEnabled;
-	public static String ViewPreferencePageWeight;
-	public static String ViewPreferencePageDescription;
-	public static String ViewExtensionEnablementDescription;
-	public static String ViewExtensionPreferenceDescription;
 
 	public static String DescriptorXPathRemoveCategory;
 	public static String DescriptorXPathRemoveCategoryDesc;
 	public static String DescriptorXPathNewXPath;
 	public static String DescriptorXPathEditXPath;
 	public static String DescriptorXPathDeleteXPath;
-	public static String DescriptorXPathAttributeValue;
-	public static String DescriptorXPathXPathXML;
-	public static String DescriptorXPathAttributeKeyValue;
-	public static String DescriptorXPathDescriptorValues;
-	public static String DescriptorXPathNameLocation;
-	public static String DescriptorXPathServerName;
-	public static String DescriptorXPathPortCategory;
-	public static String DescriptorXPathSimple;
-	public static String DescriptorXPathComplex;
 	public static String DescriptorXPathMatch;
 
 
@@ -221,7 +164,7 @@ public class Messages {
 	public static String LaunchInvalidHostChanged;
 
 	static {
-		NLS.initializeMessages(JBossServerUIPlugin.PLUGIN_ID + ".Messages",
+		NLS.initializeMessages("org.jboss.ide.eclipse.as.ui.Messages",
 				Messages.class);
 	}
 }

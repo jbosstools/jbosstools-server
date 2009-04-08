@@ -127,7 +127,7 @@ public class PollerSection extends ServerEditorSection {
 	
 	public class SetStopPollerCommand extends SetPollerCommand {
 		public SetStopPollerCommand(IServerWorkingCopy server) {
-			super(server, Messages.EditorChangeStartPollerCommandName,  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
+			super(server, Messages.EditorChangeStopPollerCommandName,  IJBossServerConstants.SHUTDOWN_POLLER_KEY, 
 					IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER,
 					shutdownTypes, stopPollerCombo, stopPollerListener);
 		}
