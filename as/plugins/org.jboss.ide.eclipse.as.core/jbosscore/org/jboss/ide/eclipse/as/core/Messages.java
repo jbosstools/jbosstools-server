@@ -31,7 +31,7 @@ public class Messages {
 	public static String runModeNotSupported;
 	
 	static {
-		NLS.initializeMessages(JBossServerCorePlugin.PLUGIN_ID + ".Messages",
+		NLS.initializeMessages("org.jboss.ide.eclipse.as.core.Messages",
 				Messages.class);
 	}
 }
