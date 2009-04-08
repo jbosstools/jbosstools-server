@@ -30,6 +30,6 @@ public class Messages {
 	public static String ejb3ClasspathPageTitle;
 	public static String ejb3ClasspathPageDescription;
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIMessages", Messages.class); //$NON-NLS-1$
+		NLS.initializeMessages("org.jboss.ide.eclipse.as.classpath.ui.Messages", Messages.class); //$NON-NLS-1$
 	}
 }
