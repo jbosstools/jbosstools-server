@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.core;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages {
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.core.Messages"; //$NON-NLS-1$
 	/* Standard and re-usable */
 	public static String jboss;
 	public static String server;
@@ -31,7 +32,6 @@ public class Messages {
 	public static String runModeNotSupported;
 	
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.core.Messages",
-				Messages.class);
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 }
