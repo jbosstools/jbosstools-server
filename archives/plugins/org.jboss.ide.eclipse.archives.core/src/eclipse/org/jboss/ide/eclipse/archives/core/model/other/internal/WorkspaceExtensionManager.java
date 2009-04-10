@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.core.model.other.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -36,7 +37,9 @@ public class WorkspaceExtensionManager implements IExtensionManager {
 	public static final String ARCHIVE_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.archiveTypes"; //$NON-NLS-1$
 	public static final String ACTION_TYPES_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.actionTypes"; //$NON-NLS-1$
 	public static final String VARIABLE_PROVIDER_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.variableProviders"; //$NON-NLS-1$
+	public static final String NODE_PROVIDER_EXTENSION_ID = "org.jboss.ide.eclipse.archives.core.nodeProvider"; //$NON-NLS-1$
 
+	
 	private IExtension[] findExtension (String extensionId) {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = registry.getExtensionPoint(extensionId);
@@ -113,4 +116,33 @@ public class WorkspaceExtensionManager implements IExtensionManager {
 			}
 		}
 	}
+	
+	
+
+	private static ArrayList<INodeProvider> nodeProviders = null;
+	public INodeProvider[] getNodeProviders() {
+		if (nodeProviders == null)
+			loadNodeProviders();
+		return (INodeProvider[]) nodeProviders.toArray(new INodeProvider[nodeProviders.size()]);
+	}
+
+	private void loadNodeProviders() {
+		nodeProviders = new ArrayList<INodeProvider>();
+		IExtension[] extensions = findExtension(NODE_PROVIDER_EXTENSION_ID);
+		for (int i = 0; i < extensions.length; i++) {
+			IConfigurationElement elements[] = extensions[i].getConfigurationElements();
+			for (int j = 0; j < elements.length; j++) {
+				try {
+					Object executable = elements[j].createExecutableExtension("class"); //$NON-NLS-1$
+					INodeProvider type = (INodeProvider)executable;
+					nodeProviders.add(type);
+				} catch (InvalidRegistryObjectException e) {
+					ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, e.getMessage(), e);
+				} catch( CoreException e ) {
+					ArchivesCore.getInstance().getLogger().log(IStatus.WARNING, e.getMessage(), e);
+				}
+			}
+		}
+	}
+	
 }

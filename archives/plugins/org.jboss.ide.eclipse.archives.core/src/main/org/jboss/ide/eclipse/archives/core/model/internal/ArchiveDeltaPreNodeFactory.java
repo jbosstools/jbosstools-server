@@ -109,14 +109,14 @@ public class ArchiveDeltaPreNodeFactory {
 		return pack;
 	}
 	
-	protected static boolean getBeforeBoolean(HashMap map, String key) {
+	public static boolean getBeforeBoolean(HashMap map, String key) {
 		NodeDelta delta = (NodeDelta)map.get(key);
 		if( delta != null ) {
 			return ((Boolean)delta.getBefore()).booleanValue();
 		}
 		return true;
 	}
-	protected static String getBeforeString(HashMap map, String key) {
+	public static String getBeforeString(HashMap map, String key) {
 		NodeDelta delta = (NodeDelta)map.get(key);
 		if( delta != null ) {
 			return (String)delta.getBefore();
@@ -125,7 +125,7 @@ public class ArchiveDeltaPreNodeFactory {
 	}
 	
 	// set the properties here to what they were before the delta
-	protected static void undoPropertyChanges(XbPackageNodeWithProperties node, HashMap changes) {
+	public static void undoPropertyChanges(XbPackageNodeWithProperties node, HashMap changes) {
 		String key;
 		NodeDelta val;
 		for( Iterator i = changes.keySet().iterator(); i.hasNext(); ) {

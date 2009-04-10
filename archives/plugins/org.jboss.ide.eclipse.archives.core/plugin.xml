@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="archiveTypes" name="JBoss Tools Package Type" schema="schema/archiveTypes.exsd"/>
    <extension-point id="actionTypes" name="JBoss Tools Build Action Type" schema="schema/actionTypes.exsd"/>
+   <extension-point id="nodeProvider" name="JBoss Tools Archives Node Providers" schema="schema/nodeProvider.exsd"/>
    <extension
          id="archivesNature"
          name="Project Archives Nature"

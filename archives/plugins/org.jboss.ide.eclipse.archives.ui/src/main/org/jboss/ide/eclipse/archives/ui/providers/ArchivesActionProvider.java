@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.archives.ui.providers;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -35,9 +34,12 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
+import org.jboss.ide.eclipse.archives.core.model.INamedContainerArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFolderImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.ExtensionManager;
@@ -47,18 +49,20 @@ import org.jboss.ide.eclipse.archives.ui.actions.NewArchiveAction;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView;
 import org.jboss.ide.eclipse.archives.ui.wizards.FilesetWizard;
-import org.jboss.ide.eclipse.archives.ui.wizards.LibFilesetWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.NewJARWizard;
 
 public class ArchivesActionProvider extends CommonActionProvider {
 	public static final String NEW_PACKAGE_MENU_ID = "org.jboss.ide.eclipse.archives.ui.newPackageMenu"; //$NON-NLS-1$
 	public static final String NODE_CONTEXT_MENU_ID = "org.jboss.ide.eclipse.archives.ui.nodeContextMenu"; //$NON-NLS-1$
 	public static final String NEW_PACKAGE_ADDITIONS = "newPackageAdditions"; //$NON-NLS-1$
-
+	public static final String INITIAL_SEPARATOR_ID = "org.jboss.ide.eclipse.archives.ui.providers.initialSeparator"; //$NON-NLS-1$
+	public static final String END_ADD_CHILD_SEPARATOR_ID = "org.jboss.ide.eclipse.archives.ui.providers.endAddChildSeparator"; //$NON-NLS-1$
+	
+	
 	private MenuManager newPackageManager;
 	private NodeContribution[]  nodePopupMenuContributions;
 	private NewArchiveAction[] newPackageActions;
-	private Action editAction, deleteAction, newFolderAction, newFilesetAction, newLibFilesetAction;
+	private Action editAction, deleteAction, newFolderAction, newFilesetAction;
 	private Action buildAction;
 	private ICommonViewerSite site;
 
@@ -88,7 +92,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		}
 		addNewPackageActions(newPackageManager);
 
-		IStructuredSelection selection = getSelection();
+		IStructuredSelection selection = getSelection(site);
 		if (selection != null && !selection.isEmpty()) {
 			Object element = selection.getFirstElement();
 
@@ -99,38 +103,36 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			} else if( element instanceof IArchiveNode ){
 				IArchiveNode node = (IArchiveNode)element;
 
-				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE
-						|| node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
-					manager.add(newPackageManager);
-					manager.add(newFolderAction);
-					manager.add(newFilesetAction);
-					manager.add(newLibFilesetAction);
-					manager.add(new Separator());
+				if (node instanceof INamedContainerArchiveNode ) {
+					manager.insertAfter(INITIAL_SEPARATOR_ID, newFilesetAction);
+					manager.insertAfter(INITIAL_SEPARATOR_ID, newFolderAction);
+					manager.insertAfter(INITIAL_SEPARATOR_ID, newPackageManager);
+					manager.insertBefore(END_ADD_CHILD_SEPARATOR_ID, new Separator(END_ADD_CHILD_SEPARATOR_ID));
 				}
 
-				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
+				
+				if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE && node instanceof ArchiveImpl) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editPackageAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label);
 					editAction.setImageDescriptor(ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_PACKAGE_EDIT));
 					buildAction.setText(ArchivesUIMessages.ProjectPackagesView_buildArchiveAction_label);
-					manager.add(buildAction);
-				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
+					manager.insertAfter(END_ADD_CHILD_SEPARATOR_ID, buildAction);
+					manager.add(editAction);
+					manager.add(deleteAction);
+				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER && node instanceof ArchiveFolderImpl) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFolderAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFolderAction_label);
 					editAction.setImageDescriptor(platformDescriptor(ISharedImages.IMG_OBJ_FOLDER));
-				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
+					manager.add(editAction);
+					manager.add(deleteAction);
+				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET && node instanceof ArchiveFileSetImpl) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFilesetAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFilesetAction_label);
-					ImageDescriptor id = null;
-					if( node instanceof IArchiveStandardFileSet)
-						id = ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES);
-					if( node instanceof IArchiveLibFileSet)
-						id = JavaUI.getSharedImages().getImageDescriptor(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_LIBRARY);
-					if( id != null )
-						editAction.setImageDescriptor(id);
+					ImageDescriptor id = ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES);
+					editAction.setImageDescriptor(id);
+					manager.add(editAction);
+					manager.add(deleteAction);
 				}
-				manager.add(editAction);
-				manager.add(deleteAction);
 				addContextMenuContributions(node, manager);
 			}
 		} else if( ProjectArchivesCommonView.getInstance().getCurrentProject() != null ){
@@ -150,11 +152,6 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				createFileset();
 			}
 		};
-		newLibFilesetAction = new Action(ArchivesUIMessages.ProjectPackagesView_newLibFilesetAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES)) {
-			public void run () {
-				createLibFileset();
-			}
-		};
 
 		deleteAction = new Action (ArchivesUIMessages.ProjectPackagesView_deletePackageAction_label, platformDescriptor(ISharedImages.IMG_TOOL_DELETE)) {
 			public void run () {
@@ -170,7 +167,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 
 		buildAction = new Action(ArchivesUIMessages.BuildArchivesNode, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_BUILD_PACKAGES)) {
 			public void run() {
-				new BuildAction().run(getSelectedObject());
+				new BuildAction().run(getSelectedObject(site));
 			}
 		};
 	}
@@ -218,7 +215,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		for( int i = 0; i < newPackageActions.length; i++ ) {
 			NewArchiveAction action = newPackageActions[i];
 			ActionWrapper wrapped = new ActionWrapper(action);
-			wrapped.selectionChanged(getSelection());
+			wrapped.selectionChanged(getSelection(site));
 			manager.add(wrapped);
 		}
 	}
@@ -258,7 +255,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	private void createFolder () {
 		IInputValidator validator = new IInputValidator () {
 			public String isValid(String newText) {
-				IArchiveNode selected = getSelectedNode();
+				IArchiveNode selected = getSelectedNode(site);
 
 				boolean folderExists = false;
 				IArchiveNode[] folders = selected.getChildren(IArchiveNode.TYPE_ARCHIVE_FOLDER);
@@ -285,7 +282,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		int response = dialog.open();
 		if (response == Dialog.OK) {
 			String[] folderPaths = dialog.getValue().split("[\\\\/]"); //$NON-NLS-1$
-			IArchiveNode selected = getSelectedNode();
+			IArchiveNode selected = getSelectedNode(site);
 			IArchiveFolder current = null;
 			IArchiveFolder temp = null;
 
@@ -306,38 +303,23 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	}
 
 	private void createFileset () {
-		IArchiveNode selected = getSelectedNode();
+		IArchiveNode selected = getSelectedNode(site);
 		WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(null, selected));
 		dialog.open();
 	}
-	
-	private void createLibFileset () {
-		IArchiveNode selected = getSelectedNode();
-		WizardDialog dialog = new WizardDialog(getShell(), new LibFilesetWizard(null, selected));
-		dialog.open();
-	}
-	
-	
-	
 
 	private void editSelectedNode () {
-		IArchiveNode node = getSelectedNode();
+		IArchiveNode node = getSelectedNode(site);
 		if (node != null) {
-			if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
-				if( node instanceof IArchiveStandardFileSet ) {
-					IArchiveStandardFileSet fileset = (IArchiveStandardFileSet) node;
-					WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(fileset, node.getParent()));
-					dialog.open();
-				} else {
-					IArchiveLibFileSet fileset = (IArchiveLibFileSet) node;
-					WizardDialog dialog = new WizardDialog(getShell(), new LibFilesetWizard(fileset, node.getParent()));
-					dialog.open();
-				}
-			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
+			if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET && node instanceof IArchiveStandardFileSet ) {
+				IArchiveStandardFileSet fileset = (IArchiveStandardFileSet) node;
+				WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(fileset, node.getParent()));
+				dialog.open();
+			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE && node instanceof IArchive) {
 				IArchive pkg = (IArchive) node;
 				WizardDialog dialog = new WizardDialog(getShell(), new NewJARWizard(pkg));
 				dialog.open();
-			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
+			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER && node instanceof IArchiveFolder) {
 				// folder can do the model save here.
 				IArchiveFolder folder = (IArchiveFolder) node;
 				InputDialog dialog = new InputDialog(getShell(),
@@ -354,7 +336,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	}
 
 	private void deleteSelectedNode () {
-		IArchiveNode node = getSelectedNode();
+		IArchiveNode node = getSelectedNode(site);
 		if (node != null) {
 			final IArchiveNode parent = (IArchiveNode) node.getParent();
 			parent.removeChild(node);
@@ -364,23 +346,23 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	}
 
 
-	private IArchiveNode getSelectedNode () {
-		Object selected = getSelectedObject();
+	public static IArchiveNode getSelectedNode (ICommonViewerSite site) {
+		Object selected = getSelectedObject(site);
 		if( selected instanceof IArchiveNode )
 			return ((IArchiveNode)selected);
 		return null;
 	}
-	private Object getSelectedObject() {
-		IStructuredSelection selection = getSelection();
+	public static Object getSelectedObject(ICommonViewerSite site) {
+		IStructuredSelection selection = getSelection(site);
 		if (selection != null && !selection.isEmpty())
 			return selection.getFirstElement();
 		return null;
 	}
-	private IStructuredSelection getSelection() {
+	public static IStructuredSelection getSelection(ICommonViewerSite site) {
 		return (IStructuredSelection) site.getSelectionProvider().getSelection();
 	}
 
-	private ImageDescriptor platformDescriptor(String desc) {
+	public static ImageDescriptor platformDescriptor(String desc) {
 		return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(desc);
 	}
 	private Shell getShell() {

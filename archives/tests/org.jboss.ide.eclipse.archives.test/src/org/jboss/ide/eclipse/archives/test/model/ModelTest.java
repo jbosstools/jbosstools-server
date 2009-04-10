@@ -16,12 +16,11 @@ import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
-import org.jboss.ide.eclipse.archives.core.model.other.internal.ArchiveLibFileSetImpl;
-import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceNodeFactory;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
+import org.jboss.ide.eclipse.archives.jdt.integration.model.ArchiveLibFileSetImpl;
+import org.jboss.ide.eclipse.archives.jdt.integration.model.LibFileSetNodeProvider;
 
 /**
  * @author rob.stryker <rob.stryker@redhat.com>
@@ -48,7 +47,7 @@ public abstract class ModelTest extends TestCase {
 	}
 	
 	protected IArchiveFileSet createLibFileSet(String name) {
-		ArchiveLibFileSetImpl lfsi = ((WorkspaceNodeFactory)getFactory()).createLibFileset();
+		ArchiveLibFileSetImpl lfsi = LibFileSetNodeProvider.createLibFileset();
 		lfsi.setId(name);
 		return lfsi;
 	}

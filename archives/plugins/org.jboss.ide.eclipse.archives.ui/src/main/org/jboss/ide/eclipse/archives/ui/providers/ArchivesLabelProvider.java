@@ -11,22 +11,26 @@
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.viewers.BaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveAction;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFolderImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
+import org.jboss.ide.eclipse.archives.ui.ExtensionManager;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.DelayProxy;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
@@ -88,21 +92,29 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		if( element instanceof IArchiveNode ) {
 			IArchiveNode node = (IArchiveNode) element;
 			if (node != null) {
-				switch (node.getNodeType()) {
-					case IArchiveNode.TYPE_ARCHIVE: {
-						IArchive pkg = (IArchive) node;
-						if (!pkg.isExploded())
-							return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE);
-						else
-							return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE_EXPLODED);
-					}
-					case IArchiveNode.TYPE_ARCHIVE_FOLDER: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-					case IArchiveNode.TYPE_ARCHIVE_FILESET: {
-						if( node instanceof IArchiveStandardFileSet )
-							return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_MULTIPLE_FILES);
-						else if( node instanceof IArchiveLibFileSet) 
-							return JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_LIBRARY);
-					}
+				if( isInternal(node)) {
+					switch (node.getNodeType()) {
+						case IArchiveNode.TYPE_ARCHIVE: {
+							if( node instanceof ArchiveImpl ) {
+								IArchive pkg = (IArchive) node;
+								if (!pkg.isExploded())
+									return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE);
+								else
+									return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE_EXPLODED);
+							}
+						}
+						case IArchiveNode.TYPE_ARCHIVE_FOLDER: 
+							if( node instanceof ArchiveFolderImpl) 
+								return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+						case IArchiveNode.TYPE_ARCHIVE_FILESET: {
+							if( node instanceof ArchiveFileSetImpl )
+								return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_MULTIPLE_FILES);
+						}
+					} // end switch
+				} else {
+					ILabelProvider delegate = ExtensionManager.findLabelProvider(element);
+					if( delegate != null ) 
+						return delegate.getImage(element);
 				}
 			}
 
@@ -124,22 +136,30 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		if( element instanceof DelayProxy )
 			return ArchivesUIMessages.Loading;
 		if( element instanceof IArchiveNode ) {
-			switch (((IArchiveNode)element).getNodeType()) {
-				case IArchiveNode.TYPE_ARCHIVE: return getPackageText((IArchive)element);
-				case IArchiveNode.TYPE_ARCHIVE_FOLDER: return getPackageFolderText((IArchiveFolder)element);
-				case IArchiveNode.TYPE_ARCHIVE_ACTION: return getArchiveActionText((IArchiveAction)element);
-				case IArchiveNode.TYPE_ARCHIVE_FILESET: {
-					if( element instanceof IArchiveStandardFileSet)
-						return getPackageFileSetText((IArchiveFileSet)element);
-					else if( element instanceof IArchiveLibFileSet)
-						return ((IArchiveLibFileSet)element).getId();
+			if( isInternal((IArchiveNode)element)) {
+				switch (((IArchiveNode)element).getNodeType()) {
+					case IArchiveNode.TYPE_ARCHIVE: return getPackageText((IArchive)element);
+					case IArchiveNode.TYPE_ARCHIVE_FOLDER: return getPackageFolderText((IArchiveFolder)element);
+					case IArchiveNode.TYPE_ARCHIVE_ACTION: return getArchiveActionText((IArchiveAction)element);
+					case IArchiveNode.TYPE_ARCHIVE_FILESET: return getPackageFileSetText((IArchiveFileSet)element);
 				}
+			} else {
+				ILabelProvider delegate = ExtensionManager.findLabelProvider(element);
+				if( delegate != null ) 
+					return delegate.getText(element);
 			}
-
 		}
 		return element.toString();
 	}
 
+	private boolean isInternal(IArchiveNode node) {
+		if( node instanceof ArchiveImpl || 
+				node instanceof ArchiveFolderImpl || 
+				node instanceof ArchiveFileSetImpl)
+			return true;
+		return false;
+	}
+	
 
 	private String getPackageFolderText (IArchiveFolder folder) {
 		return folder.getName();

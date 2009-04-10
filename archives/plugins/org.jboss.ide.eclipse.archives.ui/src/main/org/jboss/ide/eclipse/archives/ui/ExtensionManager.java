@@ -11,12 +11,14 @@
 package org.jboss.ide.eclipse.archives.ui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.jboss.ide.eclipse.archives.ui.actions.NewArchiveAction;
 
 /**
@@ -77,5 +79,26 @@ public class ExtensionManager {
 		}
 
 		return contributions.toArray(new NewArchiveAction[contributions.size()]);
+	}
+	
+	
+	// Probably doesn't belong here but good enough
+	private static ArrayList<ILabelProvider> labelProviders = new ArrayList<ILabelProvider>();
+	public static void addLabelProvider(ILabelProvider p) {
+		if( !labelProviders.contains(p))
+			labelProviders.add(p);
+	}
+	public static void removeLabelProvider(ILabelProvider p) {
+		labelProviders.remove(p);
+	}
+	public static ILabelProvider findLabelProvider(Object element) {
+		Iterator<ILabelProvider> i = labelProviders.iterator();
+		ILabelProvider l;
+		while(i.hasNext()) {
+			l = i.next();
+			if( l.getText(element) != null)
+				return l;
+		}
+		return null;
 	}
 }

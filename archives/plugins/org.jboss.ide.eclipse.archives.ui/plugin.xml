@@ -86,6 +86,16 @@
          point="org.eclipse.ui.navigator.viewer">
       <viewer
             viewerId="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView">
+         <popupMenu>
+            <insertionPoint
+                  name="org.jboss.ide.eclipse.archives.ui.providers.initialSeparator"
+                  separator="false">
+            </insertionPoint>
+            <insertionPoint
+                  name="org.jboss.ide.eclipse.archives.ui.providers.endAddChildSeparator"
+                  separator="false">
+            </insertionPoint>
+         </popupMenu>
       </viewer>
       <viewerContentBinding
             viewerId="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView">
@@ -128,7 +138,7 @@
             id="org.jboss.ide.eclipse.archives.ui.archivesContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
             name="%NavigatorContent_ArchivesContent"
-            priority="normal"
+            priority="higher"
             providesSaveables="true">
          <triggerPoints>
             <or>
