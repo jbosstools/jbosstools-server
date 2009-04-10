@@ -82,6 +82,17 @@ public class ModelCreationTest extends ModelTest {
 		fail();
 	}
 	
+	public void testAddLibFilesetToModel() {
+		try {
+			createEmptyModelNode().addChild(createLibFileSet("blah"));
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+	
+	
+	
 //	public void testAddActionToModel() {
 //		try {
 //			createEmptyModelNode().addChild(createAction());;
@@ -128,6 +139,17 @@ public class ModelCreationTest extends ModelTest {
 		try {
 			IArchive archive = createArchive("someName.war", "test");
 			IArchiveFileSet fs = createFileSet("*", "blah");
+			archive.addChild(fs);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			fail();
+		}
+	}
+
+	public void testAddLibFilesetToArchive() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createLibFileSet("blah");
 			archive.addChild(fs);
 			createEmptyModelNode().addChild(archive);
 		} catch( ArchivesModelException ame ) {
@@ -189,6 +211,20 @@ public class ModelCreationTest extends ModelTest {
 			fail();
 		}
 	}
+
+	public void testAddLibFilesetToInnerArchive() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchive archive2 = createArchive("someName.war2", "test2");
+			IArchiveFileSet fs = createLibFileSet("blah");
+			archive.addChild(archive2);
+			archive2.addChild(fs);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			fail();
+		}
+	}
+
 //
 //	public void testAddActionToInnerArchive() {
 //		try {
@@ -241,11 +277,26 @@ public class ModelCreationTest extends ModelTest {
 	public void testAddFilesetToInnerFolder() {
 		try {
 			IArchive archive = createArchive("someName.war", "test");
-			IArchive archive2 = createArchive("someName2.war", "test2");
 			IArchiveFolder folder = createFolder("test3");
-
+			IArchiveFileSet fs = createFileSet("**", "blah");
+			
 			archive.addChild(folder);
-			folder.addChild(archive2);
+			folder.addChild(fs);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			fail();
+		}
+		return;
+	}
+	
+	public void testAddLibFilesetToInnerFolder() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFolder folder = createFolder("test3");
+			IArchiveFileSet fs = createLibFileSet("blah");
+			
+			archive.addChild(folder);
+			folder.addChild(fs);
 			createEmptyModelNode().addChild(archive);
 		} catch( ArchivesModelException ame ) {
 			fail();
@@ -369,6 +420,83 @@ public class ModelCreationTest extends ModelTest {
 		}
 		fail();
 	}
+
+	public void testAddLibFilesetToFileset() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createFileSet("*", "path");
+			IArchiveNode child = createLibFileSet("path");
+			archive.addChild(fs);
+			fs.addChild(child);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+
+	
+	//
+	//
+	//
+	
+	// add all to fileset
+	public void testAddArchiveToLibFileset() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createLibFileSet("path");
+			IArchiveNode child = createArchive("someName.war", "test");
+			archive.addChild(fs);
+			fs.addChild(child);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+	
+	public void testAddFolderToLibFileset() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createLibFileSet("path");
+			IArchiveNode child = createFolder("test");
+			archive.addChild(fs);
+			fs.addChild(child);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+	
+	public void testAddFilesetToLibFileset() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createLibFileSet("path");
+			IArchiveNode child = createFileSet("*", "path");
+			archive.addChild(fs);
+			fs.addChild(child);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+
+	public void testAddLibFilesetToLibFileset() {
+		try {
+			IArchive archive = createArchive("someName.war", "test");
+			IArchiveFileSet fs = createLibFileSet("path1");
+			IArchiveNode child = createLibFileSet("path2");
+			archive.addChild(fs);
+			fs.addChild(child);
+			createEmptyModelNode().addChild(archive);
+		} catch( ArchivesModelException ame ) {
+			return;
+		}
+		fail();
+	}
+
 	
 //	public void testAddActionToFileset() {
 //		try {

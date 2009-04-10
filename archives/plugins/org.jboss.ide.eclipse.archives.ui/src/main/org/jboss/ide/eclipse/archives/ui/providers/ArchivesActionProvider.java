@@ -13,11 +13,8 @@ package org.jboss.ide.eclipse.archives.ui.providers;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.GroupMarker;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -30,17 +27,17 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
-import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.ExtensionManager;
@@ -50,6 +47,7 @@ import org.jboss.ide.eclipse.archives.ui.actions.NewArchiveAction;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
 import org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView;
 import org.jboss.ide.eclipse.archives.ui.wizards.FilesetWizard;
+import org.jboss.ide.eclipse.archives.ui.wizards.LibFilesetWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.NewJARWizard;
 
 public class ArchivesActionProvider extends CommonActionProvider {
@@ -60,7 +58,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	private MenuManager newPackageManager;
 	private NodeContribution[]  nodePopupMenuContributions;
 	private NewArchiveAction[] newPackageActions;
-	private Action editAction, deleteAction, newFolderAction, newFilesetAction;
+	private Action editAction, deleteAction, newFolderAction, newFilesetAction, newLibFilesetAction;
 	private Action buildAction;
 	private ICommonViewerSite site;
 
@@ -106,6 +104,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 					manager.add(newPackageManager);
 					manager.add(newFolderAction);
 					manager.add(newFilesetAction);
+					manager.add(newLibFilesetAction);
 					manager.add(new Separator());
 				}
 
@@ -122,7 +121,13 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
 					editAction.setText(ArchivesUIMessages.ProjectPackagesView_editFilesetAction_label);
 					deleteAction.setText(ArchivesUIMessages.ProjectPackagesView_deleteFilesetAction_label);
-					editAction.setImageDescriptor(ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES));
+					ImageDescriptor id = null;
+					if( node instanceof IArchiveStandardFileSet)
+						id = ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES);
+					if( node instanceof IArchiveLibFileSet)
+						id = JavaUI.getSharedImages().getImageDescriptor(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_LIBRARY);
+					if( id != null )
+						editAction.setImageDescriptor(id);
 				}
 				manager.add(editAction);
 				manager.add(deleteAction);
@@ -143,6 +148,11 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		newFilesetAction = new Action(ArchivesUIMessages.ProjectPackagesView_newFilesetAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES)) {
 			public void run () {
 				createFileset();
+			}
+		};
+		newLibFilesetAction = new Action(ArchivesUIMessages.ProjectPackagesView_newLibFilesetAction_label, ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_MULTIPLE_FILES)) {
+			public void run () {
+				createLibFileset();
 			}
 		};
 
@@ -280,7 +290,7 @@ public class ArchivesActionProvider extends CommonActionProvider {
 			IArchiveFolder temp = null;
 
 			for(int i = folderPaths.length-1; i >= 0 ; i-- ) {
-				temp = ArchiveNodeFactory.createFolder();
+				temp = ArchivesCore.getInstance().getNodeFactory().createFolder();
 				temp.setName(folderPaths[i]);
 				if( current == null )
 					current = temp;
@@ -300,14 +310,29 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(null, selected));
 		dialog.open();
 	}
+	
+	private void createLibFileset () {
+		IArchiveNode selected = getSelectedNode();
+		WizardDialog dialog = new WizardDialog(getShell(), new LibFilesetWizard(null, selected));
+		dialog.open();
+	}
+	
+	
+	
 
 	private void editSelectedNode () {
 		IArchiveNode node = getSelectedNode();
 		if (node != null) {
 			if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
-				IArchiveFileSet fileset = (IArchiveFileSet) node;
-				WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(fileset, node.getParent()));
-				dialog.open();
+				if( node instanceof IArchiveStandardFileSet ) {
+					IArchiveStandardFileSet fileset = (IArchiveStandardFileSet) node;
+					WizardDialog dialog = new WizardDialog(getShell(), new FilesetWizard(fileset, node.getParent()));
+					dialog.open();
+				} else {
+					IArchiveLibFileSet fileset = (IArchiveLibFileSet) node;
+					WizardDialog dialog = new WizardDialog(getShell(), new LibFilesetWizard(fileset, node.getParent()));
+					dialog.open();
+				}
 			} else if (node.getNodeType() == IArchiveNode.TYPE_ARCHIVE) {
 				IArchive pkg = (IArchive) node;
 				WizardDialog dialog = new WizardDialog(getShell(), new NewJARWizard(pkg));

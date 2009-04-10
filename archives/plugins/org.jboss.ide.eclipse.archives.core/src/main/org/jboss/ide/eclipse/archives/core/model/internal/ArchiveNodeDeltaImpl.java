@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
@@ -26,8 +27,8 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
  */
 public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 	
-	private ArchiveNodeDeltaImpl parentDelta;
-	private ArchiveNodeImpl postNode, preNode;
+	private IArchiveNodeDelta parentDelta;
+	private IArchiveNode postNode, preNode;
 	private HashMap attributes, properties, children;
 	private int kind;
 	private IArchiveNodeDelta[] childrenDeltas;
@@ -40,7 +41,7 @@ public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 	 * @param propertyChanges
 	 * @param childChanges
 	 */
-	public ArchiveNodeDeltaImpl(ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl impl, 
+	public ArchiveNodeDeltaImpl(IArchiveNodeDelta parentDelta, ArchiveNodeImpl impl, 
 			HashMap attributeChanges, HashMap propertyChanges, HashMap childChanges) {
 		this.parentDelta = parentDelta;
 		postNode = impl;
@@ -54,8 +55,13 @@ public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 		
 		// create *my* pre-node
 		// this creates an accurate "old" node but without ANY children at all.
-		preNode = ArchiveDeltaPreNodeFactory.createNode(parentDelta, postNode, attributeChanges, propertyChanges);
+		preNode = ArchivesCore.getInstance().getNodeFactory()
+					.createDeltaNode(parentDelta, postNode, 
+						attributeChanges, propertyChanges);
 		
+		// TODO could log if preNode is null here? 
+		// This could be null in the other constructor, but *not* here. 
+		// A null here would indicate an incomplete implementation for a node type
 		
 		// The children are expected to be added in the loadAllAffectedChildren
 		loadAllAffectedChildren();
@@ -70,7 +76,7 @@ public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 	 * @param propertyChanges
 	 * @param childChanges
 	 */
-	public ArchiveNodeDeltaImpl(ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl impl, 
+	public ArchiveNodeDeltaImpl(IArchiveNodeDelta parentDelta, ArchiveNodeImpl impl, 
 			int forcedKind, HashMap attributeChanges, 
 			HashMap propertyChanges, HashMap childChanges) {
 		this(parentDelta, impl, attributeChanges, propertyChanges, childChanges);
@@ -86,7 +92,7 @@ public class ArchiveNodeDeltaImpl implements IArchiveNodeDelta {
 
 	}
 	
-	protected ArchiveNodeDeltaImpl getParentDelta() {
+	protected IArchiveNodeDelta getParentDelta() {
 		return parentDelta;
 	}
 	

@@ -14,11 +14,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeDeltaImpl.NodeDelta;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFolder;
@@ -39,37 +41,45 @@ import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackageNodeWithPr
 public class ArchiveDeltaPreNodeFactory {
 	
 	// children get added later
-	public static ArchiveNodeImpl createNode(ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl postChange, 
+	public IArchiveNode createNode(IArchiveNodeDelta parentDelta, IArchiveNode postChange, 
 			HashMap attributeChanges, HashMap propertyChanges) {
 		
 		switch(postChange.getNodeType()) {
 		case IArchiveNode.TYPE_ARCHIVE_FILESET:
-			XbFileSet fs = createFileset((ArchiveFileSetImpl)postChange, attributeChanges, propertyChanges); 
-			return new DeltaFileset(fs, parentDelta, postChange);
+			if( postChange instanceof IArchiveStandardFileSet) {
+				XbFileSet fs = createFileset((ArchiveFileSetImpl)postChange, attributeChanges, propertyChanges); 
+				return new DeltaFileset(fs, parentDelta, postChange);
+			} 
+			break;
 		case IArchiveNode.TYPE_ARCHIVE_FOLDER:
-			XbFolder folder = createFolder((ArchiveFolderImpl)postChange, attributeChanges, propertyChanges);
-			return new DeltaFolder(folder, parentDelta, postChange);
+			if( postChange instanceof ArchiveFolderImpl) {
+				XbFolder folder = createFolder((ArchiveFolderImpl)postChange, attributeChanges, propertyChanges);
+				return new DeltaFolder(folder, parentDelta, postChange);
+			}
+			break;
 		case IArchiveNode.TYPE_ARCHIVE:
-			XbPackage pack = createPackage((ArchiveImpl)postChange, attributeChanges, propertyChanges);
-			return new DeltaArchive(pack, parentDelta, postChange);
+			if( postChange instanceof ArchiveImpl) {
+				XbPackage pack = createPackage((ArchiveImpl)postChange, attributeChanges, propertyChanges);
+				return new DeltaArchive(pack, parentDelta, postChange);
+			} 
+			break;
 		}
-		
 		return null;
 	}
 	
 	
 	protected static XbFileSet createFileset(ArchiveFileSetImpl postChange,HashMap attributeChanges, HashMap propertyChanges ) {
 		XbFileSet fs = new XbFileSet((XbFileSet)postChange.nodeDelegate);
-		if( attributeChanges.containsKey(IArchiveFileSet.INCLUDES_ATTRIBUTE))
-			fs.setIncludes(getBeforeString(attributeChanges, IArchiveFileSet.INCLUDES_ATTRIBUTE));
-		if( attributeChanges.containsKey(IArchiveFileSet.EXCLUDES_ATTRIBUTE))
-			fs.setExcludes(getBeforeString(attributeChanges, IArchiveFileSet.EXCLUDES_ATTRIBUTE));
-		if( attributeChanges.containsKey(IArchiveFileSet.SOURCE_PATH_ATTRIBUTE))
-			fs.setDir(getBeforeString(attributeChanges, IArchiveFileSet.SOURCE_PATH_ATTRIBUTE));
-		if( attributeChanges.containsKey(IArchiveFileSet.IN_WORKSPACE_ATTRIBUTE))
-			fs.setInWorkspace(getBeforeBoolean(attributeChanges, IArchiveFileSet.IN_WORKSPACE_ATTRIBUTE));
-		if( attributeChanges.containsKey(IArchiveFileSet.FLATTENED_ATTRIBUTE))
-			fs.setFlattened(getBeforeBoolean(attributeChanges, IArchiveFileSet.FLATTENED_ATTRIBUTE));
+		if( attributeChanges.containsKey(IArchiveStandardFileSet.INCLUDES_ATTRIBUTE))
+			fs.setIncludes(getBeforeString(attributeChanges, IArchiveStandardFileSet.INCLUDES_ATTRIBUTE));
+		if( attributeChanges.containsKey(IArchiveStandardFileSet.EXCLUDES_ATTRIBUTE))
+			fs.setExcludes(getBeforeString(attributeChanges, IArchiveStandardFileSet.EXCLUDES_ATTRIBUTE));
+		if( attributeChanges.containsKey(IArchiveStandardFileSet.SOURCE_PATH_ATTRIBUTE))
+			fs.setDir(getBeforeString(attributeChanges, IArchiveStandardFileSet.SOURCE_PATH_ATTRIBUTE));
+		if( attributeChanges.containsKey(IArchiveStandardFileSet.IN_WORKSPACE_ATTRIBUTE))
+			fs.setInWorkspace(getBeforeBoolean(attributeChanges, IArchiveStandardFileSet.IN_WORKSPACE_ATTRIBUTE));
+		if( attributeChanges.containsKey(IArchiveStandardFileSet.FLATTENED_ATTRIBUTE))
+			fs.setFlattened(getBeforeBoolean(attributeChanges, IArchiveStandardFileSet.FLATTENED_ATTRIBUTE));
 
 		undoPropertyChanges(fs, propertyChanges);
 		return fs;
@@ -142,9 +152,9 @@ public class ArchiveDeltaPreNodeFactory {
 	 */
 	public static class DeltaFileset extends ArchiveFileSetImpl {
 		// everything goes through the delegate or the parent. Simple
-		private ArchiveNodeDeltaImpl parentDelta; 
-		private ArchiveNodeImpl impl;
-		public DeltaFileset(XbFileSet fileset, ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl impl){
+		private IArchiveNodeDelta parentDelta; 
+		private IArchiveNode impl;
+		public DeltaFileset(XbFileSet fileset, IArchiveNodeDelta parentDelta, IArchiveNode impl){
 			super(fileset);
 			this.parentDelta = parentDelta;
 			this.impl = impl;
@@ -164,9 +174,9 @@ public class ArchiveDeltaPreNodeFactory {
 	 * Extending class representing a delta folder
 	 */
 	public static class DeltaFolder extends ArchiveFolderImpl {
-		private ArchiveNodeDeltaImpl parentDelta; 
-		private ArchiveNodeImpl impl;
-		public DeltaFolder(XbFolder folder, ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl impl){
+		private IArchiveNodeDelta parentDelta; 
+		private IArchiveNode impl;
+		public DeltaFolder(XbFolder folder, IArchiveNodeDelta parentDelta, IArchiveNode impl){
 			super(folder);
 			this.parentDelta = parentDelta;
 			this.impl = impl;
@@ -186,9 +196,9 @@ public class ArchiveDeltaPreNodeFactory {
 	 * Extending class representing a delta archive
 	 */
 	public static class DeltaArchive extends ArchiveImpl {
-		private ArchiveNodeDeltaImpl parentDelta; 
-		private ArchiveNodeImpl impl;
-		public DeltaArchive(XbPackage pack, ArchiveNodeDeltaImpl parentDelta, ArchiveNodeImpl impl){
+		private IArchiveNodeDelta parentDelta; 
+		private IArchiveNode impl;
+		public DeltaArchive(XbPackage pack, IArchiveNodeDelta parentDelta, IArchiveNode impl){
 			super(pack);
 			this.parentDelta = parentDelta;
 			this.impl = impl;

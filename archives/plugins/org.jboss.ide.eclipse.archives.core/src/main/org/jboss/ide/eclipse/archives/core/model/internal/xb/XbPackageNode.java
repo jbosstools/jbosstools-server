@@ -23,15 +23,15 @@ public abstract class XbPackageNode implements Cloneable {
 	 * The children are a class -> arraylist[child] map hashmap
 	 */
 	protected Hashtable children;
+	private String nodeType;
 	
-	public XbPackageNode ()
-	{
+	public XbPackageNode (String nodeType) {
+		this.nodeType = nodeType;
 		children = new Hashtable();
 	}
 	
-	public XbPackageNode(XbPackageNode node)
-	{
-		children = new Hashtable();
+	public XbPackageNode(XbPackageNode node) {
+		this(node.getNodeType());
 		Object key;
 		for( Iterator i = node.children.keySet().iterator(); i.hasNext(); ) {
 			key = i.next();
@@ -39,58 +39,51 @@ public abstract class XbPackageNode implements Cloneable {
 		}
 	}
 	
-	public void addChild (Object object)
-	{
+	public void addChild (Object object) {
 		addChild((XbPackageNode)object);
 	}
 	
-	public void addChild (XbPackageNode child)
-	{
-		if (!children.containsKey(child.getClass()))
-		{
+	public void addChild (XbPackageNode child) {
+		if (!children.containsKey(child.getClass())) {
 			children.put(child.getClass(), new ArrayList());
 		}
 		getChildren(child.getClass()).add(child);
 		child.setParent(this);
 	}
 	
-	public void removeChild (XbPackageNode child)
-	{
-		if (children.containsKey(child.getClass()))
-		{
+	public void removeChild (XbPackageNode child) {
+		if (children.containsKey(child.getClass())) {
 			getChildren(child.getClass()).remove(child);
 		}
 	}
 	
-	public List getChildren(Class type)
-	{
+	public List getChildren(Class type) {
 		return (List)children.get(type);
 	}
 	
-	public boolean hasChildren ()
-	{
+	public boolean hasChildren () {
 		return children != null && children.size() > 0;
 	}
 	
-	public List getAllChildren()
-	{
+	public List getAllChildren() {
 		ArrayList allChildren = new ArrayList();
 		
-		for (Iterator iter = children.keySet().iterator(); iter.hasNext();)
-		{
+		for (Iterator iter = children.keySet().iterator(); iter.hasNext();) {
 			Class childType = (Class) iter.next();
 			allChildren.addAll(getChildren(childType));
 		}
 		return allChildren;
 	}
 	
-	public XbPackageNode getParent()
-	{
+	public XbPackageNode getParent() {
 		return parent;
 	}
 	
-	public void setParent (XbPackageNode parent)
-	{
+	public void setParent (XbPackageNode parent) {
 		this.parent = parent;
+	}
+	
+	public String getNodeType() {
+		return nodeType;
 	}
 }

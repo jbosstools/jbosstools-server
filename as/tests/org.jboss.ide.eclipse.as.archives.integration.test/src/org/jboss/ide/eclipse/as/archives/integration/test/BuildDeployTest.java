@@ -37,10 +37,10 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
-import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.ui.actions.BuildAction;
 import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
@@ -248,14 +248,14 @@ public class BuildDeployTest extends TestCase {
 	protected void addArchives() {
 		ArchivesModel.instance().registerProject(project.getLocation(), new NullProgressMonitor());
 		IArchiveModelRootNode root = ArchivesModel.instance().getRoot(project.getLocation());
-		rootArchive = ArchiveNodeFactory.createArchive();
+		rootArchive = ArchivesCore.getInstance().getNodeFactory().createArchive();
 		rootArchive.setExploded(true);
 		rootArchive.setInWorkspace(true);
 		rootArchive.setName(OUT_JAR);
 		rootArchive.setDestinationPath(null);
 		root.addChild(rootArchive);
 		
-		IArchiveFileSet fs = ArchiveNodeFactory.createFileset();
+		IArchiveStandardFileSet fs = ArchivesCore.getInstance().getNodeFactory().createFileset();
 		fs.setIncludesPattern("**/*txt");
 		fs.setExcludesPattern("**/bin/**, **/*jar*");
 		fs.setInWorkspace(true);

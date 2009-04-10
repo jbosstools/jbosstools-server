@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
@@ -228,7 +229,7 @@ public class ModelTruezipBridge {
 			if( inputFiles[i] == null )
 				continue;
 			
-			if( fs.isFlattened() )
+			if( fs instanceof IArchiveStandardFileSet && ((IArchiveStandardFileSet)fs).isFlattened() )
 				filesetRelative = inputFiles[i].getOutputName();
 			else
 				filesetRelative = inputFiles[i].getFilesetRelative();

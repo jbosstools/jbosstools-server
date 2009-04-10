@@ -18,12 +18,14 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
@@ -31,11 +33,17 @@ import org.jboss.ide.eclipse.archives.test.ArchivesTest;
 import org.osgi.framework.Bundle;
 
 public class ModelUtilTest extends TestCase {
+	protected static IArchiveNodeFactory getFactory() {
+		return ArchivesCore.getInstance().getNodeFactory();
+	}
+
 	private Bundle bundle;
 	private IPath bundlePath;
 	private IPath outputs;
 	private IPath inputs; 
 	private IArchive rootArchive;
+	
+	
 	protected void setUp() {
 		if( bundlePath == null ) {
 			try {
@@ -62,33 +70,33 @@ public class ModelUtilTest extends TestCase {
 	protected IArchive createArchive() throws ArchivesModelException {
 		IPath fileTrees = inputs.append("fileTrees");
 
-		IArchive root = ArchiveNodeFactory.createArchive();
+		IArchive root = getFactory().createArchive();
 		root.setArchiveType("jar");
 		root.setDestinationPath(outputs);
 		root.setName("output.jar");
 		root.setExploded(false);
 		root.setInWorkspace(false);
 		
-		IArchiveFolder topFolder = ArchiveNodeFactory.createFolder();
+		IArchiveFolder topFolder = getFactory().createFolder();
 		topFolder.setName("topFolder");
 		root.addChild(topFolder);
 		
-		IArchiveFolder inner1 = ArchiveNodeFactory.createFolder();
+		IArchiveFolder inner1 = getFactory().createFolder();
 		inner1.setName("inner1");
 		topFolder.addChild(inner1);
 		
-		IArchiveFolder images = ArchiveNodeFactory.createFolder();
+		IArchiveFolder images = getFactory().createFolder();
 		images.setName("images");
 		topFolder.addChild(images);
 		
-		IArchiveFileSet outerFileset = ArchiveNodeFactory.createFileset();
+		IArchiveStandardFileSet outerFileset = getFactory().createFileset();
 		outerFileset.setInWorkspace(false);
 		outerFileset.setRawSourcePath(fileTrees.append("misc").toString());
 		outerFileset.setExcludesPattern("**/*.gif,**/*.png");
 		outerFileset.setIncludesPattern("**/*");
 		topFolder.addChild(outerFileset);
 		
-		IArchiveFileSet imageFileset = ArchiveNodeFactory.createFileset();
+		IArchiveStandardFileSet imageFileset = getFactory().createFileset();
 		imageFileset.setInWorkspace(false);
 		imageFileset.setRawSourcePath(fileTrees.append("misc").toString());
 		imageFileset.setIncludesPattern("**/*.gif,**/*.png,**/*.xml");
@@ -103,7 +111,7 @@ public class ModelUtilTest extends TestCase {
 		assertTrue(fsets.length == 2);
 		assertTrue(fsets[0].getParent().getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER);
 		assertTrue(fsets[1].getParent().getNodeType() == IArchiveNode.TYPE_ARCHIVE_FOLDER);
-		assertTrue(ModelUtil.findAllDescendentFilesets(ArchiveNodeFactory.createFileset()).length == 1);
+		assertTrue(ModelUtil.findAllDescendentFilesets(getFactory().createFileset()).length == 1);
 	}
 	
 	public void testFindAllDescendentFolders() {
@@ -147,13 +155,14 @@ public class ModelUtilTest extends TestCase {
 		assertFalse(testMatches(htmlFS[0], html, rootArchive));
 		
 		// add a temporary fileset that will match exactly
-		IArchiveFileSet otherFS = ArchiveNodeFactory.createFileset();
-		otherFS.setIncludesPattern(xmlFS[0].getIncludesPattern());
-		otherFS.setInWorkspace(xmlFS[0].isInWorkspace());
-		otherFS.setRawSourcePath(xmlFS[0].getRawSourcePath());
-		xmlFS[0].getParent().addChild(otherFS);
+		IArchiveStandardFileSet otherFS = getFactory().createFileset();
+		IArchiveStandardFileSet fs0 = (IArchiveStandardFileSet)xmlFS[0];
+		otherFS.setIncludesPattern(fs0.getIncludesPattern());
+		otherFS.setInWorkspace(fs0.isInWorkspace());
+		otherFS.setRawSourcePath(fs0.getRawSourcePath());
+		fs0.getParent().addChild(otherFS);
 		
-		assertTrue(testMatches(xmlFS[0], xml, rootArchive));
+		assertTrue(testMatches(fs0, xml, rootArchive));
 	}
 	
 	private boolean testMatches(IArchiveFileSet fs, IPath absoluteFile, IArchiveNode node) {

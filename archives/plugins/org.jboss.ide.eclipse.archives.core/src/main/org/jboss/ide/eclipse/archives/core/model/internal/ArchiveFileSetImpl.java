@@ -20,7 +20,7 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
@@ -32,7 +32,7 @@ import org.jboss.ide.eclipse.archives.core.util.PathUtils;
  *
  */
 public class ArchiveFileSetImpl extends ArchiveNodeImpl implements
-		IArchiveFileSet {
+		IArchiveStandardFileSet {
 
 	private DirectoryScannerExtension scanner;
 	private FileWrapper[] matchingPaths;

@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.archives.core;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
@@ -45,6 +46,7 @@ public abstract class ArchivesCore {
 	private IExtensionManager extensionManager;
 	private IPreferenceManager preferenceManager;
 	private IArchivesLogger logger;
+	private IArchiveNodeFactory nodeFactory;
 
 	public ArchivesCore(int runType) {
 		this.runType = runType;
@@ -52,13 +54,15 @@ public abstract class ArchivesCore {
 		extensionManager = createExtensionManager();
 		preferenceManager = createPreferenceManager();
 		logger = createLogger();
+		nodeFactory = createNodeFactory();
 	}
 
 	protected abstract IArchivesVFS createVFS();
 	protected abstract IExtensionManager createExtensionManager();
 	protected abstract IPreferenceManager createPreferenceManager();
 	protected abstract IArchivesLogger createLogger();
-
+	protected abstract IArchiveNodeFactory createNodeFactory();
+	
 	public int getRunType() {
 		return runType;
 	}
@@ -73,6 +77,9 @@ public abstract class ArchivesCore {
 	}
 	public IArchivesLogger getLogger() {
 		return logger;
+	}
+	public IArchiveNodeFactory getNodeFactory() {
+		return nodeFactory;
 	}
 
 	public abstract void preRegisterProject(IPath project);

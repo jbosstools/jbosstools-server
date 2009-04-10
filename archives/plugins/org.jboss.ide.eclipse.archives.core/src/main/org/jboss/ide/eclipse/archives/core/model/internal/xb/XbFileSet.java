@@ -16,19 +16,16 @@ public class XbFileSet extends XbPackageNodeWithProperties {
 	private boolean inWorkspace;
 	private boolean flattened = false;
 	
-	public XbFileSet ()
-	{
-		super();
+	public XbFileSet () {
+		super("fileset"); //$NON-NLS-1$
 	}
 	
-	public XbFileSet (XbFileSet fileset)
-	{
+	public XbFileSet (XbFileSet fileset) {
 		super(fileset);
 		copyFrom(fileset);
 	}
 	
-	public void copyFrom (XbFileSet fileset)
-	{
+	public void copyFrom (XbFileSet fileset) {
 		super.copyFrom(fileset);
 		this.dir = fileset.dir == null ? null : new String(fileset.dir);
 		this.includes = fileset.includes == null ? null : new String(fileset.includes);

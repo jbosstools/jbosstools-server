@@ -16,10 +16,11 @@ public class XbProperty extends XbPackageNode {
 	private String name, value;
 	
 	public XbProperty () {
-		super();
+		super("property"); //$NON-NLS-1$
 	}
 	
 	public XbProperty(XbProperty property) {
+		super(property);
 		this.name = property.name == null ? null : new String(property.name);
 		this.value = property.value ==  null ? null : new String(property.value);
 	}

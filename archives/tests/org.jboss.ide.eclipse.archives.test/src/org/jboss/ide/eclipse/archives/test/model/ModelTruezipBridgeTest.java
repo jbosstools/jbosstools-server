@@ -25,8 +25,15 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.core.JavaModelManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl;
+import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackageNodeWithProperties;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
@@ -213,7 +220,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		assertTrue(zippedF.exists());
 		assertTrue(!zippedF.isDirectory());
 
-		IArchiveFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
+		IArchiveStandardFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
 		fs.setInWorkspace(true);
 		zipped.addChild(fs);
 		ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
@@ -229,7 +236,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		assertTrue(zippedF.exists());
 		assertTrue(!zippedF.isDirectory());
 
-		IArchiveFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
+		IArchiveStandardFileSet fs = createFileSet("**/*.gif", new Path(proj.getName()).makeAbsolute().toString());
 		fs.setInWorkspace(true);
 		fs.setFlattened(true);
 		zipped.addChild(fs);
@@ -239,7 +246,63 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		assertEquals(14, countEntries(zippedF));
 	}
 
+	public void testLibFileset() {
+		File file = findSomeJar();
+		if( file != null ) {
+			IClasspathEntry e = 
+				JavaCore.newLibraryEntry(new Path(file.getAbsolutePath()), null, null);
+			JavaModelManager.getUserLibraryManager().setUserLibrary(
+					 "userLibTest", new IClasspathEntry[] { e },  false);
+			try {
+				IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
+				zipped.setInWorkspace(true);
+				zipped.setExploded(false);
+				ModelTruezipBridge.createFile(zipped);
+				File zippedF = proj.getLocation().append("outputs").append("zipped.war").toFile();
+				assertTrue(zippedF.exists());
+				assertTrue(!zippedF.isDirectory());
 
+				IArchiveFileSet fs = createLibFileSet("userLibTest");
+				zipped.addChild(fs);
+				ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
+
+				// should be two less files and 3 less folders created
+				assertEquals(1, countEntries(zippedF));
+			} finally {
+				JavaModelManager.getUserLibraryManager().removeUserLibrary("userLibTest");
+			}
+		}
+	}
+
+	protected File findSomeJar() {
+		String loc = System.getProperty("osgi.syspath");
+		File f = new File(loc);
+		String[] children = f.list();
+		boolean found = false;
+		int i = 0;
+		File tempFile;
+		while( !found && i < children.length) {
+			tempFile = new File(f, children[i]);
+			if( tempFile.exists() && tempFile.isFile() && children[i].endsWith("jar")) {
+				return tempFile;
+			}
+		}
+		return null;
+	}
+	
+	protected IArchiveNode getDummyParent() {
+		return new ArchiveNodeImpl(new XbPackageNodeWithProperties("DUMMY"){}) {
+			public IPath getRootArchiveRelativePath() {
+				return new Path("/");
+			}
+			public int getNodeType() {
+				return 0;
+			}
+		};
+	}
+
+	
+	
 	/*
 	 * Utility
 	 */

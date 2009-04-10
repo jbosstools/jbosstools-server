@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
 public class PathUtils {
@@ -26,8 +26,8 @@ public class PathUtils {
 					a.getProjectName(), a.isDestinationInWorkspace(),
 					a.getDescriptorVersion());
 		}
-		else if( node instanceof IArchiveFileSet ) {
-			IArchiveFileSet a = (IArchiveFileSet)node;
+		else if( node instanceof IArchiveStandardFileSet ) {
+			IArchiveStandardFileSet a = (IArchiveStandardFileSet)node;
 			return getGlobalLocation(a.getRawSourcePath(),
 					a.getProjectName(), a.isInWorkspace(),
 					a.getDescriptorVersion());
@@ -40,8 +40,8 @@ public class PathUtils {
 			IArchive a = (IArchive)node;
 			return getAbsoluteLocation(a.getRawDestinationPath(), a.getProjectName(), a.isDestinationInWorkspace(), a.getDescriptorVersion());
 		}
-		else if( node instanceof IArchiveFileSet ) {
-			IArchiveFileSet a = (IArchiveFileSet)node;
+		else if( node instanceof IArchiveStandardFileSet ) {
+			IArchiveStandardFileSet a = (IArchiveStandardFileSet)node;
 			return getAbsoluteLocation(a.getRawSourcePath(), a.getProjectName(), a.isInWorkspace(), a.getDescriptorVersion());
 		}
 		return null;

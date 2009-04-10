@@ -25,7 +25,7 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 
@@ -69,7 +69,7 @@ public class WorkspaceJARArchiveType extends AbstractArchiveType {
 		jar.setName(project.getName() + ".jar"); //$NON-NLS-1$
 		jar.setArchiveType(this);
 
-		IArchiveFileSet classes = new ArchiveFileSetImpl();
+		IArchiveStandardFileSet classes = new ArchiveFileSetImpl();
 		classes.setIncludesPattern("**/*"); //$NON-NLS-1$
 		classes.setRawSourcePath(outputContainer.getFullPath().toString());
 		classes.setInWorkspace(true);

@@ -32,6 +32,7 @@ public class ArchivesUIMessages extends NLS {
 	public static String ErrorStringSubstitution;
 	public static String ErrorCompletingWizard;
 	public static String FilesetWizard;
+	public static String LibFilesetWizard;
 	public static String DefaultJarConfiguration;
 	public static String Preview;
 	public static String UseDefaultJARConfiguration;
@@ -61,6 +62,7 @@ public class ArchivesUIMessages extends NLS {
 
 	public static String ProjectPackagesView_newFolderAction_label;
 	public static String ProjectPackagesView_newFilesetAction_label;
+	public static String ProjectPackagesView_newLibFilesetAction_label;
 	public static String ProjectPackagesView_deletePackageAction_label;
 	public static String ProjectPackagesView_editPackageAction_label;
 	public static String ProjectPackagesView_newPackageMenu_label;
@@ -85,6 +87,10 @@ public class ArchivesUIMessages extends NLS {
 	public static String FilesetInfoWizardPage_includes_label;
 	public static String FilesetInfoWizardPage_excludes_label;
 	public static String FilesetInfoWizardPage_previewGroup_label;
+	public static String LibFilesetInfoWizardPage_new_message;
+	public static String LibFilesetInfoWizardPage_new_title;
+	public static String LibFilesetInfoWizardPage_edit_message;
+	public static String LibFilesetInfoWizardPage_edit_title;
 
 	/* Preference Page */
 	public static String PreferencePageTitle;

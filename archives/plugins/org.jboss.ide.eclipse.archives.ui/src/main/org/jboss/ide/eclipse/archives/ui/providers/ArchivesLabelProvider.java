@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.archives.ui.providers;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -20,7 +21,9 @@ import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveAction;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
@@ -95,7 +98,10 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 					}
 					case IArchiveNode.TYPE_ARCHIVE_FOLDER: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
 					case IArchiveNode.TYPE_ARCHIVE_FILESET: {
-						return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_MULTIPLE_FILES);
+						if( node instanceof IArchiveStandardFileSet )
+							return ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_MULTIPLE_FILES);
+						else if( node instanceof IArchiveLibFileSet) 
+							return JavaUI.getSharedImages().getImage(org.eclipse.jdt.ui.ISharedImages.IMG_OBJS_LIBRARY);
 					}
 				}
 			}
@@ -121,8 +127,13 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 			switch (((IArchiveNode)element).getNodeType()) {
 				case IArchiveNode.TYPE_ARCHIVE: return getPackageText((IArchive)element);
 				case IArchiveNode.TYPE_ARCHIVE_FOLDER: return getPackageFolderText((IArchiveFolder)element);
-				case IArchiveNode.TYPE_ARCHIVE_FILESET: return getPackageFileSetText((IArchiveFileSet)element);
 				case IArchiveNode.TYPE_ARCHIVE_ACTION: return getArchiveActionText((IArchiveAction)element);
+				case IArchiveNode.TYPE_ARCHIVE_FILESET: {
+					if( element instanceof IArchiveStandardFileSet)
+						return getPackageFileSetText((IArchiveFileSet)element);
+					else if( element instanceof IArchiveLibFileSet)
+						return ((IArchiveLibFileSet)element).getId();
+				}
 			}
 
 		}
@@ -147,30 +158,34 @@ public class ArchivesLabelProvider extends BaseLabelProvider implements ILabelPr
 		return action.toString();
 	}
 
-	private String getPackageFileSetText (IArchiveFileSet fileset) {
-		boolean showFullPath = showFullPaths == SHOW_FULL_PATHS || 
-				(showFullPaths == FOLLOW_PREFS_FULL_PATHS && 
-			PrefsInitializer.getBoolean(
-				PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR));
-		boolean inWorkspace = fileset.isInWorkspace();
-
-		String text = ""; //$NON-NLS-1$
-		// +[includes] [excludes] : /path/to/root
-		text += "+[" + fileset.getIncludesPattern() + "] "; //$NON-NLS-1$ //$NON-NLS-2$
-
-		if (fileset.getExcludesPattern() != null) {
-			text += "-[" + fileset.getExcludesPattern() + "] : "; //$NON-NLS-1$ //$NON-NLS-2$
+	private String getPackageFileSetText (IArchiveFileSet fileset2) {
+		if( fileset2 instanceof IArchiveStandardFileSet) {
+			IArchiveStandardFileSet fileset = (IArchiveStandardFileSet)fileset2;
+			boolean showFullPath = showFullPaths == SHOW_FULL_PATHS || 
+					(showFullPaths == FOLLOW_PREFS_FULL_PATHS && 
+				PrefsInitializer.getBoolean(
+					PrefsInitializer.PREF_SHOW_FULL_FILESET_ROOT_DIR));
+			boolean inWorkspace = fileset.isInWorkspace();
+	
+			String text = ""; //$NON-NLS-1$
+			// +[includes] [excludes] : /path/to/root
+			text += "+[" + fileset.getIncludesPattern() + "] "; //$NON-NLS-1$ //$NON-NLS-2$
+	
+			if (fileset.getExcludesPattern() != null) {
+				text += "-[" + fileset.getExcludesPattern() + "] : "; //$NON-NLS-1$ //$NON-NLS-2$
+			}
+	
+			if (showFullPath) {
+				text += PathUtils.getAbsoluteLocation(fileset);
+			} else if( inWorkspace ){
+				text += fileset.getRawSourcePath();
+			} else {
+				text += new Path(PathUtils.getAbsoluteLocation(fileset)).lastSegment();
+			}
+	
+			return text;
 		}
-
-		if (showFullPath) {
-			text += PathUtils.getAbsoluteLocation(fileset);
-		} else if( inWorkspace ){
-			text += fileset.getRawSourcePath();
-		} else {
-			text += new Path(PathUtils.getAbsoluteLocation(fileset)).lastSegment();
-		}
-
-		return text;
+		return null;
 	}
 
 }

@@ -18,19 +18,17 @@ public class XbPackage extends XbPackageNodeWithProperties {
 	private boolean exploded, inWorkspace;
 
 	public XbPackage () {
-		super();
+		super("package"); //$NON-NLS-1$
 		exploded = false;
 		inWorkspace = true;
 	}
 	
-	public XbPackage (XbPackage pkg)
-	{
+	public XbPackage (XbPackage pkg) {
 		super(pkg);
 		copyFrom (pkg);
 	}
 	
-	public void copyFrom (XbPackage pkg)
-	{
+	public void copyFrom (XbPackage pkg) {
 		super.copyFrom(pkg);
 		this.name = pkg.name == null ? null: new String(pkg.name);
 		this.packageType = pkg.packageType == null ? null : new String(pkg.packageType);
@@ -47,18 +45,15 @@ public class XbPackage extends XbPackageNodeWithProperties {
 		return getChildren(XbAction.class);
 	}
 
-	public List getPackages ()
-	{
+	public List getPackages () {
 		return getChildren(XbPackage.class);
 	}
 	
-	public List getFolders ()
-	{
+	public List getFolders () {
 		return getChildren(XbFolder.class);
 	}
 	
-	public List getFileSets()
-	{
+	public List getFileSets() {
 		return getChildren(XbFileSet.class);
 	}
 	

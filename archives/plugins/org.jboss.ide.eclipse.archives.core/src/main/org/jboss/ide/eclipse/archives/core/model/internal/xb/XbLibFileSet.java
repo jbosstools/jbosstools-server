@@ -10,37 +10,33 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.core.model.internal.xb;
 
-import java.util.List;
+public class XbLibFileSet extends XbPackageNodeWithProperties {
 
-public class XbPackages extends XbPackageNodeWithProperties {
+	private String id;
 	
-	private double version;
-	public XbPackages() {
-		super("packages-type"); //$NON-NLS-1$
+	public XbLibFileSet () {
+		super("lib-fileset"); //$NON-NLS-1$
 	}
 	
-	public XbPackages (XbPackages packages) {
-		super(packages);
-		copyFrom(packages);
+	public XbLibFileSet (XbLibFileSet fileset) {
+		super(fileset);
+		copyFrom(fileset);
 	}
-	public void copyFrom (XbPackages node) {
-		super.copyFrom(node);
-		this.version = node.version;
+	
+	public void copyFrom (XbLibFileSet fileset) {
+		super.copyFrom(fileset);
+		this.id = fileset.id;
 	}
-
+	
 	protected Object clone() throws CloneNotSupportedException {
-		return new XbPackages(this);
+		return new XbLibFileSet(this);
 	}
 	
-	public List getPackages () {
-		return getChildren(XbPackage.class);
+	public String getId() {
+		return id;
 	}
 
-	public double getVersion() {
-		return version;
-	}
-
-	public void setVersion(double version) {
-		this.version = version;
+	public void setId(String id) {
+		this.id = id;
 	}
 }

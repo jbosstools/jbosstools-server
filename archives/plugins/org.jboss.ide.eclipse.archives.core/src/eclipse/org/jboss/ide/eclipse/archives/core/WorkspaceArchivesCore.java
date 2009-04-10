@@ -15,12 +15,14 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.archives.core.build.ModelChangeListenerWithRefresh;
 import org.jboss.ide.eclipse.archives.core.build.PostBuildRefresher;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.ArchivesWorkspaceLogger;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceExtensionManager;
+import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspacePreferenceManager;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceVFS;
 import org.jboss.ide.eclipse.archives.core.project.ProjectUtils;
@@ -47,6 +49,10 @@ public class WorkspaceArchivesCore extends ArchivesCore {
 
 	protected IArchivesVFS createVFS() {
 		return new WorkspaceVFS();
+	}
+	
+	protected IArchiveNodeFactory createNodeFactory() {
+		return new WorkspaceNodeFactory();
 	}
 
 	public void preRegisterProject(IPath project) {

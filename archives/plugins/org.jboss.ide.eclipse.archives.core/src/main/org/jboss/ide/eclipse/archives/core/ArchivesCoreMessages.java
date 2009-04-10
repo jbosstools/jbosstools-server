@@ -66,6 +66,7 @@ public class ArchivesCoreMessages {
 	public static String RefreshProjectFailed;
 	public static String RegisterProjectFailed;
 	public static String RegisterProject;
+	public static String UnsupportedNodeType;
 	public static String ErrorPreSave;
 	public static String SaveArchivesJob;
 	public static String CreatingDefaultJarConfig;

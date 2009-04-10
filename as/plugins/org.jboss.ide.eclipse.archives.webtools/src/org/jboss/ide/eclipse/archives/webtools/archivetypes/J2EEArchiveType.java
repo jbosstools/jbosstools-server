@@ -25,11 +25,11 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
-import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
@@ -95,7 +95,7 @@ public abstract class J2EEArchiveType implements IArchiveType {
 
 	// Create a detached package with some generic settings
 	public static IArchive createGenericIArchive(IProject project, String deployDirectory, String packageName, IContainer sourceContainer) {
-		IArchive jar = ArchiveNodeFactory.createArchive();
+		IArchive jar = ArchivesCore.getInstance().getNodeFactory().createArchive();
 
 		if( deployDirectory != null ) {
 			jar.setDestinationPath(new Path(deployDirectory));
@@ -113,14 +113,14 @@ public abstract class J2EEArchiveType implements IArchiveType {
 
 	public static IArchiveFolder addFolder(IProject project,
 			IArchiveNode parent, String name) throws ArchivesModelException {
-		IArchiveFolder folder = ArchiveNodeFactory.createFolder();
+		IArchiveFolder folder = ArchivesCore.getInstance().getNodeFactory().createFolder();
 		folder.setName(name);
 		parent.addChild(folder);
 		return folder;
 	}
-	public static IArchiveFileSet addFileset(IProject project, IArchiveNode parent,
+	public static IArchiveStandardFileSet addFileset(IProject project, IArchiveNode parent,
 			String sourcePath, String includePattern) throws ArchivesModelException {
-		IArchiveFileSet fs = ArchiveNodeFactory.createFileset();
+		IArchiveStandardFileSet fs = ArchivesCore.getInstance().getNodeFactory().createFileset();
 		Assert.isNotNull(project);
 		IJavaProject javaProject = JavaCore.create(project);
 		Assert.isNotNull(javaProject);

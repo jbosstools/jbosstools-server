@@ -19,7 +19,10 @@ import java.util.List;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
+import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
@@ -29,18 +32,9 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
-import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveActionImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFileSetImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveFolderImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveImpl;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveModelNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeImpl;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbAction;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFileSet;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbFolder;
-import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackage;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackageNode;
 import org.jboss.ide.eclipse.archives.core.model.internal.xb.XbPackages;
 
@@ -224,23 +218,24 @@ public class ModelUtil {
 	}
 
 	protected static IArchiveNode createPackageNodeImpl (XbPackageNode node, IArchiveNode parent) throws ArchivesModelException {
-		ArchiveNodeImpl nodeImpl = null;
-		if (node instanceof XbPackage) {
-			nodeImpl = new ArchiveImpl((XbPackage)node);
-		} else if (node instanceof XbFolder) {
-			nodeImpl = new ArchiveFolderImpl((XbFolder)node);
-		} else if (node instanceof XbFileSet) {
-			nodeImpl = new ArchiveFileSetImpl((XbFileSet)node);
-		} else if( node instanceof XbAction ) {
-			nodeImpl = new ArchiveActionImpl((XbAction)node);
-		}
-
-		for (Iterator iter = node.getAllChildren().iterator(); iter.hasNext(); ) {
-			XbPackageNode child = (XbPackageNode) iter.next();
-			ArchiveNodeImpl childImpl = (ArchiveNodeImpl)createPackageNodeImpl(child, nodeImpl);
-			if (nodeImpl != null && childImpl != null) {
-				nodeImpl.addChild(childImpl, false);
+		IArchiveNode nodeImpl = ArchivesCore.getInstance().getNodeFactory().createNode(node);
+		
+		if( nodeImpl != null ) {
+			for (Iterator iter = node.getAllChildren().iterator(); iter.hasNext(); ) {
+				XbPackageNode child = (XbPackageNode) iter.next();
+				IArchiveNode childImpl = (ArchiveNodeImpl)createPackageNodeImpl(child, nodeImpl);
+				if (childImpl != null) {
+					if( nodeImpl instanceof ArchiveNodeImpl)
+						((ArchiveNodeImpl)nodeImpl).addChild(childImpl, false);
+					else 
+						nodeImpl.addChild(childImpl);
+				}
 			}
+		} else {
+			// Log that this node type is unsupported
+			IStatus status = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID, 
+					NLS.bind(ArchivesCoreMessages.UnsupportedNodeType, node.getNodeType()));
+			ArchivesCore.log(status);
 		}
 		return nodeImpl;
 	}

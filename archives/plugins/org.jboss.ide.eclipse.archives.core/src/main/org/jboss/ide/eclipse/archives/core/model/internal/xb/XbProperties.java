@@ -24,7 +24,7 @@ public class XbProperties extends XbPackageNode {
 	private PropertiesExt properties;
 
 	public XbProperties () {
-		super();
+		super("properties"); //$NON-NLS-1$
 		this.properties = new PropertiesExt();
 	}
 

@@ -17,8 +17,8 @@ public abstract class XbPackageNodeWithProperties extends XbPackageNode {
 
 	protected XbProperties properties;
 	
-	public XbPackageNodeWithProperties () {
-		super();
+	public XbPackageNodeWithProperties(String nodeType) {
+		super(nodeType);
 		properties = new XbProperties();
 	}
 	
@@ -31,10 +31,8 @@ public abstract class XbPackageNodeWithProperties extends XbPackageNode {
 		properties.getProperties().clear();
 		
 		Properties props = node.getProperties().getProperties();
-		for (Iterator iter = props.keySet().iterator(); iter.hasNext(); )
-		{
+		for (Iterator iter = props.keySet().iterator(); iter.hasNext(); ) {
 			String key = (String) iter.next();
-			
 			properties.getProperties().setProperty(key, (String) props.get(key));
 		}
 	}

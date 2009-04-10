@@ -17,7 +17,7 @@ import org.jboss.xb.binding.MarshallingContext;
 /**
  * Necessary class for JBoss XB
  * @author Marshall
- *
+ * @author Rob Stryker
  */
 public class XbPackagesObjectProvider implements GenericObjectModelProvider {
 
@@ -25,8 +25,7 @@ public class XbPackagesObjectProvider implements GenericObjectModelProvider {
 		return o;
 	}
 
-	protected Object getNodeChildren(XbPackageNode node, String name)
-	{
+	protected Object getNodeChildren(XbPackageNode node, String name) {
 		if ("package".equals(name)) { //$NON-NLS-1$
 			return node.getChildren(XbPackage.class);
 		}
@@ -35,6 +34,9 @@ public class XbPackagesObjectProvider implements GenericObjectModelProvider {
 		}
 		else if ("fileset".equals(name)) {//$NON-NLS-1$
 			return node.getChildren(XbFileSet.class);
+		}
+		else if( "lib-fileset".equals(name)) {//$NON-NLS-1$
+			return node.getChildren(XbLibFileSet.class);
 		}
 		else if ("properties".equals(name) && node instanceof XbPackageNodeWithProperties) {//$NON-NLS-1$
 			return ((XbPackageNodeWithProperties)node).getProperties();
@@ -49,8 +51,8 @@ public class XbPackagesObjectProvider implements GenericObjectModelProvider {
 		return null;
 	}
 
-	public Object getChildren(Object object, MarshallingContext context, String namespaceURI, String localName)
-	{
+	public Object getChildren(Object object, MarshallingContext context, 
+				String namespaceURI, String localName) {
 		if (object instanceof XbPackageNode) {
 			Object ret = getNodeChildren(((XbPackageNode)object), localName);
 			return ret;
@@ -97,6 +99,11 @@ public class XbPackagesObjectProvider implements GenericObjectModelProvider {
 				return "" + fileset.isInWorkspace();//$NON-NLS-1$
 			else if("flatten".equals(localName))//$NON-NLS-1$
 				return new Boolean(fileset.isFlattened()).toString();
+		}
+		else if( object instanceof XbLibFileSet ) {
+			XbLibFileSet fs = (XbLibFileSet)object;
+			if( "id".equals(localName)) //$NON-NLS-1$
+				return fs.getId();
 		}
 		else if (object instanceof XbProperty) {
 			XbProperty prop = (XbProperty) object;

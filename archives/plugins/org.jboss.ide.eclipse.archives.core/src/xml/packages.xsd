@@ -55,6 +55,8 @@
     		<xsd:element maxOccurs="unbounded" minOccurs="0"
     			name="fileset" type="fileset-type" />
     		<xsd:element maxOccurs="unbounded" minOccurs="0"
+    			name="lib-fileset" type="lib-fileset-type" />
+    		<xsd:element maxOccurs="unbounded" minOccurs="0"
     			name="folder" type="folder-type" />
     		<xsd:element maxOccurs="1" minOccurs="0" name="properties"
     			type="properties-type" />
@@ -162,5 +164,22 @@
         <xsd:attribute name="inWorkspace" type="xsd:boolean" use="optional" default="true"/>
         <xsd:attribute name="flatten" type="xsd:boolean" use="optional" default="false"/>
     </xsd:complexType>
+
+    <xsd:complexType name="lib-fileset-type">
+        <xsd:annotation>
+            <xsd:appinfo>
+                <jbxb:class impl="org.jboss.ide.eclipse.archives.core.model.internal.xb.XbLibFileSet"/>
+                <jbxb:addMethod name="addChild"/>
+            </xsd:appinfo>    
+        </xsd:annotation>
+        
+        <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="0" name="properties" type="properties-type"/>
+        </xsd:sequence>
+        
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+    
+    
     
 </xsd:schema>

@@ -34,7 +34,7 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCorePlugin;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
@@ -98,7 +98,7 @@ public class WarArchiveType extends J2EEArchiveType {
 				IPath path = new Path(files[0]);
 				path = path.removeLastSegments(2); // remove the file name
 				path = new Path(project.getName()).append(path); // pre-pend project name to make workspace-relative
-				IArchiveFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*"); //$NON-NLS-1$
+				IArchiveStandardFileSet fs = addFileset(project, packageRoot, path.toOSString(), "**/*"); //$NON-NLS-1$
 				//If we have separate file set for libraries, we do not need to duplicate jars.
 				fs.setExcludesPattern("**/WEB-INF/lib/*.jar"); //$NON-NLS-1$
 			}

@@ -20,34 +20,36 @@ import org.eclipse.jface.wizard.Wizard;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModelException;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveLibFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspaceNodeFactory;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
-import org.jboss.ide.eclipse.archives.ui.wizards.pages.FilesetInfoWizardPage;
+import org.jboss.ide.eclipse.archives.ui.wizards.pages.LibFilesetInfoWizardPage;
 
 /**
  *
  * @author "Rob Stryker" <rob.stryker@redhat.com>
  *
  */
-public class FilesetWizard extends Wizard {
+public class LibFilesetWizard extends Wizard {
 
-	private FilesetInfoWizardPage page1;
-	private IArchiveStandardFileSet fileset;
+	private LibFilesetInfoWizardPage page1;
+	private IArchiveLibFileSet fileset;
 	private IArchiveNode parentNode;
 
-	public FilesetWizard(IArchiveStandardFileSet fileset, IArchiveNode parentNode) {
+	public LibFilesetWizard(IArchiveLibFileSet fileset, IArchiveNode parentNode) {
 		this.fileset = fileset;
 		this.parentNode = parentNode;
-		setWindowTitle(ArchivesUIMessages.FilesetWizard);
+		setWindowTitle(ArchivesUIMessages.LibFilesetWizard);
 	}
 
 	public boolean performFinish() {
 		final boolean createFileset = this.fileset == null;
 
 		if (createFileset)
-			this.fileset = ArchivesCore.getInstance().getNodeFactory().createFileset();
+			this.fileset = ((WorkspaceNodeFactory) 
+				ArchivesCore.getInstance().getNodeFactory()).createLibFileset();
 		fillFilesetFromPage(fileset);
 		try {
 			getContainer().run(true, false, new IRunnableWithProgress () {
@@ -68,16 +70,12 @@ public class FilesetWizard extends Wizard {
 		return true;
 	}
 
-	private void fillFilesetFromPage (IArchiveStandardFileSet fileset) {
-		fileset.setExcludesPattern(page1.getExcludes());
-		fileset.setIncludesPattern(page1.getIncludes());
-		fileset.setFlattened(page1.isFlattened());
-		fileset.setRawSourcePath(page1.getRawPath());
-		fileset.setInWorkspace(page1.isRootDirWorkspaceRelative());
+	private void fillFilesetFromPage (IArchiveLibFileSet fileset) {
+		fileset.setId(page1.getId());
 	}
 
 	public void addPages() {
-		page1 = new FilesetInfoWizardPage(getShell(), fileset, parentNode);
+		page1 = new LibFilesetInfoWizardPage(getShell(), fileset, parentNode);
 		addPage(page1);
 	}
 }

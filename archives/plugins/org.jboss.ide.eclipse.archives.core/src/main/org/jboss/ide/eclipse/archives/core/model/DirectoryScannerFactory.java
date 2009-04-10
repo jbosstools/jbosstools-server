@@ -35,7 +35,7 @@ public class DirectoryScannerFactory {
 		public double version;
 	};
 
-	public static DirectoryScannerExtension createDirectoryScanner(IArchiveFileSet fs, boolean scan) {
+	public static DirectoryScannerExtension createDirectoryScanner(IArchiveStandardFileSet fs, boolean scan) {
 		return createDirectoryScanner(fs.getRawSourcePath(), fs.getRootArchiveRelativePath(),
 				fs.getIncludesPattern(), fs.getExcludesPattern(), fs.getProjectName(),
 				fs.isInWorkspace(), fs.getDescriptorVersion(), scan);
@@ -92,9 +92,9 @@ public class DirectoryScannerFactory {
 			IPath translatedPath = new Path(PathUtils.getAbsoluteLocation(path, fs.projectName, fs.inWorkspace, fs.version));
 			if( workspaceRelative ) {
 				IPath p = PathUtils.getGlobalLocation(path, fs.projectName, true, fs.version);
-				setBasedir(new FileWrapper(p.toFile(), translatedPath));
+				setBasedir(new FileWrapper(p.toFile(), translatedPath, fs.rootArchiveRelativePath));
 			} else {
-				setBasedir(new FileWrapper(translatedPath.toFile(), translatedPath));
+				setBasedir(new FileWrapper(translatedPath.toFile(), translatedPath,  fs.rootArchiveRelativePath));
 			}
 		}
 
@@ -115,7 +115,7 @@ public class DirectoryScannerFactory {
 	    		return super.getChild(file, element);
 	    	FileWrapper pWrapper = (FileWrapper)file;
 	    	File child = super.getChild(file, element);
-	    	FileWrapper childWrapper = new FileWrapper(child, pWrapper.getWrapperPath().append(element));
+	    	FileWrapper childWrapper = new FileWrapper(child, pWrapper.getWrapperPath().append(element), fs.rootArchiveRelativePath);
 	    	return childWrapper;
 	    }
 	    
@@ -129,7 +129,7 @@ public class DirectoryScannerFactory {
 	    	IPath[] childrenAbsolute = globalize(childrenWorkspace);
 	    	File[] files = new File[childrenAbsolute.length];
 	    	for( int i = 0; i < files.length; i++ ) {
-	    		files[i] = new FileWrapper(childrenAbsolute[i].toFile(), childrenWorkspace[i]);
+	    		files[i] = new FileWrapper(childrenAbsolute[i].toFile(), childrenWorkspace[i], fs.rootArchiveRelativePath);
 	    	}
 	    	return files;
 	    }
@@ -147,7 +147,7 @@ public class DirectoryScannerFactory {
 	    	if( children != null ) {
 		    	FileWrapper[] children2 = new FileWrapper[children.length];
 		    	for( int i = 0; i < children.length; i++ )
-		    		children2[i] = new FileWrapper(children[i], new Path(children[i].getAbsolutePath()));
+		    		children2[i] = new FileWrapper(children[i], new Path(children[i].getAbsolutePath()), fs.rootArchiveRelativePath);
 		    	return children2;
 	    	} 
 	    	return new FileWrapper[]{};
@@ -184,7 +184,7 @@ public class DirectoryScannerFactory {
 	    	return matchesMap;
 	    }
 
-	    public class FileWrapper extends File {
+	    public static class FileWrapper extends File {
 	    	// The actual source file
 	    	File f;
 
@@ -193,12 +193,18 @@ public class DirectoryScannerFactory {
 
 	    	// the path of this file relative to the fileset
 	    	String fsRelative;
-
-			public FileWrapper(File delegate, IPath path2) {
+	    	IPath rootArchiveRelativePath;
+	    	public FileWrapper(File delegate, IPath path2, IPath rootArchiveRelative) {
 				super(delegate.getAbsolutePath());
 				f = delegate;
 				path = path2;
+				rootArchiveRelativePath = rootArchiveRelative;
 			}
+	    	public FileWrapper(File delegate, IPath path2, IPath rootArchiveRelative, String fsRelative) {
+	    		this(delegate, path2, rootArchiveRelative);
+	    		this.fsRelative = fsRelative;
+			}
+			
 			public IPath getWrapperPath() {
 				return path;
 			}
@@ -215,8 +221,8 @@ public class DirectoryScannerFactory {
 			}
 
 			public IPath getRootArchiveRelative() {
-				if( fs.rootArchiveRelativePath != null )
-					return fs.rootArchiveRelativePath.append(fsRelative);
+				if( rootArchiveRelativePath != null )
+					return rootArchiveRelativePath.append(fsRelative);
 				return null;
 			}
 

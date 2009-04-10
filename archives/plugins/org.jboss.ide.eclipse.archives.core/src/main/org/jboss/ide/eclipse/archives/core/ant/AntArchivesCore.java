@@ -20,11 +20,13 @@ import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IActionType;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesLogger;
 import org.jboss.ide.eclipse.archives.core.model.IArchivesVFS;
 import org.jboss.ide.eclipse.archives.core.model.IExtensionManager;
 import org.jboss.ide.eclipse.archives.core.model.IPreferenceManager;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.xpl.AntNLS;
 
 /**
@@ -74,6 +76,10 @@ public class AntArchivesCore extends ArchivesCore {
 
 	protected IArchivesVFS createVFS() {
 		return new AntVFS();
+	}
+	
+	protected IArchiveNodeFactory createNodeFactory() {
+		return new ArchiveNodeFactory();
 	}
 
 	public void preRegisterProject(IPath project) {

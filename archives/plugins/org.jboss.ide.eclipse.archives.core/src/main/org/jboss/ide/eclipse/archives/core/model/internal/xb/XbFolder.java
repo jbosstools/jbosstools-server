@@ -16,19 +16,16 @@ public class XbFolder extends XbPackageNodeWithProperties {
 
 	private String name;
 	
-	public XbFolder ()
-	{
-		super();
+	public XbFolder () {
+		super("folder"); //$NON-NLS-1$
 	}
 	
-	public XbFolder (XbFolder folder)
-	{
+	public XbFolder (XbFolder folder) {
 		super(folder);
 		copyFrom(folder);
 	}
 	
-	public void copyFrom (XbFolder folder)
-	{
+	public void copyFrom (XbFolder folder) {
 		super.copyFrom(folder);
 		this.name = folder.name == null ? null : new String(folder.name);
 	}
@@ -37,18 +34,15 @@ public class XbFolder extends XbPackageNodeWithProperties {
 		return new XbFolder(this);
 	}
 	
-	public List getPackages ()
-	{
+	public List getPackages () {
 		return getChildren(XbPackage.class);
 	}
 	
-	public List getFolders ()
-	{
+	public List getFolders () {
 		return getChildren(XbFolder.class);
 	}
 	
-	public List getFileSets()
-	{
+	public List getFileSets() {
 		return getChildren(XbFileSet.class);
 	}
 	

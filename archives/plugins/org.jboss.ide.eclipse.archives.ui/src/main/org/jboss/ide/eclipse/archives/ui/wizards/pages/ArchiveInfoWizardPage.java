@@ -32,11 +32,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.jboss.ide.eclipse.archives.core.model.ArchiveNodeFactory;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
@@ -246,7 +247,7 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 
 	private void createPackage () {
 		if (archive == null) {
-			archive = ArchiveNodeFactory.createArchive();
+			archive = ArchivesCore.getInstance().getNodeFactory().createArchive();
 		}
 
 		archive.setName(getPackageName());

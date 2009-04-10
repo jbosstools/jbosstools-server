@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
@@ -57,7 +57,7 @@ import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite
 public class FilesetInfoWizardPage extends WizardPage {
 
 	private IArchiveNode parentNode;
-	private IArchiveFileSet fileset;
+	private IArchiveStandardFileSet fileset;
 	private String includes, excludes;
 	private String projectName;
 	private boolean flattened;
@@ -76,7 +76,7 @@ public class FilesetInfoWizardPage extends WizardPage {
 	private Text excludesText;
 	private ArchiveFilesetDestinationComposite destinationComposite;
 
-	public FilesetInfoWizardPage (Shell parent, IArchiveFileSet fileset, IArchiveNode parentNode) {
+	public FilesetInfoWizardPage (Shell parent, IArchiveStandardFileSet fileset, IArchiveNode parentNode) {
 		super(ArchivesUIMessages.FilesetInfoWizardPage_new_title, ArchivesUIMessages.FilesetInfoWizardPage_new_title, null);
 
 		if (fileset == null) {

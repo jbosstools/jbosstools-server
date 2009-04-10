@@ -14,7 +14,7 @@ public class XbAction extends XbPackageNodeWithProperties {
 	private String time, type;
 	
 	public XbAction() {
-		super();
+		super("buildAction"); //$NON-NLS-1$
 	}
 
 	public XbAction(XbAction action) {
