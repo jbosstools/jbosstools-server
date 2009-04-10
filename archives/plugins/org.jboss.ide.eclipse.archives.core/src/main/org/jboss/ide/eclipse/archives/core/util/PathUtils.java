@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 
@@ -73,7 +74,7 @@ public class PathUtils {
 			String translated = ArchivesCore.getInstance().getVFS().
 				performStringSubstitution(expression, projectName, true);
 			if( inWorkspace ) {
-				if( version >= 1.2) {
+				if( version >= IArchiveModelRootNode.DESCRIPTOR_VERSION_1_2) {
 					IPath p = new Path(translated);
 					if( !p.isAbsolute() )
 						p = new Path(projectName).append(p).makeAbsolute();

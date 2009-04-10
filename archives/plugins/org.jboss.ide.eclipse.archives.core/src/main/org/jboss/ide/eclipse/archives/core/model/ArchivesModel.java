@@ -186,7 +186,7 @@ public class ArchivesModel implements IArchiveModel {
 			}
 		} else {
 			packages = new XbPackages();
-			packages.setVersion(1.2);
+			packages.setVersion(IArchiveModelRootNode.DESCRIPTOR_VERSION_LATEST);
 		}
 
 		// Fill the model

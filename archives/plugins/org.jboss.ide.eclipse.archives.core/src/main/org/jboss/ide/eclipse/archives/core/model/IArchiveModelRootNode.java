@@ -25,7 +25,8 @@ import org.jboss.ide.eclipse.archives.core.model.internal.xb.XMLBinding.XbExcept
 public interface IArchiveModelRootNode extends IArchiveNode {
 	public static final double DESCRIPTOR_VERSION_1_0 = 1.0;
 	public static final double DESCRIPTOR_VERSION_1_2 = 1.2;
-	public static final double DESCRIPTOR_VERSION_LATEST = DESCRIPTOR_VERSION_1_2;
+	public static final double DESCRIPTOR_VERSION_1_3 = 1.3;
+	public static final double DESCRIPTOR_VERSION_LATEST = DESCRIPTOR_VERSION_1_3;
 	
 	public void setModel(IArchiveModel model);
 	public IArchiveModel getModel();
