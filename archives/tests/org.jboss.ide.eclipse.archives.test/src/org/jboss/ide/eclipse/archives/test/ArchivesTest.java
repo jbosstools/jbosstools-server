@@ -10,6 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.test;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
@@ -37,6 +42,10 @@ public class ArchivesTest extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		URL url = FileLocator.toFileURL(getBundle().getEntry(""));
+		IPath p = new Path(url.getFile());
+		p.append("output").toFile().mkdirs();
+		p.append("tmp").toFile().mkdirs();
 	}
 
 	/*
@@ -44,6 +53,10 @@ public class ArchivesTest extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
+		URL url = FileLocator.toFileURL(getBundle().getEntry(""));
+		IPath p = new Path(url.getFile());
+		p.append("output").toFile().delete();
+		p.append("tmp").toFile().delete();
 		plugin = null;
 		super.stop(context);
 	}
