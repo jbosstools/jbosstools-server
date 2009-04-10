@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.jboss.ide.eclipse.archives.core.nodeProvider">
+      <provider
+            class="org.jboss.ide.eclipse.archives.jdt.integration.model.LibFileSetNodeProvider">
+      </provider>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
+      <packageType
+            class="org.jboss.ide.eclipse.archives.jdt.integration.model.WorkspaceJARArchiveType"
+            id="jar"
+            label="JAR"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <actionProvider
+            class="org.jboss.ide.eclipse.archives.jdt.integration.ui.JDTArchivesActionProvider"
+            id="org.jboss.ide.eclipse.archives.jdt.integration.ui.ArchivesActionProvider"
+            priority="highest">
+         <enablement>
+            <instanceof
+                  value="java.lang.Object">
+            </instanceof>
+         </enablement>
+      </actionProvider>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerActionBinding
+            viewerId="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView">
+         <includes>
+            <actionExtension
+                  pattern="org.jboss.ide.eclipse.archives.jdt.integration.ui.ArchivesActionProvider">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
+   </extension>
+</plugin>
