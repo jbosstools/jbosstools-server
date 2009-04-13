@@ -57,7 +57,12 @@ public class JBossServer extends DeployableServer
 
 	public JBossServer() {
 	}
-	
+
+	public void setDefaults(IProgressMonitor monitor) {
+		super.setDefaults(monitor);
+		setAttribute("auto-publish-time", 1);
+	}
+
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
 		// here we update the launch configuration with any details that might have changed. 
 		try {
