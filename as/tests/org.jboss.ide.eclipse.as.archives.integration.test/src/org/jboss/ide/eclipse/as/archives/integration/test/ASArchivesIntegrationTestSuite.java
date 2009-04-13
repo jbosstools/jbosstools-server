@@ -27,7 +27,7 @@ import junit.framework.TestSuite;
 public class ASArchivesIntegrationTestSuite extends TestSuite {
     public static Test suite() { 
         TestSuite suite = new TestSuite("AS Archives Integration Test Suite");
-        suite.addTest(new BuildDeployTest());
+        suite.addTestSuite(BuildDeployTest.class);
         return suite; 
    }
 
