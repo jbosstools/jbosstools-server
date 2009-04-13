@@ -118,21 +118,26 @@ public class ArgsUtil {
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value, boolean addQuotes ) {
 		if( addQuotes ) 
 			value = "\"" + value + "\"";
+		boolean found = false;
 		String[] args = parse(allArgs);
 		String retVal = "";
 		for( int i = 0; i < args.length; i++ ) {
 			if( args[i].equals(shortOpt)) {
 				args[i+1] = value;
 				retVal += args[i] + " " + args[++i] + " ";
+				found = true;
 			} else if( longOpt != null && args[i].startsWith(longOpt + "=")) { 
 				args[i] = longOpt + "=" + value;
 				retVal += args[i] + " ";
+				found = true;
 			} else {
 				retVal += args[i] + " ";
 			}
 		}
 		
 		// turn this to a retval;
+		if( !found )
+			retVal = retVal + longOpt + "=" + value;
 		return retVal;
 	}
 	
