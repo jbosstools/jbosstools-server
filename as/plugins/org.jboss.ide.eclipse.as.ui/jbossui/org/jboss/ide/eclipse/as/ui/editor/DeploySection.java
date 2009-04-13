@@ -256,7 +256,7 @@ public class DeploySection extends ServerEditorSection {
 		String error = "";
 		List<Status> status = new ArrayList<Status>();
 		if( getRuntime() == null ) {
-			String msg = "No Runtime Selected";
+			String msg = Messages.EditorNoRuntimeSelected;
 			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n";
 		}

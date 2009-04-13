@@ -151,7 +151,7 @@ public class Messages {
 	public static String EditorCPD_DefaultShellTitle;
 	public static String EditorCPD_DefaultDescription;
 	public static String EditorCPD_RestoreDefault;
-
+	public static String EditorNoRuntimeSelected;
 
 
 	public static String Configure;
