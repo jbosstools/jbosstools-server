@@ -62,6 +62,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -102,7 +103,6 @@ public class DeploySection extends ServerEditorSection {
 		
 		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
 		Control top = descriptionLabel;
-		if( getRuntime() != null ) {
 			Composite inner = toolkit.createComposite(composite);
 			inner.setLayout(new GridLayout(1, false));
 			metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
@@ -136,7 +136,6 @@ public class DeploySection extends ServerEditorSection {
 			radios.right = new FormAttachment(100,-5);
 			inner.setLayoutData(radios);
 			top = inner;
-		}
 		
 		
 		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
@@ -256,18 +255,22 @@ public class DeploySection extends ServerEditorSection {
 	public IStatus[] getSaveStatus() {
 		String error = "";
 		List<Status> status = new ArrayList<Status>();
+		if( getRuntime() == null ) {
+			String msg = "No Runtime Selected";
+			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
+			error = error + msg + "\n";
+		}
 		if(!new File(makeGlobal(deployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorDeployDNE, deployText.getText()); 
-			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
-			error = msg + "\n"; 
+			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
+			error = error + msg + "\n"; 
 		}
 		
 		if(!new File(makeGlobal(tempDeployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorTempDeployDNE, tempDeployText.getText());
-			status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, msg));
+			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n";
 		}
-		
 		setErrorMessage(error.equals("") ? null : error);
 		return status.size() == 0 ? null : status.toArray(new IStatus[status.size()]);
 	}
@@ -359,15 +362,17 @@ public class DeploySection extends ServerEditorSection {
 				new File(newTemp).mkdirs();
 			} else if( newSelection == serverRadio ) {
 				IRuntime rt = DeploySection.this.server.getRuntime();
-				IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-				String config = jbsrt.getJBossConfiguration();
-				newDir = new Path(IJBossServerConstants.SERVER)
-					.append(config)
-					.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
-				newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-					.append(IJBossServerConstants.TMP)
-					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-				new File(newTemp).mkdirs();
+				if( rt != null ) {
+					IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+					String config = jbsrt.getJBossConfiguration();
+					newDir = new Path(IJBossServerConstants.SERVER)
+						.append(config)
+						.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
+					newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+						.append(IJBossServerConstants.TMP)
+						.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+					new File(newTemp).mkdirs();
+				}
 				type = IDeployableServer.DEPLOY_SERVER;
 			} else {
 				newDir = lastCustomDeploy;
