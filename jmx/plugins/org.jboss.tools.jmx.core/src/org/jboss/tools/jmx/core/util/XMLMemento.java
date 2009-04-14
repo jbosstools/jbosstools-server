@@ -54,7 +54,7 @@ public final class XMLMemento implements IMemento {
 	 * you should use createReadRoot and createWriteRoot to create the initial
 	 * mementos on a document.
 	 */
-	private XMLMemento(Document doc, Element el) {
+	public XMLMemento(Document doc, Element el) {
 		factory = doc;
 		element = el;
 	}
@@ -72,7 +72,7 @@ public final class XMLMemento implements IMemento {
 	 * Create a Document from a Reader and answer a root memento for reading
 	 * a document.
 	 */
-	protected static XMLMemento createReadRoot(InputStream in) {
+	public static XMLMemento createReadRoot(InputStream in) {
 		Document document = null;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
