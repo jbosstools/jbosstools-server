@@ -21,13 +21,15 @@
  */
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -44,6 +46,8 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.tools.jmx.core.IMemento;
+import org.jboss.tools.jmx.core.util.XMLMemento;
 
 /**
  * The class representing the model for all xpath storage and searching
@@ -58,12 +62,9 @@ public class XPathModel extends UnitedServerListener {
 	private static final String DELIMITER = ",";
 	private static final String CATEGORY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	
-	private static final String QUERY_LIST = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
-	private static final String QUERY = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
-	private static final String DEFAULTS_SET = "org.jboss.ide.eclipse.as.core.model.descriptor.DefaultsSet";
-
+	private static final IPath STATE_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation();
+	private static final String XPATH_FILE_NAME = "xpaths.xml";
+	
 	/* Singleton */
 	private static XPathModel instance;
 	public static XPathModel getDefault() {
@@ -79,31 +80,26 @@ public class XPathModel extends UnitedServerListener {
 	}
 	
 	public void serverAdded(IServer server) {
-		final ServerAttributeHelper helper = new ServerAttributeHelper(server, server.createWorkingCopy());
-		if( !helper.getAttribute(DEFAULTS_SET, false)) {
-			final IServer server2 = server;
-			new Job("Add Server XPath Details") {
-				protected IStatus run(IProgressMonitor monitor) {
-					
-					if(server2==null || server2.getRuntime()==null) {
-						return Status.OK_STATUS; // server has no runtime so we can't set this up.
-					}
-					
-					LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
-					server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
-					if(ajbsr != null ) {
-						IPath loc = server2.getRuntime().getLocation();
-						IPath configFolder = loc.append(IJBossServerConstants.SERVER).append(ajbsr.getJBossConfiguration());
-						loadDefaults(server2, configFolder.toOSString());
-						helper.setAttribute(DEFAULTS_SET, true);
-						helper.save();
-						save(server2);
-					}
-					return Status.OK_STATUS;
+		final IServer server2 = server;
+		new Job("Add Server XPath Details") {
+			protected IStatus run(IProgressMonitor monitor) {
+				
+				if(server2==null || server2.getRuntime()==null) {
+					return Status.OK_STATUS; // server has no runtime so we can't set this up.
 				}
 				
-			}.schedule();
-		}
+				LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
+				server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
+				if(ajbsr != null ) {
+					IPath loc = server2.getRuntime().getLocation();
+					IPath configFolder = loc.append(IJBossServerConstants.SERVER).append(ajbsr.getJBossConfiguration());
+					ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder.toOSString());
+					serverToCategories.put(server2.getId(), defaults);
+					save(server2);
+				}
+				return Status.OK_STATUS;
+			}
+		}.schedule();
 	}
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
@@ -172,7 +168,70 @@ public class XPathModel extends UnitedServerListener {
 	/*
 	 * Loading and saving is below
 	 */
+	protected File getFile(IServer server) {
+		return STATE_LOCATION.append(server.getId().replace(' ', '_')).append(XPATH_FILE_NAME).toFile();
+	}
+	
+	public void save(IServer server) {
+		if( !serverToCategories.containsKey(server.getId()))
+			return;
+		XMLMemento memento = XMLMemento.createWriteRoot("xpaths");
+		XPathCategory[] categories = getCategories(server);
+		for( int i = 0; i < categories.length; i++ ) {
+			XMLMemento child = (XMLMemento)memento.createChild("category");
+			saveCategory(categories[i], server, child);
+		}
+		try {
+			memento.save(new FileOutputStream(getFile(server)));
+		} catch( IOException ioe) {
+			// TODO LOG
+		}
+	}
+
+	public void saveCategory(XPathCategory category, IServer server, XMLMemento memento) {
+		memento.putString("name", category.getName());
+		if( category.queriesLoaded()) {
+			XPathQuery[] queries = category.getQueries();
+			for( int i = 0; i < queries.length; i++ ) {
+				XMLMemento child = (XMLMemento)memento.createChild("query");
+				saveQuery(queries[i], category, server, child);
+			}
+		}
+	}
+	
+	private void saveQuery(XPathQuery query, XPathCategory category, 
+			IServer server, XMLMemento memento) {
+		memento.putString("name", query.getName());
+		memento.putString("dir", query.getBaseDir());
+		memento.putString("filePattern", query.getFilePattern());
+		memento.putString("xpathPattern", query.getXpathPattern());
+		memento.putString("attribute", query.getAttribute());
+	}
+	
 	private XPathCategory[] load(IServer server) {
+		if( getFile(server).exists()) 
+			return loadXML(server);
+		return load_LEGACY(server);
+	}
+	
+	private XPathCategory[] loadXML(IServer server) {
+		XPathCategory[] categories = null;
+		try {
+			File file = getFile(server);
+			XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
+			IMemento[] categoryMementos = memento.getChildren("category");
+			categories = new XPathCategory[categoryMementos.length];
+			for( int i = 0; i < categoryMementos.length; i++ ) {
+				categories[i] = new XPathCategory(server, categoryMementos[i]);
+			}
+		} catch( IOException ioe) {
+			// TODO LOG
+		}
+		return categories == null ? new XPathCategory[] { } : categories;
+	}
+	
+	
+	private XPathCategory[] load_LEGACY(IServer server) {
 		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
 		String list = helper.getAttribute(CATEGORY_LIST, (String)null);
 		if( list == null )
@@ -184,67 +243,6 @@ public class XPathModel extends UnitedServerListener {
 		}
 		return cats;
 	}
-		
-	public void save(IServer server) {
-		if( !serverToCategories.containsKey(server.getId()))
-			return;
-		
-		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
-		XPathCategory[] categories = getCategories(server);
-		String list = "";
-		for( int i = 0; i < categories.length; i++ ) {
-			if( i != 0 )
-				list += DELIMITER;
-			list += categories[i].getName();
-			saveCategory(categories[i], server, helper);
-		}
-		helper.setAttribute(CATEGORY_LIST, list);
-		helper.save();
-	}
-
-	public void saveCategory(XPathCategory category, IServer server, ServerAttributeHelper helper) {
-		if( category.queriesLoaded()) {
-			XPathQuery[] queries = category.getQueries();
-			String val = "";
-			for( int i = 0; i < queries.length; i++ ) {
-				if( i != 0 )
-					val += DELIMITER;
-				val += category.getName() + Path.SEPARATOR + queries[i].getName();
-				saveQuery(queries[i], category, server, helper);
-			}
-			helper.setAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), val);
-		}
-	}
-	
-	private void saveQuery(XPathQuery query, XPathCategory category, IServer server, ServerAttributeHelper helper) {
-		ArrayList<String> list = new ArrayList<String>();
-		list.add(query.getBaseDir());
-		list.add(query.getFilePattern() == null ? EMPTY_STRING : query.getFilePattern());
-		list.add(query.getXpathPattern() == null ? EMPTY_STRING : query.getXpathPattern());
-		list.add(query.getAttribute() == null ? EMPTY_STRING : query.getAttribute());
-		helper.setAttribute(QUERY + "." + category.getName().replace(' ', '_') + Path.SEPARATOR + query.getName().replace(' ', '_'), list);
-	}
-	
-	public XPathQuery[] loadQueries(XPathCategory category, IServer server) {
-		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
-		String list = helper.getAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), (String)null);
-		if( list == null )
-			return new XPathQuery[] {};
-		String[] queriesByName = list.split(DELIMITER);
-		List<String> queryAsStringValues;
-		ArrayList<XPathQuery> returnList = new ArrayList<XPathQuery>();
-		for( int i = 0; i < queriesByName.length; i++ ) {
-			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
-			if( queryAsStringValues != null ) {
-				XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
-				q.setCategory(category);
-				returnList.add(q);
-			}
-		}
-		return (XPathQuery[]) returnList.toArray(new XPathQuery[returnList.size()]);
-	}
-	
-	
 	
 	/*
 	 * Loading the defaults for the server
@@ -262,12 +260,12 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.43", new Path("properties").append("jboss.eap.43.default.ports.properties"));
 	}
 
-	public void loadDefaults(IServer server, String configFolder) {
+	private static ArrayList<XPathCategory> loadDefaults(IServer server, String configFolder) {
 		ArrayList<XPathCategory> retVal = new ArrayList<XPathCategory>();
 		Path p = (Path)rtToPortsFile.get(server.getRuntime().getRuntimeType().getId());
-		if( p == null ) return;
+		if( p == null ) return retVal;
 		URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
-		if( url == null ) return;
+		if( url == null ) return retVal;
 
 		Properties pr = new Properties();
 		try {
@@ -292,8 +290,7 @@ public class XPathModel extends UnitedServerListener {
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 							"Error loading default xpaths", e));
 		}
-		
-		serverToCategories.put(server.getId(), retVal);
+		return retVal;
 	}
 	
 	

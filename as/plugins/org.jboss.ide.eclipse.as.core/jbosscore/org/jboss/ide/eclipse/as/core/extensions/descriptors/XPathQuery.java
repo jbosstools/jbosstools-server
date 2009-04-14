@@ -34,6 +34,7 @@ import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 import org.jaxen.dom4j.Dom4jXPath;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.tools.jmx.core.IMemento;
 
 /**
  * A simple value object to hold the XPath query data
@@ -64,6 +65,14 @@ public class XPathQuery implements Serializable {
 	protected transient XPathCategory category;
 	protected transient XMLDocumentRepository repository = null;
 	
+	public XPathQuery(IMemento memento) {
+		this.name = memento.getString("name");
+		this.baseDir = memento.getString("dir");
+		this.filePattern = memento.getString("filePattern");
+		this.xpathPattern = memento.getString("xpathPattern");
+		this.attribute = memento.getString("attribute");
+	}
+	
 	public XPathQuery(String name, List list) {
 		this.name = name;
 		this.baseDir = list.get(0).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(0);
@@ -71,6 +80,7 @@ public class XPathQuery implements Serializable {
 		this.xpathPattern = list.get(2).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(2);
 		this.attribute = list.size() < 3 || list.get(3).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(3);			
 	}
+	
 	public XPathQuery(String name, String baseDir, String filePattern, String xpathPattern, String attribute) {
 		this.name = name;
 		this.baseDir = baseDir;

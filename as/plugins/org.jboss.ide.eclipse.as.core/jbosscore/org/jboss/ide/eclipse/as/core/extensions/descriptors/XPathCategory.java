@@ -21,11 +21,14 @@
  */
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.tools.jmx.core.IMemento;
 
 /**
  * A class representing an XPath Category, which 
@@ -34,15 +37,61 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  *
  */
 public class XPathCategory {
+	@Deprecated private static final String DELIMITER = ",";
+	@Deprecated private static final String QUERY_LIST = 
+		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
+	@Deprecated private static final String QUERY = 
+		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
+
+	
 	protected String name; // cannot include delimiter from the model, comma
 	protected IServer server;
+	protected IMemento memento;
 	protected HashMap<String, XPathQuery> children;
 	
+	@Deprecated
 	public XPathCategory(String name, IServer server) {
 		this.name = name;
 		this.server = server;
+		children = new HashMap<String, XPathQuery>();
+		XPathQuery[] queries = loadQueries_LEGACY(this, server);
+		for( int i = 0; i < queries.length; i++ ) {
+			children.put(queries[i].getName(), queries[i]);
+		}
 	}
 	
+	private static XPathQuery[] loadQueries_LEGACY(XPathCategory category, IServer server) {
+		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
+		String list = helper.getAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), (String)null);
+		if( list == null )
+			return new XPathQuery[] {};
+		String[] queriesByName = list.split(DELIMITER);
+		List<String> queryAsStringValues;
+		ArrayList<XPathQuery> returnList = new ArrayList<XPathQuery>();
+		for( int i = 0; i < queriesByName.length; i++ ) {
+			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
+			if( queryAsStringValues != null ) {
+				XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
+				q.setCategory(category);
+				returnList.add(q);
+			}
+		}
+		return (XPathQuery[]) returnList.toArray(new XPathQuery[returnList.size()]);
+	}
+	
+	public XPathCategory(IServer server, IMemento memento) {
+		this.server = server;
+		this.name = memento.getString("name");
+		IMemento[] queryMementos = memento.getChildren("query");
+		children = new HashMap<String, XPathQuery>();
+		for( int i = 0; i < queryMementos.length; i++ ) {
+			String name = queryMementos[i].getString("name");
+			XPathQuery child = new XPathQuery(queryMementos[i]);
+			children.put(name, child);
+			child.setCategory(this);
+		}
+	}
+
 	public String getName() { return this.name; }
 	public IServer getServer() { return this.server; }
 
@@ -54,13 +103,6 @@ public class XPathCategory {
 	 * Lazily load the queries upon request 
 	 */
 	public XPathQuery[] getQueries() {
-		if( children == null ) {
-			children = new HashMap<String, XPathQuery>();
-			XPathQuery[] queries = XPathModel.getDefault().loadQueries(this, server);
-			for( int i = 0; i < queries.length; i++ ) {
-				children.put(queries[i].getName(), queries[i]);
-			}
-		}
 		return children.values().toArray(new XPathQuery[children.size()]);
 	}
 
@@ -87,8 +129,6 @@ public class XPathCategory {
 	 * Save these queries to its server object
 	 */
 	public void save() {
-		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
-		XPathModel.getDefault().saveCategory(this, server, helper); 
-		helper.save();
+		XPathModel.getDefault().save(server); 
 	}
 }
