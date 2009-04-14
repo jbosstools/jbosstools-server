@@ -134,8 +134,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		List<String> newCP = fixCP(cp, jbs);
 		
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs);
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs.trim());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, newCP);
 		wc.setAttribute(SERVER_ID,jbs.getServer().getId());
 
