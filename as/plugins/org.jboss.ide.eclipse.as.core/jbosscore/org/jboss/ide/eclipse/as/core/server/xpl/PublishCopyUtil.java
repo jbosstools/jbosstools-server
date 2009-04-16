@@ -59,7 +59,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  * </p>
  * @since 2.0
  */
-public final class PublishUtil {
+public final class PublishCopyUtil {
 	// size of the buffer
 	private static final int BUFFER = 65536;
 
@@ -76,7 +76,7 @@ public final class PublishUtil {
 	 * PublishUtil cannot be created. Use static methods.
 	 */
 	private IServer server;
-	public PublishUtil(IServer server) {
+	public PublishCopyUtil(IServer server) {
 		this.server = server;
 	}
 

@@ -34,25 +34,22 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
-import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
-import org.jboss.ide.eclipse.as.core.server.xpl.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
@@ -64,7 +61,7 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
  * 
  * @author rob.stryker@jboss.com
  */
-public class JstPublisher implements IJBossServerPublisher {
+public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 
 
 	protected IModuleResourceDelta[] delta;
@@ -73,15 +70,6 @@ public class JstPublisher implements IJBossServerPublisher {
 
 
 	public JstPublisher() {
-	}
-
-	protected String getModulePath(IModule[] module ) {
-		String modulePath = "";
-		for( int i = 0; i < module.length; i++ ) {
-			modulePath += module[i].getName() + Path.SEPARATOR;
-		}
-		modulePath = modulePath.substring(0, modulePath.length()-1);
-		return modulePath;
 	}
 	
 	public IStatus publishModule(IServer server, IModule[] module, 
@@ -114,9 +102,8 @@ public class JstPublisher implements IJBossServerPublisher {
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		IPath deployPath = getDeployPath(moduleTree);
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, monitor);
-		IModuleResource[] members = md.members();
+		IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
+		IModuleResource[] members = getResources(module);
  
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
 		// if the module we're publishing is a project, not a binary, clean it's folder
@@ -124,7 +111,7 @@ public class JstPublisher implements IJBossServerPublisher {
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			list.addAll(Arrays.asList(new PublishUtil(server.getServer()).publishFull(members, deployPath, monitor)));
+			list.addAll(Arrays.asList(new PublishCopyUtil(server.getServer()).publishFull(members, deployPath, monitor)));
 		else if( isBinaryObject(moduleTree))
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
 		else
@@ -157,9 +144,9 @@ public class JstPublisher implements IJBossServerPublisher {
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		IStatus[] results = new IStatus[] {};
-		IPath deployPath = getDeployPath(moduleTree);
+		IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			results = new PublishUtil(server.getServer()).publishDelta(delta, deployPath, monitor);
+			results = new PublishCopyUtil(server.getServer()).publishDelta(delta, deployPath, monitor);
 		else if( delta.length > 0 ) {
 			if( isBinaryObject(moduleTree))
 				results = copyBinaryModule(moduleTree);
@@ -181,7 +168,7 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
 		IModule mod = module[module.length-1];
-		IStatus[] errors = localSafeDelete(getDeployPath(module));
+		IStatus[] errors = localSafeDelete(getDeployPath(module, server.getDeployFolder()));
 		if( errors.length > 0 ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_FAIL,
@@ -195,48 +182,13 @@ public class JstPublisher implements IJBossServerPublisher {
 		return ret;
 	}
 
-	protected IPath getDeployPath(IModule[] moduleTree) {
-		IPath root = new Path( server.getDeployFolder() );
-		String type, name;
-		for( int i = 0; i < moduleTree.length; i++ ) {
-			type = moduleTree[i].getModuleType().getId();
-			name = moduleTree[i].getName();
-			if( new Path(name).segmentCount() > 1 )
-				// we strongly suspect this is a binary object and not a project
-				return root.append(new Path(name).lastSegment());
-			if( "jst.ear".equals(type)) 
-				root = root.append(name + ".ear");
-			else if( "jst.web".equals(type)) 
-				root = root.append(name + ".war");
-			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId())) 
-				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
-			else if( "jst.connector".equals(type)) {
-				root = root.append(name + ".rar");
-			} else if( "jst.jboss.esb".equals(type)){
-				root = root.append(name + ".esb");
-			}else
-				root = root.append(name + ".jar");
-		}
-		return root;
-	}
-	
-	protected boolean isBinaryObject(IModule[] moduleTree) {
-		String name;
-		for( int i = 0; i < moduleTree.length; i++ ) {
-			name = moduleTree[i].getName();
-			if( new Path(name).segmentCount() > 1 )
-				// we strongly suspect this is a binary object and not a project
-				return true;
-		}
-		return false;
-	}
+
 	
 	protected IStatus[] copyBinaryModule(IModule[] moduleTree) {
 		try {
-			IPath deployPath = getDeployPath(moduleTree);
+			IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
 			FileUtilListener listener = new FileUtilListener();
-			ModuleDelegate deployable =(ModuleDelegate)moduleTree[moduleTree.length-1].loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
-			IModuleResource[] members = deployable.members();
+			IModuleResource[] members = getResources(moduleTree);
 			File source = (File)members[0].getAdapter(File.class);
 			if( source == null ) {
 				IFile ifile = (IFile)members[0].getAdapter(IFile.class);
@@ -285,7 +237,7 @@ public class JstPublisher implements IJBossServerPublisher {
 		FileUtil.safeDelete(deployPath.toFile(), listener);
 		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
-	protected boolean deployPackaged(IModule[] moduleTree) {
+	public static boolean deployPackaged(IModule[] moduleTree) {
 		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.utility")) return true;
 		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.appclient")) return true;
 		return false;
@@ -349,40 +301,6 @@ public class JstPublisher implements IJBossServerPublisher {
 			}
 		}
 	}
-	
-	protected int countChanges(IModuleResourceDelta[] deltas) {
-		IModuleResource res;
-		int count = 0;
-		if( deltas == null ) return 0;
-		for( int i = 0; i < deltas.length; i++ ) {
-			res = deltas[i].getModuleResource();
-			if( res != null && res instanceof IModuleFile)
-				count++;
-			count += countChanges(deltas[i].getAffectedChildren());
-		}
-		return count;
-	}
-
-	protected int countMembers(IModule module) {
-		try {
-			ModuleDelegate delegate = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
-			return delegate == null ? 0 : countMembers(delegate.members());
-		} catch( CoreException ce ) {}
-		return 0;
-	}
-	protected int countMembers(IModuleResource[] resources) {
-		int count = 0;
-		if( resources == null ) return 0;
-		for( int i = 0; i < resources.length; i++ ) {
-			if( resources[i] instanceof IModuleFile ) {
-				count++;
-			} else if( resources[i] instanceof IModuleFolder ) {
-				count += countMembers(((IModuleFolder)resources[i]).members());
-			}
-		}
-		return count;
-	}
-
 	public boolean accepts(IServer server, IModule[] module) {
 		return ModuleCoreNature.isFlexibleProject(module[0].getProject());
 	}

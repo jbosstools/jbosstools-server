@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -29,6 +31,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
+import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
@@ -79,12 +82,16 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		int publishType = getPublishType(kind, deltaKind, modulePublishState);
 		IJBossServerPublisher publisher;
 		
-		if( module.length > 0 && publishType != IJBossServerPublisher.NO_PUBLISH) {
+		// Let the publisher decide what to do
+		if( module.length > 0 ) {
 			publisher = ExtensionManager.getDefault().getPublisher(getServer(), module);
+			IModuleResourceDelta[] deltas = new IModuleResourceDelta[]{};
+			if( deltaKind != ServerBehaviourDelegate.REMOVED)
+				deltas = getPublishedResourceDelta(module);
 			if( publisher != null ) {
 				try {
-					IStatus result = publisher.publishModule(getServer(), module, publishType,  
-							getPublishedResourceDelta(module), monitor);
+					IStatus result = publisher.publishModule(getServer(), module, 
+							publishType, deltas, monitor);
 					if( result != null )
 				        ServerLogger.getDefault().log(getServer(), result);
 				} catch( CoreException ce ) {
@@ -108,6 +115,22 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		} 
 		return IJBossServerPublisher.NO_PUBLISH;
 	}
+	
+	// Expose 
+	public List<IModule[]> getRemovedModules() {
+		final List<IModule[]> moduleList = getAllModules();
+		int size = moduleList.size();
+		super.addRemovedModules(moduleList, null);
+		for( int i = 0; i < size; i++ ) 
+			moduleList.remove(0);
+		return moduleList;
+	}
+
+	public boolean hasBeenPublished(IModule[] module) {
+		return super.hasBeenPublished(module);
+	}
+
+	
 	
 	/*
 	 * Change the state of the server
