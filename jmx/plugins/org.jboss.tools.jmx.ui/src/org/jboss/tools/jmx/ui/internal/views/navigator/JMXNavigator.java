@@ -20,7 +20,9 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.navigator.NavigatorContentService;
 import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.LinkHelperService;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 
 /**
@@ -71,6 +73,11 @@ public class JMXNavigator extends CommonNavigator {
 	public Text getFilterText() {
 		return filterText;
 	}
+	
+	public synchronized LinkHelperService getLinkHelperService() {
+		return super.getLinkHelperService();
+	}
+
 	
 	public void fillActionBars() {
 //		queryContribution = new QueryContribution(this);

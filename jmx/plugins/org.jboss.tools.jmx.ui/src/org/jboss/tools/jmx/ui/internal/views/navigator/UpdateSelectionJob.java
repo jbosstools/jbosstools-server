@@ -29,8 +29,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.navigator.NavigatorContentService;
 import org.eclipse.ui.internal.navigator.NavigatorPlugin;
-import org.eclipse.ui.internal.navigator.extensions.LinkHelperService;
 import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.navigator.LinkHelperService;
 import org.eclipse.ui.progress.UIJob;
 
 public class UpdateSelectionJob extends UIJob {
@@ -55,12 +55,14 @@ public class UpdateSelectionJob extends UIJob {
 	public UpdateSelectionJob(CommonNavigator commonNavigator) {
 		super("Updating Selection Job"); // TODO 
 		this.commonNavigator = commonNavigator;
-		linkService = new LinkHelperService((NavigatorContentService)commonNavigator.getCommonViewer().getNavigatorContentService());
+		if( commonNavigator instanceof JMXNavigator ) {
+			linkService = ((JMXNavigator)commonNavigator).getLinkHelperService();
+		}
 	}
 
 	public IStatus runInUIThread(IProgressMonitor monitor) {
 
-		if (!commonNavigator.getCommonViewer().getControl().isDisposed()) {
+		if (linkService!= null && !commonNavigator.getCommonViewer().getControl().isDisposed()) {
 			SafeRunner.run(new ISafeRunnable() {
 
 				public void run() throws Exception {
