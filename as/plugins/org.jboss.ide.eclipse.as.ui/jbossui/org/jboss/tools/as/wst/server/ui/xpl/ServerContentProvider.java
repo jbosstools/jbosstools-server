@@ -94,18 +94,22 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 				}
 				return ms2;
 			} catch (Exception e) {
-				return null;
+				return new Object[]{};
 			}
 		}
 		
-		IServer server = (IServer) element;
-		IModule[] modules = server.getModules(); 
-		int size = modules.length;
-		ModuleServer[] ms = new ModuleServer[size];
-		for (int i = 0; i < size; i++) {
-			ms[i] = new ModuleServer(server, new IModule[] { modules[i] });
+		// TODO TELL ANGEL ABOUT THIS IF STATEMENT
+		if( element instanceof IServer) {
+			IServer server = (IServer) element;
+			IModule[] modules = server.getModules(); 
+			int size = modules.length;
+			ModuleServer[] ms = new ModuleServer[size];
+			for (int i = 0; i < size; i++) {
+				ms[i] = new ModuleServer(server, new IModule[] { modules[i] });
+			}
+			return ms;
 		}
-		return ms;
+		return new Object[]{};
 	}
 
 	public Object getParent(Object element) {
