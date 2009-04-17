@@ -157,6 +157,14 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_CUSTOM);
 	}
 	
+	public void setZipWTPDeployments(boolean val) {
+		setAttribute(ZIP_DEPLOYMENTS_PREF, val);
+	}
+	public boolean zipsWTPDeployments() {
+		return getAttribute(ZIP_DEPLOYMENTS_PREF, false);
+	}
+
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.jboss.ide.eclipse.as.core.server.attributes.IDeployableServer#getAttributeHelper()

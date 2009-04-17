@@ -34,7 +34,7 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 
 import de.schlichtherle.io.ArchiveDetector;
 
-public class TestPublisher extends PublishUtil implements IJBossServerPublisher {
+public class WTPZippedPublisher extends PublishUtil implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
 	public boolean accepts(IServer server, IModule[] module) {
 		// TODO check for zip preference
@@ -185,7 +185,7 @@ public class TestPublisher extends PublishUtil implements IJBossServerPublisher 
 			String depFolder = getDeployableServer(server).getDeployFolder();
 			IPath path = getDeployPath(module, depFolder);
 			// Get rid of the old
-			path.toFile().delete();
+			FileUtil.safeDelete(path.toFile(), null);
 			
 			TrueZipUtil.createArchive(path);
 			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());

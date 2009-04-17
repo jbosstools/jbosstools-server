@@ -130,6 +130,7 @@ public class Messages {
 	public static String EditorUseCustomDeployFolder;
 	public static String EditorSetDeployLabel;
 	public static String EditorSetTempDeployLabel;
+	public static String EditorZipDeployments;
 	public static String EditorSetRadioClicked;
 	public static String EditorDeployDNE;
 	public static String EditorTempDeployDNE;

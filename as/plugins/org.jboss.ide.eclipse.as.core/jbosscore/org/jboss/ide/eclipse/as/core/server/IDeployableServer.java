@@ -32,6 +32,7 @@ public interface IDeployableServer extends IJBossServerConstants {
 	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory";
 	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory";
 	public static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType";
+	public static final String ZIP_DEPLOYMENTS_PREF = "org.jboss.ide.eclipse.as.core.server.zipDeploymentsPreference";
 
 	public static final String DEPLOY_METADATA = "metadata";
 	public static final String DEPLOY_CUSTOM = "custom";
@@ -43,6 +44,8 @@ public interface IDeployableServer extends IJBossServerConstants {
 	public void setTempDeployFolder(String folder);
 	public String getDeployLocationType();
 	public void setDeployLocationType(String type);
+	public boolean zipsWTPDeployments();
+	public void setZipWTPDeployments(boolean val);
 	
 	
 	public String getConfigDirectory();

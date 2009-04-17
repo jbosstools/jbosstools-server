@@ -56,6 +56,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -76,9 +77,9 @@ public class DeploySection extends ServerEditorSection {
 	private Button metadataRadio, serverRadio, customRadio, currentSelection;
 	private Button deployButton, tempDeployButton;
 	private ModifyListener deployListener, tempDeployListener;
-	private SelectionListener radioListener;
+	private SelectionListener radioListener, zipListener;
 	private ServerAttributeHelper helper;
-	
+	private Button zipDeployWTPProjects;
 	private String lastCustomDeploy, lastCustomTemp;
 	public DeploySection() {
 	}
@@ -103,39 +104,39 @@ public class DeploySection extends ServerEditorSection {
 		
 		Label descriptionLabel = toolkit.createLabel(composite, Messages.swf_DeploymentDescription);
 		Control top = descriptionLabel;
-			Composite inner = toolkit.createComposite(composite);
-			inner.setLayout(new GridLayout(1, false));
-			metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
-			serverRadio = toolkit.createButton(inner, Messages.EditorUseServersDeployFolder, SWT.RADIO);
-			customRadio = toolkit.createButton(inner, Messages.EditorUseCustomDeployFolder, SWT.RADIO);
-			
-			metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
-			serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
-			customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
-			currentSelection = metadataRadio.getSelection() ? metadataRadio :
-								serverRadio.getSelection() ? serverRadio : 
-									customRadio;
-			
-			radioListener = new SelectionListener() {
-				public void widgetDefaultSelected(SelectionEvent e) {
-					widgetSelected(e);
-				}
-				public void widgetSelected(SelectionEvent e) {
-					if( e.getSource() == currentSelection )
-						return; // do nothing
-					execute(new RadioClickedCommand((Button)e.getSource(), currentSelection));
-					currentSelection = (Button)e.getSource();
-				} };
-			metadataRadio.addSelectionListener(radioListener);
-			serverRadio.addSelectionListener(radioListener);
-			customRadio.addSelectionListener(radioListener);
-			
-			FormData radios = new FormData();
-			radios.top = new FormAttachment(descriptionLabel,5);
-			radios.left = new FormAttachment(0,5);
-			radios.right = new FormAttachment(100,-5);
-			inner.setLayoutData(radios);
-			top = inner;
+		Composite inner = toolkit.createComposite(composite);
+		inner.setLayout(new GridLayout(1, false));
+		metadataRadio = toolkit.createButton(inner, Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
+		serverRadio = toolkit.createButton(inner, Messages.EditorUseServersDeployFolder, SWT.RADIO);
+		customRadio = toolkit.createButton(inner, Messages.EditorUseCustomDeployFolder, SWT.RADIO);
+		
+		metadataRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_METADATA));
+		serverRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_SERVER));
+		customRadio.setSelection(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		currentSelection = metadataRadio.getSelection() ? metadataRadio :
+							serverRadio.getSelection() ? serverRadio : 
+								customRadio;
+		
+		radioListener = new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+			public void widgetSelected(SelectionEvent e) {
+				if( e.getSource() == currentSelection )
+					return; // do nothing
+				execute(new RadioClickedCommand((Button)e.getSource(), currentSelection));
+				currentSelection = (Button)e.getSource();
+			} };
+		metadataRadio.addSelectionListener(radioListener);
+		serverRadio.addSelectionListener(radioListener);
+		customRadio.addSelectionListener(radioListener);
+		
+		FormData radios = new FormData();
+		radios.top = new FormAttachment(descriptionLabel,5);
+		radios.left = new FormAttachment(0,5);
+		radios.right = new FormAttachment(100,-5);
+		inner.setLayoutData(radios);
+		top = inner;
 		
 		
 		Label label = toolkit.createLabel(composite, Messages.swf_DeployDirectory);
@@ -232,6 +233,28 @@ public class DeploySection extends ServerEditorSection {
 		tempButtonData.top = new FormAttachment(deployText,5);
 		tempDeployButton.setLayoutData(tempButtonData);
 		
+		zipDeployWTPProjects = toolkit.createButton(composite, Messages.EditorZipDeployments, SWT.CHECK);
+		boolean publisherAvailable = ExtensionManager.getDefault().getZippedPublisher() != null;
+		boolean value = getServer().zipsWTPDeployments();
+		zipDeployWTPProjects.setEnabled(publisherAvailable);
+		zipDeployWTPProjects.setSelection(publisherAvailable && value);
+
+		FormData zipButtonData = new FormData();
+		zipButtonData.right = new FormAttachment(100,-5);
+		zipButtonData.left = new FormAttachment(0,5);
+		zipButtonData.top = new FormAttachment(tempDeployText,5);
+		zipDeployWTPProjects.setLayoutData(zipButtonData);
+		
+		zipListener = new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				execute(new SetZipCommand());
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		};
+		zipDeployWTPProjects.addSelectionListener(zipListener);
+		
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 		getSaveStatus();
@@ -303,6 +326,27 @@ public class DeploySection extends ServerEditorSection {
 		}
 	}
 
+	public class SetZipCommand extends ServerCommand {
+		boolean oldVal;
+		boolean newVal;
+		public SetZipCommand() {
+			super(DeploySection.this.server, Messages.EditorZipDeployments);
+			oldVal = helper.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
+			newVal = zipDeployWTPProjects.getSelection();
+		}
+		public void execute() {
+			helper.setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, newVal);
+			getSaveStatus();
+		}
+		public void undo() {
+			zipDeployWTPProjects.removeSelectionListener(zipListener);
+			zipDeployWTPProjects.setSelection(oldVal);
+			helper.setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, oldVal);
+			zipDeployWTPProjects.addSelectionListener(zipListener);
+			getSaveStatus();
+		}
+	}
+	
 	public class SetTempDeployDirCommand extends ServerCommand {
 		private String oldDir;
 		private String newDir;

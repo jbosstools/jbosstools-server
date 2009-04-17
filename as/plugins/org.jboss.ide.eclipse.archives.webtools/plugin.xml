@@ -90,6 +90,11 @@
             class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
             priority="5">
       </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher"
+            priority="0"
+            zipDelegate="true">
+      </publisher>
    </extension>
 
 
