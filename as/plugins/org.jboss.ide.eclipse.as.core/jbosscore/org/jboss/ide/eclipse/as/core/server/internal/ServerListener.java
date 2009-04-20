@@ -52,10 +52,11 @@ public class ServerListener extends UnitedServerListener {
 			IRuntime rt = server.getRuntime();
 			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 			String config = jbsrt.getJBossConfiguration();
-			String newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+			IPath newTemp = new Path(IJBossServerConstants.SERVER).append(config)
 				.append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-			new File(newTemp).mkdirs();
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+			IPath newTempAsGlobal = DeployableServer.makeGlobal(jbsrt, newTemp);
+			newTempAsGlobal.toFile().mkdirs();
 		}
 	}
 
