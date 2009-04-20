@@ -64,13 +64,12 @@ import org.jboss.ide.eclipse.as.test.ASTest;
  */
 public class StartupShutdownTest extends TestCase {
 
-	protected static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
-	protected static final String DEFAULT_CONFIG = "default";
+	public static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
+	public static final String DEFAULT_CONFIG = "default";
 	
-	protected static final int DEFAULT_STARTUP_TIME = 150000;
-	protected static final int DEFAULT_SHUTDOWN_TIME = 90000;
+	public static final int DEFAULT_STARTUP_TIME = 150000;
+	public static final int DEFAULT_SHUTDOWN_TIME = 90000;
 
-	protected IRuntime currentRuntime;
 	protected IServer currentServer;
 	protected ServerStateListener stateListener;
 	
@@ -104,22 +103,22 @@ public class StartupShutdownTest extends TestCase {
 	
 
 
-	protected void createServer(String runtimeID, String serverID, 
+	public static IServer createServer(String runtimeID, String serverID, 
 					String location, String configuration) throws CoreException {
 		// if file doesnt exist, abort immediately.
 		assertTrue(new Path(location).toFile().exists());
 		
-		currentRuntime = createRuntime(runtimeID, location, configuration);
+		IRuntime currentRuntime = createRuntime(runtimeID, location, configuration);
 		IServerType serverType = ServerCore.findServerType(serverID);
 		IServerWorkingCopy serverWC = serverType.createServer(null, null, new NullProgressMonitor());
 		serverWC.setRuntime(currentRuntime);
 		serverWC.setName(serverID);
 		serverWC.setServerConfiguration(null);
-		currentServer = serverWC.save(true, new NullProgressMonitor());
+		return serverWC.save(true, new NullProgressMonitor());
 	}
 	
 	
-	private IRuntime createRuntime(String runtimeId, String homeDir, String config) throws CoreException {
+	private static IRuntime createRuntime(String runtimeId, String homeDir, String config) throws CoreException {
 		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, runtimeId);
 		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
 		IRuntimeType runtimeType = runtimeTypes[0];
