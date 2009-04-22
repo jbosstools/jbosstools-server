@@ -69,6 +69,8 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			IPath tempDestFolder = new Path(server.getTempDeployFolder());
 			File tempDestFile = tempDestFolder.append(sourcePath.lastSegment()).toFile();
 			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
+			if( destFile.exists())
+				destFile.delete();
 			FileUtilListener l = new FileUtilListener();
 			FileUtil.fileSafeCopy(sourcePath.toFile(), tempDestFile, l);
 			boolean success = tempDestFile.renameTo(destFile);
