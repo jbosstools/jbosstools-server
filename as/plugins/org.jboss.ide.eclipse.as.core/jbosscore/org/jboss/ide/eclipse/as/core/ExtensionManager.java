@@ -159,7 +159,7 @@ public class ExtensionManager {
 		while(i.hasNext()) {
 			wrapper = (PublisherWrapper)i.next();
 			if( wrapper.publisher.accepts(server, module))
-				return wrapper.publisher;
+				return wrapper.getNewInstance();
 		}
 		return null;
 	}
@@ -172,7 +172,7 @@ public class ExtensionManager {
 		while(i.hasNext()) {
 			wrapper = i.next();
 			if( wrapper.isZipDelegate )
-				return wrapper.publisher;
+				return wrapper.getNewInstance();
 		}
 		return null;
 	}
@@ -190,7 +190,7 @@ public class ExtensionManager {
 				try {
 					p = Integer.parseInt(priority);
 				} catch( NumberFormatException nfe) {}
-				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz));
+				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz, cf[i]));
 			} catch( CoreException e ) {
 			} catch( ClassCastException cce ) {
 			}
@@ -208,10 +208,20 @@ public class ExtensionManager {
 		private int priority;
 		private IJBossServerPublisher publisher;
 		private boolean isZipDelegate = false;
-		private PublisherWrapper(int priority, String zipDelegate, IJBossServerPublisher publisher) {
+		private IConfigurationElement element;
+		private PublisherWrapper(int priority, String zipDelegate, IJBossServerPublisher publisher, IConfigurationElement element) {
 			this.priority = priority;
 			this.publisher = publisher;
 			isZipDelegate = Boolean.parseBoolean(zipDelegate);
+			element = element;
+		}
+		private IJBossServerPublisher getNewInstance() {
+			try {
+				Object clazz = element.createExecutableExtension("class");
+				return (IJBossServerPublisher)clazz;
+			} catch( CoreException ce ) {
+			}
+			return publisher;
 		}
 	}
 }
