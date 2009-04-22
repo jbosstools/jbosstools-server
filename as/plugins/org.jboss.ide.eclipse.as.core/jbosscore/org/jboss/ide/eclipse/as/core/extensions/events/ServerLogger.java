@@ -28,6 +28,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 public class ServerLogger implements IJBossServerConstants {
@@ -77,8 +78,7 @@ public class ServerLogger implements IJBossServerConstants {
 	}
 	
 	public static File getServerLogFile(IServer server) {
-		File f = server == null ? PLUGIN_LOCATION.toFile() : 
-			PLUGIN_LOCATION.append(server.getId().replace(' ', '_')).append(LOG).toFile();
+		File f = JBossServerCorePlugin.getServerStateLocation(server).append(LOG).toFile();
 		if( !f.getParentFile().exists() ) 
 			f.getParentFile().mkdirs();
 		return f;

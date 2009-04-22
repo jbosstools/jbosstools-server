@@ -27,8 +27,10 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
@@ -99,5 +101,16 @@ public class JBossServerCorePlugin extends Plugin  {
 	public ResourceBundle getResourceBundle() {
 		return resourceBundle;
 	}
-	
+
+	public static IPath getServerStateLocation(IServer server) {
+		return server == null ? getDefault().getStateLocation() :
+					getServerStateLocation(server.getId());
+	}
+
+	public static IPath getServerStateLocation(String serverID) {
+		return serverID == null ? getDefault().getStateLocation() : 
+			JBossServerCorePlugin.getDefault().getStateLocation()
+			.append(serverID.replace(' ', '_'));
+	}
+
 }

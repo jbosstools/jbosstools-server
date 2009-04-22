@@ -59,6 +59,7 @@ public class Messages {
 	public static String swf_DeploymentDescription;
 	public static String swf_DeployDirectory;
 	public static String swf_TempDeployDirectory;
+	public static String swf_CloneConfiguration;
 	public static String sswf_Title;
 	public static String sswf_BaseName;
 

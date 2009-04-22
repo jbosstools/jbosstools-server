@@ -31,11 +31,16 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
  *
  */
 public interface IJBossServerConstants {
-	public static final IPath PLUGIN_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation();
+	// Metadata folders
 	public static final String LOG = "log";
 	public static final String TEMP_DEPLOY = "tempDeploy";
 	public static final String JBOSSTOOLS_TMP = "jbosstoolsTemp";
 	public static final String TMP = "tmp";
+	public static final String CONFIG_IN_METADATA = "jbossConfig";
+	
+	
+	// Preference codes
+	public static final String USE_METADATA_CONFIG = "IJBossServerConstants.useMetadataConfig";
 	
 	// Launch configuration constants
 	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir";
@@ -47,6 +52,11 @@ public interface IJBossServerConstants {
 	public static final String DEFAULT_SERVER_NAME = "default";
 	public static final String DEPLOY = "deploy";
 	public static final String SERVER = "server";
+	public static final String WORK = "work";
+	public static final String DATA = "data";
+//	public static final String TMP = "tmp"; // repeat
+//	public static final String LOG = "log"; // repeat
+	public static final String[] JBOSS_TEMPORARY_FOLDERS = new String[] { WORK, DATA, TMP, LOG};
 	
 	// Property keys stored in the server object
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName";

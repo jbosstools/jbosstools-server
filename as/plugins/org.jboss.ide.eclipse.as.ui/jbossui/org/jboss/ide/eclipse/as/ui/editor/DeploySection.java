@@ -61,8 +61,8 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -397,10 +397,10 @@ public class DeploySection extends ServerEditorSection {
 			
 			
 			if( newSelection == metadataRadio  ) {
-				newDir = IJBossServerConstants.PLUGIN_LOCATION.append(id.replace(' ', '_')).
-					append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-				newTemp = IJBossServerConstants.PLUGIN_LOCATION.append(id.replace(' ', '_')).
-					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+				newDir = JBossServerCorePlugin.getServerStateLocation(id)
+					.append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+				newTemp = JBossServerCorePlugin.getServerStateLocation(id)
+					.append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 				type = IDeployableServer.DEPLOY_METADATA;
 				new File(newDir).mkdirs();
 				new File(newTemp).mkdirs();
@@ -486,14 +486,14 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String makeGlobal(String path) {
-		return DeployableServer.makeGlobal(getRuntime(), new Path(path)).toString();
+		return ServerUtil.makeGlobal(getRuntime(), new Path(path)).toString();
 	}
 	
 	private String makeRelative(String path) {
 		if (getRuntime() == null) {
 			return path;
 		}
-		return DeployableServer.makeRelative(getRuntime(), new Path(path)).toString();
+		return ServerUtil.makeRelative(getRuntime(), new Path(path)).toString();
 	}
 	
 	private IJBossServerRuntime getRuntime() {

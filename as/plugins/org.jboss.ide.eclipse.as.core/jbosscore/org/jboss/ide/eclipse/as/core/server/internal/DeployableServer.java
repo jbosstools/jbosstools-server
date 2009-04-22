@@ -35,13 +35,13 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
-import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
@@ -87,7 +87,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 
 	private IModule[] doGetParentModules(IModule module) {
-		IModule[] ears = ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
+		IModule[] ears = org.eclipse.wst.server.core.ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
 		ArrayList<IModule> list = new ArrayList<IModule>();
 		for (int i = 0; i < ears.length; i++) {
 			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
@@ -110,43 +110,21 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	
 	public String getDeployFolder() {
-		String type = getDeployLocationType();
-		if( type.equals(DEPLOY_CUSTOM))
-			return makeGlobal(getRuntime(), new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
-		if( type.equals(DEPLOY_METADATA)) {
-			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
-			append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-		} else /* if( type.equals(DEPLOY_SERVER)) */ {
-			IJBossServerRuntime jbsrt = getRuntime();
-			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(IJBossServerConstants.SERVER).append(config)
-				.append(IJBossServerConstants.DEPLOY).makeRelative();
-			return makeGlobal(getRuntime(), p).toString();
-		}
+		IJBossServerRuntime jbsrt = getRuntime();
+		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
 	}
 	
 	public void setDeployFolder(String folder) {
-		setAttribute(DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
+		setAttribute(DEPLOY_DIRECTORY, ServerUtil.makeRelative(getRuntime(), new Path(folder)).toString());
 	}
 	
 	public String getTempDeployFolder() {
-		String type = getDeployLocationType();
-		if( type.equals(DEPLOY_CUSTOM))
-			return makeGlobal(getRuntime(), new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
-		if( type.equals(DEPLOY_METADATA)) {
-			return IJBossServerConstants.PLUGIN_LOCATION.append(getServer().getId().replace(' ', '_')).
-				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-		} else /* if( type.equals(DEPLOY_SERVER)) */{
-			IJBossServerRuntime jbsrt = getRuntime();
-			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(IJBossServerConstants.SERVER)
-				.append(config).append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
-			return makeGlobal(getRuntime(), p).toString();
-		}
-	}
+		IJBossServerRuntime jbsrt = getRuntime();
+		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+	} 
+	
 	public void setTempDeployFolder(String folder) {
-		setAttribute(TEMP_DEPLOY_DIRECTORY, makeRelative(getRuntime(), new Path(folder)).toString());
+		setAttribute(TEMP_DEPLOY_DIRECTORY, ServerUtil.makeRelative(getRuntime(), new Path(folder)).toString());
 	}
 	
 	public void setDeployLocationType(String type) {
@@ -188,21 +166,5 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 							new NullProgressMonitor());
 		return ajbsrt;
 	}
-	
-	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
-		if( p.isAbsolute() && rt != null) {
-			if(rt.getRuntime().getLocation().isPrefixOf(p)) {
-				int size = rt.getRuntime().getLocation().toOSString().length();
-				return new Path(p.toOSString().substring(size)).makeRelative();
-			}
-		}
-		return p;
-	}
-	
-	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( !p.isAbsolute() && rt != null) {
-			return rt.getRuntime().getLocation().append(p).makeAbsolute();
-		}
-		return p;
-	}
+
 }

@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
@@ -121,7 +123,16 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args, "-c", "--configuration", config);
-
+		
+		if( jbs.isMetadataConfig()) {
+			try {
+				IPath dest = JBossServerCorePlugin.getServerStateLocation(jbs.getServer());
+				dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
+				args = ArgsUtil.setArg(args, null, "-Djboss.server.home.url", dest.toFile().toURL().toString());
+			} catch( MalformedURLException murle) {}
+		}
+		
+		
 		vmArgs= ArgsUtil.setArg(vmArgs, null, "-Djava.endorsed.dirs", 
 				"\"" + runtime.getRuntime().getLocation().append("lib").append("endorsed") + "\"", false);
 		

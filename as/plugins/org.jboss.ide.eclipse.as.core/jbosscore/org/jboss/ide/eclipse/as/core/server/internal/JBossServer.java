@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -46,6 +47,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
  * 
@@ -134,14 +136,57 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public String getDeployFolder() {
-		String folder = super.getDeployFolder();
-		return folder != null ? folder : getDeployFolder(true);
+		IJBossServerRuntime jbsrt = getRuntime();
+		String type = getDeployLocationType();
+		if( type.equals(DEPLOY_CUSTOM))
+			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
+		if( type.equals(DEPLOY_METADATA)) {
+			return JBossServerCorePlugin.getServerStateLocation(getServer()).
+				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+		} else if( type.equals(DEPLOY_SERVER)) {
+			if( !getAttribute(USE_METADATA_CONFIG, false)) {
+				String config = jbsrt.getJBossConfiguration();
+				IPath p = new Path(IJBossServerConstants.SERVER).append(config)
+					.append(IJBossServerConstants.DEPLOY).makeRelative();
+				return ServerUtil.makeGlobal(jbsrt, p).toString();
+			} else {
+				IPath dest = JBossServerCorePlugin.getServerStateLocation(getServer());
+				dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
+				return dest.toOSString();
+			}
+		}
+		return null;
 	}
 	
 	protected String getDeployFolder(boolean checkLaunchConfig) {
 		return new Path(getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY).toOSString();
 	}
 
+	
+	public String getTempDeployFolder() {
+		IJBossServerRuntime jbsrt = getRuntime();
+		String type = getDeployLocationType();
+		if( type.equals(DEPLOY_CUSTOM))
+			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+		if( type.equals(DEPLOY_METADATA)) {
+			return JBossServerCorePlugin.getServerStateLocation(getServer()).
+				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+		} else if( type.equals(DEPLOY_SERVER)) {
+			if( !getAttribute(USE_METADATA_CONFIG, false)) {
+				String config = jbsrt.getJBossConfiguration();
+				IPath p = new Path(IJBossServerConstants.SERVER)
+					.append(config).append(IJBossServerConstants.TMP)
+					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+				return ServerUtil.makeGlobal(jbsrt, p).toString();
+			} else {
+				return JBossServerCorePlugin.getServerStateLocation(getServer()).
+					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+			}
+		}
+		return null;
+	}
+
+	
 	protected String getLaunchConfigConfigurationDirectory() {
 		try {
 			Server s = (Server)getServer();
@@ -167,6 +212,10 @@ public class JBossServer extends DeployableServer
 		return null;
 	}
 
+	public boolean isMetadataConfig() {
+		return getAttribute(USE_METADATA_CONFIG, false);
+	}
+	
 	protected String getRuntimeConfigDirectory() {
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
