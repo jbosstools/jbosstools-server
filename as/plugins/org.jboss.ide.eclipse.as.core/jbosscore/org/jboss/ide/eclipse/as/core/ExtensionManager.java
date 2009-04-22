@@ -213,7 +213,7 @@ public class ExtensionManager {
 			this.priority = priority;
 			this.publisher = publisher;
 			isZipDelegate = Boolean.parseBoolean(zipDelegate);
-			element = element;
+			this.element = element;
 		}
 		private IJBossServerPublisher getNewInstance() {
 			try {
