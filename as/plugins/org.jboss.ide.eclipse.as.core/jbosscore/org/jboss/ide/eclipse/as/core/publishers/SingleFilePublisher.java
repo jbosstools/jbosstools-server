@@ -1,3 +1,24 @@
+/**
+  * JBoss, a Division of Red Hat
+ * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
+ *
+* This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
@@ -74,19 +95,19 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			FileUtilListener l = new FileUtilListener();
 			FileUtil.fileSafeCopy(sourcePath.toFile(), tempDestFile, l);
 			boolean success = tempDestFile.renameTo(destFile);
-			if( updateTimestamp )
+			if( success && updateTimestamp )
 				destFile.setLastModified(new Date().getTime());
 			if( l.errorFound || !success ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
 				Exception e = l.e != null ? l.e : new Exception("Move from " + tempDestFile + " to " + destFile + " failed.");
 				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_FAIL, 
-						"The module cannot be published.", e);
+						"The module " + module.getName() + " cannot be published.", e);
 			}
 		} else {
 			// deleted module. o noes. Ignore it. We can't re-publish it, so just ignore it.
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_MNF, 
-					"The module cannot be published because it cannot be located. (" + module.getName() + ")", null);
+					"The module " + module.getName() + " cannot be published because it cannot be located. (" + module.getName() + ")", null);
 			return status;
 		}
 		
