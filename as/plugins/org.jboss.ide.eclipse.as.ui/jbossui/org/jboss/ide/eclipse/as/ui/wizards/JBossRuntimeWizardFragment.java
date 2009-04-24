@@ -433,7 +433,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.getControl().setEnabled(true);
 			if( !homeDirText.getText().equals(configurations.getInput())) {
 				configurations.setJBossHome(homeDirText.getText());
-				configurations.setConfiguration(IJBossServerConstants.DEFAULT_SERVER_NAME);
+				configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
 			}
 		}
 
