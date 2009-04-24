@@ -23,11 +23,9 @@
         <property>stop</property>
       </emphasis> it or <emphasis>
         <property>restart</property>
-      </emphasis> it, <emphasis>
+      </emphasis> it and  <emphasis>
         <property>publish</property>
-      </emphasis> to the server, <emphasis>
-        <property>clean</property>
-      </emphasis> the server.</para>
+      </emphasis> to the server.</para>
 
     <figure>
       <title>JBoss Server Toolbar</title>

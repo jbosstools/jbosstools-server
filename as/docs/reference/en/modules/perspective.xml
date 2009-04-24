@@ -45,9 +45,9 @@
         <section id="jbossserver_view_toolbar">
             <title>JBoss Server View Toolbar</title>
             <para>In the right top corner of the <property>JBoss Server View</property> there is a
-                special toolbar which provides a quick access to starting a server (in debug mode,
-                run mode, or profile mode), restarting a server, stopping a server, publishing to a
-                server and a possibility to clean a server.</para>
+                special toolbar which provides a quick access to starting a server (in the debug mode,
+                run mode, or profile mode), restarting a server, stopping a server and a possibility to publish to a
+                server.</para>
 
             <figure>
                 <title>The JBoss Server View Toolbar</title>
@@ -74,12 +74,7 @@
                 </emphasis> button will republish any modules where it has determined the workspace
                 is out of sync with the server. It will attempt to do an incremental publish if it
                 turns out that the module in question is capable of doing one.</para>
-
-
-            <para>Press <emphasis>
-                    <property>Clean</property>
-                </emphasis> if you need to clean projects published on the server, i.e. remove
-                invalid resources from the server.</para>
+         
         </section>
 
         <section id="jbossserver_view_structure">
@@ -251,15 +246,6 @@
                             <entry>
                                 <para>The action for synchronizing the publish information between
                                     the server and workspace</para>
-                            </entry>
-                        </row>
-
-                        <row>
-                            <entry>
-                                <para>Clean</para>
-                            </entry>
-                            <entry>
-                                <para>The option for complete redeploying the resources</para>
                             </entry>
                         </row>
 
