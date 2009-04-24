@@ -8,7 +8,6 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
@@ -23,7 +22,7 @@ import java.util.zip.ZipFile;
  */
 public class ServerBeanLoader {
 	
-	public static final String SOAP_JBPM_JPDL_PATH = "jbpm-jpdl";
+	public static final String SOAP_JBPM_JPDL_PATH = "jbpm-jpdl"; //$NON-NLS-1$
 	
 	public JBossServerType getServerType(File location) {
 		File asSystemJar = new File(location, JBossServerType.AS.getSystemJarPath());
@@ -52,10 +51,10 @@ public class ServerBeanLoader {
 		if(systemJarFile.canRead()) {
 			try {
 				ZipFile jar = new ZipFile(systemJarFile);
-				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");
+				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF"); //$NON-NLS-1$
 				Properties props = new Properties();
 				props.load(jar.getInputStream(manifest));
-				version = (String)props.get("Specification-Version");
+				version = (String)props.get("Specification-Version"); //$NON-NLS-1$
 			} catch (IOException e) {
 				// version = ""
 			}
@@ -64,22 +63,22 @@ public class ServerBeanLoader {
 	}
 	
 	public String getServerVersion(String version) {
-		if(version==null) return "";
+		if(version==null) return ""; //$NON-NLS-1$
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
-		String adapterVersion = "";
+		String adapterVersion = ""; //$NON-NLS-1$
 		//  trying to match adapter version by X.X version
 		for (String currentVersion : versions) {
-			String pattern = currentVersion.replace(".", "\\.") + ".*";
+			String pattern = currentVersion.replace(".", "\\.") + ".*"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if(version.matches(pattern)) {
 				adapterVersion = currentVersion;
 				break;
 			}
 		}
 		
-		if("".equals(adapterVersion)) {
+		if("".equals(adapterVersion)) { //$NON-NLS-1$
 			// trying to match by major version
 			for (String currentVersion : versions) {
-				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";
+				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if(version.matches(pattern)) {
 					adapterVersion = currentVersion;
 					break;
@@ -91,20 +90,20 @@ public class ServerBeanLoader {
 	
 	public String getAdapterVersion(String version) {
 		String[] versions = JBossServerType.UNKNOWN.getVersions();
-		String adapterVersion = "";
+		String adapterVersion = ""; //$NON-NLS-1$
 		//  trying to match adapter version by X.X version
 		for (String currentVersion : versions) {
-			String pattern = currentVersion.replace(".", "\\.") + ".*";
+			String pattern = currentVersion.replace(".", "\\.") + ".*"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if(version.matches(pattern)) {
 				adapterVersion = currentVersion;
 				break;
 			}
 		}
 		
-		if("".equals(adapterVersion)) {
+		if("".equals(adapterVersion)) { //$NON-NLS-1$
 			// trying to match by major version
 			for (String currentVersion : versions) {
-				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*";
+				String pattern = currentVersion.substring(0, 2).replace(".", "\\.") + ".*"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				if(version.matches(pattern)) {
 					adapterVersion = currentVersion;
 					break;

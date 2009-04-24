@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.io.File;
@@ -20,7 +30,9 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.xml.sax.SAXException;
 
 /**
@@ -32,6 +44,8 @@ import org.xml.sax.SAXException;
 public class XMLDocumentRepository {
 	/** singleton instance */
 	private static XMLDocumentRepository instance = null;
+	private static final String LOAD_EXTERNAL_DTD_KEY = 
+		"http://apache.org/xml/features/nonvalidating/load-external-dtd"; //$NON-NLS-1$
 
 	/** singleton getter */
 	public static XMLDocumentRepository getDefault() {
@@ -41,10 +55,10 @@ public class XMLDocumentRepository {
 	}
 
 	/** maps a path to its actual document object */
-	private HashMap pathToDocument;
+	private HashMap<String, Document> pathToDocument;
 	
 	/** maps a path to the last time that path's file was changed */
-	private HashMap pathToTimestamp;
+	private HashMap<String, Long> pathToTimestamp;
 	
 	/** a link to a parent repository which may already contain the document 
 	 * and may prevent a costly reparse. */
@@ -52,16 +66,16 @@ public class XMLDocumentRepository {
 
 	/** package-private constructor */
 	XMLDocumentRepository() {
-		pathToDocument = new HashMap();
-		pathToTimestamp = new HashMap();
+		pathToDocument = new HashMap<String, Document>();
+		pathToTimestamp = new HashMap<String, Long>();
 	}
 
 	/** public constructor with a parent repository
 	 * @param parent The parent repository
 	 */
 	public XMLDocumentRepository(XMLDocumentRepository parent) {
-		pathToDocument = new HashMap();
-		pathToTimestamp = new HashMap();
+		pathToDocument = new HashMap<String, Document>();
+		pathToTimestamp = new HashMap<String, Long>();
 		this.parent = parent;
 	}
 
@@ -92,7 +106,9 @@ public class XMLDocumentRepository {
 	 * @return the document
 	 */
 	public Document getDocument(String fullPath, boolean load, boolean save) {
-		Document d = (Document) pathToDocument.get(fullPath);
+		Document d = pathToDocument.get(fullPath);
+		if( d == null && parent != null)
+			d = parent.getDocument(fullPath, false, save);
 		if (d == null && load) {
 			d = loadDocument(fullPath);
 			if (save) {
@@ -111,8 +127,8 @@ public class XMLDocumentRepository {
 	 */
 	public boolean refresh(String fullPath) {
 		boolean found = pathToTimestamp.get(fullPath) != null;
-		if (!found || new File(fullPath).lastModified() != ((Long) pathToTimestamp
-				.get(fullPath)).longValue()) {
+		if (!found || new File(fullPath).lastModified() != pathToTimestamp
+				.get(fullPath).longValue()) {
 			pathToDocument.put(fullPath, loadDocument(fullPath));
 			pathToTimestamp.put(fullPath, new Long(new File(fullPath)
 					.lastModified()));
@@ -133,11 +149,9 @@ public class XMLDocumentRepository {
 
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser sp = spf.newSAXParser();
-			sp
-					.getXMLReader()
-					.setFeature(
-							"http://apache.org/xml/features/nonvalidating/load-external-dtd",
-							false);
+			sp.getXMLReader().setFeature(
+					LOAD_EXTERNAL_DTD_KEY,
+					false);
 
 			SAXReader reader = new SAXReader(false);
 			reader.setXMLReader(sp.getXMLReader());
@@ -156,7 +170,7 @@ public class XMLDocumentRepository {
 		if (ex != null) {
 			JBossServerCorePlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"Could not load document: " + fullpath, ex));
+							NLS.bind(Messages.loadXMLDocumentFailed,fullpath), ex));
 		}
 		return null;
 	}
@@ -186,7 +200,7 @@ public class XMLDocumentRepository {
 		if (ex != null) {
 			JBossServerCorePlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"Could not save document: " + fullPath, ex));
+							NLS.bind(Messages.saveXMLDocumentFailed ,fullPath), ex));
 		}
 	}
 }

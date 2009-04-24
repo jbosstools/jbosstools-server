@@ -1,24 +1,23 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import javax.management.MBeanServerConnection;
@@ -36,6 +35,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
@@ -43,6 +43,8 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
@@ -51,11 +53,6 @@ import org.jboss.tools.jmx.core.IJMXRunnable;
  *
  */
 public class JBossServerBehavior extends DeployableServerBehavior {
-	private static final String STOP_FAILED_MESSAGE = 
-		"Command to stop server failed. The next attempt will forcefully terminate the process.";
-	private static final String FORCE_TERMINATED = "The server was shutdown forcefully. All processes were terminated.";
-	private static final String TERMINATED = "Server processes have been terminated.";
-	private static final String FORCE_TERMINATE_FAILED = "Killing the server process has failed. The process may still be running.";
 	
 	private PollThread pollThread = null;
 	protected IProcess process;
@@ -85,7 +82,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			if( !success ) {
 				if( process != null && !process.isTerminated() ) { 
 					setServerStarted();
-					pollThread.cancel(STOP_FAILED_MESSAGE);
+					pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
 					nextStopRequiresForce = true;
 				}
 			}
@@ -109,20 +106,20 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	protected void addForceStopFailedEvent(DebugException e) {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP_FAILED, 
-				FORCE_TERMINATE_FAILED, e);
+				Messages.FORCE_TERMINATE_FAILED, e);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	protected void addForceStopEvent() {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_FORCE_STOP, 
-				FORCE_TERMINATED, null);
+				Messages.FORCE_TERMINATED, null);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	
 	protected void addProcessTerminatedEvent() {
 		IStatus status = new Status(IStatus.INFO,
 				JBossServerCorePlugin.PLUGIN_ID, IEventCodes.BEHAVIOR_PROCESS_TERMINATED, 
-				TERMINATED, null);
+				Messages.TERMINATED, null);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
 	
@@ -183,7 +180,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		if( this.pollThread != null ) {
 			pollThread.cancel();
 		}
-		this.pollThread = new PollThread("Server Poller", expectedState, this);
+		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, this);
 		pollThread.start();
 	}
 	
@@ -217,7 +214,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 
 	protected boolean shouldSuspendScanner() {
-		if( getServer().getServerType().getId().equals("org.jboss.ide.eclipse.as.50"))
+		if( getServer().getServerType().getId().equals(IConstants.AS_50))
 			return false;
 		if( getServer().getServerState() != IServer.STATE_STARTED)
 			return false;
@@ -225,13 +222,13 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	protected void suspendDeployment(MBeanServerConnection connection) throws Exception {
-		ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
-		connection.invoke(name, "stop", new Object[] {  }, new String[] {});
+		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
+		connection.invoke(name, IJBossRuntimeConstants.STOP, new Object[] {  }, new String[] {});
 	}
 	
 	protected void resumeDeployment(MBeanServerConnection connection) throws Exception {
-		ObjectName name = new ObjectName("jboss.deployment:flavor=URL,type=DeploymentScanner");
-		connection.invoke(name, "start", new Object[] {  }, new String[] {});
+		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
+		connection.invoke(name, IJBossRuntimeConstants.START, new Object[] {  }, new String[] {});
 	}
 		
 

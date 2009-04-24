@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.jmx;
 
 import java.net.MalformedURLException;
@@ -30,9 +19,12 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 /**
  * A repository for classloaders that relate to servers, 
@@ -117,7 +109,7 @@ public class JMXClassLoaderRepository {
 		try {
 			IRuntime rt = s.getRuntime();
 			IPath loc = rt.getLocation();
-			URL url = loc.append("client").append("jbossall-client.jar")
+			URL url = loc.append(IJBossServerConstants.CLIENT).append(IJBossServerConstants.JBOSSALL_CLIENT_JAR)
 					.toFile().toURI().toURL();
 			URLClassLoader loader = new URLClassLoader(new URL[] { url, }, 
 					Thread.currentThread().getContextClassLoader());
@@ -125,7 +117,7 @@ public class JMXClassLoaderRepository {
 		} catch (MalformedURLException murle) {
 			JBossServerCorePlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"Cannot load JMX classes for server: " + s.getName(), murle));
+							NLS.bind(Messages.loadJMXClassesFailed, s.getName()), murle));
 		}
 	}
 

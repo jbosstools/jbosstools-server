@@ -8,14 +8,16 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
 
+import org.eclipse.osgi.util.NLS;
+import org.jboss.ide.eclipse.as.core.Messages;
+
 public class JBossServerType {
 	
-	private static final String SYSTEM_JAR_NAME = "twiddle.jar";
+	private static final String SYSTEM_JAR_NAME = "twiddle.jar"; //$NON-NLS-1$
 	private String type;
 	private String jbossSystemJarPath;
 	private String[] versions = new String[0];
@@ -27,24 +29,24 @@ public class JBossServerType {
 	}
 
 	public static final JBossServerType AS = new JBossServerType(
-			"AS",
-			"bin"+File.separatorChar + SYSTEM_JAR_NAME,
-			new String[]{"5.0", "4.2", "4.0", "3.2"});
+			"AS", //$NON-NLS-1$
+			"bin"+File.separatorChar + SYSTEM_JAR_NAME, //$NON-NLS-1$
+			new String[]{"5.0", "4.2", "4.0", "3.2"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	
 	public static final JBossServerType EAP = new JBossServerType(
-			"EAP",
-			"jboss-as" + File.separatorChar + "bin"+ File.separatorChar + SYSTEM_JAR_NAME, 
-			new String[]{"4.2","4.3"});
+			"EAP", //$NON-NLS-1$
+			"jboss-as" + File.separatorChar + "bin"+ File.separatorChar + SYSTEM_JAR_NAME,  //$NON-NLS-1$ //$NON-NLS-2$
+			new String[]{"4.2","4.3"}); //$NON-NLS-1$ //$NON-NLS-2$
 	
 	public static final JBossServerType SOAP = new JBossServerType(
-			"SOA-P",
-			"jboss-as" + File.separatorChar + "bin"+ File.separatorChar + SYSTEM_JAR_NAME,
-			new String[]{"4.3"});
+			"SOA-P", //$NON-NLS-1$
+			"jboss-as" + File.separatorChar + "bin"+ File.separatorChar + SYSTEM_JAR_NAME, //$NON-NLS-1$ //$NON-NLS-2$
+			new String[]{"4.3"}); //$NON-NLS-1$
 	
 	public static final JBossServerType UNKNOWN = new JBossServerType(
-			"UNKNOWN",
-			"",
-			new String[]{"5.0", "4.3", "4.2", "4.0", "3.2"});
+			"UNKNOWN", //$NON-NLS-1$
+			"", //$NON-NLS-1$
+			new String[]{"5.0", "4.3", "4.2", "4.0", "3.2"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 	public String toString() {
 		return type;
@@ -58,7 +60,8 @@ public class JBossServerType {
 		} else if(SOAP.type.equals(name)) {
 			return SOAP;
 		}
-		throw new IllegalArgumentException("Name '" + name + "' cannot be converted to ServerType");
+		throw new IllegalArgumentException(
+				NLS.bind(Messages.ServerTypeDiscovererFail, name));
 	}
 
 	public String[] getVersions() {

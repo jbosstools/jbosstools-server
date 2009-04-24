@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.util.ArrayList;
@@ -28,14 +17,19 @@ import java.util.Map;
 public class ArgsUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
-
+	public static final String EQ = "="; //$NON-NLS-1$
+	public static final String SPACE=" "; //$NON-NLS-1$
+	public static final String VMO = "-D"; //$NON-NLS-1$
+	public static final String EMPTY=""; //$NON-NLS-1$
+	public static final String QUOTE="\""; //$NON-NLS-1$
+	
 	public static Map<String, Object> getSystemProperties(String argString) {
 		String[] args = parse(argString);
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		
 		for( int i = 0; i < args.length; i++ ) {
-			if( args[i].startsWith("-D")) {
-				int eq = args[i].indexOf('=');
+			if( args[i].startsWith(VMO)) {
+				int eq = args[i].indexOf(EQ);
 				if( eq != -1 ) {
 					map.put(args[i].substring(2, eq), 
 							args[i].substring(eq+1));
@@ -55,8 +49,8 @@ public class ArgsUtil {
 		for( int i = 0; i < args.length; i++ ) {
 			if( args[i].equals(shortOpt) && i+1 < args.length)
 				return args[i+1];
-			if( longOpt != null && args[i].startsWith(longOpt + "=")) 
-				return args[i].substring(args[i].indexOf('=') + 1);
+			if( longOpt != null && args[i].startsWith(longOpt + EQ)) 
+				return args[i].substring(args[i].indexOf(EQ) + 1);
 		}
 		return null;
 	}
@@ -69,7 +63,7 @@ public class ArgsUtil {
 			int current = 0;
 			boolean inQuotes = false;
 			boolean done = false;
-			String tmp = "";
+			String tmp = EMPTY;
 			StringBuffer buf = new StringBuffer();
 	
 			while( !done ) {
@@ -110,34 +104,34 @@ public class ArgsUtil {
 	}
 	
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value ) {
-		if( value.contains(" "))
-			value = "\"" + value + "\"";
+		if( value.contains(SPACE))
+			value = QUOTE + value + QUOTE;
 		return setArg(allArgs, shortOpt, longOpt, value, false);
 	}
 	
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value, boolean addQuotes ) {
 		if( addQuotes ) 
-			value = "\"" + value + "\"";
+			value = QUOTE + value + QUOTE;
 		boolean found = false;
 		String[] args = parse(allArgs);
-		String retVal = "";
+		String retVal = EMPTY;
 		for( int i = 0; i < args.length; i++ ) {
 			if( args[i].equals(shortOpt)) {
 				args[i+1] = value;
-				retVal += args[i] + " " + args[++i] + " ";
+				retVal += args[i] + SPACE + args[++i] + SPACE;
 				found = true;
-			} else if( longOpt != null && args[i].startsWith(longOpt + "=")) { 
-				args[i] = longOpt + "=" + value;
-				retVal += args[i] + " ";
+			} else if( longOpt != null && args[i].startsWith(longOpt + EQ)) { 
+				args[i] = longOpt + EQ + value;
+				retVal += args[i] + SPACE;
 				found = true;
 			} else {
-				retVal += args[i] + " ";
+				retVal += args[i] + SPACE;
 			}
 		}
 		
 		// turn this to a retval;
 		if( !found )
-			retVal = retVal + longOpt + "=" + value;
+			retVal = retVal + longOpt + EQ + value;
 		return retVal;
 	}
 	

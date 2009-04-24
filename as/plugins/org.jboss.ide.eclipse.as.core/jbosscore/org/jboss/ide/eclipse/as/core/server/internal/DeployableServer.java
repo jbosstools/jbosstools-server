@@ -1,30 +1,18 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -38,8 +26,8 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -67,7 +55,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	 * Abstracts to implement
 	 */
 	public IStatus canModifyModules(IModule[] add, IModule[] remove) {
-		return new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID,0, "OK", null);
+		return Status.OK_STATUS;
 	}
 
 	public IModule[] getChildModules(IModule[] module) {
@@ -87,7 +75,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 
 	private IModule[] doGetParentModules(IModule module) {
-		IModule[] ears = org.eclipse.wst.server.core.ServerUtil.getModules("jst.ear"); //$NON-NLS-1$
+		IModule[] ears = org.eclipse.wst.server.core.ServerUtil.getModules(IWTPConstants.FACET_EAR);
 		ArrayList<IModule> list = new ArrayList<IModule>();
 		for (int i = 0; i < ears.length; i++) {
 			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
@@ -111,7 +99,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	public String getDeployFolder() {
 		IJBossServerRuntime jbsrt = getRuntime();
-		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
+		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 	}
 	
 	public void setDeployFolder(String folder) {
@@ -120,7 +108,7 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	
 	public String getTempDeployFolder() {
 		IJBossServerRuntime jbsrt = getRuntime();
-		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+		return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 	} 
 	
 	public void setTempDeployFolder(String folder) {

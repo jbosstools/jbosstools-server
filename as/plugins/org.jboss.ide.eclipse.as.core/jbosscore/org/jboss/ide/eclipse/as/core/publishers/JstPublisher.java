@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
@@ -36,22 +25,25 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
@@ -89,11 +81,9 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			if( delegate != null ) {
 				return delegate.publishModule(server, module, publishType, delta, monitor);
 			} else {
-				// TODO log, return
+				// TODO log,  use unzipped instead
 			}
 		}
-		
-		
 		
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
@@ -136,7 +126,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		
 		if( list.size() > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
-					"Full Publish Failed for module " + module.getName(), null);
+					NLS.bind(Messages.FullPublishFail, module.getName()), null);
 			for( int i = 0; i < list.size(); i++ )
 				ms.add(list.get(i));
 			return ms;
@@ -146,7 +136,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File pathname) {
-				if( pathname.getAbsolutePath().toLowerCase().endsWith(".xml"))
+				if( pathname.getAbsolutePath().toLowerCase().endsWith(IConstants.EXT_XML))
 					return true;
 				return false;
 			}
@@ -155,7 +145,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		publishState = IServer.PUBLISH_STATE_NONE;
 		
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
-				countMembers(module) + " files modified in module " + module.getName(), null);
+				NLS.bind(Messages.CountModifiedMembers, countMembers(module), module.getName()), null);
 		return ret;
 	}
 
@@ -172,13 +162,13 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		}
 		if( results != null && results.length > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
-					"Incremental Publish Failed for module " + module.getName(), null);
+					NLS.bind(Messages.IncrementalPublishFail, module.getName()), null);
 			for( int i = 0; i < results.length; i++ )
 				ms.add(results[i]);
 			return ms;
 		}
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
-				countChanges(delta) + " files modified in module " + module.getName(), null);
+				NLS.bind(Messages.CountModifiedMembers, countChanges(delta), module.getName()), null);
 		return ret;
 	}
 	
@@ -189,13 +179,14 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		if( errors.length > 0 ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_FAIL,
-					"Unable to delete module " + mod.getName(), new Exception("Some files were not removed from the server"));
+					NLS.bind(Messages.DeleteModuleFail, mod.getName()), 
+					new Exception(Messages.DeleteModuleFail2));
 			for( int i = 0; i < errors.length; i++ )
 				ms.addAll(errors[i]);
 			throw new CoreException(ms);
 		}
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_SUCCESS, 
-				mod.getName() + " removed.", null);
+				NLS.bind(Messages.ModuleDeleted, mod.getName()), null);
 		return ret;
 	}
 
@@ -217,12 +208,14 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 				return listener.getStatuses();
 			} else {
 				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_COPY_BINARY_FAIL,
-						"Could not publish module " + moduleTree[moduleTree.length-1], null);
+						NLS.bind(Messages.CouldNotPublishModule,
+								moduleTree[moduleTree.length-1]), null);
 				return new IStatus[] {s};
 			}
 		} catch( CoreException ce ) {
 			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_COPY_BINARY_FAIL,
-					"Could not publish module " + moduleTree[moduleTree.length-1], ce);
+					NLS.bind(Messages.CouldNotPublishModule,
+							moduleTree[moduleTree.length-1]), null);
 			return new IStatus[] {s};
 		}
 	}
@@ -234,20 +227,21 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 	 */
 	protected IStatus[] localSafeDelete(IPath deployPath) {
         String serverDeployFolder = server.getDeployFolder();
-        Assert.isTrue(!deployPath.toFile().equals(new Path(serverDeployFolder).toFile()), "An attempt to delete your entire deploy folder has been prevented. This should never happen");
+        Assert.isTrue(!deployPath.toFile().equals(new Path(serverDeployFolder).toFile()), 
+        		"An attempt to delete your entire deploy folder has been prevented. This should never happen"); //$NON-NLS-1$
         final ArrayList<IStatus> status = new ArrayList<IStatus>();
 		IFileUtilListener listener = new IFileUtilListener() {
 			public void fileCopied(File source, File dest, boolean result,Exception e) {}
 			public void fileDeleted(File file, boolean result, Exception e) {
 				if( result == false || e != null ) {
 					status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FILE_DELETE_FAIL, 
-							"Attempt to delete " + file.getAbsolutePath() + " failed",e));
+							NLS.bind(Messages.DeleteFileError, file.getAbsolutePath()),e));
 				}
 			}
 			public void folderDeleted(File file, boolean result, Exception e) {
 				if( result == false || e != null ) {
 					status.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FILE_DELETE_FAIL,
-							"Attempt to delete " + file.getAbsolutePath() + " failed",e));
+							NLS.bind(Messages.DeleteFolderError, file.getAbsolutePath()),e));
 				}
 			} 
 		};
@@ -255,8 +249,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
 	public static boolean deployPackaged(IModule[] moduleTree) {
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.utility")) return true;
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals("jst.appclient")) return true;
+		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_UTILITY)) return true;
+		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_APP_CLIENT)) return true;
 		return false;
 	}
 	

@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.util.ArrayList;
@@ -37,11 +26,11 @@ import org.jboss.tools.jmx.core.IMemento;
  *
  */
 public class XPathCategory {
-	@Deprecated private static final String DELIMITER = ",";
+	@Deprecated private static final String DELIMITER = ","; //$NON-NLS-1$
 	@Deprecated private static final String QUERY_LIST = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
+		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	 //$NON-NLS-1$
 	@Deprecated private static final String QUERY = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	
+		"org.jboss.ide.eclipse.as.core.model.descriptor.Query";	 //$NON-NLS-1$
 
 	
 	protected String name; // cannot include delimiter from the model, comma
@@ -62,14 +51,14 @@ public class XPathCategory {
 	
 	private static XPathQuery[] loadQueries_LEGACY(XPathCategory category, IServer server) {
 		ServerAttributeHelper helper = ServerAttributeHelper.createHelper(server);
-		String list = helper.getAttribute(QUERY_LIST + "." + category.getName().replace(' ', '_'), (String)null);
+		String list = helper.getAttribute(QUERY_LIST + '.' + category.getName().replace(' ', '_'), (String)null);
 		if( list == null )
 			return new XPathQuery[] {};
 		String[] queriesByName = list.split(DELIMITER);
 		List<String> queryAsStringValues;
 		ArrayList<XPathQuery> returnList = new ArrayList<XPathQuery>();
 		for( int i = 0; i < queriesByName.length; i++ ) {
-			queryAsStringValues = helper.getAttribute(QUERY + "." + queriesByName[i].replace(' ', '_'), (List)null);
+			queryAsStringValues = helper.getAttribute(QUERY + '.' + queriesByName[i].replace(' ', '_'), (List)null);
 			if( queryAsStringValues != null ) {
 				XPathQuery q =new XPathQuery(queriesByName[i].substring(queriesByName[i].indexOf(Path.SEPARATOR)+1), queryAsStringValues); 
 				q.setCategory(category);
@@ -81,11 +70,11 @@ public class XPathCategory {
 	
 	public XPathCategory(IServer server, IMemento memento) {
 		this.server = server;
-		this.name = memento.getString("name");
-		IMemento[] queryMementos = memento.getChildren("query");
+		this.name = memento.getString("name"); //$NON-NLS-1$
+		IMemento[] queryMementos = memento.getChildren("query");//$NON-NLS-1$
 		children = new HashMap<String, XPathQuery>();
 		for( int i = 0; i < queryMementos.length; i++ ) {
-			String name = queryMementos[i].getString("name");
+			String name = queryMementos[i].getString("name");//$NON-NLS-1$
 			XPathQuery child = new XPathQuery(queryMementos[i]);
 			children.put(name, child);
 			child.setCategory(this);

@@ -1,24 +1,14 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
+
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.util.ArrayList;
@@ -33,8 +23,10 @@ import javax.naming.NamingException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
@@ -42,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 
 /**
@@ -51,12 +44,12 @@ import org.jboss.tools.jmx.core.IJMXRunnable;
  */
 public class JMXPoller implements IServerStatePoller {
 
-	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller";
+	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"; //$NON-NLS-1$
 	public static final int JMXPOLLER_CODE = IEventCodes.JMXPOLLER_CODE;
 	public static final Properties IGNORED_PROPERTIES = new Properties();
 	
-	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER";
-	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS";
+	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER"; //$NON-NLS-1$
+	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS"; //$NON-NLS-1$
 	
 	public static final int STATE_STARTED = 1;
 	public static final int STATE_STOPPED = 0;
@@ -87,14 +80,15 @@ public class JMXPoller implements IServerStatePoller {
 	private class JMXPollerRunnable implements IJMXRunnable {
 		public void run(MBeanServerConnection connection) throws Exception {
 			Object attInfo = connection.getAttribute(
-					new ObjectName("jboss.system:type=Server"),
-					"Started");
+					new ObjectName(IJBossRuntimeConstants.SYSTEM_MBEAN),
+					IJBossRuntimeConstants.STARTED_METHOD);
 			boolean b = ((Boolean) attInfo).booleanValue();
 			started = b ? STATE_STARTED : STATE_TRANSITION;
 			done = b;
 			if( !startingFound ) {
 				startingFound = true;
-				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, JMXPOLLER_CODE|started, "Server is starting", null);
+				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
+						JMXPOLLER_CODE|started, Messages.ServerStarting, null);
 				log(s);
 			}
 		}
@@ -124,7 +118,7 @@ public class JMXPoller implements IServerStatePoller {
 					if( !waitingForCredentials ) {
 						waitingForCredentials = true;
 						requiresInfoException = new PollingSecurityException(
-								"Security Exception: " + t.getMessage());
+								NLS.bind(Messages.securityException, t.getMessage()));
 					} else {
 						// we're waiting. are they back yet?
 						if( requiredPropertiesReturned != null ) {
@@ -178,7 +172,7 @@ public class JMXPoller implements IServerStatePoller {
 	
 	private void launchJMXPoller() {
 		PollerRunnable run = new PollerRunnable();
-		Thread t = new Thread(run, "JMX Poller");
+		Thread t = new Thread(run, Messages.JMXPoller);
 		t.start();
 	}
 

@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
@@ -38,6 +27,7 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 
 public class TwiddleLauncher {
 	
@@ -72,7 +62,7 @@ public class TwiddleLauncher {
 	protected static ProcessData[] toProcessDatas(IProcess[] processes) {
 		ProcessData[] datas = new ProcessData[processes.length];
 		for( int i = 0; i < processes.length; i++ ) {
-			datas[i] = new ProcessData(processes[i], "");
+			datas[i] = new ProcessData(processes[i], ""); //$NON-NLS-1$
 			datas[i].startListening();
 		}
 		return datas;
@@ -118,7 +108,8 @@ public class TwiddleLauncher {
 						for( int i = 0; i < processes.length; i++ )
 							processes[i].getProcess().terminate();
 					} catch( DebugException e ) {
-						IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Cannot terminate twiddle process", e);
+						IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+								Messages.TerminateTwiddleFailed, e);
 						JBossServerCorePlugin.getDefault().getLog().log(s);
 					}
 				}	
@@ -161,8 +152,8 @@ public class TwiddleLauncher {
 			this.outMonitor = process.getStreamsProxy().getOutputStreamMonitor();
 			this.errMonitor = process.getStreamsProxy().getErrorStreamMonitor();
 			
-			out = "";
-			err = "";
+			out = ""; //$NON-NLS-1$
+			err = ""; //$NON-NLS-1$
 		}
 		
 		public void startListening() {
@@ -176,8 +167,8 @@ public class TwiddleLauncher {
 		}
 		
 		public void resetStrings() {
-			out = "";
-			err = "";
+			out = ""; //$NON-NLS-1$
+			err = ""; //$NON-NLS-1$
 		}
 		
 		public void destroy() {

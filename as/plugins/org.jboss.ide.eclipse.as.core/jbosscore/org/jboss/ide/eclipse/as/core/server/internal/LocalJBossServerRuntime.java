@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.HashMap;
@@ -31,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
@@ -38,23 +28,24 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 
 public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 
 	public void setDefaults(IProgressMonitor monitor) {
 		String location = Platform.getOS().equals(Platform.WS_WIN32) 
-		? "c:/program files/jboss-" : "/usr/bin/jboss-";
+		? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
 		String version = getRuntime().getRuntimeType().getVersion();
-		location += version + ".x";
+		location += version + ".x"; //$NON-NLS-1$
 		getRuntimeWorkingCopy().setLocation(new Path(location));
 		getRuntimeWorkingCopy().setName(getNextRuntimeName());
-		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_SERVER_NAME);
+		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_CONFIGURATION);
 		setVM(null);
 	}
 
 	private String getNextRuntimeName() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
-		String base = Messages.jboss + " " + version + " " + Messages.runtime;
+		String base = Messages.jboss + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
 		return getNextRuntimeName(base);
 	}
 	
@@ -65,17 +56,18 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 
 		int i = 0;
 		while (rt != null) {
-			rt = ServerCore.findRuntime(base + " " + ++i);
+			rt = ServerCore.findRuntime(base + " " + ++i); //$NON-NLS-1$
 		}
-		return base + " " + i;
+		return base + " " + i; //$NON-NLS-1$
 	}
 
 	public IStatus validate() {
 		IStatus s = super.validate();
 		if( !s.isOK()) return s;
 		
-		if( getJBossConfiguration().equals(""))
-			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0, "Runtime Configuration Not Set", null);
+		if( getJBossConfiguration().equals("")) //$NON-NLS-1$
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0, 
+					NLS.bind(Messages.ServerRuntimeConfigNotFound, getRuntime().getName()), null);
 		
 		return Status.OK_STATUS;
 	}
@@ -111,7 +103,7 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	public String getJBossConfiguration() {
-		return getAttribute(PROPERTY_CONFIGURATION_NAME, (String)"");
+		return getAttribute(PROPERTY_CONFIGURATION_NAME, (String)""); //$NON-NLS-1$
 	}
 	
 	public void setJBossConfiguration(String config) {
@@ -119,29 +111,33 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 
 	public String getDefaultRunArgs() {
-		return "--configuration=" + getJBossConfiguration() + " ";
+		return IConstants.STARTUP_ARG_CONFIG_LONG + "=" + getJBossConfiguration() + IConstants.SPACE;  //$NON-NLS-1$
 	}
 
 	public String getDefaultRunVMArgs() {
+		IConstants c = new IConstants(){};
 		String name = getRuntime().getName();
-		String ret = "-Dprogram.name=\"JBossTools " + name + "\" ";
+		String ret = c.SYSPROP + c.PROGRAM_NAME_ARG + c.EQ + c.QUOTE + 
+			"JBossTools: " + name + c.QUOTE + c.SPACE; //$NON-NLS-1$
 		if( Platform.getOS().equals(Platform.OS_MACOSX))
-			ret += "-server ";
-		ret += "-Xms256m -Xmx512m -XX:MaxPermSize=256m ";
+			ret += c.SERVER_ARG + c.SPACE;
+		ret += c.DEFAULT_MEM_ARGS;
 		if( Platform.getOS().equals(Platform.OS_LINUX))
-			ret += "-Djava.net.preferIPv4Stack=true ";
-		ret += "-Dsun.rmi.dgc.client.gcInterval=3600000 ";
-		ret += "-Dsun.rmi.dgc.server.gcInterval=3600000 ";
-		ret += "-Djava.endorsed.dirs=\"" + (getRuntime().getLocation().append("lib").append("endorsed")) + "\" ";
-		if( getRuntime().getLocation().append("bin").append("native").toFile().exists() ) 
-			ret +=  "-Djava.library.path=\"" + getRuntime().getLocation().append("bin").append("native") + "\" ";
+			ret += c.SYSPROP + c.JAVA_PREFER_IP4_ARG + c.EQ + true + c.SPACE; 
+		ret += c.SYSPROP + c.SUN_CLIENT_GC_ARG + c.EQ + 3600000 + c.SPACE;
+		ret += c.SYSPROP + c.SUN_SERVER_GC_ARG + c.EQ + 3600000 + c.SPACE;
+		ret += c.SYSPROP + c.ENDORSED_DIRS + c.EQ + c.QUOTE +
+			(getRuntime().getLocation().append(c.LIB).append(c.ENDORSED)) + c.QUOTE + c.SPACE;
+		if( getRuntime().getLocation().append(c.BIN).append(c.NATIVE).toFile().exists() ) 
+			ret += c.SYSPROP + c.JAVA_LIB_PATH + c.EQ + c.QUOTE + 
+				getRuntime().getLocation().append(c.BIN).append(c.NATIVE) + c.QUOTE + c.SPACE;
 		
 		return ret;
 	}
 	
 	public HashMap<String, String> getDefaultRunEnvVars(){
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
-		envVars.put("Path", "native");
+		envVars.put("Path", IConstants.NATIVE); //$NON-NLS-1$
 		return envVars;
 	}
 

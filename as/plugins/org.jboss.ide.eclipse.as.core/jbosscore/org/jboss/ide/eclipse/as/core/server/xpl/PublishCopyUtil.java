@@ -1,13 +1,13 @@
-/*******************************************************************************
- * Copyright (c) 2007 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
  * 
- * Contributors:
- *     IBM Corporation - Initial API and implementation
- *******************************************************************************/
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.xpl;
 
 import java.io.BufferedOutputStream;
@@ -70,7 +70,7 @@ public final class PublishCopyUtil {
 
 	private static final File tempDir = ServerPlugin.getInstance().getStateLocation().toFile();
 	
-	private static final String TEMPFILE_PREFIX = "tmp";
+	private static final String TEMPFILE_PREFIX = "tmp"; //$NON-NLS-1$
 
 	/**
 	 * PublishUtil cannot be created. Use static methods.
@@ -96,7 +96,7 @@ public final class PublishCopyUtil {
 			File file = to.toFile();
 			
 			// Change from original PublishUtil, will require 
-			tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + to.getFileExtension(), getTempFolder());
+			tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + to.getFileExtension(), getTempFolder()); //$NON-NLS-1$
 			
 			out = new FileOutputStream(tempFile);
 			
@@ -117,7 +117,7 @@ public final class PublishCopyUtil {
 			throw e;
 		} catch (Exception e) {
 			IPath path = mf.getModuleRelativePath().append(mf.getName());
-			Trace.trace(Trace.SEVERE, "Error copying file: " + to.toOSString() + " to " + path.toOSString(), e);
+			//Trace.trace(Trace.SEVERE, "Error copying file: " + to.toOSString() + " to " + path.toOSString(), e);
 			throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null));
 		} finally {
 			if (tempFile != null && tempFile.exists())
@@ -180,7 +180,7 @@ public final class PublishCopyUtil {
 				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null));
 			monitor.done();
 		} catch (Exception e) {
-			Trace.trace(Trace.SEVERE, "Error deleting directory " + dir.getAbsolutePath(), e);
+			//Trace.trace(Trace.SEVERE, "Error deleting directory " + dir.getAbsolutePath(), e);
 			status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, e.getLocalizedMessage(), null));
 		}
 		
@@ -437,14 +437,14 @@ public final class PublishCopyUtil {
 	}
 
 	private  void deleteFile2(IPath path, IModuleFile file) throws CoreException {
-		Trace.trace(Trace.PUBLISHING, "Deleting: " + file.getName() + " from " + path.toString());
+		//Trace.trace(Trace.PUBLISHING, "Deleting: " + file.getName() + " from " + path.toString());
 		IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
 		if (path2.toFile().exists() && !path2.toFile().delete())
 			throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, path2), null));
 	}
 
 	private  void copyFile(IModuleFile mf, IPath path) throws CoreException {
-		Trace.trace(Trace.PUBLISHING, "Copying: " + mf.getName() + " to " + path.toString());
+		//Trace.trace(Trace.PUBLISHING, "Copying: " + mf.getName() + " to " + path.toString());
 		
 		IFile file = (IFile) mf.getAdapter(IFile.class);
 		if (file != null)
@@ -490,7 +490,7 @@ public final class PublishCopyUtil {
 
 	private  IStatus[] copy(IModuleResource resource, IPath path, IProgressMonitor monitor) {
 		String name = resource.getName();
-		Trace.trace(Trace.PUBLISHING, "Copying: " + name + " to " + path.toString());
+		//Trace.trace(Trace.PUBLISHING, "Copying: " + name + " to " + path.toString());
 		List status = new ArrayList(2);
 		if (resource instanceof IModuleFolder) {
 			IModuleFolder folder = (IModuleFolder) resource;
@@ -537,7 +537,7 @@ public final class PublishCopyUtil {
 		File tempFile = null;
 		try {
 			File file = path.toFile();
-			tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + path.getFileExtension(), getTempFolder());
+			tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + path.getFileExtension(), getTempFolder()); //$NON-NLS-1$
 			BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(tempFile));
 			ZipOutputStream zout = new ZipOutputStream(bout);
 			addZipEntries(zout, resources);
@@ -547,7 +547,7 @@ public final class PublishCopyUtil {
 		} catch (CoreException e) {
 			return new IStatus[] { e.getStatus() };
 		} catch (Exception e) {
-			Trace.trace(Trace.SEVERE, "Error zipping", e);
+			//Trace.trace(Trace.SEVERE, "Error zipping", e);
 			return new Status[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCreatingZipFile, path.lastSegment(), e.getLocalizedMessage()), e) };
 		} finally {
 			if (tempFile != null && tempFile.exists())
@@ -568,7 +568,7 @@ public final class PublishCopyUtil {
 				
 				IPath path = mf.getModuleRelativePath().append(mf.getName());
 				String entryPath = path.toPortableString();
-				if (!entryPath.endsWith("/"))
+				if (!entryPath.endsWith("/")) //$NON-NLS-1$
 					entryPath += '/';
 				
 				ZipEntry ze = new ZipEntry(entryPath);
@@ -682,7 +682,7 @@ public final class PublishCopyUtil {
 			}
 			return Status.OK_STATUS;
 		} catch (Exception e) {
-			Trace.trace(Trace.SEVERE, "Error copying file", e);
+			//Trace.trace(Trace.SEVERE, "Error copying file", e);
 			return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, new String[] {to, e.getLocalizedMessage()}), e);
 		} finally {
 			try {

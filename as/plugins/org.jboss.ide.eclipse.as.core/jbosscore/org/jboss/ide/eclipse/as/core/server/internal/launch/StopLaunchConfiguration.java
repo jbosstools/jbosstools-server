@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
@@ -41,16 +30,18 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 
 public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	
-	public static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration";
-	public static final String STOP_MAIN_TYPE = "org.jboss.Shutdown";
-	public static final String STOP_JAR_LOC = "bin" + File.separator + "shutdown.jar";
+	public static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
+	public static final String STOP_MAIN_TYPE = IJBossRuntimeConstants.SHUTDOWN_MAIN_TYPE;
+	public static final String STOP_JAR_LOC = IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.SHUTDOWN_JAR;
 	
 	/* Returns whether termination was normal */
 	public static boolean stop(IServer server) {
@@ -69,7 +60,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		} catch( CoreException ce ) {
 			// report it from here
 			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					"Unexpected Exception launching stop server command: ", ce);
+					Messages.UnexpectedServerStopError, ce);
 			JBossServerCorePlugin.getDefault().getLog().log(s);
 			return false;
 		}
@@ -94,7 +85,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(SERVER_ID, server.getId());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, STOP_MAIN_TYPE);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		addCPEntry(classpath, jbs, STOP_JAR_LOC);
 		addJREEntry(classpath, jbrt.getVM());
@@ -107,12 +98,13 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
-		String args = "-S ";
-		args += "-s " + jbs.getHost() + ":" + jbs.getJNDIPort() + " ";
-		if( jbs.getUsername() != null && !jbs.getUsername().equals("")) 
-			args += "-u " + jbs.getUsername() + " ";
-		if( jbs.getPassword() != null && !jbs.getUsername().equals("")) 
-			args += "-p " + jbs.getPassword() + " ";
+		IJBossRuntimeConstants c = new IJBossRuntimeConstants() {};
+		String args = c.SHUTDOWN_STOP_ARG + c.SPACE;
+		args += c.SHUTDOWN_SERVER_ARG + c.SPACE + jbs.getHost() + ":" + jbs.getJNDIPort() + c.SPACE; //$NON-NLS-1$
+		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
+			args += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
+		if( jbs.getPassword() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
+			args += c.SHUTDOWN_PASS_ARG + c.SPACE + jbs.getPassword() + c.SPACE;
 		return args;
 	}
 

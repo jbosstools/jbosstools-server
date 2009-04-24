@@ -1,33 +1,24 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */ 
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -56,8 +47,8 @@ public class PollThread extends Thread {
 	public static final int STATE_STOPPING = IServer.STATE_STOPPING << 3;
 	public static final int STATE_STOPPED = IServer.STATE_STOPPED << 3;
 	
-	public static final String SERVER_STARTING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.starting";
-	public static final String SERVER_STOPPING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.stopping";
+	public static final String SERVER_STARTING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.starting"; //$NON-NLS-1$
+	public static final String SERVER_STOPPING = "org.jboss.ide.eclipse.as.core.runtime.server.PollThread.server.stopping"; //$NON-NLS-1$
 
 	private boolean expectedState, abort, stateStartedOrStopped;
 	private IServerStatePoller poller;
@@ -249,7 +240,8 @@ public class PollThread extends Thread {
 	 * Event Log Stuff here!
 	 */
 	protected void alertEventLogStarting() {
-		String message = expectedState ? "Server Starting" : "Server shutting down";
+		String message = expectedState ?
+				Messages.PollingStarting : Messages.PollingShuttingDown;
 		int state = expectedState ? STATE_STARTING : STATE_STOPPING;
 		
 		IStatus status = new Status(IStatus.INFO,
@@ -259,26 +251,26 @@ public class PollThread extends Thread {
 
 	protected void alertEventLogPollerException(PollingException e) {
 		IStatus status = new Status(IStatus.ERROR,
-				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE, "Failure in Poll Thread", e);
+				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE, Messages.PollerFailure, e);
 		ServerLogger.getDefault().log(behavior.getServer(), status);
 	}
 
 	protected void alertEventLogAbort() {
 		IStatus status = new Status(IStatus.WARNING,
-				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), "Poll Thread Aborted: "
-						+ abortMessage, null);
+				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), 
+				NLS.bind(Messages.PollerAborted, abortMessage), null);
 		ServerLogger.getDefault().log(behavior.getServer(), status);
 	}
 
 	protected void alertEventLogTimeout() {
 		IStatus status = new Status(IStatus.ERROR,
-				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), "", null);
+				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), "", null); //$NON-NLS-1$
 		ServerLogger.getDefault().log(behavior.getServer(), status);
 	}
 
 	protected void alertEventLogFailure() {
-		String startupFailed = "Server Startup Failed";
-		String shutdownFailed = "Server Shutdown Failed";
+		String startupFailed = Messages.PollingStartupFailed;
+		String shutdownFailed = Messages.PollingShutdownFailed;
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false),
 				expectedState ? startupFailed : shutdownFailed, null);
@@ -286,8 +278,8 @@ public class PollThread extends Thread {
 	}
 
 	protected void alertEventLogSuccess(boolean currentState) {
-		String startupSuccess = "Server Startup Succeeded";
-		String shutdownSuccess = "Server Shutdown Succeeded";
+		String startupSuccess = Messages.PollingStartupSuccess;
+		String shutdownSuccess = Messages.PollingShutdownSuccess;
 		int state = getStateMask(expectedState, true);
 		IStatus status = new Status(IStatus.INFO,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_ROOT_CODE | state |  SUCCESS,
@@ -296,8 +288,8 @@ public class PollThread extends Thread {
 	}
 
 	protected void alertPollerNotFound() {
-		String startupPollerNotFound = "Startup Poller not found: " + pollerId;
-		String shutdownPollerNotFound = "Shutdown Poller not found: "+ pollerId;
+		String startupPollerNotFound = NLS.bind(Messages.StartupPollerNotFound, pollerId); 
+		String shutdownPollerNotFound = NLS.bind(Messages.ShutdownPollerNotFound, pollerId);
 		IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				POLLING_FAIL_CODE | getStateMask(expectedState, false), 
 				expectedState ? startupPollerNotFound : shutdownPollerNotFound, null);

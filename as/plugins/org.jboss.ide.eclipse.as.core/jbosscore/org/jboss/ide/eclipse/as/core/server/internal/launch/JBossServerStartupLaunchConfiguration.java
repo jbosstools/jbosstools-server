@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.net.MalformedURLException;
@@ -45,24 +34,29 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.StandardClasspathProvider;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	static final char[] INVALID_CHARS = new char[] {'\\', '/', ':', '*', '?', '"', '<', '>', '|', '\0', '@', '&'};
-	static final String LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.startupConfiguration";
-	static final String DEFAULTS_SET = "jboss.defaults.been.set";
-	static final String START_JAR_LOC = "bin" + Path.SEPARATOR + "run.jar";
-	static final String START_MAIN_TYPE = "org.jboss.Main";
+	static final String LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.startupConfiguration"; //$NON-NLS-1$
+	static final String DEFAULTS_SET = "jboss.defaults.been.set"; //$NON-NLS-1$
+	static final String START_JAR_LOC = IJBossRuntimeResourceConstants.BIN + Path.SEPARATOR + IJBossRuntimeResourceConstants.START_JAR;
+	static final String START_MAIN_TYPE = IJBossRuntimeConstants.START_MAIN_TYPE;
 	
 	public static ILaunchConfigurationWorkingCopy setupLaunchConfiguration(IServer server, String action) throws CoreException {
 		ILaunchConfigurationWorkingCopy config = createLaunchConfiguration(server);
@@ -79,7 +73,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		// Upgrade old launch configs
 		JBossServer jbs = findJBossServer(server.getId());
 		if( jbs == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is not a proper JBoss Server"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
 
 		String cpProvider = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
 		if(  !DEFAULT_CP_PROVIDER_ID.equals(cpProvider)) {
@@ -100,7 +95,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	protected static void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs) throws CoreException{
 		String serverHome = getServerHome(jbs);
 		if( serverHome == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + jbs.getServer().getName() + " is corrupt and the server home is unable to be located."));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CannotLocateServerHome, jbs.getServer().getName())));
 		
 		IRuntime rt = jbs.getServer().getRuntime();
 		IJBossServerRuntime jbrt = null;
@@ -108,43 +104,59 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
 		
 		if( jbrt == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));
 
 		/* Args and vm args */
 		
-		String args = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
-		String vmArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+		String args = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
+		String vmArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
 		String host = jbs.getServer().getHost();
-		String host2 = ArgsUtil.getValue(args, "-b", "--host");
+		String host2 = ArgsUtil.getValue(args, 
+				IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
+				IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG);
 		if( !host.equals(host2))
-			args = ArgsUtil.setArg(args, "-b", "--host", host);
-		
+			args = ArgsUtil.setArg(args, 
+					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
+					IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG, host);
+
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 		String config = runtime.getJBossConfiguration();
-		args = ArgsUtil.setArg(args, "-c", "--configuration", config);
-		
+		args = ArgsUtil.setArg(args, 
+				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
+				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);
+
 		if( jbs.isMetadataConfig()) {
 			try {
 				IPath dest = JBossServerCorePlugin.getServerStateLocation(jbs.getServer());
 				dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
-				args = ArgsUtil.setArg(args, null, "-Djboss.server.home.url", dest.toFile().toURL().toString());
+				args = ArgsUtil.setArg(args, null, 
+						IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
+						dest.toFile().toURL().toString());
 			} catch( MalformedURLException murle) {}
 		}
 		
 		
-		vmArgs= ArgsUtil.setArg(vmArgs, null, "-Djava.endorsed.dirs", 
-				"\"" + runtime.getRuntime().getLocation().append("lib").append("endorsed") + "\"", false);
+		vmArgs= ArgsUtil.setArg(vmArgs, null, 
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
+				runtime.getRuntime().getLocation().append(
+						IJBossRuntimeResourceConstants.LIB).append(
+								IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
 		
-		if( runtime.getRuntime().getLocation().append("bin").append("native").toFile().exists() ) 
-			vmArgs = ArgsUtil.setArg(vmArgs, null, "-Djava.library.path",  
-				"\"" + runtime.getRuntime().getLocation().append("bin").append("native") + "\"", false);
+		if( runtime.getRuntime().getLocation().append(
+				IJBossRuntimeResourceConstants.BIN).append(	
+						IJBossRuntimeResourceConstants.NATIVE).toFile().exists() ) 
+			vmArgs = ArgsUtil.setArg(vmArgs, null, 
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
+				runtime.getRuntime().getLocation().append(IJBossRuntimeResourceConstants.BIN).append(	
+						IJBossRuntimeResourceConstants.NATIVE).toOSString(), true);
 		
 		/* Claspath */
 		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 		List<String> newCP = fixCP(cp, jbs);
 		
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs.trim());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, newCP);
@@ -175,11 +187,13 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	protected static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
 		JBossServer jbs = findJBossServer(server.getId());
 		if( jbs == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is not a proper JBoss Server"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
 		
 		String serverHome = getServerHome(jbs);
 		if( serverHome == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server " + server.getName() + " is corrupt and the server home is unable to be located."));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CannotLocateServerHome, server.getName())));
 		
 		IRuntime rt = jbs.getServer().getRuntime();
 		String jrePath = null;
@@ -189,7 +203,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		}
 		
 		if( jbrt == null )
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime not found"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+			NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));		
 			
 		IVMInstall install = jbrt.getVM();
 		IPath path = JavaRuntime.newJREContainerPath(install);
@@ -198,7 +213,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jbrt.getDefaultRunVMArgs());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, jrePath);
 		wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, jbrt.getDefaultRunEnvVars());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath(jbs));
@@ -215,7 +230,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		addJREEntry(classpath, jbrt.getVM());
 		
 		String version = jbs.getServer().getRuntime().getRuntimeType().getVersion();
-		if( version.equals("4.0")) 
+		if( version.equals(IJBossToolingConstants.AS_40)) 
 			addToolsJar(classpath, jbrt.getVM());
 		
 		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
@@ -231,7 +246,9 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	protected static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		IJBossServerRuntime rt = findJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
-			return rt.getDefaultRunArgs() + " -b " + jbs.getServer().getHost();
+			return rt.getDefaultRunArgs() + 
+			IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT + 
+			IJBossRuntimeConstants.SPACE + jbs.getServer().getHost();
 		}
 		return null;
 	}
@@ -266,7 +283,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	
 	protected static String getValidLaunchConfigurationName(String s) {
 		if (s == null || s.length() == 0)
-			return "1";
+			return "1"; //$NON-NLS-1$
 		int size = INVALID_CHARS.length;
 		for (int i = 0; i < size; i++) {
 			s = s.replace(INVALID_CHARS[i], '_');
@@ -314,7 +331,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	}	
 	
 	/* For "restore defaults" functionality */
-	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider";
+	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$
 	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {
 		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration) throws CoreException {
 			boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);

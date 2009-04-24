@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.FileInputStream;
@@ -40,11 +29,12 @@ import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.HttpLaunchable;
 import org.eclipse.wst.server.core.util.WebResource;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 
-	private static final String JAVA_NAMING_PROVIDER_URL_PROPKEY = "java.naming.provider.url"; //$NON-NLS-1$
-	private static final String JAVA_NAMING_FACTORY_INITIAL_PROPKEY = "java.naming.factory.initial"; //$NON-NLS-1$
+	private static final String JAVA_NAMING_PROVIDER_URL_PROPKEY = IJBossServerConstants.NAMING_FACTORY_PROVIDER_URL;
+	private static final String JAVA_NAMING_FACTORY_INITIAL_PROPKEY = IJBossServerConstants.NAMING_FACTORY_KEY;
 	public JBossLaunchAdapter() {
 		// TODO Auto-generated constructor stub
 	}
@@ -69,13 +59,16 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
     private Object prepareJndiLaunchable(IModuleArtifact moduleObject, ServerDelegate delegate) {
         JndiLaunchable launchable = null;
         JBossServer server = (JBossServer)delegate;
-        IPath p = new Path(server.getConfigDirectory()).append("jndi.properties");
+        IPath p = new Path(server.getConfigDirectory())
+        	.append(IJBossServerConstants.JNDI_PROPERTIES);
         Properties props = new Properties();
         try  {
 	        props.load(new FileInputStream(p.toFile()));
         } catch( IOException ioe ) {
-            props.put(JAVA_NAMING_FACTORY_INITIAL_PROPKEY, "org.jnp.interfaces.NamingContextFactory");
-            props.put(JAVA_NAMING_PROVIDER_URL_PROPKEY,"org.jboss.naming:org.jnp.interfaces");
+            props.put(JAVA_NAMING_FACTORY_INITIAL_PROPKEY, 
+            		IJBossServerConstants.NAMING_FACTORY_VALUE);
+            props.put(JAVA_NAMING_PROVIDER_URL_PROPKEY,
+            		IJBossServerConstants.NAMING_FACTORY_INTERFACES);
         }
 	
         if(moduleObject instanceof EJBBean) {
@@ -106,7 +99,7 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 						path = path.substring(1);
 					url = new URL(url, path);
 				} else
-					url = new URL(url, servlet.getName()); //$NON-NLS-1$
+					url = new URL(url, servlet.getName()); 
 			} else if (moduleObject instanceof WebResource) {
 				WebResource resource = (WebResource) moduleObject;
 				String path = resource.getPath().toString();

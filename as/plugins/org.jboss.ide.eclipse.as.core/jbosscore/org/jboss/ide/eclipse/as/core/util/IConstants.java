@@ -8,14 +8,12 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.server.internal;
+package org.jboss.ide.eclipse.as.core.util;
 
-import org.eclipse.wst.server.core.model.RuntimeDelegate;
-
-public class DeployableServerRuntime extends RuntimeDelegate {
-
-	public DeployableServerRuntime() {
-		// Nothing to do
-	}
-
+public interface IConstants extends 
+	IJBossRuntimeConstants, 
+	IWTPConstants, 
+	IJBossToolingConstants, 
+	IJBossRuntimeResourceConstants {
+	
 }

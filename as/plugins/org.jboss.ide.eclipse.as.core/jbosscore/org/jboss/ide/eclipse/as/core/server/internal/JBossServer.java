@@ -1,24 +1,13 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.File;
@@ -37,16 +26,19 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -62,7 +54,7 @@ public class JBossServer extends DeployableServer
 
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
-		setAttribute("auto-publish-time", 1);
+		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 	}
 
 	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
@@ -74,12 +66,17 @@ public class JBossServer extends DeployableServer
 				String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
 				String originalArgs = startArgs;
 				if( !getServer().getHost().equals(getHost(true)))
-					startArgs = ArgsUtil.setArg(startArgs, "-b", "--host", getServer().getHost());
+					startArgs = ArgsUtil.setArg(startArgs, 
+							IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
+							IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG, 
+							getServer().getHost());
 				
 				IJBossServerRuntime runtime = (IJBossServerRuntime)
 					getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 				String config = runtime.getJBossConfiguration();
-				startArgs = ArgsUtil.setArg(startArgs, "-c", "--configuration", config);
+				startArgs = ArgsUtil.setArg(startArgs, 
+						IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
+						IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);
 				
 				if( startArgs != null && !startArgs.trim().equals(originalArgs)) {
 					ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
@@ -88,7 +85,8 @@ public class JBossServer extends DeployableServer
 				}
 			}
 		} catch( CoreException ce )  {
-			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Could not save server's start arguments", ce);
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.CannotSaveServersStartArgs, getServer().getName()), ce);
 			JBossServerCorePlugin.getDefault().getLog().log(s);
 		}
 	}
@@ -106,7 +104,9 @@ public class JBossServer extends DeployableServer
 				ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
 				if(lc!=null) {
 					String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-					String val = ArgsUtil.getValue(startArgs, "-b", "--host");
+					String val = ArgsUtil.getValue(startArgs, 
+							IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
+							IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG); 
 					if( val != null ) {
 						host = val;
 					}
@@ -139,7 +139,7 @@ public class JBossServer extends DeployableServer
 		IJBossServerRuntime jbsrt = getRuntime();
 		String type = getDeployLocationType();
 		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString();
+			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(getServer()).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
@@ -167,7 +167,7 @@ public class JBossServer extends DeployableServer
 		IJBossServerRuntime jbsrt = getRuntime();
 		String type = getDeployLocationType();
 		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString();
+			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(getServer()).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
@@ -199,13 +199,13 @@ public class JBossServer extends DeployableServer
 
 			if( map.get(JBOSS_SERVER_BASE_DIR) != null ) {
 				String name = map.get(JBOSS_SERVER_NAME) != null ? 
-						(String)map.get(JBOSS_SERVER_NAME) : DEFAULT_SERVER_NAME;
+						(String)map.get(JBOSS_SERVER_NAME) : DEFAULT_CONFIGURATION;
 				return (String)map.get(JBOSS_SERVER_BASE_DIR) + Path.SEPARATOR + name;
 			}
 			
 			if( map.get(JBOSS_HOME_DIR) != null ) {
 				return (String)map.get(JBOSS_HOME_DIR) + Path.SEPARATOR + SERVER 
-					+ Path.SEPARATOR + DEFAULT_SERVER_NAME;
+					+ Path.SEPARATOR + DEFAULT_CONFIGURATION;
 			}
 		} catch( CoreException ce ) {
 		}
@@ -284,14 +284,14 @@ public class JBossServer extends DeployableServer
 	
 	// first class parameters
 	public String getUsername() {
-		return getAttribute(SERVER_USERNAME, "");
+		return getAttribute(SERVER_USERNAME, ""); //$NON-NLS-1$
 	}
 	public void setUsername(String name) {
 		setAttribute(SERVER_USERNAME, name);
 	}
 
 	public String getPassword() {
-		return getAttribute(SERVER_PASSWORD, "");
+		return getAttribute(SERVER_PASSWORD, ""); //$NON-NLS-1$
 	}
 	public void setPassword(String pass) {
 		setAttribute(SERVER_PASSWORD, pass);

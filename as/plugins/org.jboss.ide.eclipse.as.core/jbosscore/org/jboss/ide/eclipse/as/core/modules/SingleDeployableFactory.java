@@ -1,24 +1,14 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
+
 package org.jboss.ide.eclipse.as.core.modules;
 
 import java.util.ArrayList;
@@ -43,6 +33,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -56,6 +47,7 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 
@@ -65,12 +57,12 @@ import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
  *
  */
 public class SingleDeployableFactory extends ModuleFactoryDelegate {
-	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.singledeployablefactory";
+	public static final String FACTORY_ID = "org.jboss.ide.eclipse.as.core.singledeployablefactory"; //$NON-NLS-1$
 	private static SingleDeployableFactory factDelegate;
-	public static final String MODULE_TYPE = "jboss.singlefile";
-	public static final String VERSION = "1.0";
-	private static final String PREFERENCE_KEY = "org.jboss.ide.eclipse.as.core.singledeployable.deployableList";
-	private static final String DELIM = "\r";
+	public static final String MODULE_TYPE = "jboss.singlefile"; //$NON-NLS-1$
+	public static final String VERSION = "1.0"; //$NON-NLS-1$
+	private static final String PREFERENCE_KEY = "org.jboss.ide.eclipse.as.core.singledeployable.deployableList"; //$NON-NLS-1$
+	private static final String DELIM = "\r"; //$NON-NLS-1$
 
 	
 	private static ModuleFactory factory;
@@ -132,7 +124,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		moduleToDelegate = new HashMap<IModule, SingleDeployableModuleDelegate>();
 		registerListener();
 		String files = JBossServerCorePlugin.getDefault().getPluginPreferences().getString(PREFERENCE_KEY);
-		if( files.equals("")) return;
+		if( files.equals("")) return; //$NON-NLS-1$
 		String[] files2 = files.split(DELIM);
 		for( int i = 0; i < files2.length; i++ ) {
 			addModule(new Path(files2[i]));
@@ -186,7 +178,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	public void saveDeployableList() {
 		Iterator<IPath> i = moduleIdToModule.keySet().iterator();
-		String val = "";
+		String val = ""; //$NON-NLS-1$
 		while(i.hasNext()) {
 			val += i.next().toString() + DELIM;
 		}
@@ -293,7 +285,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			this(paths,true);
 		}
 		public UndeployFromServerJob(ArrayList<IPath> paths, boolean removeFromFactory) {
-			super("Undeploy Single Files From Server");
+			super(Messages.UndeploySingleFilesJob);
 			this.paths = paths;
 			this.removeFromFactory = removeFromFactory;
 		}
@@ -302,9 +294,10 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			IPath next;
 			IModule mod;
 			IServer[] allServers = ServerCore.getServers();
-			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, "Failed to undeploy modules from all servers", null);
-			for( Iterator i = paths.iterator(); i.hasNext(); ) {
-				next = (IPath)i.next();
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR, 
+					Messages.SingleFileUndeployFailed, null);
+			for( Iterator<IPath> i = paths.iterator(); i.hasNext(); ) {
+				next = i.next();
 				mod = getFactory().getModule(next);
 				if( mod != null ) {
 					boolean removedFromAllServers = true;
@@ -318,7 +311,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 								new PublishServerJob(s).schedule();
 							} catch( CoreException ce ) {
 								removedFromAllServers = false;
-								IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Failed to remove " + next + " from " + allServers[j].getName(), ce);
+								IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+										NLS.bind(Messages.SingleFileUndeployFailed2, next, allServers[j].getName()),
+										ce);
 								ms.add(s);
 							}
 						}

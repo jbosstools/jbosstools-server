@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
@@ -24,6 +34,7 @@ import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jst.server.core.ServerProfilerDelegate;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
@@ -33,10 +44,11 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
-	public static final String SERVER_ID = "server-id";
+	public static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 
 	// we have no need to do anything in pre-launch check
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
@@ -125,15 +137,18 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	protected static JBossServer findJBossServer(String serverId) throws CoreException {
 		if( serverId == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "No server specified"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.ServerNotFound, serverId)));
 
 		IServer s = ServerCore.findServer(serverId);
 		if( s == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server Not Found"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.ServerNotFound, serverId)));
 
 		JBossServer jbs = ServerConverter.getJBossServer(s);
 		if( jbs == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Server Not Found"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+			NLS.bind(Messages.ServerNotFound, serverId)));
 		
 		return jbs;
 	}
@@ -144,7 +159,8 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		if( rt != null ) 
 			jbrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 		if( jbrt == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Runtime Not Found"));
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+			NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));
 		return jbrt;
 	}
 	
@@ -164,7 +180,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
 			} catch (CoreException e) {
 				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-						"Unexpected Exception converting launch classpath: ", e);
+						Messages.LaunchConfigJREError, e);
 				JBossServerCorePlugin.getDefault().getLog().log(s);
 			}
 		}
@@ -172,8 +188,8 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	protected static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		File f = vmInstall.getInstallLocation();
-		File c1 = new File(f, "lib");
-		File c2 = new File(c1, "tools.jar");
+		File c1 = new File(f, IConstants.LIB);
+		File c2 = new File(c1, IConstants.TOOLS_JAR);
 		if( c2.exists()) 
 			addCPEntry(cp, new Path(c2.getAbsolutePath()));
 	}
@@ -201,7 +217,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		File libDir = new File(libPath);
 		File libs[] = libDir.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return (name != null && name.endsWith("jar"));
+				return (name != null && name.endsWith(IConstants.EXT_JAR));
 			}
 		});
 

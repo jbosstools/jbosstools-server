@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
@@ -9,13 +19,22 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 public class ServerUtil {
-	
+	public static IPath getServerStateLocation(IServer server) {
+		return server == null ? JBossServerCorePlugin.getDefault().getStateLocation() :
+					getServerStateLocation(server.getId());
+	}
+
+	public static IPath getServerStateLocation(String serverID) {
+		return serverID == null ? JBossServerCorePlugin.getDefault().getStateLocation() : 
+			JBossServerCorePlugin.getDefault().getStateLocation()
+			.append(serverID.replace(' ', '_'));
+	}
+
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
 		if( p.isAbsolute() && rt != null) {
 			if(rt.getRuntime().getLocation().isPrefixOf(p)) {

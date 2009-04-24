@@ -1,27 +1,15 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.IExtension;
@@ -34,6 +22,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerListener;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -42,9 +31,7 @@ import org.osgi.framework.BundleContext;
 public class JBossServerCorePlugin extends Plugin  {
 	//The shared instance.
 	private static JBossServerCorePlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
-	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.core";
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.core"; //$NON-NLS-1$
 	
 	/**
 	 * The constructor.
@@ -52,15 +39,9 @@ public class JBossServerCorePlugin extends Plugin  {
 	public JBossServerCorePlugin() {
 		super();
 		plugin = this;
-		try {
-			resourceBundle = ResourceBundle.getBundle("org.jboss.ide.eclipse.as.core.ServerCorePluginResources");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
 	}
 
-	public IExtension[] getExtensions (String extensionPoint)
-	{
+	public IExtension[] getExtensions (String extensionPoint) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
 		IExtensionPoint ep = reg.getExtensionPoint(extensionPoint);
 		IExtension[] extensions = ep.getExtensions();
@@ -86,6 +67,7 @@ public class JBossServerCorePlugin extends Plugin  {
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		UnitedServerListenerManager.getDefault().removeListener(ServerListener.getDefault());
+		UnitedServerListenerManager.getDefault().removeListener(XPathModel.getDefault());
 	}
 
 	/**
@@ -95,22 +77,12 @@ public class JBossServerCorePlugin extends Plugin  {
 		return plugin;
 	}
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
-
 	public static IPath getServerStateLocation(IServer server) {
-		return server == null ? getDefault().getStateLocation() :
-					getServerStateLocation(server.getId());
+		return ServerUtil.getServerStateLocation(server);
 	}
 
 	public static IPath getServerStateLocation(String serverID) {
-		return serverID == null ? getDefault().getStateLocation() : 
-			JBossServerCorePlugin.getDefault().getStateLocation()
-			.append(serverID.replace(' ', '_'));
+		return ServerUtil.getServerStateLocation(serverID);
 	}
 
 }

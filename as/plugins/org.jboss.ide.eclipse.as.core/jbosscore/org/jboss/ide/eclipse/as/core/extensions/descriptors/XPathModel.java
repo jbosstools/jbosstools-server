@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.descriptors;
 
 import java.io.File;
@@ -41,11 +30,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
@@ -57,13 +49,12 @@ import org.jboss.tools.jmx.core.util.XMLMemento;
  */
 public class XPathModel extends UnitedServerListener {
 	
-	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
-	public static final String PORTS_CATEGORY_NAME = "Ports";
-	private static final String DELIMITER = ",";
+	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString"; //$NON-NLS-1$
+	public static final String PORTS_CATEGORY_NAME = Messages.Ports;
+	private static final String DELIMITER = ","; //$NON-NLS-1$
 	private static final String CATEGORY_LIST = 
-		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	
+		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	 //$NON-NLS-1$
 	private static final IPath STATE_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation();
-	private static final String XPATH_FILE_NAME = "xpaths.xml";
 	
 	/* Singleton */
 	private static XPathModel instance;
@@ -81,7 +72,7 @@ public class XPathModel extends UnitedServerListener {
 	
 	public void serverAdded(IServer server) {
 		final IServer server2 = server;
-		new Job("Add Server XPath Details") {
+		new Job(Messages.AddXPathDetailsJob) {
 			protected IStatus run(IProgressMonitor monitor) {
 				
 				if(server2==null || server2.getRuntime()==null) {
@@ -169,16 +160,16 @@ public class XPathModel extends UnitedServerListener {
 	 * Loading and saving is below
 	 */
 	protected File getFile(IServer server) {
-		return STATE_LOCATION.append(server.getId().replace(' ', '_')).append(XPATH_FILE_NAME).toFile();
+		return STATE_LOCATION.append(server.getId().replace(' ', '_')).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
 	}
 	
 	public void save(IServer server) {
 		if( !serverToCategories.containsKey(server.getId()))
 			return;
-		XMLMemento memento = XMLMemento.createWriteRoot("xpaths");
+		XMLMemento memento = XMLMemento.createWriteRoot("xpaths"); //$NON-NLS-1$
 		XPathCategory[] categories = getCategories(server);
 		for( int i = 0; i < categories.length; i++ ) {
-			XMLMemento child = (XMLMemento)memento.createChild("category");
+			XMLMemento child = (XMLMemento)memento.createChild("category");//$NON-NLS-1$
 			saveCategory(categories[i], server, child);
 		}
 		try {
@@ -189,11 +180,11 @@ public class XPathModel extends UnitedServerListener {
 	}
 
 	public void saveCategory(XPathCategory category, IServer server, XMLMemento memento) {
-		memento.putString("name", category.getName());
+		memento.putString("name", category.getName());//$NON-NLS-1$
 		if( category.queriesLoaded()) {
 			XPathQuery[] queries = category.getQueries();
 			for( int i = 0; i < queries.length; i++ ) {
-				XMLMemento child = (XMLMemento)memento.createChild("query");
+				XMLMemento child = (XMLMemento)memento.createChild("query");//$NON-NLS-1$
 				saveQuery(queries[i], category, server, child);
 			}
 		}
@@ -201,11 +192,11 @@ public class XPathModel extends UnitedServerListener {
 	
 	private void saveQuery(XPathQuery query, XPathCategory category, 
 			IServer server, XMLMemento memento) {
-		memento.putString("name", query.getName());
-		memento.putString("dir", query.getBaseDir());
-		memento.putString("filePattern", query.getFilePattern());
-		memento.putString("xpathPattern", query.getXpathPattern());
-		memento.putString("attribute", query.getAttribute());
+		memento.putString("name", query.getName());//$NON-NLS-1$
+		memento.putString("dir", query.getBaseDir());//$NON-NLS-1$
+		memento.putString("filePattern", query.getFilePattern());//$NON-NLS-1$
+		memento.putString("xpathPattern", query.getXpathPattern());//$NON-NLS-1$
+		memento.putString("attribute", query.getAttribute());//$NON-NLS-1$
 	}
 	
 	private XPathCategory[] load(IServer server) {
@@ -219,7 +210,7 @@ public class XPathModel extends UnitedServerListener {
 		try {
 			File file = getFile(server);
 			XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
-			IMemento[] categoryMementos = memento.getChildren("category");
+			IMemento[] categoryMementos = memento.getChildren("category");//$NON-NLS-1$
 			categories = new XPathCategory[categoryMementos.length];
 			for( int i = 0; i < categoryMementos.length; i++ ) {
 				categories[i] = new XPathCategory(server, categoryMementos[i]);
@@ -249,15 +240,16 @@ public class XPathModel extends UnitedServerListener {
 	 * returns the category created
 	 */
 	private static HashMap<String, IPath> rtToPortsFile;
-	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";
-	private static final String FILE_SUFFIX = "_FILE";
+	private static final String ATTRIBUTE_SUFFIX = "_ATTRIBUTE";//$NON-NLS-1$
+	private static final String FILE_SUFFIX = "_FILE";//$NON-NLS-1$
 	static {
+		IPath properties = new Path(IJBossToolingConstants.PROPERTIES);
 		rtToPortsFile = new HashMap<String, IPath>();
-		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.32", new Path("properties").append("jboss.32.default.ports.properties"));
-		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.40", new Path("properties").append("jboss.40.default.ports.properties"));
-		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.42", new Path("properties").append("jboss.42.default.ports.properties"));
-		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.50", new Path("properties").append("jboss.50.default.ports.properties"));
-		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.43", new Path("properties").append("jboss.eap.43.default.ports.properties"));
+		rtToPortsFile.put(IConstants.AS_32, properties.append(IJBossToolingConstants.DEFAULT_PROPS_32));
+		rtToPortsFile.put(IConstants.AS_40, properties.append(IJBossToolingConstants.DEFAULT_PROPS_40));
+		rtToPortsFile.put(IConstants.AS_42, properties.append(IJBossToolingConstants.DEFAULT_PROPS_42));
+		rtToPortsFile.put(IConstants.AS_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_50));
+		rtToPortsFile.put(IConstants.EAP_43, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 	}
 
 	private static ArrayList<XPathCategory> loadDefaults(IServer server, String configFolder) {
@@ -288,7 +280,7 @@ public class XPathModel extends UnitedServerListener {
 		} catch (IOException e) {
 			JBossServerCorePlugin.getDefault().getLog().log(
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							"Error loading default xpaths", e));
+							Messages.XPathLoadFailure, e));
 		}
 		return retVal;
 	}
@@ -306,7 +298,7 @@ public class XPathModel extends UnitedServerListener {
 	protected void loadNamespaceMap() {
 		// TODO load from preferenes. 
 		//If nothing's there, load from default
-		IPath p = new Path("properties").append("namespaceMap.properties");
+		IPath p = new Path("properties").append("namespaceMap.properties");//$NON-NLS-1$//$NON-NLS-2$
 		if( p != null ) {
 			URL url = FileLocator.find(JBossServerCorePlugin.getDefault().getBundle(), p, null);
 			if( url != null ) {

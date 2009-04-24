@@ -122,7 +122,7 @@ public class ClientAllRuntimeClasspathProvider
 			if(f.isDirectory()) {
 				String[] files = f.list();
 				for( int i = 0; i < files.length; i++ ) {
-					if( files[i].endsWith(JAR_EXT)) {
+					if( files[i].endsWith(EXT_JAR)) {
 						list.add(getEntry(folder.append(files[i])));
 					}
 				}

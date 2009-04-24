@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
@@ -68,9 +57,9 @@ public class ExtensionManager {
 	public void loadPollers() {
 		pollers = new HashMap<String, ServerStatePollerType>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers");
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
-			pollers.put(cf[i].getAttribute("id"), new ServerStatePollerType(cf[i]));
+			pollers.put(cf[i].getAttribute("id"), new ServerStatePollerType(cf[i])); //$NON-NLS-1$
 		}
 	}
 	
@@ -120,11 +109,11 @@ public class ExtensionManager {
 	public void loadFailureHandler() {
 		pollerFailureHandlers = new HashMap<String, IPollerFailureHandler>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerFailureHandler");
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollerFailureHandler"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
 			try {
-				pollerFailureHandlers.put(cf[i].getAttribute("id"), 
-						(IPollerFailureHandler)cf[i].createExecutableExtension("class"));
+				pollerFailureHandlers.put(cf[i].getAttribute("id"),  //$NON-NLS-1$
+						(IPollerFailureHandler)cf[i].createExecutableExtension("class")); //$NON-NLS-1$
 			} catch( CoreException e ) {
 				// TODO ERROR LOG
 			} catch( ClassCastException cce ) {
@@ -140,7 +129,7 @@ public class ExtensionManager {
 		return c.toArray(new IPollerFailureHandler[c.size()]);
 	}
 	
-	public IPollerFailureHandler getFirstPollFailureHandler(IServerStatePoller poller, String action, List requiredProperties) {
+	public IPollerFailureHandler getFirstPollFailureHandler(IServerStatePoller poller, String action, List<String> requiredProperties) {
 		IPollerFailureHandler[] handlers = getPollerFailureHandlers();
 		for( int i = 0; i < handlers.length; i++ ) {
 			if( handlers[i].accepts(poller, action, requiredProperties)) {
@@ -154,10 +143,10 @@ public class ExtensionManager {
 	public IJBossServerPublisher getPublisher(IServer server, IModule[] module) {
 		if( publishers == null ) 
 			loadPublishers();
-		Iterator i = publishers.iterator();
+		Iterator<PublisherWrapper> i = publishers.iterator();
 		PublisherWrapper wrapper;
 		while(i.hasNext()) {
-			wrapper = (PublisherWrapper)i.next();
+			wrapper = i.next();
 			if( wrapper.publisher.accepts(server, module))
 				return wrapper.getNewInstance();
 		}
@@ -180,12 +169,12 @@ public class ExtensionManager {
 	private void loadPublishers() {
 		ArrayList<PublisherWrapper> publishers = new ArrayList<PublisherWrapper>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishers");
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishers"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
 			try {
-				Object clazz = cf[i].createExecutableExtension("class");
-				String priority = cf[i].getAttribute("priority");
-				String zipDelegate = cf[i].getAttribute("zipDelegate");
+				Object clazz = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
+				String priority = cf[i].getAttribute("priority"); //$NON-NLS-1$
+				String zipDelegate = cf[i].getAttribute("zipDelegate"); //$NON-NLS-1$
 				int p = -1; 
 				try {
 					p = Integer.parseInt(priority);
@@ -217,7 +206,7 @@ public class ExtensionManager {
 		}
 		private IJBossServerPublisher getNewInstance() {
 			try {
-				Object clazz = element.createExecutableExtension("class");
+				Object clazz = element.createExecutableExtension("class"); //$NON-NLS-1$
 				return (IJBossServerPublisher)clazz;
 			} catch( CoreException ce ) {
 			}

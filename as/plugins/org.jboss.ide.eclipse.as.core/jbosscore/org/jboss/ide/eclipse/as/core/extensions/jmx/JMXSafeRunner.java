@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.jmx;
 
 import java.util.Properties;
@@ -10,6 +20,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
@@ -53,7 +64,7 @@ public class JMXSafeRunner {
 			JMXUtil.setCredentials(s,user,pass);
 			Properties p = JMXUtil.getDefaultProperties(s);
 			ic = new InitialContext(p);
-			Object obj = ic.lookup("jmx/invoker/RMIAdaptor"); //$NON-NLS-1$
+			Object obj = ic.lookup(IJBossRuntimeConstants.RMIAdaptor);
 			ic.close();
 			if (obj instanceof MBeanServerConnection) {
 				MBeanServerConnection connection = (MBeanServerConnection) obj;

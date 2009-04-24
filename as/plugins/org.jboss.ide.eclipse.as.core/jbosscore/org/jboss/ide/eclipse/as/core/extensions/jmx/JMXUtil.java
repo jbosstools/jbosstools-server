@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.jmx;
 
 import java.lang.reflect.Constructor;
@@ -28,6 +17,7 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -58,10 +48,10 @@ public class JMXUtil {
 			// get our methods
 			Class simplePrincipal = Thread.currentThread()
 					.getContextClassLoader().loadClass(
-							"org.jboss.security.SimplePrincipal");
+							IJBossServerConstants.CLASS_SIMPLE_PRINCIPAL);
 			Class securityAssoc = Thread.currentThread()
 					.getContextClassLoader().loadClass(
-							"org.jboss.security.SecurityAssociation");
+							IJBossServerConstants.CLASS_SECURITY_ASSOCIATION);
 			securityAssoc.getMethods(); // force-init the methods since the
 			// class hasn't been initialized yet.
 
@@ -71,14 +61,16 @@ public class JMXUtil {
 					.newInstance(new Object[] { principal });
 
 			// set the principal
-			Method setPrincipalMethod = securityAssoc.getMethod("setPrincipal",
+			Method setPrincipalMethod = securityAssoc.getMethod(
+					IJBossServerConstants.METHOD_SET_PRINCIPAL,
 					new Class[] { Principal.class });
 			setPrincipalMethod.invoke(null,
 					new Object[] { newPrincipalInstance });
 
 			// set the credential
 			Method setCredentialMethod = securityAssoc.getMethod(
-					"setCredential", new Class[] { Object.class });
+					IJBossServerConstants.METHOD_SET_CREDENTIAL, 
+					new Class[] { Object.class });
 			setCredentialMethod.invoke(null, new Object[] { credential });
 		} catch (ClassNotFoundException e) {
 			temp = e;
@@ -118,13 +110,13 @@ public class JMXUtil {
 		if( jbs != null ) {
 			
 			int port = jbs.getJNDIPort();
-			props.put("java.naming.factory.initial",
-					"org.jnp.interfaces.NamingContextFactory");
-			props.put("java.naming.factory.url.pkgs",
-					"org.jboss.naming:org.jnp.interfaces");
-			props.put("java.naming.provider.url", "jnp://" + jbs.getHost() + ":"
-					+ port);
-			props.put("jnp.disableDiscovery", "true");
+			props.put(IJBossServerConstants.NAMING_FACTORY_KEY,
+					IJBossServerConstants.NAMING_FACTORY_VALUE);
+			props.put(IJBossServerConstants.NAMING_FACTORY_PKGS,
+					IJBossServerConstants.NAMING_FACTORY_INTERFACES);
+			props.put(IJBossServerConstants.NAMING_FACTORY_PROVIDER_URL, 
+					"jnp://" + jbs.getHost() + ":" + port); //$NON-NLS-1$ //$NON-NLS-2$
+			props.put(IJBossServerConstants.JNP_DISABLE_DISCOVERY, new Boolean(true).booleanValue());
 		} 
 		return props;
 	}

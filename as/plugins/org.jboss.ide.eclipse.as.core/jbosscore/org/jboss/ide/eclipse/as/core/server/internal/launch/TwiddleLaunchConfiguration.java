@@ -1,24 +1,13 @@
-/**
- * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
@@ -35,13 +24,16 @@ import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
-	public static final String TWIDDLE_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.twiddleConfiguration";
+	public static final String TWIDDLE_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"; //$NON-NLS-1$
 
-	protected static final String TWIDDLE_MAIN_TYPE = "org.jboss.console.twiddle.Twiddle";
-	protected static final String TWIDDLE_JAR_LOC = "bin" + File.separator + "twiddle.jar";
+	protected static final String TWIDDLE_MAIN_TYPE = IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE;
+	protected static final String TWIDDLE_JAR_LOC =
+		IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.TWIDDLE_JAR;
 
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
 		return createLaunchConfiguration(server, getDefaultArgs(server));
@@ -60,15 +52,15 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, TWIDDLE_MAIN_TYPE);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		wc.setAttribute(TwiddleLaunchConfiguration.SERVER_ID, server.getId());
 
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		addCPEntry(classpath, jbs, TWIDDLE_JAR_LOC);
 		// Twiddle requires more classes and I'm too lazy to actually figure OUT which ones it needs.
-		addDirectory (serverHome, classpath, "lib");
-		addDirectory (serverHome, classpath, "lib" + File.separator + "endorsed");
-		addDirectory (serverHome, classpath, "client");
+		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.LIB);
+		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.LIB + File.separator + IJBossRuntimeResourceConstants.ENDORSED);
+		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
 		addJREEntry(classpath, jbrt.getVM());
 		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
 		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
@@ -79,13 +71,15 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 	
 	public static String getDefaultArgs(IServer server) throws CoreException {
+		IJBossRuntimeConstants c = new IJBossRuntimeConstants() { };
 		JBossServer jbs = findJBossServer(server.getId());
-		String twiddleArgs = "-s " + jbs.getHost() + ":" 
-				+ jbs.getJNDIPort() +  " -a jmx/rmi/RMIAdaptor ";
+		String twiddleArgs = c.SHUTDOWN_SERVER_ARG + c.SPACE + jbs.getHost() + ":"  //$NON-NLS-1$
+				+ jbs.getJNDIPort() +  c.SPACE + c.SHUTDOWN_ADAPTER_ARG 
+				+ c.SPACE + c.RMIAdaptor + c.SPACE;
 		if( jbs.getUsername() != null ) 
-			twiddleArgs += "-u " + jbs.getUsername() + " ";
+			twiddleArgs += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
 		if( jbs.getPassword() != null ) 
-			twiddleArgs += "-p " + jbs.getPassword() + " ";
+			twiddleArgs += c.SHUTDOWN_PASS_ARG + c.SPACE + jbs.getPassword() + c.SPACE;
 		return twiddleArgs;
 	}
 

@@ -1,24 +1,13 @@
-/**
-  * JBoss, a Division of Red Hat
- * Copyright 2006, Red Hat Middleware, LLC, and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
-* This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
@@ -31,11 +20,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -57,7 +49,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 	public boolean accepts(IServer server, IModule[] module) {
 		if( module != null && module.length > 0 
 				&& module[module.length-1] != null  
-				&& module[module.length-1].getModuleType().getId().equals("jboss.singlefile"))
+				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE))
 			return true;
 		return false;
 	}
@@ -99,20 +91,22 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 				destFile.setLastModified(new Date().getTime());
 			if( l.errorFound || !success ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
-				Exception e = l.e != null ? l.e : new Exception("Move from " + tempDestFile + " to " + destFile + " failed.");
+				Exception e = l.e != null ? l.e : new Exception(
+						NLS.bind(Messages.CopyFileError, tempDestFile, destFile));
 				return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_FAIL, 
-						"The module " + module.getName() + " cannot be published.", e);
+						NLS.bind(Messages.CouldNotPublishModule, module.getName()), e);
 			}
 		} else {
 			// deleted module. o noes. Ignore it. We can't re-publish it, so just ignore it.
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_PUBLISH_MNF, 
-					"The module " + module.getName() + " cannot be published because it cannot be located. (" + module.getName() + ")", null);
+					NLS.bind(Messages.CouldNotPublishModule, module.getName()), null);
 			return status;
 		}
 		
 		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
-				IEventCodes.SINGLE_FILE_PUBLISH_SUCCESS, "Module " + module.getName() + " copied.", null);
+				IEventCodes.SINGLE_FILE_PUBLISH_SUCCESS, 
+				NLS.bind(Messages.ModulePublished,module.getName()), null);
 		return status;
 	}
 
@@ -128,17 +122,17 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 			if( l.errorFound ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
 				return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_FAIL,
-						"Unable to delete module " + module.getName() + " from server.", l.e);
+						NLS.bind(Messages.DeleteModuleFail, module.getName()), l.e);
 			}
 		} else {
 			// deleted module. o noes. Ignore it. 
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			Status status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_MNF, 
-					"The module cannot be removed because it cannot be located. (" + module.getName() + ")", null);
+					NLS.bind(Messages.DeleteModuleFail, module.getName()), null);
 			return status;
 		}
 		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SINGLE_FILE_UNPUBLISH_SUCCESS,
-				"Module " + module.getName() + " removed.", null);
+				NLS.bind(Messages.ModuleDeleted, module.getName()), null);
 		return status;
 	}
 
