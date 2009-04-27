@@ -18,7 +18,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.launching,
  org.eclipse.jst.jee;bundle-version="1.0.100",
  org.eclipse.jst.server.core;bundle-version="1.1.0",
- org.jboss.tools.jmx.core.test
+ org.jboss.tools.jmx.core.test,
+ org.jboss.ide.eclipse.as.ui;bundle-version="1.0.0",
+ org.eclipse.ui.navigator;bundle-version="3.3.101"
 Eclipse-LazyStart: true
 Bundle-ClassPath: jbossastest.jar
 Bundle-Vendor: %Bundle-Vendor.0
