@@ -41,12 +41,19 @@ public abstract class AbstractDeploymentTest extends TestCase {
 	protected IRuntime runtime;
 	protected IServer server;
 	protected String deployLocation;
+	protected String tempDeployLocation;
 	
 	public AbstractDeploymentTest(String[] projectNames, String[] testProperties) {
 		try {
 			this.sourceProjectName = projectNames;
 			this.testProperties = testProperties;
-			this.deployLocation = getFileLocation("/testOutputs").getAbsolutePath();
+			File f = getFileLocation("/testOutputs");
+			File fDeploy = new File(f, "1");
+			File fTmpDeploy = new File(f, "2");
+			fDeploy.mkdir();
+			fTmpDeploy.mkdir();
+			deployLocation = fDeploy.getAbsolutePath();
+			tempDeployLocation = fDeploy.getAbsolutePath();
 			this.provider = new TestProjectProvider[sourceProjectName.length];
 			this.workspaceProject = new IProject[sourceProjectName.length];
 		} catch( CoreException ce ) {
@@ -157,7 +164,9 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer("testServer", null, null);
 		swc.setServerConfiguration(null);
 		swc.setName("testServer");
+		swc.setRuntime(runtime);
 		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
+		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
 		server = swc.save(true, null);
 	}
 	
