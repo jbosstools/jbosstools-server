@@ -278,7 +278,6 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 				try {
 					if( viewer != null && !viewer.getControl().isDisposed()) {
 						viewer.update(server, null);
-						ServerDecorator.getDefault().redecorate(server);
 					}
 				} catch (Exception e) {
 					// ignore
@@ -300,7 +299,6 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 							ISelection sel = viewer.getSelection();
 							viewer.setSelection(sel);
 						}
-						ServerDecorator.getDefault().redecorate(server);
 					}
 				} catch (Exception e) {
 					// ignore
@@ -344,7 +342,6 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 						for (int i = 0; i < size; i++) {
 							IServer server = ServerCore.findServer(servers[i]);
 							if (server != null ) {
-								ServerDecorator.animate();
 								updateServerLabel(server);
 							}
 						}

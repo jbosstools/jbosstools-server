@@ -303,27 +303,6 @@
       </view>
    </extension>
    
-   <extension point="org.eclipse.ui.decorators">
-      <decorator
-            class="org.jboss.tools.as.wst.server.ui.xpl.ServerDecorator"
-            icon="icons/cview16/servers_view.gif"
-            id="org.jboss.tools.as.wst.server.ui.navigatorDecorator"
-            label="Server State Decorator"
-            lightweight="true"
-            location="BOTTOM_RIGHT">
-         <enablement>
-            <or>
-               <objectClass
-                     name="org.eclipse.wst.server.core.IServer">
-               </objectClass>
-               <objectClass
-                     name="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
-               </objectClass>
-            </or>
-         </enablement>
-      </decorator>
-   </extension>
-   
 	<extension
       point="org.eclipse.ui.navigator.navigatorContent">
 	   <navigatorContent
