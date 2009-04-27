@@ -54,7 +54,6 @@ public class XPathModel extends UnitedServerListener {
 	private static final String DELIMITER = ","; //$NON-NLS-1$
 	private static final String CATEGORY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	 //$NON-NLS-1$
-	private static final IPath STATE_LOCATION = JBossServerCorePlugin.getDefault().getStateLocation();
 	
 	/* Singleton */
 	private static XPathModel instance;
@@ -160,7 +159,7 @@ public class XPathModel extends UnitedServerListener {
 	 * Loading and saving is below
 	 */
 	protected File getFile(IServer server) {
-		return STATE_LOCATION.append(server.getId().replace(' ', '_')).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
+		return JBossServerCorePlugin.getServerStateLocation(server).append(IJBossToolingConstants.XPATH_FILE_NAME).toFile();
 	}
 	
 	public void save(IServer server) {
