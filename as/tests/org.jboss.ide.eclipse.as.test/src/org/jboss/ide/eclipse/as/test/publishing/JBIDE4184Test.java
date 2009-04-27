@@ -12,6 +12,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.server.StartupShutdownTest;
@@ -22,7 +23,7 @@ public class JBIDE4184Test extends TestCase {
 	public void setUp() {
 		try {
 			tmpPath = new Path(ASTest.JBOSS_AS_42_HOME);
-			tmpPath = tmpPath.append("server").append("default").append("tmp").append(IDeployableServer.JBOSSTOOLS_TMP);
+			tmpPath = tmpPath.append("server").append("default").append("tmp").append(IJBossServerConstants.JBOSSTOOLS_TMP);
 			if( tmpPath.toFile().exists())
 				FileUtil.safeDelete(tmpPath.toFile());
 			assertFalse(tmpPath.toFile().exists());
