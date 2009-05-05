@@ -471,7 +471,7 @@
                 <para>The goal here is to get an end result where the XPath matches up with a
                     necessary property. With that in mind, let&apos;s look how it works. If the
                     property you want to reach is the value of the <emphasis>name</emphasis>
-                    attribute in the element <emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
+                    attribute in the element <code>&lt;mbean&gt;</code>, then your <emphasis>
                         <property>XPath Patten</property>
                     </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
                         <property>Attribute Name</property>
@@ -509,7 +509,7 @@
                 </tip>
 
                 <para>Then, on the other hand, if your desired field is the text of an element
-                        <emphasis>&lt;description&gt;</emphasis>, your <emphasis>
+                        <code>&lt;description&gt;</code>, your <emphasis>
                         <property>XPath Patten</property>
                     </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
                         <property>Attribute Name</property>
