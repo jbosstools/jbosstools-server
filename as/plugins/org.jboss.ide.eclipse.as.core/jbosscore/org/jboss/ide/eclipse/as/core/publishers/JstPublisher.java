@@ -124,15 +124,6 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		else
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
 		
-		if( list.size() > 0 ) {
-			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
-					NLS.bind(Messages.FullPublishFail, module.getName()), null);
-			for( int i = 0; i < list.size(); i++ )
-				ms.add(list.get(i));
-			return ms;
-		}
-
-		
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {
 			public boolean accept(File pathname) {
@@ -142,6 +133,16 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			}
 		};
 		FileUtil.touch(filter, deployPath.toFile(), true);
+
+		if( list.size() > 0 ) {
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
+					NLS.bind(Messages.FullPublishFail, module.getName()), null);
+			for( int i = 0; i < list.size(); i++ )
+				ms.add(list.get(i));
+			return ms;
+		}
+
+		
 		publishState = IServer.PUBLISH_STATE_NONE;
 		
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
