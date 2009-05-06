@@ -130,14 +130,6 @@ public class JstPublisher implements IJBossServerPublisher {
 		else
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
 		
-		if( list.size() > 0 ) {
-			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
-					"Full Publish Failed for module " + module.getName(), null);
-			for( int i = 0; i < list.size(); i++ )
-				ms.add(list.get(i));
-			return ms;
-		}
-
 		
 		// adjust timestamps
 		FileFilter filter = new FileFilter() {
@@ -148,6 +140,17 @@ public class JstPublisher implements IJBossServerPublisher {
 			}
 		};
 		FileUtil.touch(filter, deployPath.toFile(), true);
+
+
+		if( list.size() > 0 ) {
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
+					"Full Publish Failed for module " + module.getName(), null);
+			for( int i = 0; i < list.size(); i++ )
+				ms.add(list.get(i));
+			return ms;
+		}
+
+
 		publishState = IServer.PUBLISH_STATE_NONE;
 		
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
