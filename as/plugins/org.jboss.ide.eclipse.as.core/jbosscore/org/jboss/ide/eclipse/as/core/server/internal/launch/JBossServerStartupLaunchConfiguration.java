@@ -125,18 +125,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args, 
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
-				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);
-
-		if( jbs.isMetadataConfig()) {
-			try {
-				IPath dest = JBossServerCorePlugin.getServerStateLocation(jbs.getServer());
-				dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
-				args = ArgsUtil.setArg(args, null, 
-						IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
-						dest.toFile().toURL().toString());
-			} catch( MalformedURLException murle) {}
-		}
-		
+				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);		
 		
 		vmArgs= ArgsUtil.setArg(vmArgs, null, 
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,

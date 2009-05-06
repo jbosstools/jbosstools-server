@@ -144,16 +144,10 @@ public class JBossServer extends DeployableServer
 			return JBossServerCorePlugin.getServerStateLocation(getServer()).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
-			if( !getAttribute(USE_METADATA_CONFIG, false)) {
-				String config = jbsrt.getJBossConfiguration();
-				IPath p = new Path(IJBossServerConstants.SERVER).append(config)
-					.append(IJBossServerConstants.DEPLOY).makeRelative();
-				return ServerUtil.makeGlobal(jbsrt, p).toString();
-			} else {
-				IPath dest = JBossServerCorePlugin.getServerStateLocation(getServer());
-				dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
-				return dest.toOSString();
-			}
+			String config = jbsrt.getJBossConfiguration();
+			IPath p = new Path(IJBossServerConstants.SERVER).append(config)
+				.append(IJBossServerConstants.DEPLOY).makeRelative();
+			return ServerUtil.makeGlobal(jbsrt, p).toString();
 		}
 		return null;
 	}
@@ -172,16 +166,11 @@ public class JBossServer extends DeployableServer
 			return JBossServerCorePlugin.getServerStateLocation(getServer()).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
-			if( !getAttribute(USE_METADATA_CONFIG, false)) {
-				String config = jbsrt.getJBossConfiguration();
-				IPath p = new Path(IJBossServerConstants.SERVER)
-					.append(config).append(IJBossServerConstants.TMP)
-					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
-				return ServerUtil.makeGlobal(jbsrt, p).toString();
-			} else {
-				return JBossServerCorePlugin.getServerStateLocation(getServer()).
-					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-			}
+			String config = jbsrt.getJBossConfiguration();
+			IPath p = new Path(IJBossServerConstants.SERVER)
+				.append(config).append(IJBossServerConstants.TMP)
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+			return ServerUtil.makeGlobal(jbsrt, p).toString();
 		}
 		return null;
 	}
@@ -210,10 +199,6 @@ public class JBossServer extends DeployableServer
 		} catch( CoreException ce ) {
 		}
 		return null;
-	}
-
-	public boolean isMetadataConfig() {
-		return getAttribute(USE_METADATA_CONFIG, false);
 	}
 	
 	protected String getRuntimeConfigDirectory() {

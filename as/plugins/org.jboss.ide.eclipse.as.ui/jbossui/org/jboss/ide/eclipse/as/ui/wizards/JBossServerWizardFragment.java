@@ -30,14 +30,11 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -47,11 +44,9 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -74,8 +69,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private Composite nameComposite;
 	private Group runtimeGroup;
 	private Text nameText;
-	private Button cloneButton;
-	private boolean shouldClone;
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		
@@ -231,21 +224,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configValLabel = new Label(runtimeGroup, SWT.NONE);
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		configValLabel.setLayoutData(d);
-		
-		cloneButton = new Button(runtimeGroup, SWT.CHECK);
-		cloneButton.setText(Messages.swf_CloneConfiguration);
-		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
-		d.horizontalSpan = 2;
-		cloneButton.setLayoutData(d);
-		
-		cloneButton.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-			public void widgetSelected(SelectionEvent e) {
-				shouldClone = cloneButton.getSelection();
-			} 
-		});
 	}
 	
 	private void updateErrorMessage() {
@@ -286,7 +264,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		jbs.setUsername("admin");
 		jbs.setPassword("admin");
-		((ServerWorkingCopy)serverWC).setAttribute(IJBossServerConstants.USE_METADATA_CONFIG, shouldClone);
 		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setName(name);
@@ -295,8 +272,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IServer saved = serverWC.save(false, new NullProgressMonitor());
 		getTaskModel().putObject(TaskModel.TASK_SERVER, saved);
 		ServerUtil.createStandardFolders(saved);
-		if( shouldClone)
-			ServerUtil.cloneConfigToMetadata(saved, monitor);
 	}
 	
 	private IJBossServerRuntime getRuntime() {

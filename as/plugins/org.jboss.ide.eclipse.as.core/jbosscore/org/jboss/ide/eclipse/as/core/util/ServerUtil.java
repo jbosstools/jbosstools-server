@@ -52,28 +52,28 @@ public class ServerUtil {
 		return p;
 	}
 	
-	public static void cloneConfigToMetadata(IServer server, IProgressMonitor monitor) {
-		IPath dest = JBossServerCorePlugin.getServerStateLocation(server);
-		dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
-		IRuntime rt = server.getRuntime();
-		IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		IPath src = rt.getLocation().append(IJBossServerConstants.SERVER).append(jbsrt.getJBossConfiguration());
-		dest.toFile().mkdirs();
-		
-		File[] subFiles = src.toFile().listFiles();
-		dest.toFile().mkdirs();
-		String[] excluded = IJBossServerConstants.JBOSS_TEMPORARY_FOLDERS;
-		for (int i = 0; i < subFiles.length; i++) {
-			boolean found = false;
-			for( int j = 0; j < excluded.length; j++)
-				if( subFiles[i].getName().equals(excluded[j]))
-					found = true;
-			if( !found ) {
-				File newDest = new File(dest.toFile(), subFiles[i].getName());
-				FileUtil.fileSafeCopy(subFiles[i], newDest, null);
-			}
-		}
-	}
+//	public static void cloneConfigToMetadata(IServer server, IProgressMonitor monitor) {
+//		IPath dest = JBossServerCorePlugin.getServerStateLocation(server);
+//		dest = dest.append(IJBossServerConstants.CONFIG_IN_METADATA);
+//		IRuntime rt = server.getRuntime();
+//		IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+//		IPath src = rt.getLocation().append(IJBossServerConstants.SERVER).append(jbsrt.getJBossConfiguration());
+//		dest.toFile().mkdirs();
+//		
+//		File[] subFiles = src.toFile().listFiles();
+//		dest.toFile().mkdirs();
+//		String[] excluded = IJBossServerConstants.JBOSS_TEMPORARY_FOLDERS;
+//		for (int i = 0; i < subFiles.length; i++) {
+//			boolean found = false;
+//			for( int j = 0; j < excluded.length; j++)
+//				if( subFiles[i].getName().equals(excluded[j]))
+//					found = true;
+//			if( !found ) {
+//				File newDest = new File(dest.toFile(), subFiles[i].getName());
+//				FileUtil.fileSafeCopy(subFiles[i], newDest, null);
+//			}
+//		}
+//	}
 	
 	public static void createStandardFolders(IServer server) {
 		// create metadata area

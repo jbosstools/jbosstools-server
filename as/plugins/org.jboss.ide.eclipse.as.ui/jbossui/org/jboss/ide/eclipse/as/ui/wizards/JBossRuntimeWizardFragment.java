@@ -66,6 +66,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
@@ -89,7 +90,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private int jreComboIndex;
 	private Button homeDirButton, jreButton;
 	private Composite nameComposite, homeDirComposite, jreComposite,
-			configComposite;
+			configComposite, cloneComposite;
 	private String name, homeDir, config;
 
 	// jre fields
@@ -112,7 +113,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		createHomeComposite(main);
 		createJREComposite(main);
 		createConfigurationComposite(main);
-
+		createCloneComposite(main);
 		fillWidgets();
 
 		// make modifications to parent
@@ -141,15 +142,15 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				TaskModel.TASK_RUNTIME);
 		String id = rt.getRuntimeType().getId();
 		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		if (id.equals("org.jboss.ide.eclipse.as.runtime.32"))
+		if (id.equals(IJBossToolingConstants.AS_32))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
-		else if (id.equals("org.jboss.ide.eclipse.as.runtime.40"))
+		else if (id.equals(IJBossToolingConstants.AS_40))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
-		else if (id.equals("org.jboss.ide.eclipse.as.runtime.42"))
+		else if (id.equals(IJBossToolingConstants.AS_42))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		else if (id.equals("org.jboss.ide.eclipse.as.runtime.50"))
+		else if (id.equals(IJBossToolingConstants.AS_50))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) 
+		else if (id.equals(IJBossToolingConstants.EAP_43))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
@@ -160,8 +161,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IJBossServerRuntime rt = getRuntime();
 		if (rt != null) {
 			originalName = rt.getRuntime().getName();
-			nameText.setText(rt.getRuntime().getName());
-			name = rt.getRuntime().getName();
+			nameText.setText(originalName);
+			name = originalName;
 			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
 			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
 			homeDir = (value != null && value.length() != 0) ? value : rt.getRuntime().getLocation().toOSString();
@@ -422,6 +423,46 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		});
 
+	}
+	
+	private void createCloneComposite(Composite main) {
+		IJBossServerRuntime rt = getRuntime();
+		if (rt != null) {
+
+			cloneComposite = new Composite(main, SWT.NONE);
+			FormData cData = new FormData();
+			cData.left = new FormAttachment(0, 5);
+			cData.right = new FormAttachment(100, -5);
+			cData.top = new FormAttachment(configComposite, 5);
+			cData.bottom = new FormAttachment(100, -5);
+			cloneComposite.setLayoutData(cData);
+
+			cloneComposite.setLayout(new FormLayout());
+			Button cloneButton = new Button(cloneComposite, SWT.CHECK);
+			cloneButton.setSelection(false);
+			cloneButton.setText("Clone this configuration");
+			cData = new FormData();
+			cData.left = new FormAttachment(0, 5);
+			cData.right = new FormAttachment(100, -5);
+			cData.top = new FormAttachment(0, 5);
+			cData.bottom = new FormAttachment(100, -5);
+			cloneButton.setLayoutData(cData);
+			
+			Button intoConfigButton = new Button(cloneComposite, SWT.RADIO);
+			Button intoLocationButton = new Button(cloneComposite, SWT.RADIO);
+			Text newConfigName = new Text(cloneComposite, SWT.DEFAULT);
+			Text newLocation = new Text(cloneComposite, SWT.DEFAULT);
+			
+			
+			intoConfigButton.setText("new configuration name");
+			intoLocationButton.setText("arbitrary location");
+			
+			
+			
+			
+		} else {
+			// TODO Display something useful in edit-runtime wizard
+		}
 	}
 
 	private void updatePage() {

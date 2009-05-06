@@ -24,12 +24,17 @@ public interface IJBossServerRuntime {
 	public static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID"; //$NON-NLS-1$
 	
 	public static String PROPERTY_CONFIGURATION_NAME = "org.jboss.ide.eclipse.as.core.runtime.configurationName"; //$NON-NLS-1$
-
+	public static String PROPERTY_CONFIG_LOCATION="org.jboss.ide.eclipse.as.core.runtime.configurationLocation"; //$NON-NLS-1$
+	
 	public IRuntime getRuntime();
 	public IVMInstall getVM();
 	public void setVM(IVMInstall install);
+	
 	public String getJBossConfiguration();
 	public void setJBossConfiguration(String config);
+	public String getConfigLocation();
+	public void setConfigLocation(String configLocation);
+	
 	
 	// for startup
 	public String getDefaultRunArgs();

@@ -148,4 +148,12 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	protected String getVMInstallTypeId() {
 		return getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
 	}
+
+	public String getConfigLocation() {
+		return getAttribute(PROPERTY_CONFIG_LOCATION, (String)null);
+	}
+
+	public void setConfigLocation(String configLocation) {
+		setAttribute(PROPERTY_CONFIG_LOCATION, configLocation);
+	}
 }
