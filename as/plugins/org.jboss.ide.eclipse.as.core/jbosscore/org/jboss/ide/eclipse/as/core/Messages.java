@@ -19,6 +19,9 @@ public class Messages {
 	public static String jboss;
 	public static String server;
 	public static String runtime;
+	public static String serverVersionName;
+	public static String serverName;
+	public static String serverCountName;
 	public static String runModeNotSupported;
 	
 	public static String loadXMLDocumentFailed;

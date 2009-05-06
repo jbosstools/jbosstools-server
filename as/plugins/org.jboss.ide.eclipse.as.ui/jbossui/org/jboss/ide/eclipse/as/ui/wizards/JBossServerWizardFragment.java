@@ -60,15 +60,12 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  */
 public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private String name;
-	private Label nameLabel, serverExplanationLabel, 
+	private Label serverExplanationLabel, 
 					runtimeExplanationLabel; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
 	private Label homeValLabel, jreValLabel, configValLabel;
 	
-	private Composite nameComposite;
 	private Group runtimeGroup;
-	private Text nameText;
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		
@@ -76,7 +73,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		main.setLayout(new FormLayout());
 		
 		createExplanationLabel(main);
-		createNameComposite(main);
 		createRuntimeGroup(main);
 
 		// make modifications to parent
@@ -122,70 +118,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		serverExplanationLabel.setText(Messages.swf_Explanation);
 	}
 
-	private void createNameComposite(Composite main) {
-		// Create our name composite
-		nameComposite = new Composite(main, SWT.NONE);
-		
-		FormData cData = new FormData();
-		cData.left = new FormAttachment(0,5);
-		cData.right = new FormAttachment(100,-5);
-		cData.top = new FormAttachment(serverExplanationLabel, 10);
-		nameComposite.setLayoutData(cData);
-		
-		nameComposite.setLayout(new FormLayout());
-
-		
-		// create internal widgets
-		nameLabel = new Label(nameComposite, SWT.None);
-		nameLabel.setText(Messages.wf_NameLabel);
-		
-		nameText = new Text(nameComposite, SWT.BORDER);
-		name = getDefaultNameText();
-		nameText.setText(name);
-		nameText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				name = nameText.getText();
-				updateErrorMessage();
-			} 
-		});
-		
-		// organize widgets inside composite
-		FormData nameLabelData = new FormData();
-		nameLabelData.left = new FormAttachment(0,0);
-		nameLabel.setLayoutData(nameLabelData);
-		
-		FormData nameTextData = new FormData();
-		nameTextData.left = new FormAttachment(0, 5);
-		nameTextData.right = new FormAttachment(100, -5);
-		nameTextData.top = new FormAttachment(nameLabel, 5);
-		nameText.setLayoutData(nameTextData);
-	}
-	
-	private String getDefaultNameText() {
-		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		String name = rt.getName();
-		String base = null;
-		if( name == null || name.equals(""))
-			base = Messages.swf_BaseName.replace(Messages.wf_BaseNameVersionReplacement, rt.getRuntimeType().getVersion());
-		else if( name.endsWith(org.jboss.ide.eclipse.as.core.Messages.runtime)) 
-			base = name.substring(0, name.indexOf(org.jboss.ide.eclipse.as.core.Messages.runtime)) + org.jboss.ide.eclipse.as.core.Messages.server; 
-		else 
-			base = name + " " + org.jboss.ide.eclipse.as.core.Messages.server;
-		
-		if( findServer(base) == null ) return base;
-		int i = 1;
-		while( findServer(base + " (" + i + ")") != null ) 
-			i++;
-		return base + " (" + i + ")";
-	}
-	private IServer findServer(String name) {
-		IServer[] servers = ServerCore.getServers();
-		for( int i = 0; i < servers.length; i++ ) {
-			if (name.trim().equals(servers[i].getName()))
-				return servers[i];
-		}
-		return null;
-	}
 
 	private void createRuntimeGroup(Composite main) {
 		
@@ -194,7 +126,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		FormData groupData = new FormData();
 		groupData.left = new FormAttachment(0,5);
 		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(nameComposite, 5);
+		groupData.top = new FormAttachment(serverExplanationLabel, 5);
 		runtimeGroup.setLayoutData(groupData);
 
 		runtimeGroup.setLayout(new GridLayout(2, false));
@@ -236,8 +168,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getErrorString() {
-		if( findServer(name) != null ) 
-			return Messages.swf_NameInUse;
 		return null;
 	}
 		
@@ -245,8 +175,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 	public void enter() {
 		if(homeValLabel !=null && !homeValLabel.isDisposed()) {
 			IJBossServerRuntime srt = getRuntime();
-			name = name == null ? getDefaultNameText() : name;
-			nameText.setText(name);
 			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 			configValLabel.setText(srt.getJBossConfiguration());
 			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
@@ -260,13 +188,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		name = name == null ? getDefaultNameText() : name;
 		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		jbs.setUsername("admin");
 		jbs.setPassword("admin");
 		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
-		serverWC.setName(name);
 		serverWC.setServerConfiguration(null); // no inside jboss folder
 		
 		IServer saved = serverWC.save(false, new NullProgressMonitor());

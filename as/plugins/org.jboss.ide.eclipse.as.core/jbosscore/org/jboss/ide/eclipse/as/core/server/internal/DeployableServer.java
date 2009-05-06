@@ -24,7 +24,6 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
@@ -40,6 +39,10 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public void setDefaults(IProgressMonitor monitor) {
+		IRuntime rt = getServer().getRuntime();
+		if( rt != null ) {
+			getServerWorkingCopy().setName(ServerUtil.getDefaultServerName(rt));
+		}
 	}
 	
 	public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {

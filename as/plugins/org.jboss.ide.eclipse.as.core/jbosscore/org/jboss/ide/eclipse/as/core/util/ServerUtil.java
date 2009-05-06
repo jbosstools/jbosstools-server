@@ -13,12 +13,14 @@ package org.jboss.ide.eclipse.as.core.util;
 import java.io.File;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -101,4 +103,31 @@ public class ServerUtil {
 			newTempAsGlobal.toFile().mkdirs();
 		}
 	}
+	
+	public static IServer findServer(String name) {
+		IServer[] servers = ServerCore.getServers();
+		for( int i = 0; i < servers.length; i++ ) {
+			if (name.trim().equals(servers[i].getName()))
+				return servers[i];
+		}
+		return null;
+	}
+	
+	public static String getDefaultServerName(IRuntime rt) {
+		String runtimeName = rt.getName();
+		String base = null;
+		if( runtimeName == null || runtimeName.equals("")) //$NON-NLS-1$
+			base = NLS.bind(Messages.serverVersionName, rt.getRuntimeType().getVersion());
+		else 
+			base = NLS.bind(Messages.serverName, runtimeName);
+		
+		if( ServerUtil.findServer(base) == null ) return base;
+		int i = 1;
+		while( ServerUtil.findServer(
+				NLS.bind(Messages.serverCountName, base, i)) != null )
+			i++;
+		return NLS.bind(Messages.serverCountName, base, i);
+	}
+	
+
 }
