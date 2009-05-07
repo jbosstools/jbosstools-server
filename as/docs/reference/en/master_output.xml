@@ -35,12 +35,12 @@
          <pubdate>April 2008</pubdate>
 	                       <copyright>
 			             <year>2007</year>
-							<year><diffmk:wrapper diffmk:change="changed">2009</diffmk:wrapper></year>
-	                           <holder><diffmk:wrapper diffmk:change="changed">JBoss, a division of Red Hat</diffmk:wrapper></holder>
+							<year>2009</year>
+	                           <holder>JBoss, a division of Red Hat</holder>
 	                       </copyright>
-          <releaseinfo><diffmk:wrapper diffmk:change="changed">
+          <releaseinfo>
             Version: 2.0.0.GA
-          </diffmk:wrapper></releaseinfo>
+          </releaseinfo>
 <abstract>
    <title></title>
        <para>
@@ -77,11 +77,9 @@
         <property moreinfo="none">stop</property>
       </emphasis> it or <emphasis>
         <property moreinfo="none">restart</property>
-      </emphasis> it, <emphasis>
+      </emphasis><diffmk:wrapper diffmk:change="changed"> it and  </diffmk:wrapper><emphasis>
         <property moreinfo="none">publish</property>
-      </emphasis> to the server, <emphasis>
-        <property moreinfo="none">clean</property>
-      </emphasis> the server.</para>
+      </emphasis><diffmk:wrapper diffmk:change="added"> to the server.</diffmk:wrapper></para>
 
     <figure float="0">
       <title>JBoss Server Toolbar</title>
@@ -267,19 +265,19 @@
 
   <para>In this chapter we will discuss how to install runtimes and servers.</para>
 
-  <para><diffmk:wrapper diffmk:change="changed">First of all it's necessary to mention that the JBoss AS plugin makes use of WTP.
+  <para>First of all it's necessary to mention that the JBoss AS plugin makes use of WTP.
     This includes starting and stopping servers in run or debug mode. It also includes targeting WTP
     projects, such as Dynamic Web Projects, to certain server runtimes in order to ensure that the
     proper jars from a specific server are added to the project's classpath
-    properly.</diffmk:wrapper></para>
+    properly.</para>
   <para>In order to get started creating, running, and debugging J2EE applications, we should create
     our <property moreinfo="none">runtime</property> and <property moreinfo="none">server</property> instances.</para>
 
   <section>
     <title>Runtimes</title>
-    <para><diffmk:wrapper diffmk:change="added">In </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">, the main purpose of Server Runtimes is to point to a
+    <para>In <property moreinfo="none">JBoss Tools</property>, the main purpose of Server Runtimes is to point to a
       server installation somewhere on disk. In our case, this will be a JBoss installation, and it
-      can then be used for two primary purposes:</diffmk:wrapper></para>
+      can then be used for two primary purposes:</para>
     <itemizedlist>
       <listitem>
         <para>it provides classpath additions to WTP projects that require them.</para>
@@ -292,12 +290,12 @@
     </itemizedlist>
 
     <section id="InstNewRuntime">
-      <title><diffmk:wrapper diffmk:change="changed">Installing a New Runtime</diffmk:wrapper></title>
+      <title>Installing a New Runtime</title>
       <para>You can install runtimes into eclipse from the <emphasis>
-          <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Window &gt; Preferences </diffmk:wrapper></property>
+          <property moreinfo="none">Window &gt; Preferences </property>
         </emphasis> menu, and then select <emphasis>
-          <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Server &gt; Runtime Environments</diffmk:wrapper></property>
-        </emphasis><diffmk:wrapper diffmk:change="changed"> from the categories available on the left.</diffmk:wrapper></para>
+          <property moreinfo="none">Server &gt; Runtime Environments</property>
+        </emphasis> from the categories available on the left.</para>
       <figure float="0">
         <title>Installed Runtimes</title>
         <mediaobject>
@@ -306,15 +304,15 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para><diffmk:wrapper diffmk:change="changed">From this preference page you can see all declared runtimes and their types as well.
+      <para>From this preference page you can see all declared runtimes and their types as well.
         Here, it's possible to edit or remove existing runtimes as well as add a new
-        one.</diffmk:wrapper></para>
+        one.</para>
 
       <para>To create a JBoss runtime click <emphasis>
           <property moreinfo="none">Add</property>
-        </emphasis><diffmk:wrapper diffmk:change="added"> button and choose a necessary type of runtime from the </diffmk:wrapper><emphasis diffmk:change="added">
-          <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Community</diffmk:wrapper></property>
-        </emphasis><diffmk:wrapper diffmk:change="added"> category.</diffmk:wrapper></para>
+        </emphasis> button and choose a necessary type of runtime from the <emphasis>
+          <property moreinfo="none">JBoss Community</property>
+        </emphasis> category.</para>
 
       <figure float="0">
         <title>Adding a Runtime</title>
@@ -325,14 +323,14 @@
         </mediaobject>
       </figure>
 
-      <note diffmk:change="added">
-        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
+      <note>
+        <title>Note:</title>
 
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Now there is a separation between .org servers (the </diffmk:wrapper><emphasis diffmk:change="added">
-            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Community</diffmk:wrapper></property>
-          </emphasis><diffmk:wrapper diffmk:change="added"> category) and product server that comes with JBoss EAP in JBDS ( the </diffmk:wrapper><emphasis diffmk:change="added">
-            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Enterprise Middleware</diffmk:wrapper></property>
-          </emphasis><diffmk:wrapper diffmk:change="added"> category).</diffmk:wrapper></para>
+        <para>Now there is a separation between .org servers (the <emphasis>
+            <property moreinfo="none">JBoss Community</property>
+          </emphasis> category) and product server that comes with JBoss EAP in JBDS ( the <emphasis>
+            <property moreinfo="none">JBoss Enterprise Middleware</property>
+          </emphasis> category).</para>
       </note>
 
       <para>As you can see, <property moreinfo="none">JBoss Tools</property> provide its own adapters such as JBoss
@@ -360,8 +358,8 @@
         </mediaobject>
       </figure>
 
-      <para><diffmk:wrapper diffmk:change="changed">The following table describes all the available options of the currant wizard
-        page.</diffmk:wrapper></para>
+      <para>The following table describes all the available options of the currant wizard
+        page.</para>
       <table>
         <title>Server Runtime Wizard Parameters</title>
         <tgroup cols="2">
@@ -403,7 +401,7 @@
 
             <row>
               <entry>
-                <para>jRE</para>
+                <para><diffmk:wrapper diffmk:change="changed">JRE</diffmk:wrapper></para>
               </entry>
               <entry>
                 <para>The proper Java Runtime Environment. Because of the open-source nature of
@@ -431,11 +429,11 @@
         </tgroup>
       </table>
 
-      <para><diffmk:wrapper diffmk:change="changed">As a result of having each runtime represent a specific configuration rather than the
+      <para>As a result of having each runtime represent a specific configuration rather than the
         server installation as a whole, it is very likely you'll create several different
         runtimes to test each of your configurations. It becomes important to ensure your runtimes,
         and later your servers, are given descriptive names that help you remember which is
-        which.</diffmk:wrapper></para>
+        which.</para>
 
       <para>Press <emphasis>
           <property moreinfo="none">Finish</property>
@@ -449,11 +447,11 @@
     <para>WTP servers are eclipse-representations of a backing server installation. They are used to
       start or stop servers, deploy to servers, or debug code that will run on the server. They keep
       track of the modules (jars, wars, etc) you deploy to the server and also allow you to undeploy
-      those modules (see <link linkend="run_on_server_wizard"><diffmk:wrapper diffmk:change="changed">Deploying with Run On Server
-        Wizard</diffmk:wrapper></link> section). </para>
+      those modules (see <link linkend="run_on_server_wizard">Deploying with Run On Server
+        Wizard</link> section). </para>
     <para>Servers can be started or stopped with different <link linkend="com_line_arg">command-line
-        arguments</link><diffmk:wrapper diffmk:change="changed">. They are often backed by a runtime object representing that server's
-      location.</diffmk:wrapper></para>
+        arguments</link>. They are often backed by a runtime object representing that server's
+      location.</para>
 
     <section>
       <title>Creating a New Server</title>
@@ -475,16 +473,16 @@
         or stopping, and runtimes keep track of the location of the installation. Thus, each server
         instance must be backed by an appropriate runtime. </para>
 
-      <para><diffmk:wrapper diffmk:change="changed">From the list of already declared runtimes in the combo box below the view it's
+      <para>From the list of already declared runtimes in the combo box below the view it's
         possible to select which runtime you want your server to be backed by. If there is no
-        runtime that matches your needs just press the </diffmk:wrapper><emphasis>
-          <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Add...</diffmk:wrapper></property>
-        </emphasis><diffmk:wrapper diffmk:change="added"> link nearby to bring up the wizard for creating a new runtime (see the </diffmk:wrapper><link diffmk:change="added" linkend="add_runtime_figure"><diffmk:wrapper diffmk:change="added">previous section</diffmk:wrapper></link><diffmk:wrapper diffmk:change="added">). To configure the already installed
-        runtimes you should go to server preferences that you can easily do by pressing the </diffmk:wrapper><emphasis diffmk:change="added">
-          <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Configure runtime environments...</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> link.</diffmk:wrapper></para>
+        runtime that matches your needs just press the <emphasis>
+          <property moreinfo="none">Add...</property>
+        </emphasis> link nearby to bring up the wizard for creating a new runtime (see the <link linkend="add_runtime_figure">previous section</link>). To configure the already installed
+        runtimes you should go to server preferences that you can easily do by pressing the <emphasis>
+          <property moreinfo="none">Configure runtime environments...</property></emphasis> link.</para>
 
-      <para><diffmk:wrapper diffmk:change="changed">If the server you want to create doesn't have any installed runtime yet, the combo box
-        and the links are absent.</diffmk:wrapper></para>
+      <para>If the server you want to create doesn't have any installed runtime yet, the combo box
+        and the links are absent.</para>
 
       <figure float="0">
         <title>Installed Server Runtime Environments</title>
@@ -513,8 +511,10 @@
       <para>Press <emphasis>
           <property moreinfo="none">Finish</property>
         </emphasis> to complete the process of the server creation.</para>
-      <para>Now that we've created our runtimes and servers, we can dwell on all services
-        and tools that JBoss Server Manager provides.</para>
+      <para><diffmk:wrapper diffmk:change="added">Now that we've created our runtimes and servers, we can dwell on all services
+      and tools that JBoss Server Manager provides.</diffmk:wrapper></para>
+      
+      <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">We hope, this guide helped you to get started with the JBoss Tools server manager. Besides, for additional information you are welcome on </diffmk:wrapper><ulink diffmk:change="added" url="http://www.jboss.com/index.html?module=bb&op=viewforum&f=201"><diffmk:wrapper diffmk:change="added">JBoss forum</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
     </section>
 
   </section>
@@ -567,10 +567,10 @@
 
         <section id="jbossserver_view_toolbar">
             <title>JBoss Server View Toolbar</title>
-            <para>In the right top corner of the <property moreinfo="none">JBoss Server View</property> there is a
-                special toolbar which provides a quick access to starting a server (in debug mode,
-                run mode, or profile mode), restarting a server, stopping a server, publishing to a
-                server and a possibility to clean a server.</para>
+            <para>In the right top corner of the <property moreinfo="none">JBoss Server View</property><diffmk:wrapper diffmk:change="changed"> there is a
+                special toolbar which provides a quick access to starting a server (in the debug mode,
+                run mode, or profile mode), restarting a server, stopping a server and a possibility to publish to a
+                server.</diffmk:wrapper></para>
 
             <figure float="0">
                 <title>The JBoss Server View Toolbar</title>
@@ -597,12 +597,7 @@
                 </emphasis> button will republish any modules where it has determined the workspace
                 is out of sync with the server. It will attempt to do an incremental publish if it
                 turns out that the module in question is capable of doing one.</para>
-
-
-            <para>Press <emphasis>
-                    <property moreinfo="none">Clean</property>
-                </emphasis> if you need to clean projects published on the server, i.e. remove
-                invalid resources from the server.</para>
+         
         </section>
 
         <section id="jbossserver_view_structure">
@@ -675,7 +670,7 @@
                 the help of the context menu commands.</para>
 
             <figure float="0">
-                <title><diffmk:wrapper diffmk:change="changed">Context Menu Commands</diffmk:wrapper></title>
+                <title>Context Menu Commands</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_8.png"></imagedata>
@@ -726,8 +721,8 @@
                                 <para>Show in</para>
                             </entry>
                             <entry>
-                                <para><diffmk:wrapper diffmk:change="changed">This option gives an easy access to the next views: Console,
-                                    Debug view, Server Log or MBean Explorer</diffmk:wrapper></para>
+                                <para>This option gives an easy access to the next views: Console,
+                                    Debug view, Server Log or MBean Explorer</para>
                             </entry>
                         </row>
 
@@ -772,34 +767,25 @@
                                 <para>Publish</para>
                             </entry>
                             <entry>
-                                <para>The action for synching the publish information between the
-                                    server and workspace</para>
+                                <para><diffmk:wrapper diffmk:change="added">The action for synchronizing the publish information between
+                                    the server and workspace</diffmk:wrapper></para>
                             </entry>
                         </row>
 
                         <row>
                             <entry>
-                                <para>Clean</para>
+                                <para>Explore</para>
                             </entry>
                             <entry>
-                                <para>The option for complete redeploying the resources</para>
-                            </entry>
-                        </row>
-
-                        <row>
-                            <entry>
-                                <para><diffmk:wrapper diffmk:change="added">Explore</diffmk:wrapper></para>
-                            </entry>
-                            <entry diffmk:change="added">
-                                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">This action uses the native OS file explorer to browse the
+                                <para>This action uses the native OS file explorer to browse the
                                     deploy destination. Note: The option is also available for
-                                    deployed resources/projects (see the figure below).</diffmk:wrapper></para>
+                                    deployed resources/projects (see the figure below).</para>
                             </entry>
                         </row>
 
-                        <row diffmk:change="added">
-                            <entry diffmk:change="added">
-                                <para diffmk:change="added">Add and Remove Projects</para>
+                        <row>
+                            <entry>
+                                <para>Add and Remove Projects</para>
                             </entry>
                             <entry>
                                 <para>The option allows to publish a new project to the server (if
@@ -812,8 +798,8 @@
                                 <para>Monitoring</para>
                             </entry>
                             <entry>
-                                <para><diffmk:wrapper diffmk:change="changed">Possibility to add ports to be monitored on the current
-                                    server</diffmk:wrapper></para>
+                                <para>Possibility to add ports to be monitored on the current
+                                    server</para>
                             </entry>
                         </row>
 
@@ -822,8 +808,8 @@
                                 <para>Properties</para>
                             </entry>
                             <entry>
-                                <para><diffmk:wrapper diffmk:change="changed">Opens the window to adjust the current server
-                                    preferences</diffmk:wrapper></para>
+                                <para>Opens the window to adjust the current server
+                                    preferences</para>
                             </entry>
                         </row>
 
@@ -847,129 +833,133 @@
                 </mediaobject>
             </figure>
 
-            <section diffmk:change="added" id="filesets">
-                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></title>
+            <section id="filesets">
+                <title>Filesets</title>
 
                 <para>The <emphasis>
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> category in the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Server View</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> is intended
-                    for files filtering.</diffmk:wrapper></para>
+                        <property moreinfo="none">Filesets</property>
+                    </emphasis> category in the <property moreinfo="none">JBoss Server View</property> is intended
+                    for files filtering.</para>
 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">To add a new file filter, right-click the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> category and select </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Create File Filter</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></emphasis><diffmk:wrapper diffmk:change="added">The </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">New File
-                        Filter wizard</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> should appear.</diffmk:wrapper></para>
+                <para>To add a new file filter, right-click the <emphasis>
+                        <property moreinfo="none">Filesets</property>
+                    </emphasis> category and select <emphasis>
+                        <property moreinfo="none">Create File Filter</property>.</emphasis>The <property moreinfo="none">New File
+                        Filter wizard</property> should appear.</para>
 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Creating a New File Filter</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/filesets1.png"></imagedata>
+                <figure float="0">
+                    <title>Creating a New File Filter</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets1.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The wizard asks you to enter the filter name and add includes and excludes
+                <para>The wizard asks you to enter the filter name and add includes and excludes
                     patterns. The preview box underneath gives a list of files matched to the
-                    defined patterns.</diffmk:wrapper></para>
+                    defined patterns.</para>
 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">New File Filter Wizard</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/filesets2.png"></imagedata>
+                <figure float="0">
+                    <title>New File Filter Wizard</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets2.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">After the filter is created, you can observe it by expanding the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> category in the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Server View</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
+                <para>After the filter is created, you can observe it by expanding the <emphasis>
+                        <property moreinfo="none">Filesets</property>
+                    </emphasis> category in the <property moreinfo="none">JBoss Server View</property>.</para>
 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">It's possible now to edit files directly from the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="changed"> category. Double clicking on a file from </diffmk:wrapper><emphasis>
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> opens up the editor automatically or you can use the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Edit File</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="changed"> context menu command.</diffmk:wrapper></para>
+                <para>It's possible now to edit files directly from the <emphasis>
+                        <property moreinfo="none">Filesets</property>
+                    </emphasis> category. Double clicking on a file from <emphasis>
+                        <property moreinfo="none">Filesets</property>
+                    </emphasis> opens up the editor automatically or you can use the <emphasis>
+                        <property moreinfo="none">Edit File</property>
+                    </emphasis> context menu command.</para>
 
-                <figure diffmk:change="added" float="0">
-                    <title><diffmk:wrapper diffmk:change="changed">Direct Editing from the Filesets</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/filesets3.png"></imagedata>
+                <figure float="0">
+                    <title>Direct Editing from the Filesets</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets3.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
 
-                <para><diffmk:wrapper diffmk:change="added">To delete a file filter (or just a file) from the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Filesets</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">,</diffmk:wrapper></emphasis><diffmk:wrapper diffmk:change="added"> right-click a file filter (or the
-                    unnecessary file) and select the </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Delete File Filter</diffmk:wrapper></property>
+                <para>To delete a file filter (or just a file) from the <emphasis>
+                        <property moreinfo="none">Filesets</property>,</emphasis> right-click a file filter (or the
+                    unnecessary file) and select the <emphasis>
+                        <property moreinfo="none">Delete File Filter</property>
                     </emphasis>
-                    <emphasis diffmk:change="added"><diffmk:wrapper diffmk:change="added">(</diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Delete File</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">)</diffmk:wrapper></emphasis><diffmk:wrapper diffmk:change="added"> command.</diffmk:wrapper></para>
+                    <emphasis>(<property moreinfo="none">Delete File</property>)</emphasis> command.</para>
 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Deleting the File from the Filesets</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/filesets4.png"></imagedata>
+                <figure float="0">
+                    <title>Deleting the File from the Filesets</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets4.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
             </section>
 
-            <section diffmk:change="added" id="xml_configuration">
-                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">XML Configuration</diffmk:wrapper></title>
+            <section id="xml_configuration">
+                <title>XML Configuration</title>
                 <para>The <emphasis>
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">XML Configuration</diffmk:wrapper></property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> category allows you to quickly browse to descriptor files in your
-                    server's deploy directory and check or change the values. Basically, </diffmk:wrapper><emphasis diffmk:change="added">
                         <property moreinfo="none">XML Configuration</property>
-                    </emphasis><diffmk:wrapper diffmk:change="added"> includes XML XPaths where a xpath is a path used to access some
+                    </emphasis> category allows you to quickly browse to descriptor files in your
+                    server's deploy directory and check or change the values. Basically, <emphasis>
+                        <property moreinfo="none">XML Configuration</property>
+                    </emphasis><diffmk:wrapper diffmk:change="changed"> includes XML XPaths where an xpath is a path used to access some
                     specific part of an xml document. </diffmk:wrapper></para>
 
-                <note diffmk:change="added">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You are assumed to be familiar with XPath. If not, we highly suggested
-                        that you look through an appropriate manual or tutorial on the topic.</diffmk:wrapper></para>
+                <note>
+                    <title>Note:</title>
+                    <para>You are assumed to be familiar with XPath. If not, we highly suggested
+                        that you look through an appropriate manual or tutorial on the topic.</para>
                 </note>
 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">XML Configuration</diffmk:wrapper></property>
+                <para>The <emphasis>
+                        <property moreinfo="none">XML Configuration</property>
                     </emphasis> category itself contains only a list of categories. <emphasis>
                         <property moreinfo="none">Ports</property>
-                    </emphasis><diffmk:wrapper diffmk:change="changed"> are provided by default and is filled with many of the most commonly
-                    used ports in the </diffmk:wrapper><property moreinfo="none">JBoss Server</property>.</para>
+                    </emphasis> are provided by default and is filled with many of the most commonly
+                    used ports in the <property moreinfo="none">JBoss Server</property>.</para>
 
                 <figure float="0">
                     <title>XML Configuration</title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
+                    <mediaobject>
+                        <imageobject>
                             <imagedata fileref="images/perspective/perspective_14.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
 
 
-                
+                <!--para>In the <property>Properties
+                    view</property> you can see an identifier and nested files underneath in which
+                that xpath can be found as well as its current value. The details of the xpath are
+                hidden as all you need to see is only which file you&apos;re referring to and
+                what its current value is.</para-->
 
                 <para>By right-clicking on <emphasis>
-                        <property moreinfo="none">XML Configuration</property>, </emphasis><diffmk:wrapper diffmk:change="changed"> you can create a new
-                    category. Besides, context menu for </diffmk:wrapper><emphasis>
+                        <property moreinfo="none">XML Configuration</property>, </emphasis> you can create a new
+                    category. Besides, context menu for <emphasis>
                         <property moreinfo="none">XML Configuration</property>
-                    </emphasis><diffmk:wrapper diffmk:change="changed"> category makes possible to disable it. You can disable any category
-                    in the bottom part of the </diffmk:wrapper><emphasis>
+                    </emphasis> category makes possible to disable it. You can disable any category
+                    in the bottom part of the <emphasis>
                         <property moreinfo="none">JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
                         <property moreinfo="none">Inactive Categories</property>
                     </emphasis> afterwards to re-enable.</para>
 
                 <figure float="0">
                     <title>Adding New Category</title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
+                    <mediaobject>
+                        <imageobject>
                             <imagedata fileref="images/perspective/perspective_15.png"></imagedata>
                         </imageobject>
                     </mediaobject>
@@ -983,8 +973,8 @@
 
                 <figure float="0">
                     <title>Adding New XPath</title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
+                    <mediaobject>
+                        <imageobject>
                             <imagedata fileref="images/perspective/perspective_16.png"></imagedata>
                         </imageobject>
                     </mediaobject>
@@ -994,17 +984,17 @@
 
                 <figure float="0">
                     <title>Adding New XPath</title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
+                    <mediaobject>
+                        <imageobject>
                             <imagedata fileref="images/perspective/perspective_17.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
 
-                <para><diffmk:wrapper diffmk:change="changed">The goal here is to get an end result where the XPath matches up with a
+                <para>The goal here is to get an end result where the XPath matches up with a
                     necessary property. With that in mind, let's look how it works. If the
-                    property you want to reach is the value of the </diffmk:wrapper><emphasis>name</emphasis><diffmk:wrapper diffmk:change="changed">
-                    attribute in the element </diffmk:wrapper><emphasis>&lt;mbean&gt;</emphasis>, then your <emphasis>
+                    property you want to reach is the value of the <emphasis>name</emphasis>
+                    attribute in the element <code diffmk:change="added">&lt;mbean&gt;</code>, then your <emphasis>
                         <property moreinfo="none">XPath Patten</property>
                     </emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
                         <property moreinfo="none">Attribute Name</property>
@@ -1028,8 +1018,8 @@
 
                 <figure float="0">
                     <title>XPath Preview</title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
+                    <mediaobject>
+                        <imageobject>
                             <imagedata fileref="images/perspective/perspective_18.png"></imagedata>
                         </imageobject>
                     </mediaobject>
@@ -1037,12 +1027,12 @@
 
                 <tip>
                     <title>Tip:</title>
-                    <para><diffmk:wrapper diffmk:change="changed">Notice, when you type the fields autocomplete to help you locate exactly
-                        what xpath you're looking for.</diffmk:wrapper></para>
+                    <para>Notice, when you type the fields autocomplete to help you locate exactly
+                        what xpath you're looking for.</para>
                 </tip>
 
-                <para><diffmk:wrapper diffmk:change="changed">Then, on the other hand, if your desired field is the text of an element
-                        </diffmk:wrapper><emphasis>&lt;description&gt;</emphasis>, your <emphasis>
+                <para>Then, on the other hand, if your desired field is the text of an element
+                        <code diffmk:change="added">&lt;description&gt;</code>, your <emphasis>
                         <property moreinfo="none">XPath Patten</property>
                     </emphasis> should end with <emphasis>description</emphasis> and <emphasis>
                         <property moreinfo="none">Attribute Name</property>
@@ -1050,11 +1040,11 @@
                         <property moreinfo="none">Preview</property>
                     </emphasis> to see how many matches you have for that particular XPath.</para>
 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">XPath Preview</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/perspective_19.png"></imagedata>
+                <figure float="0">
+                    <title>XPath Preview</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/perspective_19.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
@@ -1062,67 +1052,67 @@
             </section>
         </section>
 
-        <section diffmk:change="added" id="dragndrop_to_jboss_server_view">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Drag-n-Drop to JBoss Server View</diffmk:wrapper></title>
+        <section id="dragndrop_to_jboss_server_view">
+            <title>Drag-n-Drop to JBoss Server View</title>
 
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Starting from 2.0.0.CR2 version of </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss AS Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> the
-                    </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Server View</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> supports drag-n-drop of deployable and
-                    runnable projects/resources.</diffmk:wrapper></para>
-            
+            <para>Starting from 2.0.0.CR2 version of <property moreinfo="none">JBoss AS Tools</property> the
+                    <property moreinfo="none">JBoss Server View</property><diffmk:wrapper diffmk:change="changed"> supports drag-n-drop of deployable and
+                runnable projects/resources.</diffmk:wrapper></para>
+
             <figure float="0">
-                <title><diffmk:wrapper diffmk:change="changed">Dragging to the JBoss Server View</diffmk:wrapper></title>
+                <title>Dragging to the JBoss Server View</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/dnd_toJBossServerView.png"></imagedata>
                     </imageobject>
                 </mediaobject>
             </figure>
-            
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">With drag-n-drop the following actions can be performed:</diffmk:wrapper></para>
-            
-            <itemizedlist diffmk:change="added">
-                <listitem diffmk:change="added">
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">dragging a project to a server will deploy it to the server and run it by
-                        showing the main page in a browser</diffmk:wrapper></para>
+
+            <para>With drag-n-drop the following actions can be performed:</para>
+
+            <itemizedlist>
+                <listitem>
+                    <para>dragging a project to a server will deploy it to the server and run it by
+                        showing the main page in a browser</para>
                 </listitem>
 
-                <listitem diffmk:change="added">
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">dragging an </diffmk:wrapper><emphasis diffmk:change="added">
-                            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">.xhtml</diffmk:wrapper></property>
-                        </emphasis><diffmk:wrapper diffmk:change="added"> file from </diffmk:wrapper><emphasis diffmk:change="added">
-                            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">WebContent</diffmk:wrapper></property>
-                        </emphasis><diffmk:wrapper diffmk:change="added"> will do the same and show the corresponding page in a
-                        browser</diffmk:wrapper></para>
+                <listitem>
+                    <para>dragging an <emphasis>
+                            <property moreinfo="none">.xhtml</property>
+                        </emphasis> file from <emphasis>
+                            <property moreinfo="none">WebContent</property>
+                        </emphasis> will do the same and show the corresponding page in a
+                        browser</para>
                 </listitem>
 
-                <listitem diffmk:change="added">
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">dragging a deployable resource (i.e. a datasource (</diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">-ds.xml</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">) file that has
-                        been made deployable) will simply deploy that resource directly to the
-                        server</diffmk:wrapper></para>
+                <listitem>
+                    <para>dragging a deployable resource (i.e. a datasource (<emphasis>
+                            <property moreinfo="none">-ds.xml</property>
+                        </emphasis><diffmk:wrapper diffmk:change="changed">) file that has been made deployable) will simply deploy that
+                        resource directly to the server</diffmk:wrapper></para>
                 </listitem>
             </itemizedlist>
 
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">In short, the feature does the same thing as if you used the </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Run On Server</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="added"> option or </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Add and Remove Projects</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="added"> option in the context menu of the server.</diffmk:wrapper></para>
+            <para>In short, the feature does the same thing as if you used the <emphasis>
+                    <property moreinfo="none">Run On Server</property>
+                </emphasis> option or <emphasis>
+                    <property moreinfo="none">Add and Remove Projects</property>
+                </emphasis> option in the context menu of the server.</para>
         </section>
 
         <section id="server_log">
             <title>Server Log View</title>
 
-            <para><diffmk:wrapper diffmk:change="changed">You can monitor the current server behavior with the help of the </diffmk:wrapper><property moreinfo="none">Server
-                    Log</property>. To open a server in the <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Server Log view</diffmk:wrapper></property><diffmk:wrapper diffmk:change="changed"> you
-                should right-click on the server and follow to </diffmk:wrapper><emphasis>
+            <para>You can monitor the current server behavior with the help of the <property moreinfo="none">Server
+                    Log</property>. To open a server in the <property moreinfo="none">Server Log view</property> you
+                should right-click on the server and follow to <emphasis>
                     <property moreinfo="none">Open in &gt; Server Log</property>.</emphasis></para>
 
             <para>The <emphasis>
                     <property moreinfo="none">Server Log</property>
-                </emphasis><diffmk:wrapper diffmk:change="changed"> shows relevant information to your server's startup, shutdown,
+                </emphasis> shows relevant information to your server's startup, shutdown,
                 and publish processes. This allows you to keep an eye on what's going on
-                (such as automatic incremental deployment if you have it enabled).</diffmk:wrapper></para>
+                (such as automatic incremental deployment if you have it enabled).</para>
 
             <figure float="0">
                 <title>Event Log Actions</title>
@@ -1133,8 +1123,8 @@
                 </mediaobject>
             </figure>
 
-            <para>The <property moreinfo="none">Server Log</property><diffmk:wrapper diffmk:change="changed"> toolbar contains several icons that perform
-                the following actions:</diffmk:wrapper></para>
+            <para>The <property moreinfo="none">Server Log</property> toolbar contains several icons that perform
+                the following actions:</para>
 
             <table>
                 <title>Server Log Toolbar Icons</title>
@@ -1169,7 +1159,7 @@
                                 <para>Clear Log Viewer</para>
                             </entry>
                             <entry>
-                                <para><diffmk:wrapper diffmk:change="changed">The option clears the current server log</diffmk:wrapper></para>
+                                <para>The option clears the current server log</para>
                             </entry>
                         </row>
 
@@ -1222,10 +1212,10 @@
 
             <tip>
                 <title>Tip:</title>
-                <para>On the figure you can see that a username/password is available in the UI when
-                    configuring the server. If you get an SecurityException when trying to launch
-                    the server, it is most likely because your server is protected and hence you
-                    need to fill the username/password fields with appropriate values.</para>
+                <para><diffmk:wrapper diffmk:change="changed">On the figure you can see that a username/password is available in the UI when
+                    configuring the server. If you get a SecurityException when trying to launch the
+                    server, it is most likely because your server is protected and hence you need to
+                    fill the username/password fields with appropriate values.</diffmk:wrapper></para>
             </tip>
 
             <para>It should be pointed out that our server adapter by default tries to automatically
@@ -1272,8 +1262,9 @@
             <para id="com_line_arg"><property moreinfo="none">Server editor</property> makes it also possible to
                 modify the server's launch configuration. It's just after clicking <emphasis>
                     <property moreinfo="none">Open launch configuration</property>
-                </emphasis> link. In the open window there are the tabs for setting command line
-                arguments and other things that are relevant to launching the server.</para>
+                </emphasis><diffmk:wrapper diffmk:change="changed"> link. In the open window there are the tabs for setting command line
+                arguments, classpaths and other things that are relevant to launching the
+                server.</diffmk:wrapper></para>
 
             <figure float="0">
                 <title>Launch Configuration Properties</title>
@@ -1286,6 +1277,49 @@
 
             <para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">here</ulink> to find parameters which can be specified for <property moreinfo="none">JBoss
                     Server</property>.</para>
+
+            <note diffmk:change="added">
+                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Please note, that the Launch Configurations for JBoss Servers are enough
+                    strict in enforcing the configured values in the server in order to avoid
+                    inconsistencies between server's and their configured runtime.</diffmk:wrapper></para>
+
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">For example, if you change the launch configuration program arguments to
+                        </diffmk:wrapper><emphasis diffmk:change="added"><diffmk:wrapper diffmk:change="added">"-c myConfig"</diffmk:wrapper></emphasis><diffmk:wrapper diffmk:change="added"> but do not change the
+                    targeted runtime configuration, then your program arguments will be ignored. The
+                    server runtime "wins" so to speak. This ensures consistency
+                    and if you change the location of the runtime, your launch configurations will
+                    automatically pick that up.</diffmk:wrapper></para>
+
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Values are not controlled by the server and its runtime setup will be passed
+                    on unaltered.</diffmk:wrapper></para>
+            </note>
+
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Until 3.0.0.GA release of </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">, the servers classpath was readonly, but that caused
+                problems for users wanting to add their own jars in the startup classpath. That is
+                relevant if you need to patch the server, add a custom charset or other tweaks that
+                require early access to the classpath.</diffmk:wrapper></para>
+
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Now all servers have a custom 'server runtime classpath
+                container', which is there by default and point to the default jars in
+                JBoss. You can now adjust the classpath. Then just make sure this container is there
+                if you want the classpath to be picked up.</diffmk:wrapper></para>
+
+            <figure diffmk:change="added" float="0">
+                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Server Classpaths</diffmk:wrapper></title>
+                <mediaobject diffmk:change="added">
+                    <imageobject diffmk:change="added">
+                        <imagedata diffmk:change="added" fileref="images/perspective/server_classpaths.png"></imagedata>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">If for some reason you have a launch configuration without this container, </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Restore
+                    Default Entries</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> should add it properly. Also, </diffmk:wrapper><emphasis diffmk:change="added">
+                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Restore
+                            Default Entries</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> will also remove any
+                extra entries you added yourself.</diffmk:wrapper></para>
         </section>
 
         <section>
@@ -1499,11 +1533,11 @@
                     pattern. As you type in either of these fields, the preview viewer should update
                     itself with which files are matched.</para>
 
-                <para>You can create a Fileset with flattenning or without it. Look at the
-                    difference on the figure below.</para>
+                <para><diffmk:wrapper diffmk:change="changed">You can create a Fileset with flattening or without it. Look at the difference
+                    on the figure below.</diffmk:wrapper></para>
 
                 <figure float="0">
-                    <title>The FileSet with flattenning and without it</title>
+                    <title><diffmk:wrapper diffmk:change="changed">The FileSet with flattening and without it</diffmk:wrapper></title>
                     <mediaobject>
                         <imageobject>
                             <imagedata fileref="images/perspective/perspective_24a.png"></imagedata>
@@ -1709,10 +1743,10 @@
 				<property moreinfo="none">Next</property>
 			</emphasis> and you will see Dynamic Web Project page like on the figure below.</para>
 
-		<para> The first page of most WTP projects allows you to target a specific runtime,
+		<para><diffmk:wrapper diffmk:change="changed"> The first page of most WTP projects allows you to target a specific runtime,
 			representing a server's library location. It will also provide you the ability to add
-			this project to an EAR project, and select a pre-selected default set of facets, called
-			a configuration, rather than manually select each facet you might want.</para>
+			this project to an EAR project, and select a preselected default set of facets, called
+			a configuration, rather than manually select each facet you might want.</diffmk:wrapper></para>
 		<para> Selecting the runtime, again, allows the project to install the proper classpaths to
 			the project so it knows what code to compile against.</para>
 
@@ -1776,7 +1810,7 @@
 		</figure>
 		<para>When switching on the <emphasis>
 				<property moreinfo="none">Runtimes</property>
-			</emphasis><diffmk:wrapper diffmk:change="changed"> tab on the right you'll see the current server Runtime.</diffmk:wrapper></para>
+			</emphasis> tab on the right you'll see the current server Runtime.</para>
 		<figure float="0">
 			<title>Runtimes on the Project Facets Wizard</title>
 			<mediaobject>
@@ -1825,8 +1859,8 @@
 	<section>
 		<title>Deploying on the Package Explorer</title>
 
-		<para>On the package explorer it is possible to publish either a project to a server or just
-			a signal file. Let's look at how to do this.</para>
+		<para><diffmk:wrapper diffmk:change="changed">On the package explorer it is possible to publish either a project to a server or just
+			a single file. Let's look at how to do this.</diffmk:wrapper></para>
 		<section id="run_on_server_wizard">
 			<title>Deploying with Run On Server Wizard</title>
 			<para> The first WTP method is to right-click on a project, such as a Dynamic Web
