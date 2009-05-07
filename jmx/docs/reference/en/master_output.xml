@@ -226,13 +226,20 @@
 
     <itemizedlist>
         <listitem>
-            <para>the Attributes page</para>
+            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Attributes</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
+        </listitem>
+        <listitem diffmk:change="added">
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Operations</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
         </listitem>
         <listitem>
-            <para>the Operations page</para>
+            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page </diffmk:wrapper></para>
         </listitem>
         <listitem>
-            <para>the Info page </para>
+            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Info</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page </diffmk:wrapper></para>
         </listitem>
     </itemizedlist>
 
@@ -265,11 +272,22 @@
 
     <section>
         <title>Notifications Page</title>
-        <para>One more page in the <property moreinfo="none">MBean Editor</property> is a Notifications Page, which gives the possibility to
+        <para>One more page in the <property moreinfo="none">MBean Editor</property><diffmk:wrapper diffmk:change="added"> is the </diffmk:wrapper><emphasis diffmk:change="added">
+            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page, which gives the possibility to
             subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
-            unchecking) the Subscribe checkbox. </para>
-        <para>The list of notifications is refreshed every time a new notification is
-            received:</para>
+            unchecking) the </diffmk:wrapper><emphasis diffmk:change="added">
+                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Subscribe</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button in the right top corner. </diffmk:wrapper></para>
+        <para><diffmk:wrapper diffmk:change="changed">The list of notifications is refreshed every time a new notification is
+        received:</diffmk:wrapper></para>
+        
+        <figure diffmk:change="added" float="0">
+            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor Notifications Page</diffmk:wrapper></title>
+            <mediaobject diffmk:change="added">
+                <imageobject diffmk:change="added">
+                    <imagedata diffmk:change="added" fileref="images/notifications.png"></imagedata>
+                </imageobject>
+            </mediaobject>
+        </figure>
 
         <note>
             <title>Note</title>
@@ -493,9 +511,9 @@
          one child, a connectionProvider with a class that implements
          org.jboss.tools.jmx.core.IConnectionProvider.</para>
       
-      <para>An IConnectionProvider is resposnbile for creation and deletion of IConnectionWrapper
+      <para><diffmk:wrapper diffmk:change="changed">An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
          objects. It must also keep a list of listeners that it is expected to inform when a
-         connection is added or removed from its list. </para>
+         connection is added or removed from its list. </diffmk:wrapper></para>
       
       <para>Each IConnectionWrapper is expected to handle running arbitrary JMX runnables or getting
          a "Root" object representing all JMX nodes. There are some utility methods the
@@ -512,8 +530,9 @@
                wizardPage class for creation of new connections</para>
          </listitem>
          <listitem>
-            <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
-               Control to present them in the MBean Editor</para>
+            <para><diffmk:wrapper diffmk:change="added">org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
+            Control to present them in the MBean Editor</diffmk:wrapper></para>
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on </diffmk:wrapper><ulink diffmk:change="added" url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201"><diffmk:wrapper diffmk:change="added">JBoss forum</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
          </listitem>
       </itemizedlist>
    </section>
