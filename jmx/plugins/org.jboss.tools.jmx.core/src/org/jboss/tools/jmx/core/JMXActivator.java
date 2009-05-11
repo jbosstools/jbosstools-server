@@ -44,4 +44,13 @@ public class JMXActivator extends Plugin {
     public static void log(int severity, String message, Throwable e) {
         log(new Status(severity, PLUGIN_ID, 0, message, e));
     }
+    
+
+    public static void log(Throwable e) {
+    	log(e.getMessage(), e);
+    }
+
+    public static void log(String message, Throwable e) {
+        log(IStatus.ERROR, message, e);
+    }
 }
