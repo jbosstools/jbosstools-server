@@ -11,7 +11,7 @@
 		<title>Deploying on the Package Explorer</title>
 
 		<para>On the package explorer it is possible to publish either a project to a server or just
-			a signal file. Let&apos;s look at how to do this.</para>
+			a single file. Let&apos;s look at how to do this.</para>
 		<section id="run_on_server_wizard">
 			<title>Deploying with Run On Server Wizard</title>
 			<para> The first WTP method is to right-click on a project, such as a Dynamic Web
@@ -157,8 +157,7 @@
 		<para>In the <property>Project Archives View</property> you can right-click on any declared
 			archive and select the <emphasis>
 				<property>Publish To Server</property>
-			</emphasis> element. For more on this subject, see <link linkend="PublishToServer"
-				>Publishing to Server</link> in the Project Archives View section.</para>
+			</emphasis> element. For more on this subject, see <link linkend="PublishToServer">Publishing to Server</link> in the Project Archives View section.</para>
 		<figure>
 			<title>Publish to Server</title>
 			<mediaobject>
