@@ -24,7 +24,7 @@
          one child, a connectionProvider with a class that implements
          org.jboss.tools.jmx.core.IConnectionProvider.</para>
       
-      <para>An IConnectionProvider is resposnbile for creation and deletion of IConnectionWrapper
+      <para>An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
          objects. It must also keep a list of listeners that it is expected to inform when a
          connection is added or removed from its list. </para>
       
@@ -44,7 +44,9 @@
          </listitem>
          <listitem>
             <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
-               Control to present them in the MBean Editor</para>
+            Control to present them in the MBean Editor</para>
+            <para>We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on <ulink
+               url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
          </listitem>
       </itemizedlist>
    </section>
