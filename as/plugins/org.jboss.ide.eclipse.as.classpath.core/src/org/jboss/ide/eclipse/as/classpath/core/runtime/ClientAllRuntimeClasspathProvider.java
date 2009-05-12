@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -56,28 +57,26 @@ public class ClientAllRuntimeClasspathProvider
 		}
 		
 		IPath loc = runtime.getLocation();
-		String config = jbsrt.getJBossConfiguration();
+		IPath configPath = jbsrt.getConfigurationFullPath();
 		String rtID  = runtime.getRuntimeType().getId();
-		if(AS_32.equals(rtID)) return get32(loc, config);
-		if(AS_40.equals(rtID)) return get40(loc,config);
-		if(AS_42.equals(rtID)) return get42(loc,config);
-		if(AS_50.equals(rtID)) return get50(loc,config);
-		if(EAP_43.equals(rtID)) return getEAP43(loc,config);
+		if(AS_32.equals(rtID)) return get32(loc, configPath);
+		if(AS_40.equals(rtID)) return get40(loc,configPath);
+		if(AS_42.equals(rtID)) return get42(loc,configPath);
+		if(AS_50.equals(rtID)) return get50(loc,configPath);
+		if(EAP_43.equals(rtID)) return getEAP43(loc,configPath);
 		return null;
 	}
 	
-	protected IClasspathEntry[] get32(IPath location, String config) {
+	protected IClasspathEntry[] get32(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append(SERVER).append(config);
 		addEntries(location.append(CLIENT), list);
 		addEntries(location.append(LIB), list);
 		addEntries(configPath.append(LIB), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 	
-	protected IClasspathEntry[] get40(IPath location, String config) {
+	protected IClasspathEntry[] get40(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append(SERVER).append(config);
 		IPath deployPath = configPath.append(DEPLOY);
 		addEntries(location.append(CLIENT), list);
 		addEntries(location.append(LIB), list);
@@ -88,17 +87,16 @@ public class ClientAllRuntimeClasspathProvider
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 
-	protected IClasspathEntry[] get42(IPath location, String config) {
-		return get40(location, config);
+	protected IClasspathEntry[] get42(IPath location, IPath configPath) {
+		return get40(location, configPath);
 	}
 
-	protected IClasspathEntry[] getEAP43(IPath location, String config) {
-		return get40(location, config);
+	protected IClasspathEntry[] getEAP43(IPath location, IPath configPath) {
+		return get40(location, configPath);
 	}
 	
-	protected IClasspathEntry[] get50(IPath location, String config) {
+	protected IClasspathEntry[] get50(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		IPath configPath = location.append(SERVER).append(config);
 		IPath deployerPath = configPath.append(DEPLOYERS);
 		IPath deployPath = configPath.append(DEPLOY);
 		addEntries(location.append(CLIENT), list);

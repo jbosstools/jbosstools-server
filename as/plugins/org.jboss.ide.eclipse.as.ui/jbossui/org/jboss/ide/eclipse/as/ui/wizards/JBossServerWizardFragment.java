@@ -63,7 +63,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private Label serverExplanationLabel, 
 					runtimeExplanationLabel; 
 	private Label homeDirLabel, installedJRELabel, configLabel;
-	private Label homeValLabel, jreValLabel, configValLabel;
+	private Label homeValLabel, jreValLabel, configValLabel, configLocValLabel;
 	
 	private Group runtimeGroup;
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
@@ -151,6 +151,10 @@ public class JBossServerWizardFragment extends WizardFragment {
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		jreValLabel.setLayoutData(d);
 		
+		Label configLocationLabel = new Label(runtimeGroup, SWT.NONE);
+		configLocationLabel.setText(Messages.swf_ConfigurationLocation);
+		configLocValLabel = new Label(runtimeGroup, SWT.NONE);
+
 		configLabel = new Label(runtimeGroup, SWT.NONE);
 		configLabel.setText(Messages.wf_ConfigLabel);
 		configValLabel = new Label(runtimeGroup, SWT.NONE);
@@ -178,6 +182,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 			configValLabel.setText(srt.getJBossConfiguration());
 			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
+			configLocValLabel.setText(srt.getConfigLocation());
 			runtimeGroup.layout();
 			updateErrorMessage();
 		}

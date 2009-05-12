@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -33,11 +34,6 @@ import org.jboss.ide.eclipse.as.core.util.IConstants;
 public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 
 	public void setDefaults(IProgressMonitor monitor) {
-		String location = Platform.getOS().equals(Platform.WS_WIN32) 
-		? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
-		String version = getRuntime().getRuntimeType().getVersion();
-		location += version + ".x"; //$NON-NLS-1$
-		getRuntimeWorkingCopy().setLocation(new Path(location));
 		getRuntimeWorkingCopy().setName(getNextRuntimeName());
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_CONFIGURATION);
 		setVM(null);
@@ -150,10 +146,21 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 
 	public String getConfigLocation() {
-		return getAttribute(PROPERTY_CONFIG_LOCATION, (String)null);
+		return getAttribute(PROPERTY_CONFIG_LOCATION, IConstants.SERVER);
 	}
 
 	public void setConfigLocation(String configLocation) {
 		setAttribute(PROPERTY_CONFIG_LOCATION, configLocation);
+	}
+
+	public IPath getConfigurationFullPath() {
+		return getConfigLocationFullPath().append(getJBossConfiguration());
+	}
+
+	public IPath getConfigLocationFullPath() {
+		String cl = getConfigLocation();
+		if( new Path(cl).isAbsolute())
+			return new Path(cl);
+		return getRuntime().getLocation().append(cl);
 	}
 }

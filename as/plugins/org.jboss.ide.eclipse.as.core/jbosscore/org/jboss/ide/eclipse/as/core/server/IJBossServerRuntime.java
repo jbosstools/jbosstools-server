@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IRuntime;
 
@@ -32,9 +33,34 @@ public interface IJBossServerRuntime {
 	
 	public String getJBossConfiguration();
 	public void setJBossConfiguration(String config);
+	
+	/**
+	 * The folder this config is located in, for example:
+	 *   /home/rob/tmp/default_copy1  would return /home/rob/tmp/
+	 *   whereas /home/rob/apps/jboss/server/default_copy3 would return server
+	 * @return
+	 */
 	public String getConfigLocation();
+	
+	/**
+	 * The full path of the folder this config is located in, for example:
+	 *   /home/rob/tmp/default_copy1  would return 
+	 *   /home/rob/tmp/
+	 *       whereas 
+	 *   /home/rob/apps/jboss/server/default_copy3 would return 
+	 *   /home/rob/apps/jboss/server
+	 * @return
+	 */
+	public IPath getConfigLocationFullPath();
+	
 	public void setConfigLocation(String configLocation);
 	
+	/**
+	 * The full path of the configuration, ex:
+	 *  /home/rob/tmp/default_copy3 would return /home/rob/tmp/default_copy3 
+	 * @return
+	 */
+	public IPath getConfigurationFullPath();
 	
 	// for startup
 	public String getDefaultRunArgs();

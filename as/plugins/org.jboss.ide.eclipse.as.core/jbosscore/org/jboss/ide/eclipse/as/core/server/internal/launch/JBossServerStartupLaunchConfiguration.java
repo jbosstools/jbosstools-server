@@ -46,6 +46,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -126,6 +127,15 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		args = ArgsUtil.setArg(args, 
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);		
+		
+		try {
+			if( !runtime.getConfigLocation().equals(IConstants.SERVER)) {
+				args = ArgsUtil.setArg(args, null, 
+						IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
+						runtime.getConfigLocationFullPath().toFile().toURL().toString());
+			}
+		} catch( MalformedURLException murle) {}
+
 		
 		vmArgs= ArgsUtil.setArg(vmArgs, null, 
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,

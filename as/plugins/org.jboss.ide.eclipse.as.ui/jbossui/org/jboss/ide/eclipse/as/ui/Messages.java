@@ -27,15 +27,21 @@ public class Messages {
 	/* Standard and re-usable */
 	public static String browse;
 	public static String serverName;
-
+	public static String copy;
+	public static String delete;
+	public static String directory;
+	
 	/* Server and Runtime Wizard Fragments */
 	public static String wf_BaseNameVersionReplacement;
 	public static String wf_NameLabel;
 	public static String wf_HomeDirLabel;
 	public static String wf_JRELabel;
 	public static String wf_ConfigLabel;
+	
 	public static String JBAS_version;
 	public static String JBEAP_version;
+	public static String rwf_CopyConfigLabel;
+	public static String rwf_DestinationLabel;
 	public static String rwf_TitleCreate;
 	public static String rwf_TitleEdit;
 	public static String rwf_Explanation;
@@ -50,6 +56,7 @@ public class Messages {
 	public static String swf_AuthorizationDescription;
 	public static String swf_Explanation;
 	public static String swf_Explanation2;
+	public static String swf_ConfigurationLocation;
 	public static String swf_AuthenticationGroup;
 	public static String swf_Username;
 	public static String swf_Password;

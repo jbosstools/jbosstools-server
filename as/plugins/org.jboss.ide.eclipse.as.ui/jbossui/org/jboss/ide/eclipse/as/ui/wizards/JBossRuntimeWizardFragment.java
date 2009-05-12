@@ -25,18 +25,27 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -46,13 +55,18 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -66,6 +80,8 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
@@ -73,6 +89,7 @@ import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 /**
  * @author Stryker
@@ -83,22 +100,29 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private boolean beenEntered = false;
 	
 	
-	private Label nameLabel, homeDirLabel, installedJRELabel, configLabel,
-			explanationLabel;
+	private Label nameLabel, homeDirLabel, 
+			installedJRELabel, explanationLabel;
 	private Text nameText, homeDirText;
 	private Combo jreCombo;
 	private int jreComboIndex;
 	private Button homeDirButton, jreButton;
-	private Composite nameComposite, homeDirComposite, jreComposite,
-			configComposite, cloneComposite;
-	private String name, homeDir, config;
+	private Composite nameComposite, homeDirComposite, jreComposite;
+	private String name, homeDir;
+
+	// Configuration stuff
+	private Composite configComposite;
+	private Group configGroup;
+	private Label configDirLabel;
+	private Text configDirText;
+	private JBossConfigurationTableViewer configurations;
+	private Button configCopy, configBrowse, configDelete;
+	private String configDirTextVal;
 
 	// jre fields
 	protected ArrayList<IVMInstall> installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
 	private IVMInstall selectedVM;
-	private JBossConfigurationTableViewer configurations;
 	private String originalName;
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
@@ -113,7 +137,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		createHomeComposite(main);
 		createJREComposite(main);
 		createConfigurationComposite(main);
-		createCloneComposite(main);
 		fillWidgets();
 
 		// make modifications to parent
@@ -163,14 +186,29 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			originalName = rt.getRuntime().getName();
 			nameText.setText(originalName);
 			name = originalName;
-			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
-			homeDir = (value != null && value.length() != 0) ? value : rt.getRuntime().getLocation().toOSString();
+			
+			if( rt.getRuntime().getLocation() == null ) {
+				// new runtime creation
+				Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+				String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
+				
+				String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
+				? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
+				String version = rt.getRuntime().getRuntimeType().getVersion();
+				locationDefault += version + ".x"; //$NON-NLS-1$
+				
+				homeDir = (value != null && value.length() != 0) ? value : locationDefault;
+			} else {
+				// old runtime, load from it
+				homeDir = rt.getRuntime().getLocation().toOSString();
+			}
 			homeDirText.setText(homeDir);
+			
 			((IRuntimeWorkingCopy)rt.getRuntime()).setLocation(new Path(homeDir));
-			config = rt.getJBossConfiguration();
-			configurations.setConfiguration(config);
-			configLabel.setText(Messages.wf_ConfigLabel);
+			String dirText = rt.getConfigLocation();
+			configDirText.setText(dirText == null ? IConstants.SERVER : dirText);
+			configurations.setConfiguration(rt.getJBossConfiguration() == null 
+					? IConstants.DEFAULT_CONFIGURATION : rt.getJBossConfiguration());
 
 			if (rt.isUsingDefaultJRE()) {
 				jreCombo.select(0);
@@ -382,107 +420,167 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	private void createConfigurationComposite(Composite main) {
+		UIUtil u = new UIUtil(); // top bottom left right
 		configComposite = new Composite(main, SWT.NONE);
-
-		FormData cData = new FormData();
-		cData.left = new FormAttachment(0, 5);
-		cData.right = new FormAttachment(100, -5);
-		cData.top = new FormAttachment(jreComposite, 10);
-		cData.bottom = new FormAttachment(100, -5);
-		configComposite.setLayoutData(cData);
-
+		configComposite.setLayoutData(u.createFormData(
+				jreComposite, 10, 100, -5, 0, 5, 100, -5));
 		configComposite.setLayout(new FormLayout());
+		
+		configGroup = new Group(configComposite, SWT.DEFAULT);
+		configGroup.setText(Messages.wf_ConfigLabel);
+		configGroup.setLayoutData(u.createFormData(
+				0, 0, 100, 0, 0, 0, 100, 0));
+		configGroup.setLayout(new FormLayout());
+		
+		configDirLabel = new Label(configGroup, SWT.NONE);
+		configDirLabel.setText(Messages.directory);
+		configDirText = new Text(configGroup, SWT.BORDER);
 
-		configLabel = new Label(configComposite, SWT.NONE);
-		configLabel.setText(Messages.wf_ConfigLabel);
-
-		configurations = new JBossConfigurationTableViewer(configComposite,
-				SWT.BORDER | SWT.SINGLE);
-
-		FormData labelData = new FormData();
-		labelData.left = new FormAttachment(0, 5);
-		configLabel.setLayoutData(labelData);
-
-		FormData viewerData = new FormData();
-		viewerData.left = new FormAttachment(0, 5);
-		viewerData.right = new FormAttachment(100, -5);
-		viewerData.top = new FormAttachment(configLabel, 5);
-		viewerData.bottom = new FormAttachment(100, -5);
-
-		configurations.getTable().setLayoutData(viewerData);
-
-		configurations.getTable().addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
+		configurations = new JBossConfigurationTableViewer(configGroup,
+		SWT.BORDER | SWT.SINGLE);
+		
+		configBrowse = new Button(configGroup, SWT.DEFAULT);
+		configCopy = new Button(configGroup, SWT.DEFAULT);
+		configDelete = new Button(configGroup, SWT.DEFAULT);
+		configBrowse.setText(Messages.browse);
+		configCopy.setText(Messages.copy);
+		configDelete.setText(Messages.delete);
+		
+		// Organize them
+		configDirLabel.setLayoutData(u.createFormData(
+				2, 5, null, 0, 0, 5, null, 0));
+		configDirText.setLayoutData(u.createFormData(
+				0, 5, null, 0, configDirLabel, 5, configBrowse, -5));
+		configBrowse.setLayoutData(u.createFormData(
+				0, 5, null, 0, configurations.getTable(), 5, 100, -5));
+		configurations.getTable().setLayoutData(u.createFormData(
+				configDirText, 5, 100,-5, 0,5, 80, 0));
+		configCopy.setLayoutData(u.createFormData(
+				configBrowse, 5, null, 0, configurations.getTable(), 5, 100, -5));
+		configDelete.setLayoutData(u.createFormData(
+				configCopy, 5, null, 0, configurations.getTable(), 5, 100, -5));
+		
+		configDirText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
 				updatePage();
-			}
-
+			} 
+		});
+		
+		configBrowse.addSelectionListener(new SelectionListener(){
 			public void widgetSelected(SelectionEvent e) {
-				updatePage();
+				configBrowsePressed();
 			}
-
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
 		});
 
+		configCopy.addSelectionListener(new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				configCopyPressed();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		configDelete.addSelectionListener(new SelectionListener(){
+			public void widgetSelected(SelectionEvent e) {
+				configDeletePressed();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		
+		configurations.addSelectionChangedListener(new ISelectionChangedListener(){
+			public void selectionChanged(SelectionChangedEvent event) {
+				updateErrorMessage();
+				configDelete.setEnabled(!((IStructuredSelection)configurations.getSelection()).isEmpty());
+				configCopy.setEnabled(!((IStructuredSelection)configurations.getSelection()).isEmpty());
+			}
+		});
 	}
 	
-	private void createCloneComposite(Composite main) {
-		IJBossServerRuntime rt = getRuntime();
-		if (rt != null) {
-
-			cloneComposite = new Composite(main, SWT.NONE);
-			FormData cData = new FormData();
-			cData.left = new FormAttachment(0, 5);
-			cData.right = new FormAttachment(100, -5);
-			cData.top = new FormAttachment(configComposite, 5);
-			cData.bottom = new FormAttachment(100, -5);
-			cloneComposite.setLayoutData(cData);
-
-			cloneComposite.setLayout(new FormLayout());
-			Button cloneButton = new Button(cloneComposite, SWT.CHECK);
-			cloneButton.setSelection(false);
-			cloneButton.setText("Clone this configuration");
-			cData = new FormData();
-			cData.left = new FormAttachment(0, 5);
-			cData.right = new FormAttachment(100, -5);
-			cData.top = new FormAttachment(0, 5);
-			cData.bottom = new FormAttachment(100, -5);
-			cloneButton.setLayoutData(cData);
-			
-			Button intoConfigButton = new Button(cloneComposite, SWT.RADIO);
-			Button intoLocationButton = new Button(cloneComposite, SWT.RADIO);
-			Text newConfigName = new Text(cloneComposite, SWT.DEFAULT);
-			Text newLocation = new Text(cloneComposite, SWT.DEFAULT);
-			
-			
-			intoConfigButton.setText("new configuration name");
-			intoLocationButton.setText("arbitrary location");
-			
-			
-			
-			
-		} else {
-			// TODO Display something useful in edit-runtime wizard
+	protected void configBrowsePressed() {
+		String folder = new Path(configDirText.getText()).isAbsolute() ? 
+				configDirText.getText() : new Path(homeDir).append(configDirText.getText()).toString();
+		File file = new File(folder);
+		if (!file.exists()) {
+			file = null;
 		}
-	}
 
-	private void updatePage() {
-		updateErrorMessage();
-		if (!isHomeValid()) {
-			configurations.getControl().setEnabled(false);
-			configurations.setJBossHome(homeDirText.getText());
-		} else {
-			configurations.getControl().setEnabled(true);
-			if( !homeDirText.getText().equals(configurations.getInput())) {
-				configurations.setJBossHome(homeDirText.getText());
-				configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
+		File directory = getDirectory(file, homeDirComposite.getShell());
+		if (directory != null) {
+			if(directory.getAbsolutePath().startsWith(new Path(homeDir).toString())) {
+				String result = directory.getAbsolutePath().substring(homeDir.length());
+				configDirText.setText(new Path(result).makeRelative().toString());
+			} else {
+				configDirText.setText(directory.getAbsolutePath());
 			}
 		}
+	}
+	protected void configCopyPressed() {
+		CopyConfigurationDialog d = new CopyConfigurationDialog(configCopy.getShell(), homeDir, configDirText.getText(), configurations.getCurrentlySelectedConfiguration());
+		if(d.open() == 0 ) {
+			IPath source = new Path(configDirText.getText());
+			if( !source.isAbsolute())
+				source = new Path(homeDir).append(source);
+			source = source.append(configurations.getCurrentlySelectedConfiguration());
+			
+			IPath dest = new Path(d.getNewDest());
+			if( !dest.isAbsolute())
+				dest = new Path(homeDir).append(dest);
+			dest = dest.append(d.getNewConfig());
+			dest.toFile().mkdirs();
+			org.jboss.tools.jmx.core.util.FileUtil.copyDir(source.toFile(), dest.toFile());
+			configDirText.setText(d.getNewDest());
+			configurations.setSelection(new StructuredSelection(d.getNewConfig()));
+		}
+		
+	}
+	protected void configDeletePressed() {
+        MessageDialog dialog = new MessageDialog(configBrowse.getShell(), 
+        		"Delete Configuration?", null,
+        		"Are you sure you want to delete this folder? This cannot be undone.", 
+                MessageDialog.WARNING, new String[] { IDialogConstants.YES_LABEL,
+                        IDialogConstants.NO_LABEL }, 0); // yes is the default
+        if(dialog.open() == 0) {
+        	String config = configurations.getCurrentlySelectedConfiguration();
+        	String configDir = configDirText.getText();
+        	File folder;
+        	if( !new Path(configDir).isAbsolute())
+        		folder = new Path(homeDir).append(configDir).append(config).toFile();
+        	else
+        		folder = new Path(configDir).append(config).toFile();
+        	 
+        	FileUtil.completeDelete(folder);
+        	configurations.refresh();
+        	updatePage();
+        }
+	}
+
+	// Launchable only from UI thread
+	private void updatePage() {
+		String folder;
+		if (!isHomeValid()) {
+			configurations.getControl().setEnabled(false);
+			folder = homeDirText.getText();
+		} else {
+			IPath p = new Path(configDirText.getText());
+			if( p.isAbsolute()) 
+				folder = p.toString();
+			else 
+				folder = new Path(homeDirText.getText()).append(p).toString();
+		}
+		configurations.setFolder(folder);
+		File f = new File(folder);
+		configurations.getControl().setEnabled(f.exists() && f.isDirectory());
+		configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
 
 		int sel = jreCombo.getSelectionIndex();
 		if (sel > 0)
 			selectedVM = installedJREs.get(sel-1);
 		else
 			selectedVM = null;
+		configDirTextVal = configDirText.getText();
+		updateErrorMessage();
 	}
 
 	private void updateErrorMessage() {
@@ -518,6 +616,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		if (jreComboIndex < 0)
 			return Messages.rwf_NoVMSelected;
+		
+		if( configurations.getSelection().isEmpty())
+			return "User must select a valid configuration";
 
 		return null;
 	}
@@ -554,7 +655,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		}
 	}
 
-	protected File getDirectory(File startingDirectory, Shell shell) {
+	protected static File getDirectory(File startingDirectory, Shell shell) {
 		DirectoryDialog fileDialog = new DirectoryDialog(shell, SWT.OPEN);
 		if (startingDirectory != null) {
 			fileDialog.setFilterPath(startingDirectory.getPath());
@@ -638,6 +739,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				IJBossServerRuntime.class, new NullProgressMonitor());
 		srt.setVM(selectedVM);
 		srt.setJBossConfiguration(configurations.getSelectedConfiguration());
+		srt.setConfigLocation(configDirTextVal);
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 
@@ -670,5 +772,157 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				return runtimes[i];
 		}
 		return null;
+	}
+	
+	
+	public static class CopyConfigurationDialog extends TitleAreaDialog {
+		private String origHome, origDest, origConfig;
+		private String newDest, newConfig;
+		private Text destText;
+		protected CopyConfigurationDialog(Shell parentShell, String home, 
+				String dir, String config) {
+			super(new Shell(parentShell));
+			origHome = home;
+			origDest = dir;
+			origConfig = config;
+		}
+		
+		protected Control createDialogArea(Composite parent) {
+			Composite c = (Composite) super.createDialogArea(parent);
+			Composite main = new Composite(c, SWT.NONE);
+			main.setLayoutData(new GridData(GridData.FILL_BOTH));
+			main.setLayout(new FormLayout());
+ 
+			setCleanMessage();
+
+			Label nameLabel = new Label(main, SWT.NONE);
+			nameLabel.setText(Messages.wf_NameLabel);
+
+			final Text nameText = new Text(main, SWT.BORDER);
+			
+			Label destLabel = new Label(main, SWT.NONE);
+			destLabel.setText(Messages.rwf_DestinationLabel);
+
+			destText = new Text(main, SWT.BORDER);
+
+			Button browse = new Button(main, SWT.PUSH);
+			browse.setText(Messages.browse);
+
+			Point nameSize = new GC(nameLabel).textExtent(nameLabel.getText());
+			Point destSize = new GC(destLabel).textExtent(destLabel.getText());
+			Control wider = nameSize.x > destSize.x ? nameLabel : destLabel;
+			
+			nameText.setLayoutData(UIUtil.createFormData2(
+					0,13,null,0,wider,5,100,-5));
+			nameLabel.setLayoutData(UIUtil.createFormData2(
+					0,15,null,0,0,5,null,0));
+			destText.setLayoutData(UIUtil.createFormData2(
+					nameText,5,null,0,wider,5,browse,-5));
+			destLabel.setLayoutData(UIUtil.createFormData2(
+					nameText,7,null,0,0,5,null,0));
+			browse.setLayoutData(UIUtil.createFormData2( 
+					nameText,5,null,0,null,0,100,-5));
+			
+			nameText.addModifyListener(new ModifyListener(){
+				public void modifyText(ModifyEvent e) {
+					newConfig = nameText.getText();
+					validate();
+				}
+			});
+			destText.addModifyListener(new ModifyListener(){
+				public void modifyText(ModifyEvent e) {
+					newDest = destText.getText();
+					validate();
+				}
+			});
+			browse.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					IPath p = new Path(newDest);
+					if( !p.isAbsolute())
+						p = new Path(origHome).append(newDest);
+					File file = p.toFile();
+					if (!file.exists()) { 
+						file = null;
+					}
+
+					File directory = getDirectory(file, getShell());
+					if (directory != null) {
+						IPath newP = new Path(directory.getAbsolutePath());
+						IPath result;
+						if( newP.toOSString().startsWith(new Path(origHome).toOSString()))
+							result = newP.removeFirstSegments(new Path(origHome).segmentCount());
+						else
+							result = newP;
+						destText.setText(result.toString());
+					}
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+			
+			
+			
+			destText.setText(origDest);
+			nameText.setText(findNewest(origConfig + "_copy")); // TODO increment
+			return c;
+		}
+		
+		public void validate() {
+			boolean valid = false;
+			IPath p = null;
+			if( newDest != null && newConfig != null ) {
+				p = new Path(newDest);
+				if( !p.isAbsolute())
+					p = new Path(origHome).append(newDest);
+				if( !p.append(newConfig).toFile().exists()) 
+					valid = true;
+
+			}
+			if( !valid ) {
+				if( newDest == null || newConfig == null ) {
+					setMessage("All fields must be completed.", IMessageProvider.ERROR);
+				} else {
+					setMessage("The output folder already exists: " + p.append(newConfig).toString(), IMessageProvider.ERROR);
+				}
+			} else {
+				setCleanMessage();
+			}
+			if( getOKButton() != null ) 
+				getOKButton().setEnabled(valid);
+		}
+		
+		protected void setCleanMessage() {
+			setMessage(NLS.bind(Messages.rwf_CopyConfigLabel, origConfig, origDest));
+		}
+		// Only to be used in initializing dialog
+		protected String findNewest(String suggested) {
+			IPath p = new Path(origDest);
+			if( !p.isAbsolute())
+				p = new Path(origHome).append(origDest);
+			if( p.append(suggested).toFile().exists()) {
+				int i = 1;
+				while(p.append(suggested + i).toFile().exists())
+					i++;
+				return suggested + i;
+			}
+			return suggested;
+		}
+		
+		protected Point getInitialSize() {
+			return new Point(500, super.getInitialSize().y);
+		}
+
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Copy a Configuration");
+		}
+
+		public String getNewDest() {
+			return newDest;
+		}
+		
+		public String getNewConfig() {
+			return newConfig;
+		}
 	}
 }

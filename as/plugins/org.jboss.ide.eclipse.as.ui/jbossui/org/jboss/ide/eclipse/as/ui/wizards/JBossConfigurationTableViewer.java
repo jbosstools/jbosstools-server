@@ -30,6 +30,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
@@ -37,7 +38,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 
 /**
@@ -46,8 +46,6 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 public class JBossConfigurationTableViewer extends TableViewer {
 	// private String jbossHome;
 	private String selectedConfiguration;
-	private WizardFragment fragment;
-
 	public JBossConfigurationTableViewer(Composite parent) {
 		super(parent);
 		init();
@@ -63,9 +61,8 @@ public class JBossConfigurationTableViewer extends TableViewer {
 		init();
 	}
 
-	public void setJBossHome(String jbossHome) {
-		// this.jbossHome = jbossHome;
-		setInput(jbossHome);
+	public void setFolder(String folder) {
+		setInput(folder);
 	}
 
 	public String getSelectedConfiguration() {
@@ -73,20 +70,7 @@ public class JBossConfigurationTableViewer extends TableViewer {
 	}
 
 	public void setConfiguration(String defaultConfiguration) {
-		int item = -1;
-		TableItem items[] = getTable().getItems();
-		for (int i = 0; i < items.length; i++) {
-			if (items[i] != null && items[i].getText() != null
-					&& items[i].getText().equals(defaultConfiguration)) {
-				item = i;
-				break;
-			}
-		}
-
-		if (item != -1) {
-			getTable().setSelection(item);
-		}
-
+		setSelection(new StructuredSelection(defaultConfiguration));
 		selectedConfiguration = defaultConfiguration;
 	}
 
@@ -114,10 +98,6 @@ public class JBossConfigurationTableViewer extends TableViewer {
 
 	protected void configurationSelected() {
 		selectedConfiguration = getCurrentlySelectedConfiguration();
-
-		if (fragment != null) {
-			fragment.updateChildFragments();
-		}
 	}
 
 	protected class ConfigurationProvider implements
@@ -132,8 +112,7 @@ public class JBossConfigurationTableViewer extends TableViewer {
 
 		public Object[] getElements(Object inputElement) {
 			ArrayList<String> configList = new ArrayList<String>();
-			File serverDirectory = new File(inputElement.toString()
-					+ File.separator + "server");
+			File serverDirectory = new File(inputElement.toString());
 
 			if (serverDirectory.exists()) {
 
@@ -180,9 +159,5 @@ public class JBossConfigurationTableViewer extends TableViewer {
 		public String getText(Object element) {
 			return (String) element;
 		}
-	}
-
-	public void setWizardFragment(WizardFragment fragment) {
-		this.fragment = fragment;
 	}
 }
