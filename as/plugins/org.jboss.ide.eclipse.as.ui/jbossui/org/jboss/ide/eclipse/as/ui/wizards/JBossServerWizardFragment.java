@@ -202,7 +202,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 		IServer saved = serverWC.save(false, new NullProgressMonitor());
 		getTaskModel().putObject(TaskModel.TASK_SERVER, saved);
-		ServerUtil.createStandardFolders(saved);
 	}
 	
 	private IJBossServerRuntime getRuntime() {

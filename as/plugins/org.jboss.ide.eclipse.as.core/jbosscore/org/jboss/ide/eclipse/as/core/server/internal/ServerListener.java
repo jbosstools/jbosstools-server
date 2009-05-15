@@ -49,6 +49,7 @@ public class ServerListener extends UnitedServerListener {
 	}
 	
 	public void serverAdded(IServer server) {
+		ServerUtil.createStandardFolders(server);
 	}
 
 	public void serverRemoved(IServer server) {
