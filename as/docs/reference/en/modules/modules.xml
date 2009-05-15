@@ -58,16 +58,6 @@
 				the <link linkend="Project_archivesView">Project Archives view</link> and customize
 				packaging yourself.</para>
 			
-			<para>You can also use the "Finger touch" for a quick restart of the project without restarting the server:</para>
-			<figure>
-				<title>Finger Touch button</title>
-				<mediaobject>
-					<imageobject>
-						<imagedata fileref="images/modules/modules_8_finger_touch.png"/>
-					</imageobject>
-				</mediaobject>
-			</figure>	        
-			<para>The "Finger" touches descriptors dependent on project (i.e. web.xml for WAR, application.xml for EAR,  jboss-esb.xml in ESB projects).</para>
 			
 			
 		</section>
@@ -189,6 +179,19 @@
 			</emphasis> file, is to enable the builder for that project. This is done by either
 			changing the global preferences for the <property>Archives View</property>, or by
 			enabling project-specific preferences and ensuring the builder is on.</para>
+		
+		<para>You can also use the "Finger touch" button for a quick restart of the project without restarting the server:</para>
+		<figure>
+			<title>Finger Touch button</title>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="images/modules/modules_8_finger_touch.png"/>
+				</imageobject>
+			</mediaobject>
+		</figure>	        
+		<para>The "Finger" touches descriptors dependent on project (i.e. web.xml for WAR, application.xml for EAR,  jboss-esb.xml in ESB projects).</para>
+		
+		
 		<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
 			server.</para>
 	</section>
