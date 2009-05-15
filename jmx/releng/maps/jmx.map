@@ -1,0 +1,7 @@
+feature@org.jboss.tools.jmx.sdk.feature=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/features/org.jboss.tools.jmx.sdk.feature
+feature@org.jboss.tools.jmx.feature=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/features/org.jboss.tools.jmx.feature
+plugin@org.jboss.tools.jmx.core=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/plugins/org.jboss.tools.jmx.core
+plugin@org.jboss.tools.jmx.ui=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/plugins/org.jboss.tools.jmx.ui
+plugin@org.jboss.tools.jmx.core.test=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.core.test
+plugin@org.jboss.tools.jmx.ui.test=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.ui.test
+plugin@org.jboss.tools.jmx.ui.test.interactive=SVN,,http://anonsvn.jboss.org/repos,,jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.ui.test.interactive
