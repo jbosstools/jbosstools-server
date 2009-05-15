@@ -25,11 +25,11 @@ for a full listing of individual contributors.
    </url>
 
    <includes
-         id="org.jboss.tools.jmx"
+         id="org.jboss.tools.jmx.feature"
          version="0.0.0"/>
 
    <includes
-         id="org.jboss.tools.jmx.source"
+         id="org.jboss.tools.jmx.source.feature"
          version="0.0.0"/>
 
 </feature>
