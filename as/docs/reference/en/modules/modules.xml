@@ -57,6 +57,19 @@
 				directory. For quicker smarter deployment, you will need to create archives using
 				the <link linkend="Project_archivesView">Project Archives view</link> and customize
 				packaging yourself.</para>
+			
+			<para>You can also use the "Finger touch" for a quick restart of the project without restarting the server:</para>
+			<figure>
+				<title>Finger Touch button</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/modules/modules_8_finger_touch.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>	        
+			<para>The "Finger" touches descriptors dependent on project (i.e. web.xml for WAR, application.xml for EAR,  jboss-esb.xml in ESB projects).</para>
+			
+			
 		</section>
 
 		<section id="single_file_deployment">
