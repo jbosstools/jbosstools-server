@@ -45,7 +45,7 @@ public class DirectoryScannerTest extends TestCase {
 		ResourcesUtils.deleteProject(proj.getName());
 	}
 	
-	public void testScanner() {
+	public void testScannerIterator() {
 		DirectoryScannerExtension scanner1 = 
 			DirectoryScannerFactory.createDirectoryScanner(
 					proj.getLocation().toOSString(), null, 
@@ -74,5 +74,25 @@ public class DirectoryScannerTest extends TestCase {
 		}
 		
 		assertEquals(results.length, iterated.size());
+	}
+	
+	public void testSingleFileScanner() {
+		DirectoryScannerExtension scanner1 = 
+			DirectoryScannerFactory.createDirectoryScanner(
+					proj.getLocation().append("Resources").append("images").toOSString(), null, 
+					"multiple_files.gif", "", null, 
+					false, 1.2, false);
+		scanner1.scan();
+		FileWrapper[] results = scanner1.getMatchedArray();
+		assertTrue(results != null && results.length == 1);
+
+		DirectoryScannerExtension scanner2 = 
+			DirectoryScannerFactory.createDirectoryScanner(
+					proj.getLocation().toOSString(), null, 
+					"Resources/images/multiple_files.gif", "", null, 
+					false, 1.2, false);
+		scanner2.scan();
+		FileWrapper[] results2 = scanner2.getMatchedArray();
+		assertTrue(results2 != null && results2.length == 1);
 	}
 }

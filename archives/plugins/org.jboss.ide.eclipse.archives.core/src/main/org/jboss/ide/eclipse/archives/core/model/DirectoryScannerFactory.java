@@ -112,7 +112,7 @@ public class DirectoryScannerFactory {
 
 	    protected File getChild(File file, String element) {
 	    	if( !fs.inWorkspace)
-	    		return super.getChild(file, element);
+	    		return new FileWrapper(file, new Path(file.getAbsolutePath()), fs.rootArchiveRelativePath);
 	    	FileWrapper pWrapper = (FileWrapper)file;
 	    	File child = super.getChild(file, element);
 	    	FileWrapper childWrapper = new FileWrapper(child, pWrapper.getWrapperPath().append(element), fs.rootArchiveRelativePath);
