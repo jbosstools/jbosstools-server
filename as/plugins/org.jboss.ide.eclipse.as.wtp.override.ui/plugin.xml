@@ -10,7 +10,7 @@
       		objectClass="org.eclipse.core.resources.IProject"
       		name="JEE Module Dependencies (JBT Beta)"
             class="org.jboss.ide.eclipse.as.wtp.override.ui.properypage.J2EEDependenciesPage"
-            id="org.eclipse.jst.j2ee.internal.J2EEDependenciesPage">
+            id="org.jboss.ide.eclipse.as.wtp.override.ui.J2EEDependenciesPage">
            <enabledWhen>
 			<and>
 				<adapt
