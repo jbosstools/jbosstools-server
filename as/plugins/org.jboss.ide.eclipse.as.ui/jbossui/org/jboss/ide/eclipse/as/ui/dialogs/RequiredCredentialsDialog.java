@@ -28,8 +28,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -40,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 
 /**
  * @author rob.stryker <rob.stryker@redhat.com>
@@ -78,12 +77,13 @@ public class RequiredCredentialsDialog extends Dialog {
 		passText.setEditable(true);
 		final Button saveCredentials = new Button(main, SWT.CHECK);
 		
-		top.setLayoutData(createFormData(0,5,null,0,0,5,100,-5));
-		userLabel.setLayoutData(createFormData(top, 10, null, 0, 0,5, 100, -5));
-		userText.setLayoutData(createFormData(userLabel, 5, null, 0, 0,5, 100, -5));
-		passLabel.setLayoutData(createFormData(userText, 10, null, 0, 0,5, 100, -5));
-		passText.setLayoutData(createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
-		saveCredentials.setLayoutData(createFormData(passText, 10, null, 0, 0,5, 100, -5));
+		UIUtil u = new UIUtil();
+		top.setLayoutData(u.createFormData(0,5,null,0,0,5,100,-5));
+		userLabel.setLayoutData(u.createFormData(top, 10, null, 0, 0,5, 100, -5));
+		userText.setLayoutData(u.createFormData(userLabel, 5, null, 0, 0,5, 100, -5));
+		passLabel.setLayoutData(u.createFormData(userText, 10, null, 0, 0,5, 100, -5));
+		passText.setLayoutData(u.createFormData(passLabel, 5, null, 0, 0,5, 100, -5));
+		saveCredentials.setLayoutData(u.createFormData(passText, 10, null, 0, 0,5, 100, -5));
 		
 		top.setText(Messages.credentials_warning);
 		userLabel.setText(Messages.swf_Username);
@@ -127,33 +127,6 @@ public class RequiredCredentialsDialog extends Dialog {
 		createButton(parent, IDialogConstants.CANCEL_ID, "Ignore", false);
 	}
 
-
-	private FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset, 
-			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
-		FormData data = new FormData();
-
-		if( topStart != null ) {
-			data.top = topStart instanceof Control ? new FormAttachment((Control)topStart, topOffset) : 
-				new FormAttachment(((Integer)topStart).intValue(), topOffset);
-		}
-
-		if( bottomStart != null ) {
-			data.bottom = bottomStart instanceof Control ? new FormAttachment((Control)bottomStart, bottomOffset) : 
-				new FormAttachment(((Integer)bottomStart).intValue(), bottomOffset);
-		}
-
-		if( leftStart != null ) {
-			data.left = leftStart instanceof Control ? new FormAttachment((Control)leftStart, leftOffset) : 
-				new FormAttachment(((Integer)leftStart).intValue(), leftOffset);
-		}
-
-		if( rightStart != null ) {
-			data.right = rightStart instanceof Control ? new FormAttachment((Control)rightStart, rightOffset) : 
-				new FormAttachment(((Integer)rightStart).intValue(), rightOffset);
-		}
-
-		return data;
-	}
 	
 	/**
 	 * @return the user
