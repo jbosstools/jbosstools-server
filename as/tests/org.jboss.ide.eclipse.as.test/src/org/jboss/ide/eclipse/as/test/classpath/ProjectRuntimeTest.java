@@ -77,10 +77,13 @@ public class ProjectRuntimeTest extends TestCase {
 	
 	protected void verifyPostRuntimeCPE(IJavaProject jp) throws CoreException {
 		IClasspathEntry[] entries = jp.getRawClasspath();
-		assertEquals(3, entries.length);
+		assertEquals(4, entries.length);
 		jp.getResolvedClasspath(false); // make sure it can resolve all
-		String[] required = new String[] { "org.eclipse.jst.server.core.container",
-				"basicwebproject", "org.eclipse.jst.j2ee.internal.web.container" };
+		String[] required = new String[] { 
+				"org.eclipse.jst.server.core.container",
+				"basicwebproject", 
+				"org.eclipse.jst.j2ee.internal.web.container",
+				"org.eclipse.jdt.launching.JRE_CONTAINER"};
 		verifyClasspathEntries(entries, required);
 	}
 
