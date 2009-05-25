@@ -75,13 +75,13 @@ public class ServiceXMLEditorUtil {
 	
 	public static String[] findAttributesFromMethods(IMethod[] methods, String attributeCurrentValue) {
 		ArrayList attributeNames = new ArrayList();
-		String getterPrefix = "get" + attributeCurrentValue;
+		String getterPrefix = "get" + attributeCurrentValue; //$NON-NLS-1$
 		
 		
 		for( int i = 0; i < methods.length; i++ ) {
 			if( methods[i].getElementName().startsWith(getterPrefix)) {
 				String atName = methods[i].getElementName().substring(3);
-				String setterName = "set" + atName;
+				String setterName = "set" + atName; //$NON-NLS-1$
 				for( int j = 0; j < methods.length; j++ ) {
 					if( methods[j].getElementName().equals(setterName)) {
 						// there's a getter and a setter... 

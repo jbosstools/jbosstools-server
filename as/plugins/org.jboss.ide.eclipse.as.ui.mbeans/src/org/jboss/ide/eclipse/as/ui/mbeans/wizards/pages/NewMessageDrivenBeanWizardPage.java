@@ -61,7 +61,7 @@ public class NewMessageDrivenBeanWizardPage extends NewTypeWizardPage
 
    public NewMessageDrivenBeanWizardPage()
    {
-      super(true, "New Message Driven Bean Page");
+      super(true, Messages.NewMessageDrivenBeanWizardPage_Name);
       setTitle(Messages.NewMessageBeanWizardMessage);
       setDescription(Messages.NewMessageBeanWizardDescription);
    }
@@ -99,7 +99,7 @@ public class NewMessageDrivenBeanWizardPage extends NewTypeWizardPage
       WorkbenchHelp.setHelp(composite, IJavaHelpContextIds.NEW_CLASS_WIZARD_PAGE);
 
       ArrayList superInterfaces = new ArrayList();
-      superInterfaces.add("javax.jms.MessageListener");
+      superInterfaces.add("javax.jms.MessageListener"); //$NON-NLS-1$
       setSuperInterfaces(superInterfaces, true);
    }
 
@@ -131,11 +131,11 @@ public class NewMessageDrivenBeanWizardPage extends NewTypeWizardPage
       ImportDeclaration importDecl = ast.newImportDeclaration();
       importDecl.setOnDemand(false);
       importDecl.setName(ast.newName(new String[]
-      {"javax", "ejb", "MessageDriven"}));
+      {"javax", "ejb", "MessageDriven"})); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       beanAstUnit.imports().add(importDecl);
 
       MarkerAnnotation sessionAnnotation = ast.newMarkerAnnotation();
-      sessionAnnotation.setTypeName(ast.newSimpleName("MessageDriven"));
+      sessionAnnotation.setTypeName(ast.newSimpleName("MessageDriven")); //$NON-NLS-1$
       TypeDeclaration type = (TypeDeclaration) beanAstUnit.types().get(0);
       type.modifiers().add(sessionAnnotation);
 

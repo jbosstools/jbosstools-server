@@ -25,8 +25,18 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.ui.mbeans.Messages"; //$NON-NLS-1$
+
+	public static String ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsAction;
+
+	public static String ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsDescription;
+
 	/* XML service editor */
 	public static String ServiceXMLAddAttributeTags;
+
+	public static String ServiceXMLEditorConfiguration_OccurrenceNameWithAttributes;
+
+	public static String ServiceXMLEditorConfiguration_UnableToDisplayInEditor;
 
 	/* MBean Wizard */
 
@@ -37,6 +47,8 @@ public class Messages extends NLS {
 	public static String NewMBeanClass;
 	public static String MBeanClassDescription;
 	public static String MBeanServiceXML;
+
+	public static String NewSessionBeanWizard_WindowTitle;
 
 	public static String NewSessionBeanWizardTitle;
 	public static String NewSessionBeanWizardBeanTypeLabel;
@@ -49,12 +61,16 @@ public class Messages extends NLS {
 	public static String NewSessionBeanWizardRemoteInterfaceNameLabel;
 	public static String NewSessionBeanWizardMessage;
 	public static String NewSessionBeanWizardDescription;
+	public static String NewMBeanWizard_CreatingTaskName;
+	public static String NewMBeanWizard_WindowTitle;
+	public static String NewMBeanWizard_XMLTaskName;
 	public static String NewMessageBeanWizardMessage;
 	public static String NewMessageBeanWizardDescription;
+
+	public static String NewMessageDrivenBeanWizardPage_Name;
 	
 
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.ui.mbeans.Messages",
-				Messages.class);
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 }

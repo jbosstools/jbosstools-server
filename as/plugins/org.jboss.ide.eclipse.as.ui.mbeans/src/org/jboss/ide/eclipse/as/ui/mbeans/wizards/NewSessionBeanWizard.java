@@ -30,6 +30,7 @@ import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jdt.internal.ui.wizards.NewElementWizard;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.mbeans.wizards.pages.NewSessionBeanWizardPage;
 
 /**
@@ -46,7 +47,7 @@ public class NewSessionBeanWizard extends NewElementWizard
    {
 	   super();
 	   setDefaultPageImageDescriptor(JavaPluginImages.DESC_WIZBAN_NEWCLASS);
-	   setWindowTitle("New Session Bean");
+	   setWindowTitle(Messages.NewSessionBeanWizard_WindowTitle);
    }
    
    public void init(IWorkbench workbench, IStructuredSelection selection)

@@ -190,7 +190,7 @@ public class ServiceXMLOutlineConfiguration extends
 			if( menuProviders == null ) {
 				ArrayList list = new ArrayList();
 				IExtensionRegistry registry = Platform.getExtensionRegistry();
-				IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLOutlineMenuProvider");
+				IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLOutlineMenuProvider"); //$NON-NLS-1$
 				for( int i = 0; i < cf.length; i++ ) {
 					try {
 						list.add(new OutlineMenuProvider(cf[i]));
@@ -226,7 +226,7 @@ public class ServiceXMLOutlineConfiguration extends
 	private static class OutlineMenuProvider {
 		private IServiceXMLOutlineActionProvider listener;
 		public OutlineMenuProvider(IConfigurationElement element) throws CoreException {
-			listener = (IServiceXMLOutlineActionProvider)element.createExecutableExtension("class");
+			listener = (IServiceXMLOutlineActionProvider)element.createExecutableExtension("class"); //$NON-NLS-1$
 		}
 		public void menuAboutToShow(IMenuManager manager, ISelection selection) {
 			if( listener != null ) listener.menuAboutToShow(manager, selection);

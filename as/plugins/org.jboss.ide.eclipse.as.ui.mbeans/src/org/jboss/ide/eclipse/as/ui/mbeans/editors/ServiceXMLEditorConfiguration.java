@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui.mbeans.editors;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentAssistProcessor;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImageHelper;
 import org.eclipse.wst.xml.ui.internal.editor.XMLEditorPluginImages;
 import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.util.BaseXMLHyperlinkUtil;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher;
 import org.jboss.ide.eclipse.as.ui.util.ServiceXMLEditorUtil;
@@ -115,10 +117,10 @@ public class ServiceXMLEditorConfiguration extends
 		}
 		
 		private class ChildOccurances {
-			public static final String ZERO_OR_ONE = "_ZERO_OR_ONE_";
-			public static final String ONE = "_ONE_";
-			public static final String ZERO_TO_INFINITY = "_ZERO_TO_INFINITY_";
-			public static final String ONE_TO_INFINITY = "_ONE_TO_INFINITY_";
+			public static final String ZERO_OR_ONE = "_ZERO_OR_ONE_"; //$NON-NLS-1$
+			public static final String ONE = "_ONE_"; //$NON-NLS-1$
+			public static final String ZERO_TO_INFINITY = "_ZERO_TO_INFINITY_"; //$NON-NLS-1$
+			public static final String ONE_TO_INFINITY = "_ONE_TO_INFINITY_"; //$NON-NLS-1$
 			
 			public String name;
 			public String numOccurances;
@@ -155,76 +157,76 @@ public class ServiceXMLEditorConfiguration extends
 				this.enumOptions = enumOptions;
 				this.mandatory = mandatory;
 				this.dataType = dataType;
-				this.defaultValue = defaultValue == null ? "" : defaultValue;
+				this.defaultValue = defaultValue == null ? "" : defaultValue; //$NON-NLS-1$
 			}
 			
 		}
 		
 		private void fillChildren() {
 			ArrayList<ChildOccurances> list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("loader-repository", ChildOccurances.ZERO_OR_ONE));
-			list.add(new ChildOccurances("local-directory", ChildOccurances.ZERO_TO_INFINITY));
-			list.add(new ChildOccurances("classpath", ChildOccurances.ZERO_TO_INFINITY));
-			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("server", list);
+			list.add(new ChildOccurances("loader-repository", ChildOccurances.ZERO_OR_ONE)); //$NON-NLS-1$
+			list.add(new ChildOccurances("local-directory", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			list.add(new ChildOccurances("classpath", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("server", list); //$NON-NLS-1$
 			
 			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("loader-repository-config", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("loader-repository", list);
+			list.add(new ChildOccurances("loader-repository-config", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("loader-repository", list); //$NON-NLS-1$
 			
-			children.put("loader-repository-config", new ArrayList<ChildOccurances>());
-			children.put("local-directory", new ArrayList<ChildOccurances>());
-			children.put("classpath", new ArrayList<ChildOccurances>());
-			
-			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("constructor", ChildOccurances.ZERO_OR_ONE));
-			list.add(new ChildOccurances("xmbean", ChildOccurances.ZERO_OR_ONE));
-			list.add(new ChildOccurances("attribute", ChildOccurances.ZERO_TO_INFINITY));
-			list.add(new ChildOccurances("depends", ChildOccurances.ZERO_TO_INFINITY));
-			list.add(new ChildOccurances("depends-list", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("mbean", list);
-			
-			children.put("xmbean", new ArrayList<ChildOccurances>());
+			children.put("loader-repository-config", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
+			children.put("local-directory", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
+			children.put("classpath", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
 			
 			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("arg", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("constructor", list);
+			list.add(new ChildOccurances("constructor", ChildOccurances.ZERO_OR_ONE)); //$NON-NLS-1$
+			list.add(new ChildOccurances("xmbean", ChildOccurances.ZERO_OR_ONE)); //$NON-NLS-1$
+			list.add(new ChildOccurances("attribute", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			list.add(new ChildOccurances("depends", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			list.add(new ChildOccurances("depends-list", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("mbean", list); //$NON-NLS-1$
 			
-			children.put("arg", new ArrayList<ChildOccurances>());
-			children.put("attribute", new ArrayList<ChildOccurances>());
-			children.put("property", new ArrayList<ChildOccurances>());
-			
-			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("depends", list);
+			children.put("xmbean", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
 			
 			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("depends-list-element", ChildOccurances.ONE_TO_INFINITY));
-			children.put("depends-list", list);
+			list.add(new ChildOccurances("arg", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("constructor", list); //$NON-NLS-1$
+			
+			children.put("arg", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
+			children.put("attribute", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
+			children.put("property", new ArrayList<ChildOccurances>()); //$NON-NLS-1$
 			
 			list = new ArrayList<ChildOccurances>();
-			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY));
-			children.put("depends-list-element", list);
+			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("depends", list); //$NON-NLS-1$
+			
+			list = new ArrayList<ChildOccurances>();
+			list.add(new ChildOccurances("depends-list-element", ChildOccurances.ONE_TO_INFINITY)); //$NON-NLS-1$
+			children.put("depends-list", list); //$NON-NLS-1$
+			
+			list = new ArrayList<ChildOccurances>();
+			list.add(new ChildOccurances("mbean", ChildOccurances.ZERO_TO_INFINITY)); //$NON-NLS-1$
+			children.put("depends-list-element", list); //$NON-NLS-1$
 			
 			
 		}
 		private void fillAttributes() {
-			attributes.put("server", new ArrayList());
+			attributes.put("server", new ArrayList()); //$NON-NLS-1$
 			
 			/*
 			 * <!ELEMENT loader-repository (#PCDATA | loader-repository-config)*>
 			 * <!ATTLIST loader-repository loaderRepositoryClass CDATA  #IMPLIED>
 			 */
-			attributes.put("loader-repository", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("loaderRepositoryClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("loader-repository", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("loaderRepositoryClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 			}));
 			
 			/*
 			 * <!ELEMENT loader-repository-config (#PCDATA)>
 			 * <!ATTLIST loader-repository-config configParserClass CDATA  #IMPLIED>
 			 */
-			attributes.put("loader-repository-config", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("configParserClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("loader-repository-config", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("configParserClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 			}));
 			
 			
@@ -232,8 +234,8 @@ public class ServiceXMLEditorConfiguration extends
 			 * <!ELEMENT local-directory EMPTY>
 			 *	<!ATTLIST local-directory path CDATA  #IMPLIED>
 			 */
-			attributes.put("local-directory", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("path", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("local-directory", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("path", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 			}));
 			
 			/*
@@ -242,9 +244,9 @@ public class ServiceXMLEditorConfiguration extends
 				<!ATTLIST classpath archives CDATA  #IMPLIED>
 			 */
 			
-			attributes.put("classpath", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("codebase", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED), 
-					new DTDAttributes("archives", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("classpath", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("codebase", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED),  //$NON-NLS-1$
+					new DTDAttributes("archives", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 			}));
 			
 
@@ -256,13 +258,13 @@ public class ServiceXMLEditorConfiguration extends
 				<!ATTLIST mbean xmbean-dd CDATA  #IMPLIED>
 				<!ATTLIST mbean xmbean-code CDATA  #IMPLIED>
 			 */
-			attributes.put("mbean", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("code", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED), 
-					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED), 
+			attributes.put("mbean", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("code", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED),  //$NON-NLS-1$
+					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED),  //$NON-NLS-1$
 					
-					new DTDAttributes("interface", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED), 
-					new DTDAttributes("xmbean-dd", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED), 
-					new DTDAttributes("xmbean-code", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+					new DTDAttributes("interface", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED),  //$NON-NLS-1$
+					new DTDAttributes("xmbean-dd", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED),  //$NON-NLS-1$
+					new DTDAttributes("xmbean-code", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 			}));
 
 
@@ -272,9 +274,9 @@ public class ServiceXMLEditorConfiguration extends
 				<!ATTLIST arg type  CDATA  #IMPLIED>
 				<!ATTLIST arg value CDATA  #REQUIRED>
 			 */
-			attributes.put("arg", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED),
-					new DTDAttributes("value", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED)
+			attributes.put("arg", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED), //$NON-NLS-1$
+					new DTDAttributes("value", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED) //$NON-NLS-1$
 			}));
 
 		
@@ -287,19 +289,19 @@ public class ServiceXMLEditorConfiguration extends
 				<!ATTLIST attribute attributeClass CDATA  #IMPLIED>
 				<!ATTLIST attribute serialDataType (text | javaBean | jbxb) 'text'>
 			 */
-			attributes.put("attribute", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED),
+			attributes.put("attribute", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED), //$NON-NLS-1$
 
-					new DTDAttributes("replace", DTDAttributes.ENUM_TYPE, 
-							DTDAttributes.IMPLIED, "true", new String[] { "true", "false" }),
+					new DTDAttributes("replace", DTDAttributes.ENUM_TYPE,  //$NON-NLS-1$
+							DTDAttributes.IMPLIED, "true", new String[] { "true", "false" }), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					
-					new DTDAttributes("trim", DTDAttributes.ENUM_TYPE, 
-							DTDAttributes.IMPLIED, "true", new String[] { "true", "false" }),
+					new DTDAttributes("trim", DTDAttributes.ENUM_TYPE,  //$NON-NLS-1$
+							DTDAttributes.IMPLIED, "true", new String[] { "true", "false" }), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-					new DTDAttributes("attributeClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED),
+					new DTDAttributes("attributeClass", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED), //$NON-NLS-1$
 
-					new DTDAttributes("serialDataType", DTDAttributes.ENUM_TYPE, 
-							DTDAttributes.IMPLIED, "text", new String[] { "text", "javaBean", "jbxb"})
+					new DTDAttributes("serialDataType", DTDAttributes.ENUM_TYPE,  //$NON-NLS-1$
+							DTDAttributes.IMPLIED, "text", new String[] { "text", "javaBean", "jbxb"}) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}));
 
 			
@@ -307,8 +309,8 @@ public class ServiceXMLEditorConfiguration extends
 				<!ELEMENT property (#PCDATA)>
 				<!ATTLIST property name CDATA #REQUIRED>
 			*/
-			attributes.put("property", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED)
+			attributes.put("property", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("name", DTDAttributes.CDATA_TYPE, DTDAttributes.REQUIRED) //$NON-NLS-1$
 			}));
 			
 			/*
@@ -317,9 +319,9 @@ public class ServiceXMLEditorConfiguration extends
 				<!ATTLIST depends optional-attribute-name CDATA  #IMPLIED>
 				<!ATTLIST depends proxy-type CDATA  #IMPLIED>
 			*/
-			attributes.put("depends", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("optional-attribute-name", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED),
-					new DTDAttributes("proxy-type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("depends", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("optional-attribute-name", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED), //$NON-NLS-1$
+					new DTDAttributes("proxy-type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 				}));
 			
 
@@ -327,8 +329,8 @@ public class ServiceXMLEditorConfiguration extends
 				<!ELEMENT depends-list (depends-list-element)+>
 				<!ATTLIST depends-list optional-attribute-name CDATA  #IMPLIED>
 			*/
-			attributes.put("depends-list", Arrays.asList(new DTDAttributes[] { 
-					new DTDAttributes("type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED)
+			attributes.put("depends-list", Arrays.asList(new DTDAttributes[] {  //$NON-NLS-1$
+					new DTDAttributes("type", DTDAttributes.CDATA_TYPE, DTDAttributes.IMPLIED) //$NON-NLS-1$
 				}));
 			
 
@@ -339,14 +341,14 @@ public class ServiceXMLEditorConfiguration extends
 			super.addEmptyDocumentProposals(contentAssistRequest);
 			
 			int beginPosition = contentAssistRequest.getReplacementBeginPosition();
-			String text = "<server>";
+			String text = "<server>"; //$NON-NLS-1$
 			int cursorPos = text.length();
 			contentAssistRequest.addProposal(new CompletionProposal(text,  beginPosition, 
 					0, cursorPos, null, text, null, null));
 			
-			text += "\n\t\n</server>";
+			text += "\n\t\n</server>"; //$NON-NLS-1$
 			contentAssistRequest.addProposal(new CompletionProposal(text,  beginPosition, 
-					0, cursorPos+2, null, text.replaceAll("\n", "").replaceAll("\t", ""), null, null));
+					0, cursorPos+2, null, text.replaceAll("\n", "").replaceAll("\t", ""), null, null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		
 		/**
@@ -361,7 +363,7 @@ public class ServiceXMLEditorConfiguration extends
 		protected void addTagNameProposals(ContentAssistRequest contentAssistRequest, int childPosition) {
 			String parentElement = contentAssistRequest.getParent().getNodeName();
 			String thisNode = contentAssistRequest.getNode().getNodeName();
-			if( thisNode.equals("#text")) thisNode = "";
+			if( thisNode.equals("#text")) thisNode = ""; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			ArrayList possibleNodes = children.get(parentElement);
 			ChildOccurances occ;
@@ -411,16 +413,16 @@ public class ServiceXMLEditorConfiguration extends
 			 */
 			
 			// <element></element>
-			String nName = (thisNode.getNodeName().equals("#text") ? "" : thisNode.getNodeName());
+			String nName = (thisNode.getNodeName().equals("#text") ? "" : thisNode.getNodeName()); //$NON-NLS-1$ //$NON-NLS-2$
 
 			
-			String emptyCompletionText = occ.name + ">";
+			String emptyCompletionText = occ.name + ">"; //$NON-NLS-1$
 			int cursorLoc = emptyCompletionText.length();
-			emptyCompletionText += "</" + occ.name + ">";
-			String descriptionText = "";
+			emptyCompletionText += "</" + occ.name + ">"; //$NON-NLS-1$ //$NON-NLS-2$
+			String descriptionText = ""; //$NON-NLS-1$
 
 			if( !isTagOpened ) {
-				emptyCompletionText = "<" + emptyCompletionText;
+				emptyCompletionText = "<" + emptyCompletionText; //$NON-NLS-1$
 				cursorLoc++;
 			}
 			descriptionText = occ.name;
@@ -434,26 +436,26 @@ public class ServiceXMLEditorConfiguration extends
 				List l = attributes.get(occ.name);
 				Iterator i = l.iterator();
 				cursorLoc = -1;
-				String attributes = "";
+				String attributes = ""; //$NON-NLS-1$
 				while( i.hasNext()) {
 					DTDAttributes attribute = (DTDAttributes)i.next();
 					if( attribute.mandatory == DTDAttributes.REQUIRED) {
-						attributes += " " + attribute.name + "=\"" + attribute.defaultValue + "\"";
-						if( cursorLoc == -1 && attribute.defaultValue.equals("")) {
+						attributes += " " + attribute.name + "=\"" + attribute.defaultValue + "\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						if( cursorLoc == -1 && attribute.defaultValue.equals("")) { //$NON-NLS-1$
 							cursorLoc = occ.name.length() + attributes.length() - 1;
 						}
 					}
 				}
 				
-				String requiredCompletionText = occ.name + attributes + "></" + occ.name + ">";
+				String requiredCompletionText = occ.name + attributes + "></" + occ.name + ">"; //$NON-NLS-1$ //$NON-NLS-2$
 
 				if( !isTagOpened ) {
-					requiredCompletionText = "<" + requiredCompletionText;
+					requiredCompletionText = "<" + requiredCompletionText; //$NON-NLS-1$
 					cursorLoc++;
 				}
-				descriptionText = occ.name + "  (with attributes)";
+				descriptionText = MessageFormat.format(Messages.ServiceXMLEditorConfiguration_OccurrenceNameWithAttributes, occ.name);
 
-				if( !attributes.equals("")) {
+				if( !attributes.equals("")) { //$NON-NLS-1$
 					contentAssistRequest.addProposal(new CompletionProposal(requiredCompletionText,  
 							beginPosition, nName.length(), cursorLoc != -1 ? cursorLoc : requiredCompletionText.length(), 
 							propImage, descriptionText, null, null));
@@ -492,7 +494,7 @@ public class ServiceXMLEditorConfiguration extends
 			while(i.hasNext()) {
 				DTDAttributes att = (DTDAttributes)i.next();
 				if( att.name.startsWith(match) && !activeAttributes.contains(att.name) && !alreadyAddedStrings.contains(att.name)) {
-					String txt = att.name + "=\"" + att.defaultValue + "\"";
+					String txt = att.name + "=\"" + att.defaultValue + "\""; //$NON-NLS-1$ //$NON-NLS-2$
 					contentAssistRequest.addProposal(new CompletionProposal(txt,  contentAssistRequest.getReplacementBeginPosition(), 
 							match.length(), txt.length()-1, attImage, att.name, null, null));
 				}
@@ -522,10 +524,10 @@ public class ServiceXMLEditorConfiguration extends
 				}
 			}
 			if( found ) {
-				if( elementName.equals("mbean") && attribute.getName().equals("code")) {
+				if( elementName.equals("mbean") && attribute.getName().equals("code")) { //$NON-NLS-1$ //$NON-NLS-2$
 					handleCodeClassNameCompletion(contentAssistRequest);
 				}
-				if( elementName.equals("attribute") && attribute.getName().equals("name")) {
+				if( elementName.equals("attribute") && attribute.getName().equals("name")) { //$NON-NLS-1$ //$NON-NLS-2$
 					handleAttributeNamesCompletion(contentAssistRequest);
 				}
 			}
@@ -534,7 +536,7 @@ public class ServiceXMLEditorConfiguration extends
 		protected void handleCodeClassNameCompletion(ContentAssistRequest contentAssistRequest) {
 			String match = contentAssistRequest.getMatchString();
 			String attributeCurrentValue;
-			if( match.startsWith("\"")) attributeCurrentValue = match.substring(1);
+			if( match.startsWith("\"")) attributeCurrentValue = match.substring(1); //$NON-NLS-1$
 			else attributeCurrentValue = match;
 			
 			ResultFilter filter = new ResultFilter() {
@@ -547,7 +549,7 @@ public class ServiceXMLEditorConfiguration extends
 						IType type = (IType)found;
 						String[] interfaces = type.getSuperInterfaceNames();
 						for( int i = 0; i < interfaces.length; i++ ) {
-							if( interfaces[i].equals(type.getElementName() + "MBean")) {
+							if( interfaces[i].equals(type.getElementName() + "MBean")) { //$NON-NLS-1$
 								return true;
 							}
 						}
@@ -568,14 +570,14 @@ public class ServiceXMLEditorConfiguration extends
 		protected void handleAttributeNamesCompletion(ContentAssistRequest contentAssistRequest) {
 			String match = contentAssistRequest.getMatchString();
 			String attributeCurrentValue;
-			if( match.startsWith("\"")) attributeCurrentValue = match.substring(1);
+			if( match.startsWith("\"")) attributeCurrentValue = match.substring(1); //$NON-NLS-1$
 			else attributeCurrentValue = match;
 
 			
 			Node node = contentAssistRequest.getNode();
 			Node mbeanNode = node.getParentNode();
 			NamedNodeMap mbeanAttributes = mbeanNode.getAttributes();
-			Node att = mbeanAttributes.getNamedItem("code");
+			Node att = mbeanAttributes.getNamedItem("code"); //$NON-NLS-1$
 			String codeClass = att.getNodeValue();
 			IType type = ServiceXMLEditorUtil.findType(codeClass);
 			if( type != null ) {
@@ -634,7 +636,7 @@ public class ServiceXMLEditorConfiguration extends
 			Node currentNode = getCurrentNode(document, region.getOffset() );
 			Attr attr = getCurrentAttrNode(currentNode, region.getOffset());
 			
-			if( currentNode.getNodeName().equals("mbean") && attr != null && attr.getName().equals("code")) {
+			if( currentNode.getNodeName().equals("mbean") && attr != null && attr.getName().equals("code")) { //$NON-NLS-1$ //$NON-NLS-2$
 
 				IJavaSearchScope scope = SearchEngine.createWorkspaceScope();
 				SearchPattern codePattern = SearchPattern.createPattern(attr.getValue(), 
@@ -685,7 +687,7 @@ public class ServiceXMLEditorConfiguration extends
 						EditorUtility.revealInEditor(part, element);
 					}
 				} catch (PartInitException e) {
-					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Unable to display element in editor.", e);
+					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, Messages.ServiceXMLEditorConfiguration_UnableToDisplayInEditor, e);
 					Activator.getDefault().getLog().log(status);
 				} 
 			}

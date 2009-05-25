@@ -57,7 +57,7 @@ public class PackageTypeSearcher {
 	private ResultFilter filter;
 	public PackageTypeSearcher(String string) {
 		fullString = string;
-		int lastDot = string.lastIndexOf(".");
+		int lastDot = string.lastIndexOf("."); //$NON-NLS-1$
 		if( lastDot == -1 ) {
 			packageName = string;
 			remainder = null;
@@ -178,7 +178,7 @@ public class PackageTypeSearcher {
 
 	            for (int i = 0; i < classFiles.length; i++) {
 	               String typeName = classFiles[i].getType().getElementName();
-	               if (typeName.equals(""))
+	               if (typeName.equals("")) //$NON-NLS-1$
 	                  continue;
 	               if (typeName.toLowerCase().startsWith(remainder.toLowerCase()) && (filter == null || filter.accept(classFiles[i].getType())))
 	                  returnList.add(classFiles[i].getType());
@@ -201,7 +201,7 @@ public class PackageTypeSearcher {
 	   }
 
 	   public ICompletionProposal[] generateProposals(int beginIndex) {
-		  return generateProposals(beginIndex, "", "");
+		  return generateProposals(beginIndex, "", "");  //$NON-NLS-1$//$NON-NLS-2$
 	   }
 
 	   public ICompletionProposal[] generateProposals(int beginIndex, 

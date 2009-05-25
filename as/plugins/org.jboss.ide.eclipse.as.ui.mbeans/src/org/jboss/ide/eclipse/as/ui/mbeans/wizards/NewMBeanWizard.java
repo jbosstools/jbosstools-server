@@ -98,10 +98,10 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 	private MBeanInterfacePage interfacePage;
 	private MBeanPage mbeanPage;
 	private NewFilePageExtension newFilePage;
-	private static String INTERFACE_NAME = "__INTERFACE_NAME__";
+	private static final String INTERFACE_NAME = "__INTERFACE_NAME__"; //$NON-NLS-1$
 	
 	public NewMBeanWizard() {
-	   setWindowTitle("New MBean Wizard");
+	   setWindowTitle(Messages.NewMBeanWizard_WindowTitle);
 	}
 
     public void createPageControls(Composite pageContainer) {
@@ -193,7 +193,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				try {
 					
-					monitor.beginTask("Creating Files", 100);
+					monitor.beginTask(Messages.NewMBeanWizard_CreatingTaskName, 100);
 					SubProgressMonitor interfaceMonitor = new SubProgressMonitor(monitor, 40);
 					SubProgressMonitor mbeanMonitor = new SubProgressMonitor(monitor, 40);
 					SubProgressMonitor xmlMonitor = new SubProgressMonitor(monitor, 20);
@@ -202,13 +202,13 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 					interfacePage.createType(interfaceMonitor);
 					mbeanPage.createType(mbeanMonitor);
 					
-					xmlMonitor.beginTask("XMLDescriptor", 1);
+					xmlMonitor.beginTask(Messages.NewMBeanWizard_XMLTaskName, 1);
 					if( mbeanPage.shouldCreateDescriptor()) {
-						newFilePage.setFileName(mbeanPage.getCreatedType().getElementName() + "-service.xml");
+						newFilePage.setFileName(mbeanPage.getCreatedType().getElementName() + "-service.xml"); //$NON-NLS-1$
 						
 						IPath fullPath = newFilePage.getContainerFullPath();
 
-						IPath newPath = new Path(fullPath.segment(0)).append("META-INF");
+						IPath newPath = new Path(fullPath.segment(0)).append("META-INF"); //$NON-NLS-1$
 						createContainer(newPath);
 						
 						newFilePage.setContainerFullPath(newPath);
@@ -281,9 +281,9 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		
 		newFilePage = new NewFilePageExtension(sel);
 		Preferences preference = XMLCorePlugin.getDefault().getPluginPreferences();
-		String ext = "xml";
+		String ext = "xml"; //$NON-NLS-1$
 		newFilePage.defaultFileExtension = "."+ext; //$NON-NLS-1$
-		newFilePage.filterExtensions = new String[] {"*.xml"};
+		newFilePage.filterExtensions = new String[] {"*.xml"}; //$NON-NLS-1$
 		addPage(newFilePage);
 		// 
 	}
@@ -316,7 +316,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 				String fieldName = null;
 				if( field == fMBeanNameDialogField ) {
 					String txt = fMBeanNameDialogField.getText();
-					fMBeanInterfaceNameDialogField.getTextControl(null).setText(txt + "MBean");
+					fMBeanInterfaceNameDialogField.getTextControl(null).setText(txt + "MBean"); //$NON-NLS-1$
 					fieldName = INTERFACE_NAME;
 					fTypeNameStatus = typeNameChanged(getTypeName());
 					fMBeanNameStatus = typeNameChanged(fMBeanNameDialogField.getText());
@@ -385,7 +385,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 		protected void handleFieldChanged(String fieldName) {
 			super.handleFieldChanged(fieldName);
 			
-			if( fieldName == INTERFACE_NAME) {
+			if( INTERFACE_NAME.equals(fieldName)) {
 				mbeanPage.setMBeanName(fMBeanNameDialogField.getText());
 			}
 			doStatusUpdate();
@@ -442,7 +442,7 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 				IResource resource= cu.getResource();
 
 				if (resource.exists()) {
-					status.setError(NewWizardMessages.NewTypeWizardPage_error_TypeNameExists + "(" + typeName + ")"); 
+					status.setError(NewWizardMessages.NewTypeWizardPage_error_TypeNameExists + "(" + typeName + ")");  //$NON-NLS-1$ //$NON-NLS-2$
 					return status;
 				}
 				URI location= resource.getLocationURI();
@@ -602,10 +602,10 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 
 			PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, charSet));
 			writer.println("<?xml version=\"1.0\" encoding=\"" + charSet + "\"?>"); //$NON-NLS-1$ //$NON-NLS-2$
-			writer.println("<server>");
-			writer.println("\t<mbean code=\"" + mbeanPage.getCreatedType().getFullyQualifiedName() + "\" name=\"your.domain:key=value\">");
-			writer.println("\t</mbean>");
-			writer.println("</server>");
+			writer.println("<server>"); //$NON-NLS-1$
+			writer.println("\t<mbean code=\"" + mbeanPage.getCreatedType().getFullyQualifiedName() + "\" name=\"your.domain:key=value\">"); //$NON-NLS-1$ //$NON-NLS-2$
+			writer.println("\t</mbean>"); //$NON-NLS-1$
+			writer.println("</server>"); //$NON-NLS-1$
 			writer.flush();
 			outputStream.close();
 

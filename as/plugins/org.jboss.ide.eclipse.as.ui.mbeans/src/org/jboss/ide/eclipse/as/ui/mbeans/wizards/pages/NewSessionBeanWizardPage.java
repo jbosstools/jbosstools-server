@@ -74,15 +74,15 @@ import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 public class NewSessionBeanWizardPage extends NewTypeWizardPage
 {
 
-   public static final String BEAN_PACKAGE_NAME = "NewSessionBeanWizard.beanPackageName";
+   public static final String BEAN_PACKAGE_NAME = "NewSessionBeanWizard.beanPackageName"; //$NON-NLS-1$
 
-   public static final String BEAN_NAME = "NewSessionBeanWizard.beanName";
+   public static final String BEAN_NAME = "NewSessionBeanWizard.beanName"; //$NON-NLS-1$
 
-   public static final String REMOTE_INTERFACE_PACKAGE_NAME = "NewSessionBeanWizard.remoteInterfacePackageName";
+   public static final String REMOTE_INTERFACE_PACKAGE_NAME = "NewSessionBeanWizard.remoteInterfacePackageName"; //$NON-NLS-1$
 
-   public static final String STATEFUL = "Stateful";
+   public static final String STATEFUL = "Stateful"; //$NON-NLS-1$
 
-   public static final String STATELESS = "Stateless";
+   public static final String STATELESS = "Stateless"; //$NON-NLS-1$
 
    private String remoteInterfacePackage, beanClass, remoteInterfaceName, beanPackage;
 
@@ -117,7 +117,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
       setDescription(Messages.NewSessionBeanWizardDescription);
       
       packageCompletionProcessor = new JavaPackageCompletionProcessor();
-      beanClass = "";
+      beanClass = ""; //$NON-NLS-1$
    }
 
    public void createControl(Composite parent)
@@ -228,7 +228,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
       fillAcrossColumns(beanNameText, nColumns - 1);
 
       Label sessionClassNameLabel = createLabel(composite, Messages.NewSessionBeanWizardBeanClassNameLabel);
-      beanClassName = createLabelWithImage(composite, "", JavaUI.getSharedImages().getImage(
+      beanClassName = createLabelWithImage(composite, "", JavaUI.getSharedImages().getImage( //$NON-NLS-1$
             ISharedImages.IMG_OBJS_CLASS), nColumns - 1);
    }
 
@@ -278,7 +278,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
       ControlContentAssistHelper.createTextContentAssistant(remoteInterfacePackageText, packageCompletionProcessor);
 
       createLabel(composite, Messages.NewSessionBeanWizardRemoteInterfaceNameLabel);
-      remoteInterfaceNameLabel = createLabelWithImage(composite, "", JavaUI.getSharedImages().getImage(
+      remoteInterfaceNameLabel = createLabelWithImage(composite, "", JavaUI.getSharedImages().getImage( //$NON-NLS-1$
             ISharedImages.IMG_OBJS_INTERFACE), nColumns - 1);
    }
 
@@ -307,13 +307,13 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
 
       ImportDeclaration importDecl = ast.newImportDeclaration();
       importDecl.setName(ast.newName(new String[]
-      {"javax", "ejb", beanType}));
+      {"javax", "ejb", beanType})); //$NON-NLS-1$ //$NON-NLS-2$
       importDecl.setOnDemand(false);
       beanAstUnit.imports().add(importDecl);
 
       importDecl = ast.newImportDeclaration();
 
-      String pkgElements[] = remoteInterfacePackage.split("\\.");
+      String pkgElements[] = remoteInterfacePackage.split("\\."); //$NON-NLS-1$
       String fullImport[] = new String[pkgElements.length + 1];
       System.arraycopy(pkgElements, 0, fullImport, 0, pkgElements.length);
       fullImport[fullImport.length - 1] = remoteInterfaceName;
@@ -348,11 +348,11 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
    public ICompilationUnit createRemoteInterface(IProgressMonitor monitor) throws CoreException, InterruptedException
    {
       // lame.
-      String source = "package " + remoteInterfacePackage + ";\n" + "\n" + "import javax.ejb.Remote;\n" + "\n"
-            + "@Remote\n" + "public interface " + remoteInterfaceName + " {\n" + "\n" + "}\n";
+      String source = "package " + remoteInterfacePackage + ";\n" + "\n" + "import javax.ejb.Remote;\n" + "\n" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            + "@Remote\n" + "public interface " + remoteInterfaceName + " {\n" + "\n" + "}\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 
-      return remoteInterfacePackageFragment.createCompilationUnit(remoteInterfaceName + ".java", source, true, monitor);
+      return remoteInterfacePackageFragment.createCompilationUnit(remoteInterfaceName + ".java", source, true, monitor); //$NON-NLS-1$
       //			AST ast = new AST();
       //			CompilationUnit unit = ast.newCompilationUnit();
       //			PackageDeclaration packageDeclaration = ast.newPackageDeclaration();
@@ -398,7 +398,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
          else if (fieldName.equals(BEAN_NAME))
          {
             remoteInterfaceName = beanNameText.getText();
-            beanClass = beanNameText.getText() + "Bean";
+            beanClass = beanNameText.getText() + "Bean"; //$NON-NLS-1$
          }
       }
       catch (CoreException e)
@@ -423,19 +423,19 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
          if (val.getSeverity() == IStatus.ERROR)
          {
             status.setError(NewWizardMessages.bind(NewWizardMessages.NewTypeWizardPage_error_InvalidPackageName, val
-                  .getMessage())); //$NON-NLS-1$
+                  .getMessage()));
             throw new CoreException(status);
          }
          else if (val.getSeverity() == IStatus.WARNING)
          {
             status.setWarning(NewWizardMessages.bind(
-                  NewWizardMessages.NewTypeWizardPage_warning_DiscouragedPackageName, val.getMessage())); //$NON-NLS-1$
+                  NewWizardMessages.NewTypeWizardPage_warning_DiscouragedPackageName, val.getMessage())); 
             // continue
          }
       }
       else
       {
-         status.setWarning(NewWizardMessages.NewTypeWizardPage_warning_DefaultPackageDiscouraged); //$NON-NLS-1$
+         status.setWarning(NewWizardMessages.NewTypeWizardPage_warning_DefaultPackageDiscouraged); 
       }
 
       IPackageFragmentRoot root = getPackageFragmentRoot();
@@ -454,7 +454,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
                   IPath packagePath = rootPath.append(packageName.replace('.', '/'));
                   if (outputPath.isPrefixOf(packagePath))
                   {
-                     status.setError(NewWizardMessages.NewTypeWizardPage_error_ClashOutputLocation); //$NON-NLS-1$
+                     status.setError(NewWizardMessages.NewTypeWizardPage_error_ClashOutputLocation); 
                      throw new CoreException(status);
                   }
                }
@@ -490,20 +490,20 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
 
       public TypeNameGetter()
       {
-         typeName = "";
+         typeName = ""; //$NON-NLS-1$
       }
 
       public void run()
       {
          if (beanNameText == null)
          {
-            typeName = "";
+            typeName = ""; //$NON-NLS-1$
             return;
          }
 
          if (!beanNameText.isDisposed())
          {
-            typeName = beanNameText.getText() + "Bean";
+            typeName = beanNameText.getText() + "Bean"; //$NON-NLS-1$
          }
       }
    }
@@ -522,7 +522,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
    {
       if (pkg != null && pkg.length() > 0)
       {
-         return pkg + "." + clazz;
+         return pkg + "." + clazz; //$NON-NLS-1$
       }
       else
          return clazz;
@@ -544,7 +544,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
 
             String beanName = beanNameText.getText();
             beanClassName.setText(getClassName(packageName, beanName)
-                  + (beanName != null && beanName.length() > 0 ? "Bean" : ""));
+                  + (beanName != null && beanName.length() > 0 ? "Bean" : "")); //$NON-NLS-1$ //$NON-NLS-2$
             remoteInterfaceNameLabel.setText(getClassName(interfacePackageName, beanName));
 
             updateRemoteInterfaceValues();

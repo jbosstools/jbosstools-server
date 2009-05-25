@@ -33,7 +33,7 @@ import org.osgi.framework.Bundle;
  * @author rob.stryker@jboss.com
  */
 public class SharedImages {
-	public static final String IMG_MBEAN = "mbean16";
+	public static final String IMG_MBEAN = "mbean16"; //$NON-NLS-1$
 
 	private static SharedImages instance;
 	
@@ -46,7 +46,7 @@ public class SharedImages {
 		
 		
 		Bundle pluginBundle = Activator.getDefault().getBundle();
-		descriptors.put(IMG_MBEAN, createImageDescriptor(pluginBundle, "icons/mbean16"));
+		descriptors.put(IMG_MBEAN, createImageDescriptor(pluginBundle, "icons/mbean16")); //$NON-NLS-1$
 		
 		Iterator iter = descriptors.keySet().iterator();
 

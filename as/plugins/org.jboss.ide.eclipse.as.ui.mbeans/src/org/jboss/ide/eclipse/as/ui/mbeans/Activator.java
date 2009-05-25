@@ -30,7 +30,7 @@ import org.osgi.framework.BundleContext;
 public class Activator extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui.mbeans";
+	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.ui.mbeans"; //$NON-NLS-1$
 
 	// The shared instance
 	private static Activator plugin;

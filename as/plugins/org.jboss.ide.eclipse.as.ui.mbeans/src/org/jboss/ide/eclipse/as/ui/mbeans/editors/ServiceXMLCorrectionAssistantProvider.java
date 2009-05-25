@@ -70,10 +70,10 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 		if( providers == null ) {
 			ArrayList list = new ArrayList();
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
-			IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLQuickFixProvider");
+			IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "ServiceXMLQuickFixProvider"); //$NON-NLS-1$
 			for( int i = 0; i < cf.length; i++ ) {
 				try {
-					list.add((IServiceXMLQuickFixProposalProvider)cf[i].createExecutableExtension("class"));
+					list.add((IServiceXMLQuickFixProposalProvider)cf[i].createExecutableExtension("class")); //$NON-NLS-1$
 				} catch( CoreException ce ) {
 					// don't even log
 				}
@@ -151,24 +151,24 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 		private String[] mbeanGetMissingAttributes( IDOMNode node ) {
 			Node parentNode = node.getParentNode();
 			
-			if( node.getNodeName().equals("mbean") || (node.getNodeName().equals("#text") && parentNode.getNodeName().equals("mbean"))) {
-				Node mbeanNode = node.getNodeName().equals("mbean") ? node : parentNode;
+			if( node.getNodeName().equals("mbean") || (node.getNodeName().equals("#text") && parentNode.getNodeName().equals("mbean"))) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				Node mbeanNode = node.getNodeName().equals("mbean") ? node : parentNode; //$NON-NLS-1$
 				NamedNodeMap attributes = mbeanNode.getAttributes();
 				for( int i = 0; i < attributes.getLength(); i++ ) {
-					if( attributes.item(i).getNodeName().equals("code")) {
+					if( attributes.item(i).getNodeName().equals("code")) { //$NON-NLS-1$
 						// we found our code element, now lets get the IType. 
 						String codeClass = attributes.item(i).getNodeValue();
 						IType type = ServiceXMLEditorUtil.findType(codeClass);
 						if( type != null ) {
 							IMethod[] methods = ServiceXMLEditorUtil.getAllMethods(type);
-							ArrayList attributeNames = new ArrayList(Arrays.asList(ServiceXMLEditorUtil.findAttributesFromMethods(methods, "")));
+							ArrayList attributeNames = new ArrayList(Arrays.asList(ServiceXMLEditorUtil.findAttributesFromMethods(methods, ""))); //$NON-NLS-1$
 							NodeList mbeanChildren = mbeanNode.getChildNodes();
 							
 							// count children named 'attribute'
 							for( int j = 0; j < mbeanChildren.getLength(); j++ ) {
-								if( mbeanChildren.item(j).getNodeName().equals("attribute")) {
+								if( mbeanChildren.item(j).getNodeName().equals("attribute")) { //$NON-NLS-1$
 									try {
-									Node t = mbeanChildren.item(j).getAttributes().getNamedItem("name");
+									Node t = mbeanChildren.item(j).getAttributes().getNamedItem("name"); //$NON-NLS-1$
 									String attName = t.getNodeValue();
 									attributeNames.remove(attName);
 									} catch( Exception e ) {
@@ -210,7 +210,7 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 			if( missing.length == 0 ) return;
 
 			Node parentNode = node.getParentNode();
-			Node mbeanNode = node.getNodeName().equals("mbean") ? node : parentNode;
+			Node mbeanNode = node.getNodeName().equals("mbean") ? node : parentNode; //$NON-NLS-1$
 
 			
 			// how many tabs?
@@ -218,24 +218,24 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 			StringBuffer attributeIndent = new StringBuffer();
 			StringBuffer mbeanClosingIndent = new StringBuffer();
 			boolean starting = true;
-			attributeIndent.append("\n");
-			mbeanClosingIndent.append("\n");
+			attributeIndent.append("\n"); //$NON-NLS-1$
+			mbeanClosingIndent.append("\n"); //$NON-NLS-1$
 			while( newParent != null && !(newParent instanceof DocumentImpl)) {
 				newParent = newParent.getParentNode();
-				attributeIndent.append("\t");
+				attributeIndent.append("\t"); //$NON-NLS-1$
 				if( starting ) 
 					starting = false;
 				else 
-					mbeanClosingIndent.append("\t");
+					mbeanClosingIndent.append("\t"); //$NON-NLS-1$
 			}
 			
 			
 			StringBuffer buf = new StringBuffer();
 			for( int i = 0; i < missing.length; i++ ) {
 				buf.append(attributeIndent);
-				buf.append("<attribute name=\"");
+				buf.append("<attribute name=\""); //$NON-NLS-1$
 				buf.append(missing[i]);
-				buf.append("\"></attribute>");
+				buf.append("\"></attribute>"); //$NON-NLS-1$
 			}
 			buf.append(mbeanClosingIndent);
 			

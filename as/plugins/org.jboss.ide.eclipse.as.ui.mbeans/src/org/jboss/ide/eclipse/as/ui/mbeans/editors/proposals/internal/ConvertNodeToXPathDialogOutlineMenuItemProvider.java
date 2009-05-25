@@ -27,6 +27,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.jboss.ide.eclipse.as.ui.dialogs.ConvertNodeToXPathDialog.ConvertNodeRunnable;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineActionProvider;
 import org.w3c.dom.Node;
 
@@ -56,8 +57,8 @@ public class ConvertNodeToXPathDialogOutlineMenuItemProvider implements
 					new ConvertNodeRunnable(n2, attName2).run();
 				}
 			};
-			temp.setText("Add to XPaths");
-			temp.setDescription("Add this element to the list of xpaths you can edit from the properties view.");
+			temp.setText(Messages.ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsAction);
+			temp.setDescription(Messages.ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsDescription);
 			manager.add(temp);
 		}
 	}
