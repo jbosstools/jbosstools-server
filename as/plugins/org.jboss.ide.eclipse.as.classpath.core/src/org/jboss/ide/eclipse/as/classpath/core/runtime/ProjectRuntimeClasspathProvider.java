@@ -11,6 +11,7 @@
 
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
 
 /**
@@ -108,7 +110,10 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			if( rt == null ) 
 				throw new CoreException(
 						new Status( IStatus.ERROR,  ClasspathCorePlugin.PLUGIN_ID, 
-								"Runtime " + path.segment(1) + " does not exist. This classpath container cannot be initialized. "));
+								MessageFormat
+										.format(
+												Messages.ProjectRuntimeClasspathProvider_runtime_does_not_exist,
+												path.segment(1))));
 		}
 
 		public IClasspathEntry[] getClasspathEntries() {
@@ -116,7 +121,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 		}
 
 		public String getDescription() {
-			return "All JBoss Libraries [" + (rt == null ? "null" : rt.getName()) + "]";
+			return MessageFormat.format(Messages.ProjectRuntimeClasspathProvider_all_jboss_libraries_description, (rt == null ? "null" : rt.getName())); //$NON-NLS-1$
 		}
 
 		public int getKind() {

@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jdt.core.IClasspathAttribute;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.osgi.service.prefs.BackingStoreException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -151,7 +152,7 @@ public final class ClasspathDecorationsManager {
 		try {
 			ep.flush();
 		} catch (BackingStoreException e) {
-			String msg = "Encountered an unexpected exception.";
+			String msg = Messages.ClasspathDecorationsManager_unexpected_exception;
 			ClasspathCorePlugin.log(msg, e);
 		}
 	}
@@ -173,7 +174,7 @@ public final class ClasspathDecorationsManager {
 			InputSource source = new InputSource(reader);
 			root = docbuilder.parse(source).getDocumentElement();
 		} catch (Exception e) {
-			String msg = "Encountered an unexpected exception.";
+			String msg = Messages.ClasspathDecorationsManager_unexpected_exception;
 			ClasspathCorePlugin.log(msg, e);
 			return map;
 		}

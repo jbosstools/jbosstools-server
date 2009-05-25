@@ -11,6 +11,7 @@
 
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -29,6 +30,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 /**
@@ -83,8 +85,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		}
 				
 		public String getDescription() {
-			if( path.segmentCount() < 4 ) return "JBoss Runtimes";
-			return "JBoss Runtimes (" + path.segment(2) + " : " + path.segment(3) + ")";
+			if( path.segmentCount() < 4 ) return Messages.WebtoolsProjectJBossClasspathContainerInitializer_jboss_runtimes;
+			String pathSegments = path.segment(2) + " : " + path.segment(3); //$NON-NLS-1$
+			return MessageFormat.format(Messages.WebtoolsProjectJBossClasspathContainerInitializer_jboss_runtimes_path, pathSegments);
 		}
 
 		public int getKind() {

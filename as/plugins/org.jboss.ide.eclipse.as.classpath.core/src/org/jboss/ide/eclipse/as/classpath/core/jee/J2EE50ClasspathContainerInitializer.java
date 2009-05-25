@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.jee.J2EE13ClasspathContainerInitializer.J2EE13ClasspathContainer;
 
 /**
@@ -39,7 +40,7 @@ public class J2EE50ClasspathContainerInitializer extends
 		public final static String SUFFIX = "javaee-5.0";//$NON-NLS-1$
 		public final static String CLASSPATH_CONTAINER = CLASSPATH_CONTAINER_PREFIX
 				+ "." + J2EE50ClasspathContainer.SUFFIX;//$NON-NLS-1$
-		public final static String DESCRIPTION = "J2EE 5.0 Libraries (JBoss Tools)";
+		public final static String DESCRIPTION = Messages.J2EE50ClasspathContainerInitializer_description;
 
 		public J2EE50ClasspathContainer(IPath path, IJavaProject javaProject) {
 			super(path, DESCRIPTION, SUFFIX, javaProject);

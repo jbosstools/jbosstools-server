@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorations;
 import org.jboss.ide.eclipse.as.classpath.core.xpl.ClasspathDecorationsManager;
 
@@ -148,7 +149,7 @@ public abstract class AbstractClasspathContainer implements IClasspathContainer 
 			return installURL.getFile().toString();
 		} catch (IOException ioe) {
 			// LOG THE ERROR (one day)
-			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, "Error loading classpath container", ioe);
+			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, Messages.AbstractClasspathContainer_error_loading_container, ioe);
 			ClasspathCorePlugin.getDefault().getLog().log(status);
 		}
 		return null;

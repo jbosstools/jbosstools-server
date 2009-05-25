@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +106,9 @@ public class DirectoryLibraryContainerInitializer extends ClasspathContainerInit
 		}
 
 		public String getDescription() {
-			return "Libraries found in " + ((file==null)?"[No directory specified]":file.getProjectRelativePath().toString());
+			return file == null ?
+					Messages.DirectoryLibraryContainerInitializer_libraries_found_no_dir :
+					MessageFormat.format(Messages.DirectoryLibraryContainerInitializer_libraries_found_in_dir, file.getProjectRelativePath().toString());
 		}
 
 		public int getKind() {

@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.classpath.core.jee;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.core.IJavaProject;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class J2EE13ClasspathContainerInitializer extends
 		public final static String SUFFIX = "j2ee-1.3";//$NON-NLS-1$
 		public final static String CLASSPATH_CONTAINER = CLASSPATH_CONTAINER_PREFIX
 				+ "." + J2EE13ClasspathContainer.SUFFIX;//$NON-NLS-1$
-		public final static String DESCRIPTION = "J2EE 1.3 Libraries (JBoss Tools)";
+		public final static String DESCRIPTION = Messages.J2EE13ClasspathContainerInitializer_description;
 
 		public J2EE13ClasspathContainer(IPath path, IJavaProject javaProject) {
 			super(path, DESCRIPTION, SUFFIX, javaProject);

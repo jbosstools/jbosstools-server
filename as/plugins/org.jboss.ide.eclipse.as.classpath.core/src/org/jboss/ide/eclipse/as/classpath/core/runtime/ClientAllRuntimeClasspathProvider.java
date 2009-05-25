@@ -12,6 +12,7 @@
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
@@ -26,6 +27,7 @@ import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 /**
@@ -51,7 +53,8 @@ public class ClientAllRuntimeClasspathProvider
 		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 		if( jbsrt == null ) {
 			// log error
-			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, "Runtime " + runtime.getName() + "is not of the proper type");
+			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.ClientAllRuntimeClasspathProvider_wrong_runtime_type,
+					runtime.getName()));
 			ClasspathCorePlugin.getDefault().getLog().log(status);
 			return new IClasspathEntry[0];
 		}

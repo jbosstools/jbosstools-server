@@ -30,8 +30,8 @@ public class EJB30SupportVerifier {
 		if( ajbsr == null ) return true;  
 
 		// one of ours. verify
-		IPath path = new Path("org.jboss.ide.eclipse.as.core.runtime.ProjectInitializer");
-		path = path.append(rt.getId()).append("jst.ejb").append("3.0");
+		IPath path = new Path("org.jboss.ide.eclipse.as.core.runtime.ProjectInitializer"); //$NON-NLS-1$
+		path = path.append(rt.getId()).append("jst.ejb").append("3.0"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		WebtoolsProjectJBossClasspathContainer container =
 			new WebtoolsProjectJBossClasspathContainer(path);

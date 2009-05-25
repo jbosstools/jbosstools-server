@@ -25,6 +25,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
+import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
 /**
@@ -34,7 +35,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathConstants {
    public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer"; //$NON-NLS-1$
 
-   public static final String DESCRIPTION = "JBoss EJB3 Libraries";
+   public static final String DESCRIPTION = Messages.EJB3ClasspathContainer_ejb3_description;
 
    public static final QualifiedName JBOSS_EJB3_CONFIGURATION = new QualifiedName(
          "org.jboss.ide.eclipse.ejb3.wizards.core.classpath", "jboss-ejb3-configuration"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -80,7 +81,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
    }
 
    public String getDescription() {
-	   return "JBoss EJB 3.0 Libraries";
+	   return Messages.EJB3ClasspathContainer_ejb30_description;
    }
 
    public JBossServer getJBossServer() {
