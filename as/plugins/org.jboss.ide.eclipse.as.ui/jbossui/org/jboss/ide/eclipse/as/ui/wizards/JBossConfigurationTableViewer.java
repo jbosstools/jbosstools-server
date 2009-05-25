@@ -121,9 +121,9 @@ public class JBossConfigurationTableViewer extends TableViewer {
 					File serviceDescriptor = new File(types[i]
 							.getAbsolutePath()
 							+ File.separator
-							+ "conf"
+							+ "conf" //$NON-NLS-1$
 							+ File.separator
-							+ "jboss-service.xml");
+							+ "jboss-service.xml"); //$NON-NLS-1$
 
 					if (types[i].isDirectory() && serviceDescriptor.exists()) {
 						String configuration = types[i].getName();

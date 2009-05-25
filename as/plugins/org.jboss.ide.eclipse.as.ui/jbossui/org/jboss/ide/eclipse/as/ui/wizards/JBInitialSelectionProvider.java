@@ -40,7 +40,7 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider {
 		
 		int size = serverTypes.length;
 		for (int i = 0; i < size; i++) {
-			if( serverTypes[i].getId().equals("org.jboss.ide.eclipse.as.42"))
+			if( serverTypes[i].getId().equals("org.jboss.ide.eclipse.as.42")) //$NON-NLS-1$
 				return serverTypes[i];
 		}
 		return serverTypes[0];

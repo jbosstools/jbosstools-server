@@ -169,7 +169,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 				dialog.run(true, false, new IRunnableWithProgress() {
 					public void run(IProgressMonitor monitor)
 							throws InvocationTargetException, InterruptedException {
-						monitor.beginTask("Loading...", items.length);
+						monitor.beginTask(Messages.ChangePortDialog_LoadingTaskName, items.length);
 						for( int i = 0; i < items.length; i++ ) {
 							countMatches(currentQuery);
 							monitor.worked(1);
@@ -218,7 +218,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 		return new Integer(count).toString();
 	}
 	private String safeString(String s) {
-		return s == null ? "" : s;
+		return s == null ? "" : s; //$NON-NLS-1$
 	}
 
 	public String getSelection() {

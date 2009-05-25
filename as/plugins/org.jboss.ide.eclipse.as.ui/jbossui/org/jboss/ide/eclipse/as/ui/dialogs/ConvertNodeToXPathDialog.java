@@ -69,12 +69,12 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 	private Node node;
 	private ArrayList keyRows;
 	
-	private static final String NO_ATTRIBUTE = "NONE";
+	private static final String NO_ATTRIBUTE = "NONE"; //$NON-NLS-1$
 	
 	protected ConvertNodeToXPathDialog(Shell parentShell, Node node, String attributeName) {
 		super(parentShell);
 		this.node = node;
-		setAttribute(attributeName == null ? "" : attributeName);
+		setAttribute(attributeName == null ? "" : attributeName); //$NON-NLS-1$
 	}
 	
 	protected void configureShell(Shell shell) {
@@ -117,9 +117,9 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		main.setLayout(new GridLayout(2, false));
 		keyRows = new ArrayList();
 		Node localNode = node;
-		String pathText = "";
+		String pathText = ""; //$NON-NLS-1$
 		while( localNode != null && !(localNode instanceof IDOMDocument)) {
-			if( !localNode.getNodeName().equals("#text")) {
+			if( !localNode.getNodeName().equals("#text")) { //$NON-NLS-1$
 				keyRows.add(0, new NameComboPair(main, localNode));
 			}
 			localNode = localNode.getParentNode();
@@ -129,7 +129,7 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 			((NameComboPair)keyRows.get(i)).create();
 		}
 		
-		main.setText("Keyed Attributes");
+		main.setText(Messages.ConvertNodeToXPathDialog_KeyedAttributes);
 		
 		
 		// The very last row should not key off the same attribute name that they wish to change
@@ -148,15 +148,15 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		ArrayList errors = super.getErrors();
 		NameComboPair pair = (NameComboPair)keyRows.get(keyRows.size()-1);
 		String val = pair.combo.getItem(pair.combo.getSelectionIndex());
-		if(attribute != null && val.startsWith(attribute + "=")) {
-			errors.add("You should not key off the value you wish to change");
+		if(attribute != null && val.startsWith(attribute + "=")) { //$NON-NLS-1$
+			errors.add(Messages.ConvertNodeToXPathDialog_ErrorMessage);
 		}
 		return errors;
 	}
 
 	
 	public void refreshXPath() {
-		String finalString = "";
+		String finalString = ""; //$NON-NLS-1$
 		for( int i = 0; i < keyRows.size(); i++ ) {
 			finalString += ((NameComboPair)keyRows.get(i)).toString();
 		}
@@ -189,8 +189,8 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 				Node attr = map.item(i);
 				if( attr instanceof AttrImpl ) {
 					AttrImpl impl = ((AttrImpl)attr);
-					list.add(impl.getName() + "='" + impl.getValue() + "'");
-					if( impl.getName().equals("name") && !attribute.equals("name"))
+					list.add(impl.getName() + "='" + impl.getValue() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
+					if( impl.getName().equals("name") && !attribute.equals("name")) //$NON-NLS-1$ //$NON-NLS-2$
 						selectedIndex = i+1;
 				}
 			}
@@ -210,10 +210,10 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		}
 		
 		public String toString() {
-			String ret = "/" + node.getNodeName();
+			String ret = "/" + node.getNodeName(); //$NON-NLS-1$
 			String comboSelection = combo.getItem(combo.getSelectionIndex());
 			if( !comboSelection.equals(NO_ATTRIBUTE))
-				ret += "[@" + comboSelection + "]";
+				ret += "[@" + comboSelection + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 			return ret;
 		}
 	}
@@ -239,7 +239,7 @@ public class ConvertNodeToXPathDialog extends XPathDialog {
 		}
 
 		public String getDisplayString() {
-			return "Add to XPaths";
+			return Messages.ConvertNodeToXPathDialog_DisplayString;
 		}
 
 		public Image getImage() {

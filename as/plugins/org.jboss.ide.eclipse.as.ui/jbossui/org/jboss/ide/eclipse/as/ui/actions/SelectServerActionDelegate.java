@@ -118,7 +118,7 @@ public class SelectServerActionDelegate extends AbstractServerActionDelegate
 	
 	private void createNewServerItem(Menu menu) {
 		MenuItem item = new MenuItem(menu, SWT.PUSH);
-		item.setText("New server...");
+		item.setText(ServerActionMessages.SelectServerActionDelegate_NewServerMenuItem);
 		item.setImage(JBossServerUISharedImages.getImage(JBossServerUISharedImages.GENERIC_SERVER_IMAGE));
 		item.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {

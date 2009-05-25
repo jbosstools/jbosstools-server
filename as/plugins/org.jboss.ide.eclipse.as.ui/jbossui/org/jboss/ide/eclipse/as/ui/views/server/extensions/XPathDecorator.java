@@ -20,18 +20,18 @@ public class XPathDecorator extends LabelProvider implements ILightweightLabelDe
 		if( element instanceof XPathQuery) {
 			XPathResultNode[] nodes = XPathModel.getResultNodes((XPathQuery)element);
 			if(nodes.length == 1 ) {
-				return "   " + nodes[0].getText();
+				return "   " + nodes[0].getText(); //$NON-NLS-1$
 			} 
 		}
 
 		if( element instanceof XPathFileResult ) {
 			XPathResultNode[] nodes = ((XPathFileResult)element).getChildren();
 			if( nodes.length == 1 )
-				return "   " + nodes[0].getText();
+				return "   " + nodes[0].getText(); //$NON-NLS-1$
 		}
 		
 		if( element instanceof XPathResultNode ) {
-			return "   " + ((XPathResultNode)element).getText();
+			return "   " + ((XPathResultNode)element).getText(); //$NON-NLS-1$
 		}
 		return null;
 	}

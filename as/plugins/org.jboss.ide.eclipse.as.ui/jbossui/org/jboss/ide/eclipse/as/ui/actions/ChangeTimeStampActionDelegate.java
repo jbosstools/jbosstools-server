@@ -118,7 +118,7 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 		if(isEar) {
 			IVirtualComponent component = ComponentCore.createComponent(project);
 			IPath path = component.getRootFolder().getProjectRelativePath();
-			IFile f = project.getFile(path.append("META-INF").append("application.xml"));
+			IFile f = project.getFile(path.append("META-INF").append("application.xml")); //$NON-NLS-1$ //$NON-NLS-2$
 			if(f != null && f.exists()) {
 				fs.add(f);
 			}
@@ -126,7 +126,7 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 		if(isWar && !isReferencedByEar) {
 			IVirtualComponent component = ComponentCore.createComponent(project);
 			IPath path = component.getRootFolder().getProjectRelativePath();
-			IFile f = project.getFile(path.append("WEB-INF").append("web.xml"));
+			IFile f = project.getFile(path.append("WEB-INF").append("web.xml")); //$NON-NLS-1$ //$NON-NLS-2$
 			if(f != null && f.exists()) {
 				fs.add(f);
 			}
@@ -134,7 +134,7 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 		if(isESBProject(project)) {
 			IVirtualComponent component = ComponentCore.createComponent(project);
 			IPath path = component.getRootFolder().getProjectRelativePath();
-			IFile f = project.getFile(path.append("META-INF").append("jboss-esb.xml"));
+			IFile f = project.getFile(path.append("META-INF").append("jboss-esb.xml")); //$NON-NLS-1$ //$NON-NLS-2$
 			if(f != null && f.exists()) {
 				fs.add(f);
 			}
@@ -143,7 +143,7 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 		return fs;
 	}
 
-	private final static String ESB_PROJECT_FACET = "jst.jboss.esb";
+	private final static String ESB_PROJECT_FACET = "jst.jboss.esb"; //$NON-NLS-1$
 
 	private static boolean isESBProject(IProject project) {
 		IFacetedProject facetedProject = null;

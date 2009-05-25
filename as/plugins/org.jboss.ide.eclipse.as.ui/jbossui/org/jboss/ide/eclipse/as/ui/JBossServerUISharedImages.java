@@ -36,25 +36,25 @@ import org.osgi.framework.Bundle;
  */
 public class JBossServerUISharedImages {
 
-	public static final String IMG_JBOSS = "jboss";
-	public static final String IMG_JBOSS_CONFIGURATION = "jbossconfiguration";
+	public static final String IMG_JBOSS = "jboss"; //$NON-NLS-1$
+	public static final String IMG_JBOSS_CONFIGURATION = "jbossconfiguration"; //$NON-NLS-1$
 
-	public static final String WIZBAN_JBOSS32_LOGO = "jboss3.2logo";
-	public static final String WIZBAN_JBOSS40_LOGO = "jboss4.0logo";
-	public static final String WIZBAN_JBOSS42_LOGO = "jboss4.2logo";
-	public static final String WIZBAN_JBOSS50_LOGO = "jboss5.0logo";
-	public static final String WIZBAN_JBOSS_EAP_LOGO = "jbossEAPlogo";
-	public static final String WIZBAN_DEPLOY_ONLY_LOGO = "jbossdeployerlogo";
-	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE";
-	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE";
-	public static final String GENERIC_SERVER_IMAGE = "GENERIC_SERVER_IMAGE";
-	public static final String PUBLISH_IMAGE = "PUBLISH_IMAGE";
-	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE";
-	public static final String JMX_IMAGE = "JMX_IMAGE";
-	public static final String EXPLORE_IMAGE = "EXPLORE_IMAGE";
-	public static final String XPATH_LEVEL_1 = "xpath_level_1";
-	public static final String XPATH_LEVEL_2 = "xpath_level_2";
-	public static final String XPATH_LEVEL_3 = "xpath_level_3";
+	public static final String WIZBAN_JBOSS32_LOGO = "jboss3.2logo"; //$NON-NLS-1$
+	public static final String WIZBAN_JBOSS40_LOGO = "jboss4.0logo"; //$NON-NLS-1$
+	public static final String WIZBAN_JBOSS42_LOGO = "jboss4.2logo"; //$NON-NLS-1$
+	public static final String WIZBAN_JBOSS50_LOGO = "jboss5.0logo"; //$NON-NLS-1$
+	public static final String WIZBAN_JBOSS_EAP_LOGO = "jbossEAPlogo"; //$NON-NLS-1$
+	public static final String WIZBAN_DEPLOY_ONLY_LOGO = "jbossdeployerlogo"; //$NON-NLS-1$
+	public static final String TWIDDLE_IMAGE = "TWIDDLE_IMAGE"; //$NON-NLS-1$
+	public static final String INACTIVE_CATEGORY_IMAGE = "INACTIVE_CATEGORY_IMAGE"; //$NON-NLS-1$
+	public static final String GENERIC_SERVER_IMAGE = "GENERIC_SERVER_IMAGE"; //$NON-NLS-1$
+	public static final String PUBLISH_IMAGE = "PUBLISH_IMAGE"; //$NON-NLS-1$
+	public static final String UNPUBLISH_IMAGE = "UNPUBLISH_IMAGE"; //$NON-NLS-1$
+	public static final String JMX_IMAGE = "JMX_IMAGE"; //$NON-NLS-1$
+	public static final String EXPLORE_IMAGE = "EXPLORE_IMAGE"; //$NON-NLS-1$
+	public static final String XPATH_LEVEL_1 = "xpath_level_1"; //$NON-NLS-1$
+	public static final String XPATH_LEVEL_2 = "xpath_level_2"; //$NON-NLS-1$
+	public static final String XPATH_LEVEL_3 = "xpath_level_3"; //$NON-NLS-1$
 	
 	
 	
@@ -68,24 +68,24 @@ public class JBossServerUISharedImages {
 		descriptors = new Hashtable<String, Object>();
 		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
 		
-		descriptors.put(IMG_JBOSS, createImageDescriptor(pluginBundle, "/icons/jboss.gif"));
-		descriptors.put(IMG_JBOSS_CONFIGURATION, createImageDescriptor(pluginBundle, "/icons/jboss-configuration.gif"));
+		descriptors.put(IMG_JBOSS, createImageDescriptor(pluginBundle, "/icons/jboss.gif")); //$NON-NLS-1$
+		descriptors.put(IMG_JBOSS_CONFIGURATION, createImageDescriptor(pluginBundle, "/icons/jboss-configuration.gif")); //$NON-NLS-1$
 		
-		descriptors.put(WIZBAN_JBOSS32_LOGO, createImageDescriptor(pluginBundle, "/icons/logo32.gif"));
-		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif"));
-		descriptors.put(WIZBAN_JBOSS42_LOGO, createImageDescriptor(pluginBundle, "/icons/logo42.gif"));
-		descriptors.put(WIZBAN_JBOSS50_LOGO, createImageDescriptor(pluginBundle, "/icons/logo50.gif"));
-		descriptors.put(WIZBAN_JBOSS_EAP_LOGO, createImageDescriptor(pluginBundle, "/icons/logoEAP.gif"));
-		descriptors.put(WIZBAN_DEPLOY_ONLY_LOGO, createImageDescriptor(pluginBundle, "/icons/blank.gif"));
-		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif"));
-		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif"));
-		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif"));
-		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif"));
-		descriptors.put(JMX_IMAGE, createImageDescriptor(pluginBundle, "/icons/jmeth_obj.gif"));
-		descriptors.put(EXPLORE_IMAGE, createImageDescriptor(pluginBundle, "/icons/actions/xpl/explore.gif"));
-		descriptors.put(XPATH_LEVEL_1, createImageDescriptor(pluginBundle, "icons/xpath_level_1.gif"));
-		descriptors.put(XPATH_LEVEL_2, createImageDescriptor(pluginBundle, "icons/xpath_level_2.gif"));
-		descriptors.put(XPATH_LEVEL_3, createImageDescriptor(pluginBundle, "icons/xpath_level_3.gif"));
+		descriptors.put(WIZBAN_JBOSS32_LOGO, createImageDescriptor(pluginBundle, "/icons/logo32.gif")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_JBOSS40_LOGO, createImageDescriptor(pluginBundle, "/icons/logo40.gif")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_JBOSS42_LOGO, createImageDescriptor(pluginBundle, "/icons/logo42.gif")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_JBOSS50_LOGO, createImageDescriptor(pluginBundle, "/icons/logo50.gif")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_JBOSS_EAP_LOGO, createImageDescriptor(pluginBundle, "/icons/logoEAP.gif")); //$NON-NLS-1$
+		descriptors.put(WIZBAN_DEPLOY_ONLY_LOGO, createImageDescriptor(pluginBundle, "/icons/blank.gif")); //$NON-NLS-1$
+		descriptors.put(TWIDDLE_IMAGE, createImageDescriptor(pluginBundle, "icons/twiddle.gif")); //$NON-NLS-1$
+		descriptors.put(INACTIVE_CATEGORY_IMAGE, createImageDescriptor(pluginBundle, "/icons/inactiveCat.gif")); //$NON-NLS-1$
+		descriptors.put(PUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/publish.gif")); //$NON-NLS-1$
+		descriptors.put(UNPUBLISH_IMAGE, createImageDescriptor(pluginBundle, "/icons/unpublish.gif")); //$NON-NLS-1$
+		descriptors.put(JMX_IMAGE, createImageDescriptor(pluginBundle, "/icons/jmeth_obj.gif")); //$NON-NLS-1$
+		descriptors.put(EXPLORE_IMAGE, createImageDescriptor(pluginBundle, "/icons/actions/xpl/explore.gif")); //$NON-NLS-1$
+		descriptors.put(XPATH_LEVEL_1, createImageDescriptor(pluginBundle, "icons/xpath_level_1.gif")); //$NON-NLS-1$
+		descriptors.put(XPATH_LEVEL_2, createImageDescriptor(pluginBundle, "icons/xpath_level_2.gif")); //$NON-NLS-1$
+		descriptors.put(XPATH_LEVEL_3, createImageDescriptor(pluginBundle, "icons/xpath_level_3.gif")); //$NON-NLS-1$
 		
 		
 		Iterator<String> iter = descriptors.keySet().iterator();

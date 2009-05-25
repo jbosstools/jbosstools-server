@@ -31,6 +31,7 @@ import org.eclipse.ui.actions.TextActionHandler;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.ui.Messages;
 /**
  * Action to rename a server.
  */
@@ -48,7 +49,7 @@ public class XPathChangeValueAction extends SelectionProviderAction {
 	protected boolean saving = false;
 
 	public XPathChangeValueAction(Shell shell, TreeViewer viewer, ISelectionProvider selectionProvider) {
-		super(selectionProvider, "Change Value");
+		super(selectionProvider, Messages.XPathChangeValueAction_ActionText);
 		this.shell = shell;
 		this.viewer = viewer;
 		this.tree = viewer.getTree();

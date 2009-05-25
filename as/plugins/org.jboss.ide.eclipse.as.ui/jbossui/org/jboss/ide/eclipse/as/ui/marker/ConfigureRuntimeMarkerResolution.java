@@ -7,12 +7,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class ConfigureRuntimeMarkerResolution implements IMarkerResolution2 {
 
-	private static final String RUNTIME_PROPERTY_PAGE = "org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage";
+	private static final String RUNTIME_PROPERTY_PAGE = "org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"; //$NON-NLS-1$
 	public String getDescription() {
-		return "Configure Targeted Runtimes";
+		return Messages.ConfigureRuntimeMarkerResolution_Description;
 	}
 
 	public Image getImage() {
@@ -21,7 +22,7 @@ public class ConfigureRuntimeMarkerResolution implements IMarkerResolution2 {
 	}
 
 	public String getLabel() {
-		return "Configure Targeted Runtimes";
+		return Messages.ConfigureRuntimeMarkerResolution_Description;
 	}
 
 	public void run(IMarker marker) {

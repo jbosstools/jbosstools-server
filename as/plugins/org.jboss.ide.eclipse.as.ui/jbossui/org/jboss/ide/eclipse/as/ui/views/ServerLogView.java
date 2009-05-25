@@ -71,7 +71,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ServerLogView extends ViewPart implements IServerLogListener {
-	public static final String VIEW_ID = "org.jboss.ide.eclipse.as.ui.view.serverLogView";
+	public static final String VIEW_ID = "org.jboss.ide.eclipse.as.ui.view.serverLogView"; //$NON-NLS-1$
 	public final static byte MESSAGE = 0x0;
 	public final static byte DATE = 0x1;
 	public static int ASCENDING = 1;
@@ -240,7 +240,7 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 	protected void reloadLog() {
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) {
-				monitor.beginTask("Importing Server Log", IProgressMonitor.UNKNOWN);
+				monitor.beginTask(org.jboss.ide.eclipse.as.ui.Messages.ServerLogView_ImportingLogTaskName, IProgressMonitor.UNKNOWN);
 				List<AbstractEntry> entries = new ArrayList<AbstractEntry>();
 				LogReader.parseLogFile(fInputFile, entries, fMemento);
 				elements.addAll(entries);
@@ -273,7 +273,7 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 			display.asyncExec(new Runnable() {
 				public void run() {
 					IServer selected = ServerLogger.findServerForFile(fInputFile);
-					setContentDescription(selected == null ? "No Log Selected" : selected.getName());
+					setContentDescription(selected == null ? org.jboss.ide.eclipse.as.ui.Messages.ServerLogView_NoLogSelected : selected.getName());
 					if (!viewer.getTree().isDisposed()) {
 						viewer.refresh();
 						viewer.expandToLevel(2);
@@ -463,7 +463,7 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 						fileStore);
 				IEditorDescriptor desc = PlatformUI.getWorkbench()
 						.getEditorRegistry().getDefaultEditor(
-								"dummy.txt");
+								"dummy.txt"); //$NON-NLS-1$
 				if (desc != null)
 					page.openEditor(input, desc.getId());
 			}

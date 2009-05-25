@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -72,6 +73,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public abstract class J2EEModuleExportOperation extends AbstractDataModelOperation {
 
@@ -135,7 +137,7 @@ public abstract class J2EEModuleExportOperation extends AbstractDataModelOperati
     			export();
     		} catch (Exception e) {
     			monitor.worked(CLOSE_WORK);
-    			throw new ExecutionException("Error Exporting " + archiveString(), e);
+    			throw new ExecutionException(MessageFormat.format(Messages.J2EEModuleExportOperation_ErrorExportingArchive, archiveString()), e);
     		}
     		
             final IDataModel dm = getDataModel();
@@ -314,7 +316,9 @@ public abstract class J2EEModuleExportOperation extends AbstractDataModelOperati
 			
 			/* Prepare the streams */
 			if (dest.exists() && dest.isDirectory()) {
-				throw new IOException("The specified file: " + dest.getAbsolutePath() + " exists and is a directory");
+				throw new IOException(MessageFormat.format(
+						Messages.J2EEModuleExportOperation_DestinationFileIsDirectoryError,
+						dest.getAbsolutePath()));
 			}
 			if (parent != null)
 				parent.mkdirs();

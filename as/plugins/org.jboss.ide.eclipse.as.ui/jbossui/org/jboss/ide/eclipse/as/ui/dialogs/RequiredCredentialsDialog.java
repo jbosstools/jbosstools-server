@@ -58,7 +58,7 @@ public class RequiredCredentialsDialog extends Dialog {
 
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Server Credentials Required");
+		newShell.setText(Messages.RequiredCredentialsDialog_ShellText);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -124,7 +124,7 @@ public class RequiredCredentialsDialog extends Dialog {
 		// create OK and Cancel buttons by default
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
 				true);
-		createButton(parent, IDialogConstants.CANCEL_ID, "Ignore", false);
+		createButton(parent, IDialogConstants.CANCEL_ID, Messages.RequiredCredentialsDialog_IgnoreButton, false);
 	}
 
 	

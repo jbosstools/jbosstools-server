@@ -92,18 +92,18 @@ public class JBossServerWizardFragment extends WizardFragment {
 	protected boolean isEAP() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.");
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
 		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		String id = rt.getRuntimeType().getId();
-		String imageKey = "";
-		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
+		String imageKey = ""; //$NON-NLS-1$
+		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO; //$NON-NLS-1$
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO; //$NON-NLS-1$
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO; //$NON-NLS-1$
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO; //$NON-NLS-1$
+		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO; //$NON-NLS-1$
 
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
@@ -181,7 +181,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 			IJBossServerRuntime srt = getRuntime();
 			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 			configValLabel.setText(srt.getJBossConfiguration());
-			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")");
+			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
 			configLocValLabel.setText(srt.getConfigLocation());
 			runtimeGroup.layout();
 			updateErrorMessage();
@@ -194,8 +194,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		jbs.setUsername("admin");
-		jbs.setPassword("admin");
+		jbs.setUsername("admin"); //$NON-NLS-1$
+		jbs.setPassword("admin"); //$NON-NLS-1$
 		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
@@ -218,7 +218,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	protected boolean isAS5() {
 		return getRuntime().getRuntime().getRuntimeType().
-				getVersion().equals("5.0");
+				getVersion().equals("5.0"); //$NON-NLS-1$
 	}
 	
 	public boolean isComplete() {

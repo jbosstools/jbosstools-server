@@ -150,14 +150,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				version);
 		handle.setImageDescriptor(getImageDescriptor());
 		handle.setDescription(description);
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime");
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime"); //$NON-NLS-1$
 		return main;
 	}
 
 	protected boolean isEAP() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.");
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
 	}
 	
 	protected ImageDescriptor getImageDescriptor() {
@@ -231,7 +231,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				.getObject(TaskModel.TASK_RUNTIME);
 			String oldName = r.getName();
 			if( r.isWorkingCopy() ) {
-				String newName = oldName.replace("Enterprise Application Platform", "EAP");
+				String newName = oldName.replace("Enterprise Application Platform", "EAP"); //$NON-NLS-1$ //$NON-NLS-2$
 				newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
 				((IRuntimeWorkingCopy)r).setName(newName);
 			}
@@ -537,8 +537,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	protected void configDeletePressed() {
         MessageDialog dialog = new MessageDialog(configBrowse.getShell(), 
-        		"Delete Configuration?", null,
-        		"Are you sure you want to delete this folder? This cannot be undone.", 
+        		Messages.JBossRuntimeWizardFragment_DeleteConfigTitle, null,
+        		Messages.JBossRuntimeWizardFragment_DeleteConfigConfirmation, 
                 MessageDialog.WARNING, new String[] { IDialogConstants.YES_LABEL,
                         IDialogConstants.NO_LABEL }, 0); // yes is the default
         if(dialog.open() == 0) {
@@ -608,17 +608,17 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if (!isHomeValid())
 			return Messages.rwf_homeMissingFiles;
 
-		if (name == null || name.equals(""))
+		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
 
-		if (homeDir == null || homeDir.equals(""))
+		if (homeDir == null || homeDir.equals("")) //$NON-NLS-1$
 			return Messages.rwf_homeDirBlank;
 
 		if (jreComboIndex < 0)
 			return Messages.rwf_NoVMSelected;
 		
 		if( configurations.getSelection().isEmpty())
-			return "User must select a valid configuration";
+			return Messages.JBossRuntimeWizardFragment_MustSelectValidConfig;
 
 		return null;
 	}
@@ -631,7 +631,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	protected boolean isHomeValid() {
 		if( homeDir == null  || !(new File(homeDir).exists())) return false;
-		return new Path(homeDir).append("bin").append("run.jar").toFile().exists();
+		return new Path(homeDir).append("bin").append("run.jar").toFile().exists(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	protected String getHomeVersionWarning() {
@@ -676,9 +676,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		PreferenceManager manager = PlatformUI.getWorkbench()
 				.getPreferenceManager();
 		IPreferenceNode node = manager
-				.find("org.eclipse.jdt.ui.preferences.JavaBasePreferencePage")
+				.find("org.eclipse.jdt.ui.preferences.JavaBasePreferencePage") //$NON-NLS-1$
 				.findSubNode(
-						"org.eclipse.jdt.debug.ui.preferences.VMPreferencePage");
+						"org.eclipse.jdt.debug.ui.preferences.VMPreferencePage"); //$NON-NLS-1$
 		PreferenceManager manager2 = new PreferenceManager();
 		manager2.addToRoot(node);
 		final PreferenceDialog dialog = new PreferenceDialog(jreButton
@@ -711,7 +711,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		// get names
 		size = installedJREs.size();
 		jreNames = new String[size+1];
-		jreNames[0] = "Default JRE";
+		jreNames[0] = "Default JRE"; //$NON-NLS-1$
 		for (int i = 0; i < size; i++) {
 			IVMInstall vmInstall = installedJREs.get(i);
 			jreNames[i+1] = vmInstall.getName();
@@ -863,7 +863,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			
 			
 			destText.setText(origDest);
-			nameText.setText(findNewest(origConfig + "_copy")); // TODO increment
+			// we could localize the string _copy, but it would probably cause more trouble than it's worth
+			nameText.setText(findNewest(origConfig + "_copy")); // TODO increment //$NON-NLS-1$
 			return c;
 		}
 		
@@ -880,9 +881,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			}
 			if( !valid ) {
 				if( newDest == null || newConfig == null ) {
-					setMessage("All fields must be completed.", IMessageProvider.ERROR);
+					setMessage(Messages.JBossRuntimeWizardFragment_AllFieldsRequired, IMessageProvider.ERROR);
 				} else {
-					setMessage("The output folder already exists: " + p.append(newConfig).toString(), IMessageProvider.ERROR);
+					setMessage(Messages.JBossRuntimeWizardFragment_OutputFolderExists + p.append(newConfig).toString(), IMessageProvider.ERROR);
 				}
 			} else {
 				setCleanMessage();
@@ -914,7 +915,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		protected void configureShell(Shell newShell) {
 			super.configureShell(newShell);
-			newShell.setText("Copy a Configuration");
+			newShell.setText(Messages.JBossRuntimeWizardFragment_CopyAConfigShellText);
 		}
 
 		public String getNewDest() {

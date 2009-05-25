@@ -35,10 +35,10 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.UpdateServerJob;
 import org.eclipse.wst.server.core.util.PublishAdapter;
-import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.eclipse.wst.server.ui.internal.viewers.BaseContentProvider;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class ServerContentProvider extends BaseContentProvider implements ITreeContentProvider {
 	public static Object INITIALIZING = new Object();
@@ -246,7 +246,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 	}
 
 	protected void deferInitialization() {
-		Job job = new Job(Messages.jobInitializingServersView) {
+		Job job = new Job(org.eclipse.wst.server.ui.internal.Messages.jobInitializingServersView) {
 			public IStatus run(IProgressMonitor monitor) {
 				IServer[] servers = ServerCore.getServers();
 				int size = servers.length;
@@ -346,7 +346,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 							}
 						}
 					} catch (Exception e) {
-						Trace.trace(Trace.FINEST, "Error in Servers view animation", e);
+						Trace.trace(Trace.FINEST, Messages.ServerContentProvider_ErrorInServersViewAnimation, e);
 					}
 					display.timerExec(SLEEP, animator[0]);
 				}

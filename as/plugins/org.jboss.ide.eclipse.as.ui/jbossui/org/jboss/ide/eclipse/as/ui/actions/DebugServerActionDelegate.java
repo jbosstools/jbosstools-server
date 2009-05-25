@@ -26,7 +26,7 @@ public class DebugServerActionDelegate extends RunServerActionDelegate {
 		String name = selected == null ? "" : selected.getName(); //$NON-NLS-1$
 		if( selected != null && selected.getServerState() == IServer.STATE_STARTED)
 			return NLS.bind(ServerActionMessages.RESTART_IN_DEBUG_MODE, name);
-		return NLS.bind(ServerActionMessages.START_IN_DEBUG_MODE, name); //$NON-NLS-2$
+		return NLS.bind(ServerActionMessages.START_IN_DEBUG_MODE, name);
 	}	
 
 }

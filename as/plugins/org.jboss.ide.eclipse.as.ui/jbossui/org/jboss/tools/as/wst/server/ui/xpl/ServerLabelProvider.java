@@ -35,7 +35,7 @@ public class ServerLabelProvider extends LabelProvider {
 		if (element instanceof ModuleServer) {
 			ModuleServer ms = (ModuleServer) element;
 			if (ms.module == null)
-				return "";
+				return ""; //$NON-NLS-1$
 			int size = ms.module.length;
 			String name = ms.module[size - 1].getName();
 			return name;
@@ -69,7 +69,7 @@ public class ServerLabelProvider extends LabelProvider {
 
 	protected String notNull(String s) {
 		if (s == null)
-			return "";
+			return ""; //$NON-NLS-1$
 		return s;
 	}
 

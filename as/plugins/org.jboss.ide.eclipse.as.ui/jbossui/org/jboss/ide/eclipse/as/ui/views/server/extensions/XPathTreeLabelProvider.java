@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -14,13 +15,14 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider.ServerWrapper;
 
 public class XPathTreeLabelProvider extends LabelProvider {
 	private Image rootImage;
 	public XPathTreeLabelProvider() {
 		super();
-		ImageDescriptor des = ImageDescriptor.createFromURL(JBossServerUIPlugin.getDefault().getBundle().getEntry("icons/XMLFile.gif"));
+		ImageDescriptor des = ImageDescriptor.createFromURL(JBossServerUIPlugin.getDefault().getBundle().getEntry("icons/XMLFile.gif")); //$NON-NLS-1$
 		rootImage = des.createImage();
 	}
 
@@ -46,9 +48,9 @@ public class XPathTreeLabelProvider extends LabelProvider {
 
 	public String getText(Object element) {
 		if( element instanceof ServerWrapper ) 
-			return "XML Configuration";
+			return Messages.XPathTreeLabelProvider_XMLConfigLabel;
 		if( element == XPathTreeContentProvider.LOADING ) 
-			return "Loading...";
+			return Messages.XPathTreeLabelProvider_LoadingLabel;
 		
 		if (element instanceof XPathCategory) 
 			return ((XPathCategory) element).getName();
@@ -60,9 +62,9 @@ public class XPathTreeLabelProvider extends LabelProvider {
 			return ((XPathFileResult)element).getFileLocation();
 		
 		if( element instanceof XPathResultNode ) 
-			return "Match " + ((XPathResultNode)element).getIndex();
+			return MessageFormat.format(Messages.XPathTreeLabelProvider_MatchIndexLabel, ((XPathResultNode)element).getIndex());
 		
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 	
 	public XPathResultNode[] getResultNodes(XPathQuery query) {

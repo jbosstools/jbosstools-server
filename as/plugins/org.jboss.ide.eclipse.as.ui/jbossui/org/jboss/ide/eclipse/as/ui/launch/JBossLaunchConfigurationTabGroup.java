@@ -73,8 +73,8 @@ public class JBossLaunchConfigurationTabGroup extends
 			super.initializeFrom(configuration);
 			try {
 				String startArgs = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-				originalHost = ArgsUtil.getValue(startArgs, "-b", "--host");
-				originalConf = ArgsUtil.getValue(startArgs, "-c", "--configuration");
+				originalHost = ArgsUtil.getValue(startArgs, "-b", "--host"); //$NON-NLS-1$ //$NON-NLS-2$
+				originalConf = ArgsUtil.getValue(startArgs, "-c", "--configuration"); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch( CoreException ce ) { }
 		}
 		public boolean isValid(ILaunchConfiguration config) {
@@ -82,8 +82,8 @@ public class JBossLaunchConfigurationTabGroup extends
 				return false;
 			try {
 				String startArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-				String newHost = ArgsUtil.getValue(startArgs, "-b", "--host");
-				String newConf = ArgsUtil.getValue(startArgs, "-c", "--configuration");
+				String newHost = ArgsUtil.getValue(startArgs, "-b", "--host"); //$NON-NLS-1$ //$NON-NLS-2$
+				String newConf = ArgsUtil.getValue(startArgs, "-c", "--configuration"); //$NON-NLS-1$ //$NON-NLS-2$
 				if( newConf == null || !newConf.equals(originalConf)) 
 					return false;
 				if( newHost == null || !newHost.equals(originalHost)) 
@@ -95,8 +95,8 @@ public class JBossLaunchConfigurationTabGroup extends
 			String m = super.getErrorMessage();
 			if (m == null) {
 				String startArgs = getAttributeValueFrom(fPrgmArgumentsText);
-				String newHost = ArgsUtil.getValue(startArgs, "-b", "--host");
-				String newConf = ArgsUtil.getValue(startArgs, "-c", "--configuration");
+				String newHost = ArgsUtil.getValue(startArgs, "-b", "--host"); //$NON-NLS-1$ //$NON-NLS-2$
+				String newConf = ArgsUtil.getValue(startArgs, "-c", "--configuration"); //$NON-NLS-1$ //$NON-NLS-2$
 				if( newConf == null || !newConf.equals(originalConf)) 
 					return Messages.LaunchInvalidConfigChanged;
 				if( newHost == null || !newHost.equals(originalHost)) 

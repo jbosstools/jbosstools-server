@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * @author snjeza
@@ -31,9 +32,9 @@ import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class ExploreUtils {
 
-	public final static String PATH = "{%}";
-	public final static String EXPLORE = "Explore";
-	public final static String EXPLORE_DESCRIPTION = "Explore deploy directory";
+	public final static String PATH = "{%}"; //$NON-NLS-1$
+	public final static String EXPLORE = Messages.ExploreUtils_Action_Text;
+	public final static String EXPLORE_DESCRIPTION = Messages.ExploreUtils_Description;
 	private static String exploreFolderCommand;
 	private static String[] exploreFolderCommandArray;
 	private static String exploreFileCommand;
@@ -52,27 +53,28 @@ public class ExploreUtils {
 		return exploreFileCommand;
 	}
 
+	@SuppressWarnings("nls")
 	private static void setExploreCommands() {
 		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-			exploreFolderCommand = "/usr/bin/open -a /System/Library/CoreServices/Finder.app \""
-					+ PATH + "\"";
+			exploreFolderCommand = "/usr/bin/open -a /System/Library/CoreServices/Finder.app \"" //$NON-NLS-1$
+					+ PATH + "\""; //$NON-NLS-1$
 			exploreFileCommand = exploreFolderCommand;
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
-			exploreFolderCommand = "cmd /C start explorer /root,/e,\""
-					+ PATH + "\"";
-			exploreFileCommand = "cmd /C start explorer /select,/e,\""
-					+ PATH + "\"";
+			exploreFolderCommand = "cmd /C start explorer /root,/e,\"" //$NON-NLS-1$
+					+ PATH + "\""; //$NON-NLS-1$
+			exploreFileCommand = "cmd /C start explorer /select,/e,\"" //$NON-NLS-1$
+					+ PATH + "\""; //$NON-NLS-1$
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
 			
-			if (new File("/usr/bin/nautilus").exists()) {
+			if (new File("/usr/bin/nautilus").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[3];
-				exploreFolderCommandArray[0]="/usr/bin/nautilus";
-				exploreFolderCommandArray[1]="--no-desktop";
-				exploreFolderCommand = "";
-			} else if (new File("/usr/bin/konqueror").exists()) {
+				exploreFolderCommandArray[0]="/usr/bin/nautilus"; //$NON-NLS-1$
+				exploreFolderCommandArray[1]="--no-desktop"; //$NON-NLS-1$
+				exploreFolderCommand = ""; //$NON-NLS-1$
+			} else if (new File("/usr/bin/konqueror").exists()) { //$NON-NLS-1$
 				exploreFolderCommandArray = new String[2];
-				exploreFolderCommandArray[0]="/usr/bin/konqueror";
-				exploreFolderCommand = "";
+				exploreFolderCommandArray[0]="/usr/bin/konqueror"; //$NON-NLS-1$
+				exploreFolderCommand = ""; //$NON-NLS-1$
 			}
 			exploreFileCommand = exploreFolderCommand;
 		}
@@ -87,7 +89,7 @@ public class ExploreUtils {
 		ServerAttributeHelper helper = new ServerAttributeHelper(swc
 				.getOriginal(), swc);
 		String deployDirectory = helper.getAttribute(
-				IDeployableServer.DEPLOY_DIRECTORY, "");
+				IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		return deployDirectory.trim();
 	}
 	
@@ -130,6 +132,7 @@ public class ExploreUtils {
 		}
 	}
 	
+	@SuppressWarnings("nls")
 	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
 		IPath root = new Path( server.getDeployFolder() );
 		String type, name;
@@ -139,18 +142,18 @@ public class ExploreUtils {
 			if( new Path(name).segmentCount() > 1 )
 				// we strongly suspect this is a binary object and not a project
 				return root.append(new Path(name).lastSegment());
-			if( "jst.ear".equals(type)) 
-				root = root.append(name + ".ear");
-			else if( "jst.web".equals(type)) 
-				root = root.append(name + ".war");
-			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId())) 
-				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
-			else if( "jst.connector".equals(type)) {
-				root = root.append(name + ".rar");
-			} else if( "jst.jboss.esb".equals(type)){
-				root = root.append(name + ".esb");
+			if( "jst.ear".equals(type))  //$NON-NLS-1$
+				root = root.append(name + ".ear"); //$NON-NLS-1$
+			else if( "jst.web".equals(type))  //$NON-NLS-1$
+				root = root.append(name + ".war"); //$NON-NLS-1$
+			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId()))  //$NON-NLS-1$ //$NON-NLS-2$
+				root = root.append("WEB-INF").append("lib").append(name + ".jar");			 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			else if( "jst.connector".equals(type)) { //$NON-NLS-1$
+				root = root.append(name + ".rar"); //$NON-NLS-1$
+			} else if( "jst.jboss.esb".equals(type)){ //$NON-NLS-1$
+				root = root.append(name + ".esb"); //$NON-NLS-1$
 			}else
-				root = root.append(name + ".jar");
+				root = root.append(name + ".jar"); //$NON-NLS-1$
 		}
 		return root;
 	}

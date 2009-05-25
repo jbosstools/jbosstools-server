@@ -124,7 +124,7 @@ public class TwiddleDialog extends TrayDialog {
 						} );
 					}
 				} catch( Exception e ) {
-					IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, "Unexpected error in TwiddleDialog", e);
+					IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.TwiddleDialog_UnexpectedError, e);
 					JBossServerUIPlugin.getDefault().getLog().log(status);
 				}
 				
@@ -150,7 +150,7 @@ public class TwiddleDialog extends TrayDialog {
 		queryLabel.setLayoutData(queryLabelData);
 
 		Workbench.getInstance().getHelpSystem().setHelp(getShell(),
-				"org.jboss.ide.eclipse.as.ui.twiddle_usage_tutorial_help");
+				"org.jboss.ide.eclipse.as.ui.twiddle_usage_tutorial_help"); //$NON-NLS-1$
 
 		query = new Text(main, SWT.BORDER);
 		FormData queryData = new FormData();
@@ -169,7 +169,7 @@ public class TwiddleDialog extends TrayDialog {
 		resultsData.bottom = new FormAttachment(100,-5);
 		resultsData.top = new FormAttachment(query, 5);
 		results.setLayoutData(resultsData);
-		results.setFont(new Font(null, "Courier New", 8, SWT.NONE));
+		results.setFont(new Font(null, "Courier New", 8, SWT.NONE)); //$NON-NLS-1$
 		
 		// set the default text
 		try {

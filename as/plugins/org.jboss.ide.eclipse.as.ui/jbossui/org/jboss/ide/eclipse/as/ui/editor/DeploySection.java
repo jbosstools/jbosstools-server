@@ -265,10 +265,10 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	private String getDeployDir() {
-		return server.getRuntime() == null ? "" : makeRelative(getServer().getDeployFolder());
+		return server.getRuntime() == null ? "" : makeRelative(getServer().getDeployFolder()); //$NON-NLS-1$
 	}
 	private String getTempDeployDir() {
-		return server.getRuntime() == null ? "" : makeRelative(getServer().getTempDeployFolder());
+		return server.getRuntime() == null ? "" : makeRelative(getServer().getTempDeployFolder()); //$NON-NLS-1$
 	}
 	
 	private IDeployableServer getServer() {
@@ -276,25 +276,25 @@ public class DeploySection extends ServerEditorSection {
 	}
 	
 	public IStatus[] getSaveStatus() {
-		String error = "";
+		String error = ""; //$NON-NLS-1$
 		List<Status> status = new ArrayList<Status>();
 		if( getRuntime() == null ) {
 			String msg = Messages.EditorNoRuntimeSelected;
 			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
-			error = error + msg + "\n";
+			error = error + msg + "\n"; //$NON-NLS-1$
 		}
 		if(!new File(makeGlobal(deployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorDeployDNE, deployText.getText()); 
 			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
-			error = error + msg + "\n"; 
+			error = error + msg + "\n";  //$NON-NLS-1$
 		}
 		
 		if(!new File(makeGlobal(tempDeployText.getText())).exists()) {
 			String msg = NLS.bind(Messages.EditorTempDeployDNE, tempDeployText.getText());
 			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
-			error = error + msg + "\n";
+			error = error + msg + "\n"; //$NON-NLS-1$
 		}
-		setErrorMessage(error.equals("") ? null : error);
+		setErrorMessage(error.equals("") ? null : error); //$NON-NLS-1$
 		return status.size() == 0 ? null : status.toArray(new IStatus[status.size()]);
 	}
 
@@ -310,7 +310,7 @@ public class DeploySection extends ServerEditorSection {
 			this.text = deployText;
 			this.newDir = deployText.getText();
 			this.listener = deployListener;
-			this.oldDir = helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
+			this.oldDir = helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		}
 		public void execute() {
 			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
@@ -357,7 +357,7 @@ public class DeploySection extends ServerEditorSection {
 			text = tempDeployText;
 			newDir = tempDeployText.getText();
 			listener = tempDeployListener;
-			oldDir = helper.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, "");
+			oldDir = helper.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		}
 		public void execute() {
 			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);

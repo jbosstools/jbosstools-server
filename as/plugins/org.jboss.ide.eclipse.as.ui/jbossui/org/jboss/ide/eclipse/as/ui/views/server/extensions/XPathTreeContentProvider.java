@@ -16,6 +16,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class XPathTreeContentProvider implements ITreeContentProvider {
 
@@ -91,7 +92,7 @@ public class XPathTreeContentProvider implements ITreeContentProvider {
 	}
 
 	protected void launchLoad(final XPathCategory cat) {
-		new Job("Loading XPaths") {
+		new Job(Messages.XPathTreeContentProvider_JobName) {
 			protected IStatus run(IProgressMonitor monitor) {
 				loading.add(cat);
 				XPathQuery[] queries = cat.getQueries();

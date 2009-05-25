@@ -60,10 +60,10 @@ public class PortSection extends ServerEditorSection {
 		if (sectionList.size() <= 0) {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 			IConfigurationElement[] cf = registry.getConfigurationElementsFor(
-					JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection");
+					JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection"); //$NON-NLS-1$
 			for (int i = 0; i < cf.length; i++) {
 				try {
-					Object o = cf[i].createExecutableExtension("class");
+					Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
 					if (o != null && o instanceof IPortEditorExtension)
 						sectionList.add((IPortEditorExtension) o);
 				} catch (CoreException ce) { /* ignore */
@@ -190,7 +190,7 @@ public class PortSection extends ServerEditorSection {
 
 			label.setText(labelText);
 			detect.setText(Messages.EditorAutomaticallyDetectPort);
-			link.setText("<a href=\"\">" + Messages.Configure + "</a>");
+			link.setText("<a href=\"\">" + Messages.Configure + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
 			return child;
 		}
 		protected void initialize() {
@@ -203,7 +203,7 @@ public class PortSection extends ServerEditorSection {
 			if( shouldDetect )
 				text.setText(findPort(helper.getServer(), new Path(currentXPath)));
 			else
-				text.setText(helper.getAttribute(IJBossServerConstants.JNDI_PORT, ""));
+				text.setText(helper.getAttribute(IJBossServerConstants.JNDI_PORT, "")); //$NON-NLS-1$
 		}
 		protected void addListeners() {
 			listener = new Listener() {
@@ -366,7 +366,7 @@ public class PortSection extends ServerEditorSection {
 			button.removeListener(SWT.Selection, listener);
 
 			button.setSelection(preOverride);
-			text.setText(preText == null ? "" : preText);
+			text.setText(preText == null ? "" : preText); //$NON-NLS-1$
 			text.setEnabled(!preOverride);
 			text.setEditable(!preOverride);
 			button.addListener(SWT.Selection, listener);
@@ -378,12 +378,12 @@ public class PortSection extends ServerEditorSection {
 
 	protected static String findPort(IServer server, IPath path) {
 		XPathQuery query = XPathModel.getDefault().getQuery(server, path);
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		if(query!=null) {
 			try {
 				query.refresh();
 				result = query.getFirstResult();
-				result = result == null ? "" : result;
+				result = result == null ? "" : result; //$NON-NLS-1$
 				return new Integer(Integer.parseInt(result)).toString();
 			} catch(NumberFormatException nfe) {
 			} catch( IllegalStateException ise ) {

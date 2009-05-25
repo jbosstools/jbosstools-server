@@ -73,8 +73,8 @@ public class ServerPasswordSection extends ServerEditorSection {
 		
 		Label username = toolkit.createLabel(composite, Messages.swf_Username);
 		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		String n = helper.getAttribute(JBossServer.SERVER_USERNAME, "");
-		String p = helper.getAttribute(JBossServer.SERVER_PASSWORD, "");
+		String n = helper.getAttribute(JBossServer.SERVER_USERNAME, ""); //$NON-NLS-1$
+		String p = helper.getAttribute(JBossServer.SERVER_PASSWORD, ""); //$NON-NLS-1$
 		nameText = toolkit.createText(composite, n); 
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
@@ -133,7 +133,7 @@ public class ServerPasswordSection extends ServerEditorSection {
 			this.key = attributeKey;
 			this.newVal = newVal;
 			this.listener = listener;
-			this.oldVal = helper.getAttribute(attributeKey, "");
+			this.oldVal = helper.getAttribute(attributeKey, ""); //$NON-NLS-1$
 		}
 		
 		public void execute() {

@@ -57,7 +57,7 @@ public class ServerLogActionProvider extends CommonActionProvider {
 			selection = (IStructuredSelection) wsSite.getSelectionProvider()
 					.getSelection();
 		}
-		IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu");
+		IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
 		if( quick != null && selection != null && selection.toArray().length == 1 ) {
 			if( selection.getFirstElement() instanceof IServer ) {
 				if( menu instanceof MenuManager ) {

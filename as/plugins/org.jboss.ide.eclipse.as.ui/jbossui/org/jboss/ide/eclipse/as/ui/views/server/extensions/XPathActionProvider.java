@@ -74,7 +74,7 @@ public class XPathActionProvider extends CommonActionProvider {
 				}
 			}
 		};
-		newXPathCategoryAction.setText("New Category");
+		newXPathCategoryAction.setText(Messages.XPathActionProvider_NewCategoryAction);
 
 		deleteXPathCategoryAction = new Action() {
 			public void run() {
@@ -82,7 +82,7 @@ public class XPathActionProvider extends CommonActionProvider {
 				MessageBox messageBox = new MessageBox(Display.getCurrent()
 						.getActiveShell(), style);
 				messageBox
-						.setText(Messages.DescriptorXPathRemoveCategory + "?");
+						.setText(Messages.XPathActionProvider_RemoveCategoryQuestion);
 				messageBox
 						.setMessage(Messages.DescriptorXPathRemoveCategoryDesc);
 				if (messageBox.open() == SWT.YES) {
@@ -198,12 +198,12 @@ public class XPathActionProvider extends CommonActionProvider {
 						}
 					}
 				} catch (Exception exc) {
-					JBossServerUIPlugin.log("Error running edit file action",
+					JBossServerUIPlugin.log(Messages.XPathActionProvider_ErrorRunningAction,
 							exc);
 				}
 			}
 		};
-		editFileAction.setText("Edit File");
+		editFileAction.setText(Messages.XPathActionProvider_EditFileAction);
 		
 		xpathChangeValueAction = new XPathChangeValueAction(shell, tableViewer, provider);
 	}

@@ -182,7 +182,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 			deployLoc = deployText.getText();
 			tempDeployLoc = tempDeployText.getText();
 			name = nameText.getText();
-			handle.setMessage("", IStatus.OK);
+			handle.setMessage("", IStatus.OK); //$NON-NLS-1$
 			handle.update();
 		} else {
 			handle.setMessage(status.getMessage(), IStatus.WARNING);
@@ -191,17 +191,17 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	
 	protected IStatus checkErrors() {
 		if( findServer(nameText.getText()) != null ) {
-			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Name in use", null);
+			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, Messages.StrippedServerWizardFragment_NameInUseStatusMessage, null);
 		}
 		File f = new File(deployText.getText());
 		if( !f.exists() || !f.isDirectory() ) {
-			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Deploy Folder does not exist", null);
+			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, Messages.StrippedServerWizardFragment_DeployFolderDoesNotExistStatusMessage, null);
 		}
 		f = new File(tempDeployText.getText());
 		if( !f.exists() || !f.isDirectory() ) {
-			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "Temporary Deploy Folder does not exist", null);
+			return new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, Messages.StrippedServerWizardFragment_TemporaryDeployFolderDoesNotExistStatusMessage, null);
 		}
-		return new Status(IStatus.OK, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "", null);
+		return new Status(IStatus.OK, JBossServerUIPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 	}
 	
 	public void enter() {
@@ -217,7 +217,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		ServerWorkingCopy swcInternal;
 		if( swc instanceof ServerWorkingCopy )  {
 			swcInternal = (ServerWorkingCopy)swc;
-			deployText.setText(swcInternal.getAttribute(DeployableServer.DEPLOY_DIRECTORY, ""));
+			deployText.setText(swcInternal.getAttribute(DeployableServer.DEPLOY_DIRECTORY, "")); //$NON-NLS-1$
 		}
 	}
 	public void exit() {
@@ -264,9 +264,9 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		String base = Messages.sswf_BaseName;
 		if( findServer(base) == null ) return base;
 		int i = 1;
-		while( ServerCore.findServer(base + " (" + i + ")") != null ) 
+		while( ServerCore.findServer(base + " (" + i + ")") != null )  //$NON-NLS-1$ //$NON-NLS-2$
 			i++;
-		return base + " (" + i + ")";
+		return base + " (" + i + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private IServer findServer(String name) {

@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.views;
 
+import java.text.MessageFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IStatus;
@@ -15,6 +16,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.views.ServerLogView.EventCategory;
 
 public class LogLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -82,11 +84,11 @@ public class LogLabelProvider extends LabelProvider implements ITableLabelProvid
 		if( element instanceof EventCategory ) {
 			int type = ((EventCategory)element).getType();
 			if( type == 0 ) 
-				return "Unknown Event Type";
+				return Messages.LogLabelProvider_UnknownEventType;
 			if( type == IEventCodes.POLLING_CODE)
-				return "Server Startup / Shutdown";
+				return Messages.LogLabelProvider_StartupShutdownEventType;
 			if( type == IEventCodes.PUBLISHING_CODE)
-				return "Publishing";
+				return Messages.LogLabelProvider_PublishingEventType;
 		}
 
 		if( element instanceof LogEntry ) {
@@ -109,14 +111,16 @@ public class LogLabelProvider extends LabelProvider implements ITableLabelProvid
 				sec -= (hours * 60 * 60);
 			}
 			if( hours > 0 ) {
-				return hours + " hours, " + minutes + " minutes ago";
+				return MessageFormat.format(Messages.LogLabelProvider_HoursMinutesAgo, hours,
+						minutes);
 			} else if( minutes > 0 ) {
-				return minutes + " minutes, " + sec + " seconds ago";
+				return MessageFormat.format(Messages.LogLabelProvider_MinutesSecondsAgo, minutes,
+						sec);
 			} else {
-				return sec + " seconds ago";
+				return MessageFormat.format(Messages.LogLabelProvider_SecondsAgo, sec);
 			}
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {

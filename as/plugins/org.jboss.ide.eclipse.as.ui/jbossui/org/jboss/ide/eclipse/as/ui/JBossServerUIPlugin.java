@@ -69,8 +69,8 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 
 		if( !prefs.getBoolean(IPreferenceKeys.ENABLED_DECORATORS)) {
 			IDecoratorManager manager = WorkbenchPlugin.getDefault().getDecoratorManager();
-			manager.setEnabled("org.jboss.tools.as.wst.server.ui.navigatorDecorator", true);
-			manager.setEnabled("org.jboss.ide.eclipse.as.ui.extensions.xml.decorator", true);
+			manager.setEnabled("org.jboss.tools.as.wst.server.ui.navigatorDecorator", true); //$NON-NLS-1$
+			manager.setEnabled("org.jboss.ide.eclipse.as.ui.extensions.xml.decorator", true); //$NON-NLS-1$
 			prefs.setValue(IPreferenceKeys.ENABLED_DECORATORS, true);
 		}
 		

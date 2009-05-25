@@ -73,7 +73,7 @@ public class JMXProvider {
 						.getSelection();
 			}
 
-			IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu");
+			IContributionItem quick = menu.find("org.eclipse.ui.navigate.showInQuickMenu"); //$NON-NLS-1$
 			if( quick != null && selection != null && selection.toArray().length == 1 ) {
 				if( selection.getFirstElement() instanceof IServer ) {
 					if( menu instanceof MenuManager ) {
@@ -178,7 +178,7 @@ public class JMXProvider {
 		
 		public String getText(Object element) {
 			if( element instanceof IConnectionWrapper ) {
-				return "JMX"; 
+				return "JMX";  //$NON-NLS-1$
 			}
 			return delegate.getText(element);
 		}
