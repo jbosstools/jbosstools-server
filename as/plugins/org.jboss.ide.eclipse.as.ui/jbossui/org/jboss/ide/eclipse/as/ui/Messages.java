@@ -23,7 +23,8 @@ package org.jboss.ide.eclipse.as.ui;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages {
+public class Messages extends NLS {
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.ui.Messages"; //$NON-NLS-1$
 	/* Standard and re-usable */
 	public static String browse;
 	public static String serverName;
@@ -38,8 +39,16 @@ public class Messages {
 	public static String wf_JRELabel;
 	public static String wf_ConfigLabel;
 	
+	public static String J2EEModuleExportOperation_DestinationFileIsDirectoryError;
+	public static String J2EEModuleExportOperation_ErrorExportingArchive;
 	public static String JBAS_version;
 	public static String JBEAP_version;
+	public static String JBossRuntimeWizardFragment_AllFieldsRequired;
+	public static String JBossRuntimeWizardFragment_CopyAConfigShellText;
+	public static String JBossRuntimeWizardFragment_DeleteConfigConfirmation;
+	public static String JBossRuntimeWizardFragment_DeleteConfigTitle;
+	public static String JBossRuntimeWizardFragment_MustSelectValidConfig;
+	public static String JBossRuntimeWizardFragment_OutputFolderExists;
 	public static String rwf_CopyConfigLabel;
 	public static String rwf_DestinationLabel;
 	public static String rwf_TitleCreate;
@@ -70,7 +79,11 @@ public class Messages {
 	public static String sswf_Title;
 	public static String sswf_BaseName;
 
+	public static String ServerActionProvider_CouldNotOpenServerError;
+	public static String ServerContentProvider_ErrorInServersViewAnimation;
 	public static String ServerDialogHeading;
+	public static String ServerLogView_ImportingLogTaskName;
+	public static String ServerLogView_NoLogSelected;
 	public static String credentials_warning;
 	public static String credentials_save;
 
@@ -82,6 +95,7 @@ public class Messages {
 	public static String IncrementalPublishModuleText;
 	public static String FullPublishModuleText;
 	public static String DeleteModuleDescription;
+	public static String PollerSection_ServerPollingSection;
 	public static String PublishModuleDescription;
 
 	public static String DeleteModuleConfirm;
@@ -97,6 +111,7 @@ public class Messages {
 	public static String ActionDelegateFileResourcesOnly;
 	public static String ActionDelegateSelectServer;
 
+	public static String ChangePortDialog_LoadingTaskName;
 	/* Console */
 	public static String ConsoleResourceNotFound;
 	public static String ConsoleCouldNotLocateInWorkspace;
@@ -104,6 +119,7 @@ public class Messages {
 
 	/* Twiddle Dialog */
 	public static String TwiddleDialog;
+	public static String TwiddleDialog_UnexpectedError;
 	public static String TwiddleDialogExecute;
 	public static String TwiddleDialogDone;
 	public static String TwiddleDialogArguments;
@@ -112,6 +128,7 @@ public class Messages {
 	public static String XPathNewCategory;
 	public static String XPathNewCategoryNameInUse;
 	public static String XPathCategoryName;
+	public static String XPathChangeValueAction_ActionText;
 	public static String XPathNewXpath;
 	public static String XPathNameEmpty;
 	public static String XPathNameInUse;
@@ -120,9 +137,24 @@ public class Messages {
 
 	public static String XPathName;
 	public static String XPathPattern;
+	public static String XPathActionProvider_EditFileAction;
+	public static String XPathActionProvider_ErrorRunningAction;
+	public static String XPathActionProvider_NewCategoryAction;
+	public static String XPathActionProvider_RemoveCategoryQuestion;
 	public static String XPathAttribute;
 
 
+	public static String XPathDialogs_BlankCategoryError;
+	public static String XPathDialogs_CategoryLabel;
+	public static String XPathDialogs_NoElementsMatched;
+	public static String XPathDialogs_PreviewButton;
+	public static String XPathDialogs_SelectServer;
+	public static String XPathDialogs_ServerLabel;
+	public static String XPathDialogs_XPathDescriptionLabel;
+	public static String XPathTreeContentProvider_JobName;
+	public static String XPathTreeLabelProvider_LoadingLabel;
+	public static String XPathTreeLabelProvider_MatchIndexLabel;
+	public static String XPathTreeLabelProvider_XMLConfigLabel;
 	public static String DescriptorXPathRemoveCategory;
 	public static String DescriptorXPathRemoveCategoryDesc;
 	public static String DescriptorXPathNewXPath;
@@ -161,19 +193,40 @@ public class Messages {
 	public static String EditorCPD_DefaultDescription;
 	public static String EditorCPD_RestoreDefault;
 	public static String EditorNoRuntimeSelected;
+	public static String ExploreUtils_Action_Text;
+	public static String ExploreUtils_Description;
 
 
 	public static String Configure;
+	public static String ConfigureRuntimeMarkerResolution_Description;
 
+	public static String ConvertNodeToXPathDialog_DisplayString;
+	public static String ConvertNodeToXPathDialog_ErrorMessage;
+	public static String ConvertNodeToXPathDialog_KeyedAttributes;
 	// misc
 	public static String ServerSaveFailed;
 
+	public static String StrippedServerWizardFragment_DeployFolderDoesNotExistStatusMessage;
+	public static String StrippedServerWizardFragment_NameInUseStatusMessage;
+	public static String StrippedServerWizardFragment_TemporaryDeployFolderDoesNotExistStatusMessage;
 	// Launch Config
 	public static String LaunchInvalidConfigChanged;
 	public static String LaunchInvalidHostChanged;
 
+	public static String LogLabelProvider_HoursMinutesAgo;
+	public static String LogLabelProvider_MinutesSecondsAgo;
+	public static String LogLabelProvider_PublishingEventType;
+	public static String LogLabelProvider_SecondsAgo;
+	public static String LogLabelProvider_StartupShutdownEventType;
+	public static String LogLabelProvider_UnknownEventType;
+	public static String RequiredCredentialsDialog_IgnoreButton;
+	public static String RequiredCredentialsDialog_ShellText;
+
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.ui.Messages",
+		NLS.initializeMessages(BUNDLE_NAME,
 				Messages.class);
+	}
+	
+	private Messages() {
 	}
 }

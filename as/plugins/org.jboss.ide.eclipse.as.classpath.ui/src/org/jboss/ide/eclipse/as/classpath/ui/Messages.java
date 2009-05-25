@@ -23,13 +23,27 @@ package org.jboss.ide.eclipse.as.classpath.ui;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages {
+public class Messages  extends NLS {
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.classpath.ui.Messages"; //$NON-NLS-1$
+	public static String ClasspathUIPlugin_ALERT;
+	public static String ClasspathUIPlugin_ERROR;
+	public static String ClasspathUIPlugin_OK;
+	public static String ClasspathUIPlugin_WARNING;
+	public static String DirectoryLibraryPage_Description;
+	public static String DirectoryLibraryPage_LabelProject;
+	public static String DirectoryLibraryPage_WebProjects;
+	public static String DirectoryLibraryPage_Title;
 	public static String jeeClasspathAdding;
 	public static String jeeClasspathBody;
 	public static String jeeClasspathDescription;
 	public static String ejb3ClasspathPageTitle;
 	public static String ejb3ClasspathPageDescription;
+	public static String JBossEJB3LibrariesPage_ConfigurationDoesNotContainEJB3Libraries;
+	public static String JBossSelectionPage_ButtonText;
+	public static String JBossSelectionPage_Name;
 	static {
-		NLS.initializeMessages("org.jboss.ide.eclipse.as.classpath.ui.Messages", Messages.class); //$NON-NLS-1$
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+	private Messages() {
 	}
 }
