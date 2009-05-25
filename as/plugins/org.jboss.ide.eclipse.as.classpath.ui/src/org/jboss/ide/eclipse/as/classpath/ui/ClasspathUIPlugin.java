@@ -74,9 +74,9 @@ public class ClasspathUIPlugin extends AbstractUIPlugin {
 
 	public static void alert(String string) {
 		MessageDialog dialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				"EJB3 Tools - Alert", Display.getDefault().getSystemImage(SWT.ICON_INFORMATION), string,
+				Messages.ClasspathUIPlugin_ALERT, Display.getDefault().getSystemImage(SWT.ICON_INFORMATION), string,
 				MessageDialog.INFORMATION, new String[]
-	            {"OK",}, 0);
+	            {Messages.ClasspathUIPlugin_OK,}, 0);
 
 		dialog.setBlockOnOpen(true);
 		dialog.open();
@@ -84,9 +84,9 @@ public class ClasspathUIPlugin extends AbstractUIPlugin {
 
 	public static void error(String string) {
 		MessageDialog dialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				"EJB3 Tools - Error", Display.getDefault().getSystemImage(SWT.ICON_ERROR), string, MessageDialog.ERROR,
+				Messages.ClasspathUIPlugin_ERROR, Display.getDefault().getSystemImage(SWT.ICON_ERROR), string, MessageDialog.ERROR,
 	            new String[]
-	            {"OK",}, 0);
+	            {Messages.ClasspathUIPlugin_OK,}, 0);
 
 		dialog.setBlockOnOpen(true);
 		dialog.open();
@@ -94,9 +94,9 @@ public class ClasspathUIPlugin extends AbstractUIPlugin {
 
 	public static void warn(String string) {
 		MessageDialog dialog = new MessageDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				"EJB3 Tools - Warning", Display.getDefault().getSystemImage(SWT.ICON_WARNING), string,
+				Messages.ClasspathUIPlugin_WARNING, Display.getDefault().getSystemImage(SWT.ICON_WARNING), string,
 	            MessageDialog.WARNING, new String[]
-	            {"OK",}, 0);
+	            {Messages.ClasspathUIPlugin_OK,}, 0);
 
 	      dialog.setBlockOnOpen(true);
 	      dialog.open();

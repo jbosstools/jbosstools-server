@@ -41,6 +41,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.actions.NewServerAction;
+import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -56,7 +57,7 @@ public class JBossSelectionPage extends WizardPage {
    protected Button newServer;
 
    public JBossSelectionPage()  {
-      super("JBoss Server Selection");
+      super(Messages.JBossSelectionPage_Name);
    }
 
    public void createControl(Composite parent) {
@@ -83,7 +84,7 @@ public class JBossSelectionPage extends WizardPage {
       links.setLayout(new RowLayout());
 
       newServer = new Button(links, SWT.NONE);
-      newServer.setText("Create a JBoss Server");
+      newServer.setText(Messages.JBossSelectionPage_ButtonText);
       newServer.addSelectionListener(new SelectionListener()  {
          public void widgetDefaultSelected(SelectionEvent e) {
             widgetSelected(e);

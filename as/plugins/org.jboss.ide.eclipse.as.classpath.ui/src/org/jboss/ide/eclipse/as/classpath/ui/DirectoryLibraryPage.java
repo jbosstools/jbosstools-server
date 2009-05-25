@@ -26,8 +26,8 @@ public class DirectoryLibraryPage extends NewElementWizardPage implements
 	public DirectoryLibraryPage() {
 		super("DirectoryLibrariesContainerPage"); //$NON-NLS-1$
 
-		setTitle("Directory library");
-		setDescription("A classpath container that automatically adds all .jar and .zip files found in a directory to the classpath.");
+		setTitle(Messages.DirectoryLibraryPage_Title);
+		setDescription(Messages.DirectoryLibraryPage_Description);
 	}
 
 	public IClasspathEntry getSelection() {
@@ -61,7 +61,7 @@ public class DirectoryLibraryPage extends NewElementWizardPage implements
 		composite.setLayout(new GridLayout(2, false));
 
 		final Label label = new Label(composite, SWT.NONE);
-		label.setText("Project:");
+		label.setText(Messages.DirectoryLibraryPage_LabelProject);
 
 		final String[] webProjects = getWebProjects();
 
@@ -103,7 +103,7 @@ public class DirectoryLibraryPage extends NewElementWizardPage implements
 	}
 
 	private static String[] getWebProjects() {
-		return new String[] { "test" };
+		return new String[] { Messages.DirectoryLibraryPage_WebProjects };
 	}
 
 	private static int indexOf(final String[] array, final String str) {

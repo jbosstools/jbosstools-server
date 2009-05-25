@@ -21,6 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.classpath.ui.ejb3;
 
+import java.text.MessageFormat;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
@@ -61,10 +62,10 @@ public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClass
             return true;
          } else {
             ClasspathUIPlugin
-                  .error("The selected configuration (\""
-                        + jbossServer.getServer().getName()
-                        + "\")"
-                        + " does not contain the expected EJB3 libraries. Please install JBoss with EJB3 enabled, or try another configuration. ");
+                  .error(MessageFormat
+						.format(
+								Messages.JBossEJB3LibrariesPage_ConfigurationDoesNotContainEJB3Libraries,
+								jbossServer.getServer().getName()));
          }
       }
 
