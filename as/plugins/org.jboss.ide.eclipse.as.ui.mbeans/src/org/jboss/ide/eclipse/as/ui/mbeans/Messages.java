@@ -23,7 +23,7 @@ package org.jboss.ide.eclipse.as.ui.mbeans;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages {
+public class Messages extends NLS {
 
 	/* XML service editor */
 	public static String ServiceXMLAddAttributeTags;
