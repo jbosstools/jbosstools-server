@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.tools.jmx.tests"
+      id="org.jboss.tools.jmx.tests.feature"
       label="%featureName"
-      version="0.2.2.qualifier"
+      version="1.0.1.qualifier"
       provider-name="%featureProvider"
       image="eclipse_update_120.jpg">
 
@@ -52,7 +52,19 @@
          version="0.0.0"/>
 
    <plugin
+         id="org.jboss.tools.jmx.core.test.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
          id="org.jboss.tools.jmx.ui.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.tools.jmx.ui.test.source"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
@@ -62,5 +74,11 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-         
+
+   <plugin
+         id="org.jboss.tools.jmx.ui.test.interactive.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>
