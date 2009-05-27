@@ -160,17 +160,22 @@
                   wizard allows to create only a new configuration instead.</para>
               </entry>
             </row>
-
+            
+            <row>
+              <entry>
+                <para>Directory</para>
+              </entry>
+              <entry>
+                <para>The path to a directory where the configurations are installed.</para>
+              </entry>
+            </row>
             <row>
               <entry>
                 <para>Configuration</para>
               </entry>
               <entry>
                 <para>The list of configurations (all, default, minimal) that is updated as soon as
-                  you browse to a valid runtime installation folder. After the runtime is created
-                  the configuration becomes an unchanging property of that runtime. To compile
-                  against a different configuration's jars, you will need to create a new runtime
-                  from that configuration.</para>
+                  you browse to a valid runtime installation folder.</para>
               </entry>
             </row>
 
@@ -181,14 +186,74 @@
       <para>As a result of having each runtime represent a specific configuration rather than the
         server installation as a whole, it is very likely you&apos;ll create several different
         runtimes to test each of your configurations. It becomes important to ensure your runtimes,
-        and later your servers, are given descriptive names that help you remember which is
+        and later your servers, are given descriptive names that help you to remember which is
         which.</para>
 
       <para>Press <emphasis>
           <property>Finish</property>
-        </emphasis> to see your new runtime in the list.</para>
+      </emphasis> to see your new runtime in the list.</para>
+      <note>
+        <title>Note:</title>
+        <para>If you edit the configuration of a runtime, the changes  don't affect the settings of the servers that currently use the runtime.
+          To apply the changes to them also,you should double right click the server, <emphasis>
+            <property>Overview>Runtime Environment</property> </emphasis>
+          ,make sure that necessary configuration is chosen,click <emphasis><property>Finish</property> </emphasis> and then  <emphasis><property>Save</property></emphasis> button.</para>
+      </note>
     </section>
-
+    <section id="CopyRuntime">
+      <title>Copying the existing runtime configuration</title>
+      <para>While installing a new runtime you can copy the configuration from the existing one.
+        To do this you should perform all the steps in the <link linkend="InstNewRuntime">previous</link> section except pressing  <emphasis>
+          <property>Finish</property></emphasis>
+          in the  New Server Runtime Environment menu  .
+      </para>
+      <para>Make sure that you browse to a valid runtime folder and can see the list of configurations (all, default, minimal) in the Configuration section .
+        Then choose necessary  Configuration from the list and click <emphasis>
+          <property>Copy</property></emphasis>.The next dialog should appear.
+      </para>
+      <figure>
+        <title>Copy the existing configuration</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_4a.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>Change the name Click on <emphasis>
+        <property>Browse</property></emphasis> and select your configuration  location or leave as it's if you want it to be located together with other  runtime configurations.
+      </para>
+      <figure>
+        <title>Copy the existing configuration</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/runtimes_servers/runtimes_servers_4b.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>   
+     
+    <para>Click<emphasis>
+      <property> Ok </property></emphasis>and you should  see the next wizard with the just added copied  configuration.
+    
+    </para>
+    <figure>
+      <title>Runtime with copied configuration</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/runtimes_servers/runtimes_servers_4c.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>   
+    <para> Press <emphasis>
+      <property>Finish</property>
+    </emphasis> and  you will see your new runtime in the list.
+    </para>
+    <para>You can also change a configuration of existing runtime to a copied one in the same way from the <emphasis>
+      <property> Window > Preferences  </property></emphasis>
+       menu <emphasis>
+         <property>Server > Runtime Environments </property></emphasis>
+          and clicking <emphasis>
+      <property>Edit</property></emphasis>.
+    </para>
   </section>
 
   <section>
@@ -227,7 +292,7 @@
         runtime that matches your needs just press the <emphasis>
           <property>Add...</property>
         </emphasis> link nearby to bring up the wizard for creating a new runtime (see the <link
-          linkend="add_runtime_figure">previous section</link>). To configure the already installed
+          linkend="add_runtime_figure">Installing a New Runtime section</link>). To configure the already installed
         runtimes you should go to server preferences that you can easily do by pressing the <emphasis>
           <property>Configure runtime environments...</property></emphasis> link.</para>
 
@@ -268,7 +333,7 @@
       <para>We hope, this guide helped you to get started with the JBoss Tools server manager. Besides, for additional information you are welcome on <ulink
         url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
     </section>
-
+   </section>
   </section>
 
 </chapter>
