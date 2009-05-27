@@ -2,7 +2,7 @@
 <feature
       id="org.jboss.tools.jmx.feature"
       label="%featureName"
-      version="0.2.2"
+      version="1.0.1.qualifier"
       provider-name="%featureProvider"
       plugin="org.jboss.tools.jmx.ui">
 
@@ -36,7 +36,7 @@ for a full listing of individual contributors.
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.ui.forms" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.ui.navigator" version="3.3.100" match="greaterOrEqual"/>
-      <import plugin="org.jboss.tools.jmx.core" version="0.2.1" match="greaterOrEqual"/>
+      <import plugin="org.jboss.tools.jmx.core" version="1.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
