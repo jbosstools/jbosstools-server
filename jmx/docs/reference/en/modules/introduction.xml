@@ -53,7 +53,7 @@
       do depend on the JMX Tooling and even extend it. </para>
 
     <para>You can find the <property>JBoss Tools</property> plugins over at the <ulink
-        url="http://labs.jboss.com/tools/download/index.html">download pages</ulink>. The only
+        url="http://labs.jboss.com/tools/download.html">download pages</ulink>. The only
       package you&apos;ll need to get is the JMX Tooling, however the <property>AS
         Tools</property> would give you a more full experience when using JMX with JBoss Servers.
       You can find further download and installation instructions on the JBoss Wiki in the <ulink
