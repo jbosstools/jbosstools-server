@@ -255,7 +255,7 @@
       <property>Edit</property></emphasis>.
     </para>
   </section>
-
+  </section>
   <section>
     <title>Servers</title>
     <para>WTP servers are eclipse-representations of a backing server installation. They are used to
@@ -334,6 +334,6 @@
         url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
     </section>
    </section>
-  </section>
+  
 
 </chapter>
