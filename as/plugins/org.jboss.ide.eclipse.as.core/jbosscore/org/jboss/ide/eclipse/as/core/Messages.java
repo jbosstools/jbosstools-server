@@ -29,6 +29,8 @@ public class Messages {
 	public static String server;
 	public static String runtime;
 	public static String runModeNotSupported;
+	public static String JMXPauseScannerError;
+	public static String JMXResumeScannerError;
 	
 	static {
 		NLS.initializeMessages(JBossServerCorePlugin.PLUGIN_ID + ".Messages",

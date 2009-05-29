@@ -36,6 +36,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
@@ -44,6 +45,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.tools.jmx.core.IJMXRunnable;
+import org.jboss.tools.jmx.core.JMXException;
 
 /**
  * 
@@ -190,16 +192,19 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		super.publishStart(monitor);
-		JMXClassLoaderRepository.getDefault().addConcerned(getServer(), this);
-		final boolean suspend = shouldSuspendScanner();
-		if( suspend ) {
+		if( shouldSuspendScanner()) {
+			JMXClassLoaderRepository.getDefault().addConcerned(getServer(), this);
 			IJMXRunnable r = new IJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
-					if( suspend )
-						suspendDeployment(connection);
+					suspendDeployment(connection);
 				}
 			};
-			JBossServerConnectionProvider.run(getServer(), r);
+			try {
+				JBossServerConnectionProvider.run(getServer(), r);
+			} catch( JMXException jmxe ) {
+				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SUSPEND_DEPLOYMENT_SCANNER, Messages.JMXPauseScannerError, jmxe);
+				ServerLogger.getDefault().log(getServer(), status);
+			}
 		}
 	}
 	
@@ -210,15 +215,21 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 					resumeDeployment(connection);
 				}
 			};
-			JBossServerConnectionProvider.run(getServer(), r);
+			try {
+				JBossServerConnectionProvider.run(getServer(), r);
+			} catch( JMXException jmxe ) {
+				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, Messages.JMXResumeScannerError, jmxe);
+				ServerLogger.getDefault().log(getServer(), status);			
+			} finally {
+				JMXClassLoaderRepository.getDefault().removeConcerned(getServer(), this);
+			}
 		}
-		JMXClassLoaderRepository.getDefault().removeConcerned(getServer(), this);
 		super.publishFinish(monitor);
 	}
 
 	protected boolean shouldSuspendScanner() {
-		if( getServer().getServerType().getId().equals("org.jboss.ide.eclipse.as.50"))
-			return false;
+//		if( getServer().getServerType().getId().equals("org.jboss.ide.eclipse.as.50"))
+//			return false;
 		if( getServer().getServerState() != IServer.STATE_STARTED)
 			return false;
 		return true;
