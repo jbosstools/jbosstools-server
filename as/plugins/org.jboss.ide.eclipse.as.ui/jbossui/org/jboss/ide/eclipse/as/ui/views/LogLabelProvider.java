@@ -32,6 +32,17 @@ public class LogLabelProvider extends LabelProvider implements ITableLabelProvid
 		
 		if( element instanceof LogEntry) {
 			int code = ((LogEntry)element).getCode();
+			int istatusCode = (code & IEventCodes.ISTATUS_MASK) >> 29;
+			
+			                       
+			if(istatusCode != 0 ) {
+				switch(istatusCode) {
+					case 1: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK);
+					case 2: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+					case 3: return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+				}
+			}
+			
 			int majorType = code & IEventCodes.MAJOR_TYPE_MASK;
 			switch(majorType) {
 			case IEventCodes.POLLING_CODE:

@@ -78,6 +78,8 @@ public class Messages {
 	public static String ServerNotFound;
 	public static String CannotLoadServerPoller;
 	public static String AddingJMXDeploymentFailed;
+	public static String JMXPauseScannerError;
+	public static String JMXResumeScannerError;
 	public static String CannotSaveServersStartArgs;
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

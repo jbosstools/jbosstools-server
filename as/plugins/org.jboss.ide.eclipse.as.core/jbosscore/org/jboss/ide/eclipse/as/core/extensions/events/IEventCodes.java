@@ -10,9 +10,17 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.extensions.events;
 
+import org.eclipse.core.runtime.IStatus;
+
 
 public interface IEventCodes {
-	public static final int MAJOR_TYPE_MASK = 0xFF << 24;
+	public static final int ISTATUS_CODE_OK = 0 << 29;
+	public static final int ISTATUS_CODE_INFO = 1 << 29;
+	public static final int ISTATUS_CODE_WARN = 2 << 29;
+	public static final int ISTATUS_CODE_ERROR = 3 << 29;
+
+	public static final int ISTATUS_MASK = 0xE0 << 24; // slot 31 and 32
+	public static final int MAJOR_TYPE_MASK = 0x1F << 24; 
 	public static final int POLLING_CODE = 1 << 24;
 	public static final int PUBLISHING_CODE = 2 << 24;
 	public static final int POLLER_MASK = 0xFF << 16;
@@ -35,7 +43,10 @@ public interface IEventCodes {
 	public static final int JST_PUBLISHER_CODE = PUBLISHING_CODE | (2 << 16); 
 	public static final int SINGLE_FILE_PUBLISHER_CODE = PUBLISHING_CODE | (3 << 16);
 	public static final int ADD_DEPLOYMENT_FOLDER = PUBLISHING_CODE | (4<<16);
-
+	public static final int SUSPEND_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (5<<16);
+	public static final int RESUME_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (6<<16);
+	
+	
 	// Publishing.JST
 	public static final int JST_PUB_FULL_SUCCESS = JST_PUBLISHER_CODE | 1;
 	public static final int JST_PUB_FULL_FAIL = JST_PUBLISHER_CODE | 2;
