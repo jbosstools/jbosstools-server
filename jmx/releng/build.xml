@@ -1,26 +1,11 @@
-<project default="run" name="org.jboss.tools.jmx.releng/build.xml - Run a JMX build using the Athena CBI">
+<project default="run" name="org.jboss.tools.*.releng/build.xml - Run a JBoss Tools component build using the Athena CBI">
 	<target name="run">
 		<!-- 
-			1. You must check out the following projects to your workspace:
+			You must check out the following projects to your workspace:
 		
 				org.eclipse.releng.basebuilder
 				org.eclipse.dash.common.releng 
-				org.eclipse.myproject.releng
-				
-			2. You must provide Ant-Contrib in one of four places:
-			
-				org.eclipse.dash.common.releng/lib/ant-contrib.jar
-				org.eclipse.myproject.releng/lib/ant-contrib.jar
-				${thirdPartyJarsDir}/ant-contrib.jar (path can be customized below) 
-				/usr/share/java/ant-contrib.jar (may require a symlink)
-			
-				You can install Ant-Contrib via RPM, or download it here:
-			
-				http://sourceforge.net/project/showfiles.php?group_id=36177&package_id=28636
-			
-			3. If your project's sources are in SVN, you must unpack this zip into the basebuilder project's plugins/ folder:
-			
-				http://downloads.sourceforge.net/svn-pde-build/org.eclipse.pde.build.svn-1.0.1RC2.zip
+				jbosstools/trunk/<your component>/releng
 		-->
 
 		<!-- load properties and set timestamp for the build -->
