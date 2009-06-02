@@ -2,7 +2,77 @@
 <chapter id="quick_start" role="updated">
   <title>Quick Start with JBoss Server</title>
 
-  <para>This chapter covers the basics of working with the <property>JBoss Server</property>. If you
+  <para>This chapter covers the basics of working with the <property>JBoss Server</property>.</para>
+  
+  <section id="JBoss_server_key_features">
+    <title>Key Features of JBoss Server</title>
+    <para>For a start, we propose you to look through the table of main features of JBoss Server:</para>
+ 
+    <table>
+      
+      <title>Key Functionality for JBoss Server</title>
+      <tgroup cols="3">
+        
+        <colspec colnum="1" align="left" colwidth="2*"/>
+        <colspec colnum="2" colwidth="4*"/>
+        <colspec colnum="3" align="left" colwidth="2*"/>
+        
+        <thead>
+          <row>
+            <entry>Feature</entry>
+            <entry>Benefit</entry>
+            <entry>Chapter</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry><para>JBoss AS plugin</para></entry>
+            <entry><para>Using WTP, JBoss AS plugin allows working with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.</para></entry>
+            <entry>
+              <link linkend="runtimes_servers">runtimes and servers</link>
+            </entry>
+          </row>
+          
+          <row>
+            <entry><para>JBoss AS Perspective</para></entry>
+            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and JBoss Server View for that purpose. </para></entry>
+            <entry>
+              <link linkend="perspective">JBoss AS perspective</link>
+            </entry>
+          </row>
+          
+          <row>
+            <entry><para>Modules Deployment</para></entry>
+            <entry><para>A number of ways, provided by WTP and JBoss Tools, to deploy either a project or a single file on the server.</para></entry>
+            <entry>
+              <link linkend="modules">deploying modules</link>
+            </entry>
+          </row>
+          
+          <row>
+            <entry><para>TPTP Support</para></entry>
+            <entry><para>Test and Performance Tools Platform (TPTP)  profiling.</para></entry>
+            <entry>
+              <link linkend="tptp_support">TPTP support</link>
+            </entry>
+          </row>
+          
+        </tbody>
+        
+      </tgroup>
+    </table>
+  
+  </section>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <para> If you
     already have installed JBoss server and runtime you can quickly learn how to configure, start,
     stop the server, to know deployment and archiving processes. How to install runtimes and servers
     read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
