@@ -15,17 +15,18 @@ testFeatureToBuildID=org.jboss.tools.jmx.tests.feature
 build.steps=buildUpdate,buildTests,generateDigests,test,publish,cleanup
 
 # Re-use local sources?
-localSourceCheckoutDir=/home/nboldt/eclipse/workspace-jboss/jbosstools-trunk/jmx
-relengBuilderDir=/home/nboldt/eclipse/workspace-jboss/jbosstools-trunk/jmx/releng
-relengBaseBuilderDir=/home/nboldt/eclipse/workspace-jboss/org.eclipse.releng.basebuilder
-relengCommonBuilderDir=/home/nboldt/eclipse/workspace-jboss/org.eclipse.dash.common.releng
+#localSourceCheckoutDir=/Users/max/workspace-jmxbuild
+#relengBuilderDir=/Users/max/workspace-jmxbuild/org.jboss.tools.jmx.releng
+#relengBaseBuilderDir=/Users/max/workspace-jmxbuild/org.eclipse.releng.basebuilder
+#relengCommonBuilderDir=/Users/max/workspace-jmxbuild/org.eclipse.dash.common.releng
 
-JAVA_HOME=/usr/lib/jvm/java
-JAVA50_HOME=/usr/lib/jvm/java
+JAVA_HOME=/work/products/jdk-1.5.0_u18/bin/java
+JAVA50_HOME=/work/products/jdk-1.5.0_u18/bin/java
 
 dependencyURLs=\
-http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-linux-gtk.tar.gz
+http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-win32.zip
 #,\
+#http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-linux-gtk.tar.gz,\
 #http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-win32.zip,\
 #http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-linux-gtk-x86_64.tar.gz,\
 #http://www.eclipse.org/downloads/download.php?r=1&amp;file=/eclipse/downloads/drops/S-3.5M7-200904302300/eclipse-SDK-3.5M7-macosx-carbon.tar.gz,\
