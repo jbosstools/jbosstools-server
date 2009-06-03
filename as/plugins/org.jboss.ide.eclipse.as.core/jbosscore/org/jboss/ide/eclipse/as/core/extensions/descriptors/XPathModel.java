@@ -259,6 +259,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.40", new Path("properties").append("jboss.40.default.ports.properties"));
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.42", new Path("properties").append("jboss.42.default.ports.properties"));
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.50", new Path("properties").append("jboss.50.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.51", new Path("properties").append("jboss.51.default.ports.properties"));
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.43", new Path("properties").append("jboss.eap.43.default.ports.properties"));
 	}
 
