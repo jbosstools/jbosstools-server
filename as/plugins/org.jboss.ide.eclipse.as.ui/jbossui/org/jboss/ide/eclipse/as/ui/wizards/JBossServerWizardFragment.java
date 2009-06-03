@@ -21,6 +21,8 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
+import java.io.File;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -49,6 +51,8 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.JBossServerType;
+import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -196,7 +200,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		jbs.setUsername("admin"); //$NON-NLS-1$
 		jbs.setPassword("admin"); //$NON-NLS-1$
-		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
+		jbs.setDeployLocationType( getDefaultDeployLocationType());
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
 		
@@ -216,9 +220,12 @@ public class JBossServerWizardFragment extends WizardFragment {
 		return ajbsrt;
 	}
 
-	protected boolean isAS5() {
-		return getRuntime().getRuntime().getRuntimeType().
-				getVersion().equals("5.0"); //$NON-NLS-1$
+	protected String getDefaultDeployLocationType() {
+		String version = new ServerBeanLoader().getFullServerVersion(
+				new File(getRuntime().getRuntime().getLocation().toOSString(), JBossServerType.AS.getSystemJarPath()));
+		if( version.startsWith("5.0."))
+			return IDeployableServer.DEPLOY_SERVER;
+		return IDeployableServer.DEPLOY_METADATA;
 	}
 	
 	public boolean isComplete() {
