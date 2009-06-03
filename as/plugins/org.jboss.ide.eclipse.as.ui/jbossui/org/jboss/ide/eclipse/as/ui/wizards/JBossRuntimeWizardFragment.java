@@ -119,7 +119,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
-		handle.setTitle(Messages.rwf_Title);
+		if( r.isWorkingCopy() && ((IRuntimeWorkingCopy)r).getOriginal() == null) 
+			handle.setTitle(Messages.rwf_Title1);
+		else 
+			handle.setTitle(Messages.rwf_Title2);
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
 				version);
@@ -160,7 +163,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String oldName = r.getName();
-		if( r.isWorkingCopy() ) {
+		if( r.isWorkingCopy() && ((IRuntimeWorkingCopy)r).getOriginal() == null) {
 			String newName = oldName.replace("Enterprise Application Platform", "EAP");
 			newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
 			((IRuntimeWorkingCopy)r).setName(newName);

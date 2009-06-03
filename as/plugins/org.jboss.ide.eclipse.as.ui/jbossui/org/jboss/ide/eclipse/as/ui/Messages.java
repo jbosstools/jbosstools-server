@@ -36,7 +36,8 @@ public class Messages {
 	public static String wf_ConfigLabel;
 	public static String JBAS_version;
 	public static String JBEAP_version;
-	public static String rwf_Title;
+	public static String rwf_Title1;
+	public static String rwf_Title2;
 	public static String rwf_Explanation;
 	public static String rwf_BaseName;
 	public static String rwf_NameInUse;
