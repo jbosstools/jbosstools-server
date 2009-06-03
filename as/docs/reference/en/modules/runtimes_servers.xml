@@ -287,7 +287,10 @@
         or stopping, and runtimes keep track of the location of the installation. Thus, each server
         instance must be backed by an appropriate runtime. </para>
 
-      <para>From the list of already declared runtimes in the combo box below the view it&apos;s
+      <para> <emphasis><property> New server wizard </property></emphasis> allows to name the server appropriately in the <emphasis><property>Server name field </property></emphasis >or you can use a generated default name.If it's nessecary to restore the default name,after you defined yours, click the Reset default button(<inlinemediaobject>          <imageobject>
+        <imagedata fileref="images/runtimes_servers/runtimes_servers_4d.png"/>
+      </imageobject></inlinemediaobject>).
+        From the list of already declared runtimes in the combo box below the view it&apos;s
         possible to select which runtime you want your server to be backed by. If there is no
         runtime that matches your needs just press the <emphasis>
           <property>Add...</property>
@@ -313,7 +316,7 @@
         associated runtime.</para>
       <para>Either way, after targeting your server to a runtime, the final screen in this wizard is
         largely confirmational, giving you a chance to verify that you&apos;ve selected the
-        appropriate runtime. It also allows to name the server appropriately. </para>
+        appropriate runtime. </para>
 
       <figure>
         <title>Installed Server Runtime Environments</title>
