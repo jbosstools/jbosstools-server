@@ -41,6 +41,56 @@
       It was forked with permission. </para>
   </section>
 
+  <section><title>Key Features of JMX Tools</title>
+    <para>For a start, we propose you to look through the table of main features of JMX Tools:</para>
+    <table>
+      
+      <title>Key Functionality for JMX Tools</title>
+      <tgroup cols="3">
+        
+        <colspec colnum="1" align="left" colwidth="2*"/>
+        <colspec colnum="2" colwidth="4*"/>
+        <colspec colnum="3" align="left" colwidth="2*"/>
+        
+        <thead>
+          <row>
+            <entry>Feature</entry>
+            <entry>Benefit</entry>
+            <entry>Chapter</entry>
+          </row>
+        </thead>
+        
+        <tbody>
+          
+          <row>
+            <entry><para>MBean Explorer</para></entry>
+            <entry><para>MBean Explorer is a useful view with a text filter that displays domains, mbeans, attributes, and operations inside a connection.</para></entry>
+            <entry>
+              <link linkend="mbean_explorer">MBean Explorer</link>
+            </entry>
+          </row>
+          
+          <row>
+            <entry><para>MBean Editor</para></entry>
+            <entry><para>MBean Editor is a multi-page editor to manage MBeans.</para></entry>
+            <entry>
+              <link linkend="mbean_editor">MBean Editor</link>
+            </entry>
+          </row>
+          
+          
+        </tbody>
+        
+      </tgroup>
+    </table>
+    
+    
+  
+  
+  </section>
+  
+  
+  
   <section>
     <title>Installation</title>
     <para>Here, we are going to explain how to install the <property>JMX plugin</property> into
