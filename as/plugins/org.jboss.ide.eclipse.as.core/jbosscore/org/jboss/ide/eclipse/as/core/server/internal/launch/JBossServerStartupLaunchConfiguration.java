@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,11 +162,11 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 				if( argVal.startsWith(":")) //$NON-NLS-1$
 					argVal = argVal.substring(1);
 				
-				String[] asArr = argVal.split(":"); //$NON-NLS-1$ 
+				String[] asArr = argVal.split(File.pathSeparator); 
 				asArr[0] = libPath;
 				String implode = ""; //$NON-NLS-1$
 				for( int i = 0; i < asArr.length; i++ ) 
-					implode += asArr[i] + ":"; //$NON-NLS-1$
+					implode += asArr[i] + File.pathSeparator;
 				libPath = implode;
 			}
 			vmArgs = ArgsUtil.setArg(vmArgs, null, 
