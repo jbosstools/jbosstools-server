@@ -28,10 +28,16 @@
      <bookinfo>
          <title>JMX Tools Reference Guide</title>
             
-            <!--author><firstname>Anatoly</firstname><surname>Fedosik</surname></author>
-            <author><firstname>Olga</firstname><surname>Chikvina</surname></author>
-            <author><firstname>Rob</firstname><surname>Stryker</surname><email>rob.stryker@jboss.com</email></author>
-            <author><firstname>Svetlana</firstname><surname>Mukhina</surname><email>smukhina@exadel.com</email></author-->      
+         <corpauthor diffmk:change="added">
+             <inlinemediaobject diffmk:change="added">
+                 <imageobject diffmk:change="added" role="fo">
+                     <imagedata diffmk:change="added" fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
+                 </imageobject>	
+                 <imageobject diffmk:change="added" role="html">
+                     <imagedata diffmk:change="added"></imagedata>
+                 </imageobject>	
+             </inlinemediaobject>           
+         </corpauthor>
          
          <pubdate>December 2008</pubdate>
 	                       <copyright>
@@ -39,9 +45,9 @@
 	                           <year>2009</year>
 	                           <holder>JBoss, a division of Red Hat</holder>
 	                       </copyright>
-          <releaseinfo>
-            Version: 1.0.0.GA 
-          </releaseinfo>
+          <releaseinfo><diffmk:wrapper diffmk:change="changed">
+             Version: 1.1.0.M1
+          </diffmk:wrapper></releaseinfo>
 <abstract>
    <title></title>
        <para>
@@ -95,7 +101,57 @@
       It was forked with permission. </para>
   </section>
 
-  <section>
+  <section><title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Features of JMX Tools</diffmk:wrapper></title>
+    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">For a start, we propose you to look through the table of main features of JMX Tools:</diffmk:wrapper></para>
+    <table diffmk:change="added">
+      
+      <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Functionality for JMX Tools</diffmk:wrapper></title>
+      <tgroup cols="3" diffmk:change="added">
+        
+        <colspec align="left" colnum="1" colwidth="2*" diffmk:change="added"></colspec>
+        <colspec colnum="2" colwidth="4*" diffmk:change="added"></colspec>
+        <colspec align="left" colnum="3" colwidth="2*" diffmk:change="added"></colspec>
+        
+        <thead diffmk:change="added">
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Feature</diffmk:wrapper></entry>
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Benefit</diffmk:wrapper></entry>
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Chapter</diffmk:wrapper></entry>
+          </row>
+        </thead>
+        
+        <tbody diffmk:change="added">
+          
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Explorer</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Explorer is a useful view with a text filter that displays domains, mbeans, attributes, and operations inside a connection.</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="mbean_explorer"><diffmk:wrapper diffmk:change="added">MBean Explorer</diffmk:wrapper></link>
+            </entry>
+          </row>
+          
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor is a multi-page editor to manage MBeans.</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="mbean_editor"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></link>
+            </entry>
+          </row>
+          
+          
+        </tbody>
+        
+      </tgroup>
+    </table>
+    
+    
+  
+  
+  </section>
+  
+  
+  
+  <section diffmk:change="added">
     <title>Installation</title>
     <para>Here, we are going to explain how to install the <property moreinfo="none">JMX plugin</property> into
       Eclipse.</para>
@@ -106,7 +162,7 @@
         Tools</property> have no dependencies, other plugins, such as <property moreinfo="none">AS Tools</property>,
       do depend on the JMX Tooling and even extend it. </para>
 
-    <para>You can find the <property moreinfo="none">JBoss Tools</property> plugins over at the <ulink url="http://labs.jboss.com/tools/download/index.html">download pages</ulink>. The only
+    <para>You can find the <property moreinfo="none">JBoss Tools</property> plugins over at the <ulink url="http://labs.jboss.com/tools/download.html">download pages</ulink>. The only
       package you'll need to get is the JMX Tooling, however the <property moreinfo="none">AS
         Tools</property> would give you a more full experience when using JMX with JBoss Servers.
       You can find further download and installation instructions on the JBoss Wiki in the <ulink url="http://labs.jboss.com/wiki/InstallingJBossTools">InstallingJBossTools</ulink>
@@ -226,20 +282,20 @@
 
     <itemizedlist>
         <listitem>
-            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Attributes</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
-        </listitem>
-        <listitem diffmk:change="added">
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Operations</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
+            <para>the <emphasis>
+                <property moreinfo="none">Attributes</property></emphasis> page</para>
         </listitem>
         <listitem>
-            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page </diffmk:wrapper></para>
+            <para>the <emphasis>
+                <property moreinfo="none">Operations</property></emphasis> page</para>
         </listitem>
         <listitem>
-            <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Info</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page </diffmk:wrapper></para>
+            <para>the <emphasis>
+                <property moreinfo="none">Notifications</property></emphasis> page </para>
+        </listitem>
+        <listitem>
+            <para>the <emphasis>
+                <property moreinfo="none">Info</property></emphasis> page </para>
         </listitem>
     </itemizedlist>
 
@@ -272,19 +328,19 @@
 
     <section>
         <title>Notifications Page</title>
-        <para>One more page in the <property moreinfo="none">MBean Editor</property><diffmk:wrapper diffmk:change="added"> is the </diffmk:wrapper><emphasis diffmk:change="added">
-            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page, which gives the possibility to
+        <para>One more page in the <property moreinfo="none">MBean Editor</property> is the <emphasis>
+            <property moreinfo="none">Notifications</property></emphasis> page, which gives the possibility to
             subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
-            unchecking) the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Subscribe</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button in the right top corner. </diffmk:wrapper></para>
-        <para><diffmk:wrapper diffmk:change="changed">The list of notifications is refreshed every time a new notification is
-        received:</diffmk:wrapper></para>
+            unchecking) the <emphasis>
+                <property moreinfo="none">Subscribe</property></emphasis> button in the right top corner. </para>
+        <para>The list of notifications is refreshed every time a new notification is
+        received:</para>
         
-        <figure diffmk:change="added" float="0">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor Notifications Page</diffmk:wrapper></title>
-            <mediaobject diffmk:change="added">
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/notifications.png"></imagedata>
+        <figure float="0">
+            <title>MBean Editor Notifications Page</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/notifications.png"></imagedata>
                 </imageobject>
             </mediaobject>
         </figure>
@@ -511,9 +567,9 @@
          one child, a connectionProvider with a class that implements
          org.jboss.tools.jmx.core.IConnectionProvider.</para>
       
-      <para><diffmk:wrapper diffmk:change="changed">An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
+      <para>An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
          objects. It must also keep a list of listeners that it is expected to inform when a
-         connection is added or removed from its list. </diffmk:wrapper></para>
+         connection is added or removed from its list. </para>
       
       <para>Each IConnectionWrapper is expected to handle running arbitrary JMX runnables or getting
          a "Root" object representing all JMX nodes. There are some utility methods the
@@ -530,9 +586,9 @@
                wizardPage class for creation of new connections</para>
          </listitem>
          <listitem>
-            <para><diffmk:wrapper diffmk:change="added">org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
-            Control to present them in the MBean Editor</diffmk:wrapper></para>
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on </diffmk:wrapper><ulink diffmk:change="added" url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201"><diffmk:wrapper diffmk:change="added">JBoss forum</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
+            <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
+            Control to present them in the MBean Editor</para>
+            <para>We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&apos;op=viewforum&apos;f=201">JBoss forum</ulink>.</para>
          </listitem>
       </itemizedlist>
    </section>
