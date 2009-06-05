@@ -145,11 +145,33 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		
 		if( runtime.getRuntime().getLocation().append(
 				IJBossRuntimeResourceConstants.BIN).append(	
-						IJBossRuntimeResourceConstants.NATIVE).toFile().exists() ) 
+						IJBossRuntimeResourceConstants.NATIVE).toFile().exists() ) {
+			String argVal = ArgsUtil.getValue(vmArgs, null, 
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH);
+			
+			String libPath = 
+				runtime.getRuntime().getLocation()
+					.append(IJBossRuntimeResourceConstants.BIN)
+					.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
+			if( argVal != null ) {
+				if( argVal.startsWith("\"")) //$NON-NLS-1$
+					argVal = argVal.substring(1);
+				if( argVal.endsWith("\"")) //$NON-NLS-1$
+					argVal = argVal.substring(0, argVal.length()-1);
+				if( argVal.startsWith(":")) //$NON-NLS-1$
+					argVal = argVal.substring(1);
+				
+				String[] asArr = argVal.split(":"); //$NON-NLS-1$ 
+				asArr[0] = libPath;
+				String implode = ""; //$NON-NLS-1$
+				for( int i = 0; i < asArr.length; i++ ) 
+					implode += asArr[i] + ":"; //$NON-NLS-1$
+				libPath = implode;
+			}
 			vmArgs = ArgsUtil.setArg(vmArgs, null, 
 					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
-				runtime.getRuntime().getLocation().append(IJBossRuntimeResourceConstants.BIN).append(	
-						IJBossRuntimeResourceConstants.NATIVE).toOSString(), true);
+					libPath, true);
+		}
 		
 		/* Claspath */
 		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
