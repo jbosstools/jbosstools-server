@@ -225,16 +225,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			homeDirText.setEditable(canEdit);
 			homeDirButton.setEnabled(canEdit);
 			configurations.getTable().setVisible(canEdit);
-		} else {
-			// STUPID ECLIPSE BUG https://bugs.eclipse.org/bugs/show_bug.cgi?id=263928
-			IRuntime r = (IRuntime) getTaskModel()
-				.getObject(TaskModel.TASK_RUNTIME);
-			String oldName = r.getName();
-			if( r.isWorkingCopy() ) {
-				String newName = oldName.replace("Enterprise Application Platform", "EAP"); //$NON-NLS-1$ //$NON-NLS-2$
-				newName = LocalJBossServerRuntime.getNextRuntimeName(newName);
-				((IRuntimeWorkingCopy)r).setName(newName);
-			}
 		}
 	}
 

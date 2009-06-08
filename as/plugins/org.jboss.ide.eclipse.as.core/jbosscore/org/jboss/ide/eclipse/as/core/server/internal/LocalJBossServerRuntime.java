@@ -41,7 +41,12 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 
 	private String getNextRuntimeName() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
-		String base = Messages.jboss + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
+		String base = null;
+		if( getRuntime().getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.")) { //$NON-NLS-1$
+			base = Messages.jboss + " EAP " + version + " " + Messages.runtime; //$NON-NLS-1$ //$NON-NLS-2$
+		} else {
+			base = Messages.jboss + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
+		}
 		return getNextRuntimeName(base);
 	}
 	
