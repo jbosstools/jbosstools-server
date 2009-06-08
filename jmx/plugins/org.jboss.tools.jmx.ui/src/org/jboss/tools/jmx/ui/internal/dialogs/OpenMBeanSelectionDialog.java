@@ -60,7 +60,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
         return result;
     }
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked") 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite area = (Composite) super.createDialogArea(parent);
@@ -94,7 +94,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
     }
 
     @Override
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     protected void computeResult() {
         IStructuredSelection selection = (IStructuredSelection) viewer
                 .getSelection();
@@ -114,13 +114,13 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
     class ContentProvider implements IStructuredContentProvider,
             ITreeContentProvider {
 
-        @SuppressWarnings("unchecked")//$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         private List mbeans;
 
         ContentProvider() {
         }
 
-        @SuppressWarnings("unchecked")//$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         public void inputChanged(Viewer v, Object oldInput, Object newInput) {
             this.mbeans = (List) newInput;
         }
@@ -128,7 +128,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
         public void dispose() {
         }
 
-        @SuppressWarnings("unchecked")//$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         public Object[] getElements(Object parent) {
             if (mbeans != null) {
                 return mbeans
@@ -141,7 +141,7 @@ public class OpenMBeanSelectionDialog extends SelectionStatusDialog {
             return null;
         }
 
-        @SuppressWarnings("unchecked")//$NON-NLS-1$
+        @SuppressWarnings("unchecked")
         public Object[] getChildren(Object parent) {
             return new Object[0];
         }

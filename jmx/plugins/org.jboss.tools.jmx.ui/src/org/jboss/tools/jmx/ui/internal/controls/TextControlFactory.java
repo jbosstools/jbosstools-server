@@ -116,7 +116,7 @@ public class TextControlFactory implements IAttributeControlFactory {
         if (toolkit != null) {
             text = toolkit.createText(parent, "", style); //$NON-NLS-1$
         } else {
-            text = new Text(parent, style); //$NON-NLS-1$    
+            text = new Text(parent, style);  
         }
         return text;
     }

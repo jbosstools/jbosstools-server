@@ -69,7 +69,7 @@ public class StringUtils {
      * this function is be called recursively to display multi-dimensional
      * arrays, e.g. int[][]
      */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public static String toString(String type, boolean detailed) {
         Assert.isNotNull(type);
         Assert.isLegal(type.length() > 0);

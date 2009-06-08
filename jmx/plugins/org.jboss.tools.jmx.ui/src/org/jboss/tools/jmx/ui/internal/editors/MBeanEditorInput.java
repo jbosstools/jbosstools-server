@@ -42,7 +42,7 @@ public class MBeanEditorInput implements IEditorInput {
         return wrapper.getObjectName().getCanonicalName();
     }
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public Object getAdapter(Class adapter) {
         return null;
     }

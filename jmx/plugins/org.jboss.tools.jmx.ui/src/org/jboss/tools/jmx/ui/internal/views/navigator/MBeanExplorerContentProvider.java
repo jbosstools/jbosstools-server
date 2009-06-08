@@ -30,6 +30,7 @@ import org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.Root;
+import org.jboss.tools.jmx.ui.Messages;
 
 /**
  * Content provider for the view
@@ -99,7 +100,7 @@ public class MBeanExplorerContentProvider implements IConnectionProviderListener
 			return getChildren(w.getRoot());
 		
 		// Must load the model
-		Job job = new Job("Loading JMX Nodes") {
+		Job job = new Job(Messages.LoadingJMXNodes) {
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
 					w.loadRoot(monitor);

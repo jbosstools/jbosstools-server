@@ -28,6 +28,7 @@ import org.jboss.tools.jmx.core.MBeanOperationInfoWrapper;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.ObjectNameNode;
 import org.jboss.tools.jmx.core.tree.PropertyNode;
+import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.UIExtensionManager;
 import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 import org.jboss.tools.jmx.ui.internal.JMXImages;
@@ -68,7 +69,7 @@ public class MBeanExplorerLabelProvider extends LabelProvider {
 		}
 
 		if( obj instanceof DelayProxy ) {
-			return "Loading...";
+			return Messages.Loading;
 		}
 		
 		if (obj instanceof DomainNode) {

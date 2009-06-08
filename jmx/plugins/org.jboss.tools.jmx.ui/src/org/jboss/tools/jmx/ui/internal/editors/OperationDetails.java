@@ -248,7 +248,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 	}});
                 }
             } catch (Exception e) {
-                String message = e.getClass().getName() + ": " + e.getLocalizedMessage();
+                String message = e.getClass().getName() + ": " + e.getLocalizedMessage(); //$NON-NLS-1$
                 JMXUIActivator.log(IStatus.ERROR, e.getClass().getName(), e);
                 // if the exception has a cause, it is likely more interesting
                 // since it may be the exception thrown by the mbean
@@ -256,7 +256,7 @@ public class OperationDetails extends AbstractFormPart implements IDetailsPage {
                 // rather than the exception thrown by the mbean server
                 // connection
                 if (e.getCause() != null) {
-                    message = e.getCause().getClass().getName() + ": " + e.getCause().getLocalizedMessage();
+                    message = e.getCause().getClass().getName() + ": " + e.getCause().getLocalizedMessage(); //$NON-NLS-1$
                 }
                 final String message2 = message;
             	Display.getDefault().asyncExec(new Runnable() { public void run() { 

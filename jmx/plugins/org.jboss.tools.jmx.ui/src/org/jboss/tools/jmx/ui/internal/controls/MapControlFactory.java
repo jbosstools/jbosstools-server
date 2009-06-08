@@ -24,7 +24,7 @@ import org.jboss.tools.jmx.ui.internal.StringUtils;
 public class MapControlFactory extends AbstractTabularControlFactory {
 
 	@Override
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
+	@SuppressWarnings("unchecked")
 	protected void fillTable(final Table table, final Object value) {
         TableColumn keyColumn = new TableColumn(table, SWT.NONE);
         keyColumn.setText(Messages.key);

@@ -16,7 +16,7 @@ public class EmbedableLabelProvider extends LabelProvider {
 	
 	public String getText(Object element) {
 		if( element instanceof IConnectionWrapper ) {
-			return "JMX"; 
+			return "JMX";  //$NON-NLS-1$
 		}
 		return delegate.getText(element);
 	}

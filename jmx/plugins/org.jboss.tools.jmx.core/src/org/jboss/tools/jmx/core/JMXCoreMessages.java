@@ -20,6 +20,10 @@ public class JMXCoreMessages extends NLS {
 	public static String DefaultConnection_ErrorRemoving;
 	public static String DefaultConnection_ErrorLoading;
 	public static String DefaultConnection_ErrorRunningJMXCode;
+	public static String ProblemWritingToFile;
+	public static String LoadMBeans;
+	public static String InspectMBeans;
+	
 	static {
 	    NLS.initializeMessages("org.jboss.tools.jmx.core.JMXCoreMessages", //$NON-NLS-1$
 	                    JMXCoreMessages.class);

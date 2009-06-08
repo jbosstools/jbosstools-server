@@ -82,7 +82,7 @@ public class NotificationsPage extends FormPage {
 
     private NotificationListener listener;
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private List notifications = new ArrayList();
 
     private TableViewer viewer;
@@ -157,7 +157,7 @@ public class NotificationsPage extends FormPage {
         viewer.setLabelProvider(new NotificationLabelProvider());
         viewer.setContentProvider(new IStructuredContentProvider() {
 
-            @SuppressWarnings("unchecked")//$NON-NLS-1$
+            @SuppressWarnings("unchecked")
             public Object[] getElements(Object inputElement) {
                 return (Notification[]) notifications
                         .toArray(new Notification[notifications.size()]);
@@ -173,7 +173,7 @@ public class NotificationsPage extends FormPage {
         });
         viewer.setInput(notifications);
         listener = new NotificationListener() {
-            @SuppressWarnings("unchecked")//$NON-NLS-1$
+            @SuppressWarnings("unchecked")
             public void handleNotification(final Notification notification,
                     Object handback) {
                 // add notification at the head so that the more recent

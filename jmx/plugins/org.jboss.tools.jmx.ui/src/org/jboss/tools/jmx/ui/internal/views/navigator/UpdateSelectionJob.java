@@ -27,11 +27,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.navigator.NavigatorContentService;
 import org.eclipse.ui.internal.navigator.NavigatorPlugin;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.LinkHelperService;
 import org.eclipse.ui.progress.UIJob;
+import org.jboss.tools.jmx.ui.Messages;
 
 public class UpdateSelectionJob extends UIJob {
 	
@@ -53,7 +53,7 @@ public class UpdateSelectionJob extends UIJob {
 	private CommonNavigator commonNavigator;
 	private LinkHelperService linkService;
 	public UpdateSelectionJob(CommonNavigator commonNavigator) {
-		super("Updating Selection Job"); // TODO 
+		super(Messages.UpdatingSelectionJob); // TODO 
 		this.commonNavigator = commonNavigator;
 		if( commonNavigator instanceof JMXNavigator ) {
 			linkService = ((JMXNavigator)commonNavigator).getLinkHelperService();

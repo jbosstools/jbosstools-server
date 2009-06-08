@@ -68,12 +68,12 @@ public class QueryContribution {
 	protected void addListener() {
 		navigator.getFilterText().addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				boolean searchNew = matches == null || filterText == null || filterText.equals("") 
+				boolean searchNew = matches == null || filterText == null || filterText.equals("")  //$NON-NLS-1$
 								|| !navigator.getFilterText().getText().startsWith(filterText);
 				RefineThread thread = new RefineThread(searchNew,
 						navigator.getFilterText().getText(), 
 						matches, shouldShow);
-				if( !navigator.getFilterText().getText().equals("")) {
+				if( !navigator.getFilterText().getText().equals("")) { //$NON-NLS-1$
 					if( refineThread != null )
 						refineThread.cancel();
 					refineThread = thread;

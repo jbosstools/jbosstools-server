@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.navigator.NavigatorContentService;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.LinkHelperService;
+import org.jboss.tools.jmx.ui.Messages;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
 
 /**
@@ -60,8 +61,8 @@ public class JMXNavigator extends CommonNavigator {
 		fd.bottom = new FormAttachment(100,0);
 		getCommonViewer().getTree().setLayoutData(fd);
 		
-		filterText.setToolTipText("Type in a filter"); 
-		filterText.setText("Type in a filter");
+		filterText.setToolTipText(Messages.TypeInAFilter); 
+		filterText.setText(Messages.TypeInAFilter);
 		
 		Display.getDefault().asyncExec(new Runnable() { 
 			public void run() {
