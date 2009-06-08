@@ -134,6 +134,8 @@ public class MainPreferencePage extends PropertyPage implements
 			showAllProjects.setEnabled(val);
 		automaticBuilder.setEnabled(val);
 		showErrorDialog.setEnabled(val);
+		enableDefaultExcludes.setEnabled(val);
+		defaultExcludes.setEnabled(val);
 	}
 
 	protected void createCorePrefs(Composite main) {
@@ -166,7 +168,7 @@ public class MainPreferencePage extends PropertyPage implements
 		
 		enableDefaultExcludes = new Button(filesetGroup, SWT.CHECK);
 		enableDefaultExcludes.setText(ArchivesUIMessages.EnableDefaultExcludes);
-		defaultExcludes = new Text(filesetGroup, SWT.DEFAULT);
+		defaultExcludes = new Text(filesetGroup, SWT.SINGLE | SWT.BORDER);
 		FormData fd = new FormData();
 		fd.top = new FormAttachment(0,5);
 		fd.left = new FormAttachment(0,5);

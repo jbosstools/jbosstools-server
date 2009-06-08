@@ -38,10 +38,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
+import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspacePreferenceManager;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
 import org.jboss.ide.eclipse.archives.ui.PrefsInitializer;
@@ -333,8 +334,13 @@ public class FilesetInfoWizardPage extends WizardPage {
 			includes = "**"; //$NON-NLS-1$
 			includesText.setText(includes);
 			boolean useDefaultExcludes = PrefsInitializer.getBoolean(PrefsInitializer.PREF_USE_DEFAULT_EXCLUDES);
-			if( useDefaultExcludes)
-				excludesText.setText(PrefsInitializer.getString(PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST));
+			if( useDefaultExcludes && parentNode != null)
+				excludesText.setText(
+						PrefsInitializer.getString(
+								PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST, 
+								WorkspacePreferenceManager.getResource(
+										parentNode.getProjectPath()), 
+								true));
 		}
 
 	}

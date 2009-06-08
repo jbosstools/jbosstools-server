@@ -94,7 +94,7 @@ public class PrefsInitializer extends AbstractPreferenceInitializer {
 		if( adaptable != null ) {
 			IResource project = (IResource)adaptable.getAdapter(IResource.class);
 			try {
-				if( project != null && project.getPersistentProperty(name) != null) {
+				if( project != null ) {// && project.getPersistentProperty(name) != null) {
 					project.setPersistentProperty(name, val);
 					return;
 				}

@@ -40,7 +40,7 @@ public class WorkspacePreferenceManager extends AbstractPreferenceInitializer im
 	public static final String PROJECT_SPECIFIC_PREFS = "org.jboss.ide.eclipse.archives.core.projectSpecificPreferencesEnabled"; //$NON-NLS-1$
 
 	private static IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-	private static IResource getResource(IPath path) {
+	public static IResource getResource(IPath path) {
 		if( path != null ) {
 			IProject[] projects = workspaceRoot.getProjects();
 			if( projects != null ) {
