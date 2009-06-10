@@ -88,6 +88,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
@@ -467,11 +468,14 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 				getProjectLabelProvider(), getProjectContentProvider());
 		if (d.open() == Window.OK) {
 			IProject selected = (IProject) d.getFirstResult();
-			addedElements.add(selected);
+			Object selected2 = ModuleCoreNature.isFlexibleProject(selected) ? 
+					ComponentCore.createComponent(selected) : selected;
+			addedElements.add(selected2);
+			objectToRuntimePath.put(selected2, "/");
 			refresh();
 			TableItem[] items = availableComponentsViewer.getTable().getItems();
 			for (int i = 0; i < items.length; i++)
-				if (items[i].getData().equals(selected))
+				if (items[i].getData().equals(selected2))
 					items[i].setChecked(true);
 		}
 	}
@@ -1059,8 +1063,10 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		Object o;
 		while(i.hasNext()) {
 			o = i.next();
-			if( o instanceof IProject )
+			if( o instanceof IProject && !ModuleCoreNature.isFlexibleProject((IProject)o)) 
 				projects.add((IProject)o);
+			else if( o instanceof IProject )
+				components.add(ComponentCore.createComponent(((IProject)o)));
 			else if( o instanceof IVirtualComponent) 
 				components.add((IVirtualComponent)o);
 		}
