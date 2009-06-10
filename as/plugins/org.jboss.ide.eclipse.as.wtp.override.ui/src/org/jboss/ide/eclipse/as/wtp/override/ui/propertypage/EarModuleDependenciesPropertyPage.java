@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
@@ -13,8 +14,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jst.j2ee.application.internal.operations.AddComponentToEnterpriseApplicationDataModelProvider;
+import org.eclipse.jst.j2ee.application.internal.operations.RemoveComponentFromEnterpriseApplicationDataModelProvider;
 import org.eclipse.jst.j2ee.internal.J2EEConstants;
 import org.eclipse.jst.j2ee.internal.J2EEVersionConstants;
+import org.eclipse.jst.j2ee.internal.common.classpath.J2EEComponentClasspathUpdater;
 import org.eclipse.jst.j2ee.internal.dialogs.ChangeLibDirDialog;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIPlugin;
@@ -22,6 +26,7 @@ import org.eclipse.jst.j2ee.model.IEARModelProvider;
 import org.eclipse.jst.j2ee.model.ModelProviderManager;
 import org.eclipse.jst.j2ee.project.EarUtilities;
 import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
+import org.eclipse.jst.j2ee.project.facet.EarFacetRuntimeHandler;
 import org.eclipse.jst.javaee.application.Application;
 import org.eclipse.jst.jee.project.facet.EarCreateDeploymentFilesDataModelProvider;
 import org.eclipse.jst.jee.project.facet.ICreateDeploymentFilesDataModelProperties;
@@ -33,6 +38,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -148,7 +154,11 @@ public class EarModuleDependenciesPropertyPage extends
 		}}, null);
 	}
 	
-	public boolean performOk(IProgressMonitor monitor) {
+	public boolean postHandleChanges(IProgressMonitor monitor) {
+		return true;
+	}
+	
+	public boolean preHandleChanges(IProgressMonitor monitor) {
 		if (isVersion5) {
 			if (libDir.length() == 0) {
 				
@@ -173,6 +183,24 @@ public class EarModuleDependenciesPropertyPage extends
 		return true;
 	}
 
+	protected void handleRemoved(ArrayList<IVirtualComponent> removed) {
+		super.handleRemoved(removed);
+		J2EEComponentClasspathUpdater.getInstance().queueUpdateEAR(rootComponent.getProject());
+	}
+	
+	protected IDataModelProvider getRemoveReferenceDataModelProvider(Object component) {
+		return new RemoveComponentFromEnterpriseApplicationDataModelProvider();
+	}
+
+	protected void postAddProjects(Set moduleProjects) throws CoreException {
+		EarFacetRuntimeHandler.updateModuleProjectRuntime(rootComponent.getProject(), moduleProjects, new NullProgressMonitor());
+	}
+
+	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
+		return new AddComponentToEnterpriseApplicationDataModelProvider();
+	}
+
+	
 	public class EarComponentDependencyContentProvider 
 		extends ComponentDependencyContentProvider {
 
