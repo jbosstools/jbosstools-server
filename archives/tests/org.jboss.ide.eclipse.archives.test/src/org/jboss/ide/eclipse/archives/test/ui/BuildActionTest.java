@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -72,7 +73,7 @@ public class BuildActionTest extends TestCase {
 		return jobChangeAdapter;
 	}
 	
-	public void testBuildAction() {
+	public void testBuildAction() throws Exception {
 		ArchivesModel.instance().registerProject(project.getLocation(), new NullProgressMonitor());
 		BuildAction action = new BuildAction();
 		waiting = true;
@@ -108,7 +109,7 @@ public class BuildActionTest extends TestCase {
 		waitForGo();
 	}
 
-	protected void waitForGo() throws RuntimeException {
+	protected void waitForGo() throws Exception {
 		if( !scheduled ) 
 			fail("Job not scheduled");
 		while(waiting) 
@@ -120,7 +121,15 @@ public class BuildActionTest extends TestCase {
 		waiting = true;
 		scheduled = false;
 		
-		if( ce != null )
-			throw new RuntimeException(ce);
+		if( ce != null ) {
+			IStatus s = ce.getStatus();
+			String message = s.getMessage() + '\n';
+			if( s instanceof MultiStatus ) {
+				IStatus[] children = ((MultiStatus)s).getChildren();
+				for( int i = 0; i < children.length; i++ ) 
+					message += children[i].getMessage() + '\n';
+			}
+			fail(message);
+		}
 	}
 }
