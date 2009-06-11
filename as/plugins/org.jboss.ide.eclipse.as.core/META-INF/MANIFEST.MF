@@ -7,20 +7,13 @@ Bundle-Activator: org.jboss.ide.eclipse.as.core.JBossServerCorePlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.core,
- org.eclipse.core.resources,
  org.eclipse.jdt.launching,
  org.eclipse.jdt.core,
  org.eclipse.jst.server.core,
  org.eclipse.wst.server.core,
- org.eclipse.core.boot,
  org.eclipse.jst.j2ee,
- org.eclipse.jst.j2ee.core,
- org.eclipse.wst.common.project.facet.core,
- org.eclipse.jst.common.project.facet.core,
  org.eclipse.wst.xml.core,
  org.apache.ant,
- org.eclipse.jst.server.tomcat.core,
- org.eclipse.wst.web,
  org.jboss.tools.jmx.core;bundle-version="0.2.1"
 Eclipse-LazyStart: true
 Export-Package: org.jboss.ide.eclipse.as.core,
