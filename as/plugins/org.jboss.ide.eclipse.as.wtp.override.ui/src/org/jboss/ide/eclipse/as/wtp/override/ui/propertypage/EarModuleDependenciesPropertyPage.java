@@ -1,7 +1,6 @@
 package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -13,7 +12,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jst.j2ee.application.internal.operations.AddComponentToEnterpriseApplicationDataModelProvider;
 import org.eclipse.jst.j2ee.application.internal.operations.RemoveComponentFromEnterpriseApplicationDataModelProvider;
 import org.eclipse.jst.j2ee.internal.J2EEConstants;
@@ -80,10 +78,6 @@ public class EarModuleDependenciesPropertyPage extends
 				libDir = oldLibDir;
 			}
 		}
-	}
-
-	protected ComponentDependencyContentProvider createProvider() {
-		return new EarComponentDependencyContentProvider(rootComponent);
 	}
 	
 	protected void createPushButtons() {
@@ -199,24 +193,4 @@ public class EarModuleDependenciesPropertyPage extends
 	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
 		return new AddComponentToEnterpriseApplicationDataModelProvider();
 	}
-
-	
-	public class EarComponentDependencyContentProvider 
-		extends ComponentDependencyContentProvider {
-
-		public EarComponentDependencyContentProvider(
-				IVirtualComponent rootComponent) {
-			super(rootComponent);
-		}
-
-		public boolean select(Viewer viewer, Object parentElement, Object element) {
-			List forceCheck = new ArrayList();
-			forceCheck.addAll(getChildrenComponents());
-			forceCheck.addAll(getCPComponents());
-			if( forceCheck.contains(element) || addedElements.contains(element))
-				return true;
-			return false;
-		}
-	}
-	
 }

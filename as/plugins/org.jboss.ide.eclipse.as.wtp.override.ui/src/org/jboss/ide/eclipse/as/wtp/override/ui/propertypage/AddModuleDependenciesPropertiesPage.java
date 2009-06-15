@@ -36,33 +36,27 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.BuildPathDialogAccess;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jst.j2ee.application.internal.operations.AddComponentToEnterpriseApplicationDataModelProvider;
-import org.eclipse.jst.j2ee.application.internal.operations.RemoveComponentFromEnterpriseApplicationDataModelProvider;
 import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualArchiveComponent;
-import org.eclipse.jst.j2ee.internal.AvailableJ2EEComponentsForEARContentProvider;
 import org.eclipse.jst.j2ee.internal.IJ2EEDependenciesControl;
-import org.eclipse.jst.j2ee.internal.J2EEConstants;
 import org.eclipse.jst.j2ee.internal.ManifestUIResourceHandler;
-import org.eclipse.jst.j2ee.internal.common.J2EEVersionUtil;
 import org.eclipse.jst.j2ee.internal.plugin.IJ2EEModuleConstants;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIPlugin;
-import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
-import org.eclipse.jst.j2ee.project.facet.IJ2EEFacetConstants;
 import org.eclipse.jst.j2ee.project.facet.IJavaProjectMigrationDataModelProperties;
 import org.eclipse.jst.j2ee.project.facet.JavaProjectMigrationDataModelProvider;
 import org.eclipse.swt.SWT;
@@ -104,16 +98,13 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		IJ2EEDependenciesControl {
 
 	protected final String PATH_SEPARATOR = ComponentDependencyContentProvider.PATH_SEPARATOR;
-	protected boolean showRuntimePath;
 	protected final IProject project;
 	protected final J2EEDependenciesPage propPage;
 	protected IVirtualComponent rootComponent = null;
 	protected Text componentNameText;
 	protected Label availableModules;
-	protected CheckboxTableViewer availableComponentsViewer;
-	protected Button selectAllButton;
-	protected Button deselectAllButton;
-	protected Button projectButton;
+	protected TableViewer availableComponentsViewer;
+	protected Button projectButton, removeButton;
 	protected Button projectJarButton;
 	protected Button externalJarButton;
 	protected Button addVariableButton;
@@ -124,8 +115,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 
 	protected HashMap<IVirtualComponent, String> oldComponentToRuntimePath = new HashMap<IVirtualComponent, String>();
 
-	// This should keep a list of all elements currently in the list, even if
-	// unchecked
+	// This should keep a list of all elements currently in the list (not removed)
 	protected HashMap<Object, String> objectToRuntimePath = new HashMap<Object, String>();
 
 	// [Bug 238264] the cached list elements that are new and need to be
@@ -141,15 +131,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		this.project = project;
 		this.propPage = page;
 		rootComponent = ComponentCore.createComponent(project);
-		this.showRuntimePath = true;
-	}
-
-	protected boolean getShowRuntimePath() {
-		return this.showRuntimePath;
-	}
-
-	protected void setShowRuntimePath(boolean bool) {
-		this.showRuntimePath = bool;
 	}
 
 	/*
@@ -215,13 +196,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		createPushButtons();
 	}
 
-	// TODO add a project button here
 	protected void createPushButtons() {
-		String SELECT_ALL_BUTTON = ManifestUIResourceHandler.Select_All_3;
-		String DE_SELECT_ALL_BUTTON = ManifestUIResourceHandler.Deselect_All_4;
-
-		selectAllButton = createPushButton(SELECT_ALL_BUTTON);
-		deselectAllButton = createPushButton(DE_SELECT_ALL_BUTTON);
 		projectButton = createPushButton("Add Project...");
 		projectJarButton = createPushButton(J2EEUIMessages
 				.getResourceString(J2EEUIMessages.PROJECT_JAR));
@@ -229,6 +204,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 				.getResourceString(J2EEUIMessages.EXTERNAL_JAR));
 		addVariableButton = createPushButton(J2EEUIMessages
 				.getResourceString(J2EEUIMessages.ADDVARIABLE));
+		removeButton = createPushButton("Remove selected...");
 	}
 
 	protected Button createPushButton(String label) {
@@ -267,8 +243,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 			provider.setRuntimePaths(objectToRuntimePath);
 			availableComponentsViewer.setContentProvider(provider);
 			availableComponentsViewer.setLabelProvider(provider);
-			availableComponentsViewer
-					.setFilters(new ViewerFilter[] { provider });
 			addTableListeners();
 		}
 	}
@@ -277,9 +251,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	 * Subclasses should over-ride this and extend the class
 	 */
 	protected ComponentDependencyContentProvider createProvider() {
-		int j2eeVersion = J2EEVersionUtil
-				.convertVersionStringToInt(rootComponent);
-		return new ComponentDependencyContentProvider(rootComponent);
+		return new ComponentDependencyContentProvider();
 	}
 
 	/*
@@ -287,9 +259,9 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	 */
 
 	protected void addTableListeners() {
-		addCheckStateListener();
 		addHoverHelpListeners();
 		addDoubleClickListener();
+		addSelectionListener();
 	}
 
 	protected void addHoverHelpListeners() {
@@ -343,9 +315,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 				}
 				case SWT.MouseHover: {
 					TableItem item = table.getItem(new Point(event.x, event.y));
-					if (item != null) {
-						if (!item.getGrayed())
-							return;
+					if (item != null && item.getData() != null && !canEdit(item.getData())) {
 						if (tip != null && !tip.isDisposed())
 							tip.dispose();
 						tip = new Shell(PlatformUI.getWorkbench()
@@ -362,8 +332,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 						label.setBackground(Display.getDefault()
 								.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 						label.setData("_TABLEITEM", item); //$NON-NLS-1$
-						label
-								.setText(J2EEUIMessages
+						label.setText(J2EEUIMessages
 										.getResourceString(J2EEUIMessages.HOVER_HELP_FOR_DISABLED_LIBS));
 						label.addListener(SWT.MouseExit, labelListener);
 						label.addListener(SWT.MouseDown, labelListener);
@@ -379,6 +348,11 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		};
 	}
 
+	protected boolean canEdit(Object data) {
+		return !(data != null && data instanceof VirtualArchiveComponent 
+				&& isPhysicallyAdded((VirtualArchiveComponent)data));
+	}
+	
 	protected void addDoubleClickListener() {
 		availableComponentsViewer.setColumnProperties(new String[] { "a", "b",
 				"c" });
@@ -390,6 +364,24 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 				.setCellModifier(new RuntimePathCellModifier());
 	}
 
+	protected void addSelectionListener() {
+		availableComponentsViewer.addSelectionChangedListener(
+				new ISelectionChangedListener(){
+					public void selectionChanged(SelectionChangedEvent event) {
+						viewerSelectionChanged();
+					}
+				});
+	}
+	
+	protected void viewerSelectionChanged() {
+		removeButton.setEnabled(getSelectedObject() != null && canEdit(getSelectedObject()));
+	}
+	
+	protected Object getSelectedObject() {
+		IStructuredSelection sel = (IStructuredSelection)availableComponentsViewer.getSelection();
+		return sel.getFirstElement();
+	}
+	
 	private class RuntimePathCellModifier implements ICellModifier {
 
 		public boolean canModify(Object element, String property) {
@@ -431,11 +423,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void handleEvent(Event event) {
-		if (event.widget == selectAllButton)
-			handleSelectAllButtonPressed();
-		else if (event.widget == deselectAllButton)
-			handleDeselectAllButtonPressed();
-		else if (event.widget == projectButton)
+		if (event.widget == projectButton)
 			handleSelectProjectButton();
 		else if (event.widget == projectJarButton)
 			handleSelectProjectJarButton();
@@ -443,24 +431,8 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 			handleSelectExternalJarButton();
 		else if (event.widget == addVariableButton)
 			handleSelectVariableButton();
-	}
-
-	private void handleSelectAllButtonPressed() {
-		TableItem[] children = availableComponentsViewer.getTable().getItems();
-		for (int i = 0; i < children.length; i++) {
-			TableItem item = children[i];
-			if (!item.getGrayed())
-				item.setChecked(true);
-		}
-	}
-
-	private void handleDeselectAllButtonPressed() {
-		TableItem[] children = availableComponentsViewer.getTable().getItems();
-		for (int i = 0; i < children.length; i++) {
-			TableItem item = children[i];
-			if (!item.getGrayed())
-				item.setChecked(false);
-		}
+		else if( event.widget == removeButton ) 
+			handleRemoveSelectedButton();
 	}
 
 	private void handleSelectProjectButton() {
@@ -637,35 +609,26 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 	}
 
-	// TODO FIX THIS
-	protected void addCheckStateListener() {
-		availableComponentsViewer
-				.addCheckStateListener(new ICheckStateListener() {
-					public void checkStateChanged(CheckStateChangedEvent event) {
-						CheckboxTableViewer vr = (CheckboxTableViewer) event
-								.getSource();
-						Object element = event.getElement();
-						if (vr.getGrayed(element))
-							vr.setChecked(element, !vr.getChecked(element));
-						Object o = event.getSource();
-
-						// TODO : check for conflict + dependency res
-					}
-				});
+	protected void handleRemoveSelectedButton() {
+		ISelection sel = availableComponentsViewer.getSelection();
+		if( sel instanceof IStructuredSelection ) {
+			Object o = ((IStructuredSelection)sel).getFirstElement();
+			objectToRuntimePath.remove(o);
+			refresh();
+		}
 	}
 
-	public CheckboxTableViewer createAvailableComponentsViewer(Composite parent) {
-		int flags = SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI;
+	public TableViewer createAvailableComponentsViewer(Composite parent) {
+		int flags = SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI;
 
 		Table table = new Table(parent, flags);
-		availableComponentsViewer = new CheckboxTableViewer(table);
+		availableComponentsViewer = new TableViewer(table);
 
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(300, true));
 		tableLayout.addColumnData(new ColumnWeightData(300, true));
-		if (showRuntimePath)
-			tableLayout.addColumnData(new ColumnWeightData(200, true));
+		tableLayout.addColumnData(new ColumnWeightData(200, true));
 		table.setLayout(tableLayout);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
@@ -680,11 +643,9 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		projectColumn.setText(ManifestUIResourceHandler.Project_UI_);
 		projectColumn.setResizable(true);
 
-		if (showRuntimePath) {
-			TableColumn bndColumn = new TableColumn(table, SWT.NONE, 2);
-			bndColumn.setText(ManifestUIResourceHandler.Packed_In_Lib_UI_);
-			bndColumn.setResizable(true);
-		}
+		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 2);
+		bndColumn.setText(ManifestUIResourceHandler.Packed_In_Lib_UI_);
+		bndColumn.setResizable(true);
 
 		tableLayout.layout(table, true);
 		return availableComponentsViewer;
@@ -699,62 +660,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		} catch (IllegalArgumentException e) {
 			return false;
 		}
-	}
-
-	private boolean secondShouldBeDisabled(IVirtualComponent component) {
-		if (component.isBinary())
-			return false;
-		if (JavaEEProjectUtilities.isApplicationClientComponent(component))
-			return true;
-		if (JavaEEProjectUtilities.isEARProject(component.getProject())
-				&& component.isBinary())
-			return false;
-		if (JavaEEProjectUtilities.isEJBComponent(component))
-			return true;
-		if (JavaEEProjectUtilities.isDynamicWebComponent(component))
-			return true;
-		if (JavaEEProjectUtilities.isJCAComponent(component))
-			return true;
-		if (JavaEEProjectUtilities.isStaticWebProject(component.getProject()))
-			return true;
-		if (JavaEEProjectUtilities.isProjectOfType(component.getProject(),
-				IJ2EEFacetConstants.JAVA))
-			return false;
-		return false;
-	}
-
-	private boolean isInLibDir(VirtualArchiveComponent comp) {
-		IPath p = comp.getProjectRelativePath();
-		if (p.segmentCount() == 2)
-			return false;
-		return true;
-	}
-
-	private boolean isConflict(Object lib) {
-		IProject libProj = (lib instanceof IProject) ? (IProject) lib
-				: ((IVirtualComponent) lib).getProject();
-		IProject earProject = rootComponent.getProject();
-		try {
-			IVirtualComponent cmp = ComponentCore.createComponent(earProject);
-			IProject[] earRefProjects = earProject.getReferencedProjects();
-			for (int i = 0; i < earRefProjects.length; i++) {
-				if (!J2EEProjectUtilities.isEARProject(earRefProjects[i])
-						&& !earRefProjects[i].equals(libProj)) {
-					IVirtualComponent cmp1 = ComponentCore
-							.createComponent(earRefProjects[i]);
-					IVirtualReference[] refs = cmp1.getReferences();
-					for (int j = 0; j < refs.length; j++) {
-						if (refs[j].getReferencedComponent().getProject()
-								.equals(libProj))
-							return true;
-					}
-				}
-			}
-			return false;
-		} catch (CoreException ce) {
-			J2EEUIPlugin.logError(ce);
-		}
-		return false;
 	}
 
 	private void handleSelectProjectJarButton() {
@@ -787,37 +692,12 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	 * tasks
 	 */
 	public void refresh() {
-		TableItem[] items = availableComponentsViewer.getTable().getItems();
-		HashMap<Object, Boolean> checked = cacheChecked();
 		resetTableUI();
 		if (!hasInitialized) {
 			initialize();
 			resetTableUI();
 		}
 
-		/*
-		 * Re-check any added elements that were checked but now lost their
-		 * check
-		 */
-		TableItem[] newItems = availableComponentsViewer.getTable().getItems();
-		for (int i = 0; i < newItems.length; i++) {
-			if (checked.containsKey(newItems[i].getData()))
-				newItems[i].setChecked(checked.get(newItems[i].getData()));
-		}
-	}
-
-	protected HashMap<Object, Boolean> cacheChecked() {
-		// preserve selections / check / etc of new (added) entities
-		TableItem[] items = availableComponentsViewer.getTable().getItems();
-		HashMap<Object, Boolean> checked = new HashMap<Object, Boolean>();
-		if (addedElements != null) {
-			int j = 0;
-			for (int i = 0; i < items.length; i++) {
-				if (addedElements.contains(items[i].getData()))
-					checked.put(items[i].getData(), items[i].getChecked());
-			}
-		}
-		return checked;
 	}
 
 	protected void resetTableUI() {
@@ -832,89 +712,18 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		GridData btndata = new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.VERTICAL_ALIGN_BEGINNING);
 		buttonColumn.setLayoutData(btndata);
-
-		// [Bug 238264] for all the jars in the cache temparaly list them in the
-		// grid
-		TableItem[] items = availableComponentsViewer.getTable().getItems();
-		for (Object addedElement : this.addedElements) {
-			boolean found = false;
-			for (int i = 0; i < items.length; i++) {
-				if (items[i].getData().equals(addedElement))
-					found = true;
-			}
-			if (!found)
-				availableComponentsViewer.add(addedElement);
-		}
 	}
 
 	protected void initialize() {
-		TableItem[] items = availableComponentsViewer.getTable().getItems();
-
-		// First initialize the paths
-		Object data;
-		for (int i = 0; i < items.length; i++) {
-			data = items[i].getData();
-			if (data instanceof IVirtualComponent) {
-				IVirtualReference ref = rootComponent
-						.getReference(((IVirtualComponent) data).getName());
-				String val = ref == null ? new Path(PATH_SEPARATOR).toString()
-						: ref.getRuntimePath().toString();
-				objectToRuntimePath.put(data, val);
-				oldComponentToRuntimePath.put((IVirtualComponent) data, val);
-			}
-		}
-
-		// Then initialize the UI
-		List forceCheck = new ArrayList();
-		forceCheck.addAll(getChildrenComponents());
-		forceCheck.addAll(getCPComponents());
-		for (int i = 0; i < items.length; i++) {
-			if (forceCheck.contains(items[i].getData()))
-				items[i].setChecked(true);
-
-			if (items[i].getData() instanceof VirtualArchiveComponent)
-				items[i]
-						.setGrayed(isPhysicallyAdded(((VirtualArchiveComponent) items[i]
-								.getData())));
+		IVirtualReference[] refs = rootComponent.getReferences();
+		IVirtualComponent comp;
+		for( int i = 0; i < refs.length; i++ ) {
+			comp = refs[i].getReferencedComponent();
+			String val = refs[i].getRuntimePath().toString();
+			objectToRuntimePath.put(comp, val);
+			oldComponentToRuntimePath.put((IVirtualComponent) comp, val);
 		}
 		hasInitialized = true;
-	}
-
-	protected List getChildrenComponents() {
-		List list = new ArrayList();
-		IVirtualReference refs[] = rootComponent.getReferences();
-		for (int i = 0; i < refs.length; i++) {
-			if (isChildComponent(refs[i]))
-				list.add(refs[i].getReferencedComponent());
-		}
-		return list;
-	}
-
-	protected boolean isChildComponent(IVirtualReference ref) {
-		// if ((ref.getRuntimePath().isRoot() && !inLibFolder) ||
-		// (!ref.getRuntimePath().isRoot() && inLibFolder) ||
-		// !isVersion5) {
-		return true;
-	}
-
-	protected List getCPComponents() {
-		List list = new ArrayList();
-		Map pathToComp = new HashMap();
-		IVirtualReference refs[] = rootComponent.getReferences();
-		for (int i = 0; i < refs.length; i++) {
-			if (isChildComponent(refs[i])) {
-				IVirtualComponent comp = refs[i].getReferencedComponent();
-				addClasspathComponentDependencies(list, pathToComp, comp);
-			}
-		}
-		return list;
-	}
-
-	protected void addClasspathComponentDependencies(final List componentList,
-			final Map pathToComp, final IVirtualComponent referencedComponent) {
-		AvailableJ2EEComponentsForEARContentProvider
-				.addClasspathComponentDependencies(componentList, pathToComp,
-						referencedComponent);
 	}
 
 	/*
@@ -961,8 +770,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		ArrayList<Object> checked = new ArrayList<Object>();
 		TableItem[] items = availableComponentsViewer.getTable().getItems();
 		for (int i = 0; i < items.length; i++)
-			if (items[i].getChecked())
-				checked.add(items[i].getData());
+			checked.add(items[i].getData());
 
 		// Fill our delta lists
 		ArrayList<Object> added = new ArrayList<Object>();
@@ -974,7 +782,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		while (j.hasNext()) {
 			key = j.next();
 			val = oldComponentToRuntimePath.get(key);
-			if (!checked.contains(key))
+			if( !objectToRuntimePath.containsKey(key))
 				removed.add((IVirtualComponent)key);
 			else if (!val.equals(objectToRuntimePath.get(key)))
 				changed.add((IVirtualComponent)key);
@@ -993,8 +801,24 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 			return false;
 		
 		handleDeltas(removed, changed, added);
-		
 		subResult &= postHandleChanges(monitor);
+		
+		// Now update the variables
+		oldComponentToRuntimePath.clear();
+		ArrayList keys = new ArrayList();
+		keys.addAll(objectToRuntimePath.keySet());
+		Iterator i = keys.iterator();
+		while(i.hasNext()) {
+			Object component = i.next();
+			IVirtualComponent vc = component instanceof IVirtualComponent ? (IVirtualComponent)component : null;
+			String path = objectToRuntimePath.get(component);
+			if( component instanceof IProject ) {
+				objectToRuntimePath.remove(component);
+				vc = ComponentCore.createComponent((IProject)component);
+				objectToRuntimePath.put(vc, path);
+			}
+			oldComponentToRuntimePath.put(vc, path);
+		}
 		return subResult;
 	}
 	
