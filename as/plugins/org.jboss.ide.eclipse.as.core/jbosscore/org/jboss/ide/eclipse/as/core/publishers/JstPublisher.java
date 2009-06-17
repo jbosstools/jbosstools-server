@@ -279,7 +279,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		}
 		finally{
 			try{
-				packager.finished();
+				if( packager != null ) 
+					packager.finished();
 			}
 			catch(IOException e){
 				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
