@@ -61,6 +61,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -278,7 +279,7 @@ public class DeploySection extends ServerEditorSection {
 	public IStatus[] getSaveStatus() {
 		String error = ""; //$NON-NLS-1$
 		List<Status> status = new ArrayList<Status>();
-		if( getRuntime() == null ) {
+		if( getServer() instanceof JBossServer && getRuntime() == null ) {
 			String msg = Messages.EditorNoRuntimeSelected;
 			status.add(new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, msg));
 			error = error + msg + "\n"; //$NON-NLS-1$
