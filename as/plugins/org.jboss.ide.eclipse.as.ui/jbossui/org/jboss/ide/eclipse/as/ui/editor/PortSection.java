@@ -86,8 +86,10 @@ public class PortSection extends ServerEditorSection {
 
 	public static class JNDIPortEditorExtension extends PortEditorExtension {
 		public JNDIPortEditorExtension() {
-			super(Messages.EditorJNDIPort, IJBossServerConstants.JNDI_PORT_DETECT_XPATH,
+			super(Messages.EditorJNDIPort, 
+					IJBossServerConstants.JNDI_PORT_DETECT_XPATH,
 					IJBossServerConstants.JNDI_PORT_DETECT,
+					IJBossServerConstants.JNDI_PORT,
 					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH);
 		}
 		public ServerCommand getCommand() {
@@ -108,8 +110,10 @@ public class PortSection extends ServerEditorSection {
 
 	public static class WebPortEditorExtension extends PortEditorExtension {
 		public WebPortEditorExtension() {
-			super(Messages.EditorWebPort, IJBossServerConstants.WEB_PORT_DETECT_XPATH,
+			super(Messages.EditorWebPort, 
+					IJBossServerConstants.WEB_PORT_DETECT_XPATH,
 					IJBossServerConstants.WEB_PORT_DETECT,
+					IJBossServerConstants.WEB_PORT,
 					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH);
 		}
 
@@ -134,15 +138,17 @@ public class PortSection extends ServerEditorSection {
 		protected Text text;
 		protected Label label;
 		protected Link link;
-		protected String labelText, currentXPathKey, detectXPathKey, defaultXPath;
+		protected String labelText, currentXPathKey, detectXPathKey, overrideValueKey, defaultXPath;
 		protected String currentXPath;
 		protected ServerAttributeHelper helper;
 		protected Listener listener;
 		protected PortSection section;
-		public PortEditorExtension(String labelText, String currentXPathKey, String detectXPathKey, String defaultXPath) {
+		public PortEditorExtension(String labelText, String currentXPathKey, 
+				String detectXPathKey, String overrideValueKey, String defaultXPath) {
 			this.labelText = labelText;
 			this.currentXPathKey = currentXPathKey;
 			this.detectXPathKey = detectXPathKey;
+			this.overrideValueKey = overrideValueKey;
 			this.defaultXPath = defaultXPath;
 		}
 		public void setServerAttributeHelper(ServerAttributeHelper helper) {
@@ -203,7 +209,7 @@ public class PortSection extends ServerEditorSection {
 			if( shouldDetect )
 				text.setText(findPort(helper.getServer(), new Path(currentXPath)));
 			else
-				text.setText(helper.getAttribute(IJBossServerConstants.JNDI_PORT, ""));
+				text.setText(helper.getAttribute(overrideValueKey, ""));
 		}
 		protected void addListeners() {
 			listener = new Listener() {
