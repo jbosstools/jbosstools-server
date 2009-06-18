@@ -119,6 +119,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+		IVMInstall vmInstall = runtime.getVM();
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args, "-c", "--configuration", config);
 
@@ -133,6 +134,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 		List<String> newCP = fixCP(cp, jbs);
 		
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + "bin");
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs);
