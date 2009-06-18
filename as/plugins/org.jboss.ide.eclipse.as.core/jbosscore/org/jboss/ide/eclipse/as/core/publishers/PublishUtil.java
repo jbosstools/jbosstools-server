@@ -77,7 +77,7 @@ public class PublishUtil {
 				root = root.append(IJBossServerConstants.WEB_INF)
 						.append(IJBossServerConstants.LIB)
 						.append(name + IJBossServerConstants.EXT_JAR);			
-			else if( IJBossServerConstants.FACET_UTILITY.equals(type)) {
+			else if( IJBossServerConstants.FACET_CONNECTOR.equals(type)) {
 				root = root.append(name + IJBossServerConstants.EXT_RAR);
 			} else if( IJBossServerConstants.FACET_ESB.equals(type)){
 				root = root.append(name + IJBossServerConstants.EXT_ESB);
