@@ -98,29 +98,33 @@ public class XPathActionProvider extends CommonActionProvider {
 
 		newXPathAction = new Action() {
 			public void run() {
+				XPathCategory category = null;
 				if(selectedNode instanceof XPathCategory) {
-					XPathCategory category = (XPathCategory) selectedNode;
-					if (category != null) {
-						String categoryName = category.getName();
-						XPathDialog d = new XPathDialog(Display.getCurrent()
-								.getActiveShell(), getServer(), categoryName);
-						if (d.open() == Window.OK) {
-							XPathCategory[] categoryList = XPathModel.getDefault()
-									.getCategories(getServer());
-							XPathCategory categoryItem = null;
-							for (int i = 0; i < categoryList.length; i++) {
-								if (categoryList[i].getName().equals(
-										category.getName()))
-									categoryItem = categoryList[i];
-							}
-							if (categoryItem != null) {
-								XPathQuery query = new XPathQuery(d.getName(),
-										XPathDialogs.getConfigFolder(getServer()),
-										null, d.getXpath(), d.getAttribute());
-								categoryItem.addQuery(query);
-								XPathModel.getDefault().save(getServer());
-								refreshViewer();
-							}
+					category = (XPathCategory) selectedNode;
+				} else if( selectedNode instanceof XPathQuery) {
+					category = ((XPathQuery)selectedNode).getCategory();
+				}
+				
+				if (category != null) {
+					String categoryName = category.getName();
+					XPathDialog d = new XPathDialog(Display.getCurrent()
+							.getActiveShell(), getServer(), categoryName);
+					if (d.open() == Window.OK) {
+						XPathCategory[] categoryList = XPathModel.getDefault()
+								.getCategories(getServer());
+						XPathCategory categoryItem = null;
+						for (int i = 0; i < categoryList.length; i++) {
+							if (categoryList[i].getName().equals(
+									category.getName()))
+								categoryItem = categoryList[i];
+						}
+						if (categoryItem != null) {
+							XPathQuery query = new XPathQuery(d.getName(),
+									XPathDialogs.getConfigFolder(getServer()),
+									null, d.getXpath(), d.getAttribute());
+							categoryItem.addQuery(query);
+							XPathModel.getDefault().save(getServer());
+							refreshViewer();
 						}
 					}
 				}
