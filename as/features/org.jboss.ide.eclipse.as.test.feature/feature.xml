@@ -3,7 +3,7 @@
       id="org.jboss.ide.eclipse.as.test.feature"
       label="JBossTools Test"
       version="1.0.0"
-      provider-name="JBoss, a division of Red Hat">
+      provider-name="JBoss by Red Hat">
 
    <description url="http://www.jboss.org/tools">
       JBossAS Test
@@ -11,7 +11,7 @@
 
    <copyright>
       JBoss, Home of Professional Open Source
-Copyright 2006-2009, JBoss, a division of Red Hat, and individual contributors as indicated
+Copyright 2006-2009, JBoss by Red Hat, and individual contributors as indicated
 by the @authors tag. See the copyright.txt in the distribution
 for a full listing of individual contributors.
    </copyright>
