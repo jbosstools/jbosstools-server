@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="moduleDependencyPropertyPage" name="org.jboss.ide.eclipse.as.wtp.override.moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
     <extension point="org.eclipse.ui.propertyPages">
  
      
@@ -8,36 +9,23 @@
       <page
             adaptable="true"
       		objectClass="org.eclipse.core.resources.IProject"
-      		name="JEE Module Dependencies (JBT Beta)"
+      		name="Module Dependencies (JBT)"
             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.J2EEDependenciesPage"
             id="org.jboss.ide.eclipse.as.wtp.override.ui.J2EEDependenciesPage">
            <enabledWhen>
 			<and>
 				<adapt
 					type="org.eclipse.core.resources.IProject">
-					<or> 
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.web" />
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.ejb" />
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.utility" />
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.ear" />
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.appclient" />
-						<test forcePluginActivation="true"
-							property="org.eclipse.wst.common.project.facet.core.projectFacet"
-							value="jst.connector" />
-					</or>
 				</adapt>
 			</and> 
          </enabledWhen>          
       </page>
       </extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.override.ui.moduleDependencyPropertyPage">
+       <dependencyPage
+             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDependencyPageProvider"
+             id="org.jboss.ide.eclipse.as.wtp.override.ui.earDependencyPage">
+       </dependencyPage>
+    </extension>
 </plugin>

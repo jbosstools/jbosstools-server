@@ -51,7 +51,6 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualArchiveComponent;
-import org.eclipse.jst.j2ee.internal.IJ2EEDependenciesControl;
 import org.eclipse.jst.j2ee.internal.ManifestUIResourceHandler;
 import org.eclipse.jst.j2ee.internal.plugin.IJ2EEModuleConstants;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
@@ -94,10 +93,16 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 
-public abstract class AddModuleDependenciesPropertiesPage implements Listener,
-		IJ2EEDependenciesControl {
+public class AddModuleDependenciesPropertiesPage implements Listener,
+		IModuleDependenciesControl {
 
+	private static final String REFERENCE_PROPERTY = new Integer(0).toString();
+	private static final String DEPLOY_PATH_PROPERTY = new Integer(1).toString();
+	private static final String SOURCE_PROPERTY = new Integer(2).toString();
+	
+	
 	protected final String PATH_SEPARATOR = ComponentDependencyContentProvider.PATH_SEPARATOR;
+	private boolean hasInitialized = false;
 	protected final IProject project;
 	protected final J2EEDependenciesPage propPage;
 	protected IVirtualComponent rootComponent = null;
@@ -117,11 +122,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 
 	// This should keep a list of all elements currently in the list (not removed)
 	protected HashMap<Object, String> objectToRuntimePath = new HashMap<Object, String>();
-
-	// [Bug 238264] the cached list elements that are new and need to be
-	// manually added to the viewer
-	// Can be an IProject or IVirtualComponent
-	protected ArrayList<Object> addedElements = new ArrayList<Object>();
 
 	/**
 	 * Constructor for AddModulestoEARPropertiesControl.
@@ -354,11 +354,12 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void addDoubleClickListener() {
-		availableComponentsViewer.setColumnProperties(new String[] { "a", "b",
-				"c" });
+		availableComponentsViewer.setColumnProperties(new String[] { 
+				REFERENCE_PROPERTY, DEPLOY_PATH_PROPERTY, SOURCE_PROPERTY
+		});
 		CellEditor[] editors = new CellEditor[] { new TextCellEditor(),
-				new TextCellEditor(),
-				new TextCellEditor(availableComponentsViewer.getTable()) };
+				new TextCellEditor(availableComponentsViewer.getTable()),
+				new TextCellEditor()};
 		availableComponentsViewer.setCellEditors(editors);
 		availableComponentsViewer
 				.setCellModifier(new RuntimePathCellModifier());
@@ -385,10 +386,7 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	private class RuntimePathCellModifier implements ICellModifier {
 
 		public boolean canModify(Object element, String property) {
-			int columnIndex = Arrays.asList(
-					availableComponentsViewer.getColumnProperties()).indexOf(
-					property);
-			if (columnIndex == 2) {
+			if( property.equals(DEPLOY_PATH_PROPERTY)) {
 				if (element instanceof VirtualArchiveComponent) {
 					try {
 						boolean sameProject = ((VirtualArchiveComponent) element)
@@ -413,10 +411,10 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 
 		public void modify(Object element, String property, Object value) {
-			if (element instanceof TableItem) {
+			if (property.equals(DEPLOY_PATH_PROPERTY)) {
 				TableItem item = (TableItem) element;
-				item.setText(2, (String) value);
 				objectToRuntimePath.put(item.getData(), (String) value);
+				refresh();
 			}
 		}
 
@@ -442,7 +440,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 			IProject selected = (IProject) d.getFirstResult();
 			Object selected2 = ModuleCoreNature.isFlexibleProject(selected) ? 
 					ComponentCore.createComponent(selected) : selected;
-			addedElements.add(selected2);
 			objectToRuntimePath.put(selected2, "/");
 			refresh();
 			TableItem[] items = availableComponentsViewer.getTable().getItems();
@@ -547,7 +544,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		// also force check it
 		if (!refAlreadyExists) {
 			this.objectToRuntimePath.put(archive, new Path("/").toString());
-			this.addedElements.add(archive);
 			availableComponentsViewer.add(archive);
 			TableItem[] items = availableComponentsViewer.getTable().getItems();
 			for (int i = 0; i < items.length; i++) {
@@ -636,16 +632,16 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 
 		// table columns
 		TableColumn fileNameColumn = new TableColumn(table, SWT.NONE, 0);
-		fileNameColumn.setText(ManifestUIResourceHandler.JAR_Module_UI_);
+		fileNameColumn.setText("Reference");
 		fileNameColumn.setResizable(true);
 
-		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 1);
-		projectColumn.setText(ManifestUIResourceHandler.Project_UI_);
-		projectColumn.setResizable(true);
-
-		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 2);
-		bndColumn.setText(ManifestUIResourceHandler.Packed_In_Lib_UI_);
+		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 1);
+		bndColumn.setText("Deploy Path");
 		bndColumn.setResizable(true);
+
+		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 2);
+		projectColumn.setText("Source");
+		projectColumn.setResizable(true);
 
 		tableLayout.layout(table, true);
 		return availableComponentsViewer;
@@ -681,8 +677,6 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 
 	}
-
-	private boolean hasInitialized = false;
 
 	/**
 	 * This should only be called on changes, such as adding a project
@@ -759,11 +753,13 @@ public abstract class AddModuleDependenciesPropertiesPage implements Listener,
 	 * This is where the OK work goes. Lots of it. Watch your head.
 	 * xiao xin
 	 */
-	
-	
-	
-	protected abstract boolean preHandleChanges(IProgressMonitor monitor);
-	protected abstract boolean postHandleChanges(IProgressMonitor monitor);
+	protected boolean preHandleChanges(IProgressMonitor monitor) {
+		return true;
+	}
+
+	protected boolean postHandleChanges(IProgressMonitor monitor) {
+		return true;
+	}
 
 	public boolean performOk() {
 		// grab what's checked

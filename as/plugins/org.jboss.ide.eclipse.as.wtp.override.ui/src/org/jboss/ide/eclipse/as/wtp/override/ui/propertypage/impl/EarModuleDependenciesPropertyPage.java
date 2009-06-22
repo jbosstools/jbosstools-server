@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -40,6 +40,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.AddModuleDependenciesPropertiesPage;
+import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.J2EEDependenciesPage;
 
 public class EarModuleDependenciesPropertyPage extends
 		AddModuleDependenciesPropertiesPage {

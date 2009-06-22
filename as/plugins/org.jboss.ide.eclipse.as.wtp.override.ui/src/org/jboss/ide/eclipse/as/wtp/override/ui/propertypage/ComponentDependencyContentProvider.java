@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -52,7 +51,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		Object[] empty = new Object[0];
 		if( !(inputElement instanceof IWorkspaceRoot))
 			return empty;
-		return runtimePaths.keySet().toArray(); 
+		return runtimePaths.keySet().toArray();
 	}
 	
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -65,15 +64,15 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			if( columnIndex == 0 ){
 				return comp.getName();
 			} else if (columnIndex == 1) {
-				return comp.getProject().getName();
-			} else if (columnIndex == 2) {
 				if( runtimePaths == null || runtimePaths.get(element) == null) {
 					return new Path(PATH_SEPARATOR).toString();
 				}
 				return runtimePaths.get(element);
+			} else if (columnIndex == 2) {
+				return comp.getProject().getName();
 			}
 		} else if (element instanceof IProject){
-			if (columnIndex != 2) {
+			if (columnIndex != 1) {
 				return ((IProject)element).getName();
 			} else {
 				if( runtimePaths == null || runtimePaths.get(element) == null) {
@@ -81,7 +80,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 				}
 				return runtimePaths.get(element);
 			}
-		}		
+		}
 		return null;
 	}
 
