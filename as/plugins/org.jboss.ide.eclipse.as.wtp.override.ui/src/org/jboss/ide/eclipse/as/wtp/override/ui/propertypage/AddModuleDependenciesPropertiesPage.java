@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -96,9 +97,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl {
 
-	private static final String REFERENCE_PROPERTY = new Integer(0).toString();
-	private static final String DEPLOY_PATH_PROPERTY = new Integer(1).toString();
-	private static final String SOURCE_PROPERTY = new Integer(2).toString();
+	private static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
+	private static final String SOURCE_PROPERTY = new Integer(1).toString();
 	
 	
 	protected final String PATH_SEPARATOR = ComponentDependencyContentProvider.PATH_SEPARATOR;
@@ -349,15 +349,21 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected boolean canEdit(Object data) {
-		return !(data != null && data instanceof VirtualArchiveComponent 
-				&& isPhysicallyAdded((VirtualArchiveComponent)data));
+		if( data == null ) return false;
+		if( !(data instanceof VirtualArchiveComponent)) return true;
+		
+		VirtualArchiveComponent d2 = (VirtualArchiveComponent)data;
+		boolean sameProject = d2.getWorkspaceRelativePath() != null
+			&& d2.getWorkspaceRelativePath().segment(0)
+				.equals(rootComponent.getProject().getName());
+		return !(sameProject && isPhysicallyAdded(d2));
 	}
 	
 	protected void addDoubleClickListener() {
 		availableComponentsViewer.setColumnProperties(new String[] { 
-				REFERENCE_PROPERTY, DEPLOY_PATH_PROPERTY, SOURCE_PROPERTY
-		});
-		CellEditor[] editors = new CellEditor[] { new TextCellEditor(),
+				DEPLOY_PATH_PROPERTY, SOURCE_PROPERTY });
+		
+		CellEditor[] editors = new CellEditor[] { 
 				new TextCellEditor(availableComponentsViewer.getTable()),
 				new TextCellEditor()};
 		availableComponentsViewer.setCellEditors(editors);
@@ -389,14 +395,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			if( property.equals(DEPLOY_PATH_PROPERTY)) {
 				if (element instanceof VirtualArchiveComponent) {
 					try {
-						boolean sameProject = ((VirtualArchiveComponent) element)
-								.getWorkspaceRelativePath() != null
-								&& ((VirtualArchiveComponent) element)
-										.getWorkspaceRelativePath().segment(0)
-										.equals(
-												rootComponent.getProject()
-														.getName());
-						return !(sameProject && isPhysicallyAdded(((VirtualArchiveComponent) element)));
+						return canEdit(element);
 					} catch (IllegalArgumentException iae) {
 					}
 				}
@@ -440,7 +439,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			IProject selected = (IProject) d.getFirstResult();
 			Object selected2 = ModuleCoreNature.isFlexibleProject(selected) ? 
 					ComponentCore.createComponent(selected) : selected;
-			objectToRuntimePath.put(selected2, "/");
+			IPath path = new Path("/");
+			path = path.append(selected2 instanceof IVirtualComponent ? 
+					getVirtualComponentNameWithExtension((IVirtualComponent)selected2) : selected.getName() + ".jar");
+			objectToRuntimePath.put(selected2, path.toString());
 			refresh();
 			TableItem[] items = availableComponentsViewer.getTable().getItems();
 			for (int i = 0; i < items.length; i++)
@@ -539,18 +541,19 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			}
 		}
 
-		// only add the archive as a potentialy new reference if it does not
-		// already exist
-		// also force check it
+		// only add the archive as a potentialy new reference 
+		// if it does not already exist
 		if (!refAlreadyExists) {
-			this.objectToRuntimePath.put(archive, new Path("/").toString());
-			availableComponentsViewer.add(archive);
-			TableItem[] items = availableComponentsViewer.getTable().getItems();
-			for (int i = 0; i < items.length; i++) {
-				if (items[i].getData().equals(archive))
-					items[i].setChecked(true);
+			String name = new Path(archive.getName()).lastSegment();
+			if( archive instanceof VirtualArchiveComponent && 
+					((VirtualArchiveComponent)archive).getArchiveType()
+						.equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
+				File f = ((VirtualArchiveComponent)archive).getUnderlyingDiskFile();
+				if( f != null )
+					name = new Path(f.getAbsolutePath()).lastSegment();
 			}
-
+			this.objectToRuntimePath.put(archive, new Path("/").append(name).toString());
+			availableComponentsViewer.add(archive);
 		} else {
 			// TODO should inform user that they selected an already referenced
 			// archive?
@@ -622,24 +625,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 		// set up table layout
 		TableLayout tableLayout = new org.eclipse.jface.viewers.TableLayout();
-		tableLayout.addColumnData(new ColumnWeightData(300, true));
-		tableLayout.addColumnData(new ColumnWeightData(300, true));
-		tableLayout.addColumnData(new ColumnWeightData(200, true));
+		tableLayout.addColumnData(new ColumnWeightData(400, true));
+		tableLayout.addColumnData(new ColumnWeightData(500, true));
 		table.setLayout(tableLayout);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		availableComponentsViewer.setSorter(null);
 
-		// table columns
-		TableColumn fileNameColumn = new TableColumn(table, SWT.NONE, 0);
-		fileNameColumn.setText("Reference");
-		fileNameColumn.setResizable(true);
-
-		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 1);
+		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 0);
 		bndColumn.setText("Deploy Path");
 		bndColumn.setResizable(true);
 
-		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 2);
+		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 1);
 		projectColumn.setText("Source");
 		projectColumn.setResizable(true);
 
@@ -711,9 +708,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void initialize() {
 		IVirtualReference[] refs = rootComponent.getReferences();
 		IVirtualComponent comp;
-		for( int i = 0; i < refs.length; i++ ) {
+		for( int i = 0; i < refs.length; i++ ) { 
 			comp = refs[i].getReferencedComponent();
-			String val = refs[i].getRuntimePath().toString();
+			String archiveName = refs[i].getArchiveName();
+			String val = refs[i].getRuntimePath().append(refs[i].getArchiveName()).toString();
 			objectToRuntimePath.put(comp, val);
 			oldComponentToRuntimePath.put((IVirtualComponent) comp, val);
 		}
@@ -848,13 +846,20 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected IDataModelOperation getRemoveComponentOperation(IVirtualComponent component) {
+		String path, archiveName;
+		path = new Path(oldComponentToRuntimePath.get(component)).removeLastSegments(1).toString();
+		archiveName = new Path(oldComponentToRuntimePath.get(component)).lastSegment(); 
+
 		IDataModelProvider provider = getRemoveReferenceDataModelProvider(component);
 		IDataModel model = DataModelFactory.createDataModel(provider);
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, rootComponent);
 		List modHandlesList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		modHandlesList.add(component);
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, modHandlesList);
-        model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, oldComponentToRuntimePath.get(component));
+        model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
+		Map uriMap = new HashMap();
+		uriMap.put(component, archiveName);
+		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
 		return model.getDefaultOperation();
 	}
 	
@@ -909,10 +914,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		Iterator<IProject> i = projects.iterator();
 		IProject proj;
 		Set moduleProjects = new HashSet();
-		String path;
+		String path, archiveName;
 		while(i.hasNext()) {
 			proj = i.next();
-			path = objectToRuntimePath.get(proj);
+			path = new Path(objectToRuntimePath.get(proj)).removeLastSegments(1).toString();
+			archiveName = new Path(objectToRuntimePath.get(proj)).lastSegment(); 
 			try {
 				moduleProjects.add(proj);
 				IDataModel migrationdm = DataModelFactory.createDataModel(new JavaProjectMigrationDataModelProvider());
@@ -930,9 +936,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				refdm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, targetCompList);
 				refdm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
 				
-
-				// referenced java projects should have archiveName attribute
-				((Map)refdm.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP)).put(targetcomponent, proj.getName().replace(' ', '_') + IJ2EEModuleConstants.JAR_EXT);
+				Map uriMap = new HashMap();
+				uriMap.put(targetcomponent, archiveName);
+				refdm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
 
 				refdm.getDefaultOperation().execute(new NullProgressMonitor(), null);
 			} catch (ExecutionException e) {
@@ -957,6 +963,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void addOneComponent(IVirtualComponent component) throws CoreException {
+		String path, archiveName;
+		path = new Path(objectToRuntimePath.get(component)).removeLastSegments(1).toString();
+		archiveName = new Path(objectToRuntimePath.get(component)).lastSegment();
+
 		IDataModelProvider provider = getAddReferenceDataModelProvider(component);
 		IDataModel dm = DataModelFactory.createDataModel(provider);
 		
@@ -965,9 +975,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		
 		//[Bug 238264] the uri map needs to be manually set correctly
 		Map uriMap = new HashMap();
-		uriMap.put(component, getVirtualComponentNameWithExtension(component));
+		uriMap.put(component, archiveName);
 		dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
-        dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, objectToRuntimePath.get(component));
+        dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
 
 		IStatus stat = dm.validateProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		if (stat != OK_STATUS)
@@ -985,7 +995,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 * @param virtComp the IVirtualComponent to get the name of with the correct extension
 	 * @return the name of the given IVirtualComponent with the correct extension
 	 */
-	private String getVirtualComponentNameWithExtension(IVirtualComponent virtComp) {
+	protected String getVirtualComponentNameWithExtension(IVirtualComponent virtComp) {
 		String virtCompURIMapName = this.getURIMappingName(virtComp);
 		
 		boolean linkedToEAR = true;

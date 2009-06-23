@@ -30,8 +30,8 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
  *  are IProject or IVirtualComponent objects. The runtime paths portion is 
  *  shared with the preference page itself where they can both modify the data. 
  * 
- *  The pref page should initialize its data first so that this provider can 
- *  spit out the proper information.  
+ * This provider no longer "meddles" in to the content as it used to, 
+ * but rather serves as only a view of it. 
  */
 public class ComponentDependencyContentProvider extends LabelProvider implements IStructuredContentProvider, ITableLabelProvider {
 	
@@ -61,24 +61,22 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	public String getColumnText(Object element, int columnIndex) {
 		if (element instanceof IVirtualComponent) {
 			IVirtualComponent comp = (IVirtualComponent)element;
-			if( columnIndex == 0 ){
-				return comp.getName();
-			} else if (columnIndex == 1) {
+			if (columnIndex == 0) {
 				if( runtimePaths == null || runtimePaths.get(element) == null) {
 					return new Path(PATH_SEPARATOR).toString();
 				}
 				return runtimePaths.get(element);
-			} else if (columnIndex == 2) {
+			} else if (columnIndex == 1) {
 				return comp.getProject().getName();
 			}
 		} else if (element instanceof IProject){
-			if (columnIndex != 1) {
-				return ((IProject)element).getName();
-			} else {
+			if (columnIndex == 0) {
 				if( runtimePaths == null || runtimePaths.get(element) == null) {
 					return new Path(PATH_SEPARATOR).toString();
 				}
 				return runtimePaths.get(element);
+			} else {
+				return ((IProject)element).getName();
 			}
 		}
 		return null;
