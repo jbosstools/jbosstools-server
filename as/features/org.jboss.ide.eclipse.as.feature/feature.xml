@@ -417,7 +417,7 @@ WITH ANY OTHER SOFTWARE), EVEN IF SUCH HOLDER OR OTHER PARTY
 HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
 END OF TERMS AND CONDITIONS
    </license>
-   
+
    <url>
       <update label="%updateSiteName" url="http://download.jboss.org/jbosstools/updates/stable"/>
    </url>
@@ -517,5 +517,19 @@ END OF TERMS AND CONDITIONS
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.jboss.ide.eclipse.as.wtp.override.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.jboss.ide.eclipse.as.wtp.override.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
