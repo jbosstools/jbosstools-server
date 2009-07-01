@@ -37,7 +37,7 @@ public class DependencyPageExtensionManager {
 		HashMap<String, IDependencyPageProvider> temp = new HashMap<String, IDependencyPageProvider>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
-				WTPOveridePlugin.PLUGIN_ID, "moduleDependencyPropertyPage");
+				WTPOveridePlugin.PLUGIN_ID, "moduleDependencyPropertyPage"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
 			try {
 				temp.put(cf[i].getAttribute("id"),  //$NON-NLS-1$

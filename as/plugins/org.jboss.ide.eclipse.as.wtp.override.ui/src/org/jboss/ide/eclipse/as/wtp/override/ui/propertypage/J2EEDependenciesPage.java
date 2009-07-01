@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDependenciesPropertyPage;
 
 
@@ -45,7 +46,7 @@ import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDepen
  */
 public class J2EEDependenciesPage extends PropertyPage {
 	
-	public String DESCRIPTION = "ModuleDependency Page Description";
+	public String DESCRIPTION = Messages.J2EEDependenciesPage_Description;
 
 	private IProject project;
 	private IModuleDependenciesControl[] controls = new IModuleDependenciesControl[0];
@@ -55,7 +56,7 @@ public class J2EEDependenciesPage extends PropertyPage {
 	}
 	
 	private Composite getFacetErrorComposite(final Composite parent) {
-		final String errorCheckingFacet = "Error Checking Project Facets";
+		final String errorCheckingFacet = Messages.J2EEDependenciesPage_ErrorCheckingFacets;
 		setErrorMessage(errorCheckingFacet);
 		setValid(false);
 		return getErrorComposite(parent, errorCheckingFacet);		

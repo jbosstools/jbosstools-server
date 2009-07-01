@@ -10,7 +10,7 @@ import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.J2EEDependenciesPag
 public class EarModuleDependencyPageProvider implements IDependencyPageProvider {
 
 	public boolean canHandle(IFacetedProject project) {
-		boolean isEAR = project.hasProjectFacet(ProjectFacetsManager.getProjectFacet("jst.ear"));
+		boolean isEAR = project.hasProjectFacet(ProjectFacetsManager.getProjectFacet("jst.ear")); //$NON-NLS-1$
 		return isEAR;
 	}
 

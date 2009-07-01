@@ -93,6 +93,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
+import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
 
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl {
@@ -197,14 +198,14 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createPushButtons() {
-		projectButton = createPushButton("Add Project...");
+		projectButton = createPushButton(Messages.AddModuleDependenciesPropertiesPage_AddProjectButton);
 		projectJarButton = createPushButton(J2EEUIMessages
 				.getResourceString(J2EEUIMessages.PROJECT_JAR));
 		externalJarButton = createPushButton(J2EEUIMessages
 				.getResourceString(J2EEUIMessages.EXTERNAL_JAR));
 		addVariableButton = createPushButton(J2EEUIMessages
 				.getResourceString(J2EEUIMessages.ADDVARIABLE));
-		removeButton = createPushButton("Remove selected...");
+		removeButton = createPushButton(Messages.AddModuleDependenciesPropertiesPage_RemoveSelectedButton);
 	}
 
 	protected Button createPushButton(String label) {
@@ -282,7 +283,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				switch (event.type) {
 				case SWT.MouseDown:
 					Event e = new Event();
-					e.item = (TableItem) label.getData("_TABLEITEM");
+					e.item = (TableItem) label.getData("_TABLEITEM"); //$NON-NLS-1$
 					table.setSelection(new TableItem[] { (TableItem) e.item });
 					table.notifyListeners(SWT.Selection, e);
 					shell.dispose();
@@ -405,7 +406,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 
 		public Object getValue(Object element, String property) {
-			return objectToRuntimePath.get(element) == null ? new Path("/")
+			return objectToRuntimePath.get(element) == null ? new Path("/") //$NON-NLS-1$
 					.toString() : objectToRuntimePath.get(element);
 		}
 
@@ -439,9 +440,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			IProject selected = (IProject) d.getFirstResult();
 			Object selected2 = ModuleCoreNature.isFlexibleProject(selected) ? 
 					ComponentCore.createComponent(selected) : selected;
-			IPath path = new Path("/");
+			IPath path = new Path("/"); //$NON-NLS-1$
 			path = path.append(selected2 instanceof IVirtualComponent ? 
-					getVirtualComponentNameWithExtension((IVirtualComponent)selected2) : selected.getName() + ".jar");
+					getVirtualComponentNameWithExtension((IVirtualComponent)selected2) : selected.getName() + ".jar"); //$NON-NLS-1$
 			objectToRuntimePath.put(selected2, path.toString());
 			refresh();
 			TableItem[] items = availableComponentsViewer.getTable().getItems();
@@ -456,7 +457,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				ITreeContentProvider contentProvider) {
 			super(parent, labelProvider, contentProvider);
 			setAllowMultiple(false);
-			setTitle("Select a Project");
+			setTitle(Messages.AddModuleDependenciesPropertiesPage_SelectAProjectTitle);
 			setInput(ResourcesPlugin.getWorkspace());
 		}
 	}
@@ -552,7 +553,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				if( f != null )
 					name = new Path(f.getAbsolutePath()).lastSegment();
 			}
-			this.objectToRuntimePath.put(archive, new Path("/").append(name).toString());
+			this.objectToRuntimePath.put(archive, new Path("/").append(name).toString()); //$NON-NLS-1$
 			availableComponentsViewer.add(archive);
 		} else {
 			// TODO should inform user that they selected an already referenced
@@ -633,11 +634,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		availableComponentsViewer.setSorter(null);
 
 		TableColumn bndColumn = new TableColumn(table, SWT.NONE, 0);
-		bndColumn.setText("Deploy Path");
+		bndColumn.setText(Messages.AddModuleDependenciesPropertiesPage_DeployPathColumn);
 		bndColumn.setResizable(true);
 
 		TableColumn projectColumn = new TableColumn(table, SWT.NONE, 1);
-		projectColumn.setText("Source");
+		projectColumn.setText(Messages.AddModuleDependenciesPropertiesPage_SourceColumn);
 		projectColumn.setResizable(true);
 
 		tableLayout.layout(table, true);

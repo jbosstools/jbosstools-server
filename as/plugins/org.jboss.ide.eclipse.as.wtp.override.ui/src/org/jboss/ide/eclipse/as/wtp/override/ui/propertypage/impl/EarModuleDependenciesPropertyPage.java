@@ -85,7 +85,7 @@ public class EarModuleDependenciesPropertyPage extends
 	protected void createPushButtons() {
 		super.createPushButtons();
 		if (isVersion5) 
-			changeLibPathButton = createPushButton(J2EEUIMessages.getResourceString(J2EEUIMessages.CHANGE_LIB_DIR));//$NON-NLS-1$
+			changeLibPathButton = createPushButton(J2EEUIMessages.getResourceString(J2EEUIMessages.CHANGE_LIB_DIR));
 
 	}
 
