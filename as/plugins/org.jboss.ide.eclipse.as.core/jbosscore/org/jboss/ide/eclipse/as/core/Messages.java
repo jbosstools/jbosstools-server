@@ -12,7 +12,7 @@ package org.jboss.ide.eclipse.as.core;
 
 import org.eclipse.osgi.util.NLS;
 
-public class Messages {
+public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.core.Messages"; //$NON-NLS-1$
 	
 	/* Standard and re-usable */
@@ -83,5 +83,7 @@ public class Messages {
 	public static String CannotSaveServersStartArgs;
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+	private Messages() {
 	}
 }

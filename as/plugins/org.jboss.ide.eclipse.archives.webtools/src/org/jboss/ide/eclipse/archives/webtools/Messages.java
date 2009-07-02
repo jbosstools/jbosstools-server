@@ -13,10 +13,7 @@ package org.jboss.ide.eclipse.archives.webtools;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-
-	static {
-		initializeMessages("org.jboss.ide.eclipse.archives.webtools.Messages", Messages.class); //$NON-NLS-1$
-	}
+	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.archives.webtools.Messages"; //$NON-NLS-1$
 	
 	public static String ExceptionCannotScanDirectory;
 	public static String ExceptionUnexpectedException;
@@ -62,4 +59,10 @@ public class Messages extends NLS {
 	public static String EjbJarPreview;
 	public static String EjbJarDescription;
 
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+	
+	private Messages() {
+	}
 }
