@@ -104,7 +104,14 @@ public class XPathCategory {
 		children.put(query.getName(), query);
 		query.setCategory(this);
 	}
-	
+	protected void renameQuery(String oldName, String newName) {
+		getQueries();
+		XPathQuery q = children.get(oldName);
+		if( q != null ) {
+			children.remove(oldName);
+			children.put(newName, q);
+		}
+	}
 	public void removeQuery(XPathQuery query) {
 		getQueries();
 		children.remove(query.getName());

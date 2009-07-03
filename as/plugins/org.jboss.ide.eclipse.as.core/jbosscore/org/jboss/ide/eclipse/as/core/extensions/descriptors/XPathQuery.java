@@ -151,6 +151,8 @@ public class XPathQuery implements Serializable {
 		return name;
 	}
 	public void setName(String name) {
+		if( category != null ) 
+			category.renameQuery(this.name, name);
 		this.name = name;
 	}
 	public String getFilePattern() {
