@@ -51,12 +51,9 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualArchiveComponent;
 import org.eclipse.jst.j2ee.internal.ManifestUIResourceHandler;
-import org.eclipse.jst.j2ee.internal.plugin.IJ2EEModuleConstants;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIPlugin;
-import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
 import org.eclipse.jst.j2ee.project.facet.IJavaProjectMigrationDataModelProperties;
 import org.eclipse.jst.j2ee.project.facet.JavaProjectMigrationDataModelProvider;
 import org.eclipse.swt.SWT;
@@ -93,8 +90,9 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
+import org.jboss.ide.eclipse.as.wtp.override.core.vcf.ComponentUtils;
 import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
-
+ 
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl {
 
@@ -993,37 +991,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 * Method returns the name of the given IVirtualComponent being sure the correct extension
 	 * is on the end of the name, this is important for internal projects. Added for [Bug 241509]
 	 * 
+	 * Note (rs) :  I do not believe this ever gets called with a binary virtComp
+	 *  
 	 * @param virtComp the IVirtualComponent to get the name of with the correct extension
 	 * @return the name of the given IVirtualComponent with the correct extension
 	 */
 	protected String getVirtualComponentNameWithExtension(IVirtualComponent virtComp) {
 		String virtCompURIMapName = this.getURIMappingName(virtComp);
-		
-		boolean linkedToEAR = true;
-		try {
-			if(virtComp.isBinary()){
-				linkedToEAR = ((J2EEModuleVirtualArchiveComponent)virtComp).isLinkedToEAR();
-				((J2EEModuleVirtualArchiveComponent)virtComp).setLinkedToEAR(false);
-			}
-			if(JavaEEProjectUtilities.isDynamicWebComponent(virtComp)) {
-				if(!virtCompURIMapName.endsWith(IJ2EEModuleConstants.WAR_EXT)) {
-					//web module URIs need to end in WAR
-					virtCompURIMapName += IJ2EEModuleConstants.WAR_EXT;
-				}
-			} else if(JavaEEProjectUtilities.isJCAComponent(virtComp)) {
-				if(!virtCompURIMapName.endsWith(IJ2EEModuleConstants.RAR_EXT)) {
-					//connector module URIs need to end in RAR
-					virtCompURIMapName += IJ2EEModuleConstants.RAR_EXT;
-				}
-			} else if(!virtCompURIMapName.endsWith(IJ2EEModuleConstants.JAR_EXT)) {
-				//all other modules (EJB, AppClient, Utility) need to end in JAR
-				virtCompURIMapName += IJ2EEModuleConstants.JAR_EXT;
-			}
-		} finally {
-			if(virtComp.isBinary()){
-				((J2EEModuleVirtualArchiveComponent)virtComp).setLinkedToEAR(linkedToEAR);
-			}
-		}
+		String extension = ComponentUtils.getDefaultProjectExtension(virtComp);
+		virtCompURIMapName += extension;
 		return virtCompURIMapName;
 	}
 	

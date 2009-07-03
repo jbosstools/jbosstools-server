@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
@@ -22,6 +23,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 
@@ -67,6 +69,12 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 				}
 				return runtimePaths.get(element);
 			} else if (columnIndex == 1) {
+				if( comp.isBinary() && comp instanceof VirtualArchiveComponent) {
+					IPath p = ((VirtualArchiveComponent)comp).getWorkspaceRelativePath();
+					if( p == null )
+						p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
+					return p.toString();
+				}
 				return comp.getProject().getName();
 			}
 		} else if (element instanceof IProject){
