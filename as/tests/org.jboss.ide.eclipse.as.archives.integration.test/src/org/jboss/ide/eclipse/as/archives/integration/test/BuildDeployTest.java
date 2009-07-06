@@ -47,6 +47,7 @@ import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListen
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.tools.test.util.JobUtils;
 
+@SuppressWarnings("nls")
 public class BuildDeployTest extends TestCase {
 	private static final String VALUE_PREFIX = "value";
 	private static final String OUT_JAR = "out.jar";

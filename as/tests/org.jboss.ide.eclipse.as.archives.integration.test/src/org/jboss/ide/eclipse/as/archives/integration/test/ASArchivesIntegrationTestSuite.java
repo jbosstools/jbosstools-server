@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.archives.integration.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+@SuppressWarnings("nls")
 public class ASArchivesIntegrationTestSuite extends TestSuite {
     public static Test suite() { 
         TestSuite suite = new TestSuite("AS Archives Integration Test Suite");
