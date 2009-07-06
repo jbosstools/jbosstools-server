@@ -56,3 +56,4 @@ Export-Package: org.jboss.ide.eclipse.as.ui,
 Bundle-ClassPath: jbossui.jar
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin
 Bundle-Vendor: %Bundle-Vendor.0
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

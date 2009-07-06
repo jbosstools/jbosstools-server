@@ -36,3 +36,4 @@ Export-Package: de.schlichtherle.io;x-friends:="org.jboss.ide.eclipse.archives.t
  org.jboss.ide.eclipse.archives.core.util;x-friends:="org.jboss.ide.eclipse.archives.test",
  org.jboss.ide.eclipse.archives.core.util.internal;x-friends:="org.jboss.ide.eclipse.archives.test",
  org.jboss.ide.eclipse.archives.core.xpl
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

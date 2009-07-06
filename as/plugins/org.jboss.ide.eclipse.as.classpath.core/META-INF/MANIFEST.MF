@@ -21,3 +21,4 @@ Export-Package: org.jboss.ide.eclipse.as.classpath.core,
  org.jboss.ide.eclipse.as.classpath.core.xpl
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

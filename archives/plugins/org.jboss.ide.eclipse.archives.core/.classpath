@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main"/>
 	<classpathentry kind="src" path="src/xml"/>
 	<classpathentry kind="src" path="src/eclipse"/>
-	<classpathentry exported="true" kind="lib" path="lib/truezip-6.6.jar" sourcepath="/home/rob/code/truezip/truezip/src"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-common-core-2.2.1.GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-common-logging-log4j-2.0.4.GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-common-logging-spi-2.0.4.GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/concurrent-1.3.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jboss-xml-binding.jar" sourcepath="/home/rob/code/xb/target/jboss-xml-binding-sources.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-common-logging-log4j-2.0.4.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-common-logging-spi-2.0.4.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-common-core-2.2.1.GA.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/truezip-6.6.jar" sourcepath="/home/rob/code/truezip/truezip/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

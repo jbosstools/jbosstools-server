@@ -14,3 +14,4 @@ Require-Bundle: org.junit,
  org.jboss.ide.eclipse.as.ui
 Export-Package: org.jboss.ide.eclipse.as.ui.test,
  org.jboss.ide.eclipse.as.ui.wizards.test
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
