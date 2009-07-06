@@ -28,13 +28,13 @@
      <bookinfo>
          <title>JMX Tools Reference Guide</title>
             
-         <corpauthor diffmk:change="added">
-             <inlinemediaobject diffmk:change="added">
-                 <imageobject diffmk:change="added" role="fo">
-                     <imagedata diffmk:change="added" fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
+         <corpauthor>
+             <inlinemediaobject>
+                 <imageobject role="fo">
+                     <imagedata fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
                  </imageobject>	
-                 <imageobject diffmk:change="added" role="html">
-                     <imagedata diffmk:change="added"></imagedata>
+                 <imageobject role="html">
+                     <imagedata></imagedata>
                  </imageobject>	
              </inlinemediaobject>           
          </corpauthor>
@@ -43,10 +43,10 @@
 	                       <copyright>
 			             <year>2007</year>
 	                           <year>2009</year>
-	                           <holder>JBoss by Red Hat</holder>
+	                           <holder><diffmk:wrapper diffmk:change="changed">JBoss by Red Hat</diffmk:wrapper></holder>
 	                       </copyright>
           <releaseinfo><diffmk:wrapper diffmk:change="changed">
-             Version: 1.1.0.M1
+             Version: 1.1.0.M2
           </diffmk:wrapper></releaseinfo>
 <abstract>
    <title></title>
@@ -588,7 +588,7 @@
          <listitem>
             <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
             Control to present them in the MBean Editor</para>
-            <para>We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&apos;op=viewforum&apos;f=201">JBoss forum</ulink>.</para>
+            <para>We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
          </listitem>
       </itemizedlist>
    </section>
