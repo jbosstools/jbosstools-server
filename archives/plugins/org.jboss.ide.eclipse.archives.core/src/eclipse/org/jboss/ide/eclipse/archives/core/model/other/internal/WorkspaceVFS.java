@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.archives.core.model.other.internal;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -92,5 +93,14 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 			return ((WorkspaceVFS)ArchivesCore.getInstance().getVFS()).resolveValue(variable, argument);
 		}
 		return null;
+	}
+
+	public IPath[] absolutePathToWorkspacePath(IPath path) {
+		IFile[] files = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(path);
+		IPath[] paths = new IPath[files.length];
+		for( int i = 0; i < files.length; i++ ) {
+			paths[i] = files[i].getFullPath();
+		}
+		return paths;
 	}
 }

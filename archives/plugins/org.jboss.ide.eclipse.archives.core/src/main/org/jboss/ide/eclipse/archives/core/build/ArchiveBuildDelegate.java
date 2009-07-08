@@ -12,8 +12,10 @@ package org.jboss.ide.eclipse.archives.core.build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,6 +33,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
@@ -81,7 +84,7 @@ public class ArchiveBuildDelegate {
 
 			monitor.beginTask( ArchivesCore.bind(ArchivesCoreMessages.BuildingProject,
 					ArchivesCore.getInstance().getVFS().getProjectName(project)), nodes.length * 1000);
-
+			
 			for( int i = 0; i < nodes.length; i++ ) {
 				errors.addAll(Arrays.asList(
 						fullArchiveBuild(
@@ -103,6 +106,23 @@ public class ArchiveBuildDelegate {
 		}
 	}
 
+	protected IArchive[] findReferences(IArchive node2) {
+		final Set<IArchive> s = new TreeSet<IArchive>();
+		final IPath dest = node2.getArchiveFilePath();
+		ArchivesModel.instance().accept(new IArchiveNodeVisitor(){
+			public boolean visit(IArchiveNode node) {
+				if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET) {
+					IArchiveFileSet fs = (IArchiveFileSet)node;
+					FileWrapper[] wrapper = fs.getMatches(dest);
+					if( wrapper != null && wrapper.length > 0 )
+						s.add(fs.getRootArchive());
+				}
+				return true;
+			}
+		});
+		return (IArchive[]) s.toArray(new IArchive[s.size()]);
+	}
+	
 	/**
 	 * Builds an archive entirely, overwriting whatever was in the output destination.
 	 * @param pkg The archive to build
@@ -183,7 +203,7 @@ public class ArchiveBuildDelegate {
 
 		// build the filesets
 		IArchiveFileSet[] filesets = ModelUtil.findAllDescendentFilesets(pkg);
-		IProgressMonitor filesetMonitor = new SubProgressMonitor(monitor, 7000);
+		IProgressMonitor filesetMonitor = new SubProgressMonitor(monitor, 6000);
 		filesetMonitor.beginTask(ArchivesCoreMessages.BuildingFilesets, filesets.length * 1000);
 		for( int i = 0; i < filesets.length; i++ ) {
 			IStatus[] errors2 = fullFilesetBuild(filesets[i], new SubProgressMonitor(filesetMonitor, 1000), pkg);
@@ -197,6 +217,20 @@ public class ArchiveBuildDelegate {
 //				actions[i].execute();
 //			}
 //		}
+		
+		
+		ArrayList<IArchive> referencingArchives = new ArrayList<IArchive>();
+		referencingArchives.addAll(Arrays.asList(findReferences(pkg)));
+		IProgressMonitor referenceMon = new SubProgressMonitor(monitor, 1000);
+		referenceMon.beginTask(ArchivesCoreMessages.BuildingArchive, 
+				referencingArchives.size() * 1000);
+		for( Iterator<IArchive> i = referencingArchives.iterator(); i.hasNext();) {
+			IArchive toBuild = i.next();
+			errors.add(fullArchiveBuild(
+					toBuild, new SubProgressMonitor(referenceMon, 1000), log));
+		}
+
+		
 
 		EventManager.finishedBuildingArchive(pkg);
 		IStatus[] errors2 = errors.toArray(new IStatus[errors.size()]);
@@ -243,8 +277,11 @@ public class ArchiveBuildDelegate {
 			Set<IPath> removed, boolean workspaceRelative, IProgressMonitor monitor) {
 		ArrayList<IStatus> errors = new ArrayList<IStatus>();
 
+		if( addedChanged.size() == 0 && removed.size() == 0 )
+			return;
+		
 		// removed get more work because all filesets are being rescanned before handling the removed
-		int totalWork = (addedChanged.size()*100) + (removed.size()*200) + 50;
+		int totalWork = (addedChanged.size()*100) + (removed.size()*200) + 50 + 500;
 		monitor.beginTask(ArchivesCoreMessages.ProjectArchivesIncrementalBuild, totalWork);
 
 		// find any and all filesets that match each file
@@ -305,10 +342,26 @@ public class ArchiveBuildDelegate {
 
 
 		TrueZipUtil.sync();
+		Comparator c = new Comparator() {
+			public int compare(Object o1, Object o2) {
+				return 0;
+			}
+		}; 
+		Set<IPath> changedPaths = new TreeSet<IPath>(c);
 		Iterator<IArchive> i2 = topPackagesChanged.iterator();
+		SubProgressMonitor consumedMon = new SubProgressMonitor(monitor, 500);
 		while(i2.hasNext()) {
-			EventManager.finishedBuildingArchive(i2.next());
+			try {
+				IArchive changed = i2.next();
+				changedPaths.add(changed.getArchiveFilePath());
+				EventManager.finishedBuildingArchive(changed);
+			} catch( ClassCastException cce ) {
+				cce.printStackTrace();  
+			}
 		}
+		incrementalBuild(null, changedPaths, new TreeSet(), false, 
+				new SubProgressMonitor(consumedMon, 500));
+		
 
 		if( errors.size() > 0 )
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));

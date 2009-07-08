@@ -236,7 +236,30 @@ public class DirectoryScannerFactory {
 	    }
 
 	    public boolean couldBeIncluded(String name, boolean inWorkspace) {
-	    	return super.isIncluded(name) && !super.isExcluded(name);
+	    	IPath targetBase = ((FileWrapper)getBasedir()).getWrapperPath();
+	    	IPath[] questionFiles = new IPath[] { new Path(name) };
+	    	if( workspaceRelative && !inWorkspace) {
+	    		questionFiles = ArchivesCore.getInstance().getVFS().absolutePathToWorkspacePath(questionFiles[0]);
+	    	} else if( !workspaceRelative && inWorkspace) {
+	    		questionFiles[0] = ArchivesCore.getInstance().
+	    				getVFS().workspacePathToAbsolutePath(questionFiles[0]);
+	    	}
+	    	ArrayList<IPath> acceptablePaths = new ArrayList<IPath>();
+	    	for( int i = 0; i < questionFiles.length; i++ ) {
+	    		if( targetBase.isPrefixOf(questionFiles[i]))
+	    			acceptablePaths.add(questionFiles[i].removeFirstSegments(targetBase.segmentCount()));
+	    	}
+	    	
+	    	if( acceptablePaths.size() == 0 )
+	    		return false;
+	    	
+	    	IPath p;
+	    	for( int i = 0; i < acceptablePaths.size(); i++ ) {
+	    		p = acceptablePaths.get(i);
+	    		if( super.isIncluded(p.toString()) && !super.isExcluded(p.toString()))
+	    			return true;
+	    	}
+	    	return false;
 	    }
 	}
 }

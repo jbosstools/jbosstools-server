@@ -168,7 +168,6 @@ public class ModelUtilTest extends TestCase {
 	private boolean testMatches(IArchiveFileSet fs, IPath absoluteFile, IArchiveNode node) {
 		FileWrapper[] wrappers = fs.getMatches(absoluteFile);
 		return ModelUtil.otherFilesetMatchesPathAndOutputLocation(fs, absoluteFile, wrappers[0].getFilesetRelative(), wrappers[0].getRootArchiveRelative().toString(), node); 
-				
 	}
 
 }

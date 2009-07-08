@@ -83,5 +83,11 @@ public class AntVFS implements IArchivesVFS, IVariableManager {
 		}
 		return null;
 	}
-
+	
+	// TODO unsupported in ant for now as ant does not use this feature
+	// Ant does not make use of incremental builds and that is the only
+	// place this method is called
+	public IPath[] absolutePathToWorkspacePath(IPath path) {
+		return new IPath[]{};
+	}
 }

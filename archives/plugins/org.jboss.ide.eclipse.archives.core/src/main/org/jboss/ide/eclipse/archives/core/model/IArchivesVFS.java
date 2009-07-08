@@ -36,6 +36,12 @@ public interface IArchivesVFS {
 	public IPath workspacePathToAbsolutePath(IPath path);
 	
 	/**
+	 * Translates a global path to any and all workspace path
+	 * that match it, if it can
+	 */
+	public IPath[] absolutePathToWorkspacePath(IPath path);
+	
+	/**
 	 * Get the project name that matches this path
 	 * @param absolutePath
 	 * @return
