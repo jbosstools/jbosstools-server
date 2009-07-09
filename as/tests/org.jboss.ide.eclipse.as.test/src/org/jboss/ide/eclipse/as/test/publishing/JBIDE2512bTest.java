@@ -36,6 +36,6 @@ public class JBIDE2512bTest extends AbstractDeploymentTest {
 		
 		String uri = enterpriseApplication.getURI(ejbModule);
 		assertNotNull("URI is null", uri);
-		assertTrue("URI does not have the expected value", "JBIDE2512b-ejb.jar".equals(uri));
+		assertTrue("URI does not have the expected value", "lib/JBIDE2512b-ejb.jar".equals(uri));
 	}
 }
