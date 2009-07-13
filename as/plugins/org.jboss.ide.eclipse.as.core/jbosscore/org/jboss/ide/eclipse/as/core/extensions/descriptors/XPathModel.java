@@ -56,7 +56,7 @@ public class XPathModel extends UnitedServerListener {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
 	public static final String PORTS_CATEGORY_NAME = "Ports";
 	private static final String DELIMITER = ",";
-	private static final String CATEGORY_LIST = 
+	private static final Strinhg CATEGORY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	
 	private static final String QUERY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
@@ -261,6 +261,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.50", new Path("properties").append("jboss.50.default.ports.properties"));
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.51", new Path("properties").append("jboss.51.default.ports.properties"));
 		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.43", new Path("properties").append("jboss.eap.43.default.ports.properties"));
+		rtToPortsFile.put("org.jboss.ide.eclipse.as.runtime.eap.50", new Path("properties").append("jboss.eap.50.default.ports.properties"));
 	}
 
 	public void loadDefaults(IServer server, String configFolder) {
