@@ -9,47 +9,12 @@
          point="org.eclipse.wst.server.ui.serverImages">
       <image
             icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-
-<!--
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.40"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.42"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.50"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.40"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.42"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.50"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
-      <image
-            icon="icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.eap.43"
-            id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
--->
 
       <image
             icon="icons/jboss.gif"
@@ -65,12 +30,12 @@
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
         	id="org.jboss.ide.eclipse.as.ui.jboss32RuntimeWizardFragmentragment"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"/>
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
@@ -177,25 +142,25 @@
             id="org.jboss.ide.eclipse.as.ui.editor.deployServer.deployDir"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"/>
+            typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PollerSection"
             id="org.jboss.ide.eclipse.as.ui.editor.pollerSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"/>
+            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection"
             id="org.jboss.ide.eclipse.as.ui.editor.portSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
             order="11"
-            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"/>
+            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection"
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43"/>
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
    </extension>
 
 

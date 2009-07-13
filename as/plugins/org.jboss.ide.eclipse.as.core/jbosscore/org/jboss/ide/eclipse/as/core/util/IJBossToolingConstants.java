@@ -21,6 +21,7 @@ public interface IJBossToolingConstants {
 	public static final String AS_50 = "org.jboss.ide.eclipse.as.runtime.50"; //$NON-NLS-1$
 	public static final String AS_51 = "org.jboss.ide.eclipse.as.runtime.51"; //$NON-NLS-1$
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
+	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
 	
 	/* Version Strings */
 	public static final String V3_0 = "3.0"; //$NON-NLS-1$
@@ -47,6 +48,7 @@ public interface IJBossToolingConstants {
 	public static final String DEFAULT_PROPS_50 = "jboss.50.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_51 = "jboss.51.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
 	
 	// Poller constants
 	public static final String DEFAULT_STARTUP_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"; //$NON-NLS-1$
