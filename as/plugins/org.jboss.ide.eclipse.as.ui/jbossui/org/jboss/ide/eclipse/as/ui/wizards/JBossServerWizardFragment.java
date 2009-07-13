@@ -201,7 +201,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		serverWC.setServerConfiguration(null); // no inside jboss folder
 		
 		IServer saved = serverWC.save(false, new NullProgressMonitor());
-		getTaskModel().putObject(TaskModel.TASK_SERVER, saved);
+		IServerWorkingCopy copy = saved.createWorkingCopy();
+		getTaskModel().putObject(TaskModel.TASK_SERVER, copy);
 	}
 	
 	private IJBossServerRuntime getRuntime() {
