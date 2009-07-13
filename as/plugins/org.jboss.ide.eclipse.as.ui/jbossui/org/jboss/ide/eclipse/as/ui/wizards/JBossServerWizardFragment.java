@@ -199,10 +199,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
-		
-		IServer saved = serverWC.save(false, new NullProgressMonitor());
-		IServerWorkingCopy copy = saved.createWorkingCopy();
-		getTaskModel().putObject(TaskModel.TASK_SERVER, copy);
 	}
 	
 	private IJBossServerRuntime getRuntime() {
