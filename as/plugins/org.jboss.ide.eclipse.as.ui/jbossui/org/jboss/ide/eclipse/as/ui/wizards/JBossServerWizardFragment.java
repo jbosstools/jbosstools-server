@@ -104,6 +104,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( id.equals(IConstants.AS_40)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
 		else if( id.equals(IConstants.AS_42)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if( id.equals(IConstants.AS_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
+		else if( id.equals(IConstants.AS_51)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
 		else if( id.equals(IConstants.EAP_43)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
 		else if( id.equals(IConstants.EAP_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
 

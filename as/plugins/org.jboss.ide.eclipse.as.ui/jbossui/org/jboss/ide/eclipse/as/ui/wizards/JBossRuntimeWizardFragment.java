@@ -173,7 +173,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if (id.equals(IJBossToolingConstants.AS_50))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
+		else if (id.equals(IJBossToolingConstants.AS_51))
+			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
 		else if (id.equals(IJBossToolingConstants.EAP_43))
+			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
+		else if (id.equals(IJBossToolingConstants.EAP_50))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
