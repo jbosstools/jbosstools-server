@@ -56,7 +56,7 @@ public class XPathModel extends UnitedServerListener {
 	public static final String EMPTY_STRING = "org.jboss.ide.eclipse.as.core.model.descriptor.EmptyString";
 	public static final String PORTS_CATEGORY_NAME = "Ports";
 	private static final String DELIMITER = ",";
-	private static final Strinhg CATEGORY_LIST = 
+	private static final String CATEGORY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.Categories";	
 	private static final String QUERY_LIST = 
 		"org.jboss.ide.eclipse.as.core.model.descriptor.QueryList";	
