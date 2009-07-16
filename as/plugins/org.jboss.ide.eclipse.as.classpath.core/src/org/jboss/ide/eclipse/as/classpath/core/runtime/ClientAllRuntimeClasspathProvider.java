@@ -62,7 +62,9 @@ public class ClientAllRuntimeClasspathProvider
 		if(AS_40.equals(rtID)) return get40(loc,config);
 		if(AS_42.equals(rtID)) return get42(loc,config);
 		if(AS_50.equals(rtID)) return get50(loc,config);
+		if(AS_51.equals(rtID)) return get51(loc,config);
 		if(EAP_43.equals(rtID)) return getEAP43(loc,config);
+		if(EAP_50.equals(rtID)) return getEAP50(loc,config);
 		return null;
 	}
 	
@@ -96,6 +98,10 @@ public class ClientAllRuntimeClasspathProvider
 		return get40(location, config);
 	}
 	
+	protected IClasspathEntry[] getEAP50(IPath location, String config) {
+		return get51(location, config);
+	}
+	
 	protected IClasspathEntry[] get50(IPath location, String config) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		IPath configPath = location.append(SERVER).append(config);
@@ -110,6 +116,10 @@ public class ClientAllRuntimeClasspathProvider
 		addEntries(deployerPath.append(AS5_AOP_DEPLOYER), list);
 		addEntries(deployerPath.append(EJB3_DEPLOYER), list);
 		return list.toArray(new IClasspathEntry[list.size()]);
+	}
+	
+	protected IClasspathEntry[] get51(IPath location, String config) {
+		return get50(location, config);
 	}
 	
 	protected IClasspathEntry getEntry(IPath path) {

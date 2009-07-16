@@ -18,7 +18,9 @@ public interface ClasspathConstants {
 	public static final String AS_40 = "org.jboss.ide.eclipse.as.runtime.40"; //$NON-NLS-1$
 	public static final String AS_42 = "org.jboss.ide.eclipse.as.runtime.42"; //$NON-NLS-1$
 	public static final String AS_50 = "org.jboss.ide.eclipse.as.runtime.50"; //$NON-NLS-1$
+	public static final String AS_51 = "org.jboss.ide.eclipse.as.runtime.51"; //$NON-NLS-1$
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
+	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
 	
 	/* Version Strings */
 	public static final String V3_0 = "3.0"; //$NON-NLS-1$
@@ -26,6 +28,7 @@ public interface ClasspathConstants {
 	public static final String V4_0 = "4.0"; //$NON-NLS-1$
 	public static final String V4_2 = "4.2"; //$NON-NLS-1$
 	public static final String V5_0 = "5.0"; //$NON-NLS-1$
+	public static final String V5_1 = "5.1"; //$NON-NLS-1$
 	
 	
 	/* Files and folders that must be added to CP */
