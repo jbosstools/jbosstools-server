@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
@@ -59,32 +60,47 @@ public class PublishUtil {
 	}
 
 	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
-		// TODO This should probably change once 241466 is solved
 		IPath root = new Path( deployFolder );
-		String type, name;
+		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {
 			type = moduleTree[i].getModuleType().getId();
-			name = moduleTree[i].getName();
-			if( new Path(name).segmentCount() > 1 )
-				// we strongly suspect this is a binary object and not a project
-				return root.append(new Path(name).lastSegment());
-			if( IJBossServerConstants.FACET_EAR.equals(type)) 
-				root = root.append(name + IJBossServerConstants.EXT_EAR);
-			else if( IJBossServerConstants.FACET_WEB.equals(type)) 
-				root = root.append(name + IJBossServerConstants.EXT_WAR);
-			else if( IJBossServerConstants.FACET_UTILITY.equals(type) && i >= 1 
-					&& IJBossServerConstants.FACET_WEB.equals(moduleTree[i-1].getModuleType().getId())) 
-				root = root.append(IJBossServerConstants.WEB_INF)
-						.append(IJBossServerConstants.LIB)
-						.append(name + IJBossServerConstants.EXT_JAR);			
-			else if( IJBossServerConstants.FACET_CONNECTOR.equals(type)) {
-				root = root.append(name + IJBossServerConstants.EXT_RAR);
-			} else if( IJBossServerConstants.FACET_ESB.equals(type)){
-				root = root.append(name + IJBossServerConstants.EXT_ESB);
-			}else
-				root = root.append(name + IJBossServerConstants.EXT_JAR);
+			modName = moduleTree[i].getName();
+			name = new Path(modName).lastSegment();
+			suffixedName = name + getSuffix(type);
+			uri = getParentRelativeURI(moduleTree, i, suffixedName);
+			root = root.append(uri);
 		}
 		return root;
+	}
+	
+	private static String getParentRelativeURI(IModule[] tree, int index, String defaultName) {
+		if( index != 0 ) {
+			IEnterpriseApplication parent = (IEnterpriseApplication)tree[index-1].loadAdapter(IEnterpriseApplication.class, null);
+			if( parent != null ) {
+				String uri = parent.getURI(tree[index]);
+				if(uri != null )
+					return uri;
+			}
+			// TODO if we make our own "enterprise app" interface, do that here
+		} 
+		// return name with extension
+		return defaultName;
+
+	}
+	
+	private static String getSuffix(String type) {
+		String suffix = null;
+		if( IJBossServerConstants.FACET_EAR.equals(type)) 
+			suffix = IJBossServerConstants.EXT_EAR;
+		else if( IJBossServerConstants.FACET_WEB.equals(type)) 
+			suffix = IJBossServerConstants.EXT_WAR;
+		else if( IJBossServerConstants.FACET_CONNECTOR.equals(type)) 
+			suffix = IJBossServerConstants.EXT_RAR;
+		else if( IJBossServerConstants.FACET_ESB.equals(type))
+			suffix = IJBossServerConstants.EXT_ESB;
+		else
+			suffix = IJBossServerConstants.EXT_JAR;
+		return suffix;
 	}
 	
 	// TODO This can also change to find the isBinaryModule method 
