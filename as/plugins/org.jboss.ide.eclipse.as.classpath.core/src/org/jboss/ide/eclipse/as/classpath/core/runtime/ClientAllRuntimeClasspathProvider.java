@@ -67,6 +67,10 @@ public class ClientAllRuntimeClasspathProvider
 		if(AS_42.equals(rtID)) return get42(loc,configPath);
 		if(AS_50.equals(rtID)) return get50(loc,configPath);
 		if(EAP_43.equals(rtID)) return getEAP43(loc,configPath);
+		
+		// Added cautiously, not sure on changes, may change
+		if(AS_51.equals(rtID)) return get50(loc,configPath);
+		if(EAP_50.equals(rtID)) return get50(loc,configPath);
 		return null;
 	}
 	

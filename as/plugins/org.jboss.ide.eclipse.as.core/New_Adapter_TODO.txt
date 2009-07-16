@@ -1,0 +1,18 @@
+This is a checklist of things to update when 
+adding a new adapter version.
+
+1) as.core/plugin.properties - add new strings
+2) as.core/plugin.xml
+   a) add new server type
+   b) add new runtime type
+   c) add new runtime component
+   d) add new runtimeFacetMapping 
+3) Add new constants to IJBossToolingConstants
+4) add new ports properties file
+5) make sure XPathModel knows about new ports file
+6) add Icons
+   a) JBossServerUISharedImages
+   b) Runtime wizard extension points
+   c) Server wizard extension points
+7) as.classpath.core/plugin.xml add runtime-component adapter
+8) Add classpath methods in ClientAllRuntimeClasspathProvider
