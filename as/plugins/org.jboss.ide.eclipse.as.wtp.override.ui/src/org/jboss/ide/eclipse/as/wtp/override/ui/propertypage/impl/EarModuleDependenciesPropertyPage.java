@@ -41,7 +41,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.AddModuleDependenciesPropertiesPage;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.J2EEDependenciesPage;
+import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ModuleAssemblyRootPage;
 
 public class EarModuleDependenciesPropertyPage extends
 		AddModuleDependenciesPropertiesPage {
@@ -50,7 +50,7 @@ public class EarModuleDependenciesPropertyPage extends
 	protected String oldLibDir;
 	protected boolean isVersion5;
 	public EarModuleDependenciesPropertyPage(IProject project,
-			J2EEDependenciesPage page) {
+			ModuleAssemblyRootPage page) {
 		super(project, page);
 		initMemberVariables();
 	}

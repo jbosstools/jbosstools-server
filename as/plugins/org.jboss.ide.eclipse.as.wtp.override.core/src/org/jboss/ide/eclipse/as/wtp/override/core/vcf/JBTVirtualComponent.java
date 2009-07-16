@@ -23,6 +23,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.internal.util.IComponentImplFactory;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -52,7 +53,7 @@ public class JBTVirtualComponent
 	}
 	
 	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath) {
-		return new VirtualFolder(aProject, aRuntimePath);
+		return new JBTVirtualFolder(aProject, aRuntimePath, this);
 	}
 	
 
@@ -62,12 +63,11 @@ public class JBTVirtualComponent
 	 */
 	
 	public IVirtualReference[] getReferences() {
-		
 		IVirtualReference[] cached = getCachedReferences();
 		if (cached != null)
 			return cached;
 		List<IVirtualReference> hardReferences = getHardReferences(this);
-		if( shouldExposeLooseReferences()) {
+		if( exposesLooseReferences()) {
 			List dynamicReferences = getLooseArchiveReferences(this, hardReferences);
 			if (dynamicReferences != null) {
 				hardReferences.addAll(dynamicReferences);
@@ -77,7 +77,11 @@ public class JBTVirtualComponent
 		return cachedReferences;
 	}
 
-	protected boolean shouldExposeLooseReferences() {
+	protected boolean exposesLooseReferences() {
+		return false;
+	}
+	
+	protected boolean isDynamicComponent(IVirtualFile file) {
 		return false;
 	}
 	

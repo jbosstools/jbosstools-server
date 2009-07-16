@@ -103,7 +103,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected final String PATH_SEPARATOR = ComponentDependencyContentProvider.PATH_SEPARATOR;
 	private boolean hasInitialized = false;
 	protected final IProject project;
-	protected final J2EEDependenciesPage propPage;
+	protected final ModuleAssemblyRootPage propPage;
 	protected IVirtualComponent rootComponent = null;
 	protected Text componentNameText;
 	protected Label availableModules;
@@ -126,7 +126,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 * Constructor for AddModulestoEARPropertiesControl.
 	 */
 	public AddModuleDependenciesPropertiesPage(final IProject project,
-			final J2EEDependenciesPage page) {
+			final ModuleAssemblyRootPage page) {
 		this.project = project;
 		this.propPage = page;
 		rootComponent = ComponentCore.createComponent(project);
@@ -143,7 +143,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		layout.marginWidth = 0;
 		composite.setLayout(layout);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-		J2EEDependenciesPage.createDescriptionComposite(composite,
+		ModuleAssemblyRootPage.createDescriptionComposite(composite,
 				ManifestUIResourceHandler.EAR_Modules_Desc);
 		createListGroup(composite);
 		refresh();

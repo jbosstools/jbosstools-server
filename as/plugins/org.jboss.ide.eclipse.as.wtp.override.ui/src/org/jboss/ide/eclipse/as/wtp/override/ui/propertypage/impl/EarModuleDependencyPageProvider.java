@@ -5,7 +5,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.IDependencyPageProvider;
 import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.IModuleDependenciesControl;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.J2EEDependenciesPage;
+import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ModuleAssemblyRootPage;
 
 public class EarModuleDependencyPageProvider implements IDependencyPageProvider {
 
@@ -15,7 +15,7 @@ public class EarModuleDependencyPageProvider implements IDependencyPageProvider 
 	}
 
 	public IModuleDependenciesControl[] createPages(IFacetedProject project,
-			J2EEDependenciesPage parent) {
+			ModuleAssemblyRootPage parent) {
 		return new IModuleDependenciesControl[] {
 				new EarModuleDependenciesPropertyPage(project.getProject(), parent)
 		};

@@ -44,14 +44,14 @@ import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDepen
  * set of IJ2EEDependenciesControl implementations.
  * 
  */
-public class J2EEDependenciesPage extends PropertyPage {
+public class ModuleAssemblyRootPage extends PropertyPage {
 	
 	public String DESCRIPTION = Messages.J2EEDependenciesPage_Description;
 
 	private IProject project;
 	private IModuleDependenciesControl[] controls = new IModuleDependenciesControl[0];
 	
-	public J2EEDependenciesPage() {
+	public ModuleAssemblyRootPage() {
 		super();
 	}
 	
@@ -179,80 +179,4 @@ public class J2EEDependenciesPage extends PropertyPage {
 		}
 		return getFacetErrorComposite(parent);
 	}
-
-	/*
-	 * This can maybe be replaced with an extension point in the future
-	 * This is the area that needs to be extended. 
-	 */
-	protected Control createContents2(Composite parent, IFacetedProject facetedProject) {
-//		boolean isEAR = facetedProject.hasProjectFacet(ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_EAR_MODULE)); 
-//		boolean isWEB = facetedProject.hasProjectFacet(ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_WEB_MODULE));
-//		if (isEAR) {
-//			return createEARContent(parent);
-//		} else if (isWEB) {
-//			return createWebContent(parent);
-//		}
-		return null;
-	}
-	
-	
-	/*
-	 * This method is different from upstream
-	 */
-	private Composite createEARContent(final Composite parent) {
-		//AddModuleDependenciesPropertiesPage page = new AddModuleDependenciesPropertiesPage(project, this);
-		EarModuleDependenciesPropertyPage page = new EarModuleDependenciesPropertyPage(project, this);
-		controls = new IModuleDependenciesControl[1];
-		controls[0] = page;
-		return page.createContents(parent);
-	}
-	
-//	private Composite createWebContent(final Composite parent) {
-//		final boolean standalone = J2EEProjectUtilities.isStandaloneProject(project);
-//		
-//		if (standalone) {
-//			// only need to create the Web Libraries page
-//			controls = new IJ2EEDependenciesControl[1];
-//			controls[0] = new WebLibDependencyPropertiesPage(project, this);
-//			return controls[0].createContents(parent);
-//		} else {
-//			// Create a tabbed folder with both "J2EE Modules" and "Web Libraries"
-//			final TabFolder folder = new TabFolder(parent, SWT.LEFT);
-//			folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-//			folder.setFont(parent.getFont());
-//
-//			// Create the two tabs 
-//			controls = new IJ2EEDependenciesControl[2];
-//		
-//			controls[0] = new JARDependencyPropertiesPage(project, this);
-//			TabItem tab = new TabItem(folder, SWT.NONE);
-//			tab.setControl(controls[0].createContents(folder));
-//			tab.setText(ManifestUIResourceHandler.J2EE_Modules);
-//			controls[1] = new WebLibDependencyPropertiesPage(project, this);		
-//			tab = new TabItem(folder, SWT.NONE);
-//			tab.setControl(controls[1].createContents(folder));
-//			tab.setText(ManifestUIResourceHandler.Web_Libraries);
-//		
-//			folder.setSelection(0);
-//			return folder;
-//		}
-//	}
-//	
-//	private Composite createNonEARContent(final Composite parent) {
-//		controls = new IJ2EEDependenciesControl[1];
-//		final boolean standalone = J2EEProjectUtilities.isStandaloneProject(project);
-//		if (standalone) {
-//			// if not referenced by an EAR, check if referenced by a dynamic web project
-//			if (J2EEProjectUtilities.getReferencingWebProjects(project).length > 0) {
-//				controls[0] = new WebRefDependencyPropertiesPage(project, this);
-//			} else {
-//				return getUnreferencedErrorComposite(parent);
-//			}
-//		} else { 
-//			controls[0] = new JARDependencyPropertiesPage(project, this);			
-//		}
-//
-//		return controls[0].createContents(parent);
-//	}
-//	
 }

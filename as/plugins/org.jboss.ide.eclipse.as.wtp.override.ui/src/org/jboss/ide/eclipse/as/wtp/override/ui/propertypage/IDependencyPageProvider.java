@@ -5,6 +5,6 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 public interface IDependencyPageProvider {
 	public boolean canHandle(IFacetedProject project);
-	public IModuleDependenciesControl[] createPages(IFacetedProject project, J2EEDependenciesPage parent);
+	public IModuleDependenciesControl[] createPages(IFacetedProject project, ModuleAssemblyRootPage parent);
 	public Composite createRootControl(IModuleDependenciesControl[] pages, Composite parent);
 }
