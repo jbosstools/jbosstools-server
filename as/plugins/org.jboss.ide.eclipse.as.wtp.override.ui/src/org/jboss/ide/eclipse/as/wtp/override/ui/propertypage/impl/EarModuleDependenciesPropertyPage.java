@@ -188,9 +188,9 @@ public class EarModuleDependenciesPropertyPage extends
 		return new RemoveComponentFromEnterpriseApplicationDataModelProvider();
 	}
 
-	protected void postAddProjects(Set moduleProjects) throws CoreException {
-		EarFacetRuntimeHandler.updateModuleProjectRuntime(rootComponent.getProject(), moduleProjects, new NullProgressMonitor());
-	}
+//	protected void postAddProjects(Set moduleProjects) throws CoreException {
+//		EarFacetRuntimeHandler.updateModuleProjectRuntime(rootComponent.getProject(), moduleProjects, new NullProgressMonitor());
+//	}
 
 	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
 		return new AddComponentToEnterpriseApplicationDataModelProvider();

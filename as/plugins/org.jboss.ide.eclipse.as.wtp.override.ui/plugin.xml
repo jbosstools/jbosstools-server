@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="moduleDependencyPropertyPage" name="org.jboss.ide.eclipse.as.wtp.override.moduleDependencyPropertyPage" schema="schema/moduleDependencyPropertyPage.exsd"/>
+   <extension-point id="referenceWizardFragment" name="referenceWizardFragment" schema="schema/referenceWizardFragment.exsd"/>
     <extension point="org.eclipse.ui.propertyPages">
  
      
@@ -27,5 +28,28 @@
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDependencyPageProvider"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.earDependencyPage">
        </dependencyPage>
+    </extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.override.ui.referenceWizardFragment">
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ProjectReferenceWizardFragment"
+             id="org.jboss.ide.eclipse.as.wtp.override.ui.newProjectReference"
+             name="Project">
+       </referenceFragment>
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.JarReferenceWizardFragment"
+             id="org.jboss.ide.eclipse.as.wtp.override.ui.jarReference"
+             name="Jar">
+       </referenceFragment>
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ExternalJarReferenceWizardFragment"
+             id="org.jboss.ide.eclipse.as.wtp.override.ui.externalJarReference"
+             name="External Jar">
+       </referenceFragment>
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.VariableReferenceWizardFragment"
+             id="org.jboss.ide.eclipse.as.wtp.override.ui.variableReference"
+             name="Variable">
+       </referenceFragment>
     </extension>
 </plugin>

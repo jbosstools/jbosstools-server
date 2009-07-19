@@ -11,7 +11,6 @@
  *******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
-import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
@@ -39,13 +38,13 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	
 	final static String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	
-	private HashMap<Object, String> runtimePaths;
+	private HashMap<IVirtualComponent, String> runtimePaths;
 	
 	public ComponentDependencyContentProvider() {
 		super();
 	}
 
-	public void setRuntimePaths(HashMap<Object, String> paths) {
+	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
 		this.runtimePaths = paths;
 	}
 	
