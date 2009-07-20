@@ -8,7 +8,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.override.ui.WTPOveridePlugin;
@@ -76,9 +78,11 @@ public class DependencyPageExtensionManager {
 	}
 	
 	public class ReferenceExtension {
+		private IConfigurationElement element;
 		private String id, name, imageLoc;
 		private Image image;
 		public ReferenceExtension(IConfigurationElement element) {
+			this.element = element;
 			this.id = element.getAttribute("id");
 			this.name = element.getAttribute("name");
 			this.imageLoc = element.getAttribute("icon");
@@ -86,11 +90,18 @@ public class DependencyPageExtensionManager {
 		public String getId() { return this.id;}
 		public String getName() { return this.name; }
 		public Image getImage() { 
-			return null;
+			if( image == null ) {
+				if( imageLoc != null && element.getContributor().getName() != null) {
+					ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(element.getContributor().getName(), imageLoc);
+					image = desc.createImage();
+				}
+			}
+			return image;
 		}
-		public void dispose() {
+		public void disposeImage() {
 			if( image != null ) {
 				image.dispose();
+				image = null;
 			}
 		}
 	}

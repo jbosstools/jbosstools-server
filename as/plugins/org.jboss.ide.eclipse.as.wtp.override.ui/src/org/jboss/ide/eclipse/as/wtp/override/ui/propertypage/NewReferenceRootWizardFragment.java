@@ -97,6 +97,8 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 		if( labelProvider == null ) {
 			labelProvider = new LabelProvider() {
 				public Image getImage(Object element) {
+					if( element instanceof ReferenceExtension)
+						return ((ReferenceExtension)element).getImage();
 					return null;
 				}
 				public String getText(Object element) {
@@ -104,6 +106,14 @@ public class NewReferenceRootWizardFragment extends WizardFragment {
 						return ((ReferenceExtension)element).getName();
 					return element == null ? "" : element.toString();//$NON-NLS-1$
 				}
+			   public void dispose() {
+			    	super.dispose();
+			    	if( extensions != null ) {
+			    		for( int i = 0; i < extensions.length; i++) {
+			    			extensions[i].disposeImage();
+			    		}
+			    	}
+			    }
 			};
 		}
 		return labelProvider;

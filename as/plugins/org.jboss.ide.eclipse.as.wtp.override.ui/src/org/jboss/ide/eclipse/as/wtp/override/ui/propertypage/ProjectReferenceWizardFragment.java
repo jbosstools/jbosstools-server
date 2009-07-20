@@ -111,6 +111,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		if( contentProvider == null ) {
 			contentProvider = new ITreeContentProvider() {
 				public Object[] getElements(Object inputElement) {
+					IProject root = (IProject)getTaskModel().getObject(NewReferenceWizard.PROJECT);
 					IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 					ArrayList<IProject> list = new ArrayList<IProject>(Arrays.asList(projects));
 					Iterator<IProject> i = list.iterator();
@@ -118,6 +119,8 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 					while(i.hasNext()) {
 						p = i.next();
 						if( !p.isOpen())
+							i.remove();
+						else if( p.equals(root))
 							i.remove();
 					}
 					return (IProject[]) list.toArray(new IProject[list.size()]);

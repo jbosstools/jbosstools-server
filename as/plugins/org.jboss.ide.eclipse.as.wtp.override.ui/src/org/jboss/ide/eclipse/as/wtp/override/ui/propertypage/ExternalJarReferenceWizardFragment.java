@@ -39,62 +39,18 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.override.core.vcf.ComponentUtils;
 
-public class JarReferenceWizardFragment extends WizardFragment {
-	protected LabelProvider labelProvider = null;
-	protected ITreeContentProvider contentProvider = null;
-	protected TreeViewer viewer;
-	protected Button browse;
-	protected IPath[] paths;
-	protected IWizardHandle handle;
-	protected IPath[] selected = new IPath[]{};
-	public boolean hasComposite() {
-		return true;
-	}
-
+public class ExternalJarReferenceWizardFragment extends JarReferenceWizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
-		this.handle = handle;
-		handle.setTitle("Add a Jar Reference");
-		handle.setDescription("Here you can reference a workspace Jar\n"
+		Composite c = super.createComposite(parent, handle);
+		handle.setTitle("Add an External Jar Reference");
+		handle.setDescription("Here you can reference a filesystem Jar\n"
 						+ "This is not a suggested use-case, but is here for backwards compatability.");
-
-		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayout(new FormLayout());
-		viewer = new TreeViewer(c, SWT.SINGLE | SWT.BORDER);
-		viewer.setContentProvider(getContentProvider());
-		viewer.setLabelProvider(getLabelProvider());
-		viewer.setInput(ResourcesPlugin.getWorkspace());
-
-		browse = new Button(c, SWT.NONE);
-		browse.setText("Browse...");
-		FormData fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		fd.bottom = new FormAttachment(100, -5);
-		browse.setLayoutData(fd);
-
-		fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		fd.top = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(100, -5);
-		fd.bottom = new FormAttachment(browse, -5);
-		viewer.getTree().setLayoutData(fd);
-
-		browse.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				buttonPressed();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);
-			}
-		});
 		return c;
 	}
 
 	protected void buttonPressed() {
-		IProject project = (IProject)getTaskModel().getObject(NewReferenceWizard.PROJECT);
-		selected = BuildPathDialogAccess.chooseJAREntries(
-				browse.getShell(), 
-				project.getLocation(), new IPath[0]);
+		selected = BuildPathDialogAccess
+			.chooseExternalJAREntries(browse.getShell());
 		viewer.refresh();
 	}
 
@@ -109,7 +65,7 @@ public class JarReferenceWizardFragment extends WizardFragment {
 						+ IPath.SEPARATOR;
 				IVirtualComponent archive = ComponentCore
 						.createArchiveComponent(rootComponent.getProject(),
-								type + selected[i].makeRelative().toString());
+								type + selected[i].toString());
 				compList.add(archive);
 				paths.add(selected[i].lastSegment());
 			}
@@ -118,44 +74,5 @@ public class JarReferenceWizardFragment extends WizardFragment {
 			getTaskModel().putObject(NewReferenceWizard.COMPONENT, components);
 			getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, paths2);
 		}
-	}
-
-	protected LabelProvider getLabelProvider() {
-		if (labelProvider == null) {
-			labelProvider = new LabelProvider() {
-				public Image getImage(Object element) {
-					return null;
-				}
-
-				public String getText(Object element) {
-					return element == null ? "" : element.toString();//$NON-NLS-1$
-				}
-			};
-		}
-		return labelProvider;
-	}
-
-	protected ITreeContentProvider getContentProvider() {
-		if (contentProvider == null) {
-			contentProvider = new ITreeContentProvider() {
-				public Object[] getElements(Object inputElement) {
-					return selected == null ? new Object[]{} : selected;
-				}
-				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				}
-				public void dispose() {
-				}
-				public boolean hasChildren(Object element) {
-					return false;
-				}
-				public Object getParent(Object element) {
-					return null;
-				}
-				public Object[] getChildren(Object parentElement) {
-					return null;
-				}
-			};
-		}
-		return contentProvider;
 	}
 }

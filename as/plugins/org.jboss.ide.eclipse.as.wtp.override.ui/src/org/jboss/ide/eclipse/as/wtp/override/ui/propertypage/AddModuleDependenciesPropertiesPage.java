@@ -179,7 +179,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void createPushButtons() {
 		// TODO add the resource button
 		referenceButton = createPushButton("Add Reference...");
-		removeButton = createPushButton("Remove selected...");
+		removeButton = createPushButton("Remove selected");
 	}
 
 	protected Button createPushButton(String label) {

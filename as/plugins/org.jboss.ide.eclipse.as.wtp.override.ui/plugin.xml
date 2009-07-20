@@ -33,21 +33,25 @@
           point="org.jboss.ide.eclipse.as.wtp.override.ui.referenceWizardFragment">
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ProjectReferenceWizardFragment"
+             icon="icons/prj_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.newProjectReference"
              name="Project">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.JarReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.jarReference"
              name="Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ExternalJarReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.externalJarReference"
              name="External Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.VariableReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.variableReference"
              name="Variable">
        </referenceFragment>
