@@ -93,7 +93,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected Text componentNameText;
 	protected Label availableModules;
 	protected TableViewer availableComponentsViewer;
-	protected Button referenceButton, removeButton;
+	protected Button addMappingButton, addReferenceButton, removeButton;
 	protected Composite buttonColumn;
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 	protected Listener tableListener;
@@ -104,6 +104,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	// This should keep a list of all elements currently in the list (not removed)
 	protected HashMap<IVirtualComponent, String> objectToRuntimePath = new HashMap<IVirtualComponent, String>();
 
+	protected HashMap<Object, Object> oldResourceMappings = new HashMap<Object, Object>();
+	protected HashMap<Object, Object> newResourceMappings = new HashMap<Object, Object>();
+	
 	/**
 	 * Constructor for AddModulestoEARPropertiesControl.
 	 */
@@ -177,8 +180,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createPushButtons() {
-		// TODO add the resource button
-		referenceButton = createPushButton("Add Reference...");
+		addMappingButton = createPushButton("Add Resource Mapping...");
+		addReferenceButton = createPushButton("Add Reference...");
 		removeButton = createPushButton("Remove selected");
 	}
 
@@ -395,117 +398,25 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public void handleEvent(Event event) {
-		if( event.widget == referenceButton) 
+		if( event.widget == addMappingButton) 
+			handleAddMappingButton();
+		else if( event.widget == addReferenceButton) 
 			handleAddReferenceButton();
 		else if( event.widget == removeButton ) 
 			handleRemoveSelectedButton();
 	}
 
-//	/**
-//	 * [Bug 238264] Add an archive as a potential new reference for
-//	 * this.earComponent NOTE1: the given archive will not be added as a
-//	 * potential reference if there is already a reference to it NOTE2: the
-//	 * given archive will only be added as an actual reference when
-//	 * this.performOk is invoked
-//	 * 
-//	 * @param archive
-//	 *            the archive to add as a potential new reference in
-//	 *            this.earComponent
-//	 * 
-//	 */
-//	private void addPotentialNewReference(IVirtualComponent archive) {
-//		// check to see if a reference to the given archive already exists
-//		IVirtualReference[] existingRefs = rootComponent.getReferences();
-//		IVirtualComponent referencedComponent;
-//		boolean refAlreadyExists = false;
-//		for (int i = 0; i < existingRefs.length && !refAlreadyExists; i++) {
-//			referencedComponent = existingRefs[i].getReferencedComponent();
-//			refAlreadyExists = referencedComponent.equals(archive);
-//		}
-//
-//		// verify it's not already in the list... ugh
-//		TableItem[] allItems = availableComponentsViewer.getTable().getItems();
-//		for (int i = 0; i < allItems.length; i++) {
-//			if (allItems[i].getData().equals(archive)) {
-//				allItems[i].setChecked(true);
-//				refAlreadyExists = true;
-//			}
-//		}
-//
-//		// only add the archive as a potentialy new reference 
-//		// if it does not already exist
-//		if (!refAlreadyExists) {
-//			String name = new Path(archive.getName()).lastSegment();
-//			if( archive instanceof VirtualArchiveComponent && 
-//					((VirtualArchiveComponent)archive).getArchiveType()
-//						.equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
-//				File f = ((VirtualArchiveComponent)archive).getUnderlyingDiskFile();
-//				if( f != null )
-//					name = new Path(f.getAbsolutePath()).lastSegment();
-//			}
-//			this.objectToRuntimePath.put(archive, new Path("/").append(name).toString()); //$NON-NLS-1$
-//			availableComponentsViewer.add(archive);
-//		} else {
-//			// TODO should inform user that they selected an already referenced
-//			// archive?
-//		}
-//	}
-//
-//	private void handleSelectExternalJarButton() {
-//		IPath[] selected = BuildPathDialogAccess
-//				.chooseExternalJAREntries(propPage.getShell());
-//
-//		if (selected != null) {
-//			for (int i = 0; i < selected.length; i++) {
-//
-//				String type = VirtualArchiveComponent.LIBARCHIVETYPE
-//						+ IPath.SEPARATOR;
-//				IVirtualComponent archive = ComponentCore
-//						.createArchiveComponent(rootComponent.getProject(),
-//								type + selected[i].toString());
-//
-//				this.addPotentialNewReference(archive);
-//			}
-//			refresh();
-//		}
-//
-//	}
-//
-//	private void handleSelectVariableButton() {
-//		IPath existingPath[] = new Path[0];
-//		IPath[] paths = BuildPathDialogAccess.chooseVariableEntries(propPage
-//				.getShell(), existingPath);
-//
-//		if (paths != null) {
-//			refresh();
-//			for (int i = 0; i < paths.length; i++) {
-//				IPath resolvedPath = JavaCore.getResolvedVariablePath(paths[i]);
-//
-//				java.io.File file = new java.io.File(resolvedPath.toOSString());
-//				if (file.isFile() && file.exists()) {
-//					String type = VirtualArchiveComponent.VARARCHIVETYPE
-//							+ IPath.SEPARATOR;
-//
-//					IVirtualComponent archive = ComponentCore
-//							.createArchiveComponent(rootComponent.getProject(),
-//									type + paths[i].toString());
-//
-//					this.addPotentialNewReference(archive);
-//				} else {
-//					// display error
-//				}
-//			}
-//			refresh();
-//		}
-//	}
-
+	protected void handleAddMappingButton() {
+		
+	}
+	
 	protected void handleAddReferenceButton() {
 		NewReferenceWizard wizard = new NewReferenceWizard();
 		// fill the task model
 		wizard.getTaskModel().putObject(NewReferenceWizard.PROJECT, project);
 		wizard.getTaskModel().putObject(NewReferenceWizard.ROOT_COMPONENT, rootComponent);
 		
-		WizardDialog wd = new WizardDialog(referenceButton.getShell(), wizard);
+		WizardDialog wd = new WizardDialog(addReferenceButton.getShell(), wizard);
 		if( wd.open() != Window.CANCEL) {
 			Object c1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT);
 			Object p1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
@@ -560,9 +471,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected boolean isPhysicallyAdded(VirtualArchiveComponent component) {
-		IPath p = null;
 		try {
-			p = component.getProjectRelativePath();
+			component.getProjectRelativePath();
 			return true;
 		} catch (IllegalArgumentException e) {
 			return false;
@@ -629,9 +539,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		Table table = null;
 		if (availableComponentsViewer != null) {
 			table = availableComponentsViewer.getTable();
-			if (table == null)
-				return;
 		}
+		if (table == null)
+			return;
 		table.removeListener(SWT.Dispose, tableListener);
 		table.removeListener(SWT.KeyDown, tableListener);
 		table.removeListener(SWT.MouseMove, tableListener);
