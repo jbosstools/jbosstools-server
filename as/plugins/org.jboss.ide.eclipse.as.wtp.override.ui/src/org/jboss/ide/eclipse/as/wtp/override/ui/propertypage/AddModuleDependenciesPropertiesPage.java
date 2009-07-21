@@ -211,12 +211,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createTable(Composite parent) {
-		availableComponentsViewer = createAvailableComponentsViewer(parent);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-				| GridData.FILL_VERTICAL);
-		availableComponentsViewer.getTable().setLayoutData(gd);
-
 		if (rootComponent != null) {
+			availableComponentsViewer = createAvailableComponentsViewer(parent);
+			GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL
+					| GridData.FILL_VERTICAL);
+			availableComponentsViewer.getTable().setLayoutData(gd);
+
 			ComponentDependencyContentProvider provider = createProvider();
 			provider.setRuntimePaths(objectToRuntimePath);
 			availableComponentsViewer.setContentProvider(provider);
@@ -540,8 +540,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		if (availableComponentsViewer != null) {
 			table = availableComponentsViewer.getTable();
 		}
-		if (table == null)
-			return;
+		if (table == null || tableListener == null)
+			return; 
 		table.removeListener(SWT.Dispose, tableListener);
 		table.removeListener(SWT.KeyDown, tableListener);
 		table.removeListener(SWT.MouseMove, tableListener);

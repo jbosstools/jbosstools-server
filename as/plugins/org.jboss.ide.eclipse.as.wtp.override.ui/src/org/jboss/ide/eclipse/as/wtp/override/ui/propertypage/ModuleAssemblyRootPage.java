@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
@@ -61,6 +62,13 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 		setValid(false);
 		return getErrorComposite(parent, errorCheckingFacet);		
 	}
+	private Composite getVirtCompErrorComposite(final Composite parent) {
+		final String errorCheckingFacet = "The given project is not a virtual component project";
+		setErrorMessage(errorCheckingFacet);
+		setValid(false);
+		return getErrorComposite(parent, errorCheckingFacet);		
+	}
+	
 	
 	private Composite getErrorComposite(final Composite parent, final String error) {
 		final Composite composite = new Composite(parent, SWT.NONE);
@@ -170,6 +178,10 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 					controls = provider.createPages(facetedProject, this);
 					return provider.createRootControl(controls, parent);
 				}
+				
+				if( ComponentCore.createComponent(project) == null )
+					return getVirtCompErrorComposite(parent);
+				
 				AddModuleDependenciesPropertiesPage page = new AddModuleDependenciesPropertiesPage(project, this);
 				controls = new IModuleDependenciesControl[1];
 				controls[0] = page;
