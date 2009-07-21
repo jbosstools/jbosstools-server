@@ -270,6 +270,10 @@
                 types="jst.jboss.esb"
                 versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -302,6 +306,10 @@
           <moduleType
                 types="jst.jboss.esb"
                 versions="4.2,4.3,4.4,4.5,5.0">
+          </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
 
@@ -372,6 +380,10 @@
                 types="jst.jboss.esb"
                 versions="4.2,4.3,4.4,4.5,5.0">
           </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
       </runtimeType>
 
 
@@ -407,6 +419,10 @@
           <moduleType
                 types="jst.jboss.esb"
                 versions="4.2,4.3,4.4,4.5,5.0">
+          </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
    </extension>
