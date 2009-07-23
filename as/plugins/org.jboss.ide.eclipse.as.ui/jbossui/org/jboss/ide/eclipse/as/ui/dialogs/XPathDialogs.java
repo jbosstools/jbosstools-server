@@ -196,6 +196,7 @@ public class XPathDialogs {
 			this.server = server;
 			repository = new XMLDocumentRepository(XMLDocumentRepository.getDefault());
 			if( original != null ) {
+				this.original = original;
 				this.originalName = this.name = original.getName();
 				this.filePattern = original.getFilePattern();
 				this.rootDir = original.getBaseDir();
@@ -209,7 +210,8 @@ public class XPathDialogs {
 
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
-			shell.setText(Messages.XPathNewXpath);
+			String title = original == null ? Messages.XPathNewXpath : Messages.XPathEditXpath;
+			shell.setText(title);
 			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 500);
 		}
 	    protected int getShellStyle() {
@@ -228,7 +230,8 @@ public class XPathDialogs {
 
 
 		protected Control createDialogArea(Composite parent) {
-			setTitle(Messages.XPathNewXpath);
+			String title = original == null ? Messages.XPathNewXpath : Messages.XPathEditXpath;
+			setTitle(title);
 			Composite main = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
 			main.setLayoutData(new GridData(GridData.FILL_BOTH));
 			main.setLayout(new FormLayout());

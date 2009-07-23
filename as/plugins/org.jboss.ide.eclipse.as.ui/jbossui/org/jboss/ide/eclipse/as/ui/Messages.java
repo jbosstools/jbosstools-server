@@ -130,6 +130,7 @@ public class Messages extends NLS {
 	public static String XPathCategoryName;
 	public static String XPathChangeValueAction_ActionText;
 	public static String XPathNewXpath;
+	public static String XPathEditXpath;
 	public static String XPathNameEmpty;
 	public static String XPathNameInUse;
 	public static String XPathColumnLocation;
