@@ -147,10 +147,7 @@ public class ChangePortDialog extends TitleAreaDialog {
 			XPathCategory category = currentQuery.getCategory();
 
 			XPathDialog d = new XPathDialog(Display.getCurrent().getActiveShell(),
-					info.server, category.getName(), currentQuery.getName());
-			d.setAttribute(currentQuery.getAttribute());
-			d.setXpath(currentQuery.getXpathPattern());
-
+					info.server, currentQuery);
 			if( d.open() == Window.OK ) {
 				currentQuery.setAttribute(d.getAttribute());
 				currentQuery.setXpathPattern(d.getXpath());

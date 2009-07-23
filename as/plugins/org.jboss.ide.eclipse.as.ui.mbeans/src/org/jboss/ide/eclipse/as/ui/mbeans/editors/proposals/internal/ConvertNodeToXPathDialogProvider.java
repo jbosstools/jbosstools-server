@@ -26,13 +26,14 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.ui.internal.contentassist.ContentAssistRequest;
 import org.eclipse.wst.xml.ui.internal.contentassist.XMLContentAssistProcessor;
-import org.jboss.ide.eclipse.as.ui.dialogs.ConvertNodeToXPathDialog.OpenXPathDialogProposal;
 import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLQuickFixProposalProvider;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
  *
+ * The functionality for this is being removed for now
+ * until a cleaner solution can be come up with
  * @author rob.stryker@jboss.com
  */
 public class ConvertNodeToXPathDialogProvider extends XMLContentAssistProcessor
@@ -42,12 +43,12 @@ public class ConvertNodeToXPathDialogProvider extends XMLContentAssistProcessor
 		return computeCompletionProposals(viewer, offset);
 	}
 	
-	protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest) {
-		Node n = contentAssistRequest.getNode();
-		String name = n.getNodeName();
-		String attName = ((AttrImpl)n.getAttributes().getNamedItem(contentAssistRequest.getText())).getName();
-		contentAssistRequest.addProposal(createProposal(n, attName));
-	}
+//	protected void addAttributeNameProposals(ContentAssistRequest contentAssistRequest) {
+//		Node n = contentAssistRequest.getNode();
+//		String name = n.getNodeName();
+//		String attName = ((AttrImpl)n.getAttributes().getNamedItem(contentAssistRequest.getText())).getName();
+//		contentAssistRequest.addProposal(createProposal(n, attName));
+//	}
 	
 	protected void addAttributeValueProposals(ContentAssistRequest contentAssistRequest) {
 		String elementName = contentAssistRequest.getNode().getNodeName();
@@ -72,20 +73,20 @@ public class ConvertNodeToXPathDialogProvider extends XMLContentAssistProcessor
 			}
 		}
 		if( found ) {
-			contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), attribute.getName()));
+			//contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), attribute.getName()));
 		}
 	}
 	
 	protected void addEmptyDocumentProposals(ContentAssistRequest contentAssistRequest) {
 	}
 	
-	protected void addTagInsertionProposals(ContentAssistRequest contentAssistRequest, int childPosition) {
-		contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), null));
-	}
+//	protected void addTagInsertionProposals(ContentAssistRequest contentAssistRequest, int childPosition) {
+//		contentAssistRequest.addProposal(createProposal(contentAssistRequest.getNode(), null));
+//	}
 	
 	
-	protected ICompletionProposal createProposal(Node node, String attributeName) {
-		return new OpenXPathDialogProposal(node, attributeName);
-	}
+//	protected ICompletionProposal createProposal(Node node, String attributeName) {
+//		return new OpenXPathDialogProposal(node, attributeName);
+//	}
 
 }

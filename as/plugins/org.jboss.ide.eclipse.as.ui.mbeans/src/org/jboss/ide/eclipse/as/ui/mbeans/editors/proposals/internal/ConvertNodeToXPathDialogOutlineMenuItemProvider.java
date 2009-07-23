@@ -26,13 +26,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
-import org.jboss.ide.eclipse.as.ui.dialogs.ConvertNodeToXPathDialog.ConvertNodeRunnable;
 import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals.IServiceXMLOutlineActionProvider;
 import org.w3c.dom.Node;
 
 /**
- *
+ * This class is also non-functional 
+ * pending a better solution
  * @author rob.stryker@jboss.com
  */
 public class ConvertNodeToXPathDialogOutlineMenuItemProvider implements
@@ -54,12 +54,12 @@ public class ConvertNodeToXPathDialogOutlineMenuItemProvider implements
 			final String attName2 = attName;
 			Action temp = new Action() { 
 				public void run() {
-					new ConvertNodeRunnable(n2, attName2).run();
+					//new ConvertNodeRunnable(n2, attName2).run();
 				}
 			};
 			temp.setText(Messages.ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsAction);
 			temp.setDescription(Messages.ConvertNodeToXPathDialogOutlineMenuItemProvider_AddToXPathsDescription);
-			manager.add(temp);
+			//manager.add(temp);
 		}
 	}
 

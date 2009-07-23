@@ -137,6 +137,8 @@ public class Messages extends NLS {
 
 	public static String XPathName;
 	public static String XPathPattern;
+	public static String XPathFilePattern;
+	public static String XPathRootDir;
 	public static String XPathActionProvider_EditFileAction;
 	public static String XPathActionProvider_ErrorRunningAction;
 	public static String XPathActionProvider_NewCategoryAction;

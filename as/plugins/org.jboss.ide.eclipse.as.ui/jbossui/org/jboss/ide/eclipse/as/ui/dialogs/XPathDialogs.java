@@ -27,11 +27,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
@@ -54,19 +58,17 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XMLDocumentRepository;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
@@ -74,7 +76,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 
@@ -162,20 +164,21 @@ public class XPathDialogs {
 		}
 	}
 
-	public static class XPathDialog extends Dialog {
+	public static class XPathDialog extends TitleAreaDialog {
 
-		protected Label errorImage, errorLabel, descriptionLabel;
-		protected Text nameText, xpathText, attributeText;
-		protected Combo categoryCombo, serverCombo;
-		protected Label nameLabel, serverLabel, categoryLabel, xpathLabel, attributeLabel;
-		protected Button previewButton;
+		protected Text nameText, baseDirText, filesetText, 
+						xpathText, attributeText;
+		protected Label nameLabel, baseDirLabel, filesetLabel, 
+		 			xpathLabel, attributeLabel;
+		protected Button previewButton, rootDirBrowse;
 
 		protected XPathProposalProvider proposalProvider;
 
 		protected IServer server;
-		protected String name, xpath, attribute, category;
+		protected String name, rootDir, filePattern, xpath, attribute;
 		protected String originalName = null;
 		protected XPathQuery original = null;
+		protected XPathCategory category;
 		protected int previewId = 48879;
 
 		protected Tree previewTree;
@@ -184,29 +187,30 @@ public class XPathDialogs {
 		protected Composite main;
 		protected XMLDocumentRepository repository;
 
-		public XPathDialog(Shell parentShell) {
-			this(parentShell, null);
-		}
 		public XPathDialog(Shell parentShell, IServer server) {
 			this(parentShell, server, null);
 		}
-		public XPathDialog(Shell parentShell, IServer server, String categoryName) {
-			this(parentShell, server, categoryName, null);
-		}
-
-		public XPathDialog(Shell parentShell, IServer server, String categoryName, String originalName) {
+		public XPathDialog(Shell parentShell, IServer server, XPathQuery original) {
 			super(parentShell);
 			setShellStyle(getShellStyle() | SWT.RESIZE);
-			this.category = categoryName;
 			this.server = server;
-			this.originalName = this.name = originalName;
 			repository = new XMLDocumentRepository(XMLDocumentRepository.getDefault());
+			if( original != null ) {
+				this.originalName = this.name = original.getName();
+				this.filePattern = original.getFilePattern();
+				this.rootDir = original.getBaseDir();
+				this.category = original.getCategory();
+				this.xpath = original.getXpathPattern();
+			} 
+			if( this.xpath == null ) this.xpath = "//server/mbean"; //$NON-NLS-1$
+			if( this.filePattern == null ) this.filePattern = "**/*.xml"; //$NON-NLS-1$
+			if( this.rootDir == null ) this.rootDir = ""; //$NON-NLS-1$
 		}
 
 		protected void configureShell(Shell shell) {
 			super.configureShell(shell);
 			shell.setText(Messages.XPathNewXpath);
-			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 400);
+			shell.setBounds(shell.getLocation().x, shell.getLocation().y, 550, 500);
 		}
 	    protected int getShellStyle() {
 	        int ret = super.getShellStyle();
@@ -224,14 +228,17 @@ public class XPathDialogs {
 
 
 		protected Control createDialogArea(Composite parent) {
-			main = (Composite)super.createDialogArea(parent);
+			setTitle(Messages.XPathNewXpath);
+			Composite main = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+			main.setLayoutData(new GridData(GridData.FILL_BOTH));
 			main.setLayout(new FormLayout());
 			layoutWidgets(main);
-			fillCombos();
 			if( name != null ) nameText.setText(name);
 			if( attribute != null ) attributeText.setText(attribute);
 			if( xpath != null ) xpathText.setText(xpath);
-
+			if( filePattern != null ) filesetText.setText(filePattern);
+			if( rootDir != null ) baseDirText.setText(rootDir);
+			
 			proposalProvider = new XPathProposalProvider(repository);
 			if( server != null )
 				proposalProvider.setPath(getConfigFolder(server));
@@ -251,21 +258,6 @@ public class XPathDialogs {
 			return main;
 		}
 
-		protected void fillCombos() {
-			if( serverCombo != null ) {
-				IServer servers[] = ServerConverter.getJBossServersAsIServers();
-				String[] names = new String[servers.length];
-				for( int i = 0; i < servers.length; i++ ) {
-					names[i] = servers[i].getName();
-				}
-				serverCombo.setItems(names);
-			}
-
-			if( categoryCombo != null ) {
-				refreshCategoryCombo();
-			}
-		}
-
 		protected void addListeners() {
 			nameText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
@@ -283,7 +275,23 @@ public class XPathDialogs {
 					xpath = xpathText.getText();
 				}
 			});
-
+			baseDirText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					rootDir = baseDirText.getText();
+				}
+			});
+			filesetText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					filePattern = filesetText.getText();
+				}
+			});
+			rootDirBrowse.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					browsePressed();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
 			previewButton.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
@@ -291,42 +299,6 @@ public class XPathDialogs {
 					previewPressed();
 				}
 			});
-
-
-			if( serverCombo != null ) {
-				serverCombo.addSelectionListener(new SelectionListener() {
-					public void widgetDefaultSelected(SelectionEvent e) {
-					}
-					public void widgetSelected(SelectionEvent e) {
-						int index = serverCombo.getSelectionIndex();
-						String val = serverCombo.getItem(index);
-						IServer[] list = ServerCore.getServers();
-						for( int i = 0; i < list.length; i++ ) {
-							if( list[i].getName().equals(val)) {
-								setServer(list[i]);
-								return;
-							}
-						}
-					}
-				});
-			}
-
-			if( categoryCombo != null ) {
-				categoryCombo.addModifyListener(new ModifyListener() {
-					public void modifyText(ModifyEvent e) {
-						category = categoryCombo.getText();
-						checkErrors();
-					}
-				});
-				categoryCombo.addSelectionListener(new SelectionListener() {
-					public void widgetDefaultSelected(SelectionEvent e) {
-					}
-					public void widgetSelected(SelectionEvent e) {
-						category = categoryCombo.getText();
-						checkErrors();
-					}
-				});
-			}
 		}
 
 
@@ -346,7 +318,6 @@ public class XPathDialogs {
 			ArrayList<String> list = new ArrayList<String>();
 			String serverError = getServerError(); if( serverError != null ) list.add(serverError);
 			String nameError = getNameError(); if( nameError != null ) list.add(nameError);
-			String categoryError = getCategoryError(); if( categoryError != null ) list.add(categoryError);
 			return list;
 		}
 
@@ -355,42 +326,21 @@ public class XPathDialogs {
 			return null;
 		}
 
-		protected String getCategoryError() {
-			if( "".equals(category)) { //$NON-NLS-1$
-				return Messages.XPathDialogs_BlankCategoryError;
-			}
-			return null;
-		}
-
 		protected void setError(String message) {
-			if( message == null ) {
-				errorImage.setVisible(false);
-				errorLabel.setVisible(false);
-				errorLabel.setText(""); //$NON-NLS-1$
-			} else {
-				errorImage.setVisible(true);
-				errorLabel.setVisible(true);
-				errorLabel.setText(message);
-			}
+			if( message == null ) 
+				setMessage(Messages.XPathDialogs_XPathDescriptionLabel);
+			else
+				setMessage(message, IMessageProvider.ERROR);
 		}
 
 		protected String getNameError() {
 			if( nameText.getText().equals("")) { //$NON-NLS-1$
 				return Messages.XPathNameEmpty;
 			}
-			if( server == null ) return null;
-			XPathCategory[] categories = XPathModel.getDefault().getCategories(server);
-			XPathCategory category = null;
-			for( int i = 0; i < categories.length; i++ ) {
-				if( categories[i].getName().equals(this.category))
-					category = categories[i];
-			}
 			if( category != null ) {
 				XPathQuery[] queries = category.getQueries();
-				boolean found = false;
 				for( int i = 0; i < queries.length; i++ ) {
 					if(nameText.getText().equals( ((XPathQuery)queries[i]).getName())) {
-
 						if( originalName == null || !nameText.getText().equals(originalName))
 							return Messages.XPathNameInUse;
 					}
@@ -399,25 +349,26 @@ public class XPathDialogs {
 			return null;
 		}
 
-
-		protected void setServer(IServer s) {
-			server = s;
-			proposalProvider.setPath(getConfigFolder(s));
-			refreshCategoryCombo();
-			checkErrors();
-		}
-
-		protected void refreshCategoryCombo() {
-			if( server != null ) {
-				XPathCategory[] categories = XPathModel.getDefault().getCategories(server);
-				String[] categoryNames = new String[categories.length];
-				for( int i = 0; i < categories.length; i++ ) {
-					categoryNames[i] = (String)categories[i].getName();
+		protected void browsePressed() {
+			DirectoryDialog d = new DirectoryDialog(rootDirBrowse.getShell());
+			String folder = rootDir;
+			if( !new Path(rootDir).isAbsolute())
+				folder = server.getRuntime().getLocation().append(rootDir).toString();
+			d.setFilterPath(folder);
+			String result = d.open();
+			if( result != null ) {
+				IPath result2 = new Path(result);
+				IRuntime rt = server.getRuntime();
+				if( result2.isAbsolute() && rt != null) {
+					if(rt.getLocation().isPrefixOf(result2)) {
+						int size = rt.getLocation().toOSString().length();
+						result2 = new Path(result2.toOSString().substring(size)).makeRelative();
+					}
 				}
-				categoryCombo.setItems(categoryNames);
+				rootDir = result2.toString();
+				baseDirText.setText(rootDir);
 			}
 		}
-
 		protected void previewPressed() {
 			if( server == null ) {
 				checkErrors();
@@ -426,9 +377,15 @@ public class XPathDialogs {
 
 			final String xpText = xpathText.getText();
 			final String attText = attributeText.getText();
+			final String filePattern = filesetText.getText();
+			String directory = baseDirText.getText();
+			if( !new Path(directory).isAbsolute()) {
+				directory = server.getRuntime().getLocation().append(directory).toString();
+			}
+			final String directory2 = directory;
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-					XPathQuery tmp = new XPathQuery("", getConfigFolder(server), null, xpText, attText); //$NON-NLS-1$
+					XPathQuery tmp = new XPathQuery("", directory2, filePattern, xpText, attText); //$NON-NLS-1$
 					tmp.setRepository(repository);
 					final ArrayList<XPathFileResult> list = new ArrayList<XPathFileResult>();
 					list.addAll(Arrays.asList(tmp.getResults()));
@@ -436,9 +393,7 @@ public class XPathDialogs {
 						public void run() {
 							previewTreeViewer.setInput(list);
 							if( list.size() == 0 ) {
-								errorImage.setVisible(true);
-								errorLabel.setText(Messages.XPathDialogs_NoElementsMatched);
-								errorLabel.setVisible(true);
+								setError(Messages.XPathDialogs_NoElementsMatched);
 								previewTreeViewer.getTree().setEnabled(false);
 							} else {
 								previewTreeViewer.getTree().setEnabled(true);
@@ -456,15 +411,6 @@ public class XPathDialogs {
 			}
 		}
 		protected void layoutWidgets(Composite c) {
-			// create widgets
-			descriptionLabel = new Label(c, SWT.WRAP);
-			descriptionLabel.setText(Messages.XPathDialogs_XPathDescriptionLabel);
-			descriptionLabel.setVisible(true);
-			errorLabel = new Label(c, SWT.NONE);
-			errorImage = new Label(c, SWT.NONE);
-			errorImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK));
-
-
 			Composite middleComposite = createMiddleComposite(c);
 
 
@@ -484,35 +430,12 @@ public class XPathDialogs {
 			previewTreeViewer = new TreeViewer(previewTree);
 
 			c.layout();
-			int pixel = Math.max(Math.max(nameLabel.getSize().x, xpathLabel.getSize().x), attributeLabel.getSize().x);
-			pixel += 5;
-
-			// Lay them out
-			FormData descriptionData = new FormData();
-			descriptionData.left = new FormAttachment(0, 5);
-			descriptionData.right = new FormAttachment(100, -5);
-			descriptionData.top = new FormAttachment(0,5);
-			descriptionLabel.setLayoutData(descriptionData);
-
-			FormData errorData = new FormData();
-			errorData.left = new FormAttachment(errorImage,5);
-			errorData.top = new FormAttachment(descriptionLabel,5);
-			errorData.right = new FormAttachment(0,300);
-			errorLabel.setLayoutData(errorData);
-			errorLabel.setVisible(false);
-
-			FormData errorImageData = new FormData();
-			errorImageData.left = new FormAttachment(0,5);
-			errorImageData.top = new FormAttachment(descriptionLabel,5);
-			errorImage.setLayoutData(errorImageData);
-			errorImage.setVisible(false);
-
 
 
 			FormData middleCompositeData = new FormData();
 			middleCompositeData.left = new FormAttachment(0,5);
 			middleCompositeData.right = new FormAttachment(100, -5);
-			middleCompositeData.top = new FormAttachment(errorLabel, 5);
+			middleCompositeData.top = new FormAttachment(0, 5);
 			middleComposite.setLayoutData(middleCompositeData);
 
 			// Tree layout data
@@ -577,21 +500,28 @@ public class XPathDialogs {
 			gridComposite.setLayout(new GridLayout(2, false));
 
 			nameLabel = new Label(gridComposite, SWT.NONE);
-			nameText= new Text(gridComposite, SWT.BORDER);
+			nameText = new Text(gridComposite, SWT.BORDER);
 			nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
 
-			if( server == null ) {
-				serverLabel = new Label(gridComposite, SWT.NONE);
-				serverCombo = new Combo(gridComposite, SWT.BORDER | SWT.READ_ONLY);
-				serverCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-			}
-
-			if( category == null ) {
-				categoryLabel = new Label(gridComposite, SWT.NONE);
-				categoryCombo = new Combo(gridComposite, SWT.BORDER);
-				categoryCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
-			}
-
+			baseDirLabel = new Label(gridComposite, SWT.NONE);
+			Composite baseDirTextAndButton = new Composite(gridComposite, SWT.NONE);
+			baseDirTextAndButton.setLayout(new FormLayout());
+			baseDirTextAndButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+			baseDirText = new Text(baseDirTextAndButton, SWT.BORDER);
+			rootDirBrowse = new Button(baseDirTextAndButton, SWT.PUSH);
+			rootDirBrowse.setText(Messages.browse);
+			FormData d = new FormData();
+			d.right = new FormAttachment(100,-5);
+			rootDirBrowse.setLayoutData(d);
+			d = new FormData();
+			d.left = new FormAttachment(0,0);
+			d.right = new FormAttachment(rootDirBrowse, -5);
+			baseDirText.setLayoutData(d);
+			
+			filesetLabel = new Label(gridComposite, SWT.NONE);
+			filesetText = new Text(gridComposite, SWT.BORDER);
+			filesetText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+			
 			xpathLabel = new Label(gridComposite, SWT.NONE);
 			xpathText = new Text(gridComposite, SWT.BORDER);
 			xpathText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
@@ -602,10 +532,10 @@ public class XPathDialogs {
 
 			// set some text
 			nameLabel.setText(Messages.XPathName);
-			if( serverLabel != null ) serverLabel.setText(Messages.XPathDialogs_ServerLabel);
-			if( categoryLabel != null ) categoryLabel.setText(Messages.XPathDialogs_CategoryLabel);
 			xpathLabel.setText(Messages.XPathPattern);
 			attributeLabel.setText(Messages.XPathAttribute);
+			filesetLabel.setText(Messages.XPathFilePattern);
+			baseDirLabel.setText(Messages.XPathRootDir);
 			return gridComposite;
 		}
 
@@ -620,30 +550,11 @@ public class XPathDialogs {
 		public String getXpath() {
 			return xpath;
 		}
-
-		public String getCategory() {
-			return category;
+		public String getBaseDir() {
+			return rootDir;
 		}
-		public IServer getServer() {
-			return server;
-		}
-
-		public void setAttribute(String attribute) {
-			this.attribute = attribute;
-			if( attributeText != null && !attributeText.isDisposed())
-				attributeText.setText(this.attribute);
-		}
-
-		public void setName(String name) {
-			this.name = name;
-			if( nameText != null && !nameText.isDisposed())
-				nameText.setText(this.name);
-		}
-
-		public void setXpath(String xpath) {
-			this.xpath = xpath;
-			if( xpathText != null && !xpathText.isDisposed())
-				xpathText.setText(this.xpath);
+		public String getFilePattern() {
+			return filePattern;
 		}
 	}
 

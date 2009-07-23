@@ -108,7 +108,7 @@ public class XPathActionProvider extends CommonActionProvider {
 				if (category != null) {
 					String categoryName = category.getName();
 					XPathDialog d = new XPathDialog(Display.getCurrent()
-							.getActiveShell(), getServer(), categoryName);
+							.getActiveShell(), getServer(), null);
 					if (d.open() == Window.OK) {
 						XPathCategory[] categoryList = XPathModel.getDefault()
 								.getCategories(getServer());
@@ -140,15 +140,14 @@ public class XPathActionProvider extends CommonActionProvider {
 					XPathCategory category = original.getCategory();
 
 					XPathDialog d = new XPathDialog(Display.getCurrent()
-							.getActiveShell(), getServer(), category.getName(),
-							original.getName());
-					d.setAttribute(original.getAttribute());
-					d.setXpath(original.getXpathPattern());
+							.getActiveShell(), getServer(), original);
 
 					if (d.open() == Window.OK) {
 						original.setAttribute(d.getAttribute());
 						original.setXpathPattern(d.getXpath());
 						original.setName(d.getName());
+						original.setBaseDir(d.getBaseDir());
+						original.setFilePattern(d.getFilePattern());
 						category.save();
 						refreshViewer();
 					}

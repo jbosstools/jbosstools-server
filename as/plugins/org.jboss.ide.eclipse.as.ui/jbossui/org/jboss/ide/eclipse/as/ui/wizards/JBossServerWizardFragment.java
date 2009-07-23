@@ -67,6 +67,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private Label homeValLabel, jreValLabel, configValLabel, configLocValLabel;
 	
 	private Group runtimeGroup;
+	
+	public JBossServerWizardFragment() {
+		super();
+	}
+	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
 		
