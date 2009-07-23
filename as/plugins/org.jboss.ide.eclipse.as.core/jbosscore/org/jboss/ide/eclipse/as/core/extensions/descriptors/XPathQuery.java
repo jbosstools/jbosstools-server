@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
@@ -38,6 +39,7 @@ public class XPathQuery implements Serializable {
 	 */
 	protected String name;
 	protected String baseDir;
+	protected volatile String effectiveBaseDir;
 	protected String filePattern;
 	protected String xpathPattern;
 	protected String attribute;
@@ -60,6 +62,7 @@ public class XPathQuery implements Serializable {
 		this.filePattern = memento.getString("filePattern"); //$NON-NLS-1$
 		this.xpathPattern = memento.getString("xpathPattern"); //$NON-NLS-1$
 		this.attribute = memento.getString("attribute"); //$NON-NLS-1$
+		setEffectiveBaseDir();
 	}
 	
 	public XPathQuery(String name, List list) {
@@ -68,6 +71,7 @@ public class XPathQuery implements Serializable {
 		this.filePattern = list.get(1).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(1);
 		this.xpathPattern = list.get(2).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(2);
 		this.attribute = list.size() < 3 || list.get(3).equals(XPathModel.EMPTY_STRING) ? null : (String)list.get(3);			
+		setEffectiveBaseDir();
 	}
 	
 	public XPathQuery(String name, String baseDir, String filePattern, String xpathPattern, String attribute) {
@@ -77,21 +81,43 @@ public class XPathQuery implements Serializable {
 		this.xpathPattern = xpathPattern;
 		this.attribute = attribute;
 		this.results = null;
+		setEffectiveBaseDir();
 	}
+	
+	private void setEffectiveBaseDir() {
+		IPath dir = baseDir == null ? null : new Path(baseDir);
+		if( dir == null && category != null) {
+			dir = getCategory().getServer().getRuntime().getLocation();
+		}
+		if( dir != null && !dir.isAbsolute() && category != null)
+			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
+		effectiveBaseDir = dir == null ? null : dir.toString();
+	}
+	
 	protected AntFileFilter getFilter() {
-		if( filter == null ) 
-			filter = new AntFileFilter(baseDir, filePattern);
+		if( filter == null ) {
+			filter = new AntFileFilter(effectiveBaseDir, filePattern);
+		}
 		return filter;
 	}
 	public void refresh() {
 		String[] files = getFilter().getIncludedFiles();
 		boolean changed = false;
 		for( int i = 0; i < files.length; i++ ) {
-			changed = changed || getRepository().refresh(new Path(baseDir).append(files[i]).toOSString());
+			changed = changed || getRepository().refresh(new Path(effectiveBaseDir).append(files[i]).toOSString());
 		}
 		if( changed ) {
 			results = null;
 		}
+	}
+	
+	/**
+	 * Get any files that match the file pattern but may 
+	 * or may not actually match the xpath
+	 * @return
+	 */
+	public String[] getPossibleFileMatches() {
+		return getFilter().getIncludedFiles();
 	}
 	
 	public XPathFileResult[] getResults() {
@@ -111,7 +137,7 @@ public class XPathQuery implements Serializable {
 			ArrayList<XPathFileResult> resultList = new ArrayList<XPathFileResult>();
 			List<Node> nodeList = null;
 			for( int i = 0; i < files.length; i++ ) {
-				fileLoc = new Path(baseDir).append(files[i]).toOSString();
+				fileLoc = new Path(effectiveBaseDir).append(files[i]).toOSString();
 				Document d = getRepository().getDocument(fileLoc);
 				if( d != null ) {
 					XPath xpath = new Dom4jXPath( xpathPattern );
@@ -178,17 +204,21 @@ public class XPathQuery implements Serializable {
 	}
 	public void setBaseDir(String baseDir) {
 		this.baseDir = baseDir;
+		setEffectiveBaseDir();
 	}
 	public XPathCategory getCategory() {
 		return category;
 	}
 	public void setCategory(XPathCategory category) {
+		boolean hadCategory = this.category != null;
 		this.category = category;
+		if( !hadCategory ) 
+			setEffectiveBaseDir();
 	}
 	public void setRepository(XMLDocumentRepository repo) {
 		this.repository = repo;
 	}
-	protected XMLDocumentRepository getRepository() {
+	public XMLDocumentRepository getRepository() {
 		return repository == null ? XMLDocumentRepository.getDefault() : repository;
 	}
 }
