@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -44,7 +45,6 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jst.j2ee.internal.plugin.J2EEUIMessages;
-import org.eclipse.jst.j2ee.internal.plugin.J2EEUIPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -66,10 +66,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -77,6 +81,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.jboss.ide.eclipse.as.wtp.override.core.vcf.ComponentUtils;
 import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.override.ui.WTPOveridePlugin;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl {
@@ -99,13 +104,18 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected Listener tableListener;
 	protected Listener labelListener;
 
+	// Mappings that existed when the page was opened (or last saved)
 	protected HashMap<IVirtualComponent, String> oldComponentToRuntimePath = new HashMap<IVirtualComponent, String>();
 
-	// This should keep a list of all elements currently in the list (not removed)
+	// Mappings that are current
 	protected HashMap<IVirtualComponent, String> objectToRuntimePath = new HashMap<IVirtualComponent, String>();
 
-	protected HashMap<Object, Object> oldResourceMappings = new HashMap<Object, Object>();
-	protected HashMap<Object, Object> newResourceMappings = new HashMap<Object, Object>();
+	// A single list of wb-resource mappings. If there's any change, 
+	// all old will be removed and new ones added
+	protected ArrayList<ComponentResourceProxy> resourceMappings = new ArrayList<ComponentResourceProxy>();
+	
+	// keeps track if a change has occurred in wb-resource mappings
+	protected boolean resourceMappingsChanged = false;
 	
 	/**
 	 * Constructor for AddModulestoEARPropertiesControl.
@@ -150,7 +160,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		availableModules = new Label(listGroup, SWT.NONE);
 		gData = new GridData(GridData.HORIZONTAL_ALIGN_FILL
 				| GridData.VERTICAL_ALIGN_FILL);
-		availableModules.setText("Available dependent modules"); //$NON-NLS-1$ 
+		availableModules.setText("Module Assembly"); //$NON-NLS-1$ 
 		availableModules.setLayoutData(gData);
 		createTableComposite(listGroup);
 	}
@@ -219,6 +229,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 
 			ComponentDependencyContentProvider provider = createProvider();
 			provider.setRuntimePaths(objectToRuntimePath);
+			provider.setResourceMappings(resourceMappings);
 			availableComponentsViewer.setContentProvider(provider);
 			availableComponentsViewer.setLabelProvider(provider);
 			addTableListeners();
@@ -383,14 +394,26 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		}
 
 		public Object getValue(Object element, String property) {
-			return objectToRuntimePath.get(element) == null ? new Path("/") //$NON-NLS-1$
-					.toString() : objectToRuntimePath.get(element);
+			Object data = element; //((TableItem)element).getData();
+			if( data instanceof IVirtualComponent ) {
+				return objectToRuntimePath.get(element) == null ? new Path("/") //$NON-NLS-1$
+						.toString() : objectToRuntimePath.get(element);
+			} else if( data instanceof ComponentResourceProxy) {
+				return ((ComponentResourceProxy)data).runtimePath.toString();
+			}
+			return new Path("/");
 		}
 
 		public void modify(Object element, String property, Object value) {
 			if (property.equals(DEPLOY_PATH_PROPERTY)) {
 				TableItem item = (TableItem) element;
-				objectToRuntimePath.put((IVirtualComponent)item.getData(), (String) value);
+				if( item.getData() instanceof IVirtualComponent) {
+					objectToRuntimePath.put((IVirtualComponent)item.getData(), (String) value);
+				} else if( item.getData() instanceof ComponentResourceProxy) {
+					ComponentResourceProxy c = ((ComponentResourceProxy)item.getData());
+					c.runtimePath = new Path((String)value);
+					resourceMappingsChanged = true;
+				}
 				refresh();
 			}
 		}
@@ -407,7 +430,16 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void handleAddMappingButton() {
-		
+		AddFolderDialog afd = new AddFolderDialog(addMappingButton.getShell(), project);
+		if( afd.open() == Window.OK) {
+			IContainer c = afd.getSelected();
+			if( c != null ) {
+				IPath p = c.getProjectRelativePath();
+				ComponentResourceProxy proxy = new ComponentResourceProxy(p, new Path("/"));
+				resourceMappings.add(proxy);
+				refresh();
+			}
+		}
 	}
 	
 	protected void handleAddReferenceButton() {
@@ -437,7 +469,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		ISelection sel = availableComponentsViewer.getSelection();
 		if( sel instanceof IStructuredSelection ) {
 			Object o = ((IStructuredSelection)sel).getFirstElement();
-			objectToRuntimePath.remove(o);
+			if( o instanceof IVirtualComponent)
+				objectToRuntimePath.remove(o);
+			else if( o instanceof ComponentResourceProxy) 
+				resourceMappings.remove(o);
 			refresh();
 		}
 	}
@@ -518,9 +553,41 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			objectToRuntimePath.put(comp, val);
 			oldComponentToRuntimePath.put((IVirtualComponent) comp, val);
 		}
+
+		ComponentResource[] allMappings = findAllMappings();
+		for( int i = 0; i < allMappings.length; i++ ) {
+			resourceMappings.add(new ComponentResourceProxy(
+					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
+			));
+		}
 		hasInitialized = true;
 	}
 
+	protected ComponentResource[] findAllMappings() {
+		StructureEdit structureEdit = null;
+		try {
+			structureEdit = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent component = structureEdit.getComponent();
+			Object[] arr = component.getResources().toArray();
+			ComponentResource[] result = new ComponentResource[arr.length];
+			for( int i = 0; i < arr.length; i++ )
+				result[i] = (ComponentResource)arr[i];
+			return result;
+		} catch(Exception e) {
+		} finally {
+			structureEdit.dispose();
+		}
+		return new ComponentResource[]{};
+	}
+	
+	public class ComponentResourceProxy {
+		public IPath source, runtimePath;
+		public ComponentResourceProxy(IPath source, IPath runtimePath) {
+			this.source = source;
+			this.runtimePath = runtimePath;
+		}
+	}
+	
 	/*
 	 * Clean-up methods are below. These include performCancel, performDefaults,
 	 * performOK, and any other methods that are called *only* by this one.
@@ -563,12 +630,46 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	public boolean performOk() {
-		// grab what's checked
-		ArrayList<IVirtualComponent> checked = new ArrayList<IVirtualComponent>();
-		TableItem[] items = availableComponentsViewer.getTable().getItems();
-		for (int i = 0; i < items.length; i++)
-			checked.add((IVirtualComponent)items[i].getData());
-
+		boolean result = true;
+		result &= saveResourceChanges();
+		result &= saveReferenceChanges();
+		return result;
+	}
+	
+	protected boolean saveResourceChanges() {
+		removeAllResourceMappings();
+		addNewResourceMappings();
+		return true;
+	}
+	protected boolean addNewResourceMappings() {
+		ComponentResourceProxy[] proxies = (ComponentResourceProxy[]) resourceMappings.toArray(new ComponentResourceProxy[resourceMappings.size()]);
+		IVirtualFolder rootFolder = rootComponent.getRootFolder();
+		for( int i = 0; i < proxies.length; i++ ) {
+			try {
+				rootFolder.getFolder(proxies[i].runtimePath).createLink(proxies[i].source, 0, null);
+			} catch( CoreException ce ) {
+			}
+		}
+		resourceMappingsChanged = false;
+		return true;
+	}
+	
+	protected boolean removeAllResourceMappings() {
+		StructureEdit moduleCore = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			moduleCore.getComponent().getResources().clear();
+		}
+		finally {
+			if (moduleCore != null) {
+				moduleCore.saveIfNecessary(new NullProgressMonitor());
+				moduleCore.dispose();
+			}
+		}
+		return true;
+	}
+	
+	protected boolean saveReferenceChanges() {
 		// Fill our delta lists
 		ArrayList<IVirtualComponent> added = new ArrayList<IVirtualComponent>();
 		ArrayList<IVirtualComponent> removed = new ArrayList<IVirtualComponent>();
@@ -623,7 +724,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		added2.addAll(added);
 		added2.addAll(changed);
 
-		// meld the changed into the added / removed
+		// meld the changed into the added / removed for less efficiency ;) 
+		// basically we lack "change" operations and only have add / remove
 		handleRemoved(removed2);
 		handleAdded(added2);
 	}	
@@ -637,7 +739,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				IDataModelOperation operation = getRemoveComponentOperation(component);
 				operation.execute(null, null);
 			} catch( ExecutionException e) {
-				J2EEUIPlugin.logError(e);
+				WTPOveridePlugin.logError(e);
 			}
 		}
 	}
@@ -693,9 +795,9 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			}
 		};
 		try {
-			J2EEUIPlugin.getWorkspace().run(runnable, new NullProgressMonitor());
+			ResourcesPlugin.getWorkspace().run(runnable, new NullProgressMonitor());
 		} catch( CoreException e ) {
-			J2EEUIPlugin.logError(e);
+			WTPOveridePlugin.logError(e);
 		}
 	}
 	
@@ -733,7 +835,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		try {
 			dm.getDefaultOperation().execute(new NullProgressMonitor(), null);
 		} catch (ExecutionException e) {
-			J2EEUIPlugin.logError(e);
+			WTPOveridePlugin.logError(e);
 		}	
 	}
 	/**

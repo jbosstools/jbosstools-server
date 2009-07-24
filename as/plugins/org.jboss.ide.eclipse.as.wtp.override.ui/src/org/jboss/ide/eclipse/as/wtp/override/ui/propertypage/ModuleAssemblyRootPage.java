@@ -26,29 +26,12 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDependenciesPropertyPage;
-
-
-/*
- * The only change in this file between here and upstream is 
- * the method createEARContent
- * 
- * We'd obviously prefer to remove the extension of the superclass here
- * but elements in the web ui demand we be a part of that tree for right now
- * Also we'd switch to depending on IModuleDependenciesControl (local)
- */
 
 /**
- * Primary project property page for J2EE dependencies; content is dynamically 
- * generated based on the project facets and will be comprised by a
- * set of IJ2EEDependenciesControl implementations.
- * 
+ * Primary project property page for Module dependencies;
  */
 public class ModuleAssemblyRootPage extends PropertyPage {
 	
-	public String DESCRIPTION = Messages.J2EEDependenciesPage_Description;
-
 	private IProject project;
 	private IModuleDependenciesControl[] controls = new IModuleDependenciesControl[0];
 	
@@ -57,15 +40,13 @@ public class ModuleAssemblyRootPage extends PropertyPage {
 	}
 	
 	private Composite getFacetErrorComposite(final Composite parent) {
-		final String errorCheckingFacet = Messages.J2EEDependenciesPage_ErrorCheckingFacets;
+		final String errorCheckingFacet = "Error Checking Project Facets";
 		setErrorMessage(errorCheckingFacet);
-		setValid(false);
 		return getErrorComposite(parent, errorCheckingFacet);		
 	}
 	private Composite getVirtCompErrorComposite(final Composite parent) {
 		final String errorCheckingFacet = "The given project is not a virtual component project";
 		setErrorMessage(errorCheckingFacet);
-		setValid(false);
 		return getErrorComposite(parent, errorCheckingFacet);		
 	}
 	

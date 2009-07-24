@@ -11,6 +11,7 @@
  *******************************************************************************/
 package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
@@ -22,8 +23,10 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
 
 /*
@@ -39,7 +42,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	final static String PATH_SEPARATOR = String.valueOf(IPath.SEPARATOR);
 	
 	private HashMap<IVirtualComponent, String> runtimePaths;
-	
+	private ArrayList<ComponentResourceProxy> resourceMappings;
 	public ComponentDependencyContentProvider() {
 		super();
 	}
@@ -47,12 +50,19 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
 		this.runtimePaths = paths;
 	}
+
+	public void setResourceMappings(ArrayList<ComponentResourceProxy> mappings) {
+		this.resourceMappings = mappings;
+	}
 	
 	public Object[] getElements(Object inputElement) {
 		Object[] empty = new Object[0];
 		if( !(inputElement instanceof IWorkspaceRoot))
 			return empty;
-		return runtimePaths.keySet().toArray();
+		ArrayList<Object> list = new ArrayList<Object>();
+		list.addAll(resourceMappings);
+		list.addAll(runtimePaths.keySet());
+		return list.toArray();
 	}
 	
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -60,6 +70,12 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
+		if( element instanceof ComponentResourceProxy) {
+			if( columnIndex == 0 ) 
+				return ((ComponentResourceProxy)element).runtimePath.toString();
+			else if( columnIndex == 1 ) 
+				return ((ComponentResourceProxy)element).source.toString();
+		}
 		if (element instanceof IVirtualComponent) {
 			IVirtualComponent comp = (IVirtualComponent)element;
 			if (columnIndex == 0) {
