@@ -79,7 +79,6 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -176,9 +175,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		else if (id.equals(IJBossToolingConstants.AS_51))
 			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
 		else if (id.equals(IJBossToolingConstants.EAP_43))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
+			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_43;
 		else if (id.equals(IJBossToolingConstants.EAP_50))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
+			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_50;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 

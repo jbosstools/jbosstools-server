@@ -28,8 +28,6 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -38,11 +36,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
@@ -50,7 +45,6 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -110,8 +104,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		else if( id.equals(IConstants.AS_42)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
 		else if( id.equals(IConstants.AS_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
 		else if( id.equals(IConstants.AS_51)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
-		else if( id.equals(IConstants.EAP_43)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
-		else if( id.equals(IConstants.EAP_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO;
+		else if( id.equals(IConstants.EAP_43)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_43;
+		else if( id.equals(IConstants.EAP_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_50;
 
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
