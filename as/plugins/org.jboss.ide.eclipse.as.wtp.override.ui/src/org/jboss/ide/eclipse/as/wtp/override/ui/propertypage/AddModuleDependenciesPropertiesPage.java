@@ -190,7 +190,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 
 	protected void createPushButtons() {
-		addMappingButton = createPushButton("Add Resource Mapping...");
+		addMappingButton = createPushButton("Add Folder...");
 		addReferenceButton = createPushButton("Add Reference...");
 		removeButton = createPushButton("Remove selected");
 	}

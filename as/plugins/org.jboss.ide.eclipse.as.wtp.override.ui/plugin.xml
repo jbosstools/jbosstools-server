@@ -10,7 +10,7 @@
       <page
             adaptable="true"
       		objectClass="org.eclipse.core.resources.IProject"
-      		name="Module Dependencies (JBT)"
+      		name="Module Assembly"
             class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ModuleAssemblyRootPage"
             id="org.jboss.ide.eclipse.as.wtp.override.ui.J2EEDependenciesPage">
            <enabledWhen>
