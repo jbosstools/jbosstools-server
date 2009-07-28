@@ -10,11 +10,16 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.ui;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IServer;
+
 
 public class Fileset implements Cloneable {
 	private static final String HASH_SEPARATOR = "::_::"; //$NON-NLS-1$
 	private static final String SEP = "\n"; //$NON-NLS-1$
 	private String name, folder, includesPattern, excludesPattern;
+	private IServer server;
 	public Fileset() {
 	}
 	public Fileset(String string) {
@@ -41,8 +46,19 @@ public class Fileset implements Cloneable {
 	 * @return the folder
 	 */
 	public String getFolder() {
+		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
+		IPath p = new Path(tmp);
+		if( !p.isAbsolute() && server != null ) {
+			if( server.getRuntime() != null ) 
+				p = server.getRuntime().getLocation().append(p);
+		}
+		return p.toString();
+	}
+	
+	public String getRawFolder() {
 		return folder == null ? "" : folder; //$NON-NLS-1$
 	}
+	
 	/**
 	 * @return the name
 	 */
@@ -89,6 +105,9 @@ public class Fileset implements Cloneable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public IServer getServer() { return this.server; }
+	public void setServer(IServer server) { this.server = server; }
 
 	public Object clone() {
 		try {

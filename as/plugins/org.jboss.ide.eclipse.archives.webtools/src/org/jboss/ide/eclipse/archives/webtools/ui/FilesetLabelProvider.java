@@ -64,7 +64,7 @@ public class FilesetLabelProvider extends LabelProvider {
 
     public String getText(Object element) {
     	if( element instanceof PathWrapper ) return ((PathWrapper)element).getLocalizedResourceName();
-    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getFolder(); //$NON-NLS-1$
+    	if( element instanceof Fileset ) return ((Fileset)element).getName() + "  " + ((Fileset)element).getRawFolder(); //$NON-NLS-1$
     	if( element instanceof ServerWrapper ) return "Filesets"; //$NON-NLS-1$
         return null;
     }

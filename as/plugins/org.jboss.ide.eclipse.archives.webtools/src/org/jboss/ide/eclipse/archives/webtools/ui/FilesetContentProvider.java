@@ -173,6 +173,7 @@ public class FilesetContentProvider implements ITreeContentProvider {
 				filesets = new Fileset[asStrings.length];
 				for (int i = 0; i < asStrings.length; i++) {
 					filesets[i] = new Fileset(asStrings[i]);
+					filesets[i].setServer(server);
 				}
 			}
 			return filesets;
@@ -197,6 +198,7 @@ public class FilesetContentProvider implements ITreeContentProvider {
 				includes = categoryMementos[i].getString("includes");//$NON-NLS-1$
 				excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
 				filesets[i] = new Fileset(name, folder, includes, excludes);
+				filesets[i].setServer(server);
 			}
 		} catch( IOException ioe) {
 			// TODO LOG
@@ -210,7 +212,7 @@ public class FilesetContentProvider implements ITreeContentProvider {
 			for( int i = 0; i < sets.length; i++ ) {
 				XMLMemento child = (XMLMemento)memento.createChild("fileset");//$NON-NLS-1$
 				child.putString("name", sets[i].getName());//$NON-NLS-1$
-				child.putString("folder", sets[i].getFolder());//$NON-NLS-1$
+				child.putString("folder", sets[i].getRawFolder());//$NON-NLS-1$
 				child.putString("includes", sets[i].getIncludesPattern());//$NON-NLS-1$
 				child.putString("excludes", sets[i].getExcludesPattern());//$NON-NLS-1$	
 			}

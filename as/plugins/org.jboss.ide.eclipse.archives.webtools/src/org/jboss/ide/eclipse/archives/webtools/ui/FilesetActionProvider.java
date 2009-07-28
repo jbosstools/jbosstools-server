@@ -17,6 +17,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -50,7 +51,9 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.PathWrapper;
 import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.ServerWrapper;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class FilesetActionProvider extends CommonActionProvider implements IDoubleClickListener {
@@ -194,13 +197,18 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 						.loadAdapter(IDeployableServer.class,
 								new NullProgressMonitor());
 				String location = null;
-				if (server != null)
-					location = server.getConfigDirectory();
-				else
+				if (server != null && server.getServer().getRuntime() != null ) {
+					IJBossServerRuntime runtime = (IJBossServerRuntime)
+						server.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+					if( runtime != null ) {
+						location = IConstants.SERVER + IPath.SEPARATOR + runtime.getJBossConfiguration();
+					}
+				}
+				if( location == null )
 					location = iserver.getRuntime().getLocation().toOSString();
 
 				if (location != null) {
-					FilesetDialog d = new FilesetDialog(new Shell(), location);
+					FilesetDialog d = new FilesetDialog(new Shell(), location, iserver);
 					if (d.open() == Window.OK) {
 						Fileset fs = d.getFileset();
 						wrapper.addFileset(fs);
@@ -231,7 +239,7 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 				if (d.open() == Window.OK) {
 					Fileset ret = d.getFileset();
 					sel.setName(ret.getName());
-					sel.setFolder(ret.getFolder());
+					sel.setFolder(ret.getRawFolder());
 					sel.setIncludesPattern(ret.getIncludesPattern());
 					sel.setExcludesPattern(ret.getExcludesPattern());
 					wrapper.saveFilesets();

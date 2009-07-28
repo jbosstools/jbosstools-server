@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
@@ -47,15 +48,19 @@ public class FilesetDialog extends TitleAreaDialog {
 	private Text includesText, excludesText, folderText, nameText;
 	private Composite main;
 	private FilesetPreviewComposite preview;
-	protected FilesetDialog(Shell parentShell, String defaultLocation) {
+	private IServer server;
+	protected FilesetDialog(Shell parentShell, String defaultLocation, IServer server) {
 		super(parentShell);
 		this.fileset = new Fileset();
 		this.fileset.setFolder(defaultLocation);
-
+		this.fileset.setServer(server);
+		this.fileset.setIncludesPattern("**/*.xml"); //$NON-NLS-1$
+		this.server = server;
 	}
 	protected FilesetDialog(Shell parentShell, Fileset fileset) {
 		super(parentShell);
 		this.fileset = (Fileset)fileset.clone();
+		this.server = fileset.getServer();
 	}
 	protected Point getInitialSize() {
 		//return new Point(400, 150);
@@ -82,11 +87,13 @@ public class FilesetDialog extends TitleAreaDialog {
 		fillArea(main);
 
 		nameText.setText(fileset.getName());
-		folderText.setText(fileset.getFolder());
+		folderText.setText(fileset.getRawFolder());
 		includesText.setText(fileset.getIncludesPattern());
 		excludesText.setText(fileset.getExcludesPattern());
 
 		addListeners();
+		getShell().layout();
+		textModified();
 		return sup;
 	}
 
@@ -106,14 +113,28 @@ public class FilesetDialog extends TitleAreaDialog {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(folderText.getText());
+				String txt = folderText.getText();
+				if( !new Path(txt).isAbsolute() && server != null && server.getRuntime() != null)
+					txt = server.getRuntime().getLocation().append(txt).toString();
+				d.setFilterPath(txt);
 				String x = d.open();
-				if( x != null )
-					folderText.setText(x);
+				if( x != null ) {
+					folderText.setText(makeRelative(x));
+				}
 			}
 		});
 	}
 
+	protected String makeRelative(String path) {
+		if( server != null && server.getRuntime() != null ) {
+			if( server.getRuntime().getLocation().isPrefixOf(new Path(path))) {
+				String p2 = path.substring(server.getRuntime().getLocation().toString().length());
+				return new Path(p2).makeRelative().toString();
+			}
+		}
+		return path;
+	}
+	
 	protected void textModified() {
 		name = nameText.getText();
 		dir = folderText.getText();
@@ -170,7 +191,7 @@ public class FilesetDialog extends TitleAreaDialog {
 	}
 
 	private void updatePreview() {
-		preview.setInput(findPaths(dir, includes, excludes));
+		preview.setInput(findPaths(fileset.getFolder(), includes, excludes));
 	}
 
 	public String getDir() {
