@@ -84,5 +84,11 @@ public class JBossServerCorePlugin extends Plugin  {
 	public static IPath getServerStateLocation(String serverID) {
 		return ServerUtil.getServerStateLocation(serverID);
 	}
+	
+	public static IPath getGlobalSettingsLocation() {
+		return JBossServerCorePlugin.getDefault().getStateLocation().append(".global"); //$NON-NLS-1$
+	}
+	
+
 
 }
