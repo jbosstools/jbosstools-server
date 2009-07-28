@@ -204,6 +204,7 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 					if (d.open() == Window.OK) {
 						Fileset fs = d.getFileset();
 						wrapper.addFileset(fs);
+						actionSite.getStructuredViewer().refresh(wrapper);
 					}
 				}
 			}
@@ -214,8 +215,10 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 			public void run() {
 				Fileset fs = (Fileset)selected[0];
 				ServerWrapper wrapper = getServerWrapper(fs);
-				if( wrapper != null )
+				if( wrapper != null ) {
 					wrapper.removeFileset(fs);
+					actionSite.getStructuredViewer().refresh(wrapper);
+				}
 			}
 		};
 		deleteFilter.setText(Messages.FilesetsDeleteFilter);
@@ -232,6 +235,7 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 					sel.setIncludesPattern(ret.getIncludesPattern());
 					sel.setExcludesPattern(ret.getExcludesPattern());
 					wrapper.saveFilesets();
+					actionSite.getStructuredViewer().refresh(wrapper);
 				}
 			}
 		};
