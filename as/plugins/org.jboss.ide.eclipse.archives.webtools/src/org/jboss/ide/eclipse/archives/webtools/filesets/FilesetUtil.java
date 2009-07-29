@@ -2,8 +2,10 @@ package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IServer;
@@ -20,22 +22,27 @@ public class FilesetUtil {
 	}
 	
 	public static Fileset[] loadFilesets(File file, IServer server) {
+		if( file != null && file.exists()) {
+			try {
+				return loadFilesets(new FileInputStream(file), server);
+			} catch( FileNotFoundException fnfe) {}
+		}
+		return new Fileset[]{};
+	}
+	
+	public static Fileset[] loadFilesets(InputStream is, IServer server) {
 		Fileset[] filesets = null;
-		try {
-			XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
-			IMemento[] categoryMementos = memento.getChildren("fileset");//$NON-NLS-1$
-			filesets = new Fileset[categoryMementos.length];
-			String name, folder, includes, excludes;
-			for( int i = 0; i < categoryMementos.length; i++ ) {
-				name = categoryMementos[i].getString("name"); //$NON-NLS-1$
-				folder = categoryMementos[i].getString("folder");//$NON-NLS-1$
-				includes = categoryMementos[i].getString("includes");//$NON-NLS-1$
-				excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
-				filesets[i] = new Fileset(name, folder, includes, excludes);
-				filesets[i].setServer(server);
-			}
-		} catch( IOException ioe) {
-			// TODO LOG
+		XMLMemento memento = XMLMemento.createReadRoot(is);
+		IMemento[] categoryMementos = memento.getChildren("fileset");//$NON-NLS-1$
+		filesets = new Fileset[categoryMementos.length];
+		String name, folder, includes, excludes;
+		for( int i = 0; i < categoryMementos.length; i++ ) {
+			name = categoryMementos[i].getString("name"); //$NON-NLS-1$
+			folder = categoryMementos[i].getString("folder");//$NON-NLS-1$
+			includes = categoryMementos[i].getString("includes");//$NON-NLS-1$
+			excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
+			filesets[i] = new Fileset(name, folder, includes, excludes);
+			filesets[i].setServer(server);
 		}
 		return filesets == null ? new Fileset[] { } : filesets;
 	}

@@ -1,14 +1,21 @@
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class NewServerFilesetHandler extends UnitedServerListener {
 	private static NewServerFilesetHandler instance;
@@ -16,6 +23,26 @@ public class NewServerFilesetHandler extends UnitedServerListener {
 		if( instance == null )
 			instance = new NewServerFilesetHandler();
 		return instance;
+	}
+	
+	protected NewServerFilesetHandler() {
+		IServerType[] types = ServerCore.getServerTypes();
+		for( int i = 0; i < types.length; i++ ) {
+			try {
+				IPath fileToWrite = FilesetUtil.DEFAULT_FS_ROOT.append(types[i].getId());
+				if( !fileToWrite.toFile().exists()) {
+					IPath p = new Path("filesetdata").append(types[i].getId()); //$NON-NLS-1$
+					URL url = FileLocator.find(IntegrationPlugin.getDefault().getBundle(), p, null);
+					if( url != null ) {
+					    InputStream fis  = url.openStream();
+					    Fileset[] sets = FilesetUtil.loadFilesets(fis, null);
+					    if( sets.length != 0 ) {
+							FilesetUtil.saveFilesets(fileToWrite.toFile(), sets);
+					    }
+					}
+				}
+			} catch(IOException ioe) {}
+		}
 	}
 	
 	public void serverAdded(IServer server) {
