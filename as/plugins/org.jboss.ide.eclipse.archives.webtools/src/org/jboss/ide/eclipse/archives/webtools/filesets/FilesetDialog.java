@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.archives.webtools.ui;
+package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,6 +49,7 @@ public class FilesetDialog extends TitleAreaDialog {
 	private Composite main;
 	private FilesetPreviewComposite preview;
 	private IServer server;
+	private boolean showViewer = true;
 	protected FilesetDialog(Shell parentShell, String defaultLocation, IServer server) {
 		super(parentShell);
 		this.fileset = new Fileset();
@@ -61,6 +62,9 @@ public class FilesetDialog extends TitleAreaDialog {
 		super(parentShell);
 		this.fileset = (Fileset)fileset.clone();
 		this.server = fileset.getServer();
+	}
+	public void setShowViewer(boolean val) {
+		showViewer = val;
 	}
 	protected Point getInitialSize() {
 		//return new Point(400, 150);
@@ -173,25 +177,28 @@ public class FilesetDialog extends TitleAreaDialog {
 		excludesText = new Text(main, SWT.BORDER);
 		excludesText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		Group previewWrapper = new Group(main, SWT.NONE);
-
-		previewWrapper.setLayout(new GridLayout());
-
-		GridData data = new GridData(GridData.FILL_BOTH);
-		data.grabExcessHorizontalSpace = true;
-		data.grabExcessVerticalSpace = true;
-		data.horizontalSpan = 3;
-		data.minimumHeight = 200;
-
-		previewWrapper.setLayoutData(data);
-		previewWrapper.setText(Messages.FilesetsNewPreview);
-
-		previewWrapper.setLayout(new FillLayout());
-		preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);
+		if( showViewer ) {
+			Group previewWrapper = new Group(main, SWT.NONE);
+	
+			previewWrapper.setLayout(new GridLayout());
+	
+			GridData data = new GridData(GridData.FILL_BOTH);
+			data.grabExcessHorizontalSpace = true;
+			data.grabExcessVerticalSpace = true;
+			data.horizontalSpan = 3;
+			data.minimumHeight = 200;
+	
+			previewWrapper.setLayoutData(data);
+			previewWrapper.setText(Messages.FilesetsNewPreview);
+	
+			previewWrapper.setLayout(new FillLayout());
+			preview = new FilesetPreviewComposite(previewWrapper, SWT.NONE);
+		}
 	}
 
 	private void updatePreview() {
-		preview.setInput(findPaths(fileset.getFolder(), includes, excludes));
+		if( preview != null ) 
+			preview.setInput(findPaths(fileset.getFolder(), includes, excludes));
 	}
 
 	public String getDir() {

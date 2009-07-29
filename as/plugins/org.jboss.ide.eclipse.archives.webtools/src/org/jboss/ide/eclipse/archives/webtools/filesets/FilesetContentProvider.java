@@ -8,12 +8,8 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.archives.webtools.ui;
+package org.jboss.ide.eclipse.archives.webtools.filesets;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,16 +23,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.tools.jmx.core.IMemento;
-import org.jboss.tools.jmx.core.util.XMLMemento;
 
 public class FilesetContentProvider implements ITreeContentProvider {
 	private static final String FILESET_KEY = "org.jboss.ide.eclipse.as.ui.views.server.providers.FilesetViewProvider.PropertyKey"; //$NON-NLS-1$
-	private static final String FILESET_FILE_NAME = "filesets.xml"; //$NON-NLS-1$
 
 	public static class PathWrapper {
 		private IPath path;
@@ -154,8 +144,8 @@ public class FilesetContentProvider implements ITreeContentProvider {
 		}
 
 		private Fileset[] loadFilesets() {
-			if( getFile(server).exists()) {
-				return FilesetContentProvider.loadFilesets(server);
+			if( FilesetUtil.getFile(server).exists()) {
+				return FilesetUtil.loadFilesets(server);
 			} else {
 				return loadFilesets_LEGACY();
 			}
@@ -180,54 +170,10 @@ public class FilesetContentProvider implements ITreeContentProvider {
 		}
 
 		public void saveFilesets() {
-			FilesetContentProvider.saveFilesets(server, children);
+			FilesetUtil.saveFilesets(server, children);
 		}
 	}
 	
-	protected static Fileset[] loadFilesets(IServer server) {
-		Fileset[] filesets = null;
-		try {
-			File file = getFile(server);
-			XMLMemento memento = XMLMemento.createReadRoot(new FileInputStream(file));
-			IMemento[] categoryMementos = memento.getChildren("fileset");//$NON-NLS-1$
-			filesets = new Fileset[categoryMementos.length];
-			String name, folder, includes, excludes;
-			for( int i = 0; i < categoryMementos.length; i++ ) {
-				name = categoryMementos[i].getString("name"); //$NON-NLS-1$
-				folder = categoryMementos[i].getString("folder");//$NON-NLS-1$
-				includes = categoryMementos[i].getString("includes");//$NON-NLS-1$
-				excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
-				filesets[i] = new Fileset(name, folder, includes, excludes);
-				filesets[i].setServer(server);
-			}
-		} catch( IOException ioe) {
-			// TODO LOG
-		}
-		return filesets == null ? new Fileset[] { } : filesets;
-	}
-	
-	protected static void saveFilesets(IServer server, Fileset[] sets) {
-		if( server != null ) {
-			XMLMemento memento = XMLMemento.createWriteRoot("filesets"); //$NON-NLS-1$
-			for( int i = 0; i < sets.length; i++ ) {
-				XMLMemento child = (XMLMemento)memento.createChild("fileset");//$NON-NLS-1$
-				child.putString("name", sets[i].getName());//$NON-NLS-1$
-				child.putString("folder", sets[i].getRawFolder());//$NON-NLS-1$
-				child.putString("includes", sets[i].getIncludesPattern());//$NON-NLS-1$
-				child.putString("excludes", sets[i].getExcludesPattern());//$NON-NLS-1$	
-			}
-			try {
-				memento.save(new FileOutputStream(getFile(server)));
-			} catch( IOException ioe) {
-				// TODO LOG
-			}
-		}
-	}
-	
-	protected static File getFile(IServer server) {
-		return JBossServerCorePlugin.getServerStateLocation(server)
-			.append(FILESET_FILE_NAME).toFile();
-	}
 
 	public Object[] getChildren(Object parentElement) {
 		if (parentElement instanceof IServer) {

@@ -11,7 +11,9 @@
 package org.jboss.ide.eclipse.archives.webtools;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.jboss.ide.eclipse.archives.webtools.filesets.NewServerFilesetHandler;
 import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -39,6 +41,7 @@ public class IntegrationPlugin extends AbstractUIPlugin {
 		super.start(context);
 		plugin = this;
 		ArchivesModuleModelListener.getInstance();
+		UnitedServerListenerManager.getDefault().addListener(NewServerFilesetHandler.getDefault());
 	}
 
 	/*
@@ -47,6 +50,7 @@ public class IntegrationPlugin extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+		UnitedServerListenerManager.getDefault().removeListener(NewServerFilesetHandler.getDefault());
 		super.stop(context);
 	}
 

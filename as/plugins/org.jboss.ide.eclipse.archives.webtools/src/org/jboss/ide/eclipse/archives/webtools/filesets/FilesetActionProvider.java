@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.archives.webtools.ui;
+package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
-import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.PathWrapper;
-import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.ServerWrapper;
+import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.PathWrapper;
+import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.ServerWrapper;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;

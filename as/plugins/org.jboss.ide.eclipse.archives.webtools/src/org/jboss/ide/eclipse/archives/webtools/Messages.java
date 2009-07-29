@@ -46,7 +46,13 @@ public class Messages extends NLS {
 	public static String FilesetsDialogTitle;
 	public static String FilesetsDialogMessage;
 
-
+	public static String DefaultFilesetsAllServerTypes;
+	public static String DefaultFilesetsLabel;
+	public static String DefaultFilesetsAdd;
+	public static String DefaultFilesetsRemove;
+	
+	
+	
 	public static String NewEar;
 	public static String EarPreview;
 	public static String EarDescription;

@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.archives.webtools.ui;
+package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;

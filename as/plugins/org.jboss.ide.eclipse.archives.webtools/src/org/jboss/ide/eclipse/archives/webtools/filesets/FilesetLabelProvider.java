@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.ide.eclipse.archives.webtools.ui;
+package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentType;
@@ -22,9 +22,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
-import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.FolderWrapper;
-import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.PathWrapper;
-import org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider.ServerWrapper;
+import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.FolderWrapper;
+import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.PathWrapper;
+import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider.ServerWrapper;
 
 public class FilesetLabelProvider extends LabelProvider {
 

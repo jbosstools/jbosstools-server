@@ -105,8 +105,8 @@
 	         id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets"
 	         activeByDefault="true"
 	         icon="icons/multiple_files.gif"
-	         contentProvider="org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider"
-	         labelProvider="org.jboss.ide.eclipse.archives.webtools.ui.FilesetLabelProvider"
+	         contentProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider"
+	         labelProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider"
 	         name="%NavigatorContent_Filesets"
 	         priority="normal">
 	      <triggerPoints>
@@ -117,20 +117,20 @@
 	      <possibleChildren>
 	         <or>
              <instanceof
-                   value="org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider$ServerWrapper">
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$ServerWrapper">
              </instanceof>
              <instanceof
-                   value="org.jboss.ide.eclipse.archives.webtools.ui.Fileset">
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.Fileset">
              </instanceof>
              <instanceof
-                   value="org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider$FolderWrapper">
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$FolderWrapper">
              </instanceof>
              <instanceof
-                   value="org.jboss.ide.eclipse.archives.webtools.ui.FilesetContentProvider$PathWrapper">
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$PathWrapper">
              </instanceof>
 	         </or></possibleChildren>
 	      <actionProvider
-	            class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetActionProvider"
+	            class="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetActionProvider"
 	            id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets.actions"
 	            priority="highest">
 	      </actionProvider>
@@ -148,5 +148,15 @@
 	      </includes>
 	   </viewerContentBinding>
 	</extension>
+    <extension
+          point="org.eclipse.ui.preferencePages">
+       <page
+             id="org.jboss.ide.eclipse.archives.webtools.defaultFileFilters.page"
+             name="%defaultFilesetPreferencePageTitle"
+             category="org.eclipse.wst.server.ui.preferencePage"
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.DefaultFilesetPreferencePage">
+                 <keywordReference id="org.eclipse.wst.server.preferenceKeywords"/>
+       </page>
+  </extension>
 
 </plugin>
