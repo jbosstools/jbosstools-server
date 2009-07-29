@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <filesets>
-<fileset excludes="" folder="{config}/conf" includes="**/*.xml" name="asdfasd"/>
+<fileset excludes="" folder="{config}/conf" includes="jboss-log4j.xml" name="Log4j.xml"/>
 </filesets>
