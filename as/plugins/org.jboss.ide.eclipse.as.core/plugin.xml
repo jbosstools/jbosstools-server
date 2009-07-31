@@ -905,4 +905,19 @@
             id="org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider">
       </classpathProvider>
    </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            name="jboss_config"
+            description="Returns the configuration name for the server who&apos;s name matches the variable"
+            resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            name="jboss_config_dir"
+            description="Returns the full path of the configuration folder for the server who&apos;s name matches the variable"
+            resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
 </plugin>

@@ -10,11 +10,12 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
+import org.eclipse.core.internal.variables.StringSubstitutionEngine;
+import org.eclipse.core.internal.variables.StringVariableManager;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 
 public class Fileset implements Cloneable {
@@ -49,17 +50,17 @@ public class Fileset implements Cloneable {
 	 */
 	public String getFolder() {
 		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
-		
-		// TODO do the string replacement! perhaps use variables plugin
-		IJBossServerRuntime ajbsrt = (IJBossServerRuntime) server.getRuntime()
-		.loadAdapter(IJBossServerRuntime.class,
-				new NullProgressMonitor());
-		String config = null;
-		if( ajbsrt != null ) 
-			config = ajbsrt.getJBossConfiguration();
-		if( config != null )
-			tmp = tmp.replace("${config}", config); //$NON-NLS-1$
-		
+		tmp = tmp.replace("${jboss_config_dir}",  //$NON-NLS-1$
+					"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		tmp = tmp.replace("${jboss_config}",  //$NON-NLS-1$
+				"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		try {
+			StringSubstitutionEngine engine = new StringSubstitutionEngine();
+			tmp = engine.performStringSubstitution(tmp, true,
+					true, StringVariableManager.getDefault());
+		} catch( CoreException ce ) {}
+
 		IPath p = new Path(tmp);
 		if( !p.isAbsolute() && server != null ) {
 			if( server.getRuntime() != null ) 
