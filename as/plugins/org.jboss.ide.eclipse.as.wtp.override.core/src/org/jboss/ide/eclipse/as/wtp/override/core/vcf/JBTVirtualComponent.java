@@ -66,23 +66,8 @@ public class JBTVirtualComponent
 		IVirtualReference[] cached = getCachedReferences();
 		if (cached != null)
 			return cached;
-		List<IVirtualReference> hardReferences = getHardReferences(this);
-		if( exposesLooseReferences()) {
-			List dynamicReferences = getLooseArchiveReferences(this, hardReferences);
-			if (dynamicReferences != null) {
-				hardReferences.addAll(dynamicReferences);
-			}
-		}
-		cachedReferences = (IVirtualReference[]) hardReferences.toArray(new IVirtualReference[hardReferences.size()]);
+		cachedReferences = getHardReferences(this);
 		return cachedReferences;
-	}
-
-	protected boolean exposesLooseReferences() {
-		return false;
-	}
-	
-	protected boolean isDynamicComponent(IVirtualFile file) {
-		return false;
 	}
 	
 	// Returns cache if still valid or null
@@ -98,7 +83,7 @@ public class JBTVirtualComponent
 		return DependencyGraphManager.getInstance().checkIfStillValid(depGraphModStamp);
 	}
 	
-	private static List<IVirtualReference> getHardReferences(IVirtualComponent earComponent) {
+	private static IVirtualReference[] getHardReferences(IVirtualComponent earComponent) {
 		StructureEdit core = null;
 		List hardReferences = new ArrayList();
 		try {
@@ -127,7 +112,7 @@ public class JBTVirtualComponent
 			if (core != null)
 				core.dispose();
 		}
-		return hardReferences;
+		return (IVirtualReference[]) hardReferences.toArray(new IVirtualReference[hardReferences.size()]);
 	}
 	
 	protected static String getArchiveName(IVirtualComponent referencedIVirtualComponent, ReferencedComponent referencedComponent) {
@@ -199,6 +184,7 @@ public class JBTVirtualComponent
 		}
 		return uri;
 	}
+	/*
 	
 	private static List getLooseArchiveReferences(JBTVirtualComponent component, List hardReferences) {
 		return  getLooseArchiveReferences(component, hardReferences, null, (EARVirtualRootFolder)component.getRootFolder());
@@ -207,7 +193,7 @@ public class JBTVirtualComponent
 	private static List getLooseArchiveReferences(JBTVirtualComponent component, List hardReferences, List dynamicReferences, EARVirtualRootFolder folder) {
 		return null;
 	}
-
+*/
 	
 	// Potentially to be overridden (awesome?)
 	protected static IVirtualReference createVirtualReference(IVirtualComponent context, ReferencedComponent referencedComponent) {
