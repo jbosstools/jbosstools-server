@@ -363,8 +363,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 		jreCombo = new Combo(jreComposite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		jreCombo.setItems(jreNames);
-		jreCombo.select(defaultVMIndex);
-
+		if( defaultVMIndex != -1 )
+			jreCombo.select(defaultVMIndex);
+		
 		jreButton = new Button(jreComposite, SWT.NONE);
 		jreButton.setText(Messages.wf_JRELabel);
 
@@ -588,7 +589,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			handle.setMessage(error, IMessageProvider.ERROR);
 	}
 
-	private String getErrorString() {
+	protected String getErrorString() {
 		if (nameText == null) {
 			// not yet initialized. no errors
 			return null;
@@ -690,31 +691,41 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	// JRE methods
 	protected void updateJREs() {
 		// get all installed JVMs
-		installedJREs = new ArrayList<IVMInstall>();
+		installedJREs = getValidJREs();
+		// get names
+		int size = installedJREs.size();
+		size = shouldIncludeDefaultJRE() ? size+1 : size;
+		int index = 0;
+		jreNames = new String[size];
+		if( shouldIncludeDefaultJRE())
+			jreNames[index++] = "Default JRE"; //$NON-NLS-1$
+		 
+		for (int i = 0; i < installedJREs.size(); i++) {
+			IVMInstall vmInstall = installedJREs.get(i);
+			jreNames[index++] = vmInstall.getName();
+		}
+		defaultVMIndex = shouldIncludeDefaultJRE() ? 0 : 
+			jreNames.length > 0 ? 0 : -1;
+	}
+	
+	protected boolean shouldIncludeDefaultJRE() {
+		return true;
+	}
+	
+	protected ArrayList<IVMInstall> getValidJREs() {
+		ArrayList<IVMInstall> valid = new ArrayList<IVMInstall>();
 		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
 		int size = vmInstallTypes.length;
 		for (int i = 0; i < size; i++) {
 			IVMInstall[] vmInstalls = vmInstallTypes[i].getVMInstalls();
 			int size2 = vmInstalls.length;
 			for (int j = 0; j < size2; j++) {
-				installedJREs.add(vmInstalls[j]);
+				valid.add(vmInstalls[j]);
 			}
 		}
-
-		// get names
-		size = installedJREs.size();
-		jreNames = new String[size+1];
-		jreNames[0] = "Default JRE"; //$NON-NLS-1$
-		for (int i = 0; i < size; i++) {
-			IVMInstall vmInstall = installedJREs.get(i);
-			jreNames[i+1] = vmInstall.getName();
-		}
-
-		//selectedVM = JavaRuntime.getDefaultVMInstall();
-		//defaultVMIndex = installedJREs.indexOf(selectedVM);
-		defaultVMIndex = 0;
+		return valid;
 	}
-
+	
 	// WST API methods
 	public void enter() {
 		beenEntered = true;
