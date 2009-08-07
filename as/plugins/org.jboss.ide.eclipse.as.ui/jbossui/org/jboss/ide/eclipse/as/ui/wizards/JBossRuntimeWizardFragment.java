@@ -81,7 +81,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
 import org.jboss.ide.eclipse.as.core.util.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
@@ -160,24 +159,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected ImageDescriptor getImageDescriptor() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		String id = rt.getRuntimeType().getId();
-		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		if (id.equals(IJBossToolingConstants.AS_32))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
-		else if (id.equals(IJBossToolingConstants.AS_40))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
-		else if (id.equals(IJBossToolingConstants.AS_42))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		else if (id.equals(IJBossToolingConstants.AS_50))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if (id.equals(IJBossToolingConstants.AS_51))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
-		else if (id.equals(IJBossToolingConstants.EAP_43))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_43;
-		else if (id.equals(IJBossToolingConstants.EAP_50))
-			imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_50;
+		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 

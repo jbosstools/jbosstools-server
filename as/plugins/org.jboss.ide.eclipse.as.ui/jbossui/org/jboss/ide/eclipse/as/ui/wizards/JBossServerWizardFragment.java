@@ -44,7 +44,6 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -96,17 +95,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
-		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		String id = rt.getRuntimeType().getId();
-		String imageKey = ""; //$NON-NLS-1$
-		if( id.equals(IConstants.AS_32)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
-		else if( id.equals(IConstants.AS_40)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
-		else if( id.equals(IConstants.AS_42)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		else if( id.equals(IConstants.AS_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals(IConstants.AS_51)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
-		else if( id.equals(IConstants.EAP_43)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_43;
-		else if( id.equals(IConstants.EAP_50)) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_50;
-
+		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	
