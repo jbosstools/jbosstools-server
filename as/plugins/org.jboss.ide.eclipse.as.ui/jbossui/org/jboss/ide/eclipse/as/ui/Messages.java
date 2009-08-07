@@ -46,6 +46,7 @@ public class Messages {
 	public static String rwf_nameTextBlank;
 	public static String rwf_homeDirBlank;
 	public static String rwf_NoVMSelected;
+	public static String rwf_jre6NotFound;
 	public static String swf_Title;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;
