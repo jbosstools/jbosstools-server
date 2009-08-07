@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.modules;
+package org.jboss.ide.eclipse.as.wtp.core.modules;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -12,7 +12,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.web.internal.deployables.ComponentDeployable;
-import org.jboss.ide.eclipse.as.wtp.override.core.vcf.JBTVirtualArchiveComponent;
+import org.jboss.ide.eclipse.as.wtp.core.vcf.JBTVirtualArchiveComponent;
 
 public abstract class JBTProjectModuleDelegate extends ComponentDeployable implements IJBTModule {
 

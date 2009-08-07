@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.vcf;
+package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +15,7 @@ import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
-import org.jboss.ide.eclipse.as.wtp.override.core.Activator;
+import org.jboss.ide.eclipse.as.wtp.core.Activator;
 
 public class ReferenceResolverUtil {
 	public static ReferenceResolverUtil instance = null;

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.modules;
+package org.jboss.ide.eclipse.as.wtp.core.modules;
 
 import org.eclipse.wst.server.core.IModule;
 

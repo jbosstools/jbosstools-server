@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.vcf;
+package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.vcf;
+package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;

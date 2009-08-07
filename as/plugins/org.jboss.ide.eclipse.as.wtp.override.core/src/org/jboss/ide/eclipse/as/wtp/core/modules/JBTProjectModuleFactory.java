@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.modules;
+package org.jboss.ide.eclipse.as.wtp.core.modules;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
-import org.jboss.ide.eclipse.as.wtp.override.core.Activator;
+import org.jboss.ide.eclipse.as.wtp.core.Activator;
 
 public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelegate {
 	public static JBTProjectModuleFactory getFactory(String id) {

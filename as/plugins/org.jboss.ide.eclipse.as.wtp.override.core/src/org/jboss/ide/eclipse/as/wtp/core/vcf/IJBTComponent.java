@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.vcf;
+package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 /**
  * Simply a marker to know if this is one of our components 

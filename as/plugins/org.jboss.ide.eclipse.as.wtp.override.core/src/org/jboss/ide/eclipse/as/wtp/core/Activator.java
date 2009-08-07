@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core;
+package org.jboss.ide.eclipse.as.wtp.core;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

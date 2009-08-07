@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.core.vcf;
+package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import java.util.HashMap;
 import java.util.Iterator;
