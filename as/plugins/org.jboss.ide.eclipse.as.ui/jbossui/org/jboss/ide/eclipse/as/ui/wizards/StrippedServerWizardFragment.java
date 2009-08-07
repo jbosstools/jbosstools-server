@@ -172,7 +172,7 @@ public class StrippedServerWizardFragment extends WizardFragment {
 		tempDeployText.addModifyListener(ml);
 		nameText.addModifyListener(ml);
 		nameText.setText(getDefaultNameText());
-		handle.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_DEPLOY_ONLY_LOGO));
+		handle.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.WIZBAN_JBOSS_LOGO));
 		return main;
 	}
 

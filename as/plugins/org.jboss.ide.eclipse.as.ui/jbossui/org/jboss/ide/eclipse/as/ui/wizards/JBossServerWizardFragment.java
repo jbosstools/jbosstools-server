@@ -100,17 +100,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
-		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		String id = rt.getRuntimeType().getId();
-		String imageKey = "";
-		if( id.equals("org.jboss.ide.eclipse.as.runtime.32")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS32_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.40")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS40_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.42")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS42_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS50_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.51")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS51_LOGO;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.43")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_43;
-		else if( id.equals("org.jboss.ide.eclipse.as.runtime.eap.50")) imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_EAP_LOGO_50;
-
+		String imageKey = JBossServerUISharedImages.WIZBAN_JBOSS_LOGO;
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 	
