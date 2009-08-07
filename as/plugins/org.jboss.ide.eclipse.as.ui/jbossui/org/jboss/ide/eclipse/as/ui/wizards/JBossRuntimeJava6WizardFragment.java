@@ -23,6 +23,7 @@ package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
@@ -48,12 +49,20 @@ public class JBossRuntimeJava6WizardFragment extends JBossRuntimeWizardFragment 
 			for (int j = 0; j < size2; j++) {
 				if( vmInstalls[j] instanceof IVMInstall2 ) {
 					String version = ((IVMInstall2)vmInstalls[j]).getJavaVersion();
-					if( version.startsWith("1.6."))
+					if( isValidVersion(version))
 						valid.add(vmInstalls[j]);
 				}
 			}
 		}
 		return valid;
+	}
+	
+	protected boolean isValidVersion(String version) {
+		return !version.equals(JavaCore.VERSION_1_1) &&
+				!version.equals(JavaCore.VERSION_1_2) &&
+				!version.equals(JavaCore.VERSION_1_3) &&
+				!version.equals(JavaCore.VERSION_1_4) &&			
+				!version.equals(JavaCore.VERSION_1_5);
 	}
 	
 	protected String getErrorString() {
