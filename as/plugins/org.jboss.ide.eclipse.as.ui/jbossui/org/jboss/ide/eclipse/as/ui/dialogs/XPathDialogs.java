@@ -823,7 +823,8 @@ public class XPathDialogs {
 			if( element instanceof XPathFileResult ) {
 				XPathFileResult result = (XPathFileResult)element;
 				if( columnIndex == 0 ) {
-					return result.getFileLocation().substring(result.getQuery().getBaseDir().length());
+					String substr = result.getFileLocation().substring(result.getQuery().getBaseDir().length());
+					return new Path(substr).makeRelative().toString();
 				}
 				if( result.getChildren().length == 1 ) {
 					element = result.getChildren()[0];
