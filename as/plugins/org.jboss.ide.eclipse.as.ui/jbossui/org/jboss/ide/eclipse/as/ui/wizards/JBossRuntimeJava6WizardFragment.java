@@ -58,11 +58,11 @@ public class JBossRuntimeJava6WizardFragment extends JBossRuntimeWizardFragment 
 	}
 	
 	protected boolean isValidVersion(String version) {
-		return !version.equals(JavaCore.VERSION_1_1) &&
-				!version.equals(JavaCore.VERSION_1_2) &&
-				!version.equals(JavaCore.VERSION_1_3) &&
-				!version.equals(JavaCore.VERSION_1_4) &&			
-				!version.equals(JavaCore.VERSION_1_5);
+		return !version.startsWith(JavaCore.VERSION_1_1) &&
+				!version.startsWith(JavaCore.VERSION_1_2) &&
+				!version.startsWith(JavaCore.VERSION_1_3) &&
+				!version.startsWith(JavaCore.VERSION_1_4) &&			
+				!version.startsWith(JavaCore.VERSION_1_5);
 	}
 	
 	protected String getErrorString() {
