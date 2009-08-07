@@ -251,6 +251,7 @@ public class XPathActionProvider extends CommonActionProvider {
 			if ((first instanceof XPathResultNode || first instanceof XPathFileResult)
 					|| (first instanceof XPathQuery && ((XPathQuery) first)
 							.getResults().length == 1)) {
+				selectedNode = first;
 				menu.add(editFileAction);
 			}
 		}
