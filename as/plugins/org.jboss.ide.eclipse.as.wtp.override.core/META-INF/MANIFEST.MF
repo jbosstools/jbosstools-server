@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: WTP Overrides Core
-Bundle-SymbolicName: org.jboss.ide.eclipse.as.wtp.override.core;singleton:=true
+Bundle-SymbolicName: org.jboss.ide.eclipse.as.wtp.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.wtp.override.core.Activator
 Require-Bundle: org.eclipse.core.runtime,
