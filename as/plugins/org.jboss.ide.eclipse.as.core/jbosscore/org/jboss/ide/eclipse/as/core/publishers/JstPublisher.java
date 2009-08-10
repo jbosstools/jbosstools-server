@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -37,7 +38,12 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.j2ee.componentcore.util.EARArtifactEdit;
+import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.DeletedModule;
@@ -201,9 +207,10 @@ public class JstPublisher implements IJBossServerPublisher {
 	protected IPath getDeployPath(IModule[] moduleTree) {
 		IPath root = new Path( server.getDeployFolder() );
 		String type, name;
-		for( int i = 0; i < moduleTree.length; i++ ) {
+		for( int i = 0; i < moduleTree.length; i++ ) { 
 			type = moduleTree[i].getModuleType().getId();
 			name = moduleTree[i].getName();
+			
 			if( new Path(name).segmentCount() > 1 )
 				// we strongly suspect this is a binary object and not a project
 				return root.append(new Path(name).lastSegment());
@@ -211,6 +218,8 @@ public class JstPublisher implements IJBossServerPublisher {
 				root = root.append(name + ".ear");
 			else if( "jst.web".equals(type)) 
 				root = root.append(name + ".war");
+			else if( "jst.utility".equals(type) && i == 1 && "jst.ear".equals(moduleTree[i-1].getModuleType().getId()))
+				root = root.append(getUtilityInEarProjectURI(moduleTree));
 			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId())) 
 				root = root.append("WEB-INF").append("lib").append(name + ".jar");			
 			else if( "jst.connector".equals(type)) {
@@ -221,6 +230,39 @@ public class JstPublisher implements IJBossServerPublisher {
 				root = root.append(name + ".jar");
 		}
 		return root;
+	}
+	
+	
+	// hack to fix JBIDE-4629, the case of a util project directly inside an ear project
+	protected String getUtilityInEarProjectURI(IModule[] moduleTree) {
+		IProject earProject = moduleTree[0].getProject();
+		IVirtualComponent earComponent = ComponentCore.createComponent(earProject);
+    	IVirtualComponent utilComponent = ComponentCore.createComponent(moduleTree[1].getProject());
+    	String aURI = null;
+    	if (utilComponent!=null && earComponent!=null && J2EEProjectUtilities.isEARProject(earProject)) {
+			EARArtifactEdit earEdit = null;
+			try {
+				earEdit = EARArtifactEdit.getEARArtifactEditForRead(earComponent);
+				if (earEdit != null) {
+					IVirtualReference [] refs = earComponent.getReferences();
+					for(int i=0; i<refs.length; i++){
+						if(refs[i].getReferencedComponent().equals(utilComponent)){
+							IPath path = refs[i].getRuntimePath();
+							path = path == null ? new Path("/") : path;
+							return path.append(refs[i].getArchiveName()).toString();
+						}
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				if (earEdit != null)
+					earEdit.dispose();
+			}
+    	}
+
+		
+		return moduleTree[1].getName() + ".jar";
 	}
 	
 	protected boolean isBinaryObject(IModule[] moduleTree) {
