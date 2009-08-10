@@ -17,6 +17,7 @@ public class ArchivesUIMessages extends NLS {
 	public static String BuildError2;
 	public static String DoNotShowThisAgain;
 	public static String BuildArchivesNode;
+	public static String BuildProjectArchives;
 	public static String SelectAProject;
 	public static String ProjectArchives;
 	public static String Loading;

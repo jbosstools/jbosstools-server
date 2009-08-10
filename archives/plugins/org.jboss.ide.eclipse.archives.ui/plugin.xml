@@ -222,5 +222,28 @@
          </enablement>
       </actionProvider>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+			categoryId="org.jboss.ide.eclipse.archives.ui.commands.projects"
+            defaultHandler="org.jboss.ide.eclipse.archives.ui.actions.BuildCommand"
+            description="This will build the project archives for the selected project"
+            id="org.jboss.ide.eclipse.archives.ui.buildArchiveCommand"
+            name="Build Project Archives">
+      </command>
+      <category
+            description="Commands related to projects"
+            id="org.jboss.ide.eclipse.archives.ui.commands.projects"
+            name="Projects">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+   <key
+      sequence=""
+      contextId=""
+      commandId="org.jboss.ide.eclipse.archives.ui.buildArchiveCommand"
+      schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
    
 </plugin>
