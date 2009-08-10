@@ -110,11 +110,11 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 		
 	}
 	public void out(String text) {
-		if( "BUILD SUCCESSFUL\n".equals(text))
+		if( "BUILD SUCCESSFUL\n".equals(text)) //$NON-NLS-1$
 			done = success = true;
 	}
 	public void err(String text) {
-		if( "BUILD FAILED\n".equals(text)) {
+		if( "BUILD FAILED\n".equals(text)) { //$NON-NLS-1$
 			success = false;
 			done = true;
 		}
