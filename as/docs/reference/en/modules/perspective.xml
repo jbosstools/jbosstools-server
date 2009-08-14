@@ -321,8 +321,9 @@
                 <para>To add a new file filter, right-click the <emphasis>
                         <property>Filesets</property>
                     </emphasis> category and select <emphasis>
-                        <property>Create File Filter</property>.</emphasis>The <property>New File
-                        Filter wizard</property> should appear.</para>
+                        <property>Create File Filter</property>.</emphasis></para>
+                <para id="filefilterWiz">The <property>New File
+                            Filter wizard</property> should appear.</para>
 
                 <figure>
                     <title>Creating a New File Filter</title>
@@ -382,6 +383,26 @@
                         </imageobject>
                     </mediaobject>
                 </figure>
+                <para>If you want to set filesets for some server types, you should open 
+                    <emphasis><property>Window>Preferences</property></emphasis> 
+                    and then select  <emphasis><property>Server > Default Filesets</property></emphasis>  
+                    from the categories available on the left.</para>
+                
+                <figure>
+                    <title>Deleting the File from the Filesets</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/filesets5.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                    <para>On this preference page you can add a fileset 
+                    to any server type or to all servers at once.To do this you should select the server type in the combo box and click <emphasis><property>Add fileset...</property></emphasis> button. 
+                    In the opened <property>New File
+                        Filter wizard</property> follow the steps described <link linkend="filefilterWiz">before</link> and finally click <emphasis><property>Apply</property></emphasis> button on the preference page.</para>
+                        <para>The defined file filter will be automatically added  to new servers during creation.</para>
+                
+                
             </section>
 
             <section id="xml_configuration">
