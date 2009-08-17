@@ -76,8 +76,19 @@ public final class PublishCopyUtil {
 	 * PublishUtil cannot be created. Use static methods.
 	 */
 	private IServer server;
-	public PublishCopyUtil(IServer server) {
+	private IPath rootDeploy;
+	private IPath rootTmpDeploy;
+	
+	/**
+	 * 
+	 * @param server The server we're publishing to
+	 * @param deploy  The deploy path where they're intended to go
+	 * @param tmpDeploy The temporary location on the same partition
+	 */
+	public PublishCopyUtil(IServer server, IPath deploy, IPath tmpDeploy) {
 		this.server = server;
+		this.rootDeploy = deploy;
+		this.rootTmpDeploy = tmpDeploy;
 	}
 
 	/**
@@ -193,12 +204,24 @@ public final class PublishCopyUtil {
 	 * Smart copy the given module resources to the given path.
 	 * 
 	 * @param resources an array of module resources
+	 * @param monitor a progress monitor, or <code>null</code> if progress
+	 *    reporting and cancellation are not desired
+	 * @return a possibly-empty array of error and warning status 
+	 */
+	public IStatus[] publishSmart(IModuleResource[] resources, IProgressMonitor monitor) {
+		return publishSmart(resources, rootDeploy, monitor);
+	}
+
+	/**
+	 * Smart copy the given module resources to the given path.
+	 * 
+	 * @param resources an array of module resources
 	 * @param path an external path to copy to
 	 * @param monitor a progress monitor, or <code>null</code> if progress
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status 
 	 */
-	public IStatus[] publishSmart(IModuleResource[] resources, IPath path, IProgressMonitor monitor) {
+	private IStatus[] publishSmart(IModuleResource[] resources, IPath path, IProgressMonitor monitor) {
 		if (resources == null)
 			return EMPTY_STATUS;
 		
@@ -772,11 +795,17 @@ public final class PublishCopyUtil {
 	}
 	
 	protected File getTempFolder() {
-		if( server == null ) return tempDir;
-		String path = ServerConverter.getDeployableServer(server).getTempDeployFolder();
-		File f = new File(path);
+		File f = null;
+		if( rootTmpDeploy != null ) {
+			f = rootTmpDeploy.toFile();
+		} else if( server != null ){
+			String path = ServerConverter.getDeployableServer(server).getTempDeployFolder();
+			f = new File(path);
+		} else {
+			return tempDir;
+		}
 		if( !f.exists() )
 			f.mkdirs();
-		return new File(path);
+		return f;
 	}
 }

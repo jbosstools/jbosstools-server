@@ -394,8 +394,10 @@ public class DeploySection extends ServerEditorSection {
 			oldDir = deployText.getText();
 			oldTemp = tempDeployText.getText();
 			
-			String type;
-			
+			String type = null;
+			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
+	 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
+	 				IDeployableServer.DEPLOY_METADATA;
 			
 			if( newSelection == metadataRadio  ) {
 				newDir = JBossServerCorePlugin.getServerStateLocation(id)
@@ -409,16 +411,18 @@ public class DeploySection extends ServerEditorSection {
 				IRuntime rt = DeploySection.this.server.getRuntime();
 				if( rt != null ) {
 					IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-					String config = jbsrt.getJBossConfiguration();
-					newDir = new Path(IJBossServerConstants.SERVER)
-						.append(config)
-						.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
-					newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-						.append(IJBossServerConstants.TMP)
-						.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
-					new File(newTemp).mkdirs();
+					if( jbsrt != null ) {
+						String config = jbsrt.getJBossConfiguration();
+						newDir = new Path(IJBossServerConstants.SERVER)
+							.append(config)
+							.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
+						newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+							.append(IJBossServerConstants.TMP)
+							.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+						new File(newTemp).mkdirs();
+						type = IDeployableServer.DEPLOY_SERVER;
+					}
 				}
-				type = IDeployableServer.DEPLOY_SERVER;
 			} else {
 				newDir = lastCustomDeploy;
 				newTemp = lastCustomTemp;
@@ -436,6 +440,7 @@ public class DeploySection extends ServerEditorSection {
 				newSelection.addSelectionListener(radioListener);
 			}
 			
+			type = type == null ? oldType : type;
 			newDir = newDir == null ? oldDir : newDir;
 			newTemp = newTemp == null ? oldTemp : newTemp; 
 			

@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
@@ -106,9 +107,11 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		// remove all of the deployed items
 		if( pack != null ) {
 			IPath sourcePath = pack.getArchiveFilePath();
-			IPath destPath = new Path(server.getDeployFolder()).append(sourcePath.lastSegment());
+			IModule[] tree = new IModule[] { module };
+			IPath destPath = PublishUtil.getDeployPath(tree, server);
+			IPath destPath2 = destPath.append(sourcePath.lastSegment());
 			// remove the entire file or folder
-			FileUtil.safeDelete(destPath.toFile(), listener);
+			FileUtil.safeDelete(destPath2.toFile(), listener);
 		}
 	}
 
@@ -117,7 +120,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	protected void publishModule(IModule module, boolean incremental, IProgressMonitor monitor) {
 		IArchive pack = getPackage(module);
 		IPath sourcePath = pack.getArchiveFilePath();
-		IPath destPathRoot = new Path(server.getDeployFolder());
+		IModule[] tree = new IModule[] { module };
+		IPath destPathRoot = PublishUtil.getDeployPath(tree, server);
 
 		// if destination is deploy directory... no need to re-copy!
 		if( destPathRoot.toOSString().equals(PathUtils.getGlobalLocation(pack).toOSString())) {

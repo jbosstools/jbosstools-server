@@ -109,7 +109,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
+		IPath deployPath = getDeployPath(moduleTree, server);
+		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
 		IModuleResource[] members = getResources(module);
  
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
@@ -117,8 +118,10 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		if( !(new Path(module.getName()).segmentCount() > 1 ))
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
-		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			list.addAll(Arrays.asList(new PublishCopyUtil(server.getServer()).publishFull(members, deployPath, monitor)));
+		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
+			PublishCopyUtil util = new PublishCopyUtil(server.getServer(), deployPath, tempDeployPath);
+			list.addAll(Arrays.asList(util.publishFull(members, deployPath, monitor)));
+		}
 		else if( isBinaryObject(moduleTree))
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
 		else
@@ -152,9 +155,11 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		IStatus[] results = new IStatus[] {};
-		IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
+		IPath deployPath = getDeployPath(moduleTree, server);
+		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			results = new PublishCopyUtil(server.getServer()).publishDelta(delta, deployPath, monitor);
+			results = new PublishCopyUtil(server.getServer(), deployPath, tempDeployPath)
+						.publishDelta(delta, deployPath, monitor);
 		else if( delta.length > 0 ) {
 			if( isBinaryObject(moduleTree))
 				results = copyBinaryModule(moduleTree);
@@ -176,7 +181,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
 		IModule mod = module[module.length-1];
-		IStatus[] errors = localSafeDelete(getDeployPath(module, server.getDeployFolder()));
+		IStatus[] errors = localSafeDelete(getDeployPath(module, server));
 		if( errors.length > 0 ) {
 			publishState = IServer.PUBLISH_STATE_FULL;
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_REMOVE_FAIL,
@@ -195,7 +200,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 	
 	protected IStatus[] copyBinaryModule(IModule[] moduleTree) {
 		try {
-			IPath deployPath = getDeployPath(moduleTree, server.getDeployFolder());
+			IPath deployPath = getDeployPath(moduleTree, server);
 			FileUtilListener listener = new FileUtilListener();
 			IModuleResource[] members = getResources(moduleTree);
 			File source = (File)members[0].getAdapter(File.class);

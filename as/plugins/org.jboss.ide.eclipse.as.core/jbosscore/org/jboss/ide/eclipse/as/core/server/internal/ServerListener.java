@@ -11,16 +11,17 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
@@ -29,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -121,9 +123,29 @@ public class ServerListener extends UnitedServerListener {
 	
 	protected void ensureDeployLocationAdded(IServer server, MBeanServerConnection connection) throws Exception {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		String deployFolder = ds.getDeployFolder();
-		String asURL = new File(deployFolder).toURL().toString(); 
-		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
-		connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
+		
+		ArrayList<String> folders = new ArrayList<String>();
+		folders.add(ds.getDeployFolder());
+
+		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
+		if (modules2 != null) {
+			int size = modules2.length;
+			for (int i = 0; i < size; i++) {
+				IModule[] module = new IModule[] { modules2[i] };
+				IStatus status = server.canModifyModules(module, null, null);
+				if (status != null && status.getSeverity() != IStatus.ERROR) {
+					String tempFolder = PublishUtil.getDeployRootFolder(module, ds).toString(); 
+					if( !folders.contains(tempFolder))
+						folders.add(tempFolder);
+				}
+			}
+		}
+
+		String[] folders2 = (String[]) folders.toArray(new String[folders.size()]);
+		for( int i = 0; i < folders2.length; i++ ) {
+			String asURL = new File(folders2[i]).toURL().toString(); 
+			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
+			connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
+		}
 	}
 }

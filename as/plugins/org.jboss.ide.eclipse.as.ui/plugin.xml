@@ -140,6 +140,16 @@
                name="Publish Events"
                typeId="org.jboss.ide.eclipse.as.core.publishers.Events.MajorType"/>
       </extension>
+    <extension
+          point="org.eclipse.wst.server.ui.editorPages">
+       <page
+             class="org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage"
+             id="org.jboss.ide.eclipse.as.ui.editor.deploymentPage"
+             name="Module Deployment"
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
+       </page>
+    </extension>
+
       <extension
          point="org.eclipse.wst.server.ui.editorPageSections">
       <section

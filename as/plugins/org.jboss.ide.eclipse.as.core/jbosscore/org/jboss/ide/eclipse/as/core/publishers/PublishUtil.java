@@ -22,7 +22,13 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
 
 public class PublishUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -59,7 +65,51 @@ public class PublishUtil {
 		return count;
 	}
 
-	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
+	private static String getDeployRootFolder(IModule[] moduleTree, 
+			IDeployableServer server, String defaultFolder, String moduleProperty) {
+		String folder = defaultFolder;
+		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferences(server.getServer());
+		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences("local"); //$NON-NLS-1$
+		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
+		if( modPrefs != null ) {
+			String loc = modPrefs.getProperty(moduleProperty);
+			if( loc != null && !loc.equals("") ) { //$NON-NLS-1$
+				if( !new Path(loc).isAbsolute()) {
+					folder = server.getServer().getRuntime().getLocation().append(loc).toString();
+				} else {
+					folder = loc;
+				}
+				// TODO translate for variables?
+			}
+		}
+		return folder;
+	}
+	
+	public static IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		String folder = getDeployRootFolder(
+				moduleTree, server, 
+				server.getDeployFolder(), 
+				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
+		return getDeployPath(moduleTree, folder);
+	}
+
+	public static IPath getDeployRootFolder(IModule[] moduleTree, IDeployableServer server) {
+		String folder = getDeployRootFolder(
+				moduleTree, server, 
+				server.getDeployFolder(), 
+				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
+		return new Path(folder);
+	}
+
+	public static IPath getTempDeployFolder(IModule[] moduleTree, IDeployableServer server) {
+		String folder = getDeployRootFolder(
+				moduleTree, server, 
+				server.getTempDeployFolder(), 
+				IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC);
+		return new Path(folder);
+	}
+	
+	private static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
 		IPath root = new Path( deployFolder );
 		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {

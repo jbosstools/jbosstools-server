@@ -78,10 +78,11 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
-			IPath destFolder = new Path(server.getDeployFolder());
-			IPath tempDestFolder = new Path(server.getTempDeployFolder());
-			File tempDestFile = tempDestFolder.append(sourcePath.lastSegment()).toFile();
+			
+			IPath destFolder = PublishUtil.getDeployPath(new IModule[]{module}, server).removeLastSegments(1);;
+			IPath tempDestFolder = PublishUtil.getTempDeployFolder(new IModule[]{module}, server).removeLastSegments(1);;
 			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
+			File tempDestFile = tempDestFolder.append(sourcePath.lastSegment()).toFile();
 			if( destFile.exists())
 				destFile.delete();
 			FileUtilListener l = new FileUtilListener();
@@ -115,7 +116,7 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 		if( delegate != null ) {
 			IPath sourcePath = delegate.getGlobalSourcePath();
-			IPath destFolder = new Path(server.getDeployFolder());
+			IPath destFolder = PublishUtil.getDeployPath(new IModule[]{module}, server).removeLastSegments(1);
 			FileUtilListener l = new FileUtilListener();
 			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
 			FileUtil.safeDelete(destFile, l);

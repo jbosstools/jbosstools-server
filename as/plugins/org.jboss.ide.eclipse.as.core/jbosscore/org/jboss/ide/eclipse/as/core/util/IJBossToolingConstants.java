@@ -72,4 +72,9 @@ public interface IJBossToolingConstants {
 	public static final int JNDI_DEFAULT_PORT = 1099;
 	public static final int JBOSS_WEB_DEFAULT_PORT = 8080;
 	
+	
+	public static final String LOCAL_DEPLOYMENT_NAME = "name";  //$NON-NLS-1$
+	public static final String LOCAL_DEPLOYMENT_LOC = "location";  //$NON-NLS-1$
+	public static final String LOCAL_DEPLOYMENT_TEMP_LOC = "tempLocation";  //$NON-NLS-1$
+
 }

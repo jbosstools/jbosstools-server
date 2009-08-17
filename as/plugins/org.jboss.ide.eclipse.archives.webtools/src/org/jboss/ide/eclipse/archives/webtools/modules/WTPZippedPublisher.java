@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 
 import de.schlichtherle.io.ArchiveDetector;
@@ -157,8 +158,8 @@ public class WTPZippedPublisher extends PublishUtil implements IJBossServerPubli
 	}
 	
 	protected IStatus[] removeModule(IServer server, IModule[] module) {
-		String depFolder = getDeployableServer(server).getDeployFolder();
-		IPath deployPath = getDeployPath(module, depFolder);
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		IPath deployPath = getDeployPath(module, ds);
         final ArrayList<IStatus> status = new ArrayList<IStatus>();
 		IFileUtilListener listener = new IFileUtilListener() {
 			public void fileCopied(File source, File dest, boolean result,Exception e) {}
@@ -181,9 +182,9 @@ public class WTPZippedPublisher extends PublishUtil implements IJBossServerPubli
 	
 	protected IStatus[] fullPublish(IServer server, IModule[] module) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		try {
-			String depFolder = getDeployableServer(server).getDeployFolder();
-			IPath path = getDeployPath(module, depFolder);
+			IPath path = getDeployPath(module, ds);
 			// Get rid of the old
 			FileUtil.safeDelete(path.toFile(), null);
 			
@@ -203,8 +204,8 @@ public class WTPZippedPublisher extends PublishUtil implements IJBossServerPubli
 	}
 	
 	protected IStatus[] publishChanges(IServer server, IModule[] module) {
-		String depFolder = getDeployableServer(server).getDeployFolder();
-		IPath path = getDeployPath(module, depFolder);
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		IPath path = getDeployPath(module, ds);
 		de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 		IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
 		return publishChanges(server, deltas, root);
