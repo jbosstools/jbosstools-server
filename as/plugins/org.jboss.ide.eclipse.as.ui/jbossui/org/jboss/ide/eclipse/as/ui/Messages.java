@@ -174,6 +174,8 @@ public class Messages extends NLS {
 	public static String EditorUseCustomDeployFolder;
 	public static String EditorSetDeployLabel;
 	public static String EditorSetTempDeployLabel;
+	public static String EditorEditDeployLocCommand;
+	public static String EditorModule;
 	public static String EditorZipDeployments;
 	public static String EditorSetRadioClicked;
 	public static String EditorDeployDNE;
@@ -197,6 +199,9 @@ public class Messages extends NLS {
 	public static String EditorCPD_DefaultDescription;
 	public static String EditorCPD_RestoreDefault;
 	public static String EditorNoRuntimeSelected;
+	public static String EditorLocalDeployment;
+	
+	
 	public static String ExploreUtils_Action_Text;
 	public static String ExploreUtils_Description;
 
