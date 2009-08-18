@@ -164,6 +164,26 @@ public final class XMLMemento implements IMemento {
 		}
 		return results;
 	}
+	
+	public String[] getChildNames() {
+		// Get the nodes.
+		NodeList nodes = element.getChildNodes();
+		int size = nodes.getLength();
+		if (size == 0)
+			return new String[0];
+
+		// Extract each node with given type.
+		List<String> list = new ArrayList<String>();
+		for (int nX = 0; nX < size; nX ++) {
+			Node node = nodes.item(nX);
+			if (node instanceof Element) {
+				Element element2 = (Element)node;
+				if (!list.contains(element2.getNodeName()))
+					list.add(element2.getNodeName());
+			}
+		}
+		return (String[]) list.toArray(new String[list.size()]);
+	}
 
 	/**
 	 * Return the contents of this memento as a byte array.
