@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.wtp.override.ui.WTPOveridePlugin;
+import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
 
 public class DependencyPageExtensionManager {
 	private static DependencyPageExtensionManager manager = null;

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.DependencyPageExtensionManager.ReferenceExtension;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 
 public class NewReferenceRootWizardFragment extends WizardFragment {
 	protected Map<String, WizardFragment> fragmentMap = 

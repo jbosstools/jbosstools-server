@@ -10,7 +10,7 @@
  *	   David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  *     Stefan Dimov, stefan.dimov@sap.com - bugs 207826, 222651
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +79,8 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
-import org.jboss.ide.eclipse.as.wtp.override.ui.WTPOveridePlugin;
+import org.jboss.ide.eclipse.as.wtp.ui.Messages;
+import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl {

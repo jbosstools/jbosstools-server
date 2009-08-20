@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

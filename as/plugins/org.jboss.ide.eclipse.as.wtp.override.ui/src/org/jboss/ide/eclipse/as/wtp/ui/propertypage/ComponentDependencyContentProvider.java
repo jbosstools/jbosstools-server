@@ -9,7 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *     Stefan Dimov, stefan.dimov@sap.com - bug 207826
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
 
 /*

@@ -1,12 +1,10 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.BuildPathDialogAccess;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -14,18 +12,18 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveCom
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 
-public class VariableReferenceWizardFragment extends JarReferenceWizardFragment {
+public class ExternalJarReferenceWizardFragment extends JarReferenceWizardFragment {
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		Composite c = super.createComposite(parent, handle);
-		handle.setTitle("Add a Variable Reference");
-		handle.setDescription("Here you can reference a variable which maps to a single jar.\n"
+		handle.setTitle("Add an External Jar Reference");
+		handle.setDescription("Here you can reference a filesystem Jar\n"
 						+ "This is not a suggested use-case, but is here for backwards compatability.");
 		return c;
 	}
 
 	protected void buttonPressed() {
-		selected = BuildPathDialogAccess.chooseVariableEntries(
-				browse.getShell(), new Path[0]);
+		selected = BuildPathDialogAccess
+			.chooseExternalJAREntries(browse.getShell());
 		viewer.refresh();
 	}
 
@@ -35,17 +33,14 @@ public class VariableReferenceWizardFragment extends JarReferenceWizardFragment 
 			ArrayList<IVirtualComponent> compList = new ArrayList<IVirtualComponent>();
 			ArrayList<String> paths = new ArrayList<String>();
 			for (int i = 0; i < selected.length; i++) {
-				IPath resolvedPath = JavaCore.getResolvedVariablePath(selected[i]);
-				java.io.File file = new java.io.File(resolvedPath.toOSString());
-				if (file.isFile() && file.exists()) {
-					String type = VirtualArchiveComponent.VARARCHIVETYPE
-							+ IPath.SEPARATOR;
-					IVirtualComponent archive = ComponentCore
-							.createArchiveComponent(rootComponent.getProject(),
-									type + selected[i].toString());
-					compList.add(archive);
-					paths.add(resolvedPath.lastSegment());
-				}
+				// IPath fullPath = project.getFile(selected[i]).getFullPath();
+				String type = VirtualArchiveComponent.LIBARCHIVETYPE
+						+ IPath.SEPARATOR;
+				IVirtualComponent archive = ComponentCore
+						.createArchiveComponent(rootComponent.getProject(),
+								type + selected[i].toString());
+				compList.add(archive);
+				paths.add(selected[i].lastSegment());
 			}
 			IVirtualComponent[] components = (IVirtualComponent[]) compList.toArray(new IVirtualComponent[compList.size()]);
 			String[] paths2 = (String[]) paths.toArray(new String[paths.size()]);

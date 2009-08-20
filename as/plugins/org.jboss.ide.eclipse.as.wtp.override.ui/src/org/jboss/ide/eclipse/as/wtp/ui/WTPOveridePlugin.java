@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui;
+package org.jboss.ide.eclipse.as.wtp.ui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;

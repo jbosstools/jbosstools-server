@@ -1,11 +1,11 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage.impl;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.IDependencyPageProvider;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.IModuleDependenciesControl;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ModuleAssemblyRootPage;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IDependencyPageProvider;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IModuleDependenciesControl;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.ModuleAssemblyRootPage;
 
 public class EarModuleDependencyPageProvider implements IDependencyPageProvider {
 

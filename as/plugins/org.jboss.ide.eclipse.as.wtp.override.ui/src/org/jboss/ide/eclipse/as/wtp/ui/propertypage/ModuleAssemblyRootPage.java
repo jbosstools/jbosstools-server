@@ -10,7 +10,7 @@
  * rfrost@bea.com - conversion to single property page impl
  *******************************************************************************/
 
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl;
+package org.jboss.ide.eclipse.as.wtp.ui.propertypage.impl;
 
 import java.util.ArrayList;
 
@@ -14,8 +14,8 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.AddModuleDependenciesPropertiesPage;
-import org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ModuleAssemblyRootPage;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.AddModuleDependenciesPropertiesPage;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.ModuleAssemblyRootPage;
 
 public class EarModuleDependenciesPropertyPage extends
 		AddModuleDependenciesPropertiesPage {
