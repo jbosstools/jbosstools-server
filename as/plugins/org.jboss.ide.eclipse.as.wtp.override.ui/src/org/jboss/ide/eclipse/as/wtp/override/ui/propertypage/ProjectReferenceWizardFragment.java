@@ -32,7 +32,6 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.wtp.override.core.vcf.ComponentUtils;
 
 public class ProjectReferenceWizardFragment extends WizardFragment {
 	private LabelProvider labelProvider = null;
@@ -83,7 +82,7 @@ public class ProjectReferenceWizardFragment extends WizardFragment {
 		}
 		IVirtualComponent comp = ComponentCore.createComponent(selected);
 		String path = selected.getName();
-		String extension = ComponentUtils.getDefaultProjectExtension(comp);
+		String extension = ".jar";
 		path += extension;
 
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, comp);

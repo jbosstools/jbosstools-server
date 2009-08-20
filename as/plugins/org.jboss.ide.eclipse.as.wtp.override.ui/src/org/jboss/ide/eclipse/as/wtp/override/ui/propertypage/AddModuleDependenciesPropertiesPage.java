@@ -79,7 +79,6 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.jboss.ide.eclipse.as.wtp.override.core.vcf.ComponentUtils;
 import org.jboss.ide.eclipse.as.wtp.override.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.override.ui.WTPOveridePlugin;
  
@@ -849,7 +848,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 */
 	protected String getVirtualComponentNameWithExtension(IVirtualComponent virtComp) {
 		String virtCompURIMapName = this.getURIMappingName(virtComp);
-		String extension = ComponentUtils.getDefaultProjectExtension(virtComp);
+		String extension = ".jar";
 		virtCompURIMapName += extension;
 		return virtCompURIMapName;
 	}
