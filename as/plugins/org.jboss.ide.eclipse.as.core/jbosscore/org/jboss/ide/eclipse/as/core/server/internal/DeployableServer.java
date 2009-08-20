@@ -26,9 +26,9 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
@@ -78,14 +78,27 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 
 
 	private IModule[] doGetParentModules(IModule module) {
-		IModule[] ears = org.eclipse.wst.server.core.ServerUtil.getModules(IWTPConstants.FACET_EAR);
+		// get all supported modules
+		IModule[] supported = 
+			org.eclipse.wst.server.core.ServerUtil.getModules(
+					getServer().getServerType().getRuntimeType().getModuleTypes());
 		ArrayList<IModule> list = new ArrayList<IModule>();
-		for (int i = 0; i < ears.length; i++) {
-			IEnterpriseApplication ear = (IEnterpriseApplication)ears[i].loadAdapter(IEnterpriseApplication.class,null);
-			IModule[] childs = ear.getModules();
-			for (int j = 0; j < childs.length; j++) {
-				if(childs[j].equals(module))
-					list.add(ears[i]);
+		
+		for( int i = 0; i < supported.length; i++ ) {
+			IEnterpriseApplication jeeMod = (IEnterpriseApplication)supported[i].loadAdapter(IEnterpriseApplication.class,null);
+			IJBTModule jbtMod = (IJBTModule)supported[i].loadAdapter(IJBTModule.class, null);
+			if( jeeMod != null ) {
+				IModule[] childs = jeeMod.getModules();
+				for (int j = 0; j < childs.length; j++) {
+					if(childs[j].equals(module))
+						list.add(supported[i]);
+				}
+			} else if( jbtMod != null ) {
+				IModule[] childs = jbtMod.getModules();
+				for (int j = 0; j < childs.length; j++) {
+					if(childs[j].equals(module))
+						list.add(supported[i]);
+				}
 			}
 		}
 		return list.toArray(new IModule[list.size()]);

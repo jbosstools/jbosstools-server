@@ -15,11 +15,9 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
-import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 public class ModuleUtil {
 	public static ArrayList<IModule[]> getShallowChildren(IServer server, IModule[] root) {
@@ -50,24 +48,14 @@ public class ModuleUtil {
 	public static IModule[] getChildModules(IModule[] module) {
 		int last = module.length-1;
 		if (module[last] != null && module[last].getModuleType() != null) {
-			IModuleType moduleType = module[last].getModuleType();
-			if(IJBossServerConstants.FACET_EAR.equals(moduleType.getId())) {
-				IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[0]
-						.loadAdapter(IEnterpriseApplication.class, null);
-				if (enterpriseApplication != null) {
-					IModule[] earModules = enterpriseApplication.getModules(); 
-					if ( earModules != null) {
-						return earModules;
-					}
-				}
-			}
-			else if (IJBossServerConstants.FACET_WEB.equals(moduleType.getId())) {
-				IWebModule webModule = (IWebModule) module[last].loadAdapter(IWebModule.class, null);
-				if (webModule != null) {
-					IModule[] modules = webModule.getModules();
-					return modules;
-				}
-			}
+			IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[last]
+			                           .loadAdapter(IEnterpriseApplication.class, null);
+			if( enterpriseApplication != null )
+				return enterpriseApplication.getModules() == null ? new IModule[]{} : enterpriseApplication.getModules();
+			
+			IJBTModule jbtMod = (IJBTModule)module[last].loadAdapter(IJBTModule.class, null);
+			if( jbtMod != null )
+				return jbtMod.getModules();
 		}
 		return new IModule[0];
 	}
