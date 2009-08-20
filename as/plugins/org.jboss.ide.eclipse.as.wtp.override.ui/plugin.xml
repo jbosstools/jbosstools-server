@@ -23,14 +23,14 @@
       </page>
       </extension>
     <extension
-          point="org.jboss.ide.eclipse.as.wtp.override.ui.moduleDependencyPropertyPage">
+          point="org.jboss.ide.eclipse.as.wtp.ui.moduleDependencyPropertyPage">
        <dependencyPage
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.impl.EarModuleDependencyPageProvider"
              id="org.jboss.ide.eclipse.as.wtp.override.ui.earDependencyPage">
        </dependencyPage>
     </extension>
     <extension
-          point="org.jboss.ide.eclipse.as.wtp.override.ui.referenceWizardFragment">
+          point="org.jboss.ide.eclipse.as.wtp.ui.referenceWizardFragment">
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.override.ui.propertypage.ProjectReferenceWizardFragment"
              icon="icons/prj_obj.gif"
