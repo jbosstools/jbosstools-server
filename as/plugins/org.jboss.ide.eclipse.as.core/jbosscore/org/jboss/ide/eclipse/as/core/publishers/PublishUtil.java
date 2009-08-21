@@ -68,7 +68,8 @@ public class PublishUtil {
 	private static String getDeployRootFolder(IModule[] moduleTree, 
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
 		String folder = defaultFolder;
-		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferences(server.getServer());
+		// TODO bug 286699
+		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getServer());
 		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences("local"); //$NON-NLS-1$
 		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
 		if( modPrefs != null ) {

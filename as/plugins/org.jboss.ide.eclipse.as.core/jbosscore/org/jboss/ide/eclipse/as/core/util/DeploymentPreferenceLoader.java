@@ -1,22 +1,41 @@
 package org.jboss.ide.eclipse.as.core.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
 public class DeploymentPreferenceLoader {
-	public static DeploymentPreferences loadPreferences(IServer server) {
+	public static final String DEPLOYMENT_PREFERENCES_KEY = "org.jboss.ide.eclipse.as.core.util.deploymentPreferenceKey"; //$NON-NLS-1$
+	
+	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
-		return new DeploymentPreferences(f);
+		InputStream is = null;
+		try {
+			if( f.exists())
+				is = new FileInputStream(f);
+		} catch( IOException ioe) {}
+		return new DeploymentPreferences(is);
+	}
+	
+	public static DeploymentPreferences loadPreferencesFromServer(IServer server) {
+		String xml = ((Server)server).getAttribute(DEPLOYMENT_PREFERENCES_KEY, (String)null);
+		ByteArrayInputStream bis = null;
+		if( xml != null ) {
+			bis = new ByteArrayInputStream(xml.getBytes());
+		}
+		return new DeploymentPreferences(bis);
 	}
 
 	public static void savePreferences(IServer server, DeploymentPreferences prefs) throws IOException {
@@ -24,6 +43,12 @@ public class DeploymentPreferenceLoader {
 		prefs.getMemento().saveToFile(f.getAbsolutePath());
 	}
 
+	public static void savePreferences(OutputStream os, DeploymentPreferences prefs) {
+		try {
+			prefs.getMemento().save(os);
+		} catch(IOException ioe) {}
+	}
+	
 	protected static File getFile(IServer server) {
 		IPath loc = ServerUtil.getServerStateLocation(server);
 		return loc.append("deploymentPreferences.xml").toFile(); //$NON-NLS-1$
@@ -32,18 +57,15 @@ public class DeploymentPreferenceLoader {
 	public static class DeploymentPreferences {
 		private HashMap<String, DeploymentTypePrefs> children;
 		private XMLMemento memento;
-		public DeploymentPreferences(File f) {
+		public DeploymentPreferences(InputStream is) {
 			children = new HashMap<String, DeploymentTypePrefs>();
-			if( f.exists()) {
-				try {
-					FileInputStream is = new FileInputStream(f);
+			if( is != null) {
 					memento = XMLMemento.createReadRoot(is);
 					String[] deploymentTypes = memento.getChildNames();
 					for( int i = 0; i < deploymentTypes.length; i++ )
 						children.put(deploymentTypes[i], 
 								new DeploymentTypePrefs(deploymentTypes[i], 
 										memento.getChild(deploymentTypes[i])));
-				} catch( FileNotFoundException fnfe) {}
 			} else {
 				memento = XMLMemento.createWriteRoot("deployment"); //$NON-NLS-1$
 			}

@@ -1,5 +1,6 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,7 +20,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.IServerEditorPartInput;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
@@ -27,6 +27,7 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.eclipse.wst.server.ui.internal.editor.ServerEditorPartInput;
 import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
@@ -37,7 +38,8 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	private ArrayList<IModule> possibleModules;
 	private DeploymentPreferences preferences;
 	private ArrayList<IDeploymentEditorTab> tabs;
-
+	private ServerAttributeHelper helper; 
+	
 	public IModule[] getPossibleModules() {
 		return (IModule[]) possibleModules.toArray(new IModule[possibleModules.size()]);
 	}
@@ -70,11 +72,12 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 			commandManager = ((ServerEditorPartInput) sepi).getServerCommandManager();
 			readOnly = sepi.isServerReadOnly();
 		}
+		helper = new ServerAttributeHelper(server.getOriginal(), server);
 
 	}
 
 	public void createPartControl(Composite parent) {
-		preferences = DeploymentPreferenceLoader.loadPreferences(server.getOriginal());
+		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
 		tabs = new ArrayList<IDeploymentEditorTab>();
 		
 		FormToolkit toolkit = getFormToolkit(parent);
@@ -126,9 +129,18 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		}
 		public void execute() {
 			p.setProperty(key, newVal);
+			saveToWC();
 		}
 		public void undo() {
 			p.setProperty(key, oldVal);
+			saveToWC();
+		}
+		
+		protected void saveToWC() {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DeploymentPreferenceLoader.savePreferences(bos, preferences);
+			String asXML = new String(bos.toByteArray());
+			helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
 		}
 	}
 	
@@ -159,6 +171,8 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public void setFocus() {
 	}
 
+	
+	// Currently inactive!!! See bug 286699
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			DeploymentPreferenceLoader.savePreferences(server.getOriginal(), preferences);
