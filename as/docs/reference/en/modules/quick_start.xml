@@ -259,9 +259,9 @@
     <title>Other relevant resources on the topic</title>
 
     <para>All JBoss Developer Studio/JBoss Tools documentation you can find <ulink
-        url="http://docs.jboss.org/tools/2.1.0.GA">here</ulink>.</para>
+        url="http://docs.jboss.org/tools/2.1.0.GA">on JBoss Tools release documentation page</ulink>.</para>
     <para>The latest documentation builds are available <ulink
-        url="http://download.jboss.org/jbosstools/nightly-docs/">here</ulink>.</para>
+      url="http://download.jboss.org/jbosstools/nightly-docs/"> JBoss Tools nightly builds documentation page</ulink>.</para>
 
   	<para>Find out the answers on the frequently asked questions about JBoss AS 5 usage in the 
   		<ulink url="http://www.jboss.org/community/wiki/jboss5faq">JBoss5FAQ</ulink>.

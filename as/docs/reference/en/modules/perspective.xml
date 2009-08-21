@@ -778,7 +778,7 @@
 
             <para>Look up <ulink
                     url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"
-                    >here</ulink> to find parameters which can be specified for <property>JBoss
+                    >AS Installation Guide </ulink> to find parameters which can be specified for <property>JBoss
                     Server</property>.</para>
 
             <note>
