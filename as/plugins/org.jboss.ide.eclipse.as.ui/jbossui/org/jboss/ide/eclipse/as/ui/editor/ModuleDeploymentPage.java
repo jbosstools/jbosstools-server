@@ -84,7 +84,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		
 		ScrolledForm form = toolkit.createScrolledForm(parent);
 		toolkit.decorateFormHeading(form.getForm());
-		form.setText("Module Deployment");
+		form.setText("Deployment");
 		form.getBody().setLayout(new GridLayout());
 
 		final TabFolder tabFolder = new TabFolder(form.getBody(), SWT.NONE);
