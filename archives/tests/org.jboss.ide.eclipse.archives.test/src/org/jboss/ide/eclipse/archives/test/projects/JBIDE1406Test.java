@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.ResourcesUtils;
 
 /**
  * This class tests first and foremost
@@ -36,22 +36,19 @@ import org.jboss.tools.common.test.util.TestProjectProvider;
  *
  */
 public class JBIDE1406Test extends TestCase {
-	private TestProjectProvider provider;
 	private IProject project;
 	private IPath outputDir;
 	private IPath propsFile;
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE1406",
-				null, true);
-		project = provider.getProject();
+		project = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE1406");
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		outputDir = project.getLocation().append("output").append("JBIDE1406.jar");
 		propsFile = outputDir.append("src").append("in.properties");
 	}
 
 	protected void tearDown() throws Exception {
-		provider.dispose();
+		ResourcesUtils.deleteProject("JBIDE1406");
 	}
 
 	public void testJBIDE1406() {

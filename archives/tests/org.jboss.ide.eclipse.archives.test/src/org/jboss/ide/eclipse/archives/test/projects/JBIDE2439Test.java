@@ -25,24 +25,19 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.ResourcesUtils;
 
 public class JBIDE2439Test extends TestCase {
-	private TestProjectProvider aProjectProvider, bProjectProvider;
 	private IProject aProject, bProject;
 
 	protected void setUp() throws Exception {
-		aProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439a",
-				null, true);
-		aProject = aProjectProvider.getProject();
+		aProject = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439a");
 		aProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 
 
-		bProjectProvider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439b",
-				null, true);
-		bProject = bProjectProvider.getProject();
+		bProject = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2439b");
 		bProject.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 
 		IResource folder = bProject.findMember("linked");
@@ -56,8 +51,8 @@ public class JBIDE2439Test extends TestCase {
 
 
 	protected void tearDown() throws Exception {
-		aProjectProvider.dispose();
-		bProjectProvider.dispose();
+		ResourcesUtils.deleteProject("JBIDE2439a");
+		ResourcesUtils.deleteProject("JBIDE2439b");
 	}
 
 	public void testJBIDE2439() {

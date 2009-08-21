@@ -20,24 +20,21 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.ResourcesUtils;
 
 public class JBIDE2099Test extends TestCase {
-	private TestProjectProvider provider;
 	private IProject project;
 	private IPath outputWar;
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2099",
-				null, true);
-		project = provider.getProject();
+		project = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2099");
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		outputWar = project.getLocation().append("output").append("dist")
 					.append("unified-http-invoker.sar").append("unified-invoker.war");
 	}
 
 	protected void tearDown() throws Exception {
-		provider.dispose();
+		ResourcesUtils.deleteProject("JBIDE2099");
 	}
 
 	public void testJBIDE2099() {

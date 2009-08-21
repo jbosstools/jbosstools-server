@@ -30,27 +30,23 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
 import org.jboss.ide.eclipse.archives.ui.actions.BuildAction;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate.WrappedProject;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.ResourcesUtils;
 
 public class BuildActionTest extends TestCase {
-	private TestProjectProvider provider;
 	private IProject project;
 	private boolean waiting = true;
 	private boolean scheduled = false;
 	private JobChangeAdapter jobChangeAdapter;
 	private CoreException ce;
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2099",
-				null, true);
-		project = provider.getProject();
+		project = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2099");
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		Job.getJobManager().addJobChangeListener(getJobChangeAdapter());
 	}
 
 	protected void tearDown() throws Exception {
-		provider.dispose();
-		Job.getJobManager().removeJobChangeListener(jobChangeAdapter);
+		ResourcesUtils.deleteProject("JBIDE2099");
 	}
 
 	protected JobChangeAdapter getJobChangeAdapter() {

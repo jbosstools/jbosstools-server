@@ -19,22 +19,19 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
-import org.jboss.tools.common.test.util.TestProjectProvider;
+import org.jboss.tools.test.util.ResourcesUtils;
 
 public class JBIDE2315Test extends TestCase {
-	private TestProjectProvider provider;
 	private IProject project;
 
 	protected void setUp() throws Exception {
-		provider = new TestProjectProvider(ArchivesTest.PLUGIN_ID,
-				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2315",
-				null, true);
-		project = provider.getProject();
+		project = ResourcesUtils.importProject(ArchivesTest.PLUGIN_ID,
+				"inputs" + Path.SEPARATOR + "projects" + Path.SEPARATOR + "JBIDE2315");
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
 
 	protected void tearDown() throws Exception {
-		provider.dispose();
+		ResourcesUtils.deleteProject("JBIDE2315");
 	}
 
 	public void testJBIDE2311() {
