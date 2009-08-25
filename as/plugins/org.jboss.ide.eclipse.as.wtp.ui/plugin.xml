@@ -12,7 +12,7 @@
       		objectClass="org.eclipse.core.resources.IProject"
       		name="Module Assembly"
             class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ModuleAssemblyRootPage"
-            id="org.jboss.ide.eclipse.as.wtp.override.ui.J2EEDependenciesPage">
+            id="org.jboss.ide.eclipse.as.wtp.ui.ModuleAssemblyPage">
            <enabledWhen>
 			<and>
 				<adapt
@@ -26,7 +26,7 @@
           point="org.jboss.ide.eclipse.as.wtp.ui.moduleDependencyPropertyPage">
        <dependencyPage
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.impl.EarModuleDependencyPageProvider"
-             id="org.jboss.ide.eclipse.as.wtp.override.ui.earDependencyPage">
+             id="org.jboss.ide.eclipse.as.wtp.ui.earDependencyPage">
        </dependencyPage>
     </extension>
     <extension
@@ -34,25 +34,25 @@
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ProjectReferenceWizardFragment"
              icon="icons/prj_obj.gif"
-             id="org.jboss.ide.eclipse.as.wtp.override.ui.newProjectReference"
+             id="org.jboss.ide.eclipse.as.wtp.ui.newProjectReference"
              name="Project">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.JarReferenceWizardFragment"
              icon="icons/jar_obj.gif"
-             id="org.jboss.ide.eclipse.as.wtp.override.ui.jarReference"
+             id="org.jboss.ide.eclipse.as.wtp.ui.jarReference"
              name="Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ExternalJarReferenceWizardFragment"
              icon="icons/jar_obj.gif"
-             id="org.jboss.ide.eclipse.as.wtp.override.ui.externalJarReference"
+             id="org.jboss.ide.eclipse.as.wtp.ui.externalJarReference"
              name="External Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.VariableReferenceWizardFragment"
              icon="icons/jar_obj.gif"
-             id="org.jboss.ide.eclipse.as.wtp.override.ui.variableReference"
+             id="org.jboss.ide.eclipse.as.wtp.ui.variableReference"
              name="Variable">
        </referenceFragment>
     </extension>
