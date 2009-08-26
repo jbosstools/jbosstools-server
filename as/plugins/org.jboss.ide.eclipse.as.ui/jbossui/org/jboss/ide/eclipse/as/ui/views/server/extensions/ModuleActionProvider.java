@@ -194,7 +194,7 @@ public class ModuleActionProvider extends CommonActionProvider {
 		ModuleServer ms = selection[0];
 		IModule[] module = ms.module;
 		IJBossServerPublisher publisher = ExtensionManager.getDefault()
-				.getPublisher(ms.getServer(), module);
+				.getPublisher(ms.getServer(), module, "local");
 		IPath path = null;
 		IDeployableServer deployableServer = ServerConverter
 				.getDeployableServer(ms.server);

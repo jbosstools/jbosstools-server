@@ -5,6 +5,7 @@
    <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
    <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
    <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
+   <extension-point id="publishMethod" name="org.jboss.ide.eclipse.as.core.publishMethod" schema="schema/publishMethod.exsd"/>
 
    <extension
          point="org.eclipse.wst.server.core.serverTypes">

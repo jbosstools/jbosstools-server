@@ -58,8 +58,8 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
-	public boolean accepts(IServer server, IModule[] module) {
-		if( module != null && module.length > 0
+	public boolean accepts(String method, IServer server, IModule[] module) {
+		if( "local".equals(method) && module != null && module.length > 0 //$NON-NLS-1$
 				&& PackageModuleFactory.MODULE_TYPE.equals(module[0].getModuleType().getId()))
 			return true;
 		return false;

@@ -37,9 +37,10 @@ import de.schlichtherle.io.ArchiveDetector;
 
 public class WTPZippedPublisher extends PublishUtil implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
-	public boolean accepts(IServer server, IModule[] module) {
+	public boolean accepts(String method, IServer server, IModule[] module) {
 		// TODO check for zip preference
-		return ModuleCoreNature.isFlexibleProject(module[0].getProject());
+		return "local".equals(method) &&  //$NON-NLS-1$
+			ModuleCoreNature.isFlexibleProject(module[0].getProject());
 	}
 
 	public int getPublishState() {

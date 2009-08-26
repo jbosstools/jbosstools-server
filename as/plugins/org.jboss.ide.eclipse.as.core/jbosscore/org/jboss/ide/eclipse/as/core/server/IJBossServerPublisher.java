@@ -30,12 +30,9 @@ public interface IJBossServerPublisher {
 	
 
 	// pre-publish
-	public boolean accepts(IServer server, IModule[] module);
-	
-	
-	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException;
-	
+	public boolean accepts(String method, IServer server, IModule[] module);
 	// post publish
 	public int getPublishState();
+	public IStatus publishModule(IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException;
 }

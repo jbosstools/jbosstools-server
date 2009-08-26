@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -22,8 +21,8 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 
@@ -41,59 +40,31 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
+		IJBossServerPublishMethod method = getPublishMethod();
+		method.publishStart(this, monitor);
 	}
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-        IModule[] modules = this.getServer().getModules();
-        boolean allpublished= true;
-        for (int i = 0; i < modules.length; i++) {
-        	if(this.getServer().getModulePublishState(new IModule[]{modules[i]})!=IServer.PUBLISH_STATE_NONE)
-                allpublished=false;
-        }
-        if(allpublished)
-            setServerPublishState(IServer.PUBLISH_STATE_NONE);
+		IJBossServerPublishMethod method = getPublishMethod();
+		int result = method.publishFinish(this, monitor);
+		setServerPublishState(result);
 	}
 
-	
-	/*
-	 * The module is a list of module trail points, from parent to child
-	 * Thus: 
-	 *    {ear, war} for the war portion,  {ear, ejb} for the ejb portion
-	 * 
-	 * (non-Javadoc)
-	 * @see org.eclipse.wst.server.core.model.ServerBehaviourDelegate#publishModule(int, int, org.eclipse.wst.server.core.IModule[], org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		// kind = [incremental, full, auto, clean] = [1,2,3,4]
-		// delta = [no_change, added, changed, removed] = [0,1,2,3]
-		if( module.length == 0 ) return;
-		int modulePublishState = getServer().getModulePublishState(module);
-		int publishType = getPublishType(kind, deltaKind, modulePublishState);
-		IJBossServerPublisher publisher;
-		
-		// Let the publisher decide what to do
-		if( module.length > 0 ) {
-			publisher = ExtensionManager.getDefault().getPublisher(getServer(), module);
-			IModuleResourceDelta[] deltas = new IModuleResourceDelta[]{};
-			if( deltaKind != ServerBehaviourDelegate.REMOVED)
-				deltas = getPublishedResourceDelta(module);
-			if( publisher != null ) {
-				try {
-					IStatus result = publisher.publishModule(getServer(), module, 
-							publishType, deltas, monitor);
-					if( result != null )
-				        ServerLogger.getDefault().log(getServer(), result);
-				} catch( CoreException ce ) {
-					throw ce;
-				} finally {
-					setModulePublishState(module, publisher.getPublishState());
-				}
-			}
-		}
+		IJBossServerPublishMethod method = getPublishMethod();
+		int result = method.publishModule(this, kind, deltaKind, module, monitor);
+		setModulePublishState(module, result);
 	}
 	
+	protected IJBossServerPublishMethod getPublishMethod() {
+		return new LocalPublishMethod(); // TODO FIX THIS
+	}
 	
-	protected int getPublishType(int kind, int deltaKind, int modulePublishState) {
+	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
+		return super.getPublishedResourceDelta(module);
+	}
+
+	public int getPublishType(int kind, int deltaKind, int modulePublishState) {
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			return IJBossServerPublisher.REMOVE_PUBLISH;
 		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {

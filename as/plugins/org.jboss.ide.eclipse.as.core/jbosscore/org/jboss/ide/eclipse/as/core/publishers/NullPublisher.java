@@ -31,7 +31,7 @@ public class NullPublisher implements IJBossServerPublisher {
 	public int getPublishState() {
 		return IServer.PUBLISH_STATE_NONE;
 	}
-	public boolean accepts(IServer server, IModule[] module) {
+	public boolean accepts(String method, IServer server, IModule[] module) {
 		return true;
 	}
 

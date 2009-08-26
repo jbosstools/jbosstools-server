@@ -140,14 +140,14 @@ public class ExtensionManager {
 	}
 	
 	
-	public IJBossServerPublisher getPublisher(IServer server, IModule[] module) {
+	public IJBossServerPublisher getPublisher(IServer server, IModule[] module, String deployMethod) {
 		if( publishers == null ) 
 			loadPublishers();
 		Iterator<PublisherWrapper> i = publishers.iterator();
 		PublisherWrapper wrapper;
 		while(i.hasNext()) {
 			wrapper = i.next();
-			if( wrapper.publisher.accepts(server, module))
+			if( wrapper.publisher.accepts(deployMethod, server, module))
 				return wrapper.getNewInstance();
 		}
 		return null;

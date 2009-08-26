@@ -319,7 +319,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			}
 		}
 	}
-	public boolean accepts(IServer server, IModule[] module) {
-		return ModuleCoreNature.isFlexibleProject(module[0].getProject());
+	public boolean accepts(String type, IServer server, IModule[] module) {
+		return "local".equals(type) &&  //$NON-NLS-1$
+			ModuleCoreNature.isFlexibleProject(module[0].getProject());
 	}
 }

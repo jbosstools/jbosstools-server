@@ -46,8 +46,8 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 		return publishState;
 	}
 	
-	public boolean accepts(IServer server, IModule[] module) {
-		if( module != null && module.length > 0 
+	public boolean accepts(String method, IServer server, IModule[] module) {
+		if( "local".equals(method) && module != null && module.length > 0  //$NON-NLS-1$
 				&& module[module.length-1] != null  
 				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE))
 			return true;
