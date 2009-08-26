@@ -357,12 +357,12 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				String currentVM = jreCombo.getText();
 				if (showPreferencePage()) {
 					updateJREs();
-					updateErrorMessage();
 					jreCombo.setItems(jreNames);
 					jreCombo.setText(currentVM);
 					if (jreCombo.getSelectionIndex() == -1)
 						jreCombo.select(defaultVMIndex);
 					jreComboIndex = jreCombo.getSelectionIndex();
+					updateErrorMessage();
 				}
 			}
 		});
