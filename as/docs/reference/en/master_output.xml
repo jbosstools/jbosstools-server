@@ -26,13 +26,13 @@
     
      <bookinfo>
          <title>JBoss Server Manager Reference Guide</title>
-             <corpauthor>
-                 <inlinemediaobject>
-                     <imageobject role="fo">
-                         <imagedata fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
+             <corpauthor diffmk:change="added">
+                 <inlinemediaobject diffmk:change="added">
+                     <imageobject diffmk:change="added" role="fo">
+                         <imagedata diffmk:change="added" fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
                      </imageobject>	
-                     <imageobject role="html">
-                         <imagedata></imagedata>
+                     <imageobject diffmk:change="added" role="html">
+                         <imagedata diffmk:change="added"></imagedata>
                      </imageobject>	
                  </inlinemediaobject>           
              </corpauthor>
@@ -46,7 +46,7 @@
 	                       <copyright>
 			             <year>2007</year>
 							<year>2009</year>
-	                           <holder>JBoss by Red Hat</holder>
+	                           <holder><diffmk:wrapper diffmk:change="changed">JBoss by Red Hat</diffmk:wrapper></holder>
 	                       </copyright>
           <releaseinfo><diffmk:wrapper diffmk:change="changed">
            Version: 2.1.0.M2
@@ -66,58 +66,58 @@
 <chapter id="quick_start" role="updated" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/as/docs/reference/en/modules/quick_start.xml">
   <title>Quick Start with JBoss Server</title>
 
-  <para>This chapter covers the basics of working with the <property moreinfo="none">JBoss Server</property>.</para>
+  <para>This chapter covers the basics of working with the <property moreinfo="none">JBoss Server</property><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
   
-  <section id="JBoss_server_key_features">
-    <title>Key Features of JBoss Server</title>
-    <para>For a start, we propose you to look through the table of main features of JBoss Server:</para>
+  <section diffmk:change="added" id="JBoss_server_key_features">
+    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Features of JBoss Server</diffmk:wrapper></title>
+    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">For a start, we propose you to look through the table of main features of JBoss Server:</diffmk:wrapper></para>
  
-    <table>
+    <table diffmk:change="added">
       
-      <title>Key Functionality for JBoss Server</title>
-      <tgroup cols="3">
+      <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Functionality for JBoss Server</diffmk:wrapper></title>
+      <tgroup cols="3" diffmk:change="added">
         
-        <colspec align="left" colnum="1" colwidth="2*"></colspec>
-        <colspec colnum="2" colwidth="4*"></colspec>
-        <colspec align="left" colnum="3" colwidth="2*"></colspec>
+        <colspec align="left" colnum="1" colwidth="2*" diffmk:change="added"></colspec>
+        <colspec colnum="2" colwidth="4*" diffmk:change="added"></colspec>
+        <colspec align="left" colnum="3" colwidth="2*" diffmk:change="added"></colspec>
         
-        <thead>
-          <row>
-            <entry>Feature</entry>
-            <entry>Benefit</entry>
-            <entry>Chapter</entry>
+        <thead diffmk:change="added">
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Feature</diffmk:wrapper></entry>
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Benefit</diffmk:wrapper></entry>
+            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Chapter</diffmk:wrapper></entry>
           </row>
         </thead>
-        <tbody>
-          <row>
-            <entry><para>JBoss AS plugin</para></entry>
-            <entry><para>Using WTP, JBoss AS plugin allows working with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.</para></entry>
-            <entry>
-              <link linkend="runtimes_servers">runtimes and servers</link>
+        <tbody diffmk:change="added">
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">JBoss AS plugin</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Using WTP, JBoss AS plugin allows working with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="runtimes_servers"><diffmk:wrapper diffmk:change="added">runtimes and servers</diffmk:wrapper></link>
             </entry>
           </row>
           
-          <row>
-            <entry><para>JBoss AS Perspective</para></entry>
-            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and JBoss Server View for that purpose. </para></entry>
-            <entry>
-              <link linkend="perspective">JBoss AS perspective</link>
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">JBoss AS Perspective</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and JBoss Server View for that purpose. </diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="perspective"><diffmk:wrapper diffmk:change="added">JBoss AS perspective</diffmk:wrapper></link>
             </entry>
           </row>
           
-          <row>
-            <entry><para>Modules Deployment</para></entry>
-            <entry><para>A number of ways, provided by WTP and JBoss Tools, to deploy either a project or a single file on the server.</para></entry>
-            <entry>
-              <link linkend="modules">deploying modules</link>
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Modules Deployment</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">A number of ways, provided by WTP and JBoss Tools, to deploy either a project or a single file on the server.</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="modules"><diffmk:wrapper diffmk:change="added">deploying modules</diffmk:wrapper></link>
             </entry>
           </row>
           
-          <row>
-            <entry><para>TPTP Support</para></entry>
-            <entry><para>Test and Performance Tools Platform (TPTP)  profiling.</para></entry>
-            <entry>
-              <link linkend="tptp_support">TPTP support</link>
+          <row diffmk:change="added">
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">TPTP Support</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Test and Performance Tools Platform (TPTP)  profiling.</diffmk:wrapper></para></entry>
+            <entry diffmk:change="added">
+              <link diffmk:change="added" linkend="tptp_support"><diffmk:wrapper diffmk:change="added">TPTP support</diffmk:wrapper></link>
             </entry>
           </row>
           
@@ -136,10 +136,10 @@
   
   
   
-  <para> If you
+  <para diffmk:change="added"><diffmk:wrapper diffmk:change="added"> If you
     already have installed JBoss server and runtime you can quickly learn how to configure, start,
     stop the server, to know deployment and archiving processes. How to install runtimes and servers
-    read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
+    read in the </diffmk:wrapper><link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
     chapter.</para>
 
   <para>To start working with JBoss AS, select a <property moreinfo="none">JBoss AS Perspective</property> via
@@ -322,9 +322,12 @@
   <section>
     <title>Other relevant resources on the topic</title>
 
-    <para>All JBoss Developer Studio/JBoss Tools documentation you can find <ulink url="http://docs.jboss.org/tools/2.1.0.GA">here</ulink>.</para>
-    <para>The latest documentation builds are available <ulink url="http://download.jboss.org/jbosstools/nightly-docs/">here</ulink>.</para>
+    <para>All JBoss Developer Studio/JBoss Tools documentation you can find <ulink url="http://docs.jboss.org/tools/2.1.0.GA"><diffmk:wrapper diffmk:change="changed">on JBoss Tools release documentation page</diffmk:wrapper></ulink>.</para>
+    <para>The latest documentation builds are available <ulink url="http://download.jboss.org/jbosstools/nightly-docs/"><diffmk:wrapper diffmk:change="changed"> JBoss Tools nightly builds documentation page</diffmk:wrapper></ulink>.</para>
 
+  	<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Find out the answers on the frequently asked questions about JBoss AS 5 usage in the 
+  		</diffmk:wrapper><ulink diffmk:change="added" url="http://www.jboss.org/community/wiki/jboss5faq"><diffmk:wrapper diffmk:change="added">JBoss5FAQ</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">.
+  	</diffmk:wrapper></para>
   </section>
 
 </chapter>
@@ -492,12 +495,12 @@
               </entry>
             </row>
             
-            <row>
-              <entry>
-                <para>Directory</para>
+            <row diffmk:change="added">
+              <entry diffmk:change="added">
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Directory</diffmk:wrapper></para>
               </entry>
-              <entry>
-                <para>The path to a directory where the configurations are installed.</para>
+              <entry diffmk:change="added">
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The path to a directory where the configurations are installed.</diffmk:wrapper></para>
               </entry>
             </row>
             <row>
@@ -505,8 +508,8 @@
                 <para>Configuration</para>
               </entry>
               <entry>
-                <para>The list of configurations (all, default, minimal) that is updated as soon as
-                  you browse to a valid runtime installation folder.</para>
+                <para><diffmk:wrapper diffmk:change="changed">The list of configurations (all, default, minimal) that is updated as soon as
+                  you browse to a valid runtime installation folder.</diffmk:wrapper></para>
               </entry>
             </row>
 
@@ -514,77 +517,77 @@
         </tgroup>
       </table>
 
-      <para>As a result of having each runtime represent a specific configuration rather than the
+      <para><diffmk:wrapper diffmk:change="changed">As a result of having each runtime represent a specific configuration rather than the
         server installation as a whole, it is very likely you'll create several different
         runtimes to test each of your configurations. It becomes important to ensure your runtimes,
         and later your servers, are given descriptive names that help you to remember which is
-        which.</para>
+        which.</diffmk:wrapper></para>
 
       <para>Press <emphasis>
           <property moreinfo="none">Finish</property>
       </emphasis> to see your new runtime in the list.</para>
-      <note>
-        <title>Note:</title>
-        <para>If you edit the configuration of a runtime, the changes  don't affect the settings of the servers that currently use the runtime.
-          To apply the changes to them also,you should double right click the server, <emphasis>
-            <property moreinfo="none">Overview&gt;Runtime Environment</property> </emphasis>
-          ,make sure that necessary configuration is chosen,click <emphasis><property moreinfo="none">Finish</property> </emphasis> and then  <emphasis><property moreinfo="none">Save</property></emphasis> button.</para>
+      <note diffmk:change="added">
+        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
+        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">If you edit the configuration of a runtime, the changes  don't affect the settings of the servers that currently use the runtime.
+          To apply the changes to them also,you should double right click the server, </diffmk:wrapper><emphasis diffmk:change="added">
+            <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Overview&gt;Runtime Environment</diffmk:wrapper></property> </emphasis><diffmk:wrapper diffmk:change="added">
+          ,make sure that necessary configuration is chosen,click </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Finish</diffmk:wrapper></property> </emphasis><diffmk:wrapper diffmk:change="added"> and then  </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Save</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button.</diffmk:wrapper></para>
       </note>
     </section>
-    <section id="CopyRuntime">
-      <title>Copying the existing runtime configuration</title>
-      <para>While installing a new runtime you can copy the configuration from the existing one.
-        To do this you should perform all the steps in the <link linkend="InstNewRuntime">previous</link> section except pressing  <emphasis>
-          <property moreinfo="none">Finish</property></emphasis>
+    <section diffmk:change="added" id="CopyRuntime">
+      <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Copying the existing runtime configuration</diffmk:wrapper></title>
+      <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">While installing a new runtime you can copy the configuration from the existing one.
+        To do this you should perform all the steps in the </diffmk:wrapper><link diffmk:change="added" linkend="InstNewRuntime"><diffmk:wrapper diffmk:change="added">previous</diffmk:wrapper></link><diffmk:wrapper diffmk:change="added"> section except pressing  </diffmk:wrapper><emphasis diffmk:change="added">
+          <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Finish</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">
           in the  New Server Runtime Environment menu  .
-      </para>
-      <para>Make sure that you browse to a valid runtime folder and can see the list of configurations (all, default, minimal) in the Configuration section .
-        Then choose necessary  Configuration from the list and click <emphasis>
-          <property moreinfo="none">Copy</property></emphasis>.The next dialog should appear.
-      </para>
-      <figure float="0">
-        <title>Copy the existing configuration</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="images/runtimes_servers/runtimes_servers_4a.png"></imagedata>
+      </diffmk:wrapper></para>
+      <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Make sure that you browse to a valid runtime folder and can see the list of configurations (all, default, minimal) in the Configuration section .
+        Then choose necessary  Configuration from the list and click </diffmk:wrapper><emphasis diffmk:change="added">
+          <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Copy</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">.The next dialog should appear.
+      </diffmk:wrapper></para>
+      <figure diffmk:change="added" float="0">
+        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Copy the existing configuration</diffmk:wrapper></title>
+        <mediaobject diffmk:change="added">
+          <imageobject diffmk:change="added">
+            <imagedata diffmk:change="added" fileref="images/runtimes_servers/runtimes_servers_4a.png"></imagedata>
           </imageobject>
         </mediaobject>
       </figure>
-      <para>Change the name Click on <emphasis>
-        <property moreinfo="none">Browse</property></emphasis> and select your configuration  location or leave as it's if you want it to be located together with other  runtime configurations.
-      </para>
-      <figure float="0">
-        <title>Copy the existing configuration</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="images/runtimes_servers/runtimes_servers_4b.png"></imagedata>
+      <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Change the name Click on </diffmk:wrapper><emphasis diffmk:change="added">
+        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Browse</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> and select your configuration  location or leave as it's if you want it to be located together with other  runtime configurations.
+      </diffmk:wrapper></para>
+      <figure diffmk:change="added" float="0">
+        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Copy the existing configuration</diffmk:wrapper></title>
+        <mediaobject diffmk:change="added">
+          <imageobject diffmk:change="added">
+            <imagedata diffmk:change="added" fileref="images/runtimes_servers/runtimes_servers_4b.png"></imagedata>
           </imageobject>
         </mediaobject>
       </figure>   
      
-    <para>Click<emphasis>
-      <property moreinfo="none"> Ok </property></emphasis>and you should  see the next wizard with the just added copied  configuration.
+    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Click</diffmk:wrapper><emphasis diffmk:change="added">
+      <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added"> Ok </diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">and you should  see the next wizard with the just added copied  configuration.
     
-    </para>
-    <figure float="0">
-      <title>Runtime with copied configuration</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="images/runtimes_servers/runtimes_servers_4c.png"></imagedata>
+    </diffmk:wrapper></para>
+    <figure diffmk:change="added" float="0">
+      <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Runtime with copied configuration</diffmk:wrapper></title>
+      <mediaobject diffmk:change="added">
+        <imageobject diffmk:change="added">
+          <imagedata diffmk:change="added" fileref="images/runtimes_servers/runtimes_servers_4c.png"></imagedata>
         </imageobject>
       </mediaobject>
     </figure>   
-    <para> Press <emphasis>
-      <property moreinfo="none">Finish</property>
-    </emphasis> and  you will see your new runtime in the list.
-    </para>
-    <para>You can also change a configuration of existing runtime to a copied one in the same way from the <emphasis>
-      <property moreinfo="none"> Window &gt; Preferences  </property></emphasis>
-       menu <emphasis>
-         <property moreinfo="none">Server &gt; Runtime Environments </property></emphasis>
-          and clicking <emphasis>
-      <property moreinfo="none">Edit</property></emphasis>.
-    </para>
+    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added"> Press </diffmk:wrapper><emphasis diffmk:change="added">
+      <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Finish</diffmk:wrapper></property>
+    </emphasis><diffmk:wrapper diffmk:change="added"> and  you will see your new runtime in the list.
+    </diffmk:wrapper></para>
+    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You can also change a configuration of existing runtime to a copied one in the same way from the </diffmk:wrapper><emphasis diffmk:change="added">
+      <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added"> Window &gt; Preferences  </diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">
+       menu </diffmk:wrapper><emphasis diffmk:change="added">
+         <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Server &gt; Runtime Environments </diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">
+          and clicking </diffmk:wrapper><emphasis diffmk:change="added">
+      <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Edit</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">.
+    </diffmk:wrapper></para>
   </section>
   </section>
   <section>
@@ -618,14 +621,14 @@
         or stopping, and runtimes keep track of the location of the installation. Thus, each server
         instance must be backed by an appropriate runtime. </para>
 
-      <para> <emphasis><property moreinfo="none"> New server wizard </property></emphasis> allows to name the server appropriately in the <emphasis><property moreinfo="none">Server name field </property></emphasis>or you can use a generated default name.If it's nessecary to restore the default name,after you defined yours, click the Reset default button(<inlinemediaobject>          <imageobject>
-        <imagedata fileref="images/runtimes_servers/runtimes_servers_4d.png"></imagedata>
-      </imageobject></inlinemediaobject>).
+      <para> <emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added"> New server wizard </diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> allows to name the server appropriately in the </diffmk:wrapper><emphasis><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Server name field </diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">or you can use a generated default name.If it's nessecary to restore the default name,after you defined yours, click the Reset default button(</diffmk:wrapper><inlinemediaobject diffmk:change="added">          <imageobject diffmk:change="added">
+        <imagedata diffmk:change="added" fileref="images/runtimes_servers/runtimes_servers_4d.png"></imagedata>
+      </imageobject></inlinemediaobject><diffmk:wrapper diffmk:change="added">).
         From the list of already declared runtimes in the combo box below the view it's
         possible to select which runtime you want your server to be backed by. If there is no
-        runtime that matches your needs just press the <emphasis>
+        runtime that matches your needs just press the </diffmk:wrapper><emphasis diffmk:change="added">
           <property moreinfo="none">Add...</property>
-        </emphasis> link nearby to bring up the wizard for creating a new runtime (see the <link linkend="add_runtime_figure">Installing a New Runtime section</link>). To configure the already installed
+        </emphasis> link nearby to bring up the wizard for creating a new runtime (see the <link linkend="add_runtime_figure"><diffmk:wrapper diffmk:change="changed">Installing a New Runtime section</diffmk:wrapper></link>). To configure the already installed
         runtimes you should go to server preferences that you can easily do by pressing the <emphasis>
           <property moreinfo="none">Configure runtime environments...</property></emphasis> link.</para>
 
@@ -643,9 +646,9 @@
 
       <para>In this case the next page in the wizard which has the same form as in <link linkend="add_runtime_figure">the previous section</link> will ask you to create the
         associated runtime.</para>
-      <para>Either way, after targeting your server to a runtime, the final screen in this wizard is
+      <para><diffmk:wrapper diffmk:change="changed">Either way, after targeting your server to a runtime, the final screen in this wizard is
         largely confirmational, giving you a chance to verify that you've selected the
-        appropriate runtime. </para>
+        appropriate runtime. </diffmk:wrapper></para>
 
       <figure float="0">
         <title>Installed Server Runtime Environments</title>
@@ -715,10 +718,10 @@
 
         <section id="jbossserver_view_toolbar">
             <title>JBoss Server View Toolbar</title>
-            <para>In the right top corner of the <property moreinfo="none">JBoss Server View</property> there is a
+            <para>In the right top corner of the <property moreinfo="none">JBoss Server View</property><diffmk:wrapper diffmk:change="changed"> there is a
                 special toolbar which provides a quick access to starting a server (in the debug
                 mode, run mode, or profile mode), restarting a server, stopping a server and a
-                possibility to publish to a server.</para>
+                possibility to publish to a server.</diffmk:wrapper></para>
 
             <figure float="0">
                 <title>The JBoss Server View Toolbar</title>
@@ -992,8 +995,9 @@
                 <para>To add a new file filter, right-click the <emphasis>
                         <property moreinfo="none">Filesets</property>
                     </emphasis> category and select <emphasis>
-                        <property moreinfo="none">Create File Filter</property>.</emphasis>The <property moreinfo="none">New File
-                        Filter wizard</property> should appear.</para>
+                        <property moreinfo="none">Create File Filter</property>.</emphasis></para>
+                <para diffmk:change="added" id="filefilterWiz">The <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">New File
+                            Filter wizard</diffmk:wrapper></property> should appear.</para>
 
                 <figure float="0">
                     <title>Creating a New File Filter</title>
@@ -1053,6 +1057,26 @@
                         </imageobject>
                     </mediaobject>
                 </figure>
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">If you want to set filesets for some server types, you should open 
+                    </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Window&gt;Preferences</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> 
+                    and then select  </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Server &gt; Default Filesets</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added">  
+                    from the categories available on the left.</diffmk:wrapper></para>
+                
+                <figure diffmk:change="added" float="0">
+                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Deleting the File from the Filesets</diffmk:wrapper></title>
+                    <mediaobject diffmk:change="added">
+                        <imageobject diffmk:change="added">
+                            <imagedata diffmk:change="added" fileref="images/perspective/filesets5.png"></imagedata>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">On this preference page you can add a fileset 
+                    to any server type or to all servers at once.To do this you should select the server type in the combo box and click </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Add fileset...</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button. 
+                    In the opened </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">New File
+                        Filter wizard</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> follow the steps described </diffmk:wrapper><link diffmk:change="added" linkend="filefilterWiz"><diffmk:wrapper diffmk:change="added">before</diffmk:wrapper></link><diffmk:wrapper diffmk:change="added"> and finally click </diffmk:wrapper><emphasis diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Apply</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button on the preference page.</diffmk:wrapper></para>
+                        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The defined file filter will be automatically added  to new servers during creation.</diffmk:wrapper></para>
+                
+                
             </section>
 
             <section id="xml_configuration">
@@ -1399,15 +1423,15 @@
                 </mediaobject>
             </figure>
 
-            <para>In the <property moreinfo="none">Server editor</property> you are able to edit the timeouts and the server pollers to use.</para>
+            <para><diffmk:wrapper diffmk:change="added">In the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Server editor</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> you are able to edit the timeouts and the server pollers to use.</diffmk:wrapper></para>
                 
-                <note>
-                    <title>Note:</title>
-                    <para>By default, the Startup poller is set to JMX Poller (see the <emphasis>
-                    <property moreinfo="none">Server Polling</property></emphasis> section). If you change the Startup poller
+                <note diffmk:change="added">
+                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
+                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">By default, the Startup poller is set to JMX Poller (see the </diffmk:wrapper><emphasis>
+                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Server Polling</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="changed"> section). If you change the Startup poller
                 to Timeout Poller (it may need in case, for example, you're using the minimal configuration for your server), this will do no polling at all and will only set the server
-                state to <emphasis>
-                    <property moreinfo="none">"Started"</property></emphasis> after your startup timeout is reached.</para>
+                state to </diffmk:wrapper><emphasis>
+                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">"Started"</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> after your startup timeout is reached.</diffmk:wrapper></para>
               </note>
 
             <para id="com_line_arg"><property moreinfo="none">Server editor</property> makes it also possible to
@@ -1426,7 +1450,7 @@
                 </mediaobject>
             </figure>
 
-            <para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">here</ulink> to find parameters which can be specified for <property moreinfo="none">JBoss
+            <para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"><diffmk:wrapper diffmk:change="changed">AS Installation Guide </diffmk:wrapper></ulink> to find parameters which can be specified for <property moreinfo="none">JBoss
                     Server</property>.</para>
 
             <note>
@@ -1446,10 +1470,10 @@
                     on unaltered.</para>
             </note>
 
-            <para>Until 3.0.0.GA release of <property moreinfo="none">JBoss Tools</property>, the servers classpath
+            <para>Until 3.0.0.GA release of <property moreinfo="none">JBoss Tools</property><diffmk:wrapper diffmk:change="changed">, the servers classpath
                 was readonly, but that caused problems for users wanting to add their own jars in
                 the startup classpath. That is relevant if you need to patch the server, add a
-                custom charset or other tweaks that require early access to the classpath.</para>
+                custom charset or other tweaks that require early access to the classpath.</diffmk:wrapper></para>
 
             <para>Now all servers have a custom 'server runtime classpath
                 container', which is there by default and point to the default jars in
@@ -1466,10 +1490,10 @@
             </figure>
 
             <para>If for some reason you have a launch configuration without this container, <emphasis>
-                    <property moreinfo="none">Restore Default Entries</property>
+                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Restore Default Entries</diffmk:wrapper></property>
                 </emphasis> should add it properly. Also, <emphasis>
-                    <property moreinfo="none">Restore Default Entries</property>
-                </emphasis> will also remove any extra entries you added yourself.</para>
+                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Restore Default Entries</diffmk:wrapper></property>
+                </emphasis><diffmk:wrapper diffmk:change="changed"> will also remove any extra entries you added yourself.</diffmk:wrapper></para>
         </section>
 
         <section>
@@ -2179,16 +2203,16 @@
 			changing the global preferences for the <property moreinfo="none">Archives View</property>, or by
 			enabling project-specific preferences and ensuring the builder is on.</para>
 		
-		<para>You can also use the "Finger touch" button for a quick restart of the project without restarting the server:</para>
-		<figure float="0">
-			<title>Finger Touch button</title>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="images/modules/modules_8_finger_touch.png"></imagedata>
+		<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You can also use the "Finger touch" button for a quick restart of the project without restarting the server:</diffmk:wrapper></para>
+		<figure diffmk:change="added" float="0">
+			<title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Finger Touch button</diffmk:wrapper></title>
+			<mediaobject diffmk:change="added">
+				<imageobject diffmk:change="added">
+					<imagedata diffmk:change="added" fileref="images/modules/modules_8_finger_touch.png"></imagedata>
 				</imageobject>
 			</mediaobject>
 		</figure>	        
-		<para>The "Finger" touches descriptors dependent on project (i.e. web.xml for WAR, application.xml for EAR,  jboss-esb.xml in ESB projects).</para>
+		<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The "Finger" touches descriptors dependent on project (i.e. web.xml for WAR, application.xml for EAR,  jboss-esb.xml in ESB projects).</diffmk:wrapper></para>
 		
 		
 		<para>The last chapter covers a variety of methods on how you can deploy needed modules onto a
