@@ -12,7 +12,7 @@
 
    <copyright>
       JBoss, Home of Professional Open Source
-Copyright 2006-2009, JBoss, a division of Red Hat, and individual contributors as indicated
+Copyright 2006-2009, JBoss by Red Hat, and individual contributors as indicated
 by the @authors tag. See the copyright.txt in the distribution
 for a full listing of individual contributors.
    </copyright>
@@ -36,7 +36,7 @@ for a full listing of individual contributors.
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.ui.forms" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.ui.navigator" version="3.3.100" match="greaterOrEqual"/>
-      <import plugin="org.jboss.tools.jmx.core" version="0.2.1" match="greaterOrEqual"/>
+      <import plugin="org.jboss.tools.jmx.core" version="1.0.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
