@@ -336,17 +336,32 @@
 
                 <para>The wizard asks you to enter the filter name and add includes and excludes
                     patterns. The preview box underneath gives a list of files matched to the
-                    defined patterns.</para>
-
-                <figure>
-                    <title>New File Filter Wizard</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="images/perspective/filesets2.png"/>
-                        </imageobject>
-                    </mediaobject>
-                </figure>
-
+                    defined patterns (see the figures bellow).</para>
+            	<para>In order to set up a default fileset relative to the concrete configuration of the server runtime, use the following variable: 
+            		<literal>${jboss_config}</literal>, i. e. you should type in the <emphasis>
+            			<property>Root Directory</property></emphasis> something like <literal>server/${jboss_config}/</literal>.
+            		This is implemented in order you can modify the runtime&apos;s configuration and not have to manually update paths.</para>
+            	<figure>
+            		<title>New File Filter Wizard</title>
+            		<mediaobject>
+            			<imageobject>
+            				<imagedata fileref="images/perspective/filesets2_a.png"/>
+            			</imageobject>
+            		</mediaobject>
+            	</figure>
+				
+            	<para>Notice, that the <emphasis>
+            		<property>Browse</property></emphasis> button still returns an absolute path:</para>
+            	
+            	<figure>
+            		<title>New File Filter Wizard</title>
+            		<mediaobject>
+            			<imageobject>
+            				<imagedata fileref="images/perspective/filesets2.png"/>
+            			</imageobject>
+            		</mediaobject>
+            	</figure>
+            	
                 <para>After the filter is created, you can observe it by expanding the <emphasis>
                         <property>Filesets</property>
                     </emphasis> category in the <property>JBoss Server View</property>.</para>
