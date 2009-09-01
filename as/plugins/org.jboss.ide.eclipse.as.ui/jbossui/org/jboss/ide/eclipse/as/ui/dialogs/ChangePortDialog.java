@@ -205,15 +205,16 @@ public class ChangePortDialog extends TitleAreaDialog {
 
 	private String countMatches(XPathQuery query) {
 		if( query == null )
-			return new Integer(-1).toString();
+			return String.valueOf(-1);
 
 		int count = 0;
 		XPathFileResult[] fResults = query.getResults();
 		for( int i = 0; i < fResults.length; i++ ) {
 			count += fResults[i].getChildren().length;
 		}
-		return new Integer(count).toString();
+		return String.valueOf(count);
 	}
+	
 	private String safeString(String s) {
 		return s == null ? "" : s; //$NON-NLS-1$
 	}
