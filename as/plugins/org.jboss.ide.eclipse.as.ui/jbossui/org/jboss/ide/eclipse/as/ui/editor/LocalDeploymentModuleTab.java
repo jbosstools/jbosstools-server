@@ -578,6 +578,8 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 	private class LocalDeploymentCellModifier implements ICellModifier {
 		public boolean canModify(Object element, String property) {
+			if( property == LOCAL_COLUMN_NAME)
+				return false;
 			return true;
 		}
 
