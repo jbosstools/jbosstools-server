@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface;bundle-version="3.4.0",
  org.eclipse.jdt.core;bundle-version="3.4.4",
  org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="1.0.0"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: archivestest.jar
 Export-Package: org.jboss.ide.eclipse.archives.test,
  org.jboss.ide.eclipse.archives.test.core,

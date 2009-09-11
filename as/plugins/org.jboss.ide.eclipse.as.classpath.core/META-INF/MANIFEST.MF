@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.jst.common.project.facet.core,
  org.jboss.ide.eclipse.as.core
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.classpath.core,
  org.jboss.ide.eclipse.as.classpath.core.ejb3,
  org.jboss.ide.eclipse.as.classpath.core.jee,

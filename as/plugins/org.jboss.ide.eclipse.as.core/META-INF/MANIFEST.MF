@@ -17,7 +17,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.tools.jmx.core;bundle-version="0.2.1",
  org.eclipse.core.variables;bundle-version="3.2.200",
  org.jboss.ide.eclipse.as.wtp.core;bundle-version="1.0.0"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
  org.jboss.ide.eclipse.as.core.extensions.events,
