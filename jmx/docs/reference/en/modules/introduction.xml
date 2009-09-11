@@ -139,5 +139,21 @@
     </itemizedlist>
 
   </section>
+  <section>
+        <title>Other relevant resources on the topic</title>
+
+        <para>You can find a set of benefits and other extra information on:</para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <ulink url="http://www.jboss.org/community/wiki/JBossMX">JBoss Wiki</ulink>
+                </para>
+            </listitem>
+         
+        </itemizedlist>
+
+        
+
+    </section>
 
 </chapter>
