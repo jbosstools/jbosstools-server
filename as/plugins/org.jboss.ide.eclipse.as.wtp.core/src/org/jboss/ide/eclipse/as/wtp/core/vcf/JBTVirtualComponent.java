@@ -210,6 +210,8 @@ public class JBTVirtualComponent
 	 * Overrides from VirtualComponent class
 	 * These are mostly here because of the extrapolation 
 	 * of createVirtualReference into its own method.
+	 * 
+	 * These can probably be removed in WTP 3.2
 	 * *******************************************/
 	@Override
 	public IVirtualReference[] getAllReferences() { 

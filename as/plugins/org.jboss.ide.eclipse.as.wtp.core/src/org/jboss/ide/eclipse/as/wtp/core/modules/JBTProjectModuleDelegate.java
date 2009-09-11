@@ -1,16 +1,23 @@
 package org.jboss.ide.eclipse.as.wtp.core.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jst.j2ee.internal.deployables.J2EEDeployableFactory;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.web.internal.deployables.ComponentDeployable;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.JBTVirtualArchiveComponent;
 
@@ -22,6 +29,63 @@ public abstract class JBTProjectModuleDelegate extends ComponentDeployable imple
 	
 	public JBTProjectModuleDelegate(IProject project, IVirtualComponent aComponent) {
 		super(project, aComponent);
+	}
+	
+	
+	/*
+	 * Let's make this clean and organized
+	 * @see org.eclipse.wst.web.internal.deployables.ComponentDeployable#members()
+	 */
+	public IModuleResource[] members() throws CoreException {
+		members.clear();
+		IVirtualComponent vc = ComponentCore.createComponent(getProject());
+		if (vc != null) {
+			addFromRootVirtualFolder(vc);
+			addConsumableReferences(vc);
+			addUtilMembers(vc);
+		}
+		
+		IModuleResource[] mr = new IModuleResource[members.size()];
+		members.toArray(mr);
+		return mr;
+	}
+	
+	protected void addFromRootVirtualFolder(IVirtualComponent vc) throws CoreException {
+		IVirtualFolder vFolder = vc.getRootFolder();
+		IModuleResource[] mr = getMembers(vFolder, Path.EMPTY);
+		int size = mr.length;
+		for (int j = 0; j < size; j++) {
+			members.add(mr[j]);
+		}
+	}
+	
+	
+	/*
+	 * This will recursively search for consumed components, and children
+	 * of consumed components, and will shove them into the members area. =D 
+	 */
+	protected void addConsumableReferences(IVirtualComponent vc) throws CoreException {
+		List consumableMembers = new ArrayList();
+		IVirtualReference[] refComponents = vc.getReferences();
+    	for (int i = 0; i < refComponents.length; i++) {
+    		IVirtualReference reference = refComponents[i];
+    		if (reference != null && reference.getDependencyType()==IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
+    			IVirtualComponent consumedComponent = reference.getReferencedComponent();
+    			if (consumedComponent!=null) {
+    				if (consumedComponent.getRootFolder()!=null) {
+    					IVirtualFolder vFolder = consumedComponent.getRootFolder();
+    					IModuleResource[] mr = getMembers(vFolder, reference.getRuntimePath().makeRelative());
+    					int size = mr.length;
+    					for (int j = 0; j < size; j++) {
+    						if (!members.contains(mr[j]))
+    							members.add(mr[j]);
+    					}
+    					addUtilMembers(consumedComponent);
+    					addConsumableReferences(consumedComponent);
+    				}
+    			}
+    		}
+    	}
 	}
 	
 	/*
@@ -45,7 +109,7 @@ public abstract class JBTProjectModuleDelegate extends ComponentDeployable imple
 	}
 	
 	/*
-	 * Should we meld the jar / external jar / var reference in with the members() IModuleResource objects.
+	 * Should we meld the jar / external jar / var / reference in with the members() IModuleResource objects.
 	 * If yes, the reference will appear like any other file.
 	 * If no, you are expected to handle this file as a child module and expose it yourself
 	 */
@@ -67,8 +131,17 @@ public abstract class JBTProjectModuleDelegate extends ComponentDeployable imple
 		return module;
     }
 
+    /**
+     * This should return the module factory which we are associated with.
+     * @return
+     */
     protected abstract String getFactoryId();
     
+    /*
+     * Get the URI for this child module relative to the parent module
+     * (non-Javadoc)
+     * @see org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule#getURI(org.eclipse.wst.server.core.IModule)
+     */
 	public String getURI(IModule child) {
 		if( component != null && child != null ) {
 	    	IVirtualReference[] components = getReferences(component);

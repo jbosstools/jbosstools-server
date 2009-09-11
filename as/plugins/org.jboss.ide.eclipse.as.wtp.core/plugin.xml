@@ -2,5 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="referenceResolver" name="referenceResolver" schema="schema/referenceResolver.exsd"/>
+   <extension
+         point="org.jboss.ide.eclipse.as.wtp.core.referenceResolver">
+      <resolver
+            class="org.jboss.ide.eclipse.as.wtp.core.vcf.OutputFolderReferenceResolver"
+            id="org.jboss.ide.eclipse.as.wtp.core.vcf.outputFolderReferenceResolver">
+      </resolver>
+   </extension>
  
 </plugin>
