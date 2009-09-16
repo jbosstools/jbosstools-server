@@ -90,7 +90,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 						p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
 					return p.toString();
 				}
-				return comp.getProject().getName();
+				return comp.getName();
 			}
 		} else if (element instanceof IProject){
 			if (columnIndex == 0) {

@@ -55,5 +55,11 @@
              id="org.jboss.ide.eclipse.as.wtp.ui.variableReference"
              name="Variable">
        </referenceFragment>
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.OutputFolderReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
+             id="org.jboss.ide.eclipse.as.wtp.ui.mappedOutputFolders"
+             name="Mapped Output Folders">
+       </referenceFragment>
     </extension>
 </plugin>

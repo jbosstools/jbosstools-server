@@ -453,7 +453,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			Object p1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
 			IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 
 					new IVirtualComponent[] { (IVirtualComponent)c1 } : 
-						(IVirtualComponent[])c1;
+						(IVirtualComponent[])c1; 
 			String[] pathArr = p1 instanceof String ? 
 							new String[] { (String)p1 } : 
 								(String[])p1;

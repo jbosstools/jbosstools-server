@@ -14,7 +14,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 public class OutputFolderReferenceResolver implements IReferenceResolver {
-	public static final String OUTPUT_FOLDER_SEGMENT = "org.jboss.ide.eclipse.as.wtp.core.vcf.outputFolder";
+	public static final String OUTPUT_FOLDER_SEGMENT = "org.jboss.ide.eclipse.as.wtp.core.vcf.outputFolders";
 	public static final String OUTPUT_FOLDER_PROTOCOL = PlatformURLModuleConnection.MODULE_PROTOCOL
 								+IPath.SEPARATOR+ OUTPUT_FOLDER_SEGMENT + IPath.SEPARATOR;
 	public OutputFolderReferenceResolver() {
@@ -38,7 +38,11 @@ public class OutputFolderReferenceResolver implements IReferenceResolver {
 	public IVirtualReference resolve(IVirtualComponent context,
 			ReferencedComponent referencedComponent) {
 		String project = referencedComponent.getHandle().segment(1);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(project);
+		IProject p = null;
+		if( !project.equals("")) 
+			p = ResourcesPlugin.getWorkspace().getRoot().getProject(project);
+		else
+			p = context.getProject();
 		IVirtualComponent comp = new OutputFoldersVirtualComponent(p, context);
 		IVirtualReference ref = ComponentCore.createReference(context, comp);
 		ref.setArchiveName(referencedComponent.getArchiveName());
@@ -49,11 +53,12 @@ public class OutputFolderReferenceResolver implements IReferenceResolver {
 
 	public ReferencedComponent resolve(IVirtualReference reference) {
 		if( reference.getReferencedComponent() instanceof OutputFoldersVirtualComponent ) {
+			OutputFoldersVirtualComponent comp = (OutputFoldersVirtualComponent)reference.getReferencedComponent();
 			IProject p = reference.getReferencedComponent().getProject();
 			ReferencedComponent rc = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createReferencedComponent();
 			rc.setArchiveName(reference.getArchiveName());
 			rc.setRuntimePath(reference.getRuntimePath());
-			rc.setHandle(URI.createURI(OUTPUT_FOLDER_PROTOCOL + p.getName()));
+			rc.setHandle(URI.createURI(comp.getId()));
 			rc.setDependencyType(DependencyType.CONSUMES_LITERAL);
 			return rc;
 		}
