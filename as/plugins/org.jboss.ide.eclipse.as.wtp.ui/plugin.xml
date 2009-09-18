@@ -58,8 +58,14 @@
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.OutputFolderReferenceWizardFragment"
              icon="icons/jar_obj.gif"
-             id="org.jboss.ide.eclipse.as.wtp.ui.mappedOutputFolders"
+             id="org.jboss.ide.eclipse.as.wtp.ui.mappedOutputFoldersReference"
              name="Mapped Output Folders">
+       </referenceFragment>
+       <referenceFragment
+             class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ExportedClasspathFoldersReferenceWizardFragment"
+             icon="icons/jar_obj.gif"
+             id="org.jboss.ide.eclipse.as.wtp.ui.ExportedClasspathFoldersReference"
+             name="Build Path Class Folders">
        </referenceFragment>
     </extension>
 </plugin>
