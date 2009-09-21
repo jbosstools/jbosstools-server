@@ -474,13 +474,15 @@ public final class PublishCopyUtil {
 			copyFile(file.getContents(), path, file.getLocalTimeStamp(), mf);
 		else {
 			File file2 = (File) mf.getAdapter(File.class);
-			InputStream in = null;
-			try {
-				in = new FileInputStream(file2);
-			} catch (IOException e) {
-				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorReading, file2.getAbsolutePath()), e));
-			}
-			copyFile(in, path, file2.lastModified(), mf);
+			if( file2 != null ) {
+				InputStream in = null;
+				try {
+					in = new FileInputStream(file2);
+				} catch (IOException e) {
+					throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorReading, file2.getAbsolutePath()), e));
+				}
+				copyFile(in, path, file2.lastModified(), mf);
+			} // else silently ignore I guess
 		}
 	}
 
