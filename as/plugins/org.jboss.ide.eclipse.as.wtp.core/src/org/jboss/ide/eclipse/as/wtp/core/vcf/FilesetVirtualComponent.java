@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import java.util.Properties;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -47,7 +48,6 @@ public abstract class FilesetVirtualComponent implements IVirtualComponent {
 		String firstSegment = getFirstIdSegment();
 		if (project.equals(referencingComp.getProject()))
 			return firstSegment; 
-		
 		return firstSegment + Path.SEPARATOR + project.getName();
 	}
 
@@ -63,12 +63,15 @@ public abstract class FilesetVirtualComponent implements IVirtualComponent {
 	}
 
 	public IVirtualFolder getRootFolder() {
-		IResource[] resources = getExposableResources();
-		return new ResourceListVirtualFolder(
-				project, new Path("/"), resources);
+		IContainer[] containers = getUnderlyingContainers();
+		IResource[] looseResources = getLooseResources();
+		ResourceListVirtualFolder folder = 
+			new ResourceListVirtualFolder(project, new Path("/"), containers, looseResources);
+		return folder;
 	}
 
-	protected abstract IResource[] getExposableResources();
+	protected abstract IContainer[] getUnderlyingContainers();
+	protected abstract IResource[] getLooseResources();
 	
 	public Properties getMetaProperties() {
 		return null;

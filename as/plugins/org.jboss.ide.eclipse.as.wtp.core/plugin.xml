@@ -8,6 +8,10 @@
             class="org.jboss.ide.eclipse.as.wtp.core.vcf.OutputFolderReferenceResolver"
             id="org.jboss.ide.eclipse.as.wtp.core.vcf.outputFolderReferenceResolver">
       </resolver>
+      <resolver
+            class="org.jboss.ide.eclipse.as.wtp.core.vcf.ExportedClassFolderReferenceResolver"
+            id="org.jboss.ide.eclipse.as.wtp.core.vcf.exportedClasspathFolderReferenceResolver">
+      </resolver>
    </extension>
  
 </plugin>

@@ -23,7 +23,11 @@ public class OutputFoldersVirtualComponent extends FilesetVirtualComponent {
 		return OutputFolderReferenceResolver.OUTPUT_FOLDER_PROTOCOL;
 	}
 
-	protected IResource[] getExposableResources() {
+	protected IResource[] getLooseResources() {
+		return new IResource[]{};
+	}
+
+	protected IContainer[] getUnderlyingContainers() {
 		List<IContainer> result = new ArrayList<IContainer>();
 		try {
 			if (!project.hasNature(JavaCore.NATURE_ID))

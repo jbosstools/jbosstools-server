@@ -24,10 +24,14 @@ public class ExportedClasspathFoldersVirtualComponent extends FilesetVirtualComp
 		return ExportedClassFolderReferenceResolver.OUTPUT_FOLDER_PROTOCOL;
 	}
 
-	protected IResource[] getExposableResources() {
+	protected IResource[] getLooseResources() {
+		return new IResource[]{};
+	}
+	
+	protected IContainer[] getUnderlyingContainers() {
 		IJavaProject jp = JavaCore.create(project);
 		IClasspathEntry[] entries = findAllClassFolderEntries(jp);
-		ArrayList<IResource> results = new ArrayList<IResource>();
+		ArrayList<IContainer> results = new ArrayList<IContainer>();
 		for( int i = 0; i < entries.length; i++ ) {
 			IClasspathAttribute attribute = ClasspathDependencyUtil.checkForComponentDependencyAttribute(
 					entries[i],
@@ -36,11 +40,11 @@ public class ExportedClasspathFoldersVirtualComponent extends FilesetVirtualComp
 			if( attribute != null ) {
 				final IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(entries[i].getPath());
 				if (resource != null && resource instanceof IContainer ) {
-					results.add(resource);
+					results.add((IContainer)resource);
 				}
 			}
 		}
-		return (IResource[]) results.toArray(new IResource[results.size()]);
+		return results.toArray(new IContainer[results.size()]);
 	}
 	
 	protected IClasspathEntry[] findAllClassFolderEntries(IJavaProject javaProject) {
@@ -55,5 +59,4 @@ public class ExportedClasspathFoldersVirtualComponent extends FilesetVirtualComp
 		} 
 		return list.toArray(new IClasspathEntry[list.size()]);
 	}
-
 }

@@ -2,9 +2,8 @@ package org.jboss.ide.eclipse.as.wtp.core.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collection;
+import java.util.HashMap;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -14,26 +13,69 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
+// TODO THis class is fucked and incorrectly works. 
+// The first instance (top) treats 'resources' as folders to search
+// Others try to treat it as items that are inside.  This is bad. 
 public class ResourceListVirtualFolder extends VirtualFolder {
 
-	private ArrayList<IResource> resources;
+	private ArrayList<IResource> children;
+	private ArrayList<IContainer> underlying;
 	public ResourceListVirtualFolder(
 			IProject aComponentProject,
-			IPath aRuntimePath, 
-			IResource[] containers) {
+			IPath aRuntimePath) {
 		super(aComponentProject, aRuntimePath);
-		this.resources = new ArrayList<IResource>();
-		this.resources.addAll(Arrays.asList(containers));
+		this.children = new ArrayList<IResource>();
+		this.underlying = new ArrayList<IContainer>();
 	}
 
-	protected void addResource(IResource c) {
-		//this.resources.add(c);
+	public ResourceListVirtualFolder(
+			IProject aComponentProject,
+			IPath aRuntimePath, IContainer[] underlyingContainers) {
+		this(aComponentProject, aRuntimePath);
+		this.underlying.addAll(Arrays.asList(underlyingContainers));
+	}
+
+	public ResourceListVirtualFolder(
+			IProject aComponentProject,
+			IPath aRuntimePath, IContainer[] underlyingContainers, 
+			IResource[] looseResources) {
+		this(aComponentProject, aRuntimePath, underlyingContainers);
+		this.children.addAll(Arrays.asList(looseResources));
+	}
+
+	protected void addUnderlyingResource(IResource resource) {
+		if( underlying instanceof IContainer ) { 
+			underlying.add((IContainer)resource);
+			try {
+				IResource[] newChildren = ((IContainer)resource).members();
+				for( int i = 0; i < newChildren.length; i++ ) {
+					children.add(newChildren[i]);
+				}
+			} catch( CoreException ce) {
+				// TODO log
+			}
+		}
+	}
+
+	protected void addUnderlyingResource(IResource[] resources) {
+		for( int i = 0; i < resources.length; i++ ) {
+			addUnderlyingResource(resources[i]);
+		}
 	}
 	
+	protected void addChild(IResource resource) {
+		this.children.add(resource);
+	}
+
+	protected void addChildren(IResource[] resources) {
+		this.children.addAll(Arrays.asList(resources));
+	}
+	
+	
 	public IResource getUnderlyingResource() {
-		// Since I'm a container, pretend I'm a container I guess
 		return getUnderlyingFolder();
 	}
 	
@@ -42,55 +84,45 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 	}
 
 	public IContainer getUnderlyingFolder() { 
-		IResource[] r = (IResource[]) resources.toArray(new IResource[resources.size()]);
-		for( int i = 0; i < r.length; i++ )
-			if( r[i] instanceof IContainer )
-				return (IContainer)r[i];
-		return null;
+		return underlying.size() > 0 ? underlying.get(0) : null;
 	}
 	
 	public IContainer[] getUnderlyingFolders() {
-		IResource[] r = (IResource[]) resources.toArray(new IResource[resources.size()]);
-		ArrayList<IContainer> c = new ArrayList<IContainer>();
-		for( int i = 0; i < r.length; i++ )
-			if( r[i] instanceof IContainer )
-				c.add((IContainer)r[i]);
-		return (IContainer[]) c.toArray(new IContainer[c.size()]);
+		return (IContainer[]) underlying.toArray(new IContainer[underlying.size()]);
 	}
 		
+
 	public IVirtualResource[] members(int memberFlags) throws CoreException {
-		List<IVirtualResource> virtualResources = new ArrayList<IVirtualResource>(); // result
-		Set allNames = new HashSet();
-		IResource[] containers2 = (IResource[]) this.resources.toArray(new IResource[this.resources.size()]);
-		for( int i = 0; i < containers2.length; i++ ) {
-			IResource realResource = containers2[i];
-			if ((realResource != null) && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT)) {
-				IContainer realContainer = (IContainer) realResource;
-				IResource[] realChildResources = realContainer.members(memberFlags);
-				for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
-					IResource child = realChildResources[realResourceIndex];
-					String localName = child.getName();
-					if (allNames.add(localName)) {
-						IPath newRuntimePath = getRuntimePath().append(localName);
-						if (child instanceof IFile) {
-							virtualResources.add(new VirtualFile(getProject(), newRuntimePath, (IFile) child));
-						} else if( child instanceof IContainer ){
-							IContainer childContainer = (IContainer)child;
-							IResource[] members = childContainer.members();
-							ResourceListVirtualFolder childFolder = 
-								new ResourceListVirtualFolder(getProject(), newRuntimePath, members);
-							virtualResources.add(childFolder);
-						}
-					}
-				}
-			} else if(realResource != null && realResource instanceof IFile) {
-				// An IResource.FILE would be an error condition (as this is a container)
-				virtualResources.add(new VirtualFile(getProject(), 
-						getRuntimePath().append(((IFile)realResource).getName()), (IFile)realResource));				
-			}
+		HashMap<String, IVirtualResource> virtualResources = new HashMap<String, IVirtualResource>(); // result
+		IResource[] resources = (IResource[]) this.children.toArray(new IResource[this.children.size()]);
+		for( int i = 0; i < resources.length; i++ ) {
+			handleResource(resources[i], virtualResources, memberFlags);
 		}
-		return virtualResources.toArray(new IVirtualResource[virtualResources.size()]);
+		Collection c = virtualResources.values();
+		return (IVirtualResource[]) c.toArray(new IVirtualResource[c.size()]);
 	}
 
-	
+	protected void handleResource(IResource resource, HashMap<String, IVirtualResource> map, int memberFlags) throws CoreException {
+		if( resource instanceof IFile ) {
+			if( !map.containsKey(resource.getName()) ) {
+				IVirtualFile virtFile = new VirtualFile(getProject(), 
+						getRuntimePath().append(((IFile)resource).getName()), (IFile)resource);
+				map.put(resource.getName(), virtFile);
+				return;
+			} 
+		}// end file
+		else if( resource instanceof IContainer ) {
+			IContainer realContainer = (IContainer) resource;
+			IResource[] realChildResources = realContainer.members(memberFlags);
+			IVirtualResource previousValue = map.get(resource.getName());
+			if( previousValue != null && previousValue instanceof ResourceListVirtualFolder ) {
+				((ResourceListVirtualFolder)previousValue).addUnderlyingResource(realContainer);
+			} else if( previousValue == null ) {
+				ResourceListVirtualFolder childFolder = 
+					new ResourceListVirtualFolder(getProject(), getRuntimePath().append(resource.getName()));
+				childFolder.addUnderlyingResource(realContainer);
+				map.put(resource.getName(), childFolder);
+			}
+		} // end container
+	}
 }
