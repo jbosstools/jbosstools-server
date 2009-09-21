@@ -141,8 +141,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
-		handle.setTitle( getRuntime() == null ? 
-				Messages.rwf_TitleCreate : Messages.rwf_TitleEdit);
+		handle.setTitle( Messages.rwf_JBossRuntime);
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
 				version);

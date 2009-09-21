@@ -51,8 +51,7 @@ public class Messages extends NLS {
 	public static String JBossRuntimeWizardFragment_OutputFolderExists;
 	public static String rwf_CopyConfigLabel;
 	public static String rwf_DestinationLabel;
-	public static String rwf_TitleCreate;
-	public static String rwf_TitleEdit;
+	public static String rwf_JBossRuntime;
 	public static String rwf_Explanation;
 	public static String rwf_NameInUse;
 	public static String rwf_homeMissingFiles;
