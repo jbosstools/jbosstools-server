@@ -550,7 +550,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			comp = refs[i].getReferencedComponent();
 			IPath val = refs[i].getRuntimePath();
 			if( refs[i].getDependencyType() != IVirtualReference.DEPENDENCY_TYPE_CONSUMES)
-				val = val.append(refs[i].getArchiveName());
+				if( refs[i].getArchiveName() != null )
+					val = val.append(refs[i].getArchiveName());
 			
 			objectToRuntimePath.put(comp, val.toString());
 			oldComponentToRuntimePath.put((IVirtualComponent) comp, val.toString());
