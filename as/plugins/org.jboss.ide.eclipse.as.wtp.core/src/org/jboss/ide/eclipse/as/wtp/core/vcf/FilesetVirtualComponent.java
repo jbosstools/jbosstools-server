@@ -63,6 +63,7 @@ public abstract class FilesetVirtualComponent implements IVirtualComponent {
 	}
 
 	public IVirtualFolder getRootFolder() {
+		// Creates a new instance each time to ensure it's not cached
 		IContainer[] containers = getUnderlyingContainers();
 		IResource[] looseResources = getLooseResources();
 		ResourceListVirtualFolder folder = 

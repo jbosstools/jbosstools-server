@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -99,6 +102,13 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 				}
 			}
 		}
+	}
+
+	protected IPath[] getListenerPaths() {
+		return new IPath[] { new Path(".project"), // nature
+				new Path(StructureEdit.MODULE_META_FILE_NAME), // component
+				new Path(".settings/org.eclipse.wst.common.project.facet.core.xml") // facets
+		};
 	}
 
 	

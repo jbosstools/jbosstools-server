@@ -16,9 +16,6 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
-// TODO THis class is fucked and incorrectly works. 
-// The first instance (top) treats 'resources' as folders to search
-// Others try to treat it as items that are inside.  This is bad. 
 public class ResourceListVirtualFolder extends VirtualFolder {
 
 	private ArrayList<IResource> children;
@@ -35,7 +32,7 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 			IProject aComponentProject,
 			IPath aRuntimePath, IContainer[] underlyingContainers) {
 		this(aComponentProject, aRuntimePath);
-		this.underlying.addAll(Arrays.asList(underlyingContainers));
+		addUnderlyingResource(underlyingContainers);
 	}
 
 	public ResourceListVirtualFolder(
@@ -43,11 +40,11 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 			IPath aRuntimePath, IContainer[] underlyingContainers, 
 			IResource[] looseResources) {
 		this(aComponentProject, aRuntimePath, underlyingContainers);
-		this.children.addAll(Arrays.asList(looseResources));
+		addChildren(looseResources);
 	}
 
 	protected void addUnderlyingResource(IResource resource) {
-		if( underlying instanceof IContainer ) { 
+		if( resource instanceof IContainer ) { 
 			underlying.add((IContainer)resource);
 			try {
 				IResource[] newChildren = ((IContainer)resource).members();
