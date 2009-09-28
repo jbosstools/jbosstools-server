@@ -97,7 +97,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected Text componentNameText;
 	protected Label availableModules;
 	protected TableViewer availableComponentsViewer;
-	protected Button addMappingButton, addReferenceButton, removeButton;
+	protected Button addMappingButton, addReferenceButton, editReferenceButton, removeButton;
 	protected Composite buttonColumn;
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 	protected Listener tableListener;
@@ -191,6 +191,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	protected void createPushButtons() {
 		addMappingButton = createPushButton("Add Folder...");
 		addReferenceButton = createPushButton("Add Reference...");
+		editReferenceButton = createPushButton("Edit Reference...");
 		removeButton = createPushButton("Remove selected");
 	}
 
@@ -424,6 +425,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			handleAddMappingButton();
 		else if( event.widget == addReferenceButton) 
 			handleAddReferenceButton();
+		else if( event.widget == editReferenceButton ) 
+			handleEditReferenceButton();
 		else if( event.widget == removeButton ) 
 			handleRemoveSelectedButton();
 	}
@@ -442,13 +445,35 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void handleAddReferenceButton() {
+		showReferenceWizard(false);
+	}
+
+	protected void handleEditReferenceButton() {
+		showReferenceWizard(true);
+	}
+
+	protected void showReferenceWizard(boolean editing) {
+
 		NewReferenceWizard wizard = new NewReferenceWizard();
 		// fill the task model
 		wizard.getTaskModel().putObject(NewReferenceWizard.PROJECT, project);
 		wizard.getTaskModel().putObject(NewReferenceWizard.ROOT_COMPONENT, rootComponent);
+
+		IVirtualComponent selected = null;
+		if( editing ) {
+			Object o = ((IStructuredSelection)availableComponentsViewer.getSelection()).getFirstElement();
+			if( o instanceof IVirtualComponent ) {
+				selected = (IVirtualComponent)o;
+				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT, selected);
+				wizard.getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, objectToRuntimePath.get(selected));
+			}
+		}
 		
 		WizardDialog wd = new WizardDialog(addReferenceButton.getShell(), wizard);
 		if( wd.open() != Window.CANCEL) {
+			if( editing && selected != null) {
+				objectToRuntimePath.remove(selected); // remove old
+			}
 			Object c1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT);
 			Object p1 = wizard.getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
 			IVirtualComponent[] compArr = c1 instanceof IVirtualComponent ? 

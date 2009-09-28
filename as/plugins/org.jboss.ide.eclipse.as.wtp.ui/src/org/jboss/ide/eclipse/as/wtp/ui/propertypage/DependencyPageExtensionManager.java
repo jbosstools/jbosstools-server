@@ -52,6 +52,19 @@ public class DependencyPageExtensionManager {
 		providers = temp;
 	}
 	
+	public WizardFragment[] loadAllReferenceWizardFragments() {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(
+				WTPOveridePlugin.PLUGIN_ID, "referenceWizardFragment"); //$NON-NLS-1$
+		ArrayList<WizardFragment> list = new ArrayList<WizardFragment>();
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				list.add((WizardFragment)cf[i].createExecutableExtension("class"));
+			} catch( CoreException ce) {}
+		}
+		return (WizardFragment[]) list.toArray(new WizardFragment[list.size()]);
+	}
+	
 	public WizardFragment loadReferenceWizardFragment(String id) {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IConfigurationElement[] cf = registry.getConfigurationElementsFor(

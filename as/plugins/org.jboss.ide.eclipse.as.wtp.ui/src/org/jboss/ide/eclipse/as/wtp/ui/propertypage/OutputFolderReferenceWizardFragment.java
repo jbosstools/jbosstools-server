@@ -25,7 +25,7 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.OutputFoldersVirtualComponent;
 
-public class OutputFolderReferenceWizardFragment extends WizardFragment {
+public class OutputFolderReferenceWizardFragment extends WizardFragment implements IReferenceEditor {
 
 	protected TreeViewer viewer;
 	protected IPath[] paths;
@@ -59,11 +59,14 @@ public class OutputFolderReferenceWizardFragment extends WizardFragment {
 		viewer.getTree().setLayoutData(fd);
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				IVirtualComponent parentComp = (IVirtualComponent)getTaskModel().getObject(NewReferenceWizard.ROOT_COMPONENT);
 				IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 				selected = (IProject)sel.getFirstElement();
 			}
 		});
+		
+		IVirtualComponent vc = (IVirtualComponent)getTaskModel().getObject(NewReferenceWizard.COMPONENT);
+		if( vc != null )
+			selected = vc.getProject();
 		return c;
 	}
 	
@@ -104,6 +107,14 @@ public class OutputFolderReferenceWizardFragment extends WizardFragment {
 		selected = selected == null ? parentComp.getProject() : selected;
 		OutputFoldersVirtualComponent vc = new OutputFoldersVirtualComponent(selected, parentComp);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, vc);
-		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, "/");
+		String s = 	(String)getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
+		if( s == null ) 
+			getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, "/");
+	}
+
+	public boolean canEdit(IVirtualComponent vc) {
+		if( vc instanceof OutputFoldersVirtualComponent )
+			return true;
+		return false;
 	}
 }

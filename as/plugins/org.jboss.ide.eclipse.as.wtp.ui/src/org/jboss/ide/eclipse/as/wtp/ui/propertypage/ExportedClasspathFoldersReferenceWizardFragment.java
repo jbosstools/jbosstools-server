@@ -43,8 +43,8 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.ExportedClasspathFoldersVirtualComponent;
 
-public class ExportedClasspathFoldersReferenceWizardFragment extends
-		WizardFragment {
+public class ExportedClasspathFoldersReferenceWizardFragment 
+	extends WizardFragment implements IReferenceEditor {
 
 	protected TreeViewer viewer;
 	protected IPath[] paths;
@@ -62,7 +62,6 @@ public class ExportedClasspathFoldersReferenceWizardFragment extends
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
-		int x = 1;
 		handle.setTitle("Add exported folders from the build pathx");
 		handle.setDescription("This reference will allow you to add references to exported classpaths from this project's build page. Please select all entries you wish to be published.");
 		IVirtualComponent parentComp = (IVirtualComponent)getTaskModel().getObject(NewReferenceWizard.ROOT_COMPONENT);
@@ -208,5 +207,11 @@ public class ExportedClasspathFoldersReferenceWizardFragment extends
 	
 	protected IPath getNewPath(IClasspathEntry cpe) {
 		return new Path("/");
+	}
+
+	public boolean canEdit(IVirtualComponent vc) {
+		if( vc instanceof ExportedClasspathFoldersVirtualComponent )
+			return true;
+		return false;
 	}
 }
