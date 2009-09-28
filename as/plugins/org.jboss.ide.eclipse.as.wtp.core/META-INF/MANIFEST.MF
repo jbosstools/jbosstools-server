@@ -24,5 +24,6 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.jboss.ide.eclipse.as.wtp.core.modules,
+ org.jboss.ide.eclipse.as.wtp.core.util,
  org.jboss.ide.eclipse.as.wtp.core.vcf
 Bundle-Vendor: JBoss by Red Hat
