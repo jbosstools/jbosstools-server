@@ -26,18 +26,24 @@ public class NewReferenceWizard extends TaskWizard {
 			if( component == null )
 				list.add(new NewReferenceRootWizardFragment());
 			else {
-				WizardFragment[] frags = DependencyPageExtensionManager.getManager().loadAllReferenceWizardFragments();
-				for( int i = 0; i < frags.length; i++ ) {
-					if( frags[i] instanceof IReferenceEditor ) {
-						if( ((IReferenceEditor)frags[i]).canEdit(component)) {
-							// accept first one
-							list.add(frags[i]);
-							return;
-						}
-					}
+				WizardFragment fragment = getFirstEditingFragment(component);
+				if( fragment != null )
+					list.add(fragment);
+			}
+		}
+	}
+	
+	public static WizardFragment getFirstEditingFragment(IVirtualComponent component ) {
+		WizardFragment[] frags = DependencyPageExtensionManager.getManager().loadAllReferenceWizardFragments();
+		for( int i = 0; i < frags.length; i++ ) {
+			if( frags[i] instanceof IReferenceEditor ) {
+				if( ((IReferenceEditor)frags[i]).canEdit(component)) {
+					// accept first one
+					return frags[i];
 				}
 			}
 		}
+		return null;
 	}
 	
 	public void init(IWorkbench newWorkbench, IStructuredSelection newSelection) {

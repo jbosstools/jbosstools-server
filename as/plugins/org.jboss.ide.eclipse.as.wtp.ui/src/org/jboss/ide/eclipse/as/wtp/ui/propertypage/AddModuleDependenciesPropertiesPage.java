@@ -79,6 +79,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
+import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
  
@@ -304,7 +305,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 				}
 				case SWT.MouseHover: {
 					TableItem item = table.getItem(new Point(event.x, event.y));
-					if (item != null && item.getData() != null && !canEdit(item.getData())) {
+					if (item != null && item.getData() != null && !canEditPath(item.getData())) {
 						if (tip != null && !tip.isDisposed())
 							tip.dispose();
 						tip = new Shell(PlatformUI.getWorkbench()
@@ -337,7 +338,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		};
 	}
 
-	protected boolean canEdit(Object data) {
+	protected boolean canEditPath(Object data) {
 		if( data == null ) return false;
 		if( !(data instanceof VirtualArchiveComponent)) return true;
 		
@@ -370,7 +371,15 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	}
 	
 	protected void viewerSelectionChanged() {
-		removeButton.setEnabled(getSelectedObject() != null && canEdit(getSelectedObject()));
+		editReferenceButton.setEnabled(hasEditWizardPage(getSelectedObject()));
+		removeButton.setEnabled(getSelectedObject() != null && canEditPath(getSelectedObject()));
+	}
+	
+	protected boolean hasEditWizardPage(Object o) {
+		if( o == null || !(o instanceof IVirtualComponent)) 
+			return false;
+		WizardFragment wf = NewReferenceWizard.getFirstEditingFragment((IVirtualComponent)o);
+		return wf != null;
 	}
 	
 	protected Object getSelectedObject() {
@@ -384,7 +393,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 			if( property.equals(DEPLOY_PATH_PROPERTY)) {
 				if (element instanceof VirtualArchiveComponent) {
 					try {
-						return canEdit(element);
+						return canEditPath(element);
 					} catch (IllegalArgumentException iae) {
 					}
 				}
@@ -588,6 +597,8 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 					allMappings[i].getSourcePath(), allMappings[i].getRuntimePath()
 			));
 		}
+		removeButton.setEnabled(false);
+		editReferenceButton.setEnabled(false);
 		hasInitialized = true;
 	}
 
