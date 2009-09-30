@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLauncher;
@@ -149,7 +149,7 @@ public class TwiddleDialog extends TrayDialog {
 		queryLabelData.top = new FormAttachment(0,5);
 		queryLabel.setLayoutData(queryLabelData);
 
-		Workbench.getInstance().getHelpSystem().setHelp(getShell(),
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getShell(),
 				"org.jboss.ide.eclipse.as.ui.twiddle_usage_tutorial_help"); //$NON-NLS-1$
 
 		query = new Text(main, SWT.BORDER);
