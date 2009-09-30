@@ -8,20 +8,20 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
 
       <image
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             typeIds="org.jboss.ide.eclipse.as.runtime.stripped"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
    </extension>
@@ -66,11 +66,11 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
-            icon="icons/J2EEModule16.gif"
+            icon="$nl$/icons/J2EEModule16.gif"
             id="org.jboss.ide.eclipse.as.ui.packagedProject.image"
             typeIds="jboss.package"/>
       <image
-            icon="icons/file.gif"
+            icon="$nl$/icons/file.gif"
             id="org.jboss.ide.eclipse.as.ui.simplefile.image"
             typeIds="jboss.singlefile"/>
    </extension>
@@ -113,7 +113,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.ASPerspective"
             name="%perspective.name"/>
    </extension>
@@ -189,13 +189,13 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.jboss.ide.eclipse.as.core.server.launchConfiguration"
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.launchConfigurationImage1"/>
    </extension>
 
    <extension
          point="org.eclipse.help.contexts">
-      <contexts
+      <contexts 
             file="InlineDocs/Twiddle/twiddleContext.xml">
       </contexts>
    </extension>
@@ -209,7 +209,7 @@
       <action
          id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action"
          label="Make Publishable"
-         icon="icons/publish.gif"
+         icon="$nl$/icons/publish.gif"
          menubarPath="additions"
       class="org.jboss.ide.eclipse.as.ui.actions.DeployAction">
       </action>
@@ -243,15 +243,15 @@
 
    <extension point="org.eclipse.ui.actionSets">
       <actionSet description="%actionSets.serverActions.description" id="org.jboss.tools.jst.web.ui.server.actionSet" label="%actionSets.serverActions.label" visible="true">
-         <action class="org.jboss.ide.eclipse.as.ui.actions.SelectServerActionDelegate" icon="icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.SelectServerActionDelegate" icon="$nl$/icons/actions/xpl/server.gif" id="org.jboss.tools.jst.web.ui.action.server.SelectServerActionDelegate" label="label1" style="pulldown" toolbarPath="Normal/SelectServer" tooltip="%actionSets.serverActions.selectServer.label">
          </action>
-         <action class="org.jboss.ide.eclipse.as.ui.actions.ChangeTimeStampActionDelegate" icon="icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.ChangeTimeStampActionDelegate" icon="$nl$/icons/actions/webxml.gif" id="org.jboss.tools.jst.web.ui.action.server.ChangeTimeStampActionDelegate" label="label2" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.changeWebXmlTimeStamp.label">
          </action>
-         <action class="org.jboss.ide.eclipse.as.ui.actions.StopServerActionDelegate" icon="icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.StopServerActionDelegate" icon="$nl$/icons/actions/stop.gif" id="org.jboss.tools.jst.web.ui.action.server.StopServerActionDelegate" label="label4" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.stopServer.label">
          </action>
-         <action class="org.jboss.ide.eclipse.as.ui.actions.DebugServerActionDelegate" icon="icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.DebugServerActionDelegate" icon="$nl$/icons/actions/xpl/debug.gif" id="org.jboss.tools.jst.web.ui.action.server.DebugServerActionDelegate" label="label6" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
-         <action class="org.jboss.ide.eclipse.as.ui.actions.RunServerActionDelegate" icon="icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
+         <action class="org.jboss.ide.eclipse.as.ui.actions.RunServerActionDelegate" icon="$nl$/icons/actions/start.gif" id="org.jboss.tools.jst.web.ui.action.server.RunServerActionDelegate" label="label7" toolbarPath="Normal/server" tooltip="%actionSets.serverActions.startServer.label">
          </action>
       </actionSet>
    </extension>
@@ -275,11 +275,11 @@
          name="%ViewName_JBossServerView"
          category="org.eclipse.wst.server.ui"
          class="org.jboss.tools.as.wst.server.ui.xpl.ServersView"
-         icon="icons/jboss.gif"/>
+         icon="$nl$/icons/jboss.gif"/>
       <view
             category="org.eclipse.wst.server.ui"
             class="org.jboss.ide.eclipse.as.ui.views.ServerLogView"
-            icon="icons/console.gif"
+            icon="$nl$/icons/console.gif"
             id="org.jboss.ide.eclipse.as.ui.view.serverLogView"
             name="%ViewName_ServerLog"
             restorable="true">
@@ -291,7 +291,7 @@
 	   <navigatorContent
 	         activeByDefault="true"
 	         contentProvider="org.jboss.tools.as.wst.server.ui.xpl.ServerContentProvider"
-	         icon="icons/cview16/servers_view.gif"
+	         icon="$nl$/icons/cview16/servers_view.gif"
 	         id="org.jboss.tools.as.wst.server.ui.ServersView.content.root"
 	         labelProvider="org.jboss.tools.as.wst.server.ui.xpl.ServerLabelProvider"
 	         name="%NavigatorContent_ServersViewDefaultContent"
@@ -361,7 +361,7 @@
     <navigatorContent
           activeByDefault="true"
           contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeContentProvider"
-          icon="icons/XMLFile.gif"
+          icon="$nl$/icons/XMLFile.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.xml"
           labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathTreeLabelProvider"
           name="%NavigatorContent_XMLConfiguration"
@@ -428,7 +428,7 @@
     <navigatorContent
           activeByDefault="false"
           contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$ContentProvider"
-          icon="icons/jmeth_obj.gif"
+          icon="$nl$/icons/jmeth_obj.gif"
           id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
           labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$LabelProvider"
           name="%NavigatorContent_JMX"
@@ -522,7 +522,7 @@
 	   <extension
          point="org.jboss.tools.jmx.ui.providerUI">
       <providerUI
-            icon="icons/jboss.gif"
+            icon="$nl$/icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
             name="JBoss Server">
       </providerUI>
@@ -531,7 +531,7 @@
           point="org.eclipse.debug.ui.launchConfigurationTypeImages">
        <launchConfigurationTypeImage
              configTypeID="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
-             icon="icons/jboss.gif"
+             icon="$nl$/icons/jboss.gif"
              id="org.jboss.ide.eclipse.as.ui.launchConfigurationTypeImage1">
        </launchConfigurationTypeImage>
     </extension>

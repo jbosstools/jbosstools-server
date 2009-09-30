@@ -53,7 +53,6 @@ Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.views.server.extensions,
  org.jboss.ide.eclipse.as.ui.wizards,
  org.jboss.tools.as.wst.server.ui.xpl
-Bundle-ClassPath: jbossui.jar
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
