@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2009 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.modules;
 
 import java.util.ArrayList;
@@ -23,7 +33,7 @@ import org.eclipse.wst.server.core.internal.ServerPlugin;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
-import org.jboss.ide.eclipse.as.wtp.core.Activator;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelegate {
 	public static JBTProjectModuleFactory getFactory(String id) {
@@ -85,7 +95,7 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 				return new IModule[] { module };
 			}
 		} catch (CoreException e) {
-			Activator.getDefault().getLog().log(e.getStatus());
+			ASWTPToolsPlugin.getDefault().getLog().log(e.getStatus());
 		}
 		return null;
 	}

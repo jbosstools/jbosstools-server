@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2009 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.util;
 
 import java.util.Arrays;
@@ -15,7 +25,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.jboss.ide.eclipse.as.wtp.core.Activator;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 public class VCFUtil {
 	public static void addReference(IVirtualComponent component, 
@@ -45,7 +55,7 @@ public class VCFUtil {
 			}	
 		}
 		if( t != null ) {
-			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, t.getMessage(), t);
+			IStatus status = new Status(IStatus.ERROR, ASWTPToolsPlugin.PLUGIN_ID, t.getMessage(), t);
 			throw new CoreException(status);
 		}
 	}

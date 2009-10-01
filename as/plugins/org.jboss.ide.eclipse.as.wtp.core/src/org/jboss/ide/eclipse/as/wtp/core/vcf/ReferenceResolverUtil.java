@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2009 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import java.util.ArrayList;
@@ -15,7 +25,7 @@ import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
-import org.jboss.ide.eclipse.as.wtp.core.Activator;
+import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
 public class ReferenceResolverUtil {
 	public static ReferenceResolverUtil instance = null;
@@ -62,7 +72,7 @@ public class ReferenceResolverUtil {
 		HashMap<String, ReferenceResolverWrapper> map = new HashMap<String, ReferenceResolverWrapper>();
 		
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(Activator.PLUGIN_ID, "referenceResolver"); //$NON-NLS-1$
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(ASWTPToolsPlugin.PLUGIN_ID, "referenceResolver"); //$NON-NLS-1$
 		String id = null;
 		for( int j = 0; j < cf.length; j++ ) {
 			id = cf[j].getAttribute("id");
