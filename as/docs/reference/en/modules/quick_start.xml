@@ -179,11 +179,27 @@
         </imageobject>
       </mediaobject>
     </figure>
-
-    <para>Learn more about the <property>Project Archives View</property>
-      <link linkend="Project_archivesView">here</link>.</para>
-
+  	
+  	<para>If you wish, you can assign a hotkey for the Build Project Archive action. A key binding can be added 
+  		by navigating to <emphasis>
+  			<property>Window &gt; Preferences &gt; General &gt; Keys</property>.</emphasis></para>
+  	
+  	<figure>
+  		<title>Setting the Hotkey for Build Project Archive Action</title>
+  		<mediaobject>
+  			<imageobject>
+  				<imagedata fileref="images/quick_start/hotkeys.png" scale="80"/>
+  			</imageobject>
+  		</mediaobject>
+  	</figure>
+  	
+  	<para>To perform the building of the project archives, select the project in the <property>Package Explorer</property> view and execute the hotkey combination 
+  		you assigned for this action.</para>
+  	
+  	<para>Learn more about the <property>Project Archives View</property>
+  		<link linkend="Project_archivesView">here</link>.</para>
   </section>
+	
   <section id="deployment">
     <title>Deploying an Application to a Server</title>
 
