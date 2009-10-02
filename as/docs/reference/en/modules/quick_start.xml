@@ -282,6 +282,9 @@
   	<para>Find out the answers on the frequently asked questions about JBoss AS 5 usage in the 
   		<ulink url="http://www.jboss.org/community/wiki/jboss5faq">JBoss5FAQ</ulink>.
   	</para>
+  	
+  	<para>The information on how to monitor a remote JBoss Server from Eclipse you can find in the following
+  		<ulink url="http://www.jboss.org/community/wiki/MonitorARemoteJbossServerFromEclipse">wiki article</ulink>.</para>
   </section>
 
 </chapter>
