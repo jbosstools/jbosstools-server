@@ -82,10 +82,10 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 			if (facetProject.hasProjectFacet(facet)) {
 				IProjectFacetVersion version = facetProject.getProjectFacetVersion(facet);
 				IModule module = createModule(
-						moduleType + "." + project.getName(), 
-						project.getName(), 
+						getId(project), 
+						getName(project), 
 						moduleType, 
-						version.getVersionString(), 
+						version.getVersionString(),
 						project);
 				JBTProjectModuleDelegate delegate = createDelegate(project);
 				moduleToDelegate.put(module, delegate);
@@ -99,6 +99,15 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 		}
 		return null;
 	}
+	
+	protected String getId(IProject project) {
+		return moduleType + "." + project.getName();
+	}
+	
+	protected String getName(IProject project) {
+		return project.getName();
+	}
+	
 	
 	protected void createBinaryModules(IVirtualComponent component, JBTProjectModuleDelegate delegate) {
 		List projectModules = new ArrayList();
