@@ -272,7 +272,7 @@
                 versions="4.2,4.3,4.4,4.5,4,6,5.0">
           </moduleType>
           <moduleType
-                types="bpel.module"
+                types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
@@ -309,7 +309,7 @@
                 versions="4.2,4.3,4.4,4.5,4.6,5.0">
           </moduleType>
           <moduleType
-                types="bpel.module"
+                types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
@@ -382,7 +382,7 @@
                 versions="4.2,4.3,4.4,4.5,4.6,5.0">
           </moduleType>
           <moduleType
-                types="bpel.module"
+                types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
@@ -422,7 +422,7 @@
                 versions="4.2,4.3,4.4,4.5,4.6,5.0">
           </moduleType>
           <moduleType
-                types="bpel.module"
+                types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
