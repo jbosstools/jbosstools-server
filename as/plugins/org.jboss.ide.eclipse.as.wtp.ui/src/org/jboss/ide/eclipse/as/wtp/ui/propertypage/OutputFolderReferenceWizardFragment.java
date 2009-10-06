@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.SharedImages;
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
@@ -107,6 +108,7 @@ public class OutputFolderReferenceWizardFragment extends WizardFragment implemen
 		selected = selected == null ? parentComp.getProject() : selected;
 		OutputFoldersVirtualComponent vc = new OutputFoldersVirtualComponent(selected, parentComp);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, vc);
+		getTaskModel().putObject(NewReferenceWizard.DEPENDENCY_TYPE, DependencyType.CONSUMES_LITERAL);
 		String s = 	(String)getTaskModel().getObject(NewReferenceWizard.COMPONENT_PATH);
 		if( s == null ) 
 			getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, "/");

@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.SharedImages;
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -191,6 +192,7 @@ public class ExportedClasspathFoldersReferenceWizardFragment
 		ExportedClasspathFoldersVirtualComponent vc = new ExportedClasspathFoldersVirtualComponent(parentComp.getProject(), parentComp);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT, vc);
 		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, "/");
+		getTaskModel().putObject(NewReferenceWizard.DEPENDENCY_TYPE, DependencyType.CONSUMES_LITERAL);
 	}
 	
 	protected IPath getOriginalPath(IClasspathEntry entry) {

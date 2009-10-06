@@ -14,6 +14,8 @@ public class NewReferenceWizard extends TaskWizard {
 	public static final String COMPONENT_PATH = "dependency.component.path";
 	public static final String PROJECT = "root.project";
 	public static final String ROOT_COMPONENT = "root.component";
+	public static final String DEPENDENCY_TYPE = "dependency.type";
+	
 	
 	public NewReferenceWizard() {
 		super("New Reference Wizard", new RootWizardFragment());
