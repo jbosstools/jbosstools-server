@@ -68,4 +68,23 @@
              name="Build Path Class Folders">
        </referenceFragment>
     </extension>
+    
+    
+    
+    <extension
+         point="org.eclipse.ui.exportWizards">
+      <wizard
+            category="org.eclipse.jst.j2ee.internal"
+            class="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
+            icon="icons/jar_obj.gif"
+            id="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
+            name="Module Archive">
+         <description>
+            Export this project as an arbitrary zipped archive file. 
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+    </extension>
 </plugin>

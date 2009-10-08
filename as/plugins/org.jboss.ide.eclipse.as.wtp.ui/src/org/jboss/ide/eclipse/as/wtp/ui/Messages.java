@@ -11,6 +11,19 @@ public class Messages extends NLS {
 	public static String AddModuleDependenciesPropertiesPage_SourceColumn;
 	public static String J2EEDependenciesPage_Description;
 	public static String J2EEDependenciesPage_ErrorCheckingFacets;
+	public static String MODULE_EXISTS_ERROR;
+	public static String DESTINATION_INVALID;
+	public static String DESTINATION_ARCHIVE_SHOULD_END_WITH;
+	public static String RESOURCE_EXISTS_ERROR;
+	public static String IS_READ_ONLY;
+	public static String Export_LabelDestination;
+	public static String Export_WizardTitle;
+	public static String Export_PageTitle;
+	public static String Export_PageDescription;
+	public static String Export_LabelProject;
+	public static String Export_LabelBrowse;
+	public static String Export_OverwriteCheckbox;
+	
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

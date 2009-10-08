@@ -12,9 +12,6 @@ package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
 import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.ARCHIVE_DESTINATION;
 import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.COMPONENT;
-import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.EXPORT_SOURCE_FILES;
-import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.OPTIMIZE_FOR_SPECIFIC_RUNTIME;
-import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.RUNTIME_SPECIFIC_PARTICIPANTS;
 import static org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.RUN_BUILD;
 
 import java.io.File;
@@ -24,7 +21,6 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -50,7 +46,6 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.j2ee.commonarchivecore.internal.exception.SaveFailureException;
-import org.eclipse.jst.j2ee.datamodel.properties.IJ2EEComponentExportDataModelProperties.IArchiveExportParticipantData;
 import org.eclipse.jst.j2ee.internal.archive.operations.EJBArchiveOpsResourceHandler;
 import org.eclipse.jst.j2ee.internal.plugin.LibCopyBuilder;
 import org.eclipse.jst.j2ee.internal.project.ProjectSupportResourceHandler;
@@ -62,21 +57,22 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.eclipse.wst.server.core.util.ProjectModule;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
-public abstract class ModuleExportOperation extends AbstractDataModelOperation {
+public class ModuleExportOperation extends AbstractDataModelOperation {
 
 	protected IProgressMonitor progressMonitor;
 	private IVirtualComponent component;
 	private IModule module;
 	private IPath destinationPath;
-	private boolean exportSource = false;
 
 	public ModuleExportOperation() {
 		super();
@@ -91,7 +87,6 @@ public abstract class ModuleExportOperation extends AbstractDataModelOperation {
 	protected final int LIB_BUILDER_WORK = 100;
 	protected final int EXPORT_WORK = 1000;
 	protected final int CLOSE_WORK = 10;
-	protected final int SINGLE_PARTICIPANT_WORK = 200;
 	
 	protected int computeTotalWork() {
 		int totalWork = REFRESH_WORK;
@@ -99,64 +94,35 @@ public abstract class ModuleExportOperation extends AbstractDataModelOperation {
 			totalWork += JAVA_BUILDER_WORK + LIB_BUILDER_WORK;
 		}
 		totalWork += EXPORT_WORK + CLOSE_WORK;
-		
-		final IDataModel dm = getDataModel();
-		
-		if( dm.getProperty( OPTIMIZE_FOR_SPECIFIC_RUNTIME ) == Boolean.TRUE ) {
-    		final List<IArchiveExportParticipantData> extensions
-    		    = (List<IArchiveExportParticipantData>) dm.getProperty( RUNTIME_SPECIFIC_PARTICIPANTS );
-    		totalWork += extensions.size() * SINGLE_PARTICIPANT_WORK;
-		}
-		    
 		return totalWork;
 	}
 	
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		setComponent((IVirtualComponent) model.getProperty(COMPONENT));
 		setDestinationPath(new Path(model.getStringProperty(ARCHIVE_DESTINATION)));
-//		setExportSource(model.getBooleanProperty(EXPORT_SOURCE_FILES));
 		
-		try
-		{
+		try {
 		    monitor.beginTask(ProjectSupportResourceHandler.getString(ProjectSupportResourceHandler.Exporting_archive, new Object [] { getDestinationPath().lastSegment() }), computeTotalWork());
             setProgressMonitor(monitor);
-
-    		try {
-    			// defect 240999
-    			component.getProject().refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, REFRESH_WORK));
-    			if (model.getBooleanProperty(RUN_BUILD)) {
-    				runNecessaryBuilders(component, new SubProgressMonitor(monitor, JAVA_BUILDER_WORK + LIB_BUILDER_WORK));
-    			}
-    			export();
-    		} catch (Exception e) {
-    			monitor.worked(CLOSE_WORK);
-    			throw new ExecutionException(EJBArchiveOpsResourceHandler.Error_exporting__UI_ + archiveString(), e);
-    		}
-    		
-            final IDataModel dm = getDataModel();
-            
-            if( dm.getProperty( OPTIMIZE_FOR_SPECIFIC_RUNTIME ) == Boolean.TRUE )
-            {
-                for( IArchiveExportParticipantData extData 
-                     : (List<IArchiveExportParticipantData>) dm.getProperty( RUNTIME_SPECIFIC_PARTICIPANTS ) )
-                {
-                    final IDataModelOperation op 
-                        = extData.getParticipant().createOperation( extData.getDataModel() );
-                    
-                    op.execute( null, null );
-                    monitor.worked( SINGLE_PARTICIPANT_WORK );
-                }
+            if( component != null ) {
+	    		try {
+	    			// defect 240999
+	    			component.getProject().refreshLocal(IResource.DEPTH_INFINITE, new SubProgressMonitor(monitor, REFRESH_WORK));
+	    			if (model.getBooleanProperty(RUN_BUILD)) {
+	    				runNecessaryBuilders(component, new SubProgressMonitor(monitor, JAVA_BUILDER_WORK + LIB_BUILDER_WORK));
+	    			}
+	    			export();
+	    		} catch (Exception e) {
+	    			monitor.worked(CLOSE_WORK);
+	    			throw new ExecutionException(EJBArchiveOpsResourceHandler.Error_exporting__UI_ + component.getProject().getName(), e);
+	    		}
             }
-		}
-		finally
-		{
+		} finally {
 		    monitor.done();
 		}
 		
 		return OK_STATUS;
 	}
-
-	protected abstract String archiveString();
 
 	protected void setProgressMonitor(IProgressMonitor newProgressMonitor) {
 		progressMonitor = newProgressMonitor;
@@ -184,21 +150,19 @@ public abstract class ModuleExportOperation extends AbstractDataModelOperation {
 	protected void setDestinationPath(IPath newDestinationPath) {
 		destinationPath = newDestinationPath;
 	}
-
-//	protected boolean isExportSource() {
-//		return exportSource;
-//	}
-//
-//	protected void setExportSource(boolean newExportSource) {
-//		exportSource = newExportSource;
-//	}
-
+	
+	/*
+	 * It's assumed that if the module is a "Project Module" then there's only 
+	 * one of these per project. This might not be a great assumption, but 
+	 * accepting the first ProjectModule which responds is how the behaviour works here. 
+	 */
 	protected void setModule() {
-		String moduleType = getModuleTypeID();
-		if( component != null && component.getProject() != null && moduleType != null) {
+		if( component != null && component.getProject() != null) {
 			IModule[] modules = ServerUtil.getModules(component.getProject());
+			ModuleDelegate delegate;
 			for( int i = 0; i < modules.length; i++ ) {
-				if( modules[i].getModuleType().getId().equals(moduleType)) {
+				delegate = (ModuleDelegate)modules[i].loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+				if( delegate != null && delegate instanceof ProjectModule ) {
 					module = modules[i];
 					return;
 				}
@@ -207,15 +171,15 @@ public abstract class ModuleExportOperation extends AbstractDataModelOperation {
 		module = null;
 	}
 	
-	protected abstract String getModuleTypeID();
-	
-	
 	/* Return null to skip this child */
 	protected /* abstract */ String getChildURI(IModule parent, IModule child) {
 		IEnterpriseApplication app = (IEnterpriseApplication)parent.loadAdapter(IEnterpriseApplication.class, new NullProgressMonitor());
 		if( app != null ) {
 			return app.getURI(child);
 		}
+		IJBTModule mod = (IJBTModule)parent.loadAdapter(IJBTModule.class, new NullProgressMonitor());
+		if( mod != null )
+			return mod.getURI(child);
 		return null;
 	}
 	

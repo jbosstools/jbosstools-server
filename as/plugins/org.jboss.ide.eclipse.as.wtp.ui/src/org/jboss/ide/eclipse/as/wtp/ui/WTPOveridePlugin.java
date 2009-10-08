@@ -64,6 +64,18 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 		return new Status(severity, PLUGIN_ID, aCode,
 				aMessage != null ? aMessage : "No message.", exception); //$NON-NLS-1$
 	}
+	public static IStatus createErrorStatus(String message) {
+		return createErrorStatus(message, null);
+	}
+	public static IStatus createWarningStatus(String message) {
+		return createWarningStatus(message, null);
+	}
+	public static IStatus createErrorStatus(String message, Throwable exception) {
+		return new Status(IStatus.ERROR, PLUGIN_ID, -1, message, exception);
+	}
+	public static IStatus createWarningStatus(String message, Throwable exception) {
+		return new Status(IStatus.WARNING, PLUGIN_ID, -1, message, exception);
+	}
 	public static IStatus createErrorStatus(int aCode, String aMessage,
 			Throwable exception) {
 		return createStatus(IStatus.ERROR, aCode, aMessage, exception);
