@@ -80,7 +80,7 @@
             id="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
             name="Module Archive">
          <description>
-            Export this project as an arbitrary zipped archive file. 
+            Export any Flexible Module projects into a zipped archive. A "Flexible Project" is a project with the ModuleCore nature.
          </description>
          <selection
                class="org.eclipse.core.resources.IResource">
