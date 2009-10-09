@@ -871,8 +871,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	
 	protected void addOneComponent(IVirtualComponent component) throws CoreException {
 		String path, archiveName;
-		path = new Path(objectToRuntimePath.get(component)).removeLastSegments(1).toString();
-		archiveName = new Path(objectToRuntimePath.get(component)).lastSegment();
+		path = archiveName = null; 
+		if( !consumedReferences.contains(component)) {
+			path = new Path(objectToRuntimePath.get(component)).removeLastSegments(1).toString();
+			archiveName = new Path(objectToRuntimePath.get(component)).lastSegment(); 
+		} else {
+			path = objectToRuntimePath.get(component);
+		}
 
 		IDataModelProvider provider = getAddReferenceDataModelProvider(component);
 		IDataModel dm = DataModelFactory.createDataModel(provider);
@@ -881,9 +886,11 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, Arrays.asList(component));
 		
 		//[Bug 238264] the uri map needs to be manually set correctly
-		Map<IVirtualComponent, String> uriMap = new HashMap<IVirtualComponent, String>();
-		uriMap.put(component, archiveName);
-		dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
+		if( archiveName != null ) {
+			Map<IVirtualComponent, String> uriMap = new HashMap<IVirtualComponent, String>();
+			uriMap.put(component, archiveName);
+			dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP, uriMap);
+		}
         dm.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH, path);
 
 		IStatus stat = dm.validateProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
