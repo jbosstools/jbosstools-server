@@ -55,13 +55,13 @@
          point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
       <nodeContribution
             class="org.jboss.ide.eclipse.archives.webtools.ui.PublishAction"
-            icon="$nl$/icons/publish.gif"
+            icon="icons/publish.gif"
             id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
             label="%nodeContribution.label.publishToServer"
             weight="1"/>
       <nodeContribution
             class="org.jboss.ide.eclipse.archives.webtools.ui.EditPublishAction"
-            icon="$nl$/icons/publishDetails.gif "
+            icon="icons/publishDetails.gif "
             id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
             label="%nodeContribution.label.editPublishSettings">
       </nodeContribution>
@@ -70,17 +70,17 @@
          point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewWARAction"
-            icon="$nl$/icons/war.gif"
+            icon="icons/war.gif"
             id="org.jboss.ide.eclipse.packages.ui.newWARAction"
             label="%newPackageAction.label.war"/>
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewEJBJARAction"
-            icon="$nl$/icons/EJBJar.gif"
+            icon="icons/EJBJar.gif"
             id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
             label="%newPackageAction.label.ejbJar"/>
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.webtools.ui.NewEARAction"
-            icon="$nl$/icons/ear.gif"
+            icon="icons/ear.gif"
             id="org.jboss.ide.eclipse.packages.ui.newEARAction"
             label="%newPackageAction.label.ear"/>
    </extension>
@@ -104,7 +104,7 @@
 	   <navigatorContent
 	         id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets"
 	         activeByDefault="true"
-	         icon="$nl$/icons/multiple_files.gif"
+	         icon="icons/multiple_files.gif"
 	         contentProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider"
 	         labelProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider"
 	         name="%NavigatorContent_Filesets"
