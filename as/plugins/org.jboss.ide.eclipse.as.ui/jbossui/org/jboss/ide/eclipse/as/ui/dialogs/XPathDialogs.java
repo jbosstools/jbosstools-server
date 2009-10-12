@@ -232,7 +232,7 @@ public class XPathDialogs {
 		protected Control createDialogArea(Composite parent) {
 			String title = original == null ? Messages.XPathNewXpath : Messages.XPathEditXpath;
 			setTitle(title);
-			Composite main = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
+			main = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
 			main.setLayoutData(new GridData(GridData.FILL_BOTH));
 			main.setLayout(new FormLayout());
 			layoutWidgets(main);
