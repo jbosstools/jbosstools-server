@@ -45,6 +45,7 @@ public interface IEventCodes {
 	public static final int ADD_DEPLOYMENT_FOLDER = PUBLISHING_CODE | (4<<16);
 	public static final int SUSPEND_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (5<<16);
 	public static final int RESUME_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (6<<16);
+	public static final int DEPLOYMENT_SCANNER_TRANSITION_CANCELED = PUBLISHING_CODE | ISTATUS_CODE_WARN | (7<<16);
 	
 	
 	// Publishing.JST

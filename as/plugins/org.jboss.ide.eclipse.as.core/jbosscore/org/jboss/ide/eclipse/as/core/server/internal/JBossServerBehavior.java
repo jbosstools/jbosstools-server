@@ -185,13 +185,13 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 
-	protected void publishStart(IProgressMonitor monitor) throws CoreException {
+	protected void publishStart(final IProgressMonitor monitor) throws CoreException {
 		super.publishStart(monitor);
 		if( shouldSuspendScanner()) {
 			JMXClassLoaderRepository.getDefault().addConcerned(getServer(), this);
 			IJMXRunnable r = new IJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
-					suspendDeployment(connection);
+					suspendDeployment(connection, monitor);
 				}
 			};
 			try {
@@ -203,18 +203,18 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		}
 	}
 	
-	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
+	protected void publishFinish(final IProgressMonitor monitor) throws CoreException {
 		if( shouldSuspendScanner()) {
 			IJMXRunnable r = new IJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
-					resumeDeployment(connection);
+					resumeDeployment(connection, monitor);
 				}
 			};
 			try {
 				JBossServerConnectionProvider.run(getServer(), r);
 			} catch( JMXException jmxe ) {
 				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, Messages.JMXResumeScannerError, jmxe);
-				ServerLogger.getDefault().log(getServer(), status);			
+				ServerLogger.getDefault().log(getServer(), status);
 			} finally {
 				JMXClassLoaderRepository.getDefault().removeConcerned(getServer(), this);
 			}
@@ -230,15 +230,45 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		return true;
 	}
 	
-	protected void suspendDeployment(MBeanServerConnection connection) throws Exception {
+	protected void suspendDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
 		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
-		connection.invoke(name, IJBossRuntimeConstants.STOP, new Object[] {  }, new String[] {});
+		launchDeployCommand(connection, name, IJBossRuntimeConstants.STOP, monitor);
 	}
 	
-	protected void resumeDeployment(MBeanServerConnection connection) throws Exception {
+
+	
+	protected void resumeDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
 		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
-		connection.invoke(name, IJBossRuntimeConstants.START, new Object[] {  }, new String[] {});
+		launchDeployCommand(connection, name, IJBossRuntimeConstants.START, monitor);
+	}
+	
+	protected void launchDeployCommand(final MBeanServerConnection connection, final ObjectName objectName, 
+			final String methodName, IProgressMonitor monitor) throws Exception {
+		final Exception[] e = new Exception[1];
+		Thread t = new Thread() {
+			public void run() {
+				try {
+					executeDeploymentCommand(connection, objectName, methodName);
+				} catch( Exception ex ) {
+					e[0] = ex;
+				}
+			}
+		};
+		t.start();
+		int count = 0;
+		while(t.isAlive() && !monitor.isCanceled() && count <= 4000) {
+			count+= 1000;
+			Thread.sleep(1000);
+		}
+		if( t.isAlive()) {
+			t.interrupt();
+			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_CANCELED, Messages.JMXScannerCanceled, null);
+			ServerLogger.getDefault().log(getServer(), status);
+		}
 	}
 		
+	protected void executeDeploymentCommand(MBeanServerConnection connection, ObjectName objectName, String methodName) throws Exception {
+		connection.invoke(objectName, methodName, new Object[] {  }, new String[] {});
+	}
 
 }
