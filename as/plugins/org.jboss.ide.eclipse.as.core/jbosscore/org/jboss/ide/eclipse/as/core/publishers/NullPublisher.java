@@ -20,6 +20,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 
 /**
@@ -38,6 +39,7 @@ public class NullPublisher implements IJBossServerPublisher {
 	public IStatus publishModule(IServer server, IModule[] module, 
 			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
 		return new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID,  
-				NLS.bind(Messages.NoPublisherFound, module[module.length-1]));
+				IEventCodes.NO_PUBLISHER_ROOT_CODE, 
+				NLS.bind(Messages.NoPublisherFound, module[module.length-1]), null);
 	}
 }

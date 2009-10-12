@@ -46,7 +46,7 @@ public interface IEventCodes {
 	public static final int SUSPEND_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (5<<16);
 	public static final int RESUME_DEPLOYMENT_SCANNER = PUBLISHING_CODE | ISTATUS_CODE_WARN | (6<<16);
 	public static final int DEPLOYMENT_SCANNER_TRANSITION_CANCELED = PUBLISHING_CODE | ISTATUS_CODE_WARN | (7<<16);
-	
+	public static final int NO_PUBLISHER_ROOT_CODE = PUBLISHING_CODE | ISTATUS_CODE_WARN | (8<<16);
 	
 	// Publishing.JST
 	public static final int JST_PUB_FULL_SUCCESS = JST_PUBLISHER_CODE | 1;
