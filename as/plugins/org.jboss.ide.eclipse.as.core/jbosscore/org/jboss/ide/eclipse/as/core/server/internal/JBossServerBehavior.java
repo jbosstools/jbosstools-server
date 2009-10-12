@@ -245,25 +245,40 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	protected void launchDeployCommand(final MBeanServerConnection connection, final ObjectName objectName, 
 			final String methodName, IProgressMonitor monitor) throws Exception {
 		final Exception[] e = new Exception[1];
+		final Object waitObject = new Object();
+		final Boolean[] subtaskComplete = new Boolean[1];
+		subtaskComplete[0] = new Boolean(false);
 		Thread t = new Thread() {
 			public void run() {
+				Exception exception = null;
 				try {
 					executeDeploymentCommand(connection, objectName, methodName);
 				} catch( Exception ex ) {
-					e[0] = ex;
+					exception = ex;
+				}
+				synchronized(waitObject) {
+					e[0] = exception;
+					subtaskComplete[0] = new Boolean(true);
+					waitObject.notifyAll();
 				}
 			}
 		};
 		t.start();
 		int count = 0;
 		while(t.isAlive() && !monitor.isCanceled() && count <= 4000) {
-			count+= 100;
-			Thread.sleep(100);
+			count+= 1000;
+			synchronized(waitObject) {
+				if( subtaskComplete[0].booleanValue() )
+					break;
+				waitObject.wait(1000);
+			}
 		}
-		if( t.isAlive()) {
-			t.interrupt();
-			IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_CANCELED, Messages.JMXScannerCanceled, null);
-			ServerLogger.getDefault().log(getServer(), status);
+		synchronized(waitObject) {
+			if( !subtaskComplete[0].booleanValue()) {
+				t.interrupt();
+				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_CANCELED, Messages.JMXScannerCanceled, null);
+				ServerLogger.getDefault().log(getServer(), status);
+			}
 		}
 	}
 		
