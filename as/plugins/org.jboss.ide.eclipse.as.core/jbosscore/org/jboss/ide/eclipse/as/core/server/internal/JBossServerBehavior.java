@@ -257,8 +257,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		t.start();
 		int count = 0;
 		while(t.isAlive() && !monitor.isCanceled() && count <= 4000) {
-			count+= 1000;
-			Thread.sleep(1000);
+			count+= 100;
+			Thread.sleep(100);
 		}
 		if( t.isAlive()) {
 			t.interrupt();
