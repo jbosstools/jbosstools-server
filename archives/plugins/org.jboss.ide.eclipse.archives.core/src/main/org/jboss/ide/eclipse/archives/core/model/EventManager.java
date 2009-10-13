@@ -177,13 +177,17 @@ public class EventManager {
 		}
 	}
 
+	private static final IArchiveModelListener[] NO_LISTENERS = new IArchiveModelListener[0]; 
 
 	private static IArchiveModelListener[] getModelListeners(IArchiveNode node) {
-		IArchiveModelRootNode model = node.getModelRootNode();
-		if( model != null && model.getModel() != null ) {
-			return model.getModel().getModelListeners();
+		IArchiveModelListener[] listeners = NO_LISTENERS;
+		if(node != null) {
+			IArchiveModelRootNode model = node.getModelRootNode();
+			if( model != null && model.getModel() != null ) {
+				listeners =  model.getModel().getModelListeners();
+			}
 		}
-		return new IArchiveModelListener[]{};
+		return listeners;
 	}
 
 	// get workspace default ones
