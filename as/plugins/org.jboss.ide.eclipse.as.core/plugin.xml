@@ -859,6 +859,26 @@
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/service-ref_5_0.dtd"
                webURL="http://www.jboss.org/j2ee/dtd/service-ref_5_0.dtd">
          </public>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_1.xsd">
+         </uri>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-common_5_1.xsd">
+         </uri>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.xsd">
+         </uri>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_1.xsd">
+         </uri>         
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-client_5_1.xsd">
+         </uri>         
 			
      </catalogContribution>
    </extension>
