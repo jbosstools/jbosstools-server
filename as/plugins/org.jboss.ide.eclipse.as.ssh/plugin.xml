@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.wst.server.core.serverTypes">
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate"
+            class="org.jboss.ide.eclipse.as.ssh.server.SSHServerDelegate"
+            description="A server which simply scp&apos;s files to a destination host and location"
+            id="org.jboss.ide.eclipse.as.ssh.server.remoteServerType"
+            name="SCP Remote Server"
+            runtime="false"
+            runtimeTypeId="org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType"
+            supportsRemoteHosts="true">
+      </serverType>
+   </extension>
+   
+   
+   <!-- This runtime type is here just to get around some weird UI checking.
+        It *can* be removed later SAFELY without breaking anything. The server
+        wizard will *not* create the runtime, but just check that the type is set.
+        ... So broken ;) -->
+   
+   <extension
+         point="org.eclipse.wst.server.core.runtimeTypes">
+     <runtimeType
+             vendor="JBoss Stuff"
+             class="org.jboss.ide.eclipse.as.ssh.server.SSHServerRuntime"
+             description="A runtime to allow SSH servers to support every module type. "
+             name="SSH Runtime"
+             id="org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType"
+             version="1.0">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,5.0">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.as.ssh.server.SSHZippedJSTPublisher"
+            priority="3"
+            zipDelegate="true">
+      </publisher>
+   </extension>
+   
+   
+   <!-- Some UI -->
+   <extension
+          point="org.eclipse.wst.server.ui.editorPages">
+       <page
+             class="org.jboss.ide.eclipse.as.ssh.ui.editor.DeploymentPage"
+             id="org.jboss.ide.eclipse.as.ssh.ui.editor.DeploymentPage"
+             name="Deployment"
+             typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
+       </page>
+    </extension>
+   <extension
+         point="org.eclipse.wst.server.ui.serverImages">
+      <image
+            icon="icons/ssh-16x16.png"
+            id="org.jboss.ide.eclipse.as.ssh.server.icons"
+            typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
+      </image>
+   </extension>
+   
+</plugin>
