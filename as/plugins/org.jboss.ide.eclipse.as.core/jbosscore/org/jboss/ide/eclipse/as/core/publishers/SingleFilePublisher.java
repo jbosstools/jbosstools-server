@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
@@ -30,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -47,15 +47,19 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 	}
 	
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( "local".equals(method) && module != null && module.length > 0  //$NON-NLS-1$
+		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method) 
+				&& module != null && module.length > 0 
 				&& module[module.length-1] != null  
 				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE))
 			return true;
 		return false;
 	}
 
-	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
+	public IStatus publishModule(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			IProgressMonitor monitor) throws CoreException {
 
 		this.server = ServerConverter.getDeployableServer(server);
 

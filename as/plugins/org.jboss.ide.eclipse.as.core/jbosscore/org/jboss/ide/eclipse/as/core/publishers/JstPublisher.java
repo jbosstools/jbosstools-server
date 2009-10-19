@@ -33,11 +33,11 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ProjectModule;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
@@ -65,26 +65,23 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 	public JstPublisher() {
 	}
 	
-	private boolean serverRequiresZips() {
-		return server.zipsWTPDeployments();
+	public boolean accepts(String type, IServer server, IModule[] module) {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		boolean shouldAccept = ds != null && LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(type)
+			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
+			&& ds.zipsWTPDeployments();
+		return shouldAccept;
 	}
 	
-	public IStatus publishModule(IServer server, IModule[] module, 
-			int publishType, IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
+	public IStatus publishModule(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module, 
+			int publishType, IModuleResourceDelta[] delta, 
+			IProgressMonitor monitor) throws CoreException {
 		IStatus status = null;
 		this.server = ServerConverter.getDeployableServer(server);
 		this.delta = delta;
 
-		if( serverRequiresZips() ) {
-			IJBossServerPublisher delegate = 
-				ExtensionManager.getDefault().getZippedPublisher();
-			if( delegate != null ) {
-				return delegate.publishModule(server, module, publishType, delta, monitor);
-			} else {
-				// TODO log,  use unzipped instead
-			}
-		}
-		
 		boolean deleted = false;
 		for( int i = 0; i < module.length; i++ ) {
 			if( module[i].isExternal() )
@@ -318,9 +315,5 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 				packager.write(file2, destination);
 			}
 		}
-	}
-	public boolean accepts(String type, IServer server, IModule[] module) {
-		return "local".equals(type) &&  //$NON-NLS-1$
-			ModuleCoreNature.isFlexibleProject(module[0].getProject());
 	}
 }

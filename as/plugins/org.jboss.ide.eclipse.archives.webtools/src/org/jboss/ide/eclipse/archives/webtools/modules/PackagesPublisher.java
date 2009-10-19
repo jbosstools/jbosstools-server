@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
@@ -27,7 +26,6 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.jboss.ide.eclipse.archives.core.build.ArchiveBuildDelegate;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
@@ -35,8 +33,10 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.ExtendedModuleFile;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -59,12 +59,14 @@ public class PackagesPublisher implements IJBossServerPublisher {
 	}
 
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( "local".equals(method) && module != null && module.length > 0 //$NON-NLS-1$
+		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method) && module != null && module.length > 0
 				&& PackageModuleFactory.MODULE_TYPE.equals(module[0].getModuleType().getId()))
 			return true;
 		return false;
 	}
-	public IStatus publishModule(IServer server, IModule[] module,
+	public IStatus publishModule(
+			IJBossServerPublishMethod method, 
+			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor)
 			throws CoreException {

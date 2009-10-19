@@ -34,11 +34,11 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentM
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 
 public class ModuleDeploymentPage extends ServerEditorPart {
-	private ServerResourceCommandManager commandManager;
-	private ArrayList<IModule> possibleModules;
-	private DeploymentPreferences preferences;
-	private ArrayList<IDeploymentEditorTab> tabs;
-	private ServerAttributeHelper helper; 
+	protected ServerResourceCommandManager commandManager;
+	protected ArrayList<IModule> possibleModules;
+	protected DeploymentPreferences preferences;
+	protected ArrayList<IDeploymentEditorTab> tabs;
+	protected ServerAttributeHelper helper; 
 	
 	public IModule[] getPossibleModules() {
 		return (IModule[]) possibleModules.toArray(new IModule[possibleModules.size()]);
@@ -92,16 +92,22 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	    toolkit.adapt(tabFolder);
 	    toolkit.adapt(form);
 	    toolkit.adapt(form.getBody());
-		// for loop {
-			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
-			IDeploymentEditorTab tab = new LocalDeploymentModuleTab();
-		    tabItem.setText(tab.getTabName());
-			tab.setDeploymentPage(this);
-			tab.setDeploymentPrefs(preferences);
-		    tabItem.setControl(tab.createControl(tabFolder));
-		    toolkit.adapt((Composite)tabItem.getControl());
-			tabs.add(tab);
-		// }
+	    IDeploymentEditorTab[] newItems = createTabs(toolkit, tabFolder);
+	    for( int i = 0; i < newItems.length; i++ ) {
+	    	tabs.add(newItems[i]);
+	    }
+	}
+	
+	protected IDeploymentEditorTab[] createTabs(FormToolkit toolkit, TabFolder tabFolder) {
+		TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
+		IDeploymentEditorTab tab = new LocalDeploymentModuleTab();
+	    tabItem.setText(tab.getTabName());
+		tab.setDeploymentPage(this);
+		tab.setDeploymentPrefs(preferences);
+	    tabItem.setControl(tab.createControl(tabFolder));
+	    toolkit.adapt((Composite)tabItem.getControl());
+
+	    return new IDeploymentEditorTab[] { tab };
 	}
 	
 	public void execute(ServerCommand command) {

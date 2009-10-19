@@ -65,7 +65,7 @@ public class PublishUtil {
 		return count;
 	}
 
-	private static String getDeployRootFolder(IModule[] moduleTree, 
+	public static String getDeployRootFolder(IModule[] moduleTree, 
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
 		String folder = defaultFolder;
 		// TODO bug 286699
@@ -110,7 +110,7 @@ public class PublishUtil {
 		return new Path(folder);
 	}
 	
-	private static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
+	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
 		IPath root = new Path( deployFolder );
 		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {

@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -21,6 +23,7 @@ import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -39,24 +42,31 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		workingCopy.setAttribute(DeployableLaunchConfiguration.ACTION_KEY, DeployableLaunchConfiguration.START);
 	}
 	
+	
+	protected IJBossServerPublishMethod method;
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
-		IJBossServerPublishMethod method = getPublishMethod();
+		if( method != null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Already publishing")); //$NON-NLS-1$
+		method = createPublishMethod();
 		method.publishStart(this, monitor);
 	}
 
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-		IJBossServerPublishMethod method = getPublishMethod();
+		if( method == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		int result = method.publishFinish(this, monitor);
 		setServerPublishState(result);
+		method = null;
 	}
 
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		IJBossServerPublishMethod method = getPublishMethod();
+		if( method == null )
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		int result = method.publishModule(this, kind, deltaKind, module, monitor);
 		setModulePublishState(module, result);
 	}
 	
-	protected IJBossServerPublishMethod getPublishMethod() {
+	protected IJBossServerPublishMethod createPublishMethod() {
 		return new LocalPublishMethod(); // TODO FIX THIS
 	}
 	

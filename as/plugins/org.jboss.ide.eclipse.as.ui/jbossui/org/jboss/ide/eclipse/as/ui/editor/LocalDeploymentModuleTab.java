@@ -43,8 +43,10 @@ import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -290,11 +292,10 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 		zipDeployWTPProjects = toolkit.createButton(composite,
 				Messages.EditorZipDeployments, SWT.CHECK);
-		boolean publisherAvailable = ExtensionManager.getDefault()
-				.getZippedPublisher() != null;
+		boolean zippedPublisherAvailable = isLocalZippedPublisherAvailable(); 
 		boolean value = getServer().zipsWTPDeployments();
-		zipDeployWTPProjects.setEnabled(publisherAvailable);
-		zipDeployWTPProjects.setSelection(publisherAvailable && value);
+		zipDeployWTPProjects.setEnabled(zippedPublisherAvailable);
+		zipDeployWTPProjects.setSelection(zippedPublisherAvailable && value);
 
 		FormData zipButtonData = new FormData();
 		zipButtonData.right = new FormAttachment(100, -5);
@@ -319,6 +320,16 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		return section;
 	}
 
+	protected boolean isLocalZippedPublisherAvailable() {
+		IJBossServerPublisher[] publishers = 
+			ExtensionManager.getDefault().getZippedPublishers();
+		for( int i = 0; i < publishers.length; i++ ) {
+			if( publishers[i].accepts(LocalPublishMethod.LOCAL_PUBLISH_METHOD, getServer().getServer(), null))
+				return true;
+		}
+		return false;
+	}
+	
 	public class SetDeployDirCommand extends ServerCommand {
 		private String oldDir;
 		private String newDir;

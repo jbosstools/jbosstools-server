@@ -153,17 +153,18 @@ public class ExtensionManager {
 		return null;
 	}
 	
-	public IJBossServerPublisher getZippedPublisher() {
+	public IJBossServerPublisher[] getZippedPublishers() {
 		if( publishers == null ) 
 			loadPublishers();
+		ArrayList<IJBossServerPublisher> list = new ArrayList<IJBossServerPublisher>();
 		Iterator<PublisherWrapper> i = publishers.iterator();
 		PublisherWrapper wrapper;
 		while(i.hasNext()) {
 			wrapper = i.next();
 			if( wrapper.isZipDelegate )
-				return wrapper.getNewInstance();
+				list.add( wrapper.getNewInstance() );
 		}
-		return null;
+		return list.toArray(new IJBossServerPublisher[list.size()]);
 	}
 	
 	private void loadPublishers() {

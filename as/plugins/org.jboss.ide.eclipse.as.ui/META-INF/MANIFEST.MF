@@ -51,6 +51,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.dialogs,
  org.jboss.ide.eclipse.as.ui.views.server.extensions,
+ org.jboss.ide.eclipse.as.ui.editor,
  org.jboss.ide.eclipse.as.ui.wizards,
  org.jboss.tools.as.wst.server.ui.xpl
 Bundle-Activator: org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin

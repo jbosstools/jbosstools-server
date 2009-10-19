@@ -14,9 +14,14 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 public class LocalPublishMethod implements IJBossServerPublishMethod {
-
+	public static final String LOCAL_PUBLISH_METHOD = "local";  //$NON-NLS-1$
+	
+	public String getPublishMethodId() {
+		return LOCAL_PUBLISH_METHOD;
+	}
+	
 	public boolean accepts(String methodType) {
-		return "local".equals(methodType); //$NON-NLS-1$
+		return getPublishMethodId().equals(methodType);
 	}
 
 	public void publishStart(DeployableServerBehavior behaviour,
@@ -58,12 +63,14 @@ public class LocalPublishMethod implements IJBossServerPublishMethod {
 		
 		// Let the publisher decide what to do
 		if( module.length > 0 ) {
-			publisher = ExtensionManager.getDefault().getPublisher(behaviour.getServer(), module, "local"); //$NON-NLS-1$
+			publisher = ExtensionManager.getDefault().getPublisher(behaviour.getServer(), module, getPublishMethodId());
 			IModuleResourceDelta[] deltas = new IModuleResourceDelta[]{};
 			if( deltaKind != ServerBehaviourDelegate.REMOVED)
 				deltas = behaviour.getPublishedResourceDelta(module);
 			if( publisher != null ) {
-				IStatus result = publisher.publishModule(behaviour.getServer(), module, 
+				IStatus result = publisher.publishModule(
+						this, 
+						behaviour.getServer(), module, 
 						publishType, deltas, monitor);
 				if( result != null )
 			        ServerLogger.getDefault().log(behaviour.getServer(), result);

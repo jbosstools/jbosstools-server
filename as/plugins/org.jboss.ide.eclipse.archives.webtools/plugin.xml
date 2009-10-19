@@ -92,7 +92,7 @@
       </publisher>
       <publisher
             class="org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher"
-            priority="0"
+            priority="2"
             zipDelegate="true">
       </publisher>
    </extension>

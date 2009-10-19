@@ -156,7 +156,7 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	public  IStatus[] deleteDirectory(File dir, IProgressMonitor monitor) {
+	private IStatus[] deleteDirectory(File dir, IProgressMonitor monitor) {
 		if (!dir.exists() || !dir.isDirectory())
 			return new IStatus[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null) };
 		
@@ -203,17 +203,7 @@ public final class PublishCopyUtil {
 	/**
 	 * Smart copy the given module resources to the given path.
 	 * 
-	 * @param resources an array of module resources
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting and cancellation are not desired
-	 * @return a possibly-empty array of error and warning status 
-	 */
-	public IStatus[] publishSmart(IModuleResource[] resources, IProgressMonitor monitor) {
-		return publishSmart(resources, rootDeploy, monitor);
-	}
-
-	/**
-	 * Smart copy the given module resources to the given path.
+	 * Not yet used
 	 * 
 	 * @param resources an array of module resources
 	 * @param path an external path to copy to
@@ -221,149 +211,149 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status 
 	 */
-	private IStatus[] publishSmart(IModuleResource[] resources, IPath path, IProgressMonitor monitor) {
-		if (resources == null)
-			return EMPTY_STATUS;
-		
-		monitor = ProgressUtil.getMonitorFor(monitor);
-		
-		List status = new ArrayList(2);
-		File toDir = path.toFile();
-		int fromSize = resources.length;
-		String[] fromFileNames = new String[fromSize];
-		for (int i = 0; i < fromSize; i++)
-			fromFileNames[i] = resources[i].getName();
-		
-		//	cache files and file names for performance
-		File[] toFiles = null;
-		String[] toFileNames = null;
-		
-		boolean foundExistingDir = false;
-		if (toDir.exists()) {
-			if (toDir.isDirectory()) {
-				foundExistingDir = true;
-				toFiles = toDir.listFiles();
-				int toSize = toFiles.length;
-				toFileNames = new String[toSize];
-				
-				// check if this exact file exists in the new directory
-				for (int i = 0; i < toSize; i++) {
-					toFileNames[i] = toFiles[i].getName();
-					boolean isDir = toFiles[i].isDirectory();
-					boolean found = false;
-					for (int j = 0; j < fromSize; j++) {
-						if (toFileNames[i].equals(fromFileNames[j]) && isDir == resources[j] instanceof IModuleFolder)
-							found = true;
-					}
-					
-					// delete file if it can't be found or isn't the correct type
-					if (!found) {
-						if (isDir) {
-							IStatus[] stat = deleteDirectory(toFiles[i], null);
-							addArrayToList(status, stat);
-						} else {
-							if (!toFiles[i].delete())
-								status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, toFiles[i].getAbsolutePath()), null));
-						}
-						toFiles[i] = null;
-						toFileNames[i] = null;
-					}
-				}
-			} else { //if (toDir.isFile())
-				if (!toDir.delete()) {
-					status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, toDir.getAbsolutePath()), null));
-					IStatus[] stat = new IStatus[status.size()];
-					status.toArray(stat);
-					return stat;
-				}
-			}
-		}
-		if (!foundExistingDir && !toDir.mkdirs()) {
-			status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorMkdir, toDir.getAbsolutePath()), null));
-			IStatus[] stat = new IStatus[status.size()];
-			status.toArray(stat);
-			return stat;
-		}
-		
-		if (monitor.isCanceled())
-			return new IStatus[] { Status.CANCEL_STATUS };
-		
-		monitor.worked(50);
-		
-		// cycle through files and only copy when it doesn't exist
-		// or is newer
-		if (toFiles == null)
-			toFiles = toDir.listFiles();
-		int toSize = 0;
-		if (toFiles != null)
-			toSize = toFiles.length;
-		
-		int dw = 0;
-		if (toSize > 0)
-			dw = 500 / toSize;
-		
-		// cache file names and last modified dates for performance
-		if (toFileNames == null)
-			toFileNames = new String[toSize];
-		long[] toFileMod = new long[toSize];
-		for (int i = 0; i < toSize; i++) {
-			if (toFiles[i] != null) {
-				if (toFileNames[i] != null)
-					toFileNames[i] = toFiles[i].getName();
-				toFileMod[i] = toFiles[i].lastModified();
-			}
-		}
-		
-		for (int i = 0; i < fromSize; i++) {
-			IModuleResource current = resources[i];
-			String name = fromFileNames[i];
-			boolean currentIsDir = current instanceof IModuleFolder;
-			
-			if (!currentIsDir) {
-				// check if this is a new or newer file
-				boolean copy = true;
-				IModuleFile mf = (IModuleFile) current;
-				
-				long mod = -1;
-				IFile file = (IFile) mf.getAdapter(IFile.class);
-				if (file != null) {
-					mod = file.getLocalTimeStamp();
-				} else {
-					File file2 = (File) mf.getAdapter(File.class);
-					mod = file2.lastModified();
-				}
-				
-				for (int j = 0; j < toSize; j++) {
-					if (name.equals(toFileNames[j]) && mod == toFileMod[j])
-						copy = false;
-				}
-				
-				if (copy) {
-					try {
-						copyFile(mf, path.append(name));
-					} catch (CoreException ce) {
-						status.add(ce.getStatus());
-					}
-				}
-				monitor.worked(dw);
-			} else { //if (currentIsDir) {
-				IModuleFolder folder = (IModuleFolder) current;
-				IModuleResource[] children = folder.members();
-				monitor.subTask(NLS.bind(Messages.copyingTask, new String[] {name, name}));
-				IStatus[] stat = publishSmart(children, path.append(name), ProgressUtil.getSubMonitorFor(monitor, dw));
-				addArrayToList(status, stat);
-			}
-		}
-		if (monitor.isCanceled())
-			return new IStatus[] { Status.CANCEL_STATUS };
-		
-		monitor.worked(500 - dw * toSize);
-		monitor.done();
-		
-		IStatus[] stat = new IStatus[status.size()];
-		status.toArray(stat);
-		return stat;
-	}
+//	private IStatus[] publishSmart(IModuleResource[] resources, IPath path, IProgressMonitor monitor) {
+//		if (resources == null)
+//			return EMPTY_STATUS;
+//		
+//		monitor = ProgressUtil.getMonitorFor(monitor);
+//		
+//		List status = new ArrayList(2);
+//		File toDir = path.toFile();
+//		int fromSize = resources.length;
+//		String[] fromFileNames = new String[fromSize];
+//		for (int i = 0; i < fromSize; i++)
+//			fromFileNames[i] = resources[i].getName();
+//		
+//		//	cache files and file names for performance
+//		File[] toFiles = null;
+//		String[] toFileNames = null;
+//		
+//		boolean foundExistingDir = false;
+//		if (toDir.exists()) {
+//			if (toDir.isDirectory()) {
+//				foundExistingDir = true;
+//				toFiles = toDir.listFiles();
+//				int toSize = toFiles.length;
+//				toFileNames = new String[toSize];
+//				
+//				// check if this exact file exists in the new directory
+//				for (int i = 0; i < toSize; i++) {
+//					toFileNames[i] = toFiles[i].getName();
+//					boolean isDir = toFiles[i].isDirectory();
+//					boolean found = false;
+//					for (int j = 0; j < fromSize; j++) {
+//						if (toFileNames[i].equals(fromFileNames[j]) && isDir == resources[j] instanceof IModuleFolder)
+//							found = true;
+//					}
+//					
+//					// delete file if it can't be found or isn't the correct type
+//					if (!found) {
+//						if (isDir) {
+//							IStatus[] stat = deleteDirectory(toFiles[i], null);
+//							addArrayToList(status, stat);
+//						} else {
+//							if (!toFiles[i].delete())
+//								status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, toFiles[i].getAbsolutePath()), null));
+//						}
+//						toFiles[i] = null;
+//						toFileNames[i] = null;
+//					}
+//				}
+//			} else { //if (toDir.isFile())
+//				if (!toDir.delete()) {
+//					status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, toDir.getAbsolutePath()), null));
+//					IStatus[] stat = new IStatus[status.size()];
+//					status.toArray(stat);
+//					return stat;
+//				}
+//			}
+//		}
+//		if (!foundExistingDir && !toDir.mkdirs()) {
+//			status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorMkdir, toDir.getAbsolutePath()), null));
+//			IStatus[] stat = new IStatus[status.size()];
+//			status.toArray(stat);
+//			return stat;
+//		}
+//		
+//		if (monitor.isCanceled())
+//			return new IStatus[] { Status.CANCEL_STATUS };
+//		
+//		monitor.worked(50);
+//		
+//		// cycle through files and only copy when it doesn't exist
+//		// or is newer
+//		if (toFiles == null)
+//			toFiles = toDir.listFiles();
+//		int toSize = 0;
+//		if (toFiles != null)
+//			toSize = toFiles.length;
+//		
+//		int dw = 0;
+//		if (toSize > 0)
+//			dw = 500 / toSize;
+//		
+//		// cache file names and last modified dates for performance
+//		if (toFileNames == null)
+//			toFileNames = new String[toSize];
+//		long[] toFileMod = new long[toSize];
+//		for (int i = 0; i < toSize; i++) {
+//			if (toFiles[i] != null) {
+//				if (toFileNames[i] != null)
+//					toFileNames[i] = toFiles[i].getName();
+//				toFileMod[i] = toFiles[i].lastModified();
+//			}
+//		}
+//		
+//		for (int i = 0; i < fromSize; i++) {
+//			IModuleResource current = resources[i];
+//			String name = fromFileNames[i];
+//			boolean currentIsDir = current instanceof IModuleFolder;
+//			
+//			if (!currentIsDir) {
+//				// check if this is a new or newer file
+//				boolean copy = true;
+//				IModuleFile mf = (IModuleFile) current;
+//				
+//				long mod = -1;
+//				IFile file = (IFile) mf.getAdapter(IFile.class);
+//				if (file != null) {
+//					mod = file.getLocalTimeStamp();
+//				} else {
+//					File file2 = (File) mf.getAdapter(File.class);
+//					mod = file2.lastModified();
+//				}
+//				
+//				for (int j = 0; j < toSize; j++) {
+//					if (name.equals(toFileNames[j]) && mod == toFileMod[j])
+//						copy = false;
+//				}
+//				
+//				if (copy) {
+//					try {
+//						copyFile(mf, path.append(name));
+//					} catch (CoreException ce) {
+//						status.add(ce.getStatus());
+//					}
+//				}
+//				monitor.worked(dw);
+//			} else { //if (currentIsDir) {
+//				IModuleFolder folder = (IModuleFolder) current;
+//				IModuleResource[] children = folder.members();
+//				monitor.subTask(NLS.bind(Messages.copyingTask, new String[] {name, name}));
+//				IStatus[] stat = publishSmart(children, path.append(name), ProgressUtil.getSubMonitorFor(monitor, dw));
+//				addArrayToList(status, stat);
+//			}
+//		}
+//		if (monitor.isCanceled())
+//			return new IStatus[] { Status.CANCEL_STATUS };
+//		
+//		monitor.worked(500 - dw * toSize);
+//		monitor.done();
+//		
+//		IStatus[] stat = new IStatus[status.size()];
+//		status.toArray(stat);
+//		return stat;
+//	}
 
 	/**
 	 * Handle a delta publish.
@@ -536,118 +526,6 @@ public final class PublishCopyUtil {
 		IStatus[] stat = new IStatus[status.size()];
 		status.toArray(stat);
 		return stat;
-	}
-
-	/**
-	 * Creates a new zip file containing the given module resources. Deletes the existing file
-	 * (and doesn't create a new one) if resources is null or empty.
-	 * 
-	 * @param resources an array of module resources
-	 * @param path the path where the zip file should be created 
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting and cancellation are not desired
-	 * @return a possibly-empty array of error and warning status
-	 */
-	public IStatus[] publishZip(IModuleResource[] resources, IPath path, IProgressMonitor monitor) {
-		if (resources == null || resources.length == 0) {
-			// should also check if resources consists of all empty directories
-			File file = path.toFile();
-			if (file.exists())
-				file.delete();
-			return EMPTY_STATUS;
-		}
-		
-		monitor = ProgressUtil.getMonitorFor(monitor);
-		
-		File tempFile = null;
-		try {
-			File file = path.toFile();
-			tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + path.getFileExtension(), getTempFolder()); //$NON-NLS-1$
-			BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(tempFile));
-			ZipOutputStream zout = new ZipOutputStream(bout);
-			addZipEntries(zout, resources);
-			zout.close();
-			
-			moveTempFile(tempFile, file);
-		} catch (CoreException e) {
-			return new IStatus[] { e.getStatus() };
-		} catch (Exception e) {
-			//Trace.trace(Trace.SEVERE, "Error zipping", e);
-			return new Status[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCreatingZipFile, path.lastSegment(), e.getLocalizedMessage()), e) };
-		} finally {
-			if (tempFile != null && tempFile.exists())
-				tempFile.deleteOnExit();
-		}
-		return EMPTY_STATUS;
-	}
-
-	private  void addZipEntries(ZipOutputStream zout, IModuleResource[] resources) throws Exception {
-		if (resources == null)
-			return;
-		
-		int size = resources.length;
-		for (int i = 0; i < size; i++) {
-			if (resources[i] instanceof IModuleFolder) {
-				IModuleFolder mf = (IModuleFolder) resources[i];
-				IModuleResource[] res = mf.members();
-				
-				IPath path = mf.getModuleRelativePath().append(mf.getName());
-				String entryPath = path.toPortableString();
-				if (!entryPath.endsWith("/")) //$NON-NLS-1$
-					entryPath += '/';
-				
-				ZipEntry ze = new ZipEntry(entryPath);
-				
-				long ts = 0;
-				IContainer folder = (IContainer) mf.getAdapter(IContainer.class);
-				if (folder != null)
-					ts = folder.getLocalTimeStamp();
-				
-				if (ts != IResource.NULL_STAMP && ts != 0)
-					ze.setTime(ts);
-				
-				zout.putNextEntry(ze);
-				zout.closeEntry();
-				
-				addZipEntries(zout, res);
-				continue;
-			}
-			
-			IModuleFile mf = (IModuleFile) resources[i];
-			IPath path = mf.getModuleRelativePath().append(mf.getName());
-			
-			ZipEntry ze = new ZipEntry(path.toPortableString());
-			
-			InputStream in = null;
-			long ts = 0;
-			IFile file = (IFile) mf.getAdapter(IFile.class);
-			if (file != null) {
-				ts = file.getLocalTimeStamp();
-				in = file.getContents();
-			} else {
-				File file2 = (File) mf.getAdapter(File.class);
-				ts = file2.lastModified();
-				in = new FileInputStream(file2);
-			}
-			
-			if (ts != IResource.NULL_STAMP && ts != 0)
-				ze.setTime(ts);
-			
-			zout.putNextEntry(ze);
-			
-			try {
-				int n = 0;
-				while (n > -1) {
-					n = in.read(buf);
-					if (n > 0)
-						zout.write(buf, 0, n);
-				}
-			} finally {
-				in.close();
-			}
-			
-			zout.closeEntry();
-		}
 	}
 
 	/**
