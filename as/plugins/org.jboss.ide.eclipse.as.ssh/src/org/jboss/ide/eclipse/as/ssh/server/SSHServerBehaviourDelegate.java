@@ -27,7 +27,7 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 		return new SSHPublishMethod(); // TODO FIX THIS in superclass
 	}
 	
-	public static class SSHPublishMethod extends LocalPublishMethod {
+	public class SSHPublishMethod extends LocalPublishMethod {
 		public static final String SSH_PUBLISH_METHOD = "ssh";  //$NON-NLS-1$
 		
 		@Override
@@ -45,7 +45,7 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 				IProgressMonitor monitor) throws CoreException {
 			
 			try {
-				ServerUserInfo info = new ServerUserInfo();
+				ServerUserInfo info = new ServerUserInfo(getServer());
 				JSch jsch = new JSch();
 				session = jsch.getSession(info.getUser(), behaviour.getServer().getHost(), 22);
 				jsch.setKnownHosts(info.getHostsFile());
@@ -69,9 +69,14 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 	
 	
 	public static class ServerUserInfo implements UserInfo {
-		private String user = "rob";
-		private String password = "p3nh2ogo";
-		private String hostsFile = "/home/rob/.ssh/known_hosts";
+		private String user;
+		private String password;
+		private String hostsFile;
+		public ServerUserInfo(IServer server) {
+			user = SSHPublishUtil.getUser(server);
+			password = SSHPublishUtil.getPass(server);
+			hostsFile = SSHPublishUtil.getHostsFile(server);
+		}
 		public String getPassword() {
 			return password;
 		}

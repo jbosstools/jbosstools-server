@@ -11,10 +11,14 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.IFormColors;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -28,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.ssh.Messages;
 import org.jboss.ide.eclipse.as.ssh.server.ISSHDeploymentConstants;
+import org.jboss.ide.eclipse.as.ssh.server.SSHPublishUtil;
 import org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate.SSHPublishMethod;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentEditorTab;
 import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
@@ -68,11 +73,11 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		return random;
 	}
 
-	private Text userText, passText, deployText;
-	private ModifyListener userListener, passListener, deployListener;
+	private Text userText, passText, deployText, hostsFileText;
+	private ModifyListener userListener, passListener, deployListener, hostsListener;
 	private ServerAttributeHelper helper;
-	private Button zipDeployWTPProjects;
-	private SelectionListener zipListener;
+	private Button zipDeployWTPProjects, browseHostsFileButton;
+	private SelectionListener zipListener, browseHostsButtonListener;
 
 	protected Composite createDefaultComposite(Composite parent) {
 
@@ -98,7 +103,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 
 		Control top = descriptionLabel;
 		Composite inner = toolkit.createComposite(composite);
-		inner.setLayout(new GridLayout(3, true));
+		inner.setLayout(new GridLayout(3, false));
 
 		FormData innerData = new FormData();
 		innerData.top = new FormAttachment(descriptionLabel, 5);
@@ -113,7 +118,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		Label label = toolkit.createLabel(inner,
 				Messages.DeployRootFolder);
 		label.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		deployText = toolkit.createText(inner, getDeployDir(), SWT.BORDER);
+		deployText = toolkit.createText(inner, SSHPublishUtil.getDeployDir(page.getServer().getOriginal()), SWT.BORDER);
 		deployListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetDeployDirCommand());
@@ -126,7 +131,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		Label userLabel = toolkit.createLabel(inner,
 				Messages.UserLabel);
 		userLabel.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		userText = toolkit.createText(inner, getUser(), SWT.BORDER);
+		userText = toolkit.createText(inner, SSHPublishUtil.getUser(page.getServer().getOriginal()), SWT.BORDER);
 		userListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetUserCommand());
@@ -140,15 +145,45 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		Label passLabel = toolkit.createLabel(inner,
 				Messages.PassLabel);
 		passLabel.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		passText = toolkit.createText(inner, getPass(), SWT.BORDER);
+		passText = toolkit.createText(inner, SSHPublishUtil.getPass(page.getServer().getOriginal()), SWT.BORDER);
 		passListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetPasswordCommand());
 			}
 		};
-		passText.addModifyListener(deployListener);
+		passText.addModifyListener(passListener);
 		passText.setEnabled(true);
 		passText.setLayoutData(textData);
+		
+		Label hostsLabel = toolkit.createLabel(inner,
+				Messages.HostsLabel);
+		hostsLabel.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
+		Composite hostsFileComposite = new Composite(inner, SWT.NONE);
+		hostsFileComposite.setLayoutData(textData);
+		hostsFileComposite.setLayout(new GridLayout(2,false));
+		
+		hostsFileText = toolkit.createText(hostsFileComposite, SSHPublishUtil.getHostsFile(page.getServer().getOriginal()), SWT.BORDER);
+		hostsListener = new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				page.execute(new SetHostsFileCommand());
+			}
+		};
+		hostsFileText.addModifyListener(hostsListener);
+		hostsFileText.setEnabled(true);
+		GridData hostsFileData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+		hostsFileData.widthHint = 200;
+		hostsFileData.grabExcessHorizontalSpace = true;
+		hostsFileText.setLayoutData(hostsFileData);
+		
+		browseHostsFileButton = toolkit.createButton(hostsFileComposite, Messages.browse, SWT.PUSH);
+		browseHostsButtonListener = new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				browseForHostsSelected();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		};
+		browseHostsFileButton.addSelectionListener(browseHostsButtonListener);
 		
 		zipDeployWTPProjects = toolkit.createButton(composite,
 				Messages.EditorZipDeployments, SWT.CHECK);
@@ -188,6 +223,15 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 				return true;
 		}
 		return false;
+	}
+	
+	protected void browseForHostsSelected() {
+		FileDialog d = new FileDialog(new Shell());
+		d.setFilterPath(page.makeGlobal(hostsFileText.getText()));
+		String x = d.open();
+		if (x != null) {
+			hostsFileText.setText(x);
+		}
 	}
 	
 	public class SetPropertyCommand extends ServerCommand {
@@ -237,6 +281,13 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 					passListener, ISSHDeploymentConstants.PASSWORD);
 		}
 	}
+	
+	public class SetHostsFileCommand extends SetPropertyCommand {
+		public SetHostsFileCommand() {
+			super(Messages.EditorSetPasswordCommandLabel, hostsFileText, 
+					hostsListener, ISSHDeploymentConstants.HOSTS_FILE);
+		}
+	}
 
 	public class SetZipCommand extends ServerCommand {
 		boolean oldVal;
@@ -259,17 +310,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		}
 	}
 	
-	private String getDeployDir() {
-		return helper.getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, "/home"); 
-	}
-	
-	private String getUser() {
-		return helper.getAttribute(ISSHDeploymentConstants.USERNAME, "username"); 
-	}
-	
-	private String getPass() {
-		return helper.getAttribute(ISSHDeploymentConstants.PASSWORD, "password"); 
-	}
+
 	
 	private boolean getZipsSSHDeployments() {
 		return helper.getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);

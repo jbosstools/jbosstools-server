@@ -45,7 +45,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		boolean shouldAccept = ds != null 
 			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
-			&& true; // TODO  ds.zipsWTPDeployments();
+			&& SSHPublishUtil.getZipsSSHDeployments(server);
 		return shouldAccept;
 	}
 
@@ -73,7 +73,6 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 			System.out.println("remove remote");
 		} else {
-			// TODO FIX THIS
 			String deployFolder = getRemoteDeployFolder(server);
 			String deployFile = new Path(deployFolder).append(outputFilepath.lastSegment()).toString();
 			launchCopyCommand(method2.getSession(), 
@@ -112,7 +111,6 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 				command += localFile;
 			}
 			command += "\n";
-			System.out.println(command);
 			out.write(command.getBytes());
 			out.flush();
 			if (checkAck(in) != 0) {

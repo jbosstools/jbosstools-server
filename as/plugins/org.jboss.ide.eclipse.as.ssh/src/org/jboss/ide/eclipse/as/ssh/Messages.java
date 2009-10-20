@@ -19,6 +19,7 @@ public class Messages extends NLS {
 	public static String UserLabel;
 	public static String PassLabel;
 	public static String DeployRootFolder;
+	public static String HostsLabel;
 	public static String EditorZipDeployments;
 	public static String EditorSetDeployCommandLabel;
 	public static String SSHDeploymentSectionTitle;
