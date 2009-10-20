@@ -69,12 +69,14 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 				deployRoot.toOSString(), module, publishType, delta, monitor);
 		IPath outputFilepath = localDelegate.getOutputFilePath();
 
+		String deployFolder = getRemoteDeployFolder(server);
+		String deployFile = new Path(deployFolder).append(outputFilepath.lastSegment()).toString();
+
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			System.out.println("remove remote");
+			launchRemoveCommand(method2.getSession(), 
+					outputFilepath.toString(), deployFile);
 		} else {
-			String deployFolder = getRemoteDeployFolder(server);
-			String deployFile = new Path(deployFolder).append(outputFilepath.lastSegment()).toString();
 			launchCopyCommand(method2.getSession(), 
 					outputFilepath.toString(), deployFile);
 		}
@@ -85,19 +87,40 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
 	}
 	
-	protected void launchCopyCommand(Session session, String localFile, String remoteLocation) throws CoreException {
+	protected void launchRemoveCommand(Session session, String localFile, String remoteLocation) throws CoreException {
+		Channel channel = null;
 		try {
-			// exec 'scp -t rfile' remotely
-			String command = "scp -p -t " + remoteLocation;
-			Channel channel = session.openChannel("exec");
+			String command = "rm " + remoteLocation;
+			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 	
 			// get I/O streams for remote scp
-			OutputStream out = channel.getOutputStream();
+			channel.connect();
+			while(!channel.isClosed()) {
+				try {Thread.sleep(300);} catch(InterruptedException ie) {}
+			}
+		} catch( JSchException jsche ) {
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error Removing Remote File"));
+		} finally {
+			channel.disconnect();
+		}
+
+	}
+	
+	protected void launchCopyCommand(Session session, String localFile, String remoteLocation) throws CoreException {
+		Channel channel = null;
+		OutputStream out = null;
+		try {
+			// exec 'scp -t rfile' remotely
+			String command = "scp -p -t " + remoteLocation;
+			channel = session.openChannel("exec");
+			((ChannelExec) channel).setCommand(command);
+	
+			// get I/O streams for remote scp
+			out = channel.getOutputStream();
 			InputStream in = channel.getInputStream();
 			channel.connect();
 			if (checkAck(in) != 0) {
-				// TODO throw new exception
 				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "no idea bug"));
 			}
 			
@@ -115,7 +138,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 			out.flush();
 			if (checkAck(in) != 0) {
 				// TODO throw new exception
-				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "no idea bug"));
+				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
 			}
 
 			// send a content of lfile
@@ -136,15 +159,19 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 			if (checkAck(in) != 0) {
 				System.exit(0);
 			}
-			out.close();
 
-			channel.disconnect();
 		} catch( JSchException jsche ) {
-			// TODO 
-			jsche.printStackTrace();
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
 		} catch( IOException ioe) {
-			// TODO
-			ioe.printStackTrace();
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
+		} finally {
+			if( channel != null )
+				channel.disconnect();
+			if( out != null ) {
+				try {
+					out.close();
+				} catch(IOException ioe) {}
+			}
 		}
 	}
 
