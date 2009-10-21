@@ -55,6 +55,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.UndeployFromServerJob;
@@ -186,8 +187,8 @@ public class DeployAction implements IObjectActionDelegate {
 				try {
 					IServerWorkingCopy copy = server.createWorkingCopy();
 					copy.modifyModules(modules, new IModule[0], new NullProgressMonitor());
-					IServer saved = copy.save(false, new NullProgressMonitor());
-					saved.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+					IServer saved = copy.save(false, new NullProgressMonitor()); 
+					new PublishServerJob(saved).schedule();
 				} catch( CoreException ce ) {
 					errorStatus = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ActionDelegatePublishFailed, ce);
 					errorTitle = Messages.ActionDelegateCannotPublish;

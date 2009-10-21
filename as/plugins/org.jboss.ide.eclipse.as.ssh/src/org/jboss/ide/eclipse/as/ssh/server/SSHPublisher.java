@@ -209,7 +209,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 		return PublishUtil.getDeployPath(moduleTree, getRemoteDeployFolder(server.getServer()));
 	}
 
-	protected static String getRemoteDeployFolder(IServer server) {
+	public static String getRemoteDeployFolder(IServer server) {
 		return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
 	}
 
