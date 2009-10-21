@@ -74,8 +74,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			launchRemoveCommand(method2.getSession(), 
-					outputFilepath.toString(), deployFile);
+			launchRemoveCommand(method2.getSession(), deployFile);
 		} else {
 			launchCopyCommand(method2.getSession(), 
 					outputFilepath.toString(), deployFile);
@@ -87,14 +86,17 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
 	}
 	
-	protected void launchRemoveCommand(Session session, String localFile, String remoteLocation) throws CoreException {
+	public static void launchRemoveCommand(Session session, String remoteLocation) throws CoreException {
+		String command = "rm " + remoteLocation;
+		launchCommand(session, command);
+	}
+	
+	public static void launchCommand(Session session, String command) throws CoreException {
 		Channel channel = null;
 		try {
-			String command = "rm " + remoteLocation;
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 	
-			// get I/O streams for remote scp
 			channel.connect();
 			while(!channel.isClosed()) {
 				try {Thread.sleep(300);} catch(InterruptedException ie) {}
@@ -107,12 +109,12 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 
 	}
 	
-	protected void launchCopyCommand(Session session, String localFile, String remoteLocation) throws CoreException {
+	public static void launchCopyCommand(Session session, String localFile, String remoteFile) throws CoreException {
 		Channel channel = null;
 		OutputStream out = null;
 		try {
 			// exec 'scp -t rfile' remotely
-			String command = "scp -p -t " + remoteLocation;
+			String command = "scp -p -t " + remoteFile;
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 	

@@ -12,11 +12,9 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -29,21 +27,18 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.LocalCopyCallback;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
@@ -69,7 +64,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		boolean shouldAccept = ds != null && LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(type)
 			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
-			&& ds.zipsWTPDeployments();
+			&& !ds.zipsWTPDeployments();
 		return shouldAccept;
 	}
 	
@@ -116,8 +111,9 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
-			PublishCopyUtil util = new PublishCopyUtil(server.getServer(), deployPath, tempDeployPath);
-			list.addAll(Arrays.asList(util.publishFull(members, deployPath, monitor)));
+			LocalCopyCallback handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
+			PublishCopyUtil util = new PublishCopyUtil(handler);
+			list.addAll(Arrays.asList(util.publishFull(members, monitor)));
 		}
 		else if( isBinaryObject(moduleTree))
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
@@ -154,10 +150,10 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
-		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree))
-			results = new PublishCopyUtil(server.getServer(), deployPath, tempDeployPath)
-						.publishDelta(delta, deployPath, monitor);
-		else if( delta.length > 0 ) {
+		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
+			LocalCopyCallback handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
+			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
+		} else if( delta.length > 0 ) {
 			if( isBinaryObject(moduleTree))
 				results = copyBinaryModule(moduleTree);
 			else
@@ -200,12 +196,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			IPath deployPath = getDeployPath(moduleTree, server);
 			FileUtilListener listener = new FileUtilListener();
 			IModuleResource[] members = getResources(moduleTree);
-			File source = (File)members[0].getAdapter(File.class);
-			if( source == null ) {
-				IFile ifile = (IFile)members[0].getAdapter(IFile.class);
-				if( ifile != null ) 
-					source = ifile.getLocation().toFile();
-			}
+			File source = getFile(members[0]);
 			if( source != null ) {
 				FileUtil.fileSafeCopy(source, deployPath.toFile(), listener);
 				return listener.getStatuses();
@@ -251,69 +242,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		FileUtil.safeDelete(deployPath.toFile(), listener);
 		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
-	public static boolean deployPackaged(IModule[] moduleTree) {
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_UTILITY)) return true;
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_APP_CLIENT)) return true;
-		return false;
-	}
 	
 	public int getPublishState() {
 		return publishState;
-	}
-
-	/*
-	 * Just package into a jar raw.  Don't think about it, just do it
-	 */
-	protected IStatus[] packModuleIntoJar(IModule module, IPath destination)throws CoreException {
-		String dest = destination.toString();
-		ModulePackager packager = null;
-		try {
-			packager = new ModulePackager(dest, false);
-			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
-			IModuleResource[] resources = pm.members();
-			for (int i = 0; i < resources.length; i++) {
-				doPackModule(resources[i], packager);
-			}
-		} catch (IOException e) {
-			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
-					"unable to assemble module " + module.getName(), e); //$NON-NLS-1$
-			return new IStatus[]{status};
-		}
-		finally{
-			try{
-				if( packager != null ) 
-					packager.finished();
-			}
-			catch(IOException e){
-				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
-						"unable to assemble module "+ module.getName(), e); //$NON-NLS-1$
-				return new IStatus[]{status};
-			}
-		}
-		return new IStatus[]{};
-	}
-
-	
-	/* Add one file or folder to a jar */
-	private void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
-		if (resource instanceof IModuleFolder) {
-			IModuleFolder mFolder = (IModuleFolder)resource;
-			IModuleResource[] resources = mFolder.members();
-
-			packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
-
-			for (int i = 0; resources!= null && i < resources.length; i++) {
-				doPackModule(resources[i], packager);
-			}
-		} else {
-			String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
-			IFile file = (IFile) resource.getAdapter(IFile.class);
-			if (file != null)
-				packager.write(file, destination);
-			else {
-				File file2 = (File) resource.getAdapter(File.class);
-				packager.write(file2, destination);
-			}
-		}
 	}
 }

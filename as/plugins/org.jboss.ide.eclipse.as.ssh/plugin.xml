@@ -68,6 +68,11 @@
             priority="3"
             zipDelegate="true">
       </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.ssh.server.SSHPublisher"
+            priority="3"
+            zipDelegate="false">
+      </publisher>
    </extension>
    
    

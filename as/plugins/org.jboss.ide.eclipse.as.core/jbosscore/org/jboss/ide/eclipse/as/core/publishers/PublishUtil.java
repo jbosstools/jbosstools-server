@@ -10,11 +10,16 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -22,10 +27,15 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.eclipse.wst.server.core.util.ProjectModule;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
@@ -175,9 +185,82 @@ public class PublishUtil {
 		return getResources(tree[tree.length-1]);
 	}
 	
+	public static File getFile(IModuleResource resource) {
+		File source = (File)resource.getAdapter(File.class);
+		if( source == null ) {
+			IFile ifile = (IFile)resource.getAdapter(IFile.class);
+			if( ifile != null ) 
+				source = ifile.getLocation().toFile();
+		}
+		return source;
+	}
+	
+	public static boolean deployPackaged(IModule[] moduleTree) {
+		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_UTILITY)) return true;
+		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_APP_CLIENT)) return true;
+		return false;
+	}
 	public static java.io.File getFile(IModuleFile mf) {
 		return (IFile)mf.getAdapter(IFile.class) != null ? 
 					((IFile)mf.getAdapter(IFile.class)).getLocation().toFile() :
 						(java.io.File)mf.getAdapter(java.io.File.class);
 	}
+	
+	
+	/*
+	 * Just package into a jar raw.  Don't think about it, just do it
+	 */
+	public static IStatus[] packModuleIntoJar(IModule module, IPath destination)throws CoreException {
+		String dest = destination.toString();
+		ModulePackager packager = null;
+		try {
+			packager = new ModulePackager(dest, false);
+			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
+			IModuleResource[] resources = pm.members();
+			for (int i = 0; i < resources.length; i++) {
+				doPackModule(resources[i], packager);
+			}
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
+					"unable to assemble module " + module.getName(), e); //$NON-NLS-1$
+			return new IStatus[]{status};
+		}
+		finally{
+			try{
+				if( packager != null ) 
+					packager.finished();
+			}
+			catch(IOException e){
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
+						"unable to assemble module "+ module.getName(), e); //$NON-NLS-1$
+				return new IStatus[]{status};
+			}
+		}
+		return new IStatus[]{};
+	}
+
+	
+	/* Add one file or folder to a jar */
+	public static void doPackModule(IModuleResource resource, ModulePackager packager) throws CoreException, IOException{
+		if (resource instanceof IModuleFolder) {
+			IModuleFolder mFolder = (IModuleFolder)resource;
+			IModuleResource[] resources = mFolder.members();
+
+			packager.writeFolder(resource.getModuleRelativePath().append(resource.getName()).toPortableString());
+
+			for (int i = 0; resources!= null && i < resources.length; i++) {
+				doPackModule(resources[i], packager);
+			}
+		} else {
+			String destination = resource.getModuleRelativePath().append(resource.getName()).toPortableString();
+			IFile file = (IFile) resource.getAdapter(IFile.class);
+			if (file != null)
+				packager.write(file, destination);
+			else {
+				File file2 = (File) resource.getAdapter(File.class);
+				packager.write(file2, destination);
+			}
+		}
+	}
+	
 }
