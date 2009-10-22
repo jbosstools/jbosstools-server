@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ssh
+Bundle-Name: JBoss SSH Server Plugin
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ssh;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.ssh.SSHDeploymentPlugin
