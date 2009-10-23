@@ -730,7 +730,10 @@
                     server, it is most likely because your server is protected and hence you need to
                     fill the username/password fields with appropriate values.</para>
             </tip>
-
+			
+        	<para>Under the <emphasis>
+        		<property>Publishing</property></emphasis> section it&apos; possible to disable/inable the automatic publishing of the changes in the workspace.</para>
+        	
             <para>It should be pointed out that our server adapter by default tries to automatically
                 detect the ports it needs for integrating with a <property>JBoss Server</property>.
                 Sometimes it can though be relevant to override this automatic detection if you are
