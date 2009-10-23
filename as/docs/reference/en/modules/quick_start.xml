@@ -10,7 +10,7 @@
  
     <table>
       
-      <title>Key Functionality for JBoss Server</title>
+    	<title>Key Functionality for JBoss AS and Archive Tools</title>
       <tgroup cols="3">
         
         <colspec colnum="1" align="left" colwidth="2*"/>
@@ -61,26 +61,17 @@
         
       </tgroup>
     </table>
-  
+  	
+  	<para>If you
+  		already have installed JBoss server and runtime you can quickly learn how to configure, start,
+  		stop the server, to know deployment and archiving processes. How to install runtimes and servers
+  		read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
+  		chapter.</para>
+  	
+  	<para>To start working with JBoss AS, select a <property>JBoss AS Perspective</property> via
+  		<emphasis><property>Window > Open Perspective > Other > JBoss
+  			AS</property>.</emphasis></para>
   </section>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <para> If you
-    already have installed JBoss server and runtime you can quickly learn how to configure, start,
-    stop the server, to know deployment and archiving processes. How to install runtimes and servers
-    read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
-    chapter.</para>
-
-  <para>To start working with JBoss AS, select a <property>JBoss AS Perspective</property> via
-        <emphasis><property>Window > Open Perspective > Other > JBoss
-    AS</property>.</emphasis></para>
 
   <section id="starting">
     <title>Starting JBoss Server</title>
@@ -264,12 +255,25 @@
         </imageobject>
       </mediaobject>
     </figure>
-
-    <para>Here, we have just performed the basic steps you should know to quick start with JBoss
-      server. In fact, there are more functionalities which you can make use of. Further we will
-      talk about them in detail.</para>
   </section>
-
+	
+	<section id="publishing">
+		<title>Publishing to JBoss Server</title>
+		<para>The publishing of all the modules added to a Server is performed automatically when starting a Server.</para>
+		<para>The automatic publish of the changes made to the workspace is turned on by default in order to permanently keep 
+			the workspace in sync with the publish folder. If you need to control when to publish the changes, 
+			just disable the automatic publish in the <link linkend="server_editor">Server Editor</link> and use the <emphasis>
+				<property>Publish to Server</property></emphasis> (<inlinemediaobject>  
+					<imageobject>
+						<imagedata fileref="images/quick_start/publish_button.png"/>
+					</imageobject>
+				</inlinemediaobject>) button which initiates an incremental publish.
+		</para>
+		
+		<para>Here, we have just performed the basic steps you should know to quick start with JBoss
+			server. In fact, there are more functionalities which you can make use of. Further we will
+			talk about them in detail.</para>
+	</section>
 
   <section>
     <title>Other relevant resources on the topic</title>
