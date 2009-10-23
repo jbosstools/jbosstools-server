@@ -1,7 +1,5 @@
 package org.jboss.ide.eclipse.as.ssh.server;
 
-import java.io.File;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,11 +16,9 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate.SSHPublishMethod;
 
@@ -80,7 +76,7 @@ public class SSHSingleFilePublisher implements IJBossServerPublisher {
 				return ce.getStatus();
 			}
 		} else {
-			// error can't do nuffin
+			// error can't do nuffin, should never happen
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;
 		}
 		return Status.OK_STATUS;
@@ -92,7 +88,7 @@ public class SSHSingleFilePublisher implements IJBossServerPublisher {
 			IPath sourcePath = delegate.getGlobalSourcePath();
 			String destFolder = SSHPublisher.getRemoteDeployFolder(server.getServer());
 			IPath destFile = new Path(destFolder).append(sourcePath.lastSegment());
-			SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + destFile.toString());
+			SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + destFile.toString(), monitor);
 		} else {
 			// deleted module. o noes. Ignore it. 
 			publishState = IServer.PUBLISH_STATE_UNKNOWN;

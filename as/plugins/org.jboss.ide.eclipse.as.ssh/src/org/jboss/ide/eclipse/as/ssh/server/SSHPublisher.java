@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
@@ -59,7 +60,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 	}
 
 	public int getPublishState() {
-		return IServer.PUBLISH_STATE_NONE;
+		return publishState;
 	}
 
 	public IStatus publishModule(IJBossServerPublishMethod method,
@@ -100,7 +101,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 		// First delete it
 		// if the module we're publishing is a project, not a binary, clean it's folder
 		if( !(new Path(module.getName()).segmentCount() > 1 ))
-			SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remoteDeployPath.toString());
+			SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remoteDeployPath.toString(), monitor);
 
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
 
@@ -110,7 +111,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 			list.addAll(Arrays.asList(util.publishFull(members, monitor)));
 		}
 		else if( PublishUtil.isBinaryObject(moduleTree))
-			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
+			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, monitor)));
 		else {
 			IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute();
@@ -137,7 +138,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
 		} else if( delta.length > 0 ) {
 			if( PublishUtil.isBinaryObject(moduleTree))
-				results = copyBinaryModule(moduleTree);
+				results = copyBinaryModule(moduleTree, monitor);
 			else {
 				IPath localDeployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
 					append(IJBossServerConstants.DEPLOY).makeAbsolute();
@@ -174,13 +175,13 @@ public class SSHPublisher implements IJBossServerPublisher {
 		return ms;
 	}
 	
-	protected IStatus[] copyBinaryModule(IModule[] moduleTree) {
+	protected IStatus[] copyBinaryModule(IModule[] moduleTree, IProgressMonitor monitor) {
 		try {
 			IPath remoteDeployPath = getDeployPath(moduleTree, server);
 			IModuleResource[] members = PublishUtil.getResources(moduleTree);
 			File source = PublishUtil.getFile(members[0]);
 			if( source != null ) {
-				SSHZippedJSTPublisher.launchCopyCommand(publishMethod.getSession(), source.toString(), remoteDeployPath.toString());
+				SSHZippedJSTPublisher.launchCopyCommand(publishMethod.getSession(), source.toString(), remoteDeployPath.toString(), monitor);
 			} else {
 //				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_COPY_BINARY_FAIL,
 //						NLS.bind(Messages.CouldNotPublishModule,
@@ -189,11 +190,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 				// TODO
 			}
 		} catch( CoreException ce ) {
-//			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_COPY_BINARY_FAIL,
-//					NLS.bind(Messages.CouldNotPublishModule,
-//							moduleTree[moduleTree.length-1]), null);
-//			return new IStatus[] {s};
-			// TODO
+			return new IStatus[] {ce.getStatus()};
 		}
 		return new IStatus[]{Status.OK_STATUS};
 	}
@@ -201,7 +198,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
 		IPath remotePath = getDeployPath(module, server);
-		SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remotePath.toString());
+		SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remotePath.toString(), monitor);
 		return Status.OK_STATUS;
 	}
 	
@@ -215,8 +212,8 @@ public class SSHPublisher implements IJBossServerPublisher {
 
 	public static void mkdirAndCopy(Session session, String localFile, String remoteFile) throws CoreException {
 		String parentFolder = new Path(remoteFile).removeLastSegments(1).toString();
-		SSHZippedJSTPublisher.launchCommand(session, "mkdir -p " + parentFolder);
-		SSHZippedJSTPublisher.launchCopyCommand(session, localFile, remoteFile);
+		SSHZippedJSTPublisher.launchCommand(session, "mkdir -p " + parentFolder, new NullProgressMonitor());
+		SSHZippedJSTPublisher.launchCopyCommand(session, localFile, remoteFile, new NullProgressMonitor());
 	}
 
 	public class SSHCopyCallback implements IPublishCopyCallbackHandler {
@@ -230,35 +227,28 @@ public class SSHPublisher implements IJBossServerPublisher {
 				IProgressMonitor monitor) throws CoreException {
 			File sourceFile = PublishUtil.getFile(mf);
 			IPath destination = deployRoot.append(path);
-			try {
-				mkdirAndCopy(publishMethod.getSession(), sourceFile.getCanonicalPath(), destination.toString());
-			} catch( IOException ioe) {
-				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, 0, 
-						"Error sending file: " + sourceFile.toString(), ioe));
-			}
-			return null;
+			mkdirAndCopy(publishMethod.getSession(), sourceFile.getAbsolutePath(), destination.toString());
+			return new IStatus[]{};
 		}
 
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor) {
 			IPath remotePath = deployRoot.append(path);
-			IStatus ret = Status.OK_STATUS;
 			try {
-				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remotePath.toString());
+				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remotePath.toString(), monitor);
 			} catch( CoreException ce ) {
-				ret = ce.getStatus();
+				return new IStatus[]{ce.getStatus()};
 			}
-			return new IStatus[] { ret };
+			return new IStatus[] {};
 		}
 
 		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor) {
 			IPath remotePath = deployRoot.append(dir);
-			IStatus ret = Status.OK_STATUS;
 			try {
-				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "mkdir -p " + remotePath.toString());
+				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "mkdir -p " + remotePath.toString(), monitor);
 			} catch( CoreException ce ) {
-				ret = ce.getStatus();
+				return new IStatus[]{ce.getStatus()};
 			}
-			return new IStatus[] { ret };
+			return new IStatus[] {};
 		}
 	}
 }

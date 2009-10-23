@@ -65,7 +65,7 @@ public final class PublishCopyUtil {
 		 * @param mf
 		 * @param path
 		 * @param monitor
-		 * @return
+		 * @return a list of error status objects. 
 		 * @throws CoreException
 		 */
 		public IStatus[] copyFile(IModuleFile mf, IPath path, IProgressMonitor monitor) throws CoreException;
@@ -78,9 +78,9 @@ public final class PublishCopyUtil {
 		 * 
 		 * @param dir
 		 * @param monitor
-		 * @return
+		 * @return a list of error status objects. 
 		 */
-		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor);
+		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor) throws CoreException ;
 		
 		/**
 		 * Make a directory for this path relative to where the module belongs.
@@ -89,9 +89,9 @@ public final class PublishCopyUtil {
 		 * 
 		 * @param dir
 		 * @param monitor
-		 * @return
+		 * @return a list of error status objects. 
 		 */
-		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor);
+		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor) throws CoreException;
 	}
 	
 	public static class LocalCopyCallback implements IPublishCopyCallbackHandler {
@@ -111,19 +111,20 @@ public final class PublishCopyUtil {
 		}
 		
 		public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
-			//Trace.trace(Trace.PUBLISHING, "Copying: " + mf.getName() + " to " + path.toString());
 			File file = PublishUtil.getFile(mf);
 			if( file != null ) {
 				InputStream in = null;
 				try {
 					in = new FileInputStream(file);
 				} catch (IOException e) {
-					throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
-							NLS.bind(Messages.errorReading, file.getAbsolutePath()), e));
+					return new IStatus[] {new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
+							NLS.bind(Messages.errorReading, file.getAbsolutePath()), e)};
 				}
-				copyFile(in, deployRootFolder.append(relativePath), file.lastModified(), mf);
+				IStatus ret = copyFile(in, deployRootFolder.append(relativePath), file.lastModified(), mf);
+				if( ret != null && ret.isOK())
+					return new IStatus[] { ret };
 			} // else silently ignore I guess
-			return new IStatus[]{Status.OK_STATUS};
+			return new IStatus[]{};
 		}
 
 		/**
@@ -133,7 +134,7 @@ public final class PublishCopyUtil {
 		 * @param to java.lang.String
 		 * @return a status
 		 */
-		private  IStatus copyFile(InputStream in, String to) {
+		private IStatus copyFile(InputStream in, String to) {
 			OutputStream out = null;
 			
 			try {
@@ -172,7 +173,7 @@ public final class PublishCopyUtil {
 		 * @param ts timestamp
 		 * @throws CoreException if anything goes wrong
 		 */
-		private  void copyFile(InputStream in, IPath to, long ts, IModuleFile mf) throws CoreException {
+		private IStatus copyFile(InputStream in, IPath to, long ts, IModuleFile mf) throws CoreException {
 			OutputStream out = null;
 			
 			File tempFile = null;
@@ -198,11 +199,10 @@ public final class PublishCopyUtil {
 				if (ts != IResource.NULL_STAMP && ts != 0)
 					file.setLastModified(ts);
 			} catch (CoreException e) {
-				throw e;
+				return e.getStatus();
 			} catch (Exception e) {
 				IPath path = mf.getModuleRelativePath().append(mf.getName());
-				//Trace.trace(Trace.SEVERE, "Error copying file: " + to.toOSString() + " to " + path.toOSString(), e);
-				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null));
+				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null);
 			} finally {
 				if (tempFile != null && tempFile.exists())
 					tempFile.deleteOnExit();
@@ -219,6 +219,7 @@ public final class PublishCopyUtil {
 					// ignore
 				}
 			}
+			return null;
 		}
 		
 		/**
@@ -229,7 +230,7 @@ public final class PublishCopyUtil {
 		 * @param file
 		 * @throws CoreException
 		 */
-		private  void moveTempFile(File tempFile, File file) throws CoreException {
+		private void moveTempFile(File tempFile, File file) throws CoreException {
 			if (file.exists()) {
 				if (!safeDelete(file, 2)) {
 					// attempt to rewrite an existing file with the tempFile contents if
@@ -312,7 +313,7 @@ public final class PublishCopyUtil {
 				IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
 				return new IStatus[]{s};
 			}
-			return new IStatus[] { Status.OK_STATUS};
+			return new IStatus[] {};
 		}
 
 		/**
@@ -404,13 +405,6 @@ public final class PublishCopyUtil {
 		
 	}
 
-	
-
-
-
-
-	
-
 	private static final IStatus[] EMPTY_STATUS = new IStatus[0];
 	private IPublishCopyCallbackHandler handler;
 	public PublishCopyUtil(IPublishCopyCallbackHandler handler) {
@@ -427,7 +421,7 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	public IStatus[] publishDelta(IModuleResourceDelta[] delta, IProgressMonitor monitor) {
+	public IStatus[] publishDelta(IModuleResourceDelta[] delta, IProgressMonitor monitor) throws CoreException {
 		if (delta == null)
 			return EMPTY_STATUS;
 		
@@ -454,7 +448,7 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	public IStatus[] publishDelta(IModuleResourceDelta delta, IPath path, IProgressMonitor monitor) {
+	public IStatus[] publishDelta(IModuleResourceDelta delta, IPath path, IProgressMonitor monitor) throws CoreException {
 		List status = new ArrayList(2);
 		
 		IModuleResource resource = delta.getModuleResource();
@@ -518,11 +512,11 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	public IStatus[] publishFull(IModuleResource[] resources, IProgressMonitor monitor) {
+	public IStatus[] publishFull(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
 		return publishFull(resources, new Path("/"), monitor); //$NON-NLS-1$
 	}
 	
-	public IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) {
+	public IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) throws CoreException {
 		if (resources == null)
 			return EMPTY_STATUS;
 		
@@ -540,7 +534,7 @@ public final class PublishCopyUtil {
 		return stat;
 	}
 
-	private IStatus[] copy(IModuleResource resource, IPath path, IProgressMonitor monitor) {
+	private IStatus[] copy(IModuleResource resource, IPath path, IProgressMonitor monitor) throws CoreException {
 		String name = resource.getName();
 		//Trace.trace(Trace.PUBLISHING, "Copying: " + name + " to " + path.toString());
 		List status = new ArrayList(2);

@@ -74,10 +74,10 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			launchRemoveCommand(method2.getSession(), deployFile);
+			launchRemoveCommand(method2.getSession(), deployFile, monitor);
 		} else {
 			launchCopyCommand(method2.getSession(), 
-					outputFilepath.toString(), deployFile);
+					outputFilepath.toString(), deployFile, monitor);
 		}
 		return null;
 	}
@@ -86,12 +86,12 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
 	}
 	
-	public static void launchRemoveCommand(Session session, String remoteLocation) throws CoreException {
+	public static void launchRemoveCommand(Session session, String remoteLocation, IProgressMonitor monitor) throws CoreException {
 		String command = "rm " + remoteLocation;
-		launchCommand(session, command);
+		launchCommand(session, command, monitor);
 	}
 	
-	public static void launchCommand(Session session, String command) throws CoreException {
+	public static void launchCommand(Session session, String command, IProgressMonitor monitor) throws CoreException {
 		Channel channel = null;
 		try {
 			channel = session.openChannel("exec");
@@ -109,7 +109,11 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 
 	}
 	
-	public static void launchCopyCommand(Session session, String localFile, String remoteFile) throws CoreException {
+	public static void launchCopyCommand(Session session, String localFile, String remoteFile, IProgressMonitor monitor) throws CoreException {
+		launchCopyCommandImpl(session, localFile, remoteFile, monitor);
+	}
+	
+	protected static void launchCopyCommandImpl(Session session, String localFile, String remoteFile, IProgressMonitor monitor) throws CoreException {
 		Channel channel = null;
 		OutputStream out = null;
 		try {
