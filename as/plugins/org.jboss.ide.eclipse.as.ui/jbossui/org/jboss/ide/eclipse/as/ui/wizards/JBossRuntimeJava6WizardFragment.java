@@ -28,6 +28,7 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBossRuntimeJava6WizardFragment extends JBossRuntimeWizardFragment {
@@ -40,29 +41,7 @@ public class JBossRuntimeJava6WizardFragment extends JBossRuntimeWizardFragment 
 	}
 	
 	protected ArrayList<IVMInstall> getValidJREs() {
-		ArrayList<IVMInstall> valid = new ArrayList<IVMInstall>();
-		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
-		int size = vmInstallTypes.length;
-		for (int i = 0; i < size; i++) {
-			IVMInstall[] vmInstalls = vmInstallTypes[i].getVMInstalls();
-			int size2 = vmInstalls.length;
-			for (int j = 0; j < size2; j++) {
-				if( vmInstalls[j] instanceof IVMInstall2 ) {
-					String version = ((IVMInstall2)vmInstalls[j]).getJavaVersion();
-					if( isValidVersion(version))
-						valid.add(vmInstalls[j]);
-				}
-			}
-		}
-		return valid;
-	}
-	
-	protected boolean isValidVersion(String version) {
-		return !version.startsWith(JavaCore.VERSION_1_1) &&
-				!version.startsWith(JavaCore.VERSION_1_2) &&
-				!version.startsWith(JavaCore.VERSION_1_3) &&
-				!version.startsWith(JavaCore.VERSION_1_4) &&			
-				!version.startsWith(JavaCore.VERSION_1_5);
+		return LocalJBossServerRuntime.getValidJREs(getRuntimeType());
 	}
 	
 	protected String getErrorString() {

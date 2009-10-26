@@ -10,7 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,11 +20,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.model.RuntimeDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -74,22 +79,20 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	public IVMInstall getVM() {
-		if (getVMInstallTypeId() == null) {
-			return JavaRuntime.getDefaultVMInstall();
-		}
-		String id = getAttribute(PROPERTY_VM_ID, (String)null);
-		String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
+		if (getVMInstallTypeId() != null) {
+			String id = getAttribute(PROPERTY_VM_ID, (String)null);
+			String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
 
-		IVMInstallType vmInstallType = JavaRuntime.getVMInstallType(type);
-		IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
+			IVMInstallType vmInstallType = JavaRuntime.getVMInstallType(type);
+			IVMInstall[] vmInstalls = vmInstallType.getVMInstalls();
 
-		for (int i = 0; i < vmInstalls.length; i++) {
-			if (id.equals(vmInstalls[i].getId()))
-				return vmInstalls[i];
+			for (int i = 0; i < vmInstalls.length; i++) {
+				if (id.equals(vmInstalls[i].getId()))
+					return vmInstalls[i];
+			}
 		}
-		
 		// not found, return default vm
-		return JavaRuntime.getDefaultVMInstall();
+		return getDefaultVMInstall();
 	}
 	
 	public void setVM(IVMInstall selectedVM) {
@@ -167,5 +170,56 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 		if( new Path(cl).isAbsolute())
 			return new Path(cl);
 		return getRuntime().getLocation().append(cl);
+	}
+	
+	protected IVMInstall getDefaultVMInstall() {
+		IVMInstall install = JavaRuntime.getDefaultVMInstall();
+		if( install instanceof IVMInstall2 ) {
+			String version = ((IVMInstall2)install).getJavaVersion();
+			if( isValidJREVersion(version, getRuntime().getRuntimeType()))
+				return install;
+		}
+		ArrayList<IVMInstall> installs = getValidJREs(getRuntime().getRuntimeType());
+		Iterator<IVMInstall> i = installs.iterator();
+		while(i.hasNext()) {
+			IVMInstall next = i.next();
+			if( next instanceof IVMInstall2 ) {
+				String version = ((IVMInstall2)next).getJavaVersion();
+				if( isValidJREVersion(version, getRuntime().getRuntimeType()))
+					return next;
+			}
+		}
+		return null;
+	}
+	
+	public static ArrayList<IVMInstall> getValidJREs(IRuntimeType type) {
+		ArrayList<IVMInstall> valid = new ArrayList<IVMInstall>();
+		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
+		int size = vmInstallTypes.length;
+		for (int i = 0; i < size; i++) {
+			IVMInstall[] vmInstalls = vmInstallTypes[i].getVMInstalls();
+			int size2 = vmInstalls.length;
+			for (int j = 0; j < size2; j++) {
+				if( vmInstalls[j] instanceof IVMInstall2 ) {
+					String version = ((IVMInstall2)vmInstalls[j]).getJavaVersion();
+					if( isValidJREVersion(version, type))
+						valid.add(vmInstalls[j]);
+				}
+			}
+		}
+		return valid;
+	}
+	
+	public static boolean isValidJREVersion(String jreVersion, IRuntimeType rtType) {
+		String id = rtType.getId();
+		String version = rtType.getVersion();
+		if( id.equals(IConstants.EAP_50) && version.equals(IConstants.V5_0)) { 
+			return !jreVersion.startsWith(JavaCore.VERSION_1_1) &&
+				!jreVersion.startsWith(JavaCore.VERSION_1_2) &&
+				!jreVersion.startsWith(JavaCore.VERSION_1_3) &&
+				!jreVersion.startsWith(JavaCore.VERSION_1_4) &&
+				!jreVersion.startsWith(JavaCore.VERSION_1_5);
+		}
+		return true;
 	}
 }

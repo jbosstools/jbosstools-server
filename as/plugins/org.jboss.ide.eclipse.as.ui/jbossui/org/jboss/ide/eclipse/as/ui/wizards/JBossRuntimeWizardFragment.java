@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
@@ -194,7 +195,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.setConfiguration(rt.getJBossConfiguration() == null 
 					? IConstants.DEFAULT_CONFIGURATION : rt.getJBossConfiguration());
 
-			if (rt.isUsingDefaultJRE()) {
+			if (rt.isUsingDefaultJRE() && shouldIncludeDefaultJRE()) {
 				jreCombo.select(0);
 			} else {
 				IVMInstall install = rt.getVM();
@@ -209,6 +210,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			homeDirText.setEditable(canEdit);
 			homeDirButton.setEnabled(canEdit);
 			configurations.getTable().setVisible(canEdit);
+			if( jreCombo.getSelectionIndex() < 0 && jreCombo.getItemCount() > 0)
+				jreCombo.select(0);
 		}
 	}
 
@@ -551,9 +554,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
 
 		int sel = jreCombo.getSelectionIndex();
-		if (sel > 0)
-			selectedVM = installedJREs.get(sel-1);
-		else
+		int offset = 0;
+		if( shouldIncludeDefaultJRE() ) {
+			offset = -1;
+		}
+		if( sel >= 0 )
+			selectedVM = installedJREs.get(sel + offset);
+		else 
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
@@ -911,5 +918,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		public String getNewConfig() {
 			return newConfig;
 		}
+	}
+	
+	public IRuntimeType getRuntimeType() {
+		IRuntime r = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		return r.getRuntimeType();
 	}
 }
