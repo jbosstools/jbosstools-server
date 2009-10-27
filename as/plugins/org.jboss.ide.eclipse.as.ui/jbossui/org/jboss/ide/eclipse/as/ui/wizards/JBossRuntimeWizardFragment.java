@@ -558,9 +558,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if( shouldIncludeDefaultJRE() ) {
 			offset = -1;
 		}
-		if( sel >= 0 )
+		if( sel + offset >= 0 )
 			selectedVM = installedJREs.get(sel + offset);
-		else 
+		else // if sel < 0 or sel == 0 and offset == -1
 			selectedVM = null;
 		configDirTextVal = configDirText.getText();
 		updateErrorMessage();
