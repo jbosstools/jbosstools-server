@@ -199,11 +199,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				jreCombo.select(0);
 			} else {
 				IVMInstall install = rt.getVM();
-				String vmName = install.getName();
-				String[] jres = jreCombo.getItems();
-				for (int i = 0; i < jres.length; i++) {
-					if (vmName.equals(jres[i]))
-						jreCombo.select(i);
+				if( install != null ) {
+					String vmName = install.getName();
+					String[] jres = jreCombo.getItems();
+					for (int i = 0; i < jres.length; i++) {
+						if (vmName.equals(jres[i]))
+							jreCombo.select(i);
+					}
 				}
 			}
 			jreComboIndex = jreCombo.getSelectionIndex();
