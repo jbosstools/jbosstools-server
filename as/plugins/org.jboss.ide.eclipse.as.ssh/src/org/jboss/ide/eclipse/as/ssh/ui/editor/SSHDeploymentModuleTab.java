@@ -64,8 +64,6 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 	}
 
 	public Control createControl(Composite parent) {
-		helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
-
 		Composite random = new Composite(parent, SWT.NONE);
 		GridData randomData = new GridData(GridData.FILL_BOTH);
 		random.setLayoutData(randomData);
@@ -82,7 +80,6 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 
 	private Text userText, passText, deployText, hostsFileText;
 	private ModifyListener userListener, passListener, deployListener, hostsListener;
-	private ServerAttributeHelper helper;
 	private Button zipDeployWTPProjects, browseHostsFileButton;
 	private SelectionListener zipListener, browseHostsButtonListener;
 
@@ -241,6 +238,10 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		}
 	}
 	
+	protected ServerAttributeHelper getHelper() {
+		return new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
+	}
+	
 	public class SetPropertyCommand extends ServerCommand {
 		protected String oldDir;
 		protected String newDir;
@@ -253,15 +254,15 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 			this.newDir = text.getText();
 			this.listener = listener;
 			this.attribute = attribute;
-			this.oldDir = helper.getAttribute(attribute, ""); //$NON-NLS-1$
+			this.oldDir = getHelper().getAttribute(attribute, ""); //$NON-NLS-1$
 		}
 		public void execute() {
-			helper.setAttribute(attribute, newDir);
+			getHelper().setAttribute(attribute, newDir);
 			page.getSaveStatus();
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
-			helper.setAttribute(attribute, oldDir);
+			getHelper().setAttribute(attribute, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
 			page.getSaveStatus();
@@ -301,17 +302,17 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		boolean newVal;
 		public SetZipCommand() {
 			super(page.getServer(), Messages.EditorZipDeployments);
-			oldVal = helper.getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);
+			oldVal = getHelper().getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);
 			newVal = zipDeployWTPProjects.getSelection();
 		}
 		public void execute() {
-			helper.setAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, newVal);
+			getHelper().setAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, newVal);
 			page.getSaveStatus();
 		}
 		public void undo() {
 			zipDeployWTPProjects.removeSelectionListener(zipListener);
 			zipDeployWTPProjects.setSelection(oldVal);
-			helper.setAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, oldVal);
+			getHelper().setAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, oldVal);
 			zipDeployWTPProjects.addSelectionListener(zipListener);
 			page.getSaveStatus();
 		}
@@ -320,7 +321,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 
 	
 	private boolean getZipsSSHDeployments() {
-		return helper.getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);
+		return getHelper().getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);
 	}
 
 	private IDeployableServer getServer() {

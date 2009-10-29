@@ -71,6 +71,7 @@ public class SSHPackagesPublisher implements IJBossServerPublisher {
 	    		statuses.addAll(Arrays.asList(publishModule(module2, true, monitor)));
 	    	}
 		}catch(Exception e) {
+			e.printStackTrace();
 			IStatus status = new Status(IStatus.ERROR, IntegrationPlugin.PLUGIN_ID, 
 					NLS.bind(Messages.ErrorDuringPublish, module2.getName()), e);
 			return status;
@@ -115,16 +116,17 @@ public class SSHPackagesPublisher implements IJBossServerPublisher {
 		IPath remoteRoot = new Path(remoteContainer).append(sourcePath.lastSegment());
 
 		try {
-			if( incremental ) {
-				IModuleResource[] members = PublishUtil.getResources(module);
-				SSHCopyCallback callback = new SSHCopyCallback(remoteRoot, method);
-				PublishCopyUtil util = new PublishCopyUtil(callback);
-				return util.publishDelta(delta, monitor);
+			if( !pack.isExploded() ) {
+				// copy the output file
+				SSHZippedJSTPublisher.launchCommand(method.getSession(), "rm -rf " + remoteRoot.toString(), monitor);
+				SSHZippedJSTPublisher.launchCopyCommand(method.getSession(), sourcePath.toOSString(), remoteRoot.toString(), monitor);
 			} else {
-				if( !pack.isExploded() ) {
-					// copy the output file
-					SSHZippedJSTPublisher.launchCopyCommand(method.getSession(), sourcePath.toOSString(), remoteRoot.toString(), monitor);
+				if( incremental ) {
+					SSHCopyCallback callback = new SSHCopyCallback(remoteRoot, method);
+					PublishCopyUtil util = new PublishCopyUtil(callback);
+					return util.publishDelta(delta, monitor);
 				} else {
+					SSHZippedJSTPublisher.launchCommand(method.getSession(), "rm -rf " + remoteRoot.toString(), monitor);
 					IModuleResource[] members = PublishUtil.getResources(module);
 					SSHCopyCallback callback = new SSHCopyCallback(remoteRoot, method);
 					PublishCopyUtil util = new PublishCopyUtil(callback);
