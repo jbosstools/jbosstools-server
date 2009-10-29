@@ -436,14 +436,6 @@
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.eclipse.jst.server.tomcat.core.sourcePathComputer"/>
       <launchConfigurationType
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration"
-            id="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
-            modes="run,debug"
-            name="Stripped Server Launch Configuration"
-            public="false"
-            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
-            sourcePathComputerId="org.eclipse.jst.server.tomcat.core.sourcePathComputer"/>
-      <launchConfigurationType
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
             modes="run"
