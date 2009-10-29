@@ -46,6 +46,11 @@ import org.eclipse.wst.server.ui.internal.EclipseUtil;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.actions.RunOnServerActionDelegate;
 
+/**
+ * 
+ * @author rob
+ * @deprecated
+ */
 public class ServersViewDropAdapterAssistant extends CommonDropAdapterAssistant {
 
 	@SuppressWarnings("unchecked") private List fElements;

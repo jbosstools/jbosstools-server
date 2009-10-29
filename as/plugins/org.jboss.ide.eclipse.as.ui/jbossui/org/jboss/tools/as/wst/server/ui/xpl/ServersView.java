@@ -17,6 +17,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.navigator.CommonNavigator;
 /**
  * A view of servers, their modules, and status.
+ * @deprecated
  */
 public class ServersView extends CommonNavigator {
 	

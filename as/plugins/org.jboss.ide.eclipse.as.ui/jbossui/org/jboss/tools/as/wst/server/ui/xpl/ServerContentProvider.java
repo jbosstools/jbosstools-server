@@ -40,6 +40,9 @@ import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.eclipse.wst.server.ui.internal.viewers.BaseContentProvider;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
+/**
+ * @deprecated
+ */
 public class ServerContentProvider extends BaseContentProvider implements ITreeContentProvider {
 	public static Object INITIALIZING = new Object();
 	protected IServerLifecycleListener serverResourceListener;

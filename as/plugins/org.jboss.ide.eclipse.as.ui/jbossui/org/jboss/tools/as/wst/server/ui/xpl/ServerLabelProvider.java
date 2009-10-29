@@ -21,6 +21,7 @@ import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 /**
  * Server table label provider.
+ * @deprecated
  */
 public class ServerLabelProvider extends LabelProvider {
 

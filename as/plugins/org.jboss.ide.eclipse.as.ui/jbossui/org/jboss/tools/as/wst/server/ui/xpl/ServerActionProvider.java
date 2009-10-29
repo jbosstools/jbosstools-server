@@ -68,7 +68,9 @@ import org.eclipse.wst.server.ui.internal.view.servers.StartModuleAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopModuleAction;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreAction;
-
+/**
+ * @deprecated
+ */
 public class ServerActionProvider extends CommonActionProvider {
 	public static final String NEW_MENU_ID = "org.jboss.tools.as.wst.server.ui.internal.cnf.newMenuId"; //$NON-NLS-1$
 	public static final String SHOW_IN_MENU_ID = "org.jboss.tools.as.wst.server.ui.internal.cnf.showInMenuId"; //$NON-NLS-1$
