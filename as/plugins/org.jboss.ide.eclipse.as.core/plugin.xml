@@ -135,15 +135,10 @@
             description="A server which only provides a deploy folder for publishing."
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
-            initialState="stopped"
             launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
-            launchModes="run"
             name="JBoss Deploy-Only Server"
-            runtime="true"
+            runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
-            startBeforePublish="false"
-            startTimeout="100000"
-            stopTimeout="100000"
             supportsRemoteHosts="true"/>
 
  </extension>
