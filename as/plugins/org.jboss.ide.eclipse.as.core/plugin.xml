@@ -135,7 +135,6 @@
             description="A server which only provides a deploy folder for publishing."
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
-            launchConfigId="org.jboss.ide.eclipse.as.core.server.stripped.launchConfiguration"
             name="JBoss Deploy-Only Server"
             runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
