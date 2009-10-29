@@ -148,6 +148,19 @@
 	      </includes>
 	   </viewerContentBinding>
 	</extension>
+	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.eclipse.wst.server.ui.ServersView">
+	      <includes>
+	         <contentExtension
+	               isRoot="false"
+	               pattern="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets">
+	         </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+	</extension>
+	
     <extension
           point="org.eclipse.ui.preferencePages">
        <page

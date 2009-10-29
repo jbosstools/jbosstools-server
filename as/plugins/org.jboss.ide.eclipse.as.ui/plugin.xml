@@ -352,6 +352,42 @@
 	   </viewerContentBinding>
 	</extension>
 	
+		<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+	      <includes>
+             <contentExtension
+                isRoot="false"
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.xml">
+             </contentExtension>
+             <contentExtension
+                   isRoot="false"
+                   pattern="org.jboss.ide.eclipse.as.ui.extensions.jmx">
+             </contentExtension>
+             <contentExtension
+                   isRoot="false"
+                   pattern="org.jboss.tools.jmx.ui.internal.views.navigator.JMXLinkHelper">
+             </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+    <viewerActionBinding
+          viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+       <includes>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.modules"/>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog"/>
+          <actionExtension
+                pattern="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView"/>
+          <actionExtension
+                pattern="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
+          </actionExtension>
+       </includes>
+    </viewerActionBinding>
+	</extension>
+	
+	
 	
 	
 	<!-- Extensions to new Server View -->
@@ -458,11 +494,10 @@
 	</extension>
 
 
-
 	<extension
 	      point="org.eclipse.ui.navigator.viewer">
 	   <viewerContentBinding
-	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+	         viewerId="org.eclipse.wst.server.ui.ServersView">
 	      <includes>
              <contentExtension
                 isRoot="false"
@@ -479,7 +514,7 @@
 	      </includes>
 	   </viewerContentBinding>
     <viewerActionBinding
-          viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+          viewerId="org.eclipse.wst.server.ui.ServersView">
        <includes>
           <actionExtension
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.modules"/>
@@ -493,7 +528,6 @@
        </includes>
     </viewerActionBinding>
 	</extension>
-	
 	
 	
 	<!-- Decorator for xpaths / xml-->
