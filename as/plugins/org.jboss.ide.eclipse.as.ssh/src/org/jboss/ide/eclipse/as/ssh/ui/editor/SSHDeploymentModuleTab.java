@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ssh.ui.editor;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -11,11 +21,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -39,13 +47,12 @@ import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 
 public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 	private ModuleDeploymentPage page;
-	private DeploymentPreferences preferences;
 
 	public SSHDeploymentModuleTab() {
 	}
 
 	public String getTabName() {
-		return "SSH Deployment";
+		return Messages.SSHDeploymentSectionTitle;
 	}
 
 	public void setDeploymentPage(ModuleDeploymentPage page) {
@@ -53,7 +60,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 	}
 
 	public void setDeploymentPrefs(DeploymentPreferences prefs) {
-		this.preferences = prefs;
+		// DO Nothing
 	}
 
 	public Control createControl(Composite parent) {

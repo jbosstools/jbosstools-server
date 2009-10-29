@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ssh.server;
 
 import java.io.File;
@@ -106,7 +116,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
 
 		if( !PublishUtil.deployPackaged(moduleTree) && !PublishUtil.isBinaryObject(moduleTree)) {
-			SSHCopyCallback callback = new SSHCopyCallback(remoteDeployPath);
+			SSHCopyCallback callback = new SSHCopyCallback(remoteDeployPath, publishMethod);
 			PublishCopyUtil util = new PublishCopyUtil(callback);
 			list.addAll(Arrays.asList(util.publishFull(members, monitor)));
 		}
@@ -121,7 +131,7 @@ public class SSHPublisher implements IJBossServerPublisher {
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
 				mkdirAndCopy(publishMethod.getSession(), tempFile.toString(), remoteDeployPath.toString());
 			} catch( IOException ioe) {
-				// TODO error handling
+				list.add(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 			}
 		}
 		
@@ -134,21 +144,22 @@ public class SSHPublisher implements IJBossServerPublisher {
 		IStatus[] results = new IStatus[] {};
 		IPath remoteDeployPath = getDeployPath(moduleTree, server);
 		if( !PublishUtil.deployPackaged(moduleTree) && !PublishUtil.isBinaryObject(moduleTree)) {
-			SSHCopyCallback handler = new SSHCopyCallback(remoteDeployPath);
+			SSHCopyCallback handler = new SSHCopyCallback(remoteDeployPath, publishMethod);
 			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
 		} else if( delta.length > 0 ) {
 			if( PublishUtil.isBinaryObject(moduleTree))
 				results = copyBinaryModule(moduleTree, monitor);
 			else {
 				IPath localDeployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
-					append(IJBossServerConstants.DEPLOY).makeAbsolute();
+					append(IJBossServerConstants.DEPLOY).makeAbsolute(); 
 				try {
 					File temp = localDeployRoot.toFile().createTempFile(module.getName(), ".tmp", localDeployRoot.toFile());
 					IPath tempFile = new Path(temp.getAbsolutePath());
 					PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile);
 					mkdirAndCopy(publishMethod.getSession(), tempFile.toString(), remoteDeployPath.toString());
 				} catch( IOException ioe) {
-					// TODO error handling
+					IStatus s = new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, ioe.getMessage(), ioe);
+					results = new IStatus[] { s };
 				}
 			}
 		}
@@ -216,25 +227,27 @@ public class SSHPublisher implements IJBossServerPublisher {
 		SSHZippedJSTPublisher.launchCopyCommand(session, localFile, remoteFile, new NullProgressMonitor());
 	}
 
-	public class SSHCopyCallback implements IPublishCopyCallbackHandler {
+	public static class SSHCopyCallback implements IPublishCopyCallbackHandler {
 
-		private IPath deployRoot;
-		public SSHCopyCallback(IPath deployRoot) {
-			this.deployRoot = deployRoot;
+		private IPath root;
+		private SSHPublishMethod method;
+		public SSHCopyCallback(IPath deployRoot, SSHPublishMethod method) {
+			this.root = deployRoot;
+			this.method = method;
 		}
 		
 		public IStatus[] copyFile(IModuleFile mf, IPath path,
 				IProgressMonitor monitor) throws CoreException {
 			File sourceFile = PublishUtil.getFile(mf);
-			IPath destination = deployRoot.append(path);
-			mkdirAndCopy(publishMethod.getSession(), sourceFile.getAbsolutePath(), destination.toString());
+			IPath destination = root.append(path);
+			mkdirAndCopy(method.getSession(), sourceFile.getAbsolutePath(), destination.toString());
 			return new IStatus[]{};
 		}
 
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor) {
-			IPath remotePath = deployRoot.append(path);
+			IPath remotePath = root.append(path);
 			try {
-				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "rm -rf " + remotePath.toString(), monitor);
+				SSHZippedJSTPublisher.launchCommand(method.getSession(), "rm -rf " + remotePath.toString(), monitor);
 			} catch( CoreException ce ) {
 				return new IStatus[]{ce.getStatus()};
 			}
@@ -242,9 +255,9 @@ public class SSHPublisher implements IJBossServerPublisher {
 		}
 
 		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor) {
-			IPath remotePath = deployRoot.append(dir);
+			IPath remotePath = root.append(dir);
 			try {
-				SSHZippedJSTPublisher.launchCommand(publishMethod.getSession(), "mkdir -p " + remotePath.toString(), monitor);
+				SSHZippedJSTPublisher.launchCommand(method.getSession(), "mkdir -p " + remotePath.toString(), monitor);
 			} catch( CoreException ce ) {
 				return new IStatus[]{ce.getStatus()};
 			}

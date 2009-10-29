@@ -40,6 +40,7 @@ public interface IEventCodes {
 	
 	// Publishing
 	public static final int PUBLISHING_ROOT_CODE = PUBLISHING_CODE | (1 << 16);
+	public static final int SSH_PUBLISHING_ROOT_CODE = PUBLISHING_CODE | (1 << 15);
 	public static final int JST_PUBLISHER_CODE = PUBLISHING_CODE | (2 << 16); 
 	public static final int SINGLE_FILE_PUBLISHER_CODE = PUBLISHING_CODE | (3 << 16);
 	public static final int ADD_DEPLOYMENT_FOLDER = PUBLISHING_CODE | (4<<16);

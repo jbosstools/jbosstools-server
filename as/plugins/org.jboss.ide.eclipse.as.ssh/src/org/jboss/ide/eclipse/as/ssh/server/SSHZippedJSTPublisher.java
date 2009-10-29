@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ssh.server;
 
 import java.io.File;
@@ -19,6 +29,9 @@ import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.webtools.modules.LocalZippedPublisherUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -92,6 +105,18 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 	}
 	
 	public static void launchCommand(Session session, String command, IProgressMonitor monitor) throws CoreException {
+		launchThreadedCommand(session, command, monitor);
+	}
+
+	protected static void launchThreadedCommand(final Session session, final String command, final IProgressMonitor monitor) throws CoreException {
+		// thread and watch the monitor for cancelations and interrupt the thread
+		LaunchRunnable r = new LaunchRunnable() { public void run() throws CoreException { 
+			launchCommandNoThread(session, command, monitor);
+		} };
+		launchThreadedCommand(r, monitor);
+	}
+	
+	protected static void launchCommandNoThread(Session session, String command, IProgressMonitor monitor) throws CoreException {
 		Channel channel = null;
 		try {
 			channel = session.openChannel("exec");
@@ -102,15 +127,71 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 				try {Thread.sleep(300);} catch(InterruptedException ie) {}
 			}
 		} catch( JSchException jsche ) {
-			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error Removing Remote File"));
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error executing command: " + command, null));
 		} finally {
 			channel.disconnect();
 		}
-
 	}
 	
-	public static void launchCopyCommand(Session session, String localFile, String remoteFile, IProgressMonitor monitor) throws CoreException {
-		launchCopyCommandImpl(session, localFile, remoteFile, monitor);
+	public static class LaunchRunnable {
+		public void run() throws CoreException {
+		}
+	}
+	
+	public static void launchCopyCommand(final Session session, final String localFile, 
+						final String remoteFile, final IProgressMonitor monitor) throws CoreException {
+		// thread and watch the monitor for cancelations and interrupt the thread
+		LaunchRunnable r = new LaunchRunnable() { public void run() throws CoreException { 
+			launchCopyCommandImpl(session, localFile, remoteFile, monitor);
+		} };
+		launchThreadedCommand(r, monitor);
+	}
+	
+	protected static void launchThreadedCommand(final LaunchRunnable runnable, IProgressMonitor monitor) throws CoreException {
+		final Exception[] e = new Exception[1];
+		e[0] = null;
+		final Object waitObject = new Object();
+		final Boolean[] subtaskComplete = new Boolean[1];
+		subtaskComplete[0] = new Boolean(false);
+		Thread t = new Thread() {
+			public void run() {
+				Exception exception = null;
+				try {
+					runnable.run();
+				} catch( Exception ex ) {
+					exception = ex;
+				}
+				synchronized(waitObject) {
+					e[0] = exception;
+					subtaskComplete[0] = new Boolean(true);
+					waitObject.notifyAll();
+				}
+			}
+		};
+		t.start();
+		while(t.isAlive() && !monitor.isCanceled() ) {
+			synchronized(waitObject) {
+				if( subtaskComplete[0].booleanValue() )
+					break;
+				try {
+					waitObject.wait(500);
+				} catch(InterruptedException ie) {}
+			}
+		}
+		synchronized(waitObject) {
+			if( !subtaskComplete[0].booleanValue()) {
+				t.interrupt();
+				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.ISTATUS_CODE_ERROR, "SSH command canceled", e[0]);
+				CoreException ce = new CoreException(status);
+				throw ce;
+			}
+			if( e[0] != null ) {
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.ISTATUS_CODE_ERROR, "Error running remote command", e[0]);
+				CoreException ce = new CoreException(status);
+				throw ce;
+			}
+				
+		}
 	}
 	
 	protected static void launchCopyCommandImpl(Session session, String localFile, String remoteFile, IProgressMonitor monitor) throws CoreException {
@@ -127,7 +208,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 			InputStream in = channel.getInputStream();
 			channel.connect();
 			if (checkAck(in) != 0) {
-				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "no idea bug"));
+				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error transfering file: " + localFile, null));
 			}
 			
 			// send "C0644 filesize filename", where filename should not include
@@ -143,8 +224,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 			out.write(command.getBytes());
 			out.flush();
 			if (checkAck(in) != 0) {
-				// TODO throw new exception
-				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
+				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error transfering file: " + localFile, null));
 			}
 
 			// send a content of lfile
@@ -163,13 +243,13 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 			out.write(buf, 0, 1);
 			out.flush();
 			if (checkAck(in) != 0) {
-				System.exit(0);
+				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error transfering file: " + localFile, null));
 			}
 
 		} catch( JSchException jsche ) {
-			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error transfering file: " + localFile, jsche));
 		} catch( IOException ioe) {
-			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Error transfering file"));
+			throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, IEventCodes.SSH_PUBLISHING_ROOT_CODE, "Error transfering file: " + localFile, ioe));
 		} finally {
 			if( channel != null )
 				channel.disconnect();
@@ -199,12 +279,12 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 				c = in.read();
 				sb.append((char) c);
 			} while (c != '\n');
-			if (b == 1) { // error
-				System.out.print(sb.toString());
-			}
-			if (b == 2) { // fatal error
-				System.out.print(sb.toString());
-			}
+//			if (b == 1) { // error
+//				System.out.print(sb.toString());
+//			}
+//			if (b == 2) { // fatal error
+//				System.out.print(sb.toString());
+//			}
 		}
 		return b;
 	}

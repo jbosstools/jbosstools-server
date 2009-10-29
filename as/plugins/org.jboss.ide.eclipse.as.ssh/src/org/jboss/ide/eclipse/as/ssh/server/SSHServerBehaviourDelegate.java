@@ -1,11 +1,25 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ssh.server;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.ssh.SSHDeploymentPlugin;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -52,7 +66,7 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 				session.setUserInfo(info);
 				session.connect();
 			} catch( JSchException jsche) {
-				// TODO handle
+				throw new CoreException(new Status(IStatus.ERROR, SSHDeploymentPlugin.PLUGIN_ID, "Remote Authentication Error", jsche));
 			}
 		}
 		
@@ -73,6 +87,8 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 		private String password;
 		private String hostsFile;
 		public ServerUserInfo(IServer server) {
+			IServer tmp = ServerCore.findServer(server.getId());
+			String tmp_pass = SSHPublishUtil.getPass(tmp);
 			user = SSHPublishUtil.getUser(server);
 			password = SSHPublishUtil.getPass(server);
 			hostsFile = SSHPublishUtil.getHostsFile(server);
