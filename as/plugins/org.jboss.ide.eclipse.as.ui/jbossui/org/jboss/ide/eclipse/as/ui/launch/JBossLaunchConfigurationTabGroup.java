@@ -55,8 +55,6 @@ public class JBossLaunchConfigurationTabGroup extends
 		tabs[i++].setLaunchConfigurationDialog(dialog);
 		tabs[i] = new EnvironmentTab();
 		tabs[i++].setLaunchConfigurationDialog(dialog);
-		tabs[i] = new JavaJRETab();
-		tabs[i++].setLaunchConfigurationDialog(dialog);	 
 		tabs[i] = new CommonTab();
 		tabs[i++].setLaunchConfigurationDialog(dialog);
 
