@@ -147,46 +147,6 @@ public class PackagesPublisher implements IJBossServerPublisher {
 		}
 	}
 
-	protected int countChanges(IModuleResourceDelta[] deltas) {
-		IModuleResource res;
-		int count = 0;
-		if( deltas == null ) return 0;
-		for( int i = 0; i < deltas.length; i++ ) {
-			res = deltas[i].getModuleResource();
-			if( res != null && res instanceof IModuleFile)
-				count++;
-			count += countChanges(deltas[i].getAffectedChildren());
-		}
-		return count;
-	}
-
-	protected int countConcreteFiles(IModule module) {
-		PackagedModuleDelegate delegate = (PackagedModuleDelegate)module.loadAdapter(PackagedModuleDelegate.class, new NullProgressMonitor());
-		try {
-			ArrayList<IPath> list = new ArrayList<IPath>();
-			countConcreteFiles(delegate.members()[0], list);
-			return list.size();
-		} catch( CoreException ce ) {
-
-		}
-		return -1;
-	}
-	protected void countConcreteFiles(IModuleResource mr, ArrayList<IPath> list) {
-		if( mr instanceof IExtendedModuleResource) {
-			IExtendedModuleResource emr = ((IExtendedModuleResource)mr);
-			if( mr instanceof IModuleFile ) {
-				IPath p = emr.getConcreteDestFile();
-				if( !list.contains(p))
-					list.add(p);
-			}
-			if( mr instanceof IModuleFolder) {
-				IModuleResource[] children = ((IModuleFolder)mr).members();
-				for( int i = 0; i < children.length; i++ )
-					countConcreteFiles(children[i], list);
-			}
-		}
-	}
-
 	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot,
 			IPath sourcePrefix, ArrayList<IPath> changedFiles) {
 		switch( delta.getKind()) {

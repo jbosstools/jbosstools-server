@@ -28,6 +28,7 @@ import org.jboss.tools.jmx.core.IConnectionProviderListener;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.IJMXRunnable;
 import org.jboss.tools.jmx.core.JMXException;
+import org.jboss.tools.jmx.core.tree.ErrorRoot;
 import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
 
@@ -74,6 +75,7 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 			} catch( CoreException ce ) {
 				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ce.getMessage(), ce);
 				JBossServerCorePlugin.getDefault().getLog().log(status);
+				root = new ErrorRoot();
 			} finally {
 				JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 				isLoading = false;
