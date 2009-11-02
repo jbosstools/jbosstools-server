@@ -32,6 +32,7 @@ import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.Root;
+import org.jboss.tools.test.util.JobUtils;
 
 public class DefaultProviderTest extends TestCase {
 	protected void setUp() throws Exception {
@@ -81,10 +82,12 @@ public class DefaultProviderTest extends TestCase {
 				null, true);
 		project = projectProvider.getProject();
 		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-
+		JobUtils.waitForIdle();
+		
 		ILaunchConfigurationWorkingCopy wc = createLaunch();
 		ILaunch launch = wc.launch("run", new NullProgressMonitor());
-		
+
+
 		/* */
 		IProcess p = launch.getProcesses()[0];
 		p.getStreamsProxy().getErrorStreamMonitor().addListener(new IStreamListener() {
@@ -127,7 +130,7 @@ public class DefaultProviderTest extends TestCase {
 			
 			boolean found = false;
 			for( int i = 0; i < children.length; i++ )
-				if( children[i] instanceof DomainNode && ((DomainNode)children[i]).getDomain().equals("com.example"))
+				if( children[i] instanceof DomainNode && ((DomainNode)children[i]).getDomain().equals("com.example.mbeans"))
 					found = true;
 			
 			assertTrue("Domain \"com.example\" not found", found);
@@ -144,10 +147,10 @@ public class DefaultProviderTest extends TestCase {
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, "Test1");
 
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, "JMX_EXAMPLE");
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "com.example.Main");
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "com.example.mbeans.Main");
 		wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_PATHS",
 				new ArrayList(Arrays.asList(new String[] {
-						"/JMX_EXAMPLE/src/com/example/Main.java"
+						"/JMX_EXAMPLE/src/com/example/mbeans/Main.java"
 				})));
 		wc.setAttribute("org.eclipse.debug.core.MAPPED_RESOURCE_TYPES",
 				new ArrayList(Arrays.asList(new String[] {"1"})));
