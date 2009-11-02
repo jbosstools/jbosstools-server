@@ -46,6 +46,14 @@ public class ClientAllRuntimeClasspathProvider
 		// TODO Auto-generated constructor stub
 	}
 
+	public static class ClientAllFilter {
+		public static boolean accepts(IPath path) {
+			if( !path.lastSegment().endsWith(EXT_JAR)) return false;
+			if( path.lastSegment().toLowerCase().endsWith("jaxb-xjc.jar")) return false;
+			return true;
+		}
+	}
+	
 	public IClasspathEntry[] resolveClasspathContainer(IProject project, IRuntime runtime) {
 		if( runtime == null ) 
 			return new IClasspathEntry[0];
@@ -121,13 +129,14 @@ public class ClientAllRuntimeClasspathProvider
 	protected IClasspathEntry getEntry(IPath path) {
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
 	}
+
 	protected void addEntries(IPath folder, ArrayList<IClasspathEntry> list) {
 		if( folder.toFile().exists()) {
 			File f = folder.toFile();
 			if(f.isDirectory()) {
 				String[] files = f.list();
 				for( int i = 0; i < files.length; i++ ) {
-					if( files[i].endsWith(EXT_JAR)) {
+					if( files[i].endsWith(EXT_JAR) && ClientAllFilter.accepts(folder.append(files[i]))) {
 						list.add(getEntry(folder.append(files[i])));
 					}
 				}
