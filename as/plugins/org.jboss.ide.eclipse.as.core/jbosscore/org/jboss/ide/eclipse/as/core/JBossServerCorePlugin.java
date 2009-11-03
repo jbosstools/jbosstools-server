@@ -10,14 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
-import java.util.ResourceBundle;
-
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
@@ -59,6 +60,7 @@ public class JBossServerCorePlugin extends Plugin  {
 		UnitedServerListenerManager.getDefault();
 		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
 		UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
+		FacetedProjectFramework.addListener( JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
 	}
 
 	/**
@@ -68,6 +70,7 @@ public class JBossServerCorePlugin extends Plugin  {
 		super.stop(context);
 		UnitedServerListenerManager.getDefault().removeListener(ServerListener.getDefault());
 		UnitedServerListenerManager.getDefault().removeListener(XPathModel.getDefault());
+		FacetedProjectFramework.removeListener(JBoss4xEarFacetInstallListener.getDefault());
 	}
 
 	/**

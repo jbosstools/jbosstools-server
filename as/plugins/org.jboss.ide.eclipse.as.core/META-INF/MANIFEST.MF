@@ -14,9 +14,13 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jst.j2ee,
  org.eclipse.wst.xml.core,
  org.apache.ant,
- org.jboss.tools.jmx.core;bundle-version="0.2.1",
- org.eclipse.core.variables;bundle-version="3.2.200",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="1.0.0"
+ org.jboss.tools.jmx.core,
+ org.eclipse.core.variables,
+ org.jboss.ide.eclipse.as.wtp.core,
+ org.eclipse.wst.common.project.facet.core,
+ org.eclipse.wst.common.frameworks,
+ org.eclipse.jst.jee,
+ org.eclipse.core.commands
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.extensions.descriptors,
