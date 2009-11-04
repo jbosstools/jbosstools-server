@@ -159,6 +159,9 @@ public class PublishUtil {
 			suffix = IJBossServerConstants.EXT_RAR;
 		else if( IJBossServerConstants.FACET_ESB.equals(type))
 			suffix = IJBossServerConstants.EXT_ESB;
+		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
+			// no suffix required, name already has it
+			suffix = ""; //$NON-NLS-1$
 		else
 			suffix = IJBossServerConstants.EXT_JAR;
 		return suffix;
