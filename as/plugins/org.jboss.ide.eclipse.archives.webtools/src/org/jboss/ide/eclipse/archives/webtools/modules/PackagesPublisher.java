@@ -135,7 +135,7 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta);
 		} else {
 			// full publish, copy whole folder or file
-			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.append(sourcePath.lastSegment()).toFile(), listener);
+			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.toFile(), listener);
 		}
 	}
 
@@ -198,9 +198,9 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			if( imr instanceof ExtendedModuleFile ) {
 				IPath concrete = ((ExtendedModuleFile)imr).getConcreteDestFile();
 				if( !changedFiles.contains(concrete)) {
-					changedFiles.add(concrete);
-					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
+					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()+1));
 					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
+					changedFiles.add(concrete);
 				}
 			}
 			break;

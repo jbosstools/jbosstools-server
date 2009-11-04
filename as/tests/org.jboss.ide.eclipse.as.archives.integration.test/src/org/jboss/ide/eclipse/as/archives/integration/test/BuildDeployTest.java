@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
@@ -40,8 +41,8 @@ import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.ui.actions.BuildAction;
 import org.jboss.ide.eclipse.archives.webtools.modules.ArchivesModuleModelListener;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
@@ -90,7 +91,7 @@ public class BuildDeployTest extends TestCase {
 		try {
 			assertDeployContents(count);
 			assertTrue("Deployed File should not have changed", false);
-		} catch( AssertionError ae) {}
+		} catch( AssertionFailedError ae) {}
 		
 		
 		// Builder is on, auto-deploy is on
@@ -115,15 +116,15 @@ public class BuildDeployTest extends TestCase {
 		try {
 			assertBinContents(count);
 			assertTrue("Bin File should not have changed", false);			
-		} catch( AssertionError ae ) {}
+		} catch( AssertionFailedError ae ) {}
 		try {
 			assertBuiltArchiveContents(count);
 			assertTrue("Built Archive File should not have changed", false);			
-		} catch( AssertionError ae ) {}
+		} catch( AssertionFailedError ae ) {}
 		try {
 			assertDeployContents(count);
 			assertTrue("Deployed File should not have changed", false);			
-		} catch( AssertionError ae ) {}
+		} catch( AssertionFailedError ae ) {}
 		
 		// Builder is off, autodeploy is on, manually call build!
 		callBuild();

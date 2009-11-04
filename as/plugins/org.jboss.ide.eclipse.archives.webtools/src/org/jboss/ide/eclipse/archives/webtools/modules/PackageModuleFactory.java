@@ -196,18 +196,18 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		}
 		public boolean visit(IArchiveNode node) {
 			int type = node.getNodeType();
+			// not sure why this is giving wrong values but it seems to go deep into IArchive code
+			IPath rootRelative = node.getRootArchiveRelativePath().removeFirstSegments(1);
 			if( type == IArchiveNode.TYPE_ARCHIVE && ((IArchive)node).isTopLevel()) {
-				IPath rel = ((IArchive)node).getRootArchiveRelativePath();
-				members.put(node, new ArchiveContainerResource(((IArchive)node).getName(), node, rel));
-				pathToNode.put(rel, node);
+				members.put(node, new ArchiveContainerResource(((IArchive)node).getName(), node, rootRelative));
+				pathToNode.put(rootRelative, node);
 			} else if( type == IArchiveNode.TYPE_ARCHIVE || type == IArchiveNode.TYPE_ARCHIVE_FOLDER) {
 				String name = type == IArchiveNode.TYPE_ARCHIVE ? ((IArchive)node).getName() : ((IArchiveFolder)node).getName();
 				// if we're any other archive or a folder, create us and add to parent
 				IArchiveNode parent = node.getParent();
 				ArchiveContainerResource parentAsResource = members.get(parent);
-				IPath rel = node.getRootArchiveRelativePath();
-				members.put(node, new ArchiveContainerResource(name, node, rel));
-				pathToNode.put(rel, node);
+				members.put(node, new ArchiveContainerResource(name, node, rootRelative));
+				pathToNode.put(rootRelative, node);
 				parentAsResource.addChild(members.get(node));
 			} else if( type == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
 				ArchiveContainerResource parentAsResource = members.get(node.getParent());
@@ -242,7 +242,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 			this.moduleRelativePath = moduleRelativePath;
 			members = new HashMap<IPath, IModuleResource>();
 			if( node.getNodeType() == IArchiveNode.TYPE_ARCHIVE_FILESET ) {
-				fsRelative = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().segmentCount());
+				fsRelative = moduleRelativePath.removeFirstSegments(node.getParent().getRootArchiveRelativePath().removeFirstSegments(1).segmentCount());
 			}
 		}
 
@@ -288,7 +288,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 		protected ArchiveContainerResource find(IArchiveFileSet fs, IPath fsRelative, boolean create) {
 			ArchiveContainerResource resource = this;
 			ArchiveContainerResource tmpResource;
-			IPath tmpPath = fs.getRootArchiveRelativePath();
+			IPath tmpPath = fs.getRootArchiveRelativePath().removeFirstSegments(1);
 			int count = fsRelative.segmentCount();
 			for( int i = 0; i < count; i++ ) {
 				tmpPath = tmpPath.append(fsRelative.segment(i));
@@ -402,7 +402,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 		public IModuleResource[] members() throws CoreException {
 			init();
-			return new IModuleResource[] { rootResource };
+			return ((IModuleFolder)rootResource).members();
 		}
 
 		public IStatus validate() {
