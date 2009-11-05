@@ -24,7 +24,7 @@
    <extension
          point="org.eclipse.wst.server.core.runtimeTypes">
      <runtimeType
-             vendor="JBoss by Red Hat"
+             vendor="JBoss Community"
              class="org.jboss.ide.eclipse.as.ssh.server.SSHServerRuntime"
              description="A runtime to allow SSH servers to support every module type. "
              name="SSH Runtime"
