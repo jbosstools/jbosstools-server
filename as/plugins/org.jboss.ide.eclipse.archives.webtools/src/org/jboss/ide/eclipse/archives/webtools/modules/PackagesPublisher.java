@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.modules;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
@@ -22,16 +23,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.IModuleFile;
-import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
-import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.ExtendedModuleFile;
-import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.IExtendedModuleResource;
 import org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory.PackagedModuleDelegate;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
@@ -131,11 +128,13 @@ public class PackagesPublisher implements IJBossServerPublisher {
 			return;
 		}
 
-		if( incremental ) {
-			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta);
-		} else {
+		if( !incremental || !pack.isExploded() ) { // full publish, or zipped
 			// full publish, copy whole folder or file
 			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.toFile(), listener);
+		} else if( destPathRoot.toFile().exists() && destPathRoot.toFile().isFile()) {
+			FileUtil.fileSafeCopy(sourcePath.toFile(), destPathRoot.toFile(), listener);
+		} else {
+			publishFromDelta(module, destPathRoot, sourcePath.removeLastSegments(1), delta);
 		}
 	}
 
@@ -149,63 +148,22 @@ public class PackagesPublisher implements IJBossServerPublisher {
 
 	protected void publishFromDeltaHandle(IModuleResourceDelta delta, IPath destRoot,
 			IPath sourcePrefix, ArrayList<IPath> changedFiles) {
-		switch( delta.getKind()) {
-		case IModuleResourceDelta.REMOVED:
-			// removed might not be IExtendedModuleResource
-			IModuleResource imr = delta.getModuleResource();
-			if( imr instanceof IExtendedModuleResource) {
-				IExtendedModuleResource emr = ((IExtendedModuleResource)imr);
-				IPath concrete = emr.getConcreteDestFile();
-				if( !changedFiles.contains(concrete)) {
-					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
-
-					// file hasnt been updated yet.
-					// But we don't know whether to delete or copy this file.
-					// depends where it is in the tree and what's exploded.
-					changedFiles.add(concrete);
-					IPath concreteRelative = concrete.removeFirstSegments(sourcePrefix.segmentCount()).setDevice(null);
-					IPath emrModRelative = emr.getModuleRelativePath();
-					boolean delete = concreteRelative.equals(emrModRelative);
-
-					if( delete ) {
-						FileUtil.safeDelete(destPath.toFile(), listener);
-					} else {
-						// copy
-						FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
-					}
-				}
+		IModuleResource imr = delta.getModuleResource();
+		File f = (File)imr.getAdapter(File.class);
+		if( f != null ) {
+			IPath destPath = destRoot.append(imr.getModuleRelativePath()).append(imr.getName());
+			switch( delta.getKind()) {
+			case IModuleResourceDelta.REMOVED:
+				FileUtil.safeDelete(destPath.toFile(), listener);
 				return;
-			} else {
-				// TODO
+			case IModuleResourceDelta.ADDED:
+				FileUtil.fileSafeCopy(f, destPath.toFile(), listener);
 				return;
+			case IModuleResourceDelta.CHANGED:
+				FileUtil.fileSafeCopy(f, destPath.toFile(), listener);
+				break;
 			}
-		case IModuleResourceDelta.ADDED:
-			imr = delta.getModuleResource();
-			if( imr instanceof IExtendedModuleResource) {
-				IPath concrete = ((IExtendedModuleResource)imr).getConcreteDestFile();
-				if( !changedFiles.contains(concrete)) {
-					changedFiles.add(concrete);
-					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()));
-					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
-				}
-				return;
-			} else {
-				// TODO
-				return;
-			}
-		case IModuleResourceDelta.CHANGED:
-			imr = delta.getModuleResource();
-			if( imr instanceof ExtendedModuleFile ) {
-				IPath concrete = ((ExtendedModuleFile)imr).getConcreteDestFile();
-				if( !changedFiles.contains(concrete)) {
-					IPath destPath = destRoot.append(concrete.removeFirstSegments(sourcePrefix.segmentCount()+1));
-					FileUtil.fileSafeCopy(concrete.toFile(), destPath.toFile(), listener);
-					changedFiles.add(concrete);
-				}
-			}
-			break;
 		}
-
 		IModuleResourceDelta[] children = delta.getAffectedChildren();
 		if( children != null ) {
 			for( int i = 0; i < children.length; i++ ) {
