@@ -31,7 +31,7 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
-import org.eclipse.jdt.debug.ui.launchConfigurations.JavaJRETab;
+import org.eclipse.jdt.debug.ui.launchConfigurations.JavaMainTab;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -45,23 +45,18 @@ public class JBossLaunchConfigurationTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[10];
-		int i = 0;
-		tabs[i] = new JavaArgumentsTabExtension();
-		tabs[i++].setLaunchConfigurationDialog(dialog);
-		tabs[i] = new JavaClasspathTab();
-		tabs[i++].setLaunchConfigurationDialog(dialog);
-		tabs[i] = new SourceLookupTab();
-		tabs[i++].setLaunchConfigurationDialog(dialog);
-		tabs[i] = new EnvironmentTab();
-		tabs[i++].setLaunchConfigurationDialog(dialog);
-		tabs[i] = new CommonTab();
-		tabs[i++].setLaunchConfigurationDialog(dialog);
+		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
+				new JavaArgumentsTabExtension(),
+				new JavaMainTab(),
+				new JavaClasspathTab(),
+				new SourceLookupTab(),
+				new EnvironmentTab(),
+				new CommonTab()
+		};
 
-		
-		ILaunchConfigurationTab[] tabs2 = new ILaunchConfigurationTab[i];
-		System.arraycopy(tabs, 0, tabs2, 0, i);
-		setTabs(tabs2);
+		for( int i = 0; i < tabs.length; i++ )
+			tabs[i].setLaunchConfigurationDialog(dialog);
+		setTabs(tabs);
 	}
 	
 	public class JavaArgumentsTabExtension extends JavaArgumentsTab {
