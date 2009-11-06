@@ -388,7 +388,7 @@ public final class XMLMemento implements IMemento {
     * @return the Text node of the memento, or <code>null</code> if
     * the memento has no Text node.
     */
-   private Text getTextNode() {
+   public Text getTextNode() {
        // Get the nodes.
        NodeList nodes = element.getChildNodes();
        int size = nodes.getLength();
