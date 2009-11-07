@@ -68,6 +68,10 @@ public final class XMLMemento implements IMemento {
 		return new XMLMemento(factory, child);
 	}
 
+	public void removeChild(XMLMemento child) {
+		element.removeChild(child.element);
+	}
+	
 	/**
 	 * Create a Document from a Reader and answer a root memento for reading
 	 * a document.
@@ -416,5 +420,13 @@ public final class XMLMemento implements IMemento {
        } else {
            textNode.setData(data);
        }
+   }
+   
+   public String getTextData() {
+       Text textNode = getTextNode();
+       if (textNode != null) {
+           return textNode.getData();
+       }
+       return ""; //$NON-NLS-1$
    }
 }
