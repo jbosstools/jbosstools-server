@@ -109,7 +109,7 @@ public class DefaultProviderTest extends TestCase {
 				ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
 			HashMap map = new HashMap();
 			map.put(DefaultConnectionProvider.ID, "Test Connection");
-			map.put(DefaultConnectionProvider.URL, "service:jmx:rmi:///jndi/rmi://127.0.0.1:9999" +
+			map.put(DefaultConnectionProvider.URL, "service:jmx:rmi:///jndi/rmi://localhost:9999" +
 					"/jmxrmi");
 			map.put(DefaultConnectionProvider.USERNAME, "");
 			map.put(DefaultConnectionProvider.PASSWORD, "");
