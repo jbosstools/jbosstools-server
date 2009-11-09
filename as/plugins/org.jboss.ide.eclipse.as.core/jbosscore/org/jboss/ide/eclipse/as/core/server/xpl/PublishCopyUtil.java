@@ -307,6 +307,7 @@ public final class PublishCopyUtil {
 		}
 		
 		public IStatus[] deleteResource(IPath resource, IProgressMonitor monitor) {
+			resource = deployRootFolder.append(resource);
 			if( resource.toFile().isDirectory())
 				return deleteDirectory(resource.toFile(), monitor);
 			if( !resource.toFile().delete()) {
@@ -398,8 +399,8 @@ public final class PublishCopyUtil {
 			return false;
 		}
 		
-		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor) {
-			dir.toFile().mkdirs();
+		public IStatus[] makeDirectoryIfRequired(IPath relativeDir, IProgressMonitor monitor) {
+			deployRootFolder.append(relativeDir).toFile().mkdirs();
 			return new IStatus[] {Status.OK_STATUS};
 		}
 		
