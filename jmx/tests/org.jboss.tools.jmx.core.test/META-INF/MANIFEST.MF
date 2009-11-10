@@ -14,8 +14,7 @@ Require-Bundle: org.junit,
  org.eclipse.debug.core,
  org.eclipse.jdt.launching,
  org.jboss.tools.tests
-Export-Package: org.jboss.tools.jmx.core,
- org.jboss.tools.jmx.core.tests,
+Export-Package: org.jboss.tools.jmx.core.tests,
  org.jboss.tools.jmx.core.tests.util
 Bundle-ClassPath: .
 Import-Package: org.jboss.tools.jmx.core
