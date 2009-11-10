@@ -37,7 +37,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ProjectRuntimeUtil;
-import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 
 public class ProjectRuntimeTest extends TestCase {
 	private TestProjectProvider provider;

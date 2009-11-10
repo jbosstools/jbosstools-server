@@ -37,7 +37,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 
 /**
  * This class tests the jee classpath containers

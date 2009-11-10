@@ -29,7 +29,7 @@ import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractDeploymentTest extends TestCase {
