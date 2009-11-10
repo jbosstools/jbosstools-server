@@ -239,11 +239,10 @@
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
-   <key
-      sequence=""
-      contextId=""
-      commandId="org.jboss.ide.eclipse.archives.ui.buildArchiveCommand"
-      schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            commandId="org.jboss.ide.eclipse.archives.ui.buildArchiveCommand"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+M2+B A">
+      </key>
    </extension>
-   
 </plugin>
