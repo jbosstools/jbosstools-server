@@ -8,7 +8,7 @@
  * Contributors:
  *     Exadel, Inc. and Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.jmx.core.tests.util;
+package org.jboss.tools.jmx.core.test.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -41,7 +41,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.jboss.tools.jmx.core.tests.JMXTestPlugin;
+import org.jboss.tools.jmx.core.test.JMXTestPlugin;
 
 
 public final class FileUtil {

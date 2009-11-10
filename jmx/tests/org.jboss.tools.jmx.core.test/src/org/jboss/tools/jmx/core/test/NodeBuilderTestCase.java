@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package org.jboss.tools.jmx.core.tests;
+package org.jboss.tools.jmx.core.test;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;

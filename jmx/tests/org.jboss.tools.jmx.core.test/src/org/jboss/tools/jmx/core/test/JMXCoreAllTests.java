@@ -1,4 +1,4 @@
-package org.jboss.tools.jmx.core.tests;
+package org.jboss.tools.jmx.core.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

@@ -8,7 +8,7 @@
  * Contributors:
  *     Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.jmx.core.tests.util;
+package org.jboss.tools.jmx.core.test.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.jboss.tools.jmx.core.tests.JMXTestPlugin;
+import org.jboss.tools.jmx.core.test.JMXTestPlugin;
 import org.osgi.framework.Bundle;
 
 /**

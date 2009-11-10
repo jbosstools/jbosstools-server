@@ -1,4 +1,4 @@
-package org.jboss.tools.jmx.core.tests;
+package org.jboss.tools.jmx.core.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
-import org.jboss.tools.jmx.core.tests.util.TestProjectProvider;
+import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.jboss.tools.jmx.core.tree.DomainNode;
 import org.jboss.tools.jmx.core.tree.Node;
 import org.jboss.tools.jmx.core.tree.Root;

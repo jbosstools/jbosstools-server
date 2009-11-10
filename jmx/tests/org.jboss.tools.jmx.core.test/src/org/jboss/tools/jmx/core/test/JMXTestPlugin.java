@@ -1,4 +1,4 @@
-package org.jboss.tools.jmx.core.tests;
+package org.jboss.tools.jmx.core.test;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Plugin;
