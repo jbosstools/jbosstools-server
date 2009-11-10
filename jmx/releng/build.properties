@@ -21,7 +21,7 @@ JAVA50_HOME=${JAVA_HOME_PARENT}
 JAVA60_HOME=${JAVA_HOME_PARENT}
 
 dependencyURLs=\
-http://repository.jboss.org/eclipse/galileo/eclipse-SDK-3.5.1-linux-gtk.tar.gz
+http://repository.jboss.org/eclipse/galileo/eclipse-SDK-3.5.1-linux-gtk-x86_64.tar.gz
 
 # use precompiled binaries from latest build as input to this build
 repositoryURLs=http://download.eclipse.org/releases/galileo/,http://download.jboss.org/jbosstools/updates/nightly/trunk/
