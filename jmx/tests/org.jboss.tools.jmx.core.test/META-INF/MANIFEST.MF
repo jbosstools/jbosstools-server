@@ -17,5 +17,5 @@ Require-Bundle: org.junit,
 Export-Package: org.jboss.tools.jmx.core,
  org.jboss.tools.jmx.core.tests,
  org.jboss.tools.jmx.core.tests.util
-Bundle-ClassPath: jmx-core-test.jar
+Bundle-ClassPath: .
 Import-Package: org.jboss.tools.jmx.core
