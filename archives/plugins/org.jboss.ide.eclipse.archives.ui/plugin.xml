@@ -14,7 +14,7 @@
             allowMultiple="false"
             category="org.jboss.tools.common.model.ui.views"
             class="org.jboss.ide.eclipse.archives.ui.views.ProjectArchivesCommonView"
-            icon="icons/jar_obj.gif"
+            icon="$nl$/icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.ProjectArchivesView"
             name="%ViewName_ProjectArchives"/>
    </extension>
@@ -23,7 +23,7 @@
          point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
       <newPackageAction
             class="org.jboss.ide.eclipse.archives.ui.actions.NewJARAction"
-            icon="icons/new_package.gif"
+            icon="$nl$/icons/new_package.gif"
             id="org.jboss.ide.eclipse.archives.ui.newJARAction"
             label="%newPackageAction.label.jar"/>
    </extension>
@@ -37,7 +37,7 @@
          <action
                class="org.jboss.ide.eclipse.archives.ui.actions.BuildAction"
                definitionId="org.jboss.ide.eclipse.packages.ui.actions.BuildArchivesAction"
-               icon="icons/build_packages.gif"
+               icon="$nl$/icons/build_packages.gif"
                id="org.jboss.ide.eclipse.archives.ui.actions.BuildArchivesAction"
                label="Build Packages"
                menubarPath="project/additions"
@@ -134,7 +134,7 @@
       <navigatorContent
             activeByDefault="true"
             contentProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesRootContentProvider"
-            icon="icons/jar_obj.gif"
+            icon="$nl$/icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.archivesContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
             name="%NavigatorContent_ArchivesContent"
@@ -172,7 +172,7 @@
       </navigatorContent>
       <navigatorContent
             contentProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesRootBridgeContentProvider"
-            icon="icons/jar_obj.gif"
+            icon="$nl$/icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.archives.ui.archivesRootBridgeContent"
             labelProvider="org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider"
             name="%NavigatorContent_ProjectArchives"

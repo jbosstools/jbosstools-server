@@ -53,7 +53,6 @@ public class NodeContribution implements Comparable {
 		Bundle bundle = Platform.getBundle(pluginId);
 		URL iconURL = iconPath == null ? null : FileLocator.find(bundle, new Path(iconPath), null);
 		if (iconURL != null) {
-			iconURL = bundle.getEntry(iconPath);
 			icon = ImageDescriptor.createFromURL(iconURL);
 		}
 		String weightString = element.getAttribute(WEIGHT);
