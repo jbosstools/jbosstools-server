@@ -179,7 +179,7 @@ public class JSTDeploymentTester extends TestCase {
 	}
 
 	protected void assertContents(File file, int val) throws IOException, CoreException {
-		assertContents(file, val);
+		assertContents(file, "" + val);
 	}
 	
 	protected void assertContents(File file, String val) throws IOException, CoreException {
