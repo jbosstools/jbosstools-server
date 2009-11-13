@@ -43,12 +43,7 @@ public class JBIDE2512aTest extends AbstractDeploymentTest {
 		File shouldExist = new File(libFolder, "EJB3WithDescriptor.jar");
 		
 		// Expected to fail currently so wrap
-		try {
-			assertTrue(shouldExist.exists());
-			assertFalse(shouldNotExist.exists());
-		} catch( AssertionFailedError afe ) {
-			return;
-		}
-		assertTrue(false);
+		assertTrue(shouldExist.exists());
+		assertFalse(shouldNotExist.exists());
 	}
 }

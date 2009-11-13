@@ -47,7 +47,9 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		try {
 			this.sourceProjectName = projectNames;
 			this.testProperties = testProperties;
-			File f = getFileLocation("/testOutputs");
+			File to = getFileLocation("/testOutputs");
+			File f = new File(to, "inner");
+			f.mkdirs();
 			File fDeploy = new File(f, "1");
 			File fTmpDeploy = new File(f, "2");
 			fDeploy.mkdir();
@@ -182,7 +184,8 @@ public abstract class AbstractDeploymentTest extends TestCase {
 			provider[i].dispose();
 
 		cleanFolder(getProjectLocation("TempProject").getAbsolutePath());
-		cleanFolder(getFileLocation("testOutputs"));
+		FileUtil.safeDelete(new File(
+				getFileLocation("testOutputs"), "inner"));
 		runtime.delete();
 		server.delete();
 	}	
