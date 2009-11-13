@@ -28,9 +28,12 @@ import org.jboss.ide.eclipse.as.test.classpath.JBIDE1657Test;
 import org.jboss.ide.eclipse.as.test.classpath.JEEClasspathContainerTest;
 import org.jboss.ide.eclipse.as.test.classpath.ProjectRuntimeTest;
 import org.jboss.ide.eclipse.as.test.classpath.RuntimeServerModelTest;
+import org.jboss.ide.eclipse.as.test.projectcreation.TestEar5WithJBossRuntime;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512aTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
+import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
+import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
@@ -43,6 +46,9 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(JBIDE2512aTest.class);
         suite.addTestSuite(JBIDE2512bTest.class);
         suite.addTestSuite(JBIDE4184Test.class);
+        suite.addTestSuite(TestEar5WithJBossRuntime.class);
+        suite.addTestSuite(JSTDeploymentTester.class);
+        suite.addTestSuite(SingleFileDeploymentTester.class);
         return suite; 
    }
 

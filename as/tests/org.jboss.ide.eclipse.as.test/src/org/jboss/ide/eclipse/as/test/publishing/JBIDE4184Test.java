@@ -14,6 +14,7 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.server.StartupShutdownTest;
 
@@ -27,8 +28,9 @@ public class JBIDE4184Test extends TestCase {
 			if( tmpPath.toFile().exists())
 				FileUtil.safeDelete(tmpPath.toFile());
 			assertFalse(tmpPath.toFile().exists());
-			server = StartupShutdownTest.createServer(ASTest.JBOSS_RUNTIME_42, ASTest.JBOSS_SERVER_42, ASTest.JBOSS_AS_42_HOME, 
-					StartupShutdownTest.DEFAULT_CONFIG);
+			server = StartupShutdownTest.createServer(
+					IJBossToolingConstants.AS_42, IJBossToolingConstants.SERVER_AS_42, 
+					ASTest.JBOSS_AS_42_HOME, StartupShutdownTest.DEFAULT_CONFIG);
 		} catch( CoreException ce) {
 			fail(ce.getMessage());
 		}

@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 /**
  * This class will test whether all of the pre-req
@@ -67,27 +68,43 @@ public class PreReqTest extends TestCase {
 	 */
 	
 	public void testRuntime32Found() {
-		_testRuntime(ASTest.JBOSS_RUNTIME_32);
+		_testRuntime(IJBossToolingConstants.AS_32);
 	}
 
 	public void testRuntime40Found() {
-		_testRuntime(ASTest.JBOSS_RUNTIME_40);
+		_testRuntime(IJBossToolingConstants.AS_40);
 	}
 
 	public void testRuntime42Found() {
-		_testRuntime(ASTest.JBOSS_RUNTIME_42);
+		_testRuntime(IJBossToolingConstants.AS_42);
 	}
-	
+
+	public void testRuntime50Found() {
+		_testRuntime(IJBossToolingConstants.AS_50);
+	}
+
+	public void testRuntime51Found() {
+		_testRuntime(IJBossToolingConstants.AS_51);
+	}
+
 	public void testServer32Found() {
-		_testServer(ASTest.JBOSS_SERVER_32);
+		_testServer(IJBossToolingConstants.SERVER_AS_32);
 	}
 
 	public void testServer40Found() {
-		_testServer(ASTest.JBOSS_SERVER_40);
+		_testServer(IJBossToolingConstants.SERVER_AS_40);
 	}
 
 	public void testServer42Found() {
-		_testServer(ASTest.JBOSS_SERVER_42);
+		_testServer(IJBossToolingConstants.SERVER_AS_42);
+	}
+	
+	public void testServer50Found() {
+		_testServer(IJBossToolingConstants.SERVER_AS_50);
+	}
+
+	public void testServer51Found() {
+		_testServer(IJBossToolingConstants.SERVER_AS_51);
 	}
 
 

@@ -42,12 +42,17 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public class ProjectRuntimeUtil extends Assert {
 	
+	public static org.eclipse.wst.common.project.facet.core.runtime.IRuntime getRuntime(IProject theProject) throws CoreException {
+		IFacetedProject facetedProject = ProjectFacetsManager.create(theProject);
+		return facetedProject.getPrimaryRuntime();
+	}
+
 	public static void clearRuntime(IProject theProject) throws CoreException {
 		IFacetedProject facetedProject = ProjectFacetsManager.create(theProject);
 		facetedProject.setTargetedRuntimes(new HashSet<org.eclipse.wst.common.project.facet.core.runtime.IRuntime>(), null); 
 		facetedProject.setTargetedRuntimes(Collections.EMPTY_SET, new NullProgressMonitor());
 	}
-	
+
 	public static void setTargetRuntime(IRuntime runtime, IProject theProject) throws CoreException {
 		final org.eclipse.wst.common.project.facet.core.runtime.IRuntime facetRuntime = RuntimeManager.getRuntime(runtime.getId());
 		assertNotNull("bridged facet runtime not found", facetRuntime); 

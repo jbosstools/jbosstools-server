@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
 
 public class RuntimeServerModelTest extends TestCase {
@@ -38,7 +39,7 @@ public class RuntimeServerModelTest extends TestCase {
 	// skipped since reported issue and always failing
 	public void skip_testDoubleCreateEclipseBug201340() throws CoreException {
 		createGenericRuntime(ASTest.TOMCAT_RUNTIME_55);
-		createGenericRuntime(ASTest.JBOSS_RUNTIME_42);
+		createGenericRuntime(IJBossToolingConstants.AS_42);
 	}
 
 	private IRuntime[] createGenericRuntime(String runtimeId) throws CoreException {
@@ -60,7 +61,7 @@ public class RuntimeServerModelTest extends TestCase {
 	}
 	
 	public void testCreateBrokenRuntime() throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, ASTest.JBOSS_RUNTIME_42);
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, IJBossToolingConstants.AS_42);
 		assertEquals("expects only one runtime type for jboss 4.2", runtimeTypes.length, 1);
 		IRuntimeType runtimeType = runtimeTypes[0];
 		IRuntimeWorkingCopy jbossRuntime = runtimeType.createRuntime(null, new NullProgressMonitor());

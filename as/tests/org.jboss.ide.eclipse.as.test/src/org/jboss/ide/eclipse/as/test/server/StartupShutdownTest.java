@@ -25,34 +25,22 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IStreamMonitor;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
-import org.eclipse.wst.server.core.IServerType;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.IServer.IOperationListener;
-import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
+import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
 /**
  * These tests are for a simple startup / shutdown of a basic, 
@@ -62,10 +50,7 @@ import org.jboss.ide.eclipse.as.test.ASTest;
  * @author Rob Stryker
  *
  */
-public class StartupShutdownTest extends TestCase {
-
-	public static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
-	public static final String DEFAULT_CONFIG = "default";
+public class StartupShutdownTest extends ServerRuntimeUtils {
 	
 	public static final int DEFAULT_STARTUP_TIME = 150000;
 	public static final int DEFAULT_SHUTDOWN_TIME = 90000;
@@ -76,11 +61,15 @@ public class StartupShutdownTest extends TestCase {
 	public void setUp() {
 		try {
 			if( getName().equals("test32"))
-				createServer(ASTest.JBOSS_RUNTIME_32, ASTest.JBOSS_SERVER_32, ASTest.JBOSS_AS_32_HOME, DEFAULT_CONFIG);
+				currentServer = createServer(IJBossToolingConstants.AS_32, IJBossToolingConstants.SERVER_AS_32, ASTest.JBOSS_AS_32_HOME, DEFAULT_CONFIG);
 			else if( getName().equals("test40"))
-				createServer(ASTest.JBOSS_RUNTIME_40, ASTest.JBOSS_SERVER_40, ASTest.JBOSS_AS_40_HOME, DEFAULT_CONFIG);
+				currentServer = createServer(IJBossToolingConstants.AS_40, IJBossToolingConstants.SERVER_AS_40, ASTest.JBOSS_AS_40_HOME, DEFAULT_CONFIG);
 			else if( getName().equals("test42"))
-				createServer(ASTest.JBOSS_RUNTIME_42, ASTest.JBOSS_SERVER_42, ASTest.JBOSS_AS_42_HOME, DEFAULT_CONFIG);
+				currentServer = createServer(IJBossToolingConstants.AS_42, IJBossToolingConstants.SERVER_AS_42, ASTest.JBOSS_AS_42_HOME, DEFAULT_CONFIG);
+			else if( getName().equals("test50"))
+				currentServer = createServer(IJBossToolingConstants.AS_50, IJBossToolingConstants.SERVER_AS_50, ASTest.JBOSS_AS_50_HOME, DEFAULT_CONFIG);
+			else if( getName().equals("test51"))
+				currentServer = createServer(IJBossToolingConstants.AS_51, IJBossToolingConstants.SERVER_AS_51, ASTest.JBOSS_AS_51_HOME, DEFAULT_CONFIG);
 			
 			// first thing's first. Let's add a server state listener
 			stateListener = new ServerStateListener();
@@ -103,39 +92,6 @@ public class StartupShutdownTest extends TestCase {
 	
 
 
-	public static IServer createServer(String runtimeID, String serverID, 
-					String location, String configuration) throws CoreException {
-		// if file doesnt exist, abort immediately.
-		assertTrue(new Path(location).toFile().exists());
-		
-		IRuntime currentRuntime = createRuntime(runtimeID, location, configuration);
-		IServerType serverType = ServerCore.findServerType(serverID);
-		IServerWorkingCopy serverWC = serverType.createServer(null, null, new NullProgressMonitor());
-		serverWC.setRuntime(currentRuntime);
-		serverWC.setName(serverID);
-		serverWC.setServerConfiguration(null);
-		return serverWC.save(true, new NullProgressMonitor());
-	}
-	
-	
-	private static IRuntime createRuntime(String runtimeId, String homeDir, String config) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null,null, runtimeId);
-		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
-		IRuntimeType runtimeType = runtimeTypes[0];
-		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null, new NullProgressMonitor());
-		runtimeWC.setName(runtimeId);
-		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, VM_INSTALL.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, VM_INSTALL
-						.getVMInstallType().getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
-
-		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
-		return savedRuntime;
-	}
 	
 	public class StatusWrapper {
 		protected IStatus status;
@@ -147,16 +103,26 @@ public class StartupShutdownTest extends TestCase {
 		startup();
 		shutdown();
 	}
-	
-	public void test40() {
-		startup();
-		shutdown();
-	}
-	
-	public void test42() {
-		startup();
-		shutdown();
-	}
+//	
+//	public void test40() {
+//		startup();
+//		shutdown();
+//	}
+//	
+//	public void test42() {
+//		startup();
+//		shutdown();
+//	}
+//
+//	public void test50() {
+//		startup();
+//		shutdown();
+//	}
+//
+//	public void test51() {
+//		startup();
+//		shutdown();
+//	}
 
 	protected class ServerStateListener implements IServerListener {
 		private ArrayList stateChanges;
@@ -231,6 +197,7 @@ public class StartupShutdownTest extends TestCase {
 		try {
 			assertTrue("Startup has taken longer than what is expected for a default startup", finishTime >= new Date().getTime());
 			assertNotNull("Startup never finished", opWrapper.getStatus());
+			assertFalse("Startup failed", opWrapper.getStatus().getSeverity() == IStatus.ERROR);
 			assertFalse("Startup had System.error output", streamListener.hasError());
 		} catch( AssertionFailedError afe ) {
 			// cleanup
@@ -238,7 +205,8 @@ public class StartupShutdownTest extends TestCase {
 			// rethrow
 			throw afe;
 		}
-		getStreamMonitor().removeListener(streamListener);
+		if( getStreamMonitor() != null )
+			getStreamMonitor().removeListener(streamListener);
 	}
 
 	

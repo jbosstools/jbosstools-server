@@ -514,6 +514,7 @@ public final class PublishCopyUtil {
 	 * @return a possibly-empty array of error and warning status
 	 */
 	public IStatus[] publishFull(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
+		handler.makeDirectoryIfRequired(new Path("/"), monitor); //$NON-NLS-1$
 		return publishFull(resources, new Path("/"), monitor); //$NON-NLS-1$
 	}
 	

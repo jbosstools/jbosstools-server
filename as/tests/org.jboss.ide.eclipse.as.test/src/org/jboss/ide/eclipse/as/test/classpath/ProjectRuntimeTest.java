@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.wst.server.core.IRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.ProjectRuntimeUtil;
 import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
@@ -59,7 +60,8 @@ public class ProjectRuntimeTest extends TestCase {
 			verifyInitialClasspathEntries(jp);
 			
 			// lets try a runtime
-			IRuntime createdRuntime = ProjectRuntimeUtil.createRuntime("runtime1", ASTest.JBOSS_RUNTIME_42, ASTest.JBOSS_AS_HOME);
+			IRuntime createdRuntime = ProjectRuntimeUtil.createRuntime("runtime1", 
+					IJBossToolingConstants.AS_42, ASTest.JBOSS_AS_HOME);
 			ProjectRuntimeUtil.setTargetRuntime(createdRuntime, project);
 			verifyPostRuntimeCPE(jp);
 			
