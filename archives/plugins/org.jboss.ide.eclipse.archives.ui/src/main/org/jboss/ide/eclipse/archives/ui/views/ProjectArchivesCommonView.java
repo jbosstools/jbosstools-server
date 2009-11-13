@@ -42,6 +42,9 @@ import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelega
  *
  */
 public class ProjectArchivesCommonView extends CommonNavigator implements IArchivesPreferenceListener {
+
+	public static final String ID = "org.jboss.ide.eclipse.archives.ui.ProjectArchivesView"; //$NON-NLS-1$
+	
 	protected static ProjectArchivesCommonView instance;
 	protected ISelectionListener selectionListener;
 	protected IProject currentProject;
