@@ -1066,6 +1066,35 @@
                 </figure>
 
             </section>
+            
+            <section id="CreatingaUserLibrariesFileSet">
+                <title>Creating User Library FileSet</title>
+                
+                <para>If you use user libraries in your projects you can also refer to these from project archives and have all the .jar/.zip files they refer included into the archive.</para>
+                <para>To add a new user libraries file set, call the right-click menu on the necessary archive and choose &quot; New User Libraries FileSet&quot; item</para>
+                
+                <figure>
+                    <title>Adding New User Library Fileset</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/userlibraryfileset1.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                
+                <para>You can edit the existing user libraries as well using &quot;User Libraries Fileset Wizard&quot;. Call the right-click menu on the library fileset and choose &quot;Edit Fileset &quot; item</para>
+                
+                <figure>
+                    <title>Editing User Library Fileset</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/userlibraryfileset2.png"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+                
+           </section>
+                       
         </section>
 
         <section id="View_Actions">
