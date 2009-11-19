@@ -101,7 +101,7 @@
       <image
             icon="icons/ssh-16x16.png"
             id="org.jboss.ide.eclipse.as.ssh.server.icons"
-            typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
+            typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType,org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType">
       </image>
    </extension>
    
