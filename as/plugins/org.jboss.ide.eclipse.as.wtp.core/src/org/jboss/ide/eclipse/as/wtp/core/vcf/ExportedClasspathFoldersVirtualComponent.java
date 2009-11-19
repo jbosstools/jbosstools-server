@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.j2ee.classpathdep.ClasspathDependencyUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
-public class ExportedClasspathFoldersVirtualComponent extends FilesetVirtualComponent {
+public class ExportedClasspathFoldersVirtualComponent extends AbstractFilesetVirtualComponent {
 	public ExportedClasspathFoldersVirtualComponent(IProject p, IVirtualComponent referencingComponent) {
 		super(p,referencingComponent);
 	}

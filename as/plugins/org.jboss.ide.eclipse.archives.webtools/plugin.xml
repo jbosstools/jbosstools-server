@@ -172,4 +172,21 @@
        </page>
   </extension>
 
+    <!-- Fileset integration for WTP Projects -->
+	<extension
+         point="org.jboss.ide.eclipse.as.wtp.core.referenceResolver">
+      <resolver
+            class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver"
+            id="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver">
+      </resolver>
+	</extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.referenceWizardFragment">
+       <referenceFragment
+             class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetReferenceWizardFragment"
+             icon="icons/multiple_files.gif"
+             id="org.jboss.ide.eclipse.archives.webtools.FilesetReferenceWizardFragment"
+             name="Fileset">
+       </referenceFragment>
+	</extension>
 </plugin>

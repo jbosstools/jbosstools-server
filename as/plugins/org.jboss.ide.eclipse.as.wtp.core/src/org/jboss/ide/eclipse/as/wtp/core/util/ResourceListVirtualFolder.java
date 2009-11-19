@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.util;
 
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,6 +31,7 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 
 	private ArrayList<IResource> children;
 	private ArrayList<IContainer> underlying;
+	private ResourceFilter filter;
 	public ResourceListVirtualFolder(
 			IProject aComponentProject,
 			IPath aRuntimePath) {
@@ -53,6 +55,10 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 		addChildren(looseResources);
 	}
 
+	public void setFilter(ResourceFilter filter) {
+		this.filter = filter;
+	}
+	
 	protected void addUnderlyingResource(IResource resource) {
 		if( resource instanceof IContainer ) { 
 			underlying.add((IContainer)resource);
@@ -97,7 +103,6 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 	public IContainer[] getUnderlyingFolders() {
 		return (IContainer[]) underlying.toArray(new IContainer[underlying.size()]);
 	}
-		
 
 	public IVirtualResource[] members(int memberFlags) throws CoreException {
 		HashMap<String, IVirtualResource> virtualResources = new HashMap<String, IVirtualResource>(); // result
@@ -110,6 +115,9 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 	}
 
 	protected void handleResource(IResource resource, HashMap<String, IVirtualResource> map, int memberFlags) throws CoreException {
+		if( filter != null && !filter.accepts(resource))
+			return;
+		
 		if( resource instanceof IFile ) {
 			if( !map.containsKey(resource.getName()) ) {
 				IVirtualFile virtFile = new VirtualFile(getProject(), 
@@ -128,6 +136,8 @@ public class ResourceListVirtualFolder extends VirtualFolder {
 				ResourceListVirtualFolder childFolder = 
 					new ResourceListVirtualFolder(getProject(), getRuntimePath().append(resource.getName()));
 				childFolder.addUnderlyingResource(realContainer);
+				if( filter != null )
+					childFolder.setFilter(filter);
 				map.put(resource.getName(), childFolder);
 			}
 		} // end container

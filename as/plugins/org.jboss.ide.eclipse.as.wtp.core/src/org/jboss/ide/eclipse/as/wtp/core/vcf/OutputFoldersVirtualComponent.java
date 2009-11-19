@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
-public class OutputFoldersVirtualComponent extends FilesetVirtualComponent {
+public class OutputFoldersVirtualComponent extends AbstractFilesetVirtualComponent {
 
 	public OutputFoldersVirtualComponent(IProject p, IVirtualComponent referencingComponent) {
 		super(p, referencingComponent);

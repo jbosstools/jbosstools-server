@@ -235,9 +235,9 @@ public class DirectoryScannerFactory {
 			}
 	    }
 
-	    public boolean couldBeIncluded(String name, boolean inWorkspace) {
+	    public boolean couldBeIncluded(String path, boolean inWorkspace) {
 	    	IPath targetBase = ((FileWrapper)getBasedir()).getWrapperPath();
-	    	IPath[] questionFiles = new IPath[] { new Path(name) };
+	    	IPath[] questionFiles = new IPath[] { new Path(path) };
 	    	if( workspaceRelative && !inWorkspace) {
 	    		questionFiles = ArchivesCore.getInstance().getVFS().absolutePathToWorkspacePath(questionFiles[0]);
 	    	} else if( !workspaceRelative && inWorkspace) {

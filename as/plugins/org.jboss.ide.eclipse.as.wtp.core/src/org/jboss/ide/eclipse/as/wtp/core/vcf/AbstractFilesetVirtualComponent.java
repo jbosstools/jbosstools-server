@@ -24,11 +24,11 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.jboss.ide.eclipse.as.wtp.core.util.ResourceListVirtualFolder;
 
-public abstract class FilesetVirtualComponent implements IVirtualComponent {
+public abstract class AbstractFilesetVirtualComponent implements IVirtualComponent {
 	protected IProject project;
 	protected IVirtualComponent referencingComp;	
 
-	public FilesetVirtualComponent(IProject p, IVirtualComponent referencingComponent) {
+	public AbstractFilesetVirtualComponent(IProject p, IVirtualComponent referencingComponent) {
 		this.project = p;
 		this.referencingComp = referencingComponent;
 	}
@@ -54,9 +54,10 @@ public abstract class FilesetVirtualComponent implements IVirtualComponent {
 		return getName();
 	}
 
-	protected String getId() {
+	public String getId() {
 		String firstSegment = getFirstIdSegment();
-		if (project.equals(referencingComp.getProject()))
+		if (project != null && project.equals(
+				referencingComp.getProject()))
 			return firstSegment; 
 		return firstSegment + Path.SEPARATOR + project.getName();
 	}
