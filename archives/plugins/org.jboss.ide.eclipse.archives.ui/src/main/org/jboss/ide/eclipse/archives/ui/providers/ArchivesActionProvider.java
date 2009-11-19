@@ -271,6 +271,9 @@ public class ArchivesActionProvider extends CommonActionProvider {
 						ArchivesUIMessages.ProjectPackagesView_createFolderDialog_warnFolderExists, newText);
 
 				}
+				if("".equals(newText)) { //$NON-NLS-1$
+					return ArchivesUIMessages.ProjectPackagesView_createFolderDialog_blank;
+				}
 				return null;
 			}
 		};
