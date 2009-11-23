@@ -54,21 +54,23 @@ public class JBoss4xEarFacetInstallListener implements IFacetedProjectListener {
 		IProjectFacetActionEvent e = (IProjectFacetActionEvent)event;
 		IProjectFacet pf = e.getProjectFacet();
 		if( pf.getId().equals(IWTPConstants.FACET_EAR)) {
-			String rtName = e.getProject().getPrimaryRuntime().getName();
-			IRuntime rt = ServerCore.findRuntime(rtName);
-			if( rt != null ) {
-				String type = rt.getRuntimeType().getId();
-				if( type.equals(AS_42) || type.equals(EAP_43)) {
-					// Launch the op to create the ear application.xml file
-					IVirtualComponent vc = ComponentCore.createComponent(e.getProject().getProject());
-					IDataModel model = DataModelFactory.createDataModel(new EarCreateDeploymentFilesDataModelProvider());
-					model.setProperty(ICreateDeploymentFilesDataModelProperties.GENERATE_DD, vc);
-					model.setProperty(ICreateDeploymentFilesDataModelProperties.TARGET_PROJECT, e.getProject().getProject());
-					IDataModelOperation op = model.getDefaultOperation();
-					try {
-						op.execute(new NullProgressMonitor(), null);
-					} catch (ExecutionException e1) {
-						// Ignore
+			if( e.getProject().getPrimaryRuntime() != null ) {
+				String rtName = e.getProject().getPrimaryRuntime().getName();
+				IRuntime rt = ServerCore.findRuntime(rtName);
+				if( rt != null ) {
+					String type = rt.getRuntimeType().getId();
+					if( type.equals(AS_42) || type.equals(EAP_43)) {
+						// Launch the op to create the ear application.xml file
+						IVirtualComponent vc = ComponentCore.createComponent(e.getProject().getProject());
+						IDataModel model = DataModelFactory.createDataModel(new EarCreateDeploymentFilesDataModelProvider());
+						model.setProperty(ICreateDeploymentFilesDataModelProperties.GENERATE_DD, vc);
+						model.setProperty(ICreateDeploymentFilesDataModelProperties.TARGET_PROJECT, e.getProject().getProject());
+						IDataModelOperation op = model.getDefaultOperation();
+						try {
+							op.execute(new NullProgressMonitor(), null);
+						} catch (ExecutionException e1) {
+							// Ignore
+						}
 					}
 				}
 			}
