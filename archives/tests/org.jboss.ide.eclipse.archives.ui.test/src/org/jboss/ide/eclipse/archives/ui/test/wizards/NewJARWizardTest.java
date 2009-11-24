@@ -30,7 +30,7 @@ public class NewJARWizardTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		project = ResourcesPlugin.getWorkspace().getRoot().getProject("archive-test");
+		project = ResourcesPlugin.getWorkspace().getRoot().getProject("archives-test");
 		IWorkbenchPage page= PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
 		IViewPart view= page.showView(IPageLayout.ID_RES_NAV);
