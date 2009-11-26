@@ -5,6 +5,7 @@ Bundle-Vendor: %Bundle-Vendor.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.ssh;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.ssh.SSHDeploymentPlugin
+Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  com.jcraft.jsch,
@@ -26,3 +27,6 @@ Require-Bundle: org.eclipse.ui,
  org.jboss.ide.eclipse.archives.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.jboss.ide.eclipse.as.ssh,
+ org.jboss.ide.eclipse.as.ssh.server,
+ org.jboss.ide.eclipse.as.ssh.ui.editor
