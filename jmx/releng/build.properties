@@ -18,12 +18,14 @@ JAVA14_HOME=${JAVA_HOME}
 JAVA50_HOME=${JAVA_HOME}
 JAVA60_HOME=${JAVA_HOME}
 
-dependencyURLs=\
-http://repository.jboss.org/eclipse/galileo/eclipse-SDK-3.5.1-linux-gtk-x86_64.tar.gz
-
 # use precompiled binaries from latest build as input to this build
-repositoryURLs=http://download.eclipse.org/releases/galileo/,http://download.jboss.org/jbosstools/updates/nightly/trunk/
-pluginIDsToInstall=org.jboss.tools.vpe.resref+org.jboss.tools.jst.web.ui+org.eclipse.core.net
+repositoryURLs=\
+http://repository.jboss.org/eclipse/galileo/repos/eclipse-Update-R-3.5.1-200909170800.zip,\
+http://download.eclipse.org/releases/galileo/,\
+http://download.jboss.org/jbosstools/updates/nightly/trunk/
+pluginIDsToInstall=\
+org.eclipse.sdk.feature.group+org.eclipse.sdk.ide+\
+org.jboss.tools.vpe.resref+org.jboss.tools.jst.web.ui+org.eclipse.core.net
 
 flattenDependencies=true
 parallelCompilation=true

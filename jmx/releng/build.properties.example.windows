@@ -12,7 +12,7 @@ version=1.1.0
 mainFeatureToBuildID=org.jboss.tools.jmx.sdk.feature
 testFeatureToBuildID=org.jboss.tools.jmx.tests.feature
 
-build.steps=buildUpdate,buildTests,generateDigests,test,publish,cleanup
+build.steps=buildUpdate,buildTests,generateDigests,testLocal,publish,cleanup
 
 # Re-use local sources?
 # if building from local sources, don't forget to include this plugins in /common dir: org.jboss.tools.tests
@@ -21,22 +21,23 @@ localSourceCheckoutDir=C:/workspace2
 # For windows, must be explicit about paths using correct slashes (/); dirs with spaces should be avoided
 writableBuildRoot=C:/tmp/build
 
-#relengBuilderDir=C:/Users/max/workspace-jmxbuild/org.jboss.tools.jmx.releng
-#relengBaseBuilderDir=C:/Users/max/workspace-jmxbuild/org.eclipse.releng.basebuilder
-#relengCommonBuilderDir=C:/Users/max/workspace-jmxbuild/org.eclipse.dash.common.releng
 relengBuilderDir=C:/workspace2/org.jboss.tools.jmx.releng
 relengBaseBuilderDir=C:/workspace2/org.eclipse.releng.basebuilder
 relengCommonBuilderDir=C:/workspace2/org.eclipse.dash.common.releng
 
 JAVA_HOME=C:/Progra~1/Java/jdk1.6.0_11
+JAVA14_HOME=C:/Progra~1/Java/jdk1.6.0_11
 JAVA50_HOME=C:/Progra~1/Java/jdk1.6.0_11
 JAVA60_HOME=C:/Progra~1/Java/jdk1.6.0_11
 
-dependencyURLs=\
-http://repository.jboss.org/eclipse/galileo/eclipse-SDK-3.5.1-win32.zip
 # use precompiled binaries from latest build as input to this build
-repositoryURLs=http://download.eclipse.org/releases/galileo/,http://download.jboss.org/jbosstools/updates/nightly/trunk/
-pluginIDsToInstall=org.jboss.tools.vpe.resref+org.jboss.tools.jst.web.ui+org.eclipse.core.net
+repositoryURLs=\
+http://repository.jboss.org/eclipse/galileo/repos/eclipse-Update-R-3.5.1-200909170800.zip,\
+http://download.eclipse.org/releases/galileo/,\
+http://download.jboss.org/jbosstools/updates/nightly/trunk/
+pluginIDsToInstall=\
+org.eclipse.sdk.feature.group+org.eclipse.sdk.ide+\
+org.jboss.tools.vpe.resref+org.jboss.tools.jst.web.ui+org.eclipse.core.net
 
 flattenDependencies=true
 parallelCompilation=true
