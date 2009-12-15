@@ -402,7 +402,8 @@ public class XPathDialogs {
 								previewTreeViewer.getTree().setEnabled(true);
 								checkErrors();
 							}
-							main.layout();
+							if( main != null )
+								main.layout();
 						}
 					});
 				}
