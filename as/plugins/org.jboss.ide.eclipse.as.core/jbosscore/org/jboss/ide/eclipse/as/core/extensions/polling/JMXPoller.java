@@ -242,7 +242,7 @@ public class JMXPoller implements IServerStatePoller {
 	}
 	
 	public int getTimeoutBehavior() {
-		return TIMEOUT_BEHAVIOR_IGNORE;
+		return TIMEOUT_BEHAVIOR_SUCCEED;
 	}
 	
 	private void log(IStatus s) {
