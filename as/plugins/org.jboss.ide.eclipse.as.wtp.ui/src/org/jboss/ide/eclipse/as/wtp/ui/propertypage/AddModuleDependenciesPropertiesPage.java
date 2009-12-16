@@ -35,9 +35,11 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
@@ -85,7 +87,7 @@ import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
-		IModuleDependenciesControl {
+		IModuleDependenciesControl, ILabelProviderListener {
 
 	private static final String DEPLOY_PATH_PROPERTY = new Integer(0).toString();
 	private static final String SOURCE_PROPERTY = new Integer(1).toString();
@@ -142,7 +144,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		composite.setLayout(layout);
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ModuleAssemblyRootPage.createDescriptionComposite(composite,
-				"TODO Change this: Create and change packaging structure for this project ");
+			Messages.ModuleDependencyDescription);
 		createListGroup(composite);
 		refresh();
 		Dialog.applyDialogFont(parent);
@@ -244,7 +246,7 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 	 * Subclasses should over-ride this and extend the class
 	 */
 	protected ComponentDependencyContentProvider createProvider() {
-		return new ComponentDependencyContentProvider();
+		return new ComponentDependencyContentProvider(this);
 	}
 
 	/*
@@ -970,4 +972,10 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		
 		return uriMapName;
 	}
+	
+	public void labelProviderChanged(LabelProviderChangedEvent event) {
+		if(!availableComponentsViewer.getTable().isDisposed())
+			availableComponentsViewer.refresh(true);
+	}
+
 }

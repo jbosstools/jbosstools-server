@@ -4,6 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.wtp.ui.messages"; //$NON-NLS-1$
+	public static String ModuleDependencyDescription;
 	public static String AddModuleDependenciesPropertiesPage_AddProjectButton;
 	public static String AddModuleDependenciesPropertiesPage_DeployPathColumn;
 	public static String AddModuleDependenciesPropertiesPage_RemoveSelectedButton;

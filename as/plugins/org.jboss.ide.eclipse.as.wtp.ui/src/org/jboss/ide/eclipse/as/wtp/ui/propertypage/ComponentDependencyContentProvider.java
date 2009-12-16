@@ -18,14 +18,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.AddModuleDependenciesPropertiesPage.ComponentResourceProxy;
 
 
@@ -43,8 +46,13 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	
 	private HashMap<IVirtualComponent, String> runtimePaths;
 	private ArrayList<ComponentResourceProxy> resourceMappings;
-	public ComponentDependencyContentProvider() {
+	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
+            new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
+             getDecoratorManager().getLabelDecorator());
+
+	public ComponentDependencyContentProvider(AddModuleDependenciesPropertiesPage addModuleDependenciesPropertiesPage) {
 		super();
+		decProvider.addListener(addModuleDependenciesPropertiesPage);
 	}
 
 	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
@@ -66,6 +74,21 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	}
 	
 	public Image getColumnImage(Object element, int columnIndex) {
+		if( element instanceof ComponentResourceProxy) {
+			return WTPOveridePlugin.getInstance().getImage("folder");
+		}
+		if (element instanceof IVirtualComponent) {
+			if (columnIndex == 0)
+				return WTPOveridePlugin.getInstance().getImage("jar_obj");
+			else
+				if(((IVirtualComponent)element).isBinary())
+					return WTPOveridePlugin.getInstance().getImage("jar_obj");
+				else return decProvider.getImage(((IVirtualComponent)element).getProject());
+					//return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
+		} 
+		if (element instanceof IProject){
+			return decProvider.getImage(element);
+		}
 		return null;
 	}
 
@@ -84,13 +107,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 				}
 				return runtimePaths.get(element);
 			} else if (columnIndex == 1) {
-				if( comp.isBinary() && comp instanceof VirtualArchiveComponent) {
-					IPath p = ((VirtualArchiveComponent)comp).getWorkspaceRelativePath();
-					if( p == null )
-						p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
-					return p.toString();
-				}
-				return comp.getName();
+				return handleSourceText(comp);
 			}
 		} else if (element instanceof IProject){
 			if (columnIndex == 0) {
@@ -105,6 +122,17 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		return null;
 	}
 
+	private String handleSourceText(IVirtualComponent comp) {
+		if( comp.isBinary() && comp instanceof VirtualArchiveComponent) {
+			IPath p = ((VirtualArchiveComponent)comp).getWorkspaceRelativePath();
+			if( p == null )
+				p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
+			return p.toString();
+		}
+		return comp.getProject().getName();
+	}
+
+	
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }

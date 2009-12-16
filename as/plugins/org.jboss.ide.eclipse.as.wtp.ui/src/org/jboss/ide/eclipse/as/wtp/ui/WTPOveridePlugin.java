@@ -1,10 +1,19 @@
 package org.jboss.ide.eclipse.as.wtp.ui;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -14,10 +23,19 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.wtp.ui"; //$NON-NLS-1$
-
+	public static final String[] ICON_DIRS = new String[]{"icons/full/obj16", //$NON-NLS-1$
+		"icons/full/cview16", //$NON-NLS-1$
+		"icons/full/ctool16", //$NON-NLS-1$
+		"icons/full/clcl16", //$NON-NLS-1$
+		"icons/full/ovr16", //$NON-NLS-1$
+		"icons/full/extra", //$NON-NLS-1$
+		"icons/full/wizban", //$NON-NLS-1$
+		"icons", //$NON-NLS-1$
+		""}; //$NON-NLS-1$
+	
 	// The shared instance
 	private static WTPOveridePlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -43,11 +61,58 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 	}
 
 	/**
+	 * Get a .gif from the image registry.
+	 */
+	public Image getImage(String key) {
+		ImageRegistry imageRegistry = getImageRegistry();
+		Image image = imageRegistry.get(key);
+		if (image == null || image.isDisposed()) {
+			ImageDescriptor descriptor = getImageDescriptor(key);
+			if (descriptor != null) {
+				image = descriptor.createImage();
+				imageRegistry.put(key, image);
+			}
+		}
+		return image;
+	}
+
+	/**
+	 * This gets a .gif from the icons folder.
+	 */
+	public ImageDescriptor getImageDescriptor(String key) {
+		ImageDescriptor imageDescriptor = null;
+		URL gifImageURL = getImageURL(key,getBundle());
+		if (gifImageURL != null)
+			imageDescriptor = ImageDescriptor.createFromURL(gifImageURL);
+		return imageDescriptor;
+	}
+
+	/**
+	 * This gets a .gif from the icons folder.
+	 */
+	public URL getImageURL(String key, Bundle bundle) {
+		String gif = "/" + key + ".gif"; //$NON-NLS-1$ //$NON-NLS-2$
+		IPath path = null;
+		for (int i = 0; i < ICON_DIRS.length; i++) {
+			path = new Path(ICON_DIRS[i]).append(gif);
+			if (Platform.find(bundle,path) == null)
+				continue;
+			try {
+				return new URL( bundle.getEntry("/"), path.toString()); //$NON-NLS-1$ 
+			} catch (MalformedURLException exception) {
+				logError(exception);
+				continue;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Returns the shared instance
 	 *
 	 * @return the shared instance
 	 */
-	public static WTPOveridePlugin getDefault() {
+	public static WTPOveridePlugin getInstance() {
 		return plugin;
 	}
 
@@ -57,7 +122,7 @@ public class WTPOveridePlugin extends AbstractUIPlugin {
 	
 	public static void log(String message, Exception e) {
 		IStatus status = new Status(IStatus.ERROR, PLUGIN_ID, message, e);
-		getDefault().getLog().log(status);
+		getInstance().getLog().log(status);
 	}
 	public static IStatus createStatus(int severity, int aCode,
 			String aMessage, Throwable exception) {
