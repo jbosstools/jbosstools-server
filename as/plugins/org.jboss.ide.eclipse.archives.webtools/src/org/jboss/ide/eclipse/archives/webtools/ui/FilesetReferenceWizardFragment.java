@@ -25,9 +25,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.archives.webtools.filesets.vcf.WorkspaceFilesetVirtualComponent;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IReferenceEditor;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.NewReferenceWizard;
 
-public class FilesetReferenceWizardFragment extends WizardFragment {
+public class FilesetReferenceWizardFragment extends WizardFragment implements IReferenceEditor {
 	public boolean hasComposite() {
 		return true;
 	}
@@ -41,7 +42,7 @@ public class FilesetReferenceWizardFragment extends WizardFragment {
 	private String includes, excludes, folder;
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		hasEntered = true;
-		handle.setTitle("Add a fileset"); //$NON-NLS-1$
+		handle.setTitle("Add a fileset reference"); //$NON-NLS-1$
 		handle.setDescription("This will let you select a root folder and some matching patterns"); //$NON-NLS-1$
 		
 		Composite child = new Composite(parent, SWT.NONE);
@@ -67,6 +68,11 @@ public class FilesetReferenceWizardFragment extends WizardFragment {
 		incText.addModifyListener(listener);
 		excText.addModifyListener(listener);
 		textModified();
+		if( original != null ) {
+			rootText.setText(original.getRootFolderPath());
+			incText.setText(original.getIncludes());
+			excText.setText(original.getExcludes());
+		}
 		return child; 
 	}
 	
@@ -141,6 +147,13 @@ public class FilesetReferenceWizardFragment extends WizardFragment {
 		vc.setIncludes(includes);
 		vc.setExcludes(excludes);
 		return vc;
+	}
+
+	private WorkspaceFilesetVirtualComponent original;
+	public boolean canEdit(IVirtualComponent vc) {
+		if( vc instanceof WorkspaceFilesetVirtualComponent)
+			original = (WorkspaceFilesetVirtualComponent)vc;
+		return original != null;
 	}
 
 }

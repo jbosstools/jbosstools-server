@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
-import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
-import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.osgi.framework.Bundle;
 
 public class SharedImages {
@@ -19,7 +17,7 @@ public class SharedImages {
 		instance = this;
 		images = new Hashtable<String, Object>();
 		descriptors = new Hashtable<String, Object>();
-		Bundle pluginBundle = JBossServerUIPlugin.getDefault().getBundle();
+		Bundle pluginBundle = IntegrationPlugin.getDefault().getBundle();
 		
 		descriptors.put(FILESET_IMAGE, createImageDescriptor(pluginBundle, "/icons/multiple_files.gif")); //$NON-NLS-1$
 		Iterator<String> iter = descriptors.keySet().iterator();
