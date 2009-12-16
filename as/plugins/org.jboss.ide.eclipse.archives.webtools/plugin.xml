@@ -184,9 +184,16 @@
           point="org.jboss.ide.eclipse.as.wtp.ui.referenceWizardFragment">
        <referenceFragment
              class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetReferenceWizardFragment"
-             icon="icons/multiple_files.gif"
+             icon="$nl$/icons/multiple_files.gif"
              id="org.jboss.ide.eclipse.archives.webtools.FilesetReferenceWizardFragment"
              name="Fileset">
        </referenceFragment>
 	</extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.virtualComponentLabelProvider">
+       <provider
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetVCLabelProvider"
+             weight="5">
+       </provider>
+    </extension>
 </plugin>

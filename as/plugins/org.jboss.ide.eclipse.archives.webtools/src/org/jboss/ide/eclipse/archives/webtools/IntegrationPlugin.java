@@ -49,8 +49,9 @@ public class IntegrationPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
+		SharedImages.instance().cleanup();
 		UnitedServerListenerManager.getDefault().removeListener(NewServerFilesetHandler.getDefault());
+		plugin = null;
 		super.stop(context);
 	}
 

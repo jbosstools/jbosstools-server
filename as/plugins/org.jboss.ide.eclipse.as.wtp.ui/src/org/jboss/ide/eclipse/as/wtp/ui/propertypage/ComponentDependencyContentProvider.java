@@ -49,10 +49,11 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 	private DecoratingLabelProvider decProvider = new DecoratingLabelProvider(
             new WorkbenchLabelProvider(), PlatformUI.getWorkbench().
              getDecoratorManager().getLabelDecorator());
-
+	private IVirtualComponentLabelProvider[] delegates;
 	public ComponentDependencyContentProvider(AddModuleDependenciesPropertiesPage addModuleDependenciesPropertiesPage) {
 		super();
 		decProvider.addListener(addModuleDependenciesPropertiesPage);
+		delegates = DependencyPageExtensionManager.loadDelegates();
 	}
 
 	public void setRuntimePaths(HashMap<IVirtualComponent, String> paths) {
@@ -81,10 +82,7 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 			if (columnIndex == 0)
 				return WTPOveridePlugin.getInstance().getImage("jar_obj");
 			else
-				if(((IVirtualComponent)element).isBinary())
-					return WTPOveridePlugin.getInstance().getImage("jar_obj");
-				else return decProvider.getImage(((IVirtualComponent)element).getProject());
-					//return ModuleCoreUIPlugin.getInstance().getImage("prj_obj");
+				return handleSourceImage((IVirtualComponent)element);
 		} 
 		if (element instanceof IProject){
 			return decProvider.getImage(element);
@@ -122,16 +120,37 @@ public class ComponentDependencyContentProvider extends LabelProvider implements
 		return null;
 	}
 
-	private String handleSourceText(IVirtualComponent comp) {
-		if( comp.isBinary() && comp instanceof VirtualArchiveComponent) {
-			IPath p = ((VirtualArchiveComponent)comp).getWorkspaceRelativePath();
+
+	
+	private String handleSourceText(IVirtualComponent component) {
+		if( delegates != null ) {
+			for( int i = 0; i < delegates.length; i++ )
+				if( delegates[i].canHandle(component))
+					return delegates[i].getSourceText(component);
+		}
+		
+		// default impl
+		if( component.isBinary() && component instanceof VirtualArchiveComponent) {
+			IPath p = ((VirtualArchiveComponent)component).getWorkspaceRelativePath();
 			if( p == null )
-				p = new Path(((VirtualArchiveComponent)comp).getUnderlyingDiskFile().getAbsolutePath());
+				p = new Path(((VirtualArchiveComponent)component).getUnderlyingDiskFile().getAbsolutePath());
 			return p.toString();
 		}
-		return comp.getProject().getName();
+		return component.getProject().getName();
 	}
 
+	private Image handleSourceImage(IVirtualComponent component) {
+		if( delegates != null ) {
+			for( int i = 0; i < delegates.length; i++ )
+				if( delegates[i].canHandle(component))
+					return delegates[i].getSourceImage(component);
+		}
+		
+		// default impl
+		if(component.isBinary())
+			return WTPOveridePlugin.getInstance().getImage("jar_obj");
+		else return decProvider.getImage(component.getProject());
+	}
 	
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
