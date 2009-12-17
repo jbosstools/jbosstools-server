@@ -28,13 +28,13 @@
      <bookinfo>
          <title>JMX Tools Reference Guide</title>
             
-         <corpauthor diffmk:change="added">
-             <inlinemediaobject diffmk:change="added">
-                 <imageobject diffmk:change="added" role="fo">
-                     <imagedata diffmk:change="added" fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
+         <corpauthor>
+             <inlinemediaobject>
+                 <imageobject role="fo">
+                     <imagedata fileref="images/jbosstools_logo.png" format="PNG"></imagedata>
                  </imageobject>	
-                 <imageobject diffmk:change="added" role="html">
-                     <imagedata diffmk:change="added"></imagedata>
+                 <imageobject role="html">
+                     <imagedata></imagedata>
                  </imageobject>	
              </inlinemediaobject>           
          </corpauthor>
@@ -43,10 +43,10 @@
 	                       <copyright>
 			             <year>2007</year>
 	                           <year>2009</year>
-	                           <holder><diffmk:wrapper diffmk:change="changed">JBoss by Red Hat</diffmk:wrapper></holder>
+	                           <holder>JBoss by Red Hat</holder>
 	                       </copyright>
           <releaseinfo><diffmk:wrapper diffmk:change="changed">
-             Version: 1.1.0.M2
+             Version: 1.1.0.CR1
           </diffmk:wrapper></releaseinfo>
 <abstract>
    <title></title>
@@ -60,7 +60,7 @@
     
     <toc></toc> 
     
-<chapter id="intruduction" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/introduction.xml" xreflabel="introduction">
+<chapter id="intruduction" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/introduction.xml" xreflabel="introduction">
   <?dbhtml filename="introduction.html"?>
 
   <title>Introduction</title>
@@ -101,40 +101,40 @@
       It was forked with permission. </para>
   </section>
 
-  <section><title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Features of JMX Tools</diffmk:wrapper></title>
-    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">For a start, we propose you to look through the table of main features of JMX Tools:</diffmk:wrapper></para>
-    <table diffmk:change="added">
+  <section><title>Key Features of JMX Tools</title>
+    <para>For a start, we propose you to look through the table of main features of JMX Tools:</para>
+    <table>
       
-      <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Key Functionality for JMX Tools</diffmk:wrapper></title>
-      <tgroup cols="3" diffmk:change="added">
+      <title>Key Functionality for JMX Tools</title>
+      <tgroup cols="3">
         
-        <colspec align="left" colnum="1" colwidth="2*" diffmk:change="added"></colspec>
-        <colspec colnum="2" colwidth="4*" diffmk:change="added"></colspec>
-        <colspec align="left" colnum="3" colwidth="2*" diffmk:change="added"></colspec>
+        <colspec align="left" colnum="1" colwidth="2*"></colspec>
+        <colspec colnum="2" colwidth="4*"></colspec>
+        <colspec align="left" colnum="3" colwidth="2*"></colspec>
         
-        <thead diffmk:change="added">
-          <row diffmk:change="added">
-            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Feature</diffmk:wrapper></entry>
-            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Benefit</diffmk:wrapper></entry>
-            <entry diffmk:change="added"><diffmk:wrapper diffmk:change="added">Chapter</diffmk:wrapper></entry>
+        <thead>
+          <row>
+            <entry>Feature</entry>
+            <entry>Benefit</entry>
+            <entry>Chapter</entry>
           </row>
         </thead>
         
-        <tbody diffmk:change="added">
+        <tbody>
           
-          <row diffmk:change="added">
-            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Explorer</diffmk:wrapper></para></entry>
-            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Explorer is a useful view with a text filter that displays domains, mbeans, attributes, and operations inside a connection.</diffmk:wrapper></para></entry>
-            <entry diffmk:change="added">
-              <link diffmk:change="added" linkend="mbean_explorer"><diffmk:wrapper diffmk:change="added">MBean Explorer</diffmk:wrapper></link>
+          <row>
+            <entry><para>MBean Explorer</para></entry>
+            <entry><para>MBean Explorer is a useful view with a text filter that displays domains, mbeans, attributes, and operations inside a connection.</para></entry>
+            <entry>
+              <link linkend="mbean_explorer">MBean Explorer</link>
             </entry>
           </row>
           
-          <row diffmk:change="added">
-            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></para></entry>
-            <entry diffmk:change="added"><para diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor is a multi-page editor to manage MBeans.</diffmk:wrapper></para></entry>
-            <entry diffmk:change="added">
-              <link diffmk:change="added" linkend="mbean_editor"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></link>
+          <row>
+            <entry><para>MBean Editor</para></entry>
+            <entry><para>MBean Editor is a multi-page editor to manage MBeans.</para></entry>
+            <entry>
+              <link linkend="mbean_editor">MBean Editor</link>
             </entry>
           </row>
           
@@ -151,7 +151,7 @@
   
   
   
-  <section diffmk:change="added">
+  <section>
     <title>Installation</title>
     <para>Here, we are going to explain how to install the <property moreinfo="none">JMX plugin</property> into
       Eclipse.</para>
@@ -197,11 +197,27 @@
     </itemizedlist>
 
   </section>
+  <section>
+        <title>Other relevant resources on the topic</title>
+
+        <para>You can find a set of benefits and other extra information on:</para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <ulink url="http://www.jboss.org/community/wiki/JBossMX">JBoss Wiki</ulink>
+                </para>
+            </listitem>
+         
+        </itemizedlist>
+
+        
+
+    </section>
 
 </chapter>
 
     
-<chapter id="mbean_explorer" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/mbean_explorer.xml" xreflabel="mbean_explorer">
+<chapter id="mbean_explorer" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/mbean_explorer.xml" xreflabel="mbean_explorer">
     <?dbhtml filename="mbean_explorer.html"?>
     
     <title>MBean Explorer</title>
@@ -264,7 +280,7 @@
 </chapter>
 
     
-<chapter id="mbean_editor" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/mbean_editor.xml" xreflabel="mbean_editor">
+<chapter id="mbean_editor" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/mbean_editor.xml" xreflabel="mbean_editor">
     <?dbhtml filename="mbean_editor.html"?>
 
     <title>MBean Editor</title>
@@ -356,7 +372,7 @@
 </chapter>
 
     
-<chapter id="connection" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/connection.xml" xreflabel="connection">
+<chapter id="connection" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/connection.xml" xreflabel="connection">
     <?dbhtml filename="connection.html"?>
     
     <title>Connections</title>
@@ -411,7 +427,7 @@
 </chapter>
 
     
-<chapter id="how_to" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/how_to.xml" xreflabel="how_to">
+<chapter id="how_to" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/how_to.xml" xreflabel="how_to">
     <?dbhtml filename="how_to.html"?>
     <title>How to ...</title>
     <para>This chapter will give you answers on most popular questions asked by <property moreinfo="none">JMX
@@ -542,7 +558,7 @@
 </chapter>
 
     
-<chapter id="extensions" xml:base="file:///home/ochikvina/WORK/for_compare/trunk/jmx/docs/reference/en/modules/extensions.xml" xreflabel="extensions">
+<chapter id="extensions" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/jmx/docs/reference/en/modules/extensions.xml" xreflabel="extensions">
    <?dbhtml filename="extensions"?>
    <title>Extension API</title>
    <para>This chapter will outline how to contribute your own Server type with some default
