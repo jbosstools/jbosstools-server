@@ -165,9 +165,12 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public IJBossServerRuntime getRuntime() {
-		IJBossServerRuntime ajbsrt = (IJBossServerRuntime) getServer().getRuntime()
+		IJBossServerRuntime  ajbsrt = null;
+		if( getServer().getRuntime() != null ) {
+			ajbsrt = (IJBossServerRuntime) getServer().getRuntime()
 					.loadAdapter(IJBossServerRuntime.class,
 							new NullProgressMonitor());
+		}
 		return ajbsrt;
 	}
 
