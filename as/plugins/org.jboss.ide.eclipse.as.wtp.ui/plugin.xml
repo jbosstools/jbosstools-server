@@ -34,37 +34,37 @@
           point="org.jboss.ide.eclipse.as.wtp.ui.referenceWizardFragment">
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ProjectReferenceWizardFragment"
-             icon="icons/prj_obj.gif"
+             icon="$nl$/icons/prj_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.newProjectReference"
              name="Project">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.JarReferenceWizardFragment"
-             icon="icons/jar_obj.gif"
+             icon="$nl$/icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.jarReference"
              name="Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ExternalJarReferenceWizardFragment"
-             icon="icons/jar_obj.gif"
+             icon="$nl$/icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.externalJarReference"
              name="External Jar">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.VariableReferenceWizardFragment"
-             icon="icons/jar_obj.gif"
+             icon="$nl$/icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.variableReference"
              name="Variable">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.OutputFolderReferenceWizardFragment"
-             icon="icons/jar_obj.gif"
+             icon="$nl$/icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.mappedOutputFoldersReference"
              name="Mapped Output Folders">
        </referenceFragment>
        <referenceFragment
              class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.ExportedClasspathFoldersReferenceWizardFragment"
-             icon="icons/jar_obj.gif"
+             icon="$nl$/icons/jar_obj.gif"
              id="org.jboss.ide.eclipse.as.wtp.ui.ExportedClasspathFoldersReference"
              name="Build Path Class Folders">
        </referenceFragment>
@@ -77,7 +77,7 @@
       <wizard
             category="org.eclipse.jst.j2ee.internal"
             class="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
-            icon="icons/jar_obj.gif"
+            icon="$nl$/icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
             name="Module Archive">
          <description>
