@@ -49,6 +49,6 @@ public class EarModuleDependenciesPropertyPage extends
 //	}
 
 	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
-		return new AddComponentToEnterpriseApplicationDataModelProvider();
+		return new OverrideAddComponentToEnterpriseApplicationDataModelProvider();
 	}
 }
