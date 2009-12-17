@@ -303,8 +303,15 @@ public class ModuleExportOperation extends AbstractDataModelOperation {
 				String path = getChildURI(parent, children[i]);
 				ModuleDelegate childDelegate = (ModuleDelegate)children[i].
 						loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
-				IJ2EEModule tempMod = (IJ2EEModule)children[i].loadAdapter(IJ2EEModule.class, new NullProgressMonitor());
-				boolean isBinary = tempMod.isBinary();
+				boolean isBinary = false;
+				{
+					IJ2EEModule tempMod = (IJ2EEModule)children[i].loadAdapter(IJ2EEModule.class, new NullProgressMonitor());
+					IJBTModule jbtModule = null;
+					if( tempMod == null ) {
+						jbtModule = (IJBTModule)children[i].loadAdapter(IJBTModule.class, new NullProgressMonitor());
+					}
+					isBinary = tempMod != null ? tempMod.isBinary() : jbtModule.isBinary();
+				}
 				if( path != null ) {
 					if( isBinary ) {
 						addResources(saver, childDelegate.members());
