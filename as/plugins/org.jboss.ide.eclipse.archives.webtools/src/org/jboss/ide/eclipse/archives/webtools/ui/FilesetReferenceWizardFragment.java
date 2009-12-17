@@ -24,6 +24,7 @@ import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.filesets.vcf.WorkspaceFilesetVirtualComponent;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IReferenceEditor;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.NewReferenceWizard;
@@ -42,19 +43,19 @@ public class FilesetReferenceWizardFragment extends WizardFragment implements IR
 	private String includes, excludes, folder;
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		hasEntered = true;
-		handle.setTitle("Add a fileset reference"); //$NON-NLS-1$
-		handle.setDescription("This will let you select a root folder and some matching patterns"); //$NON-NLS-1$
+		handle.setTitle(Messages.ReferenceWizard_title);
+		handle.setDescription(Messages.ReferenceWizard_description);
 		
 		Composite child = new Composite(parent, SWT.NONE);
 		
 		// root folder, text, browse
 		child.setLayout(new FormLayout());
 		Control top = null;
-		addLabel("Root Folder", child, top); //$NON-NLS-1$
+		addLabel(Messages.FilesetsNewRootDir, child, top);
 		top = rootText = addText(child, top, true);
-		addLabel("Includes", child, top); //$NON-NLS-1$
+		addLabel(Messages.FilesetsNewIncludes, child, top);
 		top = incText = addText(child, top, false);
-		addLabel("Excludes", child, top); //$NON-NLS-1$
+		addLabel(Messages.FilesetsNewExcludes, child, top);
 		top = excText = addText(child, top, false);
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -87,7 +88,7 @@ public class FilesetReferenceWizardFragment extends WizardFragment implements IR
 		Button b = null;
 		if( includeBrowse ) {
 			b = new Button(parent, SWT.NONE);
-			b.setText("Browse..."); //$NON-NLS-1$
+			b.setText(Messages.FilesetsNewBrowse);
 			addBrowseListener(b,t);
 			FormData bData = new FormData();
 			bData.right = new FormAttachment(100,-5);

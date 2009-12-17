@@ -65,6 +65,10 @@ public class Messages extends NLS {
 	public static String EjbJarPreview;
 	public static String EjbJarDescription;
 
+	public static String ReferenceWizard_title;
+	public static String ReferenceWizard_description;
+	
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
