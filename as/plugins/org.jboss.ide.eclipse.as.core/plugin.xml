@@ -434,7 +434,7 @@
             name="JBoss Application Server Startup Configuration"
             public="true"
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
-            sourcePathComputerId="org.eclipse.jst.server.tomcat.core.sourcePathComputer"/>
+            sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
       <launchConfigurationType
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
