@@ -66,6 +66,13 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		setModulePublishState(module, result);
 	}
 	
+	/**
+	 * This should only be called once per overall publish. 
+	 * publishStart() should call this, cache the method, and use it 
+	 * until after publishFinish() is called. 
+	 * 
+	 * @return
+	 */
 	protected IJBossServerPublishMethod createPublishMethod() {
 		return new LocalPublishMethod(); // TODO FIX THIS
 	}
