@@ -57,6 +57,15 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 		this.moduleType = moduleType;
 		this.facetType = facetType;
 	}
+	
+	protected JBTProjectModuleFactory factoryDelegate;
+	protected JBTProjectModuleFactory getFactory() {
+		if (factoryDelegate == null)
+			factoryDelegate = (JBTProjectModuleFactory)getFactory(getFactoryId());
+		return factoryDelegate;
+	}
+	
+	protected abstract String getFactoryId();
 
 	@Override
 	protected void clearCache(IProject project) {
@@ -66,10 +75,31 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 	
 	@Override
 	public ModuleDelegate getModuleDelegate(IModule module) {
+		// override for eclipse bug 251813
+		String id = module.getId();
+		if( id.startsWith(getFactoryId() + ":") && !id.startsWith(getFactoryId() + ":" + this.facetType)) {
+			// This is probably coming from ProjectRefactorOperation, bad news there
+			IModule tempModule = internalCreateModule(module.getProject());
+			if( moduleToDelegate.get(tempModule) != null)
+				return moduleToDelegate.get(tempModule);
+		}
 		return moduleToDelegate.get(module);
 	}
 
 	protected IModule[] createModules(IProject project) {
+		IModule module = internalCreateModule(project);
+		if( module != null ) {
+			JBTProjectModuleDelegate delegate = createDelegate(project);
+			moduleToDelegate.put(module, delegate);
+			
+			createBinaryModules(ComponentCore.createComponent(project), delegate);
+			// TODO - create children!!! see JEEDeployableFactory
+			return new IModule[] { module };
+		}
+		return null;
+	}
+	
+	protected IModule internalCreateModule(IProject project) {
 		IFacetedProject facetProject;
 		try {
 			facetProject = ProjectFacetsManager.create(project);
@@ -87,12 +117,7 @@ public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelega
 						moduleType, 
 						version.getVersionString(),
 						project);
-				JBTProjectModuleDelegate delegate = createDelegate(project);
-				moduleToDelegate.put(module, delegate);
-				
-				createBinaryModules(ComponentCore.createComponent(project), delegate);
-				// TODO - create children!!! see JEEDeployableFactory
-				return new IModule[] { module };
+				return module;
 			}
 		} catch (CoreException e) {
 			ASWTPToolsPlugin.getDefault().getLog().log(e.getStatus());
