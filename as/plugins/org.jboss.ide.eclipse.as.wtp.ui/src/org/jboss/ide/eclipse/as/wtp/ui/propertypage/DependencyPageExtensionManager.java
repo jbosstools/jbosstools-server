@@ -110,7 +110,8 @@ public class DependencyPageExtensionManager {
 			if( image == null ) {
 				if( imageLoc != null && element.getContributor().getName() != null) {
 					ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(element.getContributor().getName(), imageLoc);
-					image = desc.createImage();
+					if( desc != null )
+						image = desc.createImage();
 				}
 			}
 			return image;
