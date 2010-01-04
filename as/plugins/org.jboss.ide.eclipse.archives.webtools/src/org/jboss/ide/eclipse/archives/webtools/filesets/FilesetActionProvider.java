@@ -204,8 +204,12 @@ public class FilesetActionProvider extends CommonActionProvider implements IDoub
 						location = IConstants.SERVER + IPath.SEPARATOR + runtime.getJBossConfiguration();
 					}
 				}
-				if( location == null )
+				if( location == null && iserver.getRuntime() != null)
 					location = iserver.getRuntime().getLocation().toOSString();
+				else if( location == null && iserver.getRuntime() == null ) {
+					// use workspace location as default if no runtime
+					location = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+				}
 
 				if (location != null) {
 					FilesetDialog d = new FilesetDialog(new Shell(), location, iserver);
