@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.common.project.facet.core.IClasspathProvider;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.server.core.IRuntime;
@@ -56,7 +57,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 	}
 
 	public List getClasspathEntries(final IProjectFacetVersion fv) {
-		IPath path;
+		IPath path = null;
 		if( fv.getProjectFacet().getId().equals(ClasspathConstants.FACET_JST_JAVA) ) {
 			path = new Path(CONTAINER_ID);
 			path = path.append(rc.getProperty("id")); //$NON-NLS-1$
@@ -65,14 +66,27 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			IClasspathEntry[] entries =
 				new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
 			return Arrays.asList(entries);
-		} else {
+		} else if( isPrimaryFacet(fv.getProjectFacet())){
 			String id = rc.getProperty("id"); //$NON-NLS-1$
 			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$ //$NON-NLS-2$
 			path = containerPath.append(id);
 		}
-
-		IClasspathEntry cpentry = JavaCore.newContainerEntry(path);
-		return Collections.singletonList(cpentry);
+		if( path != null ) {
+			IClasspathEntry cpentry = JavaCore.newContainerEntry(path);
+			return Collections.singletonList(cpentry);
+		}
+		return Collections.emptyList();
+	}
+	
+	// Bad name, I know, but checks if this is 
+	// an ear, war, ejb, or other top level facet
+	protected boolean isPrimaryFacet(IProjectFacet facet) {
+		WebtoolsProjectJBossClasspathContainerInitializer del = new WebtoolsProjectJBossClasspathContainerInitializer();
+		return facet.equals(del.WEB_FACET) 
+			|| facet.equals(del.EJB_FACET) 
+			|| facet.equals(del.EAR_FACET) 
+			|| facet.equals(del.CONNECTOR_FACET) 
+			|| facet.equals(del.APP_CLIENT_FACET);
 	}
 	
 	public static final class Factory implements IAdapterFactory {

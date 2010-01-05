@@ -48,13 +48,13 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer implements ClasspathConstants {
 	
-	private static final IProjectFacet JST_JAVA_FACET = ProjectFacetsManager.getProjectFacet(FACET_JST_JAVA);
-	private static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet(FACET_WEB);
-	private static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet(FACET_EJB);
-	private static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet(FACET_EAR);
-	private static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet(FACET_UTILITY);
-	private static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet(FACET_CONNECTOR);
-	private static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet(FACET_APP_CLIENT);
+	public static final IProjectFacet JST_JAVA_FACET = ProjectFacetsManager.getProjectFacet(FACET_JST_JAVA);
+	public static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet(FACET_WEB);
+	public static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet(FACET_EJB);
+	public static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet(FACET_EAR);
+	public static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet(FACET_UTILITY);
+	public static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet(FACET_CONNECTOR);
+	public static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet(FACET_APP_CLIENT);
 
 
 	public WebtoolsProjectJBossClasspathContainerInitializer() {
