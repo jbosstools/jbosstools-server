@@ -26,6 +26,8 @@ public class Messages extends NLS {
 	public static String SCPDeploymentDescription;
 	public static String EditorSetUserCommandLabel;
 	public static String EditorSetPasswordCommandLabel;
+	public static String SCPServerDescription;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

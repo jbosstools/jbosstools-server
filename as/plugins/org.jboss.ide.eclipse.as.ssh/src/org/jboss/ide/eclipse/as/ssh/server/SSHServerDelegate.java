@@ -16,7 +16,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 public class SSHServerDelegate extends DeployableServer {
 
 	public SSHServerDelegate() {
-		// TODO Auto-generated constructor stub
+		super();
 	}
 
 	public IJBossServerRuntime getRuntime() {
@@ -26,8 +26,26 @@ public class SSHServerDelegate extends DeployableServer {
 	public String getUsername() {
 		return getAttribute(ISSHDeploymentConstants.USERNAME, (String)null);
 	}
-
 	public String getPassword() {
 		return getAttribute(ISSHDeploymentConstants.PASSWORD, (String)null);
+	}
+	public String getHostsFile() {
+		return getAttribute(ISSHDeploymentConstants.HOSTS_FILE, (String)null);
+	}
+	public String getDeployFolder() {
+		return getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
+	}
+	
+	public void setUsername(String user) {
+		setAttribute(ISSHDeploymentConstants.USERNAME, user);
+	}
+	public void setPassword(String pass) {
+		setAttribute(ISSHDeploymentConstants.PASSWORD, pass);
+	}
+	public void setHostsFile(String file) {
+		setAttribute(ISSHDeploymentConstants.HOSTS_FILE, file);
+	}
+	public void setDeployFolder(String folder) {
+		setAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, folder);
 	}
 }

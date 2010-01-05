@@ -104,5 +104,13 @@
             typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType,org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType">
       </image>
    </extension>
+   <extension
+         point="org.eclipse.wst.server.ui.wizardFragments">
+      <fragment
+            class="org.jboss.ide.eclipse.as.ssh.ui.wizard.SCPServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ssh.server.remoteServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
+      </fragment>
+   </extension>
    
 </plugin>
