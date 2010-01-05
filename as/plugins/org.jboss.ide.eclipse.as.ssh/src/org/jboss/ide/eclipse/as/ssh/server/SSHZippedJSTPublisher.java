@@ -80,7 +80,7 @@ public class SSHZippedJSTPublisher implements IJBossServerPublisher {
 		LocalZippedPublisherUtil localDelegate = new LocalZippedPublisherUtil();
 		IStatus localCopyStatus = localDelegate.publishModule(server, 
 				deployRoot.toOSString(), module, publishType, delta, monitor);
-		IPath outputFilepath = localDelegate.getOutputFilePath();
+		IPath outputFilepath = localDelegate.getOutputFilePath(module);
 
 		String deployFolder = getRemoteDeployFolder(server);
 		String deployFile = new Path(deployFolder).append(outputFilepath.lastSegment()).toString();

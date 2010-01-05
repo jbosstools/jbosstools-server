@@ -153,7 +153,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	}
 	
 	protected IStatus[] removeModule(IServer server, String deployRoot, IModule[] module) {
-		IPath deployPath = getOutputFilePath();
+		IPath deployPath = getOutputFilePath(module);
         final ArrayList<IStatus> status = new ArrayList<IStatus>();
 		IFileUtilListener listener = new IFileUtilListener() {
 			public void fileCopied(File source, File dest, boolean result,Exception e) {}
@@ -177,7 +177,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	protected IStatus[] fullPublish(IServer server, String deployRoot, IModule[] module) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		try {
-			IPath path = getOutputFilePath();
+			IPath path = getOutputFilePath(module);
 			// Get rid of the old
 			FileUtil.safeDelete(path.toFile(), null);
 			
@@ -189,6 +189,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			IModule[] children = server.getChildModules(module, new NullProgressMonitor());
 			for( int i = 0; i < children.length; i++ ) 
 				results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
+			TrueZipUtil.umount();
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
 		} catch( CoreException ce) {
 			results.add(generateCoreExceptionStatus(ce));
@@ -197,7 +198,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	}
 	
 	protected IStatus[] publishChanges(IServer server, String deployRoot, IModule[] module) {
-		IPath path = getOutputFilePath();
+		IPath path = getOutputFilePath(module);
 		de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 		IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
 		return publishChanges(server, deltas, root);
@@ -281,7 +282,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		return retval;
 	}
 	
-	public IPath getOutputFilePath() {
+	public IPath getOutputFilePath(IModule[] module) {
 		return getDeployPath(module, deployRoot);
 	}
 }
