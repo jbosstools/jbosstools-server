@@ -22,8 +22,8 @@ public class Messages extends NLS {
 	public static String HostsLabel;
 	public static String EditorZipDeployments;
 	public static String EditorSetDeployCommandLabel;
-	public static String SSHDeploymentSectionTitle;
-	public static String SSHDeploymentDescription;
+	public static String SCPDeploymentSectionTitle;
+	public static String SCPDeploymentDescription;
 	public static String EditorSetUserCommandLabel;
 	public static String EditorSetPasswordCommandLabel;
 	static {

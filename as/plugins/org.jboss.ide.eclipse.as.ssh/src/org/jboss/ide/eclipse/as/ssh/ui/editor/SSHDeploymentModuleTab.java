@@ -52,7 +52,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 	}
 
 	public String getTabName() {
-		return Messages.SSHDeploymentSectionTitle;
+		return Messages.SCPDeploymentSectionTitle;
 	}
 
 	public void setDeploymentPage(ModuleDeploymentPage page) {
@@ -90,7 +90,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		Section section = toolkit.createSection(parent,
 				ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
 						| ExpandableComposite.TITLE_BAR);
-		section.setText(Messages.SSHDeploymentSectionTitle);
+		section.setText(Messages.SCPDeploymentSectionTitle);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_FILL));
 
@@ -99,7 +99,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		composite.setLayout(new FormLayout());
 
 		Label descriptionLabel = toolkit.createLabel(composite,
-				Messages.SSHDeploymentDescription);
+				Messages.SCPDeploymentDescription);
 		FormData descriptionLabelData = new FormData();
 		descriptionLabelData.left = new FormAttachment(0, 5);
 		descriptionLabelData.top = new FormAttachment(0, 5);
