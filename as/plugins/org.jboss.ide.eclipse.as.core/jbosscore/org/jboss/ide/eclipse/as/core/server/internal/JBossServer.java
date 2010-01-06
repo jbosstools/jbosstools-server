@@ -29,6 +29,7 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -138,12 +139,16 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public String getDeployFolder() {
-		IJBossServerRuntime jbsrt = getRuntime();
-		String type = getDeployLocationType();
+		return getDeployFolder(this, getDeployLocationType());
+	}
+	
+	public static String getDeployFolder(JBossServer jbs, String type) {
+		IServer server = jbs.getServer();
+		IJBossServerRuntime jbsrt = getRuntime(server);
 		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+			return ServerUtil.makeGlobal(jbsrt, new Path(jbs.getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
-			return JBossServerCorePlugin.getServerStateLocation(getServer()).
+			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
 			String config = jbsrt.getJBossConfiguration();

@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
@@ -165,9 +166,13 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public IJBossServerRuntime getRuntime() {
+		return getRuntime(getServer());
+	}
+	
+	public static IJBossServerRuntime getRuntime(IServer server) {
 		IJBossServerRuntime  ajbsrt = null;
-		if( getServer().getRuntime() != null ) {
-			ajbsrt = (IJBossServerRuntime) getServer().getRuntime()
+		if( server.getRuntime() != null ) {
+			ajbsrt = (IJBossServerRuntime) server.getRuntime()
 					.loadAdapter(IJBossServerRuntime.class,
 							new NullProgressMonitor());
 		}

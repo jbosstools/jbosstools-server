@@ -74,58 +74,36 @@ public class ServerListener extends UnitedServerListener {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
 				if( event.getServer().getServerState() == IServer.STATE_STARTED ) {
-					if( shouldAddDeployLocation(event.getServer())) {
-						IJMXRunnable r = new IJMXRunnable() {
-							public void run(MBeanServerConnection connection) throws Exception {
-								ensureDeployLocationAdded(event.getServer(), connection);
-							}
-						};
-						try {
-							JBossServerConnectionProvider.run(event.getServer(), r);
-						} catch( JMXException jmxe ) {
-							IStatus s = jmxe.getStatus();
-							IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
-									Messages.AddingJMXDeploymentFailed, s.getException());
-							ServerLogger.getDefault().log(event.getServer(), newStatus);
+					IJMXRunnable r = new IJMXRunnable() {
+						public void run(MBeanServerConnection connection) throws Exception {
+							ensureDeployLocationAdded(event.getServer(), connection);
 						}
+					};
+					try {
+						JBossServerConnectionProvider.run(event.getServer(), r);
+					} catch( JMXException jmxe ) {
+						IStatus s = jmxe.getStatus();
+						IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
+								Messages.AddingJMXDeploymentFailed, s.getException());
+						ServerLogger.getDefault().log(event.getServer(), newStatus);
 					}
 				}
 			}
 		}
 	}
-		
-	protected boolean shouldAddDeployLocation(IServer server) {
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		boolean shouldAdd = server.getServerState() == IServer.STATE_STARTED;
-		String type = ds.getDeployLocationType();
-		String deployFolder = ds.getDeployFolder();
-		if( type.equals(IDeployableServer.DEPLOY_SERVER))
-			shouldAdd = false;
-		else if( type.equals(IDeployableServer.DEPLOY_METADATA))
-			shouldAdd = true;
-		else if( type.equals( IDeployableServer.DEPLOY_CUSTOM )) {
-			if( !new File(deployFolder).exists())
-				shouldAdd = false;
-			else {
-				IRuntime rt = server.getRuntime();
-				IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-				String config = jbsrt.getJBossConfiguration();
-				IPath deploy = new Path(IJBossServerConstants.SERVER)
-						.append(config)
-						.append(IJBossServerConstants.DEPLOY).makeRelative();
-				IPath deployGlobal = ServerUtil.makeGlobal(jbsrt, deploy);
-				if( new Path(deployFolder).equals(deployGlobal))
-					shouldAdd = false;
-			}
-		}
-		return shouldAdd;
-	}
 	
 	protected void ensureDeployLocationAdded(IServer server, MBeanServerConnection connection) throws Exception {
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		
+		JBossServer ds = ServerConverter.getJBossServer(server);
 		ArrayList<String> folders = new ArrayList<String>();
-		folders.add(ds.getDeployFolder());
+		// add the server folder deploy loc. first
+		String insideServer = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_SERVER);
+		String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
+		String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
+		folders.add(insideServer);
+		if( !folders.contains(metadata))
+			folders.add(metadata);
+		if( !folders.contains(custom))
+			folders.add(custom);
 
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
 		if (modules2 != null) {
@@ -140,7 +118,7 @@ public class ServerListener extends UnitedServerListener {
 				}
 			}
 		}
-
+		folders.remove(insideServer); // doesn't need to be added to deployment scanner
 		String[] folders2 = (String[]) folders.toArray(new String[folders.size()]);
 		for( int i = 0; i < folders2.length; i++ ) {
 			String asURL = new File(folders2[i]).toURL().toString(); 
