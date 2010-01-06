@@ -132,10 +132,10 @@
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServer"
-            description="A server which only provides a deploy folder for publishing."
+            description="%deploy.server.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
-            name="JBoss Deploy-Only Server"
+            name="%deploy.server.name"
             runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
             supportsRemoteHosts="true"/>
@@ -388,7 +388,7 @@
             description="%deploy.runtime.description"
             id="org.jboss.ide.eclipse.as.runtime.stripped"
             name="%deploy.runtime.name"
-            vendor="%providerName"
+            vendor="%basicProviderName"
             version="1.0">
           <moduleType
                 types="jst.web"

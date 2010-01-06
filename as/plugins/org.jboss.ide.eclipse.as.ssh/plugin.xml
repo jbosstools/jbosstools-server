@@ -6,9 +6,9 @@
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate"
             class="org.jboss.ide.eclipse.as.ssh.server.SSHServerDelegate"
-            description="A server which simply scp&apos;s files to a destination host and location"
+            description="%ssh.server.description"
             id="org.jboss.ide.eclipse.as.ssh.server.remoteServerType"
-            name="SCP Remote Server"
+            name="%ssh.server.name"
             runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType"
             supportsRemoteHosts="true">
@@ -24,10 +24,10 @@
    <extension
          point="org.eclipse.wst.server.core.runtimeTypes">
      <runtimeType
-             vendor="JBoss Community"
+             vendor="%basic.vendor"
              class="org.jboss.ide.eclipse.as.ssh.server.SSHServerRuntime"
-             description="A runtime to allow SSH servers to support every module type. "
-             name="SSH Runtime"
+             description="%ssh.runtime.description"
+             name="%ssh.runtime.name"
              id="org.jboss.ide.eclipse.as.ssh.server.remoteServerRuntimeType"
              version="1.0">
           <moduleType
