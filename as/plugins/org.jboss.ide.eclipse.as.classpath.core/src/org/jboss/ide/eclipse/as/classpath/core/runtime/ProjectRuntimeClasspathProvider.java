@@ -66,7 +66,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			IClasspathEntry[] entries =
 				new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
 			return Arrays.asList(entries);
-		} else if( isPrimaryFacet(fv.getProjectFacet())){
+		} else /*if( isPrimaryFacet(fv.getProjectFacet())) */{
 			String id = rc.getProperty("id"); //$NON-NLS-1$
 			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$ //$NON-NLS-2$
 			path = containerPath.append(id);
