@@ -86,6 +86,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
+		JBossServerUISharedImages.instance().cleanup();
 		super.stop(context);
 	}
 

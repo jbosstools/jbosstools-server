@@ -89,45 +89,45 @@ public class JBossServerUISharedImages {
 		descriptors.put(GENERIC_SERVER_IMAGE, ImageDescriptor.createFromImage((Image)images.get(GENERIC_SERVER_IMAGE)));
 	}
 	
-	private ImageDescriptor createImageDescriptor (Bundle pluginBundle, String relativePath)
-	{
+	private ImageDescriptor createImageDescriptor (Bundle pluginBundle, String relativePath) {
 		return ImageDescriptor.createFromURL(pluginBundle.getEntry(relativePath));
 	}
 	
-	private static JBossServerUISharedImages instance() {
+	public static JBossServerUISharedImages instance() {
 		if (instance == null)
-			return new JBossServerUISharedImages();
-		
+			instance = new JBossServerUISharedImages();
 		return instance;
 	}
 	
-	public static Image getImage(String key)
-	{
+	public static Image getImage(String key) {
 		return instance().image(key);
 	}
 	
-	public static ImageDescriptor getImageDescriptor(String key)
-	{
+	public static ImageDescriptor getImageDescriptor(String key) {
 		return instance().descriptor(key);
 	}
 	
-	public Image image(String key)
-	{
+	public Image image(String key) {
 		return (Image) images.get(key);
 	}
 	
-	public ImageDescriptor descriptor(String key)
-	{
+	public ImageDescriptor descriptor(String key) {
 		return (ImageDescriptor) descriptors.get(key);
 	}
 	
-	protected void finalize() throws Throwable {
+	public void cleanup() {
 		Iterator<String> iter = images.keySet().iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			Image image = (Image) images.get(iter.next());
 			image.dispose();
 		}
+		images = null;
+		descriptors = null;
+		instance = null;
+	}
+	
+	protected void finalize() throws Throwable {
+		cleanup();
 		super.finalize();
 	}
 }
