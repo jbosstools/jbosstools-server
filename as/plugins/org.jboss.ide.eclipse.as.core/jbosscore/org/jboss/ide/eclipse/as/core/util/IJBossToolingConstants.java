@@ -67,6 +67,7 @@ public interface IJBossToolingConstants {
 	/* 
 	 * Property keys stored in the server object
 	 */
+	public static final String DEPLOYMENT_METHOD = "org.jboss.ide.eclipse.as.core.server.attributes.deploymentMethod"; //$NON-NLS-1$
 	public static final String STARTUP_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.startupPollerKey"; //$NON-NLS-1$
 	public static final String SHUTDOWN_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.shutdownPollerKey"; //$NON-NLS-1$
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName"; //$NON-NLS-1$
