@@ -211,14 +211,16 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	public static boolean isValidJREVersion(String jreVersion, IRuntimeType rtType) {
+		// all servers require at least 1.3
 		String id = rtType.getId();
-		String version = rtType.getVersion();
-		if( id.equals(IConstants.EAP_50) && version.equals(IConstants.V5_0)) { 
-			return !jreVersion.startsWith(JavaCore.VERSION_1_1) &&
-				!jreVersion.startsWith(JavaCore.VERSION_1_2) &&
-				!jreVersion.startsWith(JavaCore.VERSION_1_3) &&
-				!jreVersion.startsWith(JavaCore.VERSION_1_4) &&
-				!jreVersion.startsWith(JavaCore.VERSION_1_5);
+		if( jreVersion.startsWith(JavaCore.VERSION_1_1)) return false;
+		if( jreVersion.startsWith(JavaCore.VERSION_1_2)) return false;
+		
+		// requires java6
+		if( id.equals(IConstants.EAP_50) || id.equals(IConstants.AS_60)) {
+			if( jreVersion.startsWith(JavaCore.VERSION_1_3)) return false;
+			if( jreVersion.startsWith(JavaCore.VERSION_1_4)) return false;
+			if( jreVersion.startsWith(JavaCore.VERSION_1_5)) return false;
 		}
 		return true;
 	}
