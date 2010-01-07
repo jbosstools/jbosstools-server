@@ -21,7 +21,14 @@
  */
 package org.jboss.ide.eclipse.as.ui.launch;
 
+import java.text.MessageFormat;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.CommonTab;
@@ -31,8 +38,14 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
-import org.eclipse.jdt.debug.ui.launchConfigurations.JavaMainTab;
+import org.eclipse.jdt.internal.debug.ui.IJavaDebugHelpContextIds;
+import org.eclipse.jdt.internal.debug.ui.SWTFactory;
+import org.eclipse.jdt.internal.debug.ui.launcher.LauncherMessages;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -47,7 +60,7 @@ public class JBossLaunchConfigurationTabGroup extends
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
 				new JavaArgumentsTabExtension(),
-				new JavaMainTab(),
+				new JavaMainTabExtension(),
 				new JavaClasspathTab(),
 				new SourceLookupTab(),
 				new EnvironmentTab(),
@@ -57,6 +70,37 @@ public class JBossLaunchConfigurationTabGroup extends
 		for( int i = 0; i < tabs.length; i++ )
 			tabs[i].setLaunchConfigurationDialog(dialog);
 		setTabs(tabs);
+	}
+	
+	public class JavaMainTabExtension extends JavaMainTabClone {
+		public void createControl(Composite parent) {
+			Composite comp = SWTFactory.createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
+			((GridLayout)comp.getLayout()).verticalSpacing = 0;
+			//createProjectEditor(comp);
+			//createVerticalSpacer(comp, 1);
+			createMainTypeEditor(comp, LauncherMessages.JavaMainTab_Main_cla_ss__4);
+			setControl(comp);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IJavaDebugHelpContextIds.LAUNCH_CONFIGURATION_DIALOG_MAIN_TAB);
+		}
+		public void initializeFrom(ILaunchConfiguration config) {
+			//super.initializeFrom(config);
+			//updateProjectFromConfig(config);
+			setCurrentLaunchConfiguration(config);
+			updateMainTypeFromConfig(config);
+			updateStopInMainFromConfig(config);
+			updateInheritedMainsFromConfig(config);
+			updateExternalJars(config);		
+		}
+		public boolean isValid(ILaunchConfiguration config) {
+			setErrorMessage(null);
+			setMessage(null);
+			String name = fMainText.getText().trim();
+			if (name.length() == 0) {
+				setErrorMessage(LauncherMessages.JavaMainTab_Main_type_not_specified_16); 
+				return false;
+			}
+			return true;
+		}
 	}
 	
 	public class JavaArgumentsTabExtension extends JavaArgumentsTab {
