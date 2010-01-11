@@ -36,6 +36,7 @@ import org.eclipse.debug.ui.EnvironmentTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
 import org.eclipse.jdt.internal.debug.ui.IJavaDebugHelpContextIds;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
 
 /**
  * 
@@ -101,6 +103,10 @@ public class JBossLaunchConfigurationTabGroup extends
 			}
 			return true;
 		}
+		protected IJavaProject getJavaProject() {
+			return null;
+		}
+
 	}
 	
 	public class JavaArgumentsTabExtension extends JavaArgumentsTab {

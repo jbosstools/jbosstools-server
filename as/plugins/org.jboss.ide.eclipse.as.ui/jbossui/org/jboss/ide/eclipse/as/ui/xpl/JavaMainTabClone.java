@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.ui.launch;
+package org.jboss.ide.eclipse.as.ui.xpl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
@@ -229,7 +229,7 @@ public class JavaMainTabClone extends SharedJavaMainTab {
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
-		config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText().trim());
+		//config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, fProjText.getText().trim());
 		config.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, fMainText.getText().trim());
 		mapResources(config);
 		
