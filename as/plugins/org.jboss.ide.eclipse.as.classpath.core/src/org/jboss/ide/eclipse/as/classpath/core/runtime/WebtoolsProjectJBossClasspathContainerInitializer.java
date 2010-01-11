@@ -56,6 +56,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 	public static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet(FACET_CONNECTOR);
 	public static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet(FACET_APP_CLIENT);
 
+	public static final IProjectFacet JSF_FACET = ProjectFacetsManager.getProjectFacet(FACET_JSF);
+	public static final IProjectFacet JPA_FACET = ProjectFacetsManager.getProjectFacet(FACET_JPA);
+
 
 	public WebtoolsProjectJBossClasspathContainerInitializer() {
 		// TODO Auto-generated constructor stub

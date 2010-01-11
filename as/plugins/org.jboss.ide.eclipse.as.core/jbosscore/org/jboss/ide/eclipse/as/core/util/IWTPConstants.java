@@ -21,11 +21,13 @@ public interface IWTPConstants {
 	public static final String FACET_APP_CLIENT = "jst.appclient";//$NON-NLS-1$
 	public static final String FACET_ESB = "jst.jboss.esb";//$NON-NLS-1$
 	
+	public static final String FACET_JSF = "jst.jsf"; //$NON-NLS-1$
+	public static final String FACET_JPA = "jpt.jpa"; //$NON-NLS-1$
+	
 	public static final String EXT_JAR = ".jar"; //$NON-NLS-1$
 	public static final String EXT_ESB = ".esb"; //$NON-NLS-1$
 	public static final String EXT_RAR = ".rar"; //$NON-NLS-1$
 	public static final String EXT_WAR = ".war"; //$NON-NLS-1$
 	public static final String EXT_EAR = ".ear"; //$NON-NLS-1$
 	public static final String EXT_XML = ".xml"; //$NON-NLS-1$
-
 }

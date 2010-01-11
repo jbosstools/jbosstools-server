@@ -66,7 +66,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			IClasspathEntry[] entries =
 				new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
 			return Arrays.asList(entries);
-		} else if( isPrimaryFacet(fv.getProjectFacet())) {
+		} else if( isPrimaryFacet(fv.getProjectFacet()) || isSecondaryFacet(fv.getProjectFacet())) {
 			String id = rc.getProperty("id"); //$NON-NLS-1$
 			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$ //$NON-NLS-2$
 			path = containerPath.append(id);
@@ -87,6 +87,13 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			|| facet.equals(del.EAR_FACET) 
 			|| facet.equals(del.CONNECTOR_FACET) 
 			|| facet.equals(del.APP_CLIENT_FACET);
+	}
+	
+	// Also a bad name, but facets the server automatically knows
+	// how to provide classpath entries for
+	protected boolean isSecondaryFacet(IProjectFacet facet) {
+		WebtoolsProjectJBossClasspathContainerInitializer del = new WebtoolsProjectJBossClasspathContainerInitializer();
+		return facet.equals(del.JSF_FACET) || facet.equals(del.JPA_FACET); 
 	}
 	
 	public static final class Factory implements IAdapterFactory {
