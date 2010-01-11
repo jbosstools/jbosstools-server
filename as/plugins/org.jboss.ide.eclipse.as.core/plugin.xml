@@ -856,99 +856,86 @@
    <extension
          point="org.eclipse.wst.xml.core.catalogContributions">
      <catalogContribution>
-	        <public publicId="-//JBoss//DTD JBOSS 4.0//EN"
+	     <public publicId="-//JBoss//DTD JBOSS 4.0//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_4_0.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd"/>
-	        <public publicId="-//JBoss//DTD JBOSS 4.2//EN"
+	     <public publicId="-//JBoss//DTD JBOSS 4.2//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd"/>
 
-	        <public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
+	     <public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_4_0.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_0.dtd"/>
-	        <public publicId="-//JBoss//DTD J2EE Application 4.2//EN"
+	     <public publicId="-//JBoss//DTD J2EE Application 4.2//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_2.dtd"/>
-
-	        <public publicId="-//JBoss//DTD Web Application 2.4//EN"
+	     <public publicId="-//JBoss//DTD Web Application 2.4//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_4_0.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_0.dtd"/>
-	        <public publicId="-//JBoss//DTD Web Application 4.2//EN"
+	     <public publicId="-//JBoss//DTD Web Application 4.2//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"/>
 
-			<uri 
+		 <uri 
 			    name="http://www.jboss.com/ws-security/schema/jboss-ws-security_1_0.xsd"
 			    uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ws-security_1_0.xsd"/>
-			<uri 
+		 <uri 
 			    name="jaxws-config_2_0.xsd"
                 uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jaxws-config_2_0.xsd"/>
+		 <uri 
+			    name="persistence_2_0.xsd"
+                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/persistence_2_0.xsd"/>
          <public
                publicId="-//JBoss//DTD JBOSS JCA Config 1.5//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_1_5.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_1_5.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_1_5.dtd"/>
          <public
                publicId="-//JBoss//DTD MBean Service 4.2//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-service_4_2.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_4_2.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_4_2.dtd"/>
          <public
                publicId="-//JBoss//DTD Web Service Reference 4.2//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/service-ref_4_2.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd">
-         </public>
-         
+               webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd"/>
          <public
                publicId="-//JBoss//DTD Java EE Application 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd"/>
          <public
                publicId="-//JBoss//DTD JBOSS 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss_5_0.dtd"/>
          <public
                publicId="-//JBoss//DTD Web Application 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd"/>
          <public
                publicId="-//JBoss//DTD JBOSS JCA Config 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd"/>
          <public
                publicId="-//JBoss//DTD MBean Service 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-service_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_5_0.dtd"/>
          <public
                publicId="-//JBoss//DTD Web Service Reference 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/service-ref_5_0.dtd"
-               webURL="http://www.jboss.org/j2ee/dtd/service-ref_5_0.dtd">
-         </public>
+               webURL="http://www.jboss.org/j2ee/dtd/service-ref_5_0.dtd"/>
          <uri
                name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd"
-               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_1.xsd">
-         </uri>
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_1.xsd"/>
          <uri
                name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd"
-               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-common_5_1.xsd">
-         </uri>
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-common_5_1.xsd"/>
          <uri
                name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd"
-               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.xsd">
-         </uri>
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.xsd"/>
          <uri
                name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd"
-               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_1.xsd">
-         </uri>         
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_1.xsd"/>
          <uri
                name="http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd"
-               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-client_5_1.xsd">
-         </uri>         
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-client_5_1.xsd"/>
 			
      </catalogContribution>
    </extension>
