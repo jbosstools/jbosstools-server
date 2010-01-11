@@ -88,4 +88,12 @@
          </selection>
       </wizard>
     </extension>
+    
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.virtualComponentLabelProvider">
+       <provider
+             class="org.jboss.ide.eclipse.as.wtp.ui.vcf.OutputFoldersLabelProvider"
+             weight="5">
+       </provider>
+    </extension>
 </plugin>

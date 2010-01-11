@@ -24,7 +24,7 @@ public class Messages extends NLS {
 	public static String Export_LabelProject;
 	public static String Export_LabelBrowse;
 	public static String Export_OverwriteCheckbox;
-	
+	public static String OutputFolders;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
