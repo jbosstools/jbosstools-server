@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.jst.j2ee.componentcore.util.EARVirtualRootFolder;
 import org.eclipse.jst.j2ee.internal.plugin.IJ2EEModuleConstants;
 import org.eclipse.jst.j2ee.internal.project.J2EEProjectUtilities;
 import org.eclipse.jst.j2ee.project.JavaEEProjectUtilities;
@@ -30,10 +29,8 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.builder.DependencyGraphManager;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.internal.util.IComponentImplFactory;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -73,9 +70,9 @@ public class JBTVirtualComponent
 	 */
 	
 	public IVirtualReference[] getReferences() {
-		IVirtualReference[] cached = getCachedReferences();
-		if (cached != null)
-			return cached;
+//		IVirtualReference[] cached = getCachedReferences();
+//		if (cached != null)
+//			return cached;
 		cachedReferences = getHardReferences(this);
 		return cachedReferences;
 	}
@@ -110,8 +107,10 @@ public class JBTVirtualComponent
 						if (vReference != null) {
 							IVirtualComponent referencedIVirtualComponent = vReference.getReferencedComponent();
 							if (referencedIVirtualComponent != null && referencedIVirtualComponent.exists()) {
-								String archiveName = getArchiveName(referencedIVirtualComponent, referencedComponent);
-								vReference.setArchiveName(archiveName);
+								if( vReference.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_USES ) {
+									String archiveName = getArchiveName(referencedIVirtualComponent, referencedComponent);
+									vReference.setArchiveName(archiveName);
+								}
 								hardReferences.add(vReference);
 							}
 						}
