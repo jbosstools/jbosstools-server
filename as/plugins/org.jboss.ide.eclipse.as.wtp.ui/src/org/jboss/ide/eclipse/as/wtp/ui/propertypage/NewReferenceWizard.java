@@ -7,6 +7,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.ui.internal.wizard.TaskWizard;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 
 public class NewReferenceWizard extends TaskWizard {
 
@@ -17,16 +18,20 @@ public class NewReferenceWizard extends TaskWizard {
 	public static final String DEPENDENCY_TYPE = "dependency.type";
 	
 	
-	public NewReferenceWizard() {
-		super("New Reference Wizard", new RootWizardFragment());
+	public NewReferenceWizard(ReferenceExtension[] extensions) {
+		super("New Reference Wizard", new RootWizardFragment(extensions));
 		getRootFragment().setTaskModel(getTaskModel());
 	}
 	
 	protected static class RootWizardFragment extends WizardFragment {
+		private ReferenceExtension[] extensions;
+		public RootWizardFragment(ReferenceExtension[] extensions) {
+			this.extensions = extensions;
+		}
 		protected void createChildFragments(List<WizardFragment> list) {
 			IVirtualComponent component = (IVirtualComponent)getTaskModel().getObject(COMPONENT);
 			if( component == null )
-				list.add(new NewReferenceRootWizardFragment());
+				list.add(new NewReferenceRootWizardFragment(extensions));
 			else {
 				WizardFragment fragment = getFirstEditingFragment(component);
 				if( fragment != null )

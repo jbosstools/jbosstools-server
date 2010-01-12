@@ -26,8 +26,8 @@
     <extension
           point="org.jboss.ide.eclipse.as.wtp.ui.moduleDependencyPropertyPage">
        <dependencyPage
-             class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.impl.EarModuleDependencyPageProvider"
-             id="org.jboss.ide.eclipse.as.wtp.ui.earDependencyPage">
+             class="org.jboss.ide.eclipse.as.wtp.ui.propertypage.impl.JEEModuleDependencyPageProvider"
+             id="org.jboss.ide.eclipse.as.wtp.ui.jeeDependencyPage">
        </dependencyPage>
     </extension>
     <extension

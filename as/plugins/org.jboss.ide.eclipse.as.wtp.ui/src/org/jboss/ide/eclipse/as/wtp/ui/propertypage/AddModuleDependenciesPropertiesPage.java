@@ -85,6 +85,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.wtp.ui.Messages;
 import org.jboss.ide.eclipse.as.wtp.ui.WTPOveridePlugin;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.DependencyPageExtensionManager.ReferenceExtension;
  
 public class AddModuleDependenciesPropertiesPage implements Listener,
 		IModuleDependenciesControl, ILabelProviderListener {
@@ -466,9 +467,13 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		showReferenceWizard(true);
 	}
 
+	protected ReferenceExtension[] getReferenceExtensions() {
+		return DependencyPageExtensionManager.getManager().getReferenceExtensions();
+	}
+	
 	protected void showReferenceWizard(boolean editing) {
 
-		NewReferenceWizard wizard = new NewReferenceWizard();
+		NewReferenceWizard wizard = new NewReferenceWizard(getReferenceExtensions());
 		// fill the task model
 		wizard.getTaskModel().putObject(NewReferenceWizard.PROJECT, project);
 		wizard.getTaskModel().putObject(NewReferenceWizard.ROOT_COMPONENT, rootComponent);

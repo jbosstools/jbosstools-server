@@ -15,15 +15,38 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.AddModuleDependenciesPropertiesPage;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.DependencyPageExtensionManager;
 import org.jboss.ide.eclipse.as.wtp.ui.propertypage.ModuleAssemblyRootPage;
+import org.jboss.ide.eclipse.as.wtp.ui.propertypage.DependencyPageExtensionManager.ReferenceExtension;
 
-public class EarModuleDependenciesPropertyPage extends
+public class JEEModuleDependenciesPropertyPage extends
 		AddModuleDependenciesPropertiesPage {
-	public EarModuleDependenciesPropertyPage(IProject project,
+	public JEEModuleDependenciesPropertyPage(IProject project,
 			ModuleAssemblyRootPage page) {
 		super(project, page);
 	}
 
+	protected ReferenceExtension[] getReferenceExtensions() {
+		ReferenceExtension[] parents = super.getReferenceExtensions();
+		ArrayList<ReferenceExtension> l = new ArrayList<ReferenceExtension>();
+		for( int i = 0; i < parents.length; i++ ) 
+			if( shouldAddReferenceType(parents[i]))
+				l.add(parents[i]);
+		return (ReferenceExtension[]) l.toArray(new ReferenceExtension[l.size()]);
+	}
+
+	protected boolean shouldAddReferenceType(ReferenceExtension extension) {
+		// approved types
+		String NEW_PROJ = "org.jboss.ide.eclipse.as.wtp.ui.newProjectReference";
+		String JAR = "org.jboss.ide.eclipse.as.wtp.ui.jarReference";
+		String EXT_JAR = "org.jboss.ide.eclipse.as.wtp.ui.externalJarReference";
+		String VAR = "org.jboss.ide.eclipse.as.wtp.ui.variableReference";
+		String id = extension.getId();
+		if( id.equals(NEW_PROJ) || id.equals(JAR) || id.equals(EXT_JAR) || id.equals(VAR) )
+			return true;
+		return false;
+	}
+	
 	protected IDataModelOperation generateEARDDOperation() {
 		IDataModel model = DataModelFactory.createDataModel(new EarCreateDeploymentFilesDataModelProvider());
 		model.setProperty(ICreateDeploymentFilesDataModelProperties.GENERATE_DD, rootComponent);
@@ -37,11 +60,14 @@ public class EarModuleDependenciesPropertyPage extends
 	
 	protected void handleRemoved(ArrayList<IVirtualComponent> removed) {
 		super.handleRemoved(removed);
-		J2EEComponentClasspathUpdater.getInstance().queueUpdateEAR(rootComponent.getProject());
+		if( isEar())
+			J2EEComponentClasspathUpdater.getInstance().queueUpdateEAR(rootComponent.getProject());
 	}
 	
-	protected IDataModelProvider getRemoveReferenceDataModelProvider(Object component) {
-		return new RemoveComponentFromEnterpriseApplicationDataModelProvider();
+	protected IDataModelProvider getRemoveReferenceDataModelProvider(IVirtualComponent component) {
+		if( isEar() )
+			return new RemoveComponentFromEnterpriseApplicationDataModelProvider();
+		return super.getRemoveReferenceDataModelProvider(component);
 	}
 
 //	protected void postAddProjects(Set moduleProjects) throws CoreException {
@@ -49,6 +75,12 @@ public class EarModuleDependenciesPropertyPage extends
 //	}
 
 	protected IDataModelProvider getAddReferenceDataModelProvider(IVirtualComponent component) {
-		return new OverrideAddComponentToEnterpriseApplicationDataModelProvider();
+		if( isEar() )
+			return new OverrideAddComponentToEnterpriseApplicationDataModelProvider();
+		return super.getAddReferenceDataModelProvider(component);
+	}
+	
+	protected boolean isEar() {
+		return false;
 	}
 }
