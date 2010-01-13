@@ -99,10 +99,14 @@ public class ServerListener extends UnitedServerListener {
 		String insideServer = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_SERVER);
 		String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
 		String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
+		String serverHome = null;
+		if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
+			serverHome = server.getRuntime().getLocation().toString();
+		}
 		folders.add(insideServer);
 		if( !folders.contains(metadata))
 			folders.add(metadata);
-		if( !folders.contains(custom))
+		if( !folders.contains(custom) && !custom.equals(serverHome))
 			folders.add(custom);
 
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
