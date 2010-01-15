@@ -146,7 +146,7 @@
              class="org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage"
              id="org.jboss.ide.eclipse.as.ui.editor.deploymentPage"
              name="Deployment"
-             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
        </page>
     </extension>
 
