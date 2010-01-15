@@ -119,9 +119,11 @@ public class NewServerWizardTest extends TestCase implements ILogListener {
 	public void logging(IStatus status, String plugin) {
 		StringWriter out = new StringWriter();
 		out.append(status.getMessage()).append('\n');
-		status.getException().printStackTrace(new PrintWriter(out));
-		if(out.toString().contains(JBossServerWizardFragment.class.getName())) {
-			fail(out.toString());
+		if(status.getException()!=null) {
+			status.getException().printStackTrace(new PrintWriter(out));
+			if(out.toString().contains(JBossServerWizardFragment.class.getName())) {
+				fail(out.toString());
+			}
 		}
 	}
 }
