@@ -96,4 +96,21 @@
              weight="5">
        </provider>
     </extension>
+    <extension
+          point="org.eclipse.ui.commands">
+       <command
+             defaultHandler="org.jboss.ide.eclipse.as.wtp.ui.commands.FullPublishCommandHandler"
+             id="org.jboss.ide.eclipse.as.wtp.ui.fullPublishCommand"
+             name="Full Publish">
+       </command>
+    </extension>
+    <extension
+          point="org.eclipse.ui.bindings">
+       <key
+             commandId="org.jboss.ide.eclipse.as.wtp.ui.fullPublishCommand"
+             contextId="org.eclipse.ui.contexts.window"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+             sequence="M1+M2+M">
+       </key>
+    </extension>
 </plugin>

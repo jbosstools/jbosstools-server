@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.server.core;bundle-version="1.1.101",
  org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.1.300",
  org.eclipse.emf.ecore;bundle-version="2.5.0",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="1.0.0"
+ org.jboss.ide.eclipse.as.wtp.core;bundle-version="1.0.0",
+ org.eclipse.debug.ui;bundle-version="3.5.1";resolution:=optional
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Vendor: JBoss by Red Hat
