@@ -47,6 +47,13 @@
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
 	
+	<adapter>
+      <runtime-component
+            id="org.jboss.ide.eclipse.as.runtime.component" version="6.0"/>
+      <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+	</adapter>
+	
      <adapter>
       <runtime-component
             id="org.jboss.ide.eclipse.eap.runtime.component" version="4.3"/>
@@ -76,7 +83,7 @@
    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"
-        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40, org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
+        runtimeTypeIds="org.jboss.ide.eclipse.as.runtime.32, org.jboss.ide.eclipse.as.runtime.40, org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.60,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
         class="org.jboss.ide.eclipse.as.classpath.core.runtime.ClientAllRuntimeClasspathProvider"/>
    </extension>
    <extension
