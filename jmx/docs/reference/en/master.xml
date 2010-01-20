@@ -8,8 +8,9 @@
 <!ENTITY connection SYSTEM "modules/connection.xml">
 <!ENTITY how_to SYSTEM "modules/how_to.xml">
 <!ENTITY extensions SYSTEM "modules/extensions.xml">
-
- 
+<!ENTITY tasks SYSTEM "modules/tasks.xml">
+<!ENTITY references SYSTEM "modules/references.xml"> 
+<!ENTITY summary SYSTEM "modules/summary.xml"> 
 <!ENTITY seamlink "../../seam/html_single/index.html">
 <!ENTITY aslink "../../as/html_single/index.html">
 <!ENTITY esblink "../../esb_ref_guide/html_single/index.html">
@@ -41,13 +42,13 @@
              </inlinemediaobject>           
          </corpauthor>
   
-	                       <copyright>
-			             <year>2007</year>
+	               <copyright>
+			            <year>2007</year>
 			            <year>2008</year> 
-	                           <year>2009</year>
-	                           <year>2010</year>
-	                           <holder>JBoss by Red Hat</holder>
-	                       </copyright>
+	                    <year>2009</year>
+	                    <year>2010</year>
+	                    <holder>JBoss by Red Hat</holder>
+	               </copyright>
           <releaseinfo>
              Version: 1.1.0.CR1
           </releaseinfo>
@@ -57,15 +58,17 @@
            <ulink url="http://download.jboss.org/jbosstools/nightly-docs/en/jmx_ref_guide/pdf/JMX_Tools_Reference_Guide.pdf">PDF version</ulink>
        </para>
 </abstract>
-
-    </bookinfo>
-	
-    
+   </bookinfo>
+  
     <toc/> 
     &introduction;
-    &mbean_explorer;
-    &mbean_editor;
-    &connection;
+    &tasks;
+    &references;
+    &summary;    
+    <!--&connection;
     &how_to;
     &extensions;
+    &mbean_explorer;
+    &mbean_editor;-->
+    
 </book>    
