@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="tasks" xreflabel="tasks">
+    <?dbhtml filename="tasks.html"?>
+    <title>JMX Tools Tasks</title>
+    <para>This chapter will give you answers on most popular questions asked by <property>JMX
+    plugin</property> users.</para>
+    <section>
+        <title>Quick Start</title>
+        
+        <para>To start using the <property>JMX Tools</property>, it&apos;s necessary to open
+            <property>MBean Explorer</property>. Go to <emphasis><property>Window &gt; Show View &gt; Other</property></emphasis> and then select
+            <property>MBean Explorer</property> and click <emphasis><property>OK</property>.</emphasis></para>
+        
+        <para>The <property>MBean Explorer</property> lists all of the domains, mbeans, attributes, and operations inside a
+            connection. When you double-click on a MBean in the <emphasis><property>MBean Explorer</property>,</emphasis> it opens a multi-page
+            editor to manage the MBean. The <property>MBean Editor</property> is composed of these pages:</para>
+        
+        <itemizedlist>
+            <listitem>
+                <para><emphasis><property>Attributes page</property>,</emphasis> to get/set the attributes of the MBean</para>
+            </listitem>
+            <listitem>
+                <para><emphasis><property>Operations page</property>,</emphasis> to invoke operations on the MBean</para>
+            </listitem>
+            <listitem>
+                <para><emphasis><property>Notifications page</property>,</emphasis> to receive notifications from the MBean</para>
+            </listitem>
+            <listitem>
+                <para><emphasis><property>Info page</property>,</emphasis> which displays general information about the MBean </para>
+            </listitem>
+        </itemizedlist>
+        
+    </section>
+    <section>
+        <title>Tomcat Managing</title>
+        
+        <para>It&apos;s possible to manage Tomcat using <property>JMX Tools</property>.</para>
+        
+        <para>Currently, JMX Tooling is able to connect to Tomcat without authentication or with
+            password-based authentication.</para>
+        <para>Using SSL for authentication is not supported: you need to make sure that the System
+            property <emphasis>
+                <property>com.sun.management.jmxremote.ssl</property>
+            </emphasis> is set to false. </para>
+        <para>More information to manage Tomcat can be found in Tomcat management
+            documentation.</para>
+        <para>Instructions to manage remotely Tomcat are available in Tomcat&apos;s monitoring
+            documentation.</para>
+        
+    </section>
+    
+    <section>
+        <title>Eclipse Equinox Managing</title>
+        
+        <para>You can manage Equinox through the Equinox monitoring framework.</para>
+        <para>Once you have installed the Equinox monitoring framework and restarted Eclipse:</para>
+        
+        <itemizedlist>
+            <listitem>
+                <para>Go to <emphasis>
+                    <property>Window &gt; Open Perspective &gt; Other</property>
+                </emphasis> and select the <property>JMX perspective</property></para>
+            </listitem>
+            
+            <listitem>
+                <para>Select <emphasis>
+                    <property>JMX Server &gt; Open Connection</property>
+                </emphasis> and click on <emphasis>
+                    <property>OK</property>
+                </emphasis></para>
+            </listitem>
+            
+            <listitem>
+                <para>Switch to the <property>MBean Explorer</property> by going to <emphasis>
+                    <property>Window &gt; Show View &gt; Other</property>
+                </emphasis> and selecting the MBean Explorer</para>
+            </listitem>
+            
+            <listitem>
+                <para>Click on the <emphasis>
+                    <property>New Connection</property></emphasis> icon 
+                    
+                    <inlinemediaobject>   
+                        <imageobject>
+                            <imagedata fileref="images/new_connection_icon.png"/>
+                        </imageobject>
+                    </inlinemediaobject>
+                    
+                    in the <property>MBean Explorer</property> menu
+                    bar </para>
+            </listitem>
+            
+            <listitem>
+                <para>Select the <emphasis>
+                    <property>Advanced tab</property></emphasis> and set the JMX URL to <emphasis>
+                        <property>service:jmx:rmi:///jndi/rmi://:8118/jmxserver</property>
+                    </emphasis></para>
+            </listitem>
+        </itemizedlist>
+        
+        <para>You now have access to the MBeans exposed by Equinox.</para>
+    </section>
+    
+    
+    <section>
+        <title>Managing JBoss Instances</title>
+        
+        <para>Managing JBoss instances is not supported with the <property>JMX Tools</property>
+            alone. You must also download and install the <property>AS Tools</property> portion of
+            the <property>JBoss Tools</property> distribution. Even after installing the proper
+            tooling, you cannot create a JBoss JMX connection yourself or through the Connection
+            Wizard. The first step is to create a JBoss Server. The full instructions for this can
+            be found in the AS Tools section, however, the short summary is: </para>
+        <itemizedlist>
+            <listitem>
+                <para>Open the <property>JBoss Servers View</property> or the <property>Servers
+                    View</property></para>
+            </listitem>
+            
+            <listitem>
+                <para>Right-click in the view and select <emphasis>
+                    <property>New &gt; Server</property>
+                </emphasis></para>
+            </listitem>
+            
+            <listitem>
+                <para>In the <emphasis>
+                    <property>JBoss Community</property>
+                </emphasis> section, select a server version</para>
+            </listitem>
+            
+            <listitem>
+                <para>If a runtime has not yet been created, you&apos;ll be prompted for the
+                    server's home directory, JDK, and configuration</para>
+            </listitem>
+            
+            <listitem>
+                <para>Finish the wizard and note that you have a new entry in both the
+                    <property>JBoss Server View</property> and the <property>MBean
+                        Explorer</property></para>
+            </listitem>
+            
+            <listitem>
+                <para>Start the server by right-clicking it and selecting <emphasis>
+                    <property>Start</property></emphasis></para>
+            </listitem>
+            <listitem>
+                <para>Note that once the server is started, the JMX connection can be
+                    expanded</para>
+            </listitem>
+        </itemizedlist>
+        
+        <para>Now you can explore MBeans exposed by a JBoss instance.</para>
+    </section>
+    <section id="extensions" xreflabel="extensions"> 
+        <title>Extension Task</title>
+        <para>This section will outline how to contribute your own Server type with some default
+            behavior.</para>
+        
+        <section>
+            <title>Why we should do that?</title>
+            
+            <para>You might be asking yourself why you&apos;d need to extend this framework if JMX is
+                a standard. Perhaps you want a connection to be automatically created after some specific
+                action, or perhaps you want your connection wizard to do more than simply set a host and
+                port. JBoss, for example, requires setting some credentials on the client machine, but
+                using JBoss classes to do it. This requires that the connection have access to JBoss
+                jars.</para>
+        </section>
+        
+        <section>
+            <title>Core Extensions</title>
+            
+            <para>To create your own JMX Connection type, you must use the
+                org.jboss.tools.jmx.core.MBeanServerConnectionProvider extension point. This point takes
+                one child, a connectionProvider with a class that implements
+                org.jboss.tools.jmx.core.IConnectionProvider.</para>
+            
+            <para>An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
+                objects. It must also keep a list of listeners that it is expected to inform when a
+                connection is added or removed from its list. </para>
+            
+            <para>Each IConnectionWrapper is expected to handle running arbitrary JMX runnables or getting
+                a "Root" object representing all JMX nodes. There are some utility methods the
+                IConnectionWrapper can make use of.</para>
+        </section>
+    
+        <section>
+            <title>UI Extensions</title>
+            <para>There are two extension points currently approved for use in the UI</para>
+            <itemizedlist>
+                <listitem>
+                    <para>org.jboss.tools.jmx.ui.providerUI - provide an icon, id, displayable name, and
+                        wizardPage class for creation of new connections</para>
+                </listitem>
+                <listitem>
+                    <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
+                        Control to present them in the MBean Editor</para>
+                    <para>We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on <ulink
+                        url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
+                </listitem>
+            </itemizedlist>
+        </section>
+        
+    </section>
+    <section id="connection"  xreflabel="connection">
+               
+        <title>Connections Creation Task</title>
+        
+        <para>The <property>MBean Explorer</property> supports several different types of connections. 
+            The tooling itself comes only with a default connection type, however other
+            adopters can provide additional connection types that may require additional
+            or non-spec behavior. Connections can be in either the connected state or
+            the disconnected state. Some connection types (such as the default connection type)
+            allow you to control the current state. Other connection types may not. </para>
+        
+        <para>Similarly, some connection types may be able to be created, and others may not. 
+            The default connection type, for example, can be created and deleted by you
+            at will. The AS Tools connection type, which represents a JBoss server, does not
+            allow you this level of control. A JBoss JMX connection is created when a JBoss server is created
+            in the server's view, and deleted when said server is deleted. The JMX connection for 
+            this server is in the connected state only when the server is started. </para>
+        
+        
+        <section><title>The Default Connection</title>
+            
+            <para> There are two ways to connect to an application with remote management enabled:</para>
+            
+            <para> The first step is the same for both - to connect to a MBean Server, click on the
+                <emphasis>
+                    <property>New Connection</property></emphasis> icon 
+                
+                <inlinemediaobject>   
+                    <imageobject>
+                        <imagedata fileref="images/new_connection_icon.png"/>
+                    </imageobject>
+                </inlinemediaobject>
+                
+                in the <property>MBean Explorer</property> menu bar.</para>
+            
+            <para>Then to follow the simple one you just need to specify host, port (and optionally user
+                name and password) and click <emphasis>
+                    <property>OK</property>.</emphasis></para>
+            
+            <para>The default JMX URL is <emphasis>
+                <property>service:jmx:rmi:///jndi/rmi://localhost:3000/jmxrmi</property>.</emphasis></para>
+            
+            <para>In case you need to connect to an application which has not used the "standard" JMX URL
+                (e.g. Eclipse Equinox), you need chose more advance way, where it&apos;s necessary to specify
+                explicitly a JMX URL in the Advanced tab of the JMX Connection window.</para>
+            
+            <note>
+                <title>Note</title>
+                <para>Only JMX URL based on RMI are supported.</para>
+            </note>
+        </section>
+    </section>
+</chapter>
+

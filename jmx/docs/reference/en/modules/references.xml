@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter id="references" xreflabel="references">
+    <?dbhtml filename="references.html"?>
+    <title>References</title>
+ 
+    <section id="mbean_explorer"  xreflabel="mbean_explorer">
+        <?dbhtml filename="mbean_explorer.html"?>
+        
+        <title>MBean Explorer</title>
+        <para>The <property>MBean Explorer</property> displays the MBean features (both attributes and operations) in its
+            hierarchy. Double-clicking on a feature will open a <property>MBean Editor</property>, display the page
+            corresponding to the feature type and select the feature.</para>
+        
+        <figure>
+            <title>MBean Explorer Features</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-explorer-features.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>Since it&apos;s possible to have many MBean Editors opened at the same time, the <property>MBean Explorer</property>
+            has the Link With Editor button 
+            
+            <inlinemediaobject>   
+                <imageobject>
+                    <imagedata fileref="images/link-with-editor_0.2.0.png"/>
+                </imageobject>
+            </inlinemediaobject>
+            
+            to synchronize selections between the active <property>MBean Editor</property> and
+            the <property>MBean Explorer</property> (and vice versa).</para>
+        
+        <para>The <property>MBean Explorer</property> has also a filter text that can be used to filter among all the MBeans
+            the few ones, which interest you.</para>
+        
+        <para>For example, if you are only interested by MBeans related to memory, typing memo will show
+            any node (domain, mbean, attribute, or operation) that matches that text, as well as 
+            that node&apos;s parents and children. So if an MBean matches, all attributes and operations from 
+            that bean will show.  If, however, an attribute or operation name (a leaf node) matches, 
+            only that node and its parents in the tree will show.</para>
+        
+        <figure>
+            <title>Query Filter</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-explorer-query.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        
+        <para>The <emphasis>
+            <property>Collapse All</property></emphasis> button 
+            
+            <inlinemediaobject>   
+                <imageobject>
+                    <imagedata fileref="images/collaps_all.png"/>
+                </imageobject>
+            </inlinemediaobject>
+            
+            on the <property>MBean Explorer</property> toolbar is used to collapse all the MBeans and
+            display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
+        
+    </section>
+    <section id="mbean_editor" xreflabel="mbean_editor">
+        <?dbhtml filename="mbean_editor.html"?>
+        
+        <title>MBean Editor</title>
+        
+        <figure>
+            <title>MBean Editor Pages</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor_0.2.0.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+        
+        <para>The <property>MBean Editor</property> is composed of several pages:</para>
+  
+        <itemizedlist>
+            <listitem>
+                <para>the <emphasis>
+                    <property>Attributes</property></emphasis> page</para>
+            </listitem>
+            <listitem>
+                <para>the <emphasis>
+                    <property>Operations</property></emphasis> page</para>
+            </listitem>
+            <listitem>
+                <para>the <emphasis>
+                    <property>Notifications</property></emphasis> page </para>
+            </listitem>
+            <listitem>
+                <para>the <emphasis>
+                    <property>Info</property></emphasis> page </para>
+            </listitem>
+        </itemizedlist>
+        
+        <para> The <emphasis>
+            <property>Attributes</property>
+        </emphasis> and <emphasis>
+            <property>Operations</property>
+        </emphasis> pages display a list for either the MBean attributes or operations as well as
+            details for the selection.</para>
+        
+        <para> It is possible to toggle the layout between the list and the details either vertically
+            (by default) or horizontally with the help of the special icons 
+            
+            <inlinemediaobject>   
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"/>
+                </imageobject>
+            </inlinemediaobject>
+            
+            in the right top corner of the editor.</para>
+        
+        <figure>
+            <title>MBean Editor Horizontal Layout</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor-horizontal-layout_0.2.0.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+
+        <section>
+            <title>Notifications Page</title>
+            <para>One more page in the <property>MBean Editor</property> is the <emphasis>
+                <property>Notifications</property></emphasis> page, which gives the possibility to
+                subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
+                unchecking) the <emphasis>
+                    <property>Subscribe</property></emphasis> button in the right top corner. </para>
+            <para>The list of notifications is refreshed every time a new notification is
+                received:</para>
+            
+            <figure>
+                <title>MBean Editor Notifications Page</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/notifications.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            
+            <note>
+                <title>Note</title>
+                <para>It is only possible to subscribe to MBean, which emits notifications (they must be
+                    NotificationBroadcaster).</para>
+            </note>
+            
+        </section>
+        
+    </section>
+    
+ </chapter>

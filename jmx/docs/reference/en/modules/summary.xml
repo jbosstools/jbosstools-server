@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<chapter>
+    <?dbhtml filename="summary.html"?>
+    <title>Summary</title>
+    <para>In conclusion, with this document you could easily start with JXM Tools.
+        The chapters above walked you through the steps on how to do Tomcat,Eclipse Equinox or JBoss Instances managing and how to create new JMX connections.
+        The document also includes the reference of JMX Tools features.
+        
+        If you have questions or suggestions concerned both the documentation and tools behavior,
+        you are welcome to JBoss Tools Users forum.
+        Please, use Jira to report bugs and requests on documentation.</para>
+    
+    <section>
+        <title>Other relevant resources on the topic</title>
+        <para>All JBoss Developer Studio/JBoss Tools release documentation you can find at
+            <ulink url="http://docs.jboss.org/tools">http://docs.jboss.org/tools</ulink> in the corresponding release directory.
+        </para>   
+        <para>The latest documentation builds are available at <ulink url="http://download.jboss.org/jbosstools/nightly-docs">http://download.jboss.org/jbosstools/nightly-docs</ulink>. </para>
+        <para>You can find a set of benefits and other extra information on:</para>
+        <itemizedlist>
+            <listitem>
+                <para>
+                    <ulink url="http://www.jboss.org/community/wiki/JBossMX">JBoss Wiki</ulink>
+                </para>
+            </listitem>
+            <listitem><para>For more information about JMX technology please visit
+                <ulink url="http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/">
+                JMX Technology Home Page</ulink></para>
+            </listitem>
+             </itemizedlist>
+      </section>
+</chapter>
