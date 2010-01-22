@@ -594,8 +594,12 @@ public class AddModuleDependenciesPropertiesPage implements Listener,
 		buttonColumn.setLayoutData(btndata);
 	}
 
+	protected IVirtualReference[] getHardReferencesFromComponent(IVirtualComponent component) {
+		return component.getReferences();
+	}
+	
 	protected void initialize() {
-		IVirtualReference[] refs = rootComponent.getReferences();
+		IVirtualReference[] refs = getHardReferencesFromComponent(rootComponent);
 		IVirtualComponent comp;
 		for( int i = 0; i < refs.length; i++ ) { 
 			comp = refs[i].getReferencedComponent();

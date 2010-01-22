@@ -6,10 +6,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jst.j2ee.application.internal.operations.AddComponentToEnterpriseApplicationDataModelProvider;
 import org.eclipse.jst.j2ee.application.internal.operations.RemoveComponentFromEnterpriseApplicationDataModelProvider;
+import org.eclipse.jst.j2ee.componentcore.J2EEModuleVirtualComponent;
 import org.eclipse.jst.j2ee.internal.common.classpath.J2EEComponentClasspathUpdater;
 import org.eclipse.jst.jee.project.facet.EarCreateDeploymentFilesDataModelProvider;
 import org.eclipse.jst.jee.project.facet.ICreateDeploymentFilesDataModelProperties;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -24,6 +26,13 @@ public class JEEModuleDependenciesPropertyPage extends
 	public JEEModuleDependenciesPropertyPage(IProject project,
 			ModuleAssemblyRootPage page) {
 		super(project, page);
+	}
+
+	protected IVirtualReference[] getHardReferencesFromComponent(IVirtualComponent component) {
+		if( component instanceof J2EEModuleVirtualComponent ) {
+			return ((J2EEModuleVirtualComponent)component).getNonManifestReferences(false);
+		}
+		return component.getReferences();
 	}
 
 	protected ReferenceExtension[] getReferenceExtensions() {
