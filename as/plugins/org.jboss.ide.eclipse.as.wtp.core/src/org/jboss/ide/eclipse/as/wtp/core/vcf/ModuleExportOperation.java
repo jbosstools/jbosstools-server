@@ -114,7 +114,7 @@ public class ModuleExportOperation extends AbstractDataModelOperation {
 	    			export();
 	    		} catch (Exception e) {
 	    			monitor.worked(CLOSE_WORK);
-	    			throw new ExecutionException(EJBArchiveOpsResourceHandler.Error_exporting__UI_ + component.getProject().getName(), e);
+	    			throw new ExecutionException(EJBArchiveOpsResourceHandler.Error_exporting__UI_ + " " + component.getProject().getName() + ": " + e.getMessage(), e);
 	    		}
             }
 		} finally {
@@ -167,7 +167,9 @@ public class ModuleExportOperation extends AbstractDataModelOperation {
 					return;
 				}
 			}
-		}
+			module = modules.length > 0 ? modules[0] : null;
+			return;
+		} 
 		module = null;
 	}
 	
@@ -266,7 +268,7 @@ public class ModuleExportOperation extends AbstractDataModelOperation {
 
 	protected void export() throws SaveFailureException, CoreException, InvocationTargetException, InterruptedException {
 		if( module == null )
-			throw new SaveFailureException(); // TODO add some real message
+			throw new SaveFailureException("No module found for given project"); 
 		try {
 			File dest = getDestinationPath().toFile();
 			File parent = dest.getParentFile(); 
@@ -292,8 +294,7 @@ public class ModuleExportOperation extends AbstractDataModelOperation {
 			addChildren(saver, module, moduleDelegate.getChildModules());
 			saver.finish();
 		} catch( Exception e ) {
-			e.printStackTrace();
-			throw new SaveFailureException();
+			throw new SaveFailureException(e.getMessage(), e);
 		}
 	}
 	
