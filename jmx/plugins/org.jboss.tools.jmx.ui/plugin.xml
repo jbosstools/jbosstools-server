@@ -213,13 +213,6 @@
       </command>    
    </extension>
    <extension
-         point="org.eclipse.ui.bindings">
-      <key
-           sequence="M1+M2+M"
-           commandId="org.jboss.tools.jmx.ui.navigate.open.mbean"
-           schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
-   </extension>
-   <extension
          point="org.jboss.tools.jmx.ui.attribute.controls">
       <control
             id="org.jboss.tools.jmx.ui.attribute.displays.Text"
