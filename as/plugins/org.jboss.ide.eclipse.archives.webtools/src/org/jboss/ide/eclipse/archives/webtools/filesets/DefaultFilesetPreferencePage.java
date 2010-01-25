@@ -79,11 +79,11 @@ public class DefaultFilesetPreferencePage extends PreferencePage implements
 		viewer.setLabelProvider(getLabelProvider());
 		viewer.setContentProvider(getContentProvider());
 		
-		addButton = new Button(c, SWT.DEFAULT);
+		addButton = new Button(c, SWT.PUSH);
 		addButton.setText(Messages.DefaultFilesetsAdd);
 		addButton.setLayoutData(createFormData(
 				servers,5,null,0,viewer.getTree(),5,100,-5));
-		removeButton = new Button(c, SWT.DEFAULT);
+		removeButton = new Button(c, SWT.PUSH);
 		removeButton.setText(Messages.DefaultFilesetsRemove);
 		removeButton.setLayoutData(createFormData(
 				addButton,5,null,0,viewer.getTree(),5,100,-5));

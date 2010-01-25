@@ -16,6 +16,7 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -55,6 +56,7 @@ public class FilesetDialog extends TitleAreaDialog {
 		this.fileset = new Fileset();
 		this.fileset.setFolder(defaultLocation);
 		this.fileset.setServer(server);
+		this.fileset.setFolder("server/${jboss_config}/"); //$NON-NLS-1$
 		this.fileset.setIncludesPattern("**/*.xml"); //$NON-NLS-1$
 		this.server = server;
 	}
@@ -148,8 +150,29 @@ public class FilesetDialog extends TitleAreaDialog {
 		fileset.setFolder(dir);
 		fileset.setIncludesPattern(includes);
 		fileset.setExcludesPattern(excludes);
+		validate();
 		updatePreview();
 	}
+	
+	protected void validate() {
+		String error = null;
+		if( name.equals("")) //$NON-NLS-1$
+			error = Messages.FilesetsDialogEmptyName;
+		else if( dir.equals("")) //$NON-NLS-1$
+			error = Messages.FilesetsDialogEmptyFolder;
+		else
+			error = null;
+		
+		setErrorMessage(error);
+		if(getButton(IDialogConstants.OK_ID) != null)
+			getButton(IDialogConstants.OK_ID).setEnabled(error == null);
+	}
+	
+	public void create() {
+		super.create();
+		validate();
+	}
+	
 	protected void fillArea(Composite main) {
 		Label nameLabel = new Label(main, SWT.NONE);
 		nameLabel.setText(Messages.FilesetsNewName);

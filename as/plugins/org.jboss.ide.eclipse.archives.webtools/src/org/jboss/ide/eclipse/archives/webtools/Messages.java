@@ -45,6 +45,9 @@ public class Messages extends NLS {
 	public static String FilesetsCannotOpenFile;
 	public static String FilesetsDialogTitle;
 	public static String FilesetsDialogMessage;
+	public static String FilesetsDialogEmptyName;
+	public static String FilesetsDialogEmptyFolder;
+	
 
 	public static String DefaultFilesetsAllServerTypes;
 	public static String DefaultFilesetsLabel;
