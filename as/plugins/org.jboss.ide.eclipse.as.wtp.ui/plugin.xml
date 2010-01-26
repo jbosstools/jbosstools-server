@@ -76,7 +76,7 @@
          point="org.eclipse.ui.exportWizards">
       <wizard
             category="org.eclipse.jst.j2ee.internal"
-            class="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
+            class="org.jboss.ide.eclipse.as.wtp.ui.wizards.xpl.export.ProjectModuleExportWizard"
             icon="$nl$/icons/jar_obj.gif"
             id="org.jboss.ide.eclipse.as.wtp.ui.wizards.export.ProjectModuleExportWizard"
             name="Module Archive">
