@@ -110,7 +110,7 @@
              commandId="org.jboss.ide.eclipse.as.wtp.ui.fullPublishCommand"
              contextId="org.eclipse.ui.contexts.window"
              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-             sequence="M1+M2+M">
+             sequence="M3+M2+Y F">
        </key>
     </extension>
 </plugin>

@@ -242,7 +242,7 @@
       <key
             commandId="org.jboss.ide.eclipse.archives.ui.buildArchiveCommand"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="CTRL+M2+B A">
+            sequence="M3+M2+Y B">
       </key>
    </extension>
 </plugin>
