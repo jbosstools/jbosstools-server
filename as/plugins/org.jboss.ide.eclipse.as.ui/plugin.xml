@@ -30,13 +30,8 @@
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43"
+            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.60"
         	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment"/>
-      <!-- Fragment for runtimes that require java 6 -->
-      <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeJava6WizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.60"
-        	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeJava6WizardFragment"/>      
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"

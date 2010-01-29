@@ -14,6 +14,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.wst.server.core.IRuntime;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.wst.server.core.IRuntime;
 public interface IJBossServerRuntime {
 	public static String PROPERTY_VM_ID = "PROPERTY_VM_ID"; //$NON-NLS-1$
 	public static String PROPERTY_VM_TYPE_ID = "PROPERTY_VM_TYPE_ID"; //$NON-NLS-1$
+	public static String PROPERTY_EXECUTION_ENVIRONMENT = "PROPERTY_EXEC_ENVIRONMENT"; //$NON-NLS-1$
 	
 	public static String PROPERTY_CONFIGURATION_NAME = "org.jboss.ide.eclipse.as.core.runtime.configurationName"; //$NON-NLS-1$
 	public static String PROPERTY_CONFIG_LOCATION="org.jboss.ide.eclipse.as.core.runtime.configurationLocation"; //$NON-NLS-1$
@@ -30,6 +32,8 @@ public interface IJBossServerRuntime {
 	public IRuntime getRuntime();
 	public IVMInstall getVM();
 	public void setVM(IVMInstall install);
+	public IExecutionEnvironment getExecutionEnvironment();
+	public void setExecutionEnvironment(IExecutionEnvironment environment);
 	
 	public String getJBossConfiguration();
 	public void setJBossConfiguration(String config);

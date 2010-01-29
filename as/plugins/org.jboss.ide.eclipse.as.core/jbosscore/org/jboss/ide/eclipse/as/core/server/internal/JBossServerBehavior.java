@@ -26,6 +26,7 @@ import javax.management.ObjectName;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
@@ -33,6 +34,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -40,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
@@ -286,4 +289,36 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		connection.invoke(objectName, methodName, new Object[] {  }, new String[] {});
 	}
 
+	
+	// Can start / stop / restart etc
+	public IStatus canStart(String launchMode) {
+		return canChangeState(launchMode);
+	}
+	public IStatus canRestart(String launchMode) {
+		return canChangeState(launchMode);
+	}
+	public IStatus canStop() {
+		return canChangeState(null);
+	}
+	public IStatus canStop(String launchMode) {
+		return canChangeState(launchMode);
+	}
+	protected IStatus canChangeState(String launchMode) {
+		if( getServer() != null && getServer().getRuntime() != null && 
+				getRuntime().getVM() != null )
+			return Status.OK_STATUS;
+		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+				"This server does not have a valid runtime environment"); //$NON-NLS-1$
+	}
+
+	private IJBossServerRuntime getRuntime() {
+		IRuntime r = getServer().getRuntime();
+		IJBossServerRuntime ajbsrt = null;
+		if (r != null) {
+			ajbsrt = (IJBossServerRuntime) r
+					.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+		}
+		return ajbsrt;
+	}	
 }

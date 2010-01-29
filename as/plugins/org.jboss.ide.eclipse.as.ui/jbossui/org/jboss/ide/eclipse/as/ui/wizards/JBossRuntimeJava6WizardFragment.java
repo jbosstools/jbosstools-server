@@ -21,32 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.ui.wizards;
 
-import java.util.ArrayList;
 
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMInstall2;
-import org.eclipse.jdt.launching.IVMInstallType;
-import org.eclipse.jdt.launching.JavaRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.ui.Messages;
-
+@Deprecated
 public class JBossRuntimeJava6WizardFragment extends JBossRuntimeWizardFragment {
-
 	public JBossRuntimeJava6WizardFragment() {
-	}
-	
-	protected boolean shouldIncludeDefaultJRE() {
-		return false;
-	}
-	
-	protected ArrayList<IVMInstall> getValidJREs() {
-		return LocalJBossServerRuntime.getValidJREs(getRuntimeType());
-	}
-	
-	protected String getErrorString() {
-		if( !shouldIncludeDefaultJRE() && getValidJREs().size() == 0 ) 
-			return Messages.rwf_jre6NotFound;
-		return super.getErrorString();
 	}
 }

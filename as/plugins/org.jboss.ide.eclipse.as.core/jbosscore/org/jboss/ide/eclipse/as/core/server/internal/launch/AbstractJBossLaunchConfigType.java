@@ -56,11 +56,11 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 
 	protected void preLaunch(ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) {
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
 	protected void postLaunch(ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) {
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
 

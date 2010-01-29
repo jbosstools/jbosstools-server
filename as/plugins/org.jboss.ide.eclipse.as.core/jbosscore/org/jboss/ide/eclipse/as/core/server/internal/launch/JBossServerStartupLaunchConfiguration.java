@@ -124,7 +124,6 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-		IVMInstall vmInstall = runtime.getVM();
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args, 
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
@@ -179,7 +178,9 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 		List<String> newCP = fixCP(cp, jbs);
 		
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
+		IVMInstall vmInstall = runtime.getVM();
+		if( vmInstall != null ) 
+			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs.trim());
@@ -277,8 +278,15 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		return null;
 	}
 
+	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+		JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+		if( !jbsBehavior.canStart(mode).isOK())
+			throw new CoreException(jbsBehavior.canStart(mode));
+		return true;
+	}
+
 	protected void preLaunch(ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) {
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
 			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
@@ -289,7 +297,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	}
 
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) {
+			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
 			IProcess[] processes = launch.getProcesses(); 
 			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);

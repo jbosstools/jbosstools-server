@@ -10,9 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,11 +18,11 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.launching.environments.EnvironmentsManager;
 import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
@@ -37,10 +35,10 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 
 public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
-
 	public void setDefaults(IProgressMonitor monitor) {
 		getRuntimeWorkingCopy().setName(getNextRuntimeName());
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_CONFIGURATION);
+		setExecutionEnvironment(getDefaultExecutionEnvironment(getRuntime().getRuntimeType()));
 		setVM(null);
 	}
 
@@ -90,6 +88,13 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 				if (id.equals(vmInstalls[i].getId()))
 					return vmInstalls[i];
 			}
+		}
+		if( getExecutionEnvironment() != null ) {
+			IVMInstall[] installs = getExecutionEnvironment().getCompatibleVMs();
+			if( getExecutionEnvironment().getDefaultVM() != null )
+				return getExecutionEnvironment().getDefaultVM();
+			if( installs != null && installs.length > 0 && installs[0] != null )
+				return installs[0];
 		}
 		// not found, return default vm
 		return getDefaultVMInstall();
@@ -173,55 +178,29 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 	
 	protected IVMInstall getDefaultVMInstall() {
-		IVMInstall install = JavaRuntime.getDefaultVMInstall();
-		if( install instanceof IVMInstall2 ) {
-			String version = ((IVMInstall2)install).getJavaVersion();
-			if( isValidJREVersion(version, getRuntime().getRuntimeType()))
-				return install;
-		}
-		ArrayList<IVMInstall> installs = getValidJREs(getRuntime().getRuntimeType());
-		Iterator<IVMInstall> i = installs.iterator();
-		while(i.hasNext()) {
-			IVMInstall next = i.next();
-			if( next instanceof IVMInstall2 ) {
-				String version = ((IVMInstall2)next).getJavaVersion();
-				if( isValidJREVersion(version, getRuntime().getRuntimeType()))
-					return next;
-			}
-		}
-		return null;
+		return getExecutionEnvironment().getDefaultVM();
 	}
 	
-	public static ArrayList<IVMInstall> getValidJREs(IRuntimeType type) {
-		ArrayList<IVMInstall> valid = new ArrayList<IVMInstall>();
-		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
-		int size = vmInstallTypes.length;
-		for (int i = 0; i < size; i++) {
-			IVMInstall[] vmInstalls = vmInstallTypes[i].getVMInstalls();
-			int size2 = vmInstalls.length;
-			for (int j = 0; j < size2; j++) {
-				if( vmInstalls[j] instanceof IVMInstall2 ) {
-					String version = ((IVMInstall2)vmInstalls[j]).getJavaVersion();
-					if( isValidJREVersion(version, type))
-						valid.add(vmInstalls[j]);
-				}
-			}
-		}
-		return valid;
+	public static IVMInstall[] getValidJREs(IRuntimeType type) {
+		return getDefaultExecutionEnvironment(type) == null ? new IVMInstall[0] 
+				: getDefaultExecutionEnvironment(type).getCompatibleVMs();
 	}
 	
-	public static boolean isValidJREVersion(String jreVersion, IRuntimeType rtType) {
-		// all servers require at least 1.3
-		String id = rtType.getId();
-		if( jreVersion.startsWith(JavaCore.VERSION_1_1)) return false;
-		if( jreVersion.startsWith(JavaCore.VERSION_1_2)) return false;
-		
-		// requires java6
-		if( id.equals(IConstants.EAP_50) || id.equals(IConstants.AS_60)) {
-			if( jreVersion.startsWith(JavaCore.VERSION_1_3)) return false;
-			if( jreVersion.startsWith(JavaCore.VERSION_1_4)) return false;
-			if( jreVersion.startsWith(JavaCore.VERSION_1_5)) return false;
+	public IExecutionEnvironment getExecutionEnvironment() {
+		String id = getAttribute(PROPERTY_EXECUTION_ENVIRONMENT, (String)null);
+		return id == null ? getDefaultExecutionEnvironment(getRuntime().getRuntimeType()) : 
+			EnvironmentsManager.getDefault().getEnvironment(id);
+	}
+	
+	public static IExecutionEnvironment getDefaultExecutionEnvironment(IRuntimeType rtType) {
+		String typeId = rtType.getId();
+		if( typeId.equals(IConstants.EAP_50) || typeId.equals(IConstants.AS_60)) {
+			return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 		}
-		return true;
+		return EnvironmentsManager.getDefault().getEnvironment("J2SE-1.4"); //$NON-NLS-1$
+	}
+
+	public void setExecutionEnvironment(IExecutionEnvironment environment) {
+		setAttribute(PROPERTY_EXECUTION_ENVIRONMENT, environment.getId());
 	}
 }

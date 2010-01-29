@@ -22,7 +22,8 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -32,8 +33,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMInstallType;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -80,6 +79,7 @@ import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerType;
@@ -118,7 +118,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	private String configDirTextVal;
 
 	// jre fields
-	protected ArrayList<IVMInstall> installedJREs;
+	protected List<IVMInstall> installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
 	private IVMInstall selectedVM;
@@ -195,7 +195,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			configurations.setConfiguration(rt.getJBossConfiguration() == null 
 					? IConstants.DEFAULT_CONFIGURATION : rt.getJBossConfiguration());
 
-			if (rt.isUsingDefaultJRE() && shouldIncludeDefaultJRE()) {
+			if (rt.isUsingDefaultJRE()) {
 				jreCombo.select(0);
 			} else {
 				IVMInstall install = rt.getVM();
@@ -556,10 +556,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
 
 		int sel = jreCombo.getSelectionIndex();
-		int offset = 0;
-		if( shouldIncludeDefaultJRE() ) {
-			offset = -1;
-		}
+		int offset = -1;
 		if( sel + offset >= 0 )
 			selectedVM = installedJREs.get(sel + offset);
 		else // if sel < 0 or sel == 0 and offset == -1
@@ -590,6 +587,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			return Messages.rwf_NameInUse;
 		}
 
+		if( getValidJREs().size() == 0 ) {
+			String error = "No valid JREs found for execution environment \"" 
+				+ getRuntime().getExecutionEnvironment().getId() + "\"";
+			return error;
+		}
+			
+		
 		if (!isHomeValid())
 			return Messages.rwf_homeMissingFiles;
 
@@ -685,36 +689,21 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		installedJREs = getValidJREs();
 		// get names
 		int size = installedJREs.size();
-		size = shouldIncludeDefaultJRE() ? size+1 : size;
+		size = size+1;
 		int index = 0;
 		jreNames = new String[size];
-		if( shouldIncludeDefaultJRE())
-			jreNames[index++] = "Default JRE"; //$NON-NLS-1$
+		jreNames[index++] = "Default JRE for " + getRuntime().getExecutionEnvironment().getId(); //$NON-NLS-1$
 		 
 		for (int i = 0; i < installedJREs.size(); i++) {
 			IVMInstall vmInstall = installedJREs.get(i);
 			jreNames[index++] = vmInstall.getName();
 		}
-		defaultVMIndex = shouldIncludeDefaultJRE() ? 0 : 
-			jreNames.length > 0 ? 0 : -1;
+		defaultVMIndex = 0;
 	}
 	
-	protected boolean shouldIncludeDefaultJRE() {
-		return true;
-	}
 	
-	protected ArrayList<IVMInstall> getValidJREs() {
-		ArrayList<IVMInstall> valid = new ArrayList<IVMInstall>();
-		IVMInstallType[] vmInstallTypes = JavaRuntime.getVMInstallTypes();
-		int size = vmInstallTypes.length;
-		for (int i = 0; i < size; i++) {
-			IVMInstall[] vmInstalls = vmInstallTypes[i].getVMInstalls();
-			int size2 = vmInstalls.length;
-			for (int j = 0; j < size2; j++) {
-				valid.add(vmInstalls[j]);
-			}
-		}
-		return valid;
+	protected List<IVMInstall> getValidJREs() {
+		return Arrays.asList(LocalJBossServerRuntime.getValidJREs(getRuntimeType()));
 	}
 	
 	// WST API methods
