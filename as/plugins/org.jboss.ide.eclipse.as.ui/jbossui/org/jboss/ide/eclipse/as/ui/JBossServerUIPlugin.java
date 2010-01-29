@@ -30,11 +30,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.decorators.DecoratorDefinition;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
 import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -78,14 +78,15 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 			new ServerUIPreferences().setShowOnActivity(false);
 			prefs.setValue(IPreferenceKeys.DISABLE_SHOW_SERVER_VIEW, true);
 		}
-		
 		savePluginPreferences();
+		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
+		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
 		JBossServerUISharedImages.instance().cleanup();
 		super.stop(context);
 	}
