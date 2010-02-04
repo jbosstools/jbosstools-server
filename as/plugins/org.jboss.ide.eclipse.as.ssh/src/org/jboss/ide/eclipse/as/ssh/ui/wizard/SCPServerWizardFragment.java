@@ -36,11 +36,10 @@ import org.jboss.ide.eclipse.as.ssh.server.SSHServerDelegate;
 
 public class SCPServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
-	private Text userText, passText, deployText, hostsFileText;
+	private Text userText, passText, deployText;
 	private ModifyListener listener;
 	private SelectionListener browseHostsButtonListener;
-	private Button browseHostsFileButton;
-	private String user, pass, deploy, hostFile;
+	private String user, pass, deploy;
 
 	public SCPServerWizardFragment() {
 		super();
@@ -102,49 +101,13 @@ public class SCPServerWizardFragment extends WizardFragment {
 		passText.addModifyListener(listener);
 		passText.setEnabled(true);
 		passText.setLayoutData(textData);
-		
-		Label hostsLabel = new Label(inner, SWT.NONE);
-		hostsLabel.setText(Messages.HostsLabel);
-		Composite hostsFileComposite = new Composite(inner, SWT.NONE);
-		hostsFileComposite.setLayoutData(textData);
-		hostsFileComposite.setLayout(new GridLayout(2,false));
-		
-		hostsFileText = new Text(hostsFileComposite, SWT.BORDER);
-		hostsFileText.setText("/home/username/.ssh/known_hosts");
-		hostsFileText.addModifyListener(listener);
-		hostsFileText.setEnabled(true);
-		GridData hostsFileData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
-		hostsFileData.widthHint = 200;
-		hostsFileData.grabExcessHorizontalSpace = true;
-		hostsFileText.setLayoutData(hostsFileData);
-		
-		browseHostsFileButton = new Button(hostsFileComposite, SWT.PUSH);
-		browseHostsFileButton.setText(Messages.browse);
-		browseHostsButtonListener = new SelectionListener() {
-			public void widgetSelected(SelectionEvent e) {
-				browseForHostsSelected();
-			}
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		};
-		browseHostsFileButton.addSelectionListener(browseHostsButtonListener);
 	}
 	
-	protected void browseForHostsSelected() {
-		FileDialog d = new FileDialog(new Shell());
-		IPath p = ServerUtil.makeGlobal(null, new Path(hostsFileText.getText()));
-		d.setFilterPath(p.toString());
-		String x = d.open();
-		if (x != null) {
-			hostsFileText.setText(x);
-		}
-	}
 
 	protected void updateValues() {
 		user = userText.getText();
 		pass = passText.getText();
 		deploy = deployText.getText();
-		hostFile = hostsFileText.getText();
 		validate();
 	}
 	
@@ -157,10 +120,7 @@ public class SCPServerWizardFragment extends WizardFragment {
 	}
 	
 	protected void validate() {
-		if( hostFile == null || !(new File(hostFile).exists()) || !(new File(hostFile).isFile()))
-			handle.setMessage("Host file must exist", IMessageProvider.ERROR);
-		else
-			handle.setMessage(null, IMessageProvider.NONE);
+		handle.setMessage(null, IMessageProvider.NONE);
 		handle.update();
 	}
 	
@@ -173,7 +133,7 @@ public class SCPServerWizardFragment extends WizardFragment {
 		SSHServerDelegate server = (SSHServerDelegate)serverWC.loadAdapter(SSHServerDelegate.class, new NullProgressMonitor());
 		server.setUsername(user); //$NON-NLS-1$
 		server.setPassword(pass); //$NON-NLS-1$
-		server.setHostsFile(hostFile);
+		server.setHostsFile(null);
 		server.setDeployFolder(deploy);
 	}
 }

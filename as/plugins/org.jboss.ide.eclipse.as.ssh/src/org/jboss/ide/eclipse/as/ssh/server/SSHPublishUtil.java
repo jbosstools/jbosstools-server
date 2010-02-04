@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ssh.server;
 
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Preferences;
+import org.eclipse.jsch.internal.core.JSchCorePlugin;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 
@@ -30,6 +33,10 @@ public class SSHPublishUtil {
 	}
 
 	public static String getHostsFile(IServer server) {
-		return ((Server)server).getAttribute(ISSHDeploymentConstants.HOSTS_FILE, (String)null); 
+		Preferences jschPrefs = JSchCorePlugin.getPlugin().getPluginPreferences();
+		String sshHome = jschPrefs.getDefaultString(org.eclipse.jsch.internal.core.IConstants.KEY_SSH2HOME);
+		sshHome += Path.SEPARATOR + "known_hosts";
+		return ((Server)server).getAttribute(ISSHDeploymentConstants.HOSTS_FILE, 
+				sshHome); 
 	}
 }
