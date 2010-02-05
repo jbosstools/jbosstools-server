@@ -22,10 +22,10 @@ for a full listing of individual contributors.
       %license
    </license>
 
-   <url>
-      <update label="%updateSiteName" url="http://download.jboss.org/jbosstools/updates/stable"/>
-   </url>
-   <!--
+   <!-- <url>
+      <update label="%updateSiteName" url="http://download.jboss.org/jbosstools/updates/stable/galileo/"/>
+   </url> -->
+   <!-- not a valid discovery site: must be an update site/repo
    <url>
       <discovery label="Project Home Page" url="http://code.google.com/p/eclipse-jmx/"/>
    </url>
