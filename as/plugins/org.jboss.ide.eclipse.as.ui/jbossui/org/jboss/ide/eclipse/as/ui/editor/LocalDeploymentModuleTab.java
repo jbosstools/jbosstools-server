@@ -441,13 +441,14 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 				if( rt != null ) {
 					IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 					if( jbsrt != null ) {
+						String loc = jbsrt.getConfigLocation();
 						String config = jbsrt.getJBossConfiguration();
-						newDir = new Path(IJBossServerConstants.SERVER)
+						newDir = new Path(loc)
 							.append(config)
-							.append(IJBossServerConstants.DEPLOY).makeRelative().toString();
-						newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+							.append(IJBossServerConstants.DEPLOY).toString();
+						newTemp = new Path(loc).append(config)
 							.append(IJBossServerConstants.TMP)
-							.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative().toString();
+							.append(IJBossServerConstants.JBOSSTOOLS_TMP).toString();
 						new File(newTemp).mkdirs();
 						type = IDeployableServer.DEPLOY_SERVER;
 					}
@@ -523,12 +524,12 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 	private String getDeployDir() {
 		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
-			page.makeRelative(getServer().getDeployFolder()); 
+			getServer().getDeployFolder();
 	}
 
 	private String getTempDeployDir() {
 		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
-			page.makeRelative(getServer().getTempDeployFolder()); 
+			getServer().getTempDeployFolder(); 
 	}
 
 	private IDeployableServer getServer() {

@@ -151,10 +151,11 @@ public class JBossServer extends DeployableServer
 			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
+			String loc = jbsrt.getConfigLocation();
 			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(IJBossServerConstants.SERVER).append(config)
+			IPath p = new Path(loc).append(config)
 				.append(IJBossServerConstants.DEPLOY).makeRelative();
-			return ServerUtil.makeGlobal(jbsrt, p).toString();
+			return p.toString();
 		}
 		return null;
 	}
@@ -173,11 +174,12 @@ public class JBossServer extends DeployableServer
 			return JBossServerCorePlugin.getServerStateLocation(getServer()).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
+			String loc = jbsrt.getConfigLocation();
 			String config = jbsrt.getJBossConfiguration();
-			IPath p = new Path(IJBossServerConstants.SERVER)
+			IPath p = new Path(loc)
 				.append(config).append(IJBossServerConstants.TMP)
 				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
-			return ServerUtil.makeGlobal(jbsrt, p).toString();
+			return p.toString();
 		}
 		return null;
 	}
