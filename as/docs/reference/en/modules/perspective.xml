@@ -782,7 +782,7 @@
                 modify the server&apos;s launch configuration. It&apos;s just after clicking <emphasis>
                     <property>Open launch configuration</property>
                 </emphasis> link. In the open window there are the tabs for setting command line
-                arguments, classpaths and other things that are relevant to launching the
+                arguments, main, classpaths and other things that are relevant to launching the
                 server.</para>
 
             <figure>
@@ -793,7 +793,9 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-
+            
+            
+            <para>The first tab shows the Jboss server arguments</para>
             <para>Look up <ulink
                     url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html"
                     >AS Installation Guide </ulink> to find parameters which can be specified for <property>JBoss
@@ -815,6 +817,8 @@
                 <para>Values are not controlled by the server and its runtime setup will be passed
                     on unaltered.</para>
             </note>
+            
+            <para>On the second tab you find the main class used for launching JBoss AS (default is org.jboss.Main), you can change it, if necessary. </para>
 
             <para>Until 3.0.0.GA release of <property>JBoss Tools</property>, the servers classpath
                 was readonly, but that caused problems for users wanting to add their own jars in
