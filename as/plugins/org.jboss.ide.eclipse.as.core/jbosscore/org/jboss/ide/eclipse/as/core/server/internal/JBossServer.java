@@ -154,8 +154,8 @@ public class JBossServer extends DeployableServer
 			String loc = jbsrt.getConfigLocation();
 			String config = jbsrt.getJBossConfiguration();
 			IPath p = new Path(loc).append(config)
-				.append(IJBossServerConstants.DEPLOY).makeRelative();
-			return p.toString();
+				.append(IJBossServerConstants.DEPLOY);
+			return ServerUtil.makeGlobal(jbsrt, p).toString();
 		}
 		return null;
 	}
@@ -178,8 +178,8 @@ public class JBossServer extends DeployableServer
 			String config = jbsrt.getJBossConfiguration();
 			IPath p = new Path(loc)
 				.append(config).append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
-			return p.toString();
+				.append(IJBossServerConstants.JBOSSTOOLS_TMP);
+			return ServerUtil.makeGlobal(jbsrt, p).toString();
 		}
 		return null;
 	}

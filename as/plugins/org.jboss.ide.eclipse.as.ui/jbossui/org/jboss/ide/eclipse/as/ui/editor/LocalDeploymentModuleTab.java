@@ -50,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -524,12 +525,14 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 	private String getDeployDir() {
 		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
-			getServer().getDeployFolder();
+			ModuleDeploymentPage.makeRelative(getServer().getDeployFolder(), 
+					page.getServer().getRuntime());
 	}
 
 	private String getTempDeployDir() {
 		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
-			getServer().getTempDeployFolder(); 
+			ModuleDeploymentPage.makeRelative(getServer().getTempDeployFolder(), 
+					page.getServer().getRuntime());
 	}
 
 	private IDeployableServer getServer() {

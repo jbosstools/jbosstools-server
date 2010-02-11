@@ -20,6 +20,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.IServerEditorPartInput;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
@@ -153,18 +154,33 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 
 	
 	public String makeGlobal(String path) {
-		return ServerUtil.makeGlobal(getRuntime(), new Path(path)).toString();
+		return makeGlobal(path, server.getRuntime());
+	}
+	
+	public static String makeGlobal(String path, IRuntime runtime) {
+		IJBossServerRuntime rt = getRuntime(runtime);
+		if( rt != null )
+			return ServerUtil.makeGlobal(rt, new Path(path)).toString();
+		return path;
 	}
 	
 	public String makeRelative(String path) {
-		if (getRuntime() == null) {
+		return makeRelative(path, server.getRuntime());
+	}
+	
+	public static String makeRelative(String path, IRuntime runtime) {
+		IJBossServerRuntime rt = getRuntime(runtime);
+		if (rt == null)
 			return path;
-		}
-		return ServerUtil.makeRelative(getRuntime(), new Path(path)).toString();
+		return ServerUtil.makeRelative(rt, new Path(path)).toString();
 	}
 
 	private IJBossServerRuntime getRuntime() {
 		IRuntime r = server.getRuntime();
+		return getRuntime(r);
+	}
+	
+	public static IJBossServerRuntime getRuntime(IRuntime r) {
 		IJBossServerRuntime ajbsrt = null;
 		if (r != null) {
 			ajbsrt = (IJBossServerRuntime) r
