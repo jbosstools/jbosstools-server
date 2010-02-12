@@ -37,6 +37,7 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String JSF_LIB = "jsf-libs"; //$NON-NLS-1$
 	public static final String JBOSSWEB_TOMCAT55_SAR = "jbossweb-tomcat55.sar"; //$NON-NLS-1$
 	public static final String JBOSSWEB_SAR = "jbossweb.sar"; //$NON-NLS-1$
+	public static final String JSTL_JAR = "jstl.jar"; //$NON-NLS-1$
 	public static final String JBOSS_WEB_SERVICE_JAR = "jboss-web-service.jar";  //$NON-NLS-1$
 	public static final String EJB3_DEPLOYER = "ejb3.deployer"; //$NON-NLS-1$
 	public static final String WEBBEANS_DEPLOYER = "webbeans.deployer"; //$NON-NLS-1$
