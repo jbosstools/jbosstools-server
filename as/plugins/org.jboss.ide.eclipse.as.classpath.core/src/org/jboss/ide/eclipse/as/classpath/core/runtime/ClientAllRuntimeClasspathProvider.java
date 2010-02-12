@@ -121,6 +121,7 @@ public class ClientAllRuntimeClasspathProvider
 		addEntries(configPath.append(LIB), list);
 		addEntries(deployPath.append(JBOSSWEB_SAR).append(JSF_LIB),list);
 		addEntries(deployPath.append(JBOSSWEB_SAR).append(JBOSS_WEB_SERVICE_JAR),list);
+		addEntries(deployPath.append(JBOSSWEB_SAR).append(JSTL_JAR),list);
 		addEntries(deployerPath.append(AS5_AOP_DEPLOYER), list);
 		addEntries(deployerPath.append(EJB3_DEPLOYER), list);
 		addEntries(deployerPath.append(WEBBEANS_DEPLOYER).append(JSR299_API_JAR), list);
