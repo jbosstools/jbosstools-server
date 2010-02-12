@@ -145,8 +145,15 @@ public class JBossServer extends DeployableServer
 	public static String getDeployFolder(JBossServer jbs, String type) {
 		IServer server = jbs.getServer();
 		IJBossServerRuntime jbsrt = getRuntime(server);
-		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(jbs.getAttribute(DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+		if( type.equals(DEPLOY_CUSTOM)) {
+			String val = jbs.getAttribute(DEPLOY_DIRECTORY, (String)null);
+			if( val != null ) {
+				IPath val2 = new Path(val);
+				return ServerUtil.makeGlobal(jbsrt, val2).toString();
+			}
+			// 	if no value is set, default to metadata
+			type = DEPLOY_METADATA;
+		}
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
