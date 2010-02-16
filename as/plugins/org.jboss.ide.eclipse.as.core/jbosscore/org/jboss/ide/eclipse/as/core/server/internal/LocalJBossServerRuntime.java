@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossServerRuntime {
 	public void setDefaults(IProgressMonitor monitor) {
@@ -130,7 +131,16 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 			"JBossTools: " + name + c.QUOTE + c.SPACE; //$NON-NLS-1$
 		if( Platform.getOS().equals(Platform.OS_MACOSX))
 			ret += c.SERVER_ARG + c.SPACE;
-		ret += c.DEFAULT_MEM_ARGS;
+		IRuntimeType type = getRuntime().getRuntimeType();
+		if (type != null && 
+				(IJBossToolingConstants.AS_50.equals(type.getId()) ||
+				 IJBossToolingConstants.AS_51.equals(type.getId()) ||
+				 IJBossToolingConstants.AS_60.equals(type.getId()) ||
+				 IJBossToolingConstants.EAP_50.equals(type.getId())) ) {
+			ret += c.DEFAULT_MEM_ARGS_AS50;
+		} else {
+			ret += c.DEFAULT_MEM_ARGS;
+		}
 		if( Platform.getOS().equals(Platform.OS_LINUX))
 			ret += c.SYSPROP + c.JAVA_PREFER_IP4_ARG + c.EQ + true + c.SPACE; 
 		ret += c.SYSPROP + c.SUN_CLIENT_GC_ARG + c.EQ + 3600000 + c.SPACE;

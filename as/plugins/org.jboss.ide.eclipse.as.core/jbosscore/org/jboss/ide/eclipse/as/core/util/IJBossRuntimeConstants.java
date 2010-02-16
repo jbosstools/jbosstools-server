@@ -35,6 +35,7 @@ public interface IJBossRuntimeConstants {
 	public static final String STARTUP_ARG_CONFIG_LONG = "--configuration"; //$NON-NLS-1$
 	public static final String SERVER_ARG = "-server"; //$NON-NLS-1$
 	public static final String DEFAULT_MEM_ARGS = "-Xms256m -Xmx512m -XX:MaxPermSize=256m "; //$NON-NLS-1$
+	public static final String DEFAULT_MEM_ARGS_AS50 = "-Xms256m -Xmx768m -XX:MaxPermSize=256m "; //$NON-NLS-1$
 	public static final String SUN_CLIENT_GC_ARG = "sun.rmi.dgc.client.gcInterval"; //$NON-NLS-1$
 	public static final String SUN_SERVER_GC_ARG = "sun.rmi.dgc.server.gcInterval"; //$NON-NLS-1$
 	public static final String JAVA_PREFER_IP4_ARG = "java.net.preferIPv4Stack"; //$NON-NLS-1$
