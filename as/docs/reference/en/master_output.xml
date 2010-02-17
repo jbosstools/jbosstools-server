@@ -42,15 +42,16 @@
             <author><firstname>Rob</firstname><surname>Stryker</surname><email>rob.stryker@jboss.com</email></author>
             <author><firstname>Svetlana</firstname><surname>Mukhina</surname><email>smukhina@exadel.com</email></author>      
          
-         <pubdate>April 2008</pubdate>
-	                       <copyright>
+      	                       <copyright>
 			             <year>2007</year>
-							<year>2009</year>
+			             <year>2008</year>
+			             <year>2009</year>
+			             <year >2010</year>
 	                           <holder>JBoss by Red Hat</holder>
 	                       </copyright>
-          <releaseinfo><diffmk:wrapper diffmk:change="changed">
-           Version: 2.1.0.CR1
-          </diffmk:wrapper></releaseinfo>
+          <releaseinfo>
+           Version: 2.1.0.CR2
+          </releaseinfo>
 <abstract>
    <title></title>
        <para>
@@ -63,7 +64,7 @@
     
     <toc></toc> 
     
-<chapter id="quick_start" role="updated" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/quick_start.xml">
+<chapter id="quick_start" role="updated" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/quick_start.xml">
   <title>Quick Start with JBoss Server</title>
 
   <para>This chapter covers the basics of working with the <property moreinfo="none">JBoss Server</property>.</para>
@@ -74,7 +75,7 @@
  
     <table>
       
-    	<title><diffmk:wrapper diffmk:change="changed">Key Functionality for JBoss AS and Archive Tools</diffmk:wrapper></title>
+    	<title>Key Functionality for JBoss AS and Archive Tools</title>
       <tgroup cols="3">
         
         <colspec align="left" colnum="1" colwidth="2*"></colspec>
@@ -126,15 +127,15 @@
       </tgroup>
     </table>
   	
-  	<para><diffmk:wrapper diffmk:change="changed">If you
+  	<para>If you
   		already have installed JBoss server and runtime you can quickly learn how to configure, start,
   		stop the server, to know deployment and archiving processes. How to install runtimes and servers
-  		read in the </diffmk:wrapper><link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link><diffmk:wrapper diffmk:change="changed">
-  		chapter.</diffmk:wrapper></para>
+  		read in the <link linkend="runtimes_servers">Runtimes and Servers in the JBoss AS plugin</link>
+  		chapter.</para>
   	
-  	<para>To start working with JBoss AS, select a <property moreinfo="none">JBoss AS Perspective</property><diffmk:wrapper diffmk:change="changed"> via
-  		</diffmk:wrapper><emphasis><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Window &gt; Open Perspective &gt; Other &gt; JBoss
-  			AS</diffmk:wrapper></property>.</emphasis></para>
+  	<para>To start working with JBoss AS, select a <property moreinfo="none">JBoss AS Perspective</property> via
+  		<emphasis><property moreinfo="none">Window &gt; Open Perspective &gt; Other &gt; JBoss
+  			AS</property>.</emphasis></para>
   </section>
 
   <section id="starting">
@@ -321,22 +322,22 @@
     </figure>
   </section>
 	
-	<section diffmk:change="added" id="publishing">
-		<title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Publishing to JBoss Server</diffmk:wrapper></title>
-		<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The publishing of all the modules added to a Server is performed automatically when starting a Server.</diffmk:wrapper></para>
-		<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The automatic publish of the changes made to the workspace is turned on by default in order to permanently keep 
+	<section id="publishing">
+		<title>Publishing to JBoss Server</title>
+		<para>The publishing of all the modules added to a Server is performed automatically when starting a Server.</para>
+		<para>The automatic publish of the changes made to the workspace is turned on by default in order to permanently keep 
 			the workspace in sync with the publish folder. If you need to control when to publish the changes, 
-			just disable the automatic publish in the </diffmk:wrapper><link diffmk:change="added" linkend="server_editor"><diffmk:wrapper diffmk:change="added">Server Editor</diffmk:wrapper></link><diffmk:wrapper diffmk:change="added"> and use the </diffmk:wrapper><emphasis diffmk:change="added">
-				<property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Publish to Server</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> (</diffmk:wrapper><inlinemediaobject diffmk:change="added">  
-					<imageobject diffmk:change="added">
-						<imagedata diffmk:change="added" fileref="images/quick_start/publish_button.png"></imagedata>
+			just disable the automatic publish in the <link linkend="server_editor">Server Editor</link> and use the <emphasis>
+				<property moreinfo="none">Publish to Server</property></emphasis> (<inlinemediaobject>  
+					<imageobject>
+						<imagedata fileref="images/quick_start/publish_button.png"></imagedata>
 					</imageobject>
-				</inlinemediaobject><diffmk:wrapper diffmk:change="added">) button which initiates an incremental publish.
-		</diffmk:wrapper></para>
+				</inlinemediaobject>) button which initiates an incremental publish.
+		</para>
 		
-		<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Here, we have just performed the basic steps you should know to quick start with JBoss
+		<para>Here, we have just performed the basic steps you should know to quick start with JBoss
 			server. In fact, there are more functionalities which you can make use of. Further we will
-			talk about them in detail.</diffmk:wrapper></para>
+			talk about them in detail.</para>
 	</section>
 
   <section>
@@ -356,7 +357,7 @@
 </chapter>
 
     
-<chapter id="runtimes_servers" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/runtimes_servers.xml" xreflabel="runtimes_servers">
+<chapter id="runtimes_servers" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/runtimes_servers.xml" xreflabel="runtimes_servers">
   <?dbhtml filename="runtimes_servers.html"?>
   <chapterinfo>
     <keywordset>
@@ -688,7 +689,9 @@
       <para>Now that we've created our runtimes and servers, we can dwell on all services
       and tools that JBoss Server Manager provides.</para>
       
-      <para>We hope, this guide helped you to get started with the JBoss Tools server manager. Besides, for additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
+        <para>We hope, this guide helped you to get started with the JBoss Tools server manager.
+            Besides, for additional information you are welcome on 
+            <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
     </section>
    </section>
   
@@ -696,7 +699,7 @@
 </chapter>
 
     
-<chapter id="perspective" role="updated" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/perspective.xml" xreflabel="perspective">
+<chapter id="perspective" role="updated" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/perspective.xml" xreflabel="perspective">
     <?dbhtml filename="perspective.html"?>
     <chapterinfo>
         <keywordset>
@@ -1428,8 +1431,8 @@
                     fill the username/password fields with appropriate values.</para>
             </tip>
 			
-        	<para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Under the </diffmk:wrapper><emphasis diffmk:change="added">
-        		<property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Publishing</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> section it' possible to disable/inable the automatic publishing of the changes in the workspace.</diffmk:wrapper></para>
+        	<para>Under the <emphasis>
+        		<property moreinfo="none">Publishing</property></emphasis> section it' possible to disable/inable the automatic publishing of the changes in the workspace.</para>
         	
             <para>It should be pointed out that our server adapter by default tries to automatically
                 detect the ports it needs for integrating with a <property moreinfo="none">JBoss Server</property>.
@@ -1478,9 +1481,9 @@
             <para id="com_line_arg"><property moreinfo="none">Server editor</property> makes it also possible to
                 modify the server's launch configuration. It's just after clicking <emphasis>
                     <property moreinfo="none">Open launch configuration</property>
-                </emphasis> link. In the open window there are the tabs for setting command line
-                arguments, classpaths and other things that are relevant to launching the
-                server.</para>
+                </emphasis><diffmk:wrapper diffmk:change="changed"> link. In the open window there are the tabs for setting command line
+                arguments, main, classpaths and other things that are relevant to launching the
+                server.</diffmk:wrapper></para>
 
             <figure float="0">
                 <title>Launch Configuration Properties</title>
@@ -1490,7 +1493,9 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-
+            
+            
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The first tab shows the Jboss server arguments</diffmk:wrapper></para>
             <para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find parameters which can be specified for <property moreinfo="none">JBoss
                     Server</property>.</para>
 
@@ -1510,6 +1515,8 @@
                 <para>Values are not controlled by the server and its runtime setup will be passed
                     on unaltered.</para>
             </note>
+            
+            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">On the second tab you find the main class used for launching JBoss AS (default is org.jboss.Main), you can change it, if necessary. </diffmk:wrapper></para>
 
             <para>Until 3.0.0.GA release of <property moreinfo="none">JBoss Tools</property>, the servers classpath
                 was readonly, but that caused problems for users wanting to add their own jars in
@@ -1762,28 +1769,28 @@
 
             </section>
             
-            <section diffmk:change="added" id="CreatingaUserLibrariesFileSet">
-                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Creating User Library FileSet</diffmk:wrapper></title>
+            <section id="CreatingaUserLibrariesFileSet">
+                <title>Creating User Library FileSet</title>
                 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">If you use user libraries in your projects you can also refer to these from project archives and have all the .jar/.zip files they refer included into the archive.</diffmk:wrapper></para>
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">To add a new user libraries file set, call the right-click menu on the necessary archive and choose " New User Libraries FileSet" item</diffmk:wrapper></para>
+                <para>If you use user libraries in your projects you can also refer to these from project archives and have all the .jar/.zip files they refer included into the archive.</para>
+                <para>To add a new user libraries file set, call the right-click menu on the necessary archive and choose " New User Libraries FileSet" item</para>
                 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Adding New User Library Fileset</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/userlibraryfileset1.png"></imagedata>
+                <figure float="0">
+                    <title>Adding New User Library Fileset</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/userlibraryfileset1.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
                 
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You can edit the existing user libraries as well using "User Libraries Fileset Wizard". Call the right-click menu on the library fileset and choose "Edit Fileset " item</diffmk:wrapper></para>
+                <para>You can edit the existing user libraries as well using "User Libraries Fileset Wizard". Call the right-click menu on the library fileset and choose "Edit Fileset " item</para>
                 
-                <figure diffmk:change="added" float="0">
-                    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Editing User Library Fileset</diffmk:wrapper></title>
-                    <mediaobject diffmk:change="added">
-                        <imageobject diffmk:change="added">
-                            <imagedata diffmk:change="added" fileref="images/perspective/userlibraryfileset2.png"></imagedata>
+                <figure float="0">
+                    <title>Editing User Library Fileset</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/perspective/userlibraryfileset2.png"></imagedata>
                         </imageobject>
                     </mediaobject>
                 </figure>
@@ -1931,7 +1938,7 @@
 </chapter>
 
     
-<chapter id="webtools" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/webtools.xml">
+<chapter id="webtools" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/webtools.xml">
 	<title>Projects</title>
 	<para>The most popular of the projects we deal with are the J2EE ones, such as Dynamic Web
 		Project, EJB Project, or EAR project. Web projects of <property moreinfo="none">JBoss Tools</property> are
@@ -2092,7 +2099,7 @@
 </chapter>
 
     
-<chapter id="modules" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/modules.xml">
+<chapter id="modules" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/modules.xml">
 	<title>Deploying Modules</title>
 
 	<para>In this chapter it will be described how to deploy modules onto the server.</para>
@@ -2291,7 +2298,7 @@
 </chapter>
 
     
-<chapter id="tptp_support" xml:base="file:///home/ochikvina/WORK/for_compare/jbosstools-3.1.0.CR1/as/docs/reference/en/modules/tptp_support.xml">
+<chapter id="tptp_support" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/as/docs/reference/en/modules/tptp_support.xml">
     <title>TPTP Support</title>
     <para>This chapter provides an overview on how to enable TPTP Profiling for <property moreinfo="none">JBoss
         AS</property> adapters in <property moreinfo="none">JBoss Tools</property>.</para>
