@@ -6,6 +6,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -44,7 +46,7 @@ public class XPathActionProvider extends CommonActionProvider {
 	public Action newXPathCategoryAction, deleteXPathCategoryAction,
 			newXPathAction, editXPathAction, deleteXPathAction, editFileAction;
 	private XPathChangeValueAction xpathChangeValueAction;
-	private Object selectedNode;
+	private CommonViewer cv;
 
 	public void init(ICommonActionExtensionSite aSite) {
 		super.init(aSite);
@@ -53,11 +55,32 @@ public class XPathActionProvider extends CommonActionProvider {
 		if( site instanceof ICommonViewerWorkbenchSite ) {
 			StructuredViewer v = aSite.getStructuredViewer();
 			if( v instanceof CommonViewer ) {
-				CommonViewer cv = (CommonViewer)v;
+				cv = (CommonViewer)v;
 				ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite)site;
 				createActions(cv, wsSite.getSelectionProvider());
+				addDoubleClickHandler(cv);
 			}
 		}
+	}
+	public void dispose() {
+		super.dispose();
+		removeDoubleClickHandler();
+	}
+	
+	private IDoubleClickListener doubleClickListener;
+	protected void addDoubleClickHandler(CommonViewer cv) {
+		doubleClickListener = new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				Object o = getSelection();
+				if((o instanceof XPathResultNode) || (o instanceof XPathFileResult) || (o instanceof XPathQuery))
+					editFileAction.run();
+			}
+		};
+		cv.addDoubleClickListener(doubleClickListener);
+	}
+	
+	protected void removeDoubleClickHandler() {
+		cv.removeDoubleClickListener(doubleClickListener);
 	}
 
 	public void createActions(CommonViewer tableViewer, ISelectionProvider provider) {
@@ -87,7 +110,7 @@ public class XPathActionProvider extends CommonActionProvider {
 						.setMessage(Messages.DescriptorXPathRemoveCategoryDesc);
 				if (messageBox.open() == SWT.YES) {
 					XPathModel.getDefault().removeCategory(getServer(),
-							((XPathCategory) selectedNode).getName());
+							((XPathCategory) getSelection()).getName());
 					XPathModel.getDefault().save(getServer());
 					refreshViewer();
 				}
@@ -99,6 +122,7 @@ public class XPathActionProvider extends CommonActionProvider {
 		newXPathAction = new Action() {
 			public void run() {
 				XPathCategory category = null;
+				Object selectedNode = getSelection();
 				if(selectedNode instanceof XPathCategory) {
 					category = (XPathCategory) selectedNode;
 				} else if( selectedNode instanceof XPathQuery) {
@@ -134,7 +158,7 @@ public class XPathActionProvider extends CommonActionProvider {
 
 		editXPathAction = new Action() {
 			public void run() {
-				Object o = selectedNode;
+				Object o = getSelection();
 				if (o != null && o instanceof XPathQuery) {
 					XPathQuery original = (XPathQuery) o;
 					XPathCategory category = original.getCategory();
@@ -158,7 +182,7 @@ public class XPathActionProvider extends CommonActionProvider {
 
 		deleteXPathAction = new Action() {
 			public void run() {
-				Object o = selectedNode;
+				Object o = getSelection();
 				if (o instanceof XPathQuery) {
 					XPathCategory cat = ((XPathQuery) o).getCategory();
 					cat.removeQuery((XPathQuery) o);
@@ -172,7 +196,7 @@ public class XPathActionProvider extends CommonActionProvider {
 		editFileAction = new Action() {
 			public void run() {
 				try {
-					Object o = selectedNode;
+					Object o = getSelection();
 					Path p = null;
 					if (o instanceof XPathQuery
 							&& ((XPathQuery) o).getResults().length == 1) {
@@ -211,7 +235,8 @@ public class XPathActionProvider extends CommonActionProvider {
 		xpathChangeValueAction = new XPathChangeValueAction(shell, tableViewer, provider);
 	}
 
-	public void fillContextMenu(IMenuManager menu) {
+	
+	protected Object getSelection() {
 		ICommonViewerSite site = actionSite.getViewSite();
 		IStructuredSelection selection = null;
 		if (site instanceof ICommonViewerWorkbenchSite) {
@@ -219,40 +244,42 @@ public class XPathActionProvider extends CommonActionProvider {
 			selection = (IStructuredSelection) wsSite.getSelectionProvider()
 					.getSelection();
 			Object first = selection.getFirstElement();
-			if (first == null)
-				return;
+			return first;
+		}
+		return null;
+	}
+	
+	public void fillContextMenu(IMenuManager menu) {
+		Object first = getSelection();
+		if (first == null)
+			return;
 
-			if (first instanceof ServerWrapper) {
-				selectedNode = first;
-				menu.add(newXPathCategoryAction);
-				menu.add(new Separator());
-				return;
-			}
+		if (first instanceof ServerWrapper) {
+			menu.add(newXPathCategoryAction);
+			menu.add(new Separator());
+			return;
+		}
 
-			if (first instanceof XPathCategory) {
-				selectedNode = first;
-				menu.add(newXPathAction);
-				menu.add(deleteXPathCategoryAction);
-				menu.add(new Separator());
-				return;
-			}
+		if (first instanceof XPathCategory) {
+			menu.add(newXPathAction);
+			menu.add(deleteXPathCategoryAction);
+			menu.add(new Separator());
+			return;
+		}
 
-			if (first instanceof XPathQuery) {
-				selectedNode = first;
-				menu.add(newXPathAction);
-				menu.add(editXPathAction);
-				menu.add(deleteXPathAction);
-			}
-			
-			if( xpathChangeValueAction.shouldRun())
-				menu.add(xpathChangeValueAction);
-			
-			if ((first instanceof XPathResultNode || first instanceof XPathFileResult)
-					|| (first instanceof XPathQuery && ((XPathQuery) first)
-							.getResults().length == 1)) {
-				selectedNode = first;
-				menu.add(editFileAction);
-			}
+		if (first instanceof XPathQuery) {
+			menu.add(newXPathAction);
+			menu.add(editXPathAction);
+			menu.add(deleteXPathAction);
+		}
+		
+		if( xpathChangeValueAction.shouldRun())
+			menu.add(xpathChangeValueAction);
+		
+		if ((first instanceof XPathResultNode || first instanceof XPathFileResult)
+				|| (first instanceof XPathQuery && ((XPathQuery) first)
+						.getResults().length == 1)) {
+			menu.add(editFileAction);
 		}
 	}
 
@@ -261,7 +288,7 @@ public class XPathActionProvider extends CommonActionProvider {
 	}
 
 	protected IServer getServer() {
-		Object o = selectedNode;
+		Object o = getSelection();
 		if (o instanceof ServerWrapper)
 			return ((ServerWrapper) o).server;
 		if (o instanceof XPathCategory)
