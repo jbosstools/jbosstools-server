@@ -221,7 +221,6 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 					NLS.bind(Messages.CannotLocateServerHome, server.getName())));
 		
 		IRuntime rt = jbs.getServer().getRuntime();
-		String jrePath = null;
 		IJBossServerRuntime jbrt = null;
 		if( rt != null ) {
 			jbrt = (IJBossServerRuntime)rt.getAdapter(IJBossServerRuntime.class);
@@ -234,7 +233,6 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		IVMInstall vmInstall = jbrt.getVM();
 		if( vmInstall != null ) 
 			wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, jrePath);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jbrt.getDefaultRunVMArgs());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, START_MAIN_TYPE);
