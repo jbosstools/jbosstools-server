@@ -78,6 +78,8 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, incrementalPublishModuleAction);
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, fullPublishModuleAction);
+			if( selection.size() > 1 ) 
+				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, deleteModuleAction);
 			if (selection.size() == 1) {
 				ModuleServer moduleServer = (ModuleServer) selection.getFirstElement();
 				IServer server = moduleServer.getServer();
