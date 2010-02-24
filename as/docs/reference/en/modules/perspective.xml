@@ -1192,6 +1192,11 @@
                     </tbody>
                 </tgroup>
             </table>
+            
+            <note>
+                <title>Note:</title>
+                <para>When editing an archive, it is also updated in all folders and other archives where it is nested.</para>
+            </note>
         </section>
 
         <section id="PublishToServer">
