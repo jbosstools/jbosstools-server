@@ -46,12 +46,12 @@
 			             <year>2007</year>
 			             <year>2008</year>
 			             <year>2009</year>
-			             <year >2010</year>
+			             <year>2010</year>
 	                           <holder>JBoss by Red Hat</holder>
 	                       </copyright>
-          <releaseinfo>
-           Version: 2.1.0.CR2
-          </releaseinfo>
+          <releaseinfo><diffmk:wrapper diffmk:change="changed">
+           Version: 2.1.0.GA
+          </diffmk:wrapper></releaseinfo>
 <abstract>
    <title></title>
        <para>
@@ -689,9 +689,8 @@
       <para>Now that we've created our runtimes and servers, we can dwell on all services
       and tools that JBoss Server Manager provides.</para>
       
-        <para>We hope, this guide helped you to get started with the JBoss Tools server manager.
-            Besides, for additional information you are welcome on 
-            <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
+        <para>We hope, this guide helped you to get started with the JBoss Tools server manager. Besides, for additional information you are welcome on <ulink
+            url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
     </section>
    </section>
   
@@ -1481,9 +1480,9 @@
             <para id="com_line_arg"><property moreinfo="none">Server editor</property> makes it also possible to
                 modify the server's launch configuration. It's just after clicking <emphasis>
                     <property moreinfo="none">Open launch configuration</property>
-                </emphasis><diffmk:wrapper diffmk:change="changed"> link. In the open window there are the tabs for setting command line
+                </emphasis> link. In the open window there are the tabs for setting command line
                 arguments, main, classpaths and other things that are relevant to launching the
-                server.</diffmk:wrapper></para>
+                server.</para>
 
             <figure float="0">
                 <title>Launch Configuration Properties</title>
@@ -1495,7 +1494,7 @@
             </figure>
             
             
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The first tab shows the Jboss server arguments</diffmk:wrapper></para>
+            <para>The first tab shows the Jboss server arguments</para>
             <para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find parameters which can be specified for <property moreinfo="none">JBoss
                     Server</property>.</para>
 
@@ -1516,7 +1515,7 @@
                     on unaltered.</para>
             </note>
             
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">On the second tab you find the main class used for launching JBoss AS (default is org.jboss.Main), you can change it, if necessary. </diffmk:wrapper></para>
+            <para>On the second tab you find the main class used for launching JBoss AS (default is org.jboss.Main), you can change it, if necessary. </para>
 
             <para>Until 3.0.0.GA release of <property moreinfo="none">JBoss Tools</property>, the servers classpath
                 was readonly, but that caused problems for users wanting to add their own jars in
@@ -1890,6 +1889,11 @@
                     </tbody>
                 </tgroup>
             </table>
+            
+            <note diffmk:change="added">
+                <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note:</diffmk:wrapper></title>
+                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">When editing an archive, it is also updated in all folders and other archives where it is nested.</diffmk:wrapper></para>
+            </note>
         </section>
 
         <section id="PublishToServer">
