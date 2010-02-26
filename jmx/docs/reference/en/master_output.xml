@@ -42,13 +42,13 @@
   
 	               <copyright>
 			            <year>2007</year>
-			            <year><diffmk:wrapper diffmk:change="added">2008</diffmk:wrapper></year> 
-	                    <year diffmk:change="added">2009</year>
-	                    <year diffmk:change="added"><diffmk:wrapper diffmk:change="added">2010</diffmk:wrapper></year>
+			            <year>2008</year> 
+	                    <year>2009</year>
+	                    <year>2010</year>
 	                    <holder>JBoss by Red Hat</holder>
 	               </copyright>
           <releaseinfo><diffmk:wrapper diffmk:change="changed">
-             Version: 1.1.0.CR2
+             Version: 1.1.0.GA
           </diffmk:wrapper></releaseinfo>
 <abstract>
    <title></title>
@@ -64,10 +64,10 @@
   <?dbhtml filename="introduction.html"?>
 
   <title>Introduction</title>
-  <para diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">' JMX project is a fork of </diffmk:wrapper><ulink diffmk:change="added" url="http://code.google.com/p/eclipse-jmx/"><diffmk:wrapper diffmk:change="added">eclipse-jmx</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">, a project by Jeff Mesnil.
-    It was forked with permission. </diffmk:wrapper></para>
-  <section diffmk:change="added">
-    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">What is JMX Tools?</diffmk:wrapper></title>
+  <para><property moreinfo="none">JBoss Tools</property>' JMX project is a fork of <ulink url="http://code.google.com/p/eclipse-jmx/">eclipse-jmx</ulink>, a project by Jeff Mesnil.
+    It was forked with permission. </para>
+  <section>
+    <title>What is JMX Tools?</title>
    <para><property moreinfo="none">JMX Tools</property> allows to setup multiple JMX connections and provides view
     for exploring the JMX tree and execute operations directly from Eclipse.</para>
 
@@ -125,19 +125,19 @@
     </table>
   </section>
   
-  <section diffmk:change="added">
-    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Requirements and Installation</diffmk:wrapper></title>
-  <section diffmk:change="added">
-    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added"> Requirements</diffmk:wrapper></title>
-    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Requirements to use </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> are the following:</diffmk:wrapper></para>
+  <section>
+    <title>Requirements and Installation</title>
+  <section>
+    <title> Requirements</title>
+    <para>Requirements to use <property moreinfo="none">JMX Tools</property> are the following:</para>
     
-    <itemizedlist diffmk:change="added">
-      <listitem diffmk:change="added">
-        <para diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> is developed on Eclipse 3.4.x milestones</diffmk:wrapper></para>
+    <itemizedlist>
+      <listitem>
+        <para><property moreinfo="none">JMX Tools</property> is developed on Eclipse 3.4.x milestones</para>
       </listitem>
-      <listitem diffmk:change="added">
-        <para diffmk:change="added"><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> requires that Eclipse is run on a JDK 1.5.0 or above
-          (due to dependencies on JMX packages which were introduced in Java 1.5.0)</diffmk:wrapper></para>
+      <listitem>
+        <para><property moreinfo="none">JMX Tools</property> requires that Eclipse is run on a JDK 1.5.0 or above
+          (due to dependencies on JMX packages which were introduced in Java 1.5.0)</para>
       </listitem>
     </itemizedlist>
   </section>
@@ -162,21 +162,21 @@
 </chapter>
 
     
-<chapter diffmk:change="added" id="tasks" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/jmx/docs/reference/en/modules/tasks.xml" xreflabel="tasks">
+<chapter id="tasks" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/jmx/docs/reference/en/modules/tasks.xml" xreflabel="tasks">
     <?dbhtml filename="tasks.html"?>
-    <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">JMX Tools Tasks</diffmk:wrapper></title>
-    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">This chapter will give you answers on most popular questions asked by </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX
-    plugin</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> users.</diffmk:wrapper></para>
-    <section diffmk:change="added">
+    <title>JMX Tools Tasks</title>
+    <para>This chapter will give you answers on most popular questions asked by <property moreinfo="none">JMX
+    plugin</property> users.</para>
+    <section>
         <title>Quick Start</title>
         
-        <para>To start using the <property moreinfo="none">JMX Tools</property><diffmk:wrapper diffmk:change="changed">, it's necessary to open
-            </diffmk:wrapper><property moreinfo="none">MBean Explorer</property>. Go to <emphasis><property moreinfo="none">Window &gt; Show View &gt; Other</property></emphasis><diffmk:wrapper diffmk:change="changed"> and then select
-            </diffmk:wrapper><property moreinfo="none">MBean Explorer</property> and click <emphasis><property moreinfo="none">OK</property>.</emphasis></para>
+        <para>To start using the <property moreinfo="none">JMX Tools</property>, it's necessary to open
+            <property moreinfo="none">MBean Explorer</property>. Go to <emphasis><property moreinfo="none">Window &gt; Show View &gt; Other</property></emphasis> and then select
+            <property moreinfo="none">MBean Explorer</property> and click <emphasis><property moreinfo="none">OK</property>.</emphasis></para>
         
-        <para>The <property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="changed"> lists all of the domains, mbeans, attributes, and operations inside a
-            connection. When you double-click on a MBean in the </diffmk:wrapper><emphasis><property moreinfo="none">MBean Explorer</property>,</emphasis><diffmk:wrapper diffmk:change="changed"> it opens a multi-page
-            editor to manage the MBean. The </diffmk:wrapper><property moreinfo="none">MBean Editor</property> is composed of these pages:</para>
+        <para>The <property moreinfo="none">MBean Explorer</property> lists all of the domains, mbeans, attributes, and operations inside a
+            connection. When you double-click on a MBean in the <emphasis><property moreinfo="none">MBean Explorer</property>,</emphasis> it opens a multi-page
+            editor to manage the MBean. The <property moreinfo="none">MBean Editor</property> is composed of these pages:</para>
         
         <itemizedlist>
             <listitem>
@@ -195,221 +195,223 @@
         
     </section>
     <section>
-        <title><diffmk:wrapper diffmk:change="changed">Tomcat Managing</diffmk:wrapper></title>
+        <title>Tomcat Managing</title>
         
-        <para><diffmk:wrapper diffmk:change="added">It's possible to manage Tomcat using </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
+        <para>It's possible to manage Tomcat using <property moreinfo="none">JMX Tools</property>.</para>
         
-        <para><diffmk:wrapper diffmk:change="added">Currently, JMX Tooling is able to connect to Tomcat without authentication or with
-            password-based authentication.</diffmk:wrapper></para>
-        <para><diffmk:wrapper diffmk:change="added">Using SSL for authentication is not supported: you need to make sure that the System
-            property </diffmk:wrapper><emphasis diffmk:change="added">
-                <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">com.sun.management.jmxremote.ssl</diffmk:wrapper></property>
-            </emphasis><diffmk:wrapper diffmk:change="added"> is set to false. </diffmk:wrapper></para>
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">More information to manage Tomcat can be found in Tomcat management
-            documentation.</diffmk:wrapper></para>
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Instructions to manage remotely Tomcat are available in Tomcat's monitoring
-            documentation.</diffmk:wrapper></para>
+        <para>Currently, JMX Tooling is able to connect to Tomcat without authentication or with
+            password-based authentication.</para>
+        <para>Using SSL for authentication is not supported: you need to make sure that the System
+            property <emphasis>
+                <property moreinfo="none">com.sun.management.jmxremote.ssl</property>
+            </emphasis> is set to false. </para>
+        <para>More information to manage Tomcat can be found in Tomcat management
+            documentation.</para>
+        <para>Instructions to manage remotely Tomcat are available in Tomcat's monitoring
+            documentation.</para>
         
     </section>
     
-    <section diffmk:change="added">
-        <title><diffmk:wrapper diffmk:change="changed">Eclipse Equinox Managing</diffmk:wrapper></title>
+    <section>
+        <title>Eclipse Equinox Managing</title>
         
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You can manage Equinox through the Equinox monitoring framework.</diffmk:wrapper></para>
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Once you have installed the Equinox monitoring framework and restarted Eclipse:</diffmk:wrapper></para>
+        <para>You can manage Equinox through the Equinox monitoring framework.</para>
+        <para>Once you have installed the Equinox monitoring framework and restarted Eclipse:</para>
         
-        <itemizedlist diffmk:change="added">
-            <listitem diffmk:change="added">
-                <para><diffmk:wrapper diffmk:change="added">Go to </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Window &gt; Open Perspective &gt; Other</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="added"> and select the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JMX perspective</diffmk:wrapper></property></para>
+        <itemizedlist>
+            <listitem>
+                <para>Go to <emphasis>
+                    <property moreinfo="none">Window &gt; Open Perspective &gt; Other</property>
+                </emphasis> and select the <property moreinfo="none">JMX perspective</property></para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Select </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">JMX Server &gt; Open Connection</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="added"> and click on </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">OK</diffmk:wrapper></property>
+            <listitem>
+                <para>Select <emphasis>
+                    <property moreinfo="none">JMX Server &gt; Open Connection</property>
+                </emphasis> and click on <emphasis>
+                    <property moreinfo="none">OK</property>
                 </emphasis></para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para><diffmk:wrapper diffmk:change="changed">Switch to the </diffmk:wrapper><property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="added"> by going to </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Window &gt; Show View &gt; Other</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="added"> and selecting the MBean Explorer</diffmk:wrapper></para>
+            <listitem>
+                <para>Switch to the <property moreinfo="none">MBean Explorer</property> by going to <emphasis>
+                    <property moreinfo="none">Window &gt; Show View &gt; Other</property>
+                </emphasis> and selecting the MBean Explorer</para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para><diffmk:wrapper diffmk:change="changed">Click on the </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">New Connection</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="changed"> icon 
+            <listitem>
+                <para>Click on the <emphasis>
+                    <property moreinfo="none">New Connection</property></emphasis> icon 
                     
-                    </diffmk:wrapper><inlinemediaobject>   
+                    <inlinemediaobject>   
                         <imageobject>
-                            <imagedata fileref="images/new_connection_icon.png"/>
+                            <imagedata fileref="images/new_connection_icon.png"></imagedata>
                         </imageobject>
-                    </inlinemediaobject><diffmk:wrapper diffmk:change="changed">
+                    </inlinemediaobject>
                     
-                    in the </diffmk:wrapper><property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="changed"> menu
-                    bar </diffmk:wrapper></para>
+                    in the <property moreinfo="none">MBean Explorer</property> menu
+                    bar </para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Select the </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Advanced tab</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> and set the JMX URL to </diffmk:wrapper><emphasis diffmk:change="added">
-                        <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">service:jmx:rmi:///jndi/rmi://:8118/jmxserver</diffmk:wrapper></property>
+            <listitem>
+                <para>Select the <emphasis>
+                    <property moreinfo="none">Advanced tab</property></emphasis> and set the JMX URL to <emphasis>
+                        <property moreinfo="none">service:jmx:rmi:///jndi/rmi://:8118/jmxserver</property>
                     </emphasis></para>
             </listitem>
         </itemizedlist>
         
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You now have access to the MBeans exposed by Equinox.</diffmk:wrapper></para>
+        <para>You now have access to the MBeans exposed by Equinox.</para>
     </section>
     
     
-    <section diffmk:change="added">
-        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Managing JBoss Instances</diffmk:wrapper></title>
+    <section>
+        <title>Managing JBoss Instances</title>
         
-        <para><diffmk:wrapper diffmk:change="changed">Managing JBoss instances is not supported with the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">JMX Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">
-            alone. You must also download and install the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">AS Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> portion of
-            the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">JBoss Tools</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> distribution. Even after installing the proper
+        <para>Managing JBoss instances is not supported with the <property moreinfo="none">JMX Tools</property>
+            alone. You must also download and install the <property moreinfo="none">AS Tools</property> portion of
+            the <property moreinfo="none">JBoss Tools</property> distribution. Even after installing the proper
             tooling, you cannot create a JBoss JMX connection yourself or through the Connection
             Wizard. The first step is to create a JBoss Server. The full instructions for this can
-            be found in the AS Tools section, however, the short summary is: </diffmk:wrapper></para>
-        <itemizedlist diffmk:change="added">
-            <listitem diffmk:change="added">
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Open the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">JBoss Servers View</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> or the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Servers
-                    View</diffmk:wrapper></property></para>
+            be found in the AS Tools section, however, the short summary is: </para>
+        <itemizedlist>
+            <listitem>
+                <para>Open the <property moreinfo="none">JBoss Servers View</property> or the <property moreinfo="none">Servers
+                    View</property></para>
             </listitem>
             
             <listitem>
-                <para><diffmk:wrapper diffmk:change="changed">Right-click in the view and select </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">New &gt; Server</diffmk:wrapper></property>
+                <para>Right-click in the view and select <emphasis>
+                    <property moreinfo="none">New &gt; Server</property>
                 </emphasis></para>
             </listitem>
             
             <listitem>
-                <para><diffmk:wrapper diffmk:change="changed">In the </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">JBoss Community</diffmk:wrapper></property>
-                </emphasis><diffmk:wrapper diffmk:change="changed"> section, select a server version</diffmk:wrapper></para>
+                <para>In the <emphasis>
+                    <property moreinfo="none">JBoss Community</property>
+                </emphasis> section, select a server version</para>
             </listitem>
             
             <listitem>
-                <para><diffmk:wrapper diffmk:change="added">If a runtime has not yet been created, you'll be prompted for the
-                    server's home directory, JDK, and configuration</diffmk:wrapper></para>
+                <para>If a runtime has not yet been created, you'll be prompted for the
+                    server's home directory, JDK, and configuration</para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Finish the wizard and note that you have a new entry in both the
-                    </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">JBoss Server View</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> and the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">MBean
-                        Explorer</diffmk:wrapper></property></para>
+            <listitem>
+                <para>Finish the wizard and note that you have a new entry in both the
+                    <property moreinfo="none">JBoss Server View</property> and the <property moreinfo="none">MBean
+                        Explorer</property></para>
             </listitem>
             
-            <listitem diffmk:change="added">
-                <para><diffmk:wrapper diffmk:change="added">Start the server by right-clicking it and selecting </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Start</diffmk:wrapper></property></emphasis></para>
+            <listitem>
+                <para>Start the server by right-clicking it and selecting <emphasis>
+                    <property moreinfo="none">Start</property></emphasis></para>
             </listitem>
-            <listitem diffmk:change="added">
-                <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Note that once the server is started, the JMX connection can be
-                    expanded</diffmk:wrapper></para>
+            <listitem>
+                <para>Note that once the server is started, the JMX connection can be
+                    expanded</para>
             </listitem>
         </itemizedlist>
         
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Now you can explore MBeans exposed by a JBoss instance.</diffmk:wrapper></para>
+        <para>Now you can explore MBeans exposed by a JBoss instance.</para>
     </section>
-    <section diffmk:change="added" id="extensions" xreflabel="extensions"> 
-        <title><diffmk:wrapper diffmk:change="changed">Extension Task</diffmk:wrapper></title>
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">This section will outline how to contribute your own Server type with some default
-            behavior.</diffmk:wrapper></para>
+    <section id="extensions" xreflabel="extensions"> 
+        <title>Extension Task</title>
+        <para>This section will outline how to contribute your own Server type with some default
+            behavior.</para>
         
-        <section diffmk:change="added">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Why we should do that?</diffmk:wrapper></title>
+        <section>
+            <title>Why we should do that?</title>
             
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You might be asking yourself why you'd need to extend this framework if JMX is
+            <para>You might be asking yourself why you'd need to extend this framework if JMX is
                 a standard. Perhaps you want a connection to be automatically created after some specific
                 action, or perhaps you want your connection wizard to do more than simply set a host and
                 port. JBoss, for example, requires setting some credentials on the client machine, but
                 using JBoss classes to do it. This requires that the connection have access to JBoss
-                jars.</diffmk:wrapper></para>
+                jars.</para>
         </section>
         
         <section>
-            <title><diffmk:wrapper diffmk:change="changed">Core Extensions</diffmk:wrapper></title>
+            <title>Core Extensions</title>
             
-            <para><diffmk:wrapper diffmk:change="added">To create your own JMX Connection type, you must use the
+            <para>To create your own JMX Connection type, you must use the
                 org.jboss.tools.jmx.core.MBeanServerConnectionProvider extension point. This point takes
                 one child, a connectionProvider with a class that implements
-                org.jboss.tools.jmx.core.IConnectionProvider.</diffmk:wrapper></para>
+                org.jboss.tools.jmx.core.IConnectionProvider.</para>
             
-            <para><diffmk:wrapper diffmk:change="changed">An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
+            <para>An IConnectionProvider is responsible for creation and deletion of IConnectionWrapper
                 objects. It must also keep a list of listeners that it is expected to inform when a
-                connection is added or removed from its list. </diffmk:wrapper></para>
+                connection is added or removed from its list. </para>
             
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">Each IConnectionWrapper is expected to handle running arbitrary JMX runnables or getting
+            <para>Each IConnectionWrapper is expected to handle running arbitrary JMX runnables or getting
                 a "Root" object representing all JMX nodes. There are some utility methods the
-                IConnectionWrapper can make use of.</diffmk:wrapper></para>
+                IConnectionWrapper can make use of.</para>
         </section>
     
-        <section diffmk:change="added">
-            <title><diffmk:wrapper diffmk:change="changed">UI Extensions</diffmk:wrapper></title>
-            <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">There are two extension points currently approved for use in the UI</diffmk:wrapper></para>
-            <itemizedlist diffmk:change="added">
-                <listitem diffmk:change="added">
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">org.jboss.tools.jmx.ui.providerUI - provide an icon, id, displayable name, and
-                        wizardPage class for creation of new connections</diffmk:wrapper></para>
+        <section>
+            <title>UI Extensions</title>
+            <para>There are two extension points currently approved for use in the UI</para>
+            <itemizedlist>
+                <listitem>
+                    <para>org.jboss.tools.jmx.ui.providerUI - provide an icon, id, displayable name, and
+                        wizardPage class for creation of new connections</para>
                 </listitem>
-                <listitem diffmk:change="added">
-                    <para><diffmk:wrapper diffmk:change="added">org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
-                        Control to present them in the MBean Editor</diffmk:wrapper></para>
-                    <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">We hope, this guide helped you to get started with the JBoss JMX Tools. Besides, for additional information you are welcome on </diffmk:wrapper><ulink diffmk:change="added" url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">"><diffmk:wrapper diffmk:change="added">JBoss forum</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">.</diffmk:wrapper></para>
+                <listitem>
+                    <para>org.jboss.tools.jmx.ui.attribute.controls - allows you to map class types to some
+                        Control to present them in the MBean Editor</para>
+                    <para>We hope, this guide helped you to get started with the JBoss JMX Tools. 
+                        Besides, for additional information you are welcome on 
+                        <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.</para>
                 </listitem>
             </itemizedlist>
         </section>
         
     </section>
-    <section diffmk:change="added" id="connection" xreflabel="connection">
+    <section id="connection" xreflabel="connection">
                
-        <title><diffmk:wrapper diffmk:change="changed">Connections Creation Task</diffmk:wrapper></title>
+        <title>Connections Creation Task</title>
         
-        <para>The <property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="changed"> supports several different types of connections. 
+        <para>The <property moreinfo="none">MBean Explorer</property> supports several different types of connections. 
             The tooling itself comes only with a default connection type, however other
             adopters can provide additional connection types that may require additional
             or non-spec behavior. Connections can be in either the connected state or
             the disconnected state. Some connection types (such as the default connection type)
-            allow you to control the current state. Other connection types may not. </diffmk:wrapper></para>
+            allow you to control the current state. Other connection types may not. </para>
         
-        <para><diffmk:wrapper diffmk:change="changed">Similarly, some connection types may be able to be created, and others may not. 
+        <para>Similarly, some connection types may be able to be created, and others may not. 
             The default connection type, for example, can be created and deleted by you
             at will. The AS Tools connection type, which represents a JBoss server, does not
             allow you this level of control. A JBoss JMX connection is created when a JBoss server is created
             in the server's view, and deleted when said server is deleted. The JMX connection for 
-            this server is in the connected state only when the server is started. </diffmk:wrapper></para>
+            this server is in the connected state only when the server is started. </para>
         
         
         <section><title>The Default Connection</title>
             
             <para> There are two ways to connect to an application with remote management enabled:</para>
             
-            <para><diffmk:wrapper diffmk:change="changed"> The first step is the same for both - to connect to a MBean Server, click on the
-                </diffmk:wrapper><emphasis>
-                    <property moreinfo="none">New Connection</property></emphasis><diffmk:wrapper diffmk:change="changed"> icon 
+            <para> The first step is the same for both - to connect to a MBean Server, click on the
+                <emphasis>
+                    <property moreinfo="none">New Connection</property></emphasis> icon 
                 
-                </diffmk:wrapper><inlinemediaobject>   
+                <inlinemediaobject>   
                     <imageobject>
                         <imagedata fileref="images/new_connection_icon.png"></imagedata>
                     </imageobject>
-                </inlinemediaobject><diffmk:wrapper diffmk:change="changed">
+                </inlinemediaobject>
                 
-                in the </diffmk:wrapper><property moreinfo="none">MBean Explorer</property> menu bar.</para>
+                in the <property moreinfo="none">MBean Explorer</property> menu bar.</para>
             
-            <para><diffmk:wrapper diffmk:change="changed">Then to follow the simple one you just need to specify host, port (and optionally user
-                name and password) and click </diffmk:wrapper><emphasis>
+            <para>Then to follow the simple one you just need to specify host, port (and optionally user
+                name and password) and click <emphasis>
                     <property moreinfo="none">OK</property>.</emphasis></para>
             
             <para>The default JMX URL is <emphasis>
                 <property moreinfo="none">service:jmx:rmi:///jndi/rmi://localhost:3000/jmxrmi</property>.</emphasis></para>
             
-            <para><diffmk:wrapper diffmk:change="changed">In case you need to connect to an application which has not used the "standard" JMX URL
+            <para>In case you need to connect to an application which has not used the "standard" JMX URL
                 (e.g. Eclipse Equinox), you need chose more advance way, where it's necessary to specify
-                explicitly a JMX URL in the Advanced tab of the JMX Connection window.</diffmk:wrapper></para>
+                explicitly a JMX URL in the Advanced tab of the JMX Connection window.</para>
             
             <note>
                 <title>Note</title>
@@ -423,127 +425,127 @@
     
 <chapter id="references" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/jmx/docs/reference/en/modules/references.xml" xreflabel="references">
     <?dbhtml filename="references.html"?>
-    <title><diffmk:wrapper diffmk:change="changed">References</diffmk:wrapper></title>
+    <title>References</title>
  
-    <section diffmk:change="added" id="mbean_explorer" xreflabel="mbean_explorer">
+    <section id="mbean_explorer" xreflabel="mbean_explorer">
         <?dbhtml filename="mbean_explorer.html"?>
         
-        <title><diffmk:wrapper diffmk:change="changed">MBean Explorer</diffmk:wrapper></title>
-        <para><diffmk:wrapper diffmk:change="changed">The </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Explorer</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> displays the MBean features (both attributes and operations) in its
-            hierarchy. Double-clicking on a feature will open a </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Editor</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">, display the page
-            corresponding to the feature type and select the feature.</diffmk:wrapper></para>
+        <title>MBean Explorer</title>
+        <para>The <property moreinfo="none">MBean Explorer</property> displays the MBean features (both attributes and operations) in its
+            hierarchy. Double-clicking on a feature will open a <property moreinfo="none">MBean Editor</property>, display the page
+            corresponding to the feature type and select the feature.</para>
         
-        <figure diffmk:change="added" float="0">
-            <title><diffmk:wrapper diffmk:change="changed">MBean Explorer Features</diffmk:wrapper></title>
-            <mediaobject diffmk:change="added">
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/mbean-explorer-features.png"></imagedata>
+        <figure float="0">
+            <title>MBean Explorer Features</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-explorer-features.png"></imagedata>
                 </imageobject>
             </mediaobject>
         </figure>
         
-        <para><diffmk:wrapper diffmk:change="added">Since it's possible to have many MBean Editors opened at the same time, the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Explorer</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added">
+        <para>Since it's possible to have many MBean Editors opened at the same time, the <property moreinfo="none">MBean Explorer</property>
             has the Link With Editor button 
             
-            </diffmk:wrapper><inlinemediaobject diffmk:change="added">   
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/link-with-editor_0.2.0.png"></imagedata>
+            <inlinemediaobject>   
+                <imageobject>
+                    <imagedata fileref="images/link-with-editor_0.2.0.png"></imagedata>
                 </imageobject>
-            </inlinemediaobject><diffmk:wrapper diffmk:change="added">
+            </inlinemediaobject>
             
-            to synchronize selections between the active </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Editor</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> and
-            the </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Explorer</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> (and vice versa).</diffmk:wrapper></para>
+            to synchronize selections between the active <property moreinfo="none">MBean Editor</property> and
+            the <property moreinfo="none">MBean Explorer</property> (and vice versa).</para>
         
-        <para><diffmk:wrapper diffmk:change="changed">The </diffmk:wrapper><property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="added"> has also a filter text that can be used to filter among all the MBeans
-            the few ones, which interest you.</diffmk:wrapper></para>
+        <para>The <property moreinfo="none">MBean Explorer</property> has also a filter text that can be used to filter among all the MBeans
+            the few ones, which interest you.</para>
         
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">For example, if you are only interested by MBeans related to memory, typing memo will show
+        <para>For example, if you are only interested by MBeans related to memory, typing memo will show
             any node (domain, mbean, attribute, or operation) that matches that text, as well as 
             that node's parents and children. So if an MBean matches, all attributes and operations from 
             that bean will show.  If, however, an attribute or operation name (a leaf node) matches, 
-            only that node and its parents in the tree will show.</diffmk:wrapper></para>
+            only that node and its parents in the tree will show.</para>
         
-        <figure diffmk:change="added" float="0">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Query Filter</diffmk:wrapper></title>
-            <mediaobject diffmk:change="added">
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/mbean-explorer-query.png"></imagedata>
+        <figure float="0">
+            <title>Query Filter</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-explorer-query.png"></imagedata>
                 </imageobject>
             </mediaobject>
         </figure>
         
         
-        <para><diffmk:wrapper diffmk:change="changed">The </diffmk:wrapper><emphasis>
-            <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Collapse All</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="changed"> button 
+        <para>The <emphasis>
+            <property moreinfo="none">Collapse All</property></emphasis> button 
             
-            </diffmk:wrapper><inlinemediaobject>   
+            <inlinemediaobject>   
                 <imageobject>
-                    <imagedata diffmk:change="added" fileref="images/collaps_all.png"></imagedata>
+                    <imagedata fileref="images/collaps_all.png"></imagedata>
                 </imageobject>
-            </inlinemediaobject><diffmk:wrapper diffmk:change="changed">
+            </inlinemediaobject>
             
-            on the </diffmk:wrapper><property moreinfo="none">MBean Explorer</property><diffmk:wrapper diffmk:change="changed"> toolbar is used to collapse all the MBeans and
-            display only the domains. It is also possible to double click on a node to expand/collapse it. </diffmk:wrapper></para>
+            on the <property moreinfo="none">MBean Explorer</property> toolbar is used to collapse all the MBeans and
+            display only the domains. It is also possible to double click on a node to expand/collapse it. </para>
         
     </section>
-    <section diffmk:change="added" id="mbean_editor" xreflabel="mbean_editor">
+    <section id="mbean_editor" xreflabel="mbean_editor">
         <?dbhtml filename="mbean_editor.html"?>
         
-        <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></title>
+        <title>MBean Editor</title>
         
-        <figure diffmk:change="added" float="0">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor Pages</diffmk:wrapper></title>
-            <mediaobject diffmk:change="added">
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/mbean-editor_0.2.0.png"></imagedata>
+        <figure float="0">
+            <title>MBean Editor Pages</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor_0.2.0.png"></imagedata>
                 </imageobject>
             </mediaobject>
         </figure>
         
-        <para><diffmk:wrapper diffmk:change="added">The </diffmk:wrapper><property moreinfo="none"><diffmk:wrapper diffmk:change="changed">MBean Editor</diffmk:wrapper></property><diffmk:wrapper diffmk:change="changed"> is composed of several pages:</diffmk:wrapper></para>
+        <para>The <property moreinfo="none">MBean Editor</property> is composed of several pages:</para>
   
         <itemizedlist>
             <listitem>
-                <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Attributes</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
+                <para>the <emphasis>
+                    <property moreinfo="none">Attributes</property></emphasis> page</para>
             </listitem>
             <listitem>
-                <para><diffmk:wrapper diffmk:change="changed">the </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Operations</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page</diffmk:wrapper></para>
+                <para>the <emphasis>
+                    <property moreinfo="none">Operations</property></emphasis> page</para>
             </listitem>
             <listitem>
-                <para><diffmk:wrapper diffmk:change="changed">the </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="changed"> page </diffmk:wrapper></para>
+                <para>the <emphasis>
+                    <property moreinfo="none">Notifications</property></emphasis> page </para>
             </listitem>
             <listitem>
-                <para><diffmk:wrapper diffmk:change="added">the </diffmk:wrapper><emphasis diffmk:change="added">
-                    <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Info</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page </diffmk:wrapper></para>
+                <para>the <emphasis>
+                    <property moreinfo="none">Info</property></emphasis> page </para>
             </listitem>
         </itemizedlist>
         
-        <para><diffmk:wrapper diffmk:change="added"> The </diffmk:wrapper><emphasis diffmk:change="added">
-            <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Attributes</diffmk:wrapper></property>
-        </emphasis><diffmk:wrapper diffmk:change="added"> and </diffmk:wrapper><emphasis diffmk:change="added">
-            <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Operations</diffmk:wrapper></property>
-        </emphasis><diffmk:wrapper diffmk:change="added"> pages display a list for either the MBean attributes or operations as well as
-            details for the selection.</diffmk:wrapper></para>
+        <para> The <emphasis>
+            <property moreinfo="none">Attributes</property>
+        </emphasis> and <emphasis>
+            <property moreinfo="none">Operations</property>
+        </emphasis> pages display a list for either the MBean attributes or operations as well as
+            details for the selection.</para>
         
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added"> It is possible to toggle the layout between the list and the details either vertically
+        <para> It is possible to toggle the layout between the list and the details either vertically
             (by default) or horizontally with the help of the special icons 
             
-            </diffmk:wrapper><inlinemediaobject diffmk:change="added">   
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/mbean-editor-layout-buttons_0.2.0.png"></imagedata>
+            <inlinemediaobject>   
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"></imagedata>
                 </imageobject>
-            </inlinemediaobject><diffmk:wrapper diffmk:change="added">
+            </inlinemediaobject>
             
-            in the right top corner of the editor.</diffmk:wrapper></para>
+            in the right top corner of the editor.</para>
         
-        <figure diffmk:change="added" float="0">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">MBean Editor Horizontal Layout</diffmk:wrapper></title>
-            <mediaobject diffmk:change="added">
-                <imageobject diffmk:change="added">
-                    <imagedata diffmk:change="added" fileref="images/mbean-editor-horizontal-layout_0.2.0.png"></imagedata>
+        <figure float="0">
+            <title>MBean Editor Horizontal Layout</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor-horizontal-layout_0.2.0.png"></imagedata>
                 </imageobject>
             </mediaobject>
         </figure>
@@ -560,29 +562,29 @@
                 </textobject>
             </mediaobject>
         </figure>
-        <section diffmk:change="added">
-            <title diffmk:change="added"><diffmk:wrapper diffmk:change="added">Notifications Page</diffmk:wrapper></title>
-            <para><diffmk:wrapper diffmk:change="added">One more page in the </diffmk:wrapper><property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">MBean Editor</diffmk:wrapper></property><diffmk:wrapper diffmk:change="added"> is the </diffmk:wrapper><emphasis diffmk:change="added">
-                <property diffmk:change="added" moreinfo="none"><diffmk:wrapper diffmk:change="added">Notifications</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> page, which gives the possibility to
+        <section>
+            <title>Notifications Page</title>
+            <para>One more page in the <property moreinfo="none">MBean Editor</property> is the <emphasis>
+                <property moreinfo="none">Notifications</property></emphasis> page, which gives the possibility to
                 subscribe (resp. unsubscribe) to a MBean to receive its notifications by checking (resp.
-                unchecking) the </diffmk:wrapper><emphasis>
-                    <property moreinfo="none"><diffmk:wrapper diffmk:change="changed">Subscribe</diffmk:wrapper></property></emphasis><diffmk:wrapper diffmk:change="added"> button in the right top corner. </diffmk:wrapper></para>
-            <para><diffmk:wrapper diffmk:change="changed">The list of notifications is refreshed every time a new notification is
-                received:</diffmk:wrapper></para>
+                unchecking) the <emphasis>
+                    <property moreinfo="none">Subscribe</property></emphasis> button in the right top corner. </para>
+            <para>The list of notifications is refreshed every time a new notification is
+                received:</para>
             
-            <figure diffmk:change="added" float="0">
-                <title><diffmk:wrapper diffmk:change="changed">MBean Editor Notifications Page</diffmk:wrapper></title>
-                <mediaobject diffmk:change="added">
-                    <imageobject diffmk:change="added">
-                        <imagedata diffmk:change="added" fileref="images/notifications.png"></imagedata>
+            <figure float="0">
+                <title>MBean Editor Notifications Page</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/notifications.png"></imagedata>
                     </imageobject>
                 </mediaobject>
             </figure>
             
-            <note diffmk:change="added">
-                <title><diffmk:wrapper diffmk:change="changed">Note</diffmk:wrapper></title>
-                <para><diffmk:wrapper diffmk:change="changed">It is only possible to subscribe to MBean, which emits notifications (they must be
-                    NotificationBroadcaster).</diffmk:wrapper></para>
+            <note>
+                <title>Note</title>
+                <para>It is only possible to subscribe to MBean, which emits notifications (they must be
+                    NotificationBroadcaster).</para>
             </note>
             
         </section>
@@ -592,33 +594,33 @@
  </chapter>
 
     
-<chapter diffmk:change="added" xml:base="file:///home/vchukhutsina/repos/ochik_jboss/jmx/docs/reference/en/modules/summary.xml">
+<chapter xml:base="file:///home/vchukhutsina/repos/ochik_jboss/jmx/docs/reference/en/modules/summary.xml">
     <?dbhtml filename="summary.html"?>
-    <title><diffmk:wrapper diffmk:change="changed">Summary</diffmk:wrapper></title>
-    <para><diffmk:wrapper diffmk:change="changed">In conclusion, with this document you could easily start with JXM Tools.
+    <title>Summary</title>
+    <para>In conclusion, with this document you could easily start with JXM Tools.
         The chapters above walked you through the steps on how to do Tomcat,Eclipse Equinox or JBoss Instances managing and how to create new JMX connections.
         The document also includes the reference of JMX Tools features.
         
         If you have questions or suggestions concerned both the documentation and tools behavior,
         you are welcome to JBoss Tools Users forum.
-        Please, use Jira to report bugs and requests on documentation.</diffmk:wrapper></para>
+        Please, use Jira to report bugs and requests on documentation.</para>
     
     <section>
-        <title><diffmk:wrapper diffmk:change="changed">Other relevant resources on the topic</diffmk:wrapper></title>
-        <para><diffmk:wrapper diffmk:change="added">All JBoss Developer Studio/JBoss Tools release documentation you can find at
-            </diffmk:wrapper><ulink diffmk:change="added" url="http://docs.jboss.org/tools"><diffmk:wrapper diffmk:change="added">http://docs.jboss.org/tools</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added"> in the corresponding release directory.
-        </diffmk:wrapper></para>   
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">The latest documentation builds are available at </diffmk:wrapper><ulink diffmk:change="added" url="http://download.jboss.org/jbosstools/nightly-docs"><diffmk:wrapper diffmk:change="added">http://download.jboss.org/jbosstools/nightly-docs</diffmk:wrapper></ulink><diffmk:wrapper diffmk:change="added">. </diffmk:wrapper></para>
-        <para diffmk:change="added"><diffmk:wrapper diffmk:change="added">You can find a set of benefits and other extra information on:</diffmk:wrapper></para>
+        <title>Other relevant resources on the topic</title>
+        <para>All JBoss Developer Studio/JBoss Tools release documentation you can find at
+            <ulink url="http://docs.jboss.org/tools">http://docs.jboss.org/tools</ulink> in the corresponding release directory.
+        </para>   
+        <para>The latest documentation builds are available at <ulink url="http://download.jboss.org/jbosstools/nightly-docs">http://download.jboss.org/jbosstools/nightly-docs</ulink>. </para>
+        <para>You can find a set of benefits and other extra information on:</para>
         <itemizedlist>
-            <listitem diffmk:change="added">
+            <listitem>
                 <para>
-                    <ulink diffmk:change="added" url="http://www.jboss.org/community/wiki/JBossMX"><diffmk:wrapper diffmk:change="added">JBoss Wiki</diffmk:wrapper></ulink>
+                    <ulink url="http://www.jboss.org/community/wiki/JBossMX">JBoss Wiki</ulink>
                 </para>
             </listitem>
-            <listitem diffmk:change="added"><para><diffmk:wrapper diffmk:change="added">For more information about JMX technology please visit
-                </diffmk:wrapper><ulink diffmk:change="added" url="http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/"><diffmk:wrapper diffmk:change="added">
-                JMX Technology Home Page</diffmk:wrapper></ulink></para>
+            <listitem><para>For more information about JMX technology please visit
+                <ulink url="http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/">
+                JMX Technology Home Page</ulink></para>
             </listitem>
              </itemizedlist>
       </section>
