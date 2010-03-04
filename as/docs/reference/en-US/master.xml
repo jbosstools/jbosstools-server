@@ -2,12 +2,12 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
 "http://www.docbook.org/xml/4.3/docbookx.dtd"
 
-[<!ENTITY quick_start SYSTEM "modules/quick_start.xml">
-<!ENTITY runtimes_servers SYSTEM "modules/runtimes_servers.xml">
-<!ENTITY perspective SYSTEM "modules/perspective.xml">
-<!ENTITY webtools SYSTEM "modules/webtools.xml">
-<!ENTITY modules SYSTEM "modules/modules.xml">
-<!ENTITY tptp_support SYSTEM "modules/tptp_support.xml">
+[<!ENTITY quick_start SYSTEM "quick_start.xml">
+<!ENTITY runtimes_servers SYSTEM "runtimes_servers.xml">
+<!ENTITY perspective SYSTEM "perspective.xml">
+<!ENTITY webtools SYSTEM "webtools.xml">
+<!ENTITY modules SYSTEM "modules.xml">
+<!ENTITY tptp_support SYSTEM "tptp_support.xml">
 
 <!ENTITY seamlink "../../seam/html_single/index.html">
 <!ENTITY aslink "../../as/html_single/index.html">
