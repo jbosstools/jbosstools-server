@@ -125,7 +125,19 @@
                 </imageobject>
             </mediaobject>
         </figure>
-
+        <figure id="figu-Beginners_Guide-Visual_Web_Tools-Visual_Page_Editor">
+            <title>Visual Page Editor</title> 
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/mbean-editor-horizontal-layout_0.2.0.png" format="PNG" width="444" />
+                </imageobject>
+                <textobject>
+                    <phrase>
+                        The Visual Page Editor, showing both the source and a visual preview simultaneously.
+                    </phrase>
+                </textobject>
+            </mediaobject>
+        </figure>
         <section>
             <title>Notifications Page</title>
             <para>One more page in the <property>MBean Editor</property> is the <emphasis>
