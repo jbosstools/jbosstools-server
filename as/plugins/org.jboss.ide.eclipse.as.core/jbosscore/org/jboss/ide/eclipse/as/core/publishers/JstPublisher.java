@@ -92,7 +92,11 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 				if (publishType == FULL_PUBLISH ) {
 					status = fullPublish(module, module[module.length-1], monitor);	
 				} else if (publishType == INCREMENTAL_PUBLISH) {
-					status = incrementalPublish(module, module[module.length-1], monitor);
+					if(getDeployPath(module, this.server).toFile().isDirectory()) {
+						status = incrementalPublish(module, module[module.length-1], monitor);
+					} else {
+						status =fullPublish(module, module[module.length-1], monitor);
+					} 
 				} 
 			}
 		}
