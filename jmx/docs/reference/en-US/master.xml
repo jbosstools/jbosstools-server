@@ -2,15 +2,15 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
 "http://www.docbook.org/xml/4.3/docbookx.dtd"
 
-[<!ENTITY introduction SYSTEM "modules/introduction.xml">
-<!ENTITY mbean_explorer SYSTEM "modules/mbean_explorer.xml">
-<!ENTITY mbean_editor SYSTEM "modules/mbean_editor.xml">
-<!ENTITY connection SYSTEM "modules/connection.xml">
-<!ENTITY how_to SYSTEM "modules/how_to.xml">
-<!ENTITY extensions SYSTEM "modules/extensions.xml">
-<!ENTITY tasks SYSTEM "modules/tasks.xml">
-<!ENTITY references SYSTEM "modules/references.xml"> 
-<!ENTITY summary SYSTEM "modules/summary.xml"> 
+[<!ENTITY introduction SYSTEM "introduction.xml">
+<!ENTITY mbean_explorer SYSTEM "mbean_explorer.xml">
+<!ENTITY mbean_editor SYSTEM "mbean_editor.xml">
+<!ENTITY connection SYSTEM "connection.xml">
+<!ENTITY how_to SYSTEM "how_to.xml">
+<!ENTITY extensions SYSTEM "extensions.xml">
+<!ENTITY tasks SYSTEM "tasks.xml">
+<!ENTITY references SYSTEM "references.xml"> 
+<!ENTITY summary SYSTEM "summary.xml"> 
 <!ENTITY seamlink "../../seam/html_single/index.html">
 <!ENTITY aslink "../../as/html_single/index.html">
 <!ENTITY esblink "../../esb_ref_guide/html_single/index.html">
