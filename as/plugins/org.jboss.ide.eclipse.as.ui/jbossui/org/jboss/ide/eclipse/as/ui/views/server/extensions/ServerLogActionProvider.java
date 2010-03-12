@@ -93,7 +93,8 @@ public class ServerLogActionProvider extends CommonActionProvider {
 							part = page.showView(ServerLogView.VIEW_ID);
 						} catch (PartInitException e) {
 						}
-					} else /* if (part != null) */ {
+					} 
+					if (part != null) {
 						ServerLogView view = (ServerLogView) part.getAdapter(ServerLogView.class);
 						if (view != null) {
 							view.setFocus();
