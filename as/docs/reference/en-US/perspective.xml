@@ -20,21 +20,21 @@
             perspective</property>, but it contains a few additional views. Two of the additional
         views are standard views, specifically the <property>Console view</property> and the
             <property>Properties view</property>. The other two views that are added are the
-            <property>Project archives view</property> and the <property>JBoss Server
-            View</property>.</para>
+            <property>Project archives view</property> and the <property>Servers
+            </property> view.</para>
 
     <section id="JBossServerView" role="updated">
         <?dbhtml filename="JBossServerView.html"?>
-        <title>The JBoss Server View</title>
+        <title>The Servers view</title>
 
-        <para>The <property>JBoss Server View</property> is built on Common Navigator Framework
+        <para>The <property>Servers</property> view is built on Common Navigator Framework
             allowing extensions and is using label decorators what makes the UI enough compact
             without loosing the vital information.</para>
 
-        <para>Let&apos;s have a look at the <property>JBoss Server View</property> and inspect
+        <para>Let&apos;s have a look at the <property>Servers</property> view and inspect
             in detail all parts it consists of. </para>
         <figure>
-            <title>The JBoss Server View</title>
+            <title>The Servers view</title>
             <mediaobject>
                 <imageobject>
                     <imagedata fileref="images/perspective/perspective_1.png"/>
@@ -43,14 +43,14 @@
         </figure>
 
         <section id="jbossserver_view_toolbar">
-            <title>JBoss Server View Toolbar</title>
-            <para>In the right top corner of the <property>JBoss Server View</property> there is a
+            <title>Servers view Toolbar</title>
+            <para>In the right top corner of the <property>Servers</property> view there is a
                 special toolbar which provides a quick access to starting a server (in the debug
                 mode, run mode, or profile mode), restarting a server, stopping a server and a
                 possibility to publish to a server.</para>
 
             <figure>
-                <title>The JBoss Server View Toolbar</title>
+                <title>The Servers view Toolbar</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_2.png"/>
@@ -78,13 +78,13 @@
         </section>
 
         <section id="jbossserver_view_structure">
-            <title>JBoss Server View Structure</title>
-            <para>The <property>JBoss Server View</property> displays all declared servers as well
+            <title>Servers view Structure</title>
+            <para>The <property>Servers</property> view displays all declared servers as well
                 as their current states (that is whether they are started or stopped) and statuses
                 in the square brackets next to a server name.</para>
 
             <figure>
-                <title>The JBoss Server View</title>
+                <title>The Servers view</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_1.png"/>
@@ -294,7 +294,7 @@
                 </tgroup>
             </table>
 
-            <para>Under the server element in the <property>JBoss Server View</property>, you can
+            <para>Under the server element in the <property>Servers</property> view, you can
                 see currently deployed to the server modules and some server extensions which
                 provide the additional information on the server.</para>
 
@@ -315,7 +315,7 @@
 
                 <para>The <emphasis>
                         <property>Filesets</property>
-                    </emphasis> category in the <property>JBoss Server View</property> is intended
+                </emphasis> category in the <property>Servers</property> view is intended
                     for files filtering.</para>
 
                 <para>To add a new file filter, right-click the <emphasis>
@@ -364,7 +364,7 @@
             	
                 <para>After the filter is created, you can observe it by expanding the <emphasis>
                         <property>Filesets</property>
-                    </emphasis> category in the <property>JBoss Server View</property>.</para>
+                    </emphasis> category in the <property>Servers</property> view.</para>
 
                 <para>It&apos;s possible now to edit files directly from the <emphasis>
                         <property>Filesets</property>
@@ -465,7 +465,7 @@
                         <property>XML Configuration</property>
                     </emphasis> category makes possible to disable it. You can disable any category
                     in the bottom part of the <emphasis>
-                        <property>JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                        <property>Servers</property> view.</emphasis> Look for them in the <emphasis>
                         <property>Inactive Categories</property>
                     </emphasis> afterwards to re-enable.</para>
 
@@ -566,14 +566,14 @@
         </section>
 
         <section id="dragndrop_to_jboss_server_view">
-            <title>Drag-n-Drop to JBoss Server View</title>
+            <title>Drag-n-Drop to Servers view</title>
 
             <para>Starting from 2.0.0.CR2 version of <property>JBoss AS Tools</property> the
-                    <property>JBoss Server View</property> supports drag-n-drop of deployable and
+                    <property>Servers</property> view supports drag-n-drop of deployable and
                 runnable projects/resources.</para>
 
             <figure>
-                <title>Dragging to the JBoss Server View</title>
+                <title>Dragging to the Servers view</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/dnd_toJBossServerView.png"/>

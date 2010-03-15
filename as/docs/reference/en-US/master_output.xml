@@ -100,7 +100,7 @@
           
           <row>
             <entry><para>JBoss AS Perspective</para></entry>
-            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and JBoss Server View for that purpose. </para></entry>
+            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and Servers view for that purpose. </para></entry>
             <entry>
               <link linkend="perspective">JBoss AS perspective</link>
             </entry>
@@ -142,7 +142,7 @@
     <title>Starting JBoss Server</title>
 
     <para>Starting <property moreinfo="none">JBoss Server</property> is quite simple. You can control the server
-      behaviour with the help of a special toolbar in the <property moreinfo="none">JBoss Server View</property>
+      behaviour with the help of a special toolbar in the <property moreinfo="none">Servers</property> view
       where you could <emphasis>
         <property moreinfo="none">start</property>
       </emphasis> it in a regular or debug mode, <emphasis>
@@ -154,7 +154,7 @@
       </emphasis> to the server.</para>
 
     <figure float="0">
-      <title>JBoss Server Toolbar</title>
+      <title>Servers Toolbar</title>
       <mediaobject>
         <imageobject>
           <imagedata fileref="images/quick_start/quick_start_1.png"></imagedata>
@@ -162,11 +162,11 @@
       </mediaobject>
     </figure>
 
-    <para>To launch the server click the green-with-white-arrow icon on the <property moreinfo="none">JBoss Server
-        View </property>or right click server name in this view and select <emphasis>
+    <para>To launch the server click the green-with-white-arrow icon on the <property moreinfo="none">Servers
+        </property> view or right click server name in this view and select <emphasis>
         <property moreinfo="none">Start</property>. </emphasis> If this view is not open, select
           <emphasis><property moreinfo="none">Window &gt; Show View &gt; Other &gt; Server &gt;
-          JBoss Server View</property>.</emphasis></para>
+          Servers</property>.</emphasis></para>
 
     <figure float="0">
       <title>Start JBoss Server</title>
@@ -184,7 +184,7 @@
 
     <para>To stop the server, click the <emphasis>
         <property moreinfo="none">Stop</property>
-      </emphasis> icon in the <property moreinfo="none">JBoss Server View</property> or right click the server name
+      </emphasis> icon in the <property moreinfo="none">Servers</property> view or right click the server name
       and press <emphasis><property moreinfo="none">Stop</property>.</emphasis></para>
 
     <figure float="0">
@@ -199,8 +199,8 @@
     <para>When the server is stopped you will see <emphasis>
         <property moreinfo="none">Stopped</property>
       </emphasis> state next to its name in the square brackets.</para>
-    <para>Learn more about the <property moreinfo="none">JBoss Server View</property>
-      <link linkend="JBossServerView">here</link>.</para>
+    <para>Learn more about the <property moreinfo="none">Servers</property> view
+      <link linkend="ServersView">here</link>.</para>
   </section>
 
   <section id="archiving">
@@ -296,7 +296,7 @@
     </figure>
 
     <para>You can deploy an existing application to a server by right-clicking the target defined
-      server in the <property moreinfo="none">JBoss Servers View</property> and then selecting <emphasis><property moreinfo="none">Add and
+      server in the <property moreinfo="none">Servers</property> view and then selecting <emphasis><property moreinfo="none">Add and
         Remove Projects</property></emphasis> from the context menu.</para>
 
     <figure float="0">
@@ -719,21 +719,21 @@
             perspective</property>, but it contains a few additional views. Two of the additional
         views are standard views, specifically the <property moreinfo="none">Console view</property> and the
             <property moreinfo="none">Properties view</property>. The other two views that are added are the
-            <property moreinfo="none">Project archives view</property> and the <property moreinfo="none">JBoss Server
-            View</property>.</para>
+            <property moreinfo="none">Project archives view</property> and the <property moreinfo="none">Servers
+            </property> view.</para>
 
-    <section id="JBossServerView" role="updated">
+    <section id="ServersView" role="updated">
         <?dbhtml filename="JBossServerView.html"?>
-        <title>The JBoss Server View</title>
+        <title>The Servers view</title>
 
-        <para>The <property moreinfo="none">JBoss Server View</property> is built on Common Navigator Framework
+        <para>The <property moreinfo="none">Servers</property> view is built on Common Navigator Framework
             allowing extensions and is using label decorators what makes the UI enough compact
             without loosing the vital information.</para>
 
-        <para>Let's have a look at the <property moreinfo="none">JBoss Server View</property> and inspect
+        <para>Let's have a look at the <property moreinfo="none">Servers</property> view and inspect
             in detail all parts it consists of. </para>
         <figure float="0">
-            <title>The JBoss Server View</title>
+            <title>The Servers view</title>
             <mediaobject>
                 <imageobject>
                     <imagedata fileref="images/perspective/perspective_1.png"></imagedata>
@@ -742,14 +742,14 @@
         </figure>
 
         <section id="jbossserver_view_toolbar">
-            <title>JBoss Server View Toolbar</title>
-            <para>In the right top corner of the <property moreinfo="none">JBoss Server View</property> there is a
+            <title>Servers view Toolbar</title>
+            <para>In the right top corner of the <property moreinfo="none">Servers</property> view there is a
                 special toolbar which provides a quick access to starting a server (in the debug
                 mode, run mode, or profile mode), restarting a server, stopping a server and a
                 possibility to publish to a server.</para>
 
             <figure float="0">
-                <title>The JBoss Server View Toolbar</title>
+                <title>The Servers view Toolbar</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_2.png"></imagedata>
@@ -777,13 +777,13 @@
         </section>
 
         <section id="jbossserver_view_structure">
-            <title>JBoss Server View Structure</title>
-            <para>The <property moreinfo="none">JBoss Server View</property> displays all declared servers as well
+            <title>Servers view Structure</title>
+            <para>The <property moreinfo="none">Servers</property> view displays all declared servers as well
                 as their current states (that is whether they are started or stopped) and statuses
                 in the square brackets next to a server name.</para>
 
             <figure float="0">
-                <title>The JBoss Server View</title>
+                <title>The Servers view</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/perspective_1.png"></imagedata>
@@ -993,7 +993,7 @@
                 </tgroup>
             </table>
 
-            <para>Under the server element in the <property moreinfo="none">JBoss Server View</property>, you can
+            <para>Under the server element in the <property moreinfo="none">Servers</property> view, you can
                 see currently deployed to the server modules and some server extensions which
                 provide the additional information on the server.</para>
 
@@ -1014,7 +1014,7 @@
 
                 <para>The <emphasis>
                         <property moreinfo="none">Filesets</property>
-                    </emphasis> category in the <property moreinfo="none">JBoss Server View</property> is intended
+                    </emphasis> category in the <property moreinfo="none">Servers</property> view is intended
                     for files filtering.</para>
 
                 <para>To add a new file filter, right-click the <emphasis>
@@ -1063,7 +1063,7 @@
             	
                 <para>After the filter is created, you can observe it by expanding the <emphasis>
                         <property moreinfo="none">Filesets</property>
-                    </emphasis> category in the <property moreinfo="none">JBoss Server View</property>.</para>
+                    </emphasis> category in the <property moreinfo="none">Servers</property> view.</para>
 
                 <para>It's possible now to edit files directly from the <emphasis>
                         <property moreinfo="none">Filesets</property>
@@ -1164,7 +1164,7 @@
                         <property moreinfo="none">XML Configuration</property>
                     </emphasis> category makes possible to disable it. You can disable any category
                     in the bottom part of the <emphasis>
-                        <property moreinfo="none">JBoss Server View</property>.</emphasis> Look for them in the <emphasis>
+                        <property moreinfo="none">Servers</property> view.</emphasis> Look for them in the <emphasis>
                         <property moreinfo="none">Inactive Categories</property>
                     </emphasis> afterwards to re-enable.</para>
 
@@ -1265,14 +1265,14 @@
         </section>
 
         <section id="dragndrop_to_jboss_server_view">
-            <title>Drag-n-Drop to JBoss Server View</title>
+            <title>Drag-n-Drop to Servers view</title>
 
             <para>Starting from 2.0.0.CR2 version of <property moreinfo="none">JBoss AS Tools</property> the
-                    <property moreinfo="none">JBoss Server View</property> supports drag-n-drop of deployable and
+                    <property moreinfo="none">Servers</property> view supports drag-n-drop of deployable and
                 runnable projects/resources.</para>
 
             <figure float="0">
-                <title>Dragging to the JBoss Server View</title>
+                <title>Dragging to the Servers view</title>
                 <mediaobject>
                     <imageobject>
                         <imagedata fileref="images/perspective/dnd_toJBossServerView.png"></imagedata>
@@ -2203,13 +2203,13 @@
 
 	</section>
 	<section>
-		<title>Deploying with JBoss Server View</title>
-		<para>As it has been already mentioned <property moreinfo="none">JBoss Server View</property> contains two
+		<title>Deploying with Servers view</title>
+		<para>As it has been already mentioned <property moreinfo="none">Servers</property> view contains two
 			parts: the top part that displays all defined servers and the bottom part which provides
 			categories with additional information. Thus, in this section we suggest two more ways
 			to deploy resources onto the server.</para>
 		<section>
-			<title>Top part of JBoss Server View</title>
+			<title>Top part of Servers view</title>
 			<para>In the top part of the <property moreinfo="none">JBoss Servers View</property> like in the Servers
 				View you should right click on a server and select the <emphasis>
 					<property moreinfo="none">Add and Remove Projects</property>
@@ -2235,9 +2235,9 @@
 		</section>
 
 		<section>
-			<title>Bottom part of JBoss Server View</title>
+			<title>Bottom part of Servers view</title>
 			<para>In the bottom part of <emphasis>
-					<property moreinfo="none">JBoss Server View</property>
+					<property moreinfo="none">Servers</property> view
 				</emphasis> there is a category called <emphasis>
 					<property moreinfo="none">Modules</property>
 				</emphasis> which should display all currently-published modules on the server.
