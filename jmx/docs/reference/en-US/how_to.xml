@@ -87,8 +87,7 @@
             be found in the AS Tools section, however, the short summary is: </para>
         <itemizedlist>
             <listitem>
-                <para>Open the <property>JBoss Servers View</property> or the <property>Servers
-                        View</property></para>
+                <para>Open the <property>Servers</property> view</para>
             </listitem>
 
             <listitem>
@@ -110,7 +109,7 @@
 
             <listitem>
                 <para>Finish the wizard and note that you have a new entry in both the
-                        <property>JBoss Server View</property> and the <property>MBean
+                        <property>Servers</property> view and the <property>MBean
                         Explorer</property></para>
             </listitem>
             

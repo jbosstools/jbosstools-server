@@ -276,8 +276,7 @@
             be found in the AS Tools section, however, the short summary is: </para>
         <itemizedlist>
             <listitem>
-                <para>Open the <property moreinfo="none">JBoss Servers View</property> or the <property moreinfo="none">Servers
-                    View</property></para>
+                <para>Open the <property moreinfo="none">Servers</property> view</para>
             </listitem>
             
             <listitem>
@@ -299,7 +298,7 @@
             
             <listitem>
                 <para>Finish the wizard and note that you have a new entry in both the
-                    <property moreinfo="none">JBoss Server View</property> and the <property moreinfo="none">MBean
+                    <property moreinfo="none">Servers</property> view and the <property moreinfo="none">MBean
                         Explorer</property></para>
             </listitem>
             
