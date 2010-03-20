@@ -98,10 +98,12 @@
 
             <listitem>
                 <para>In the <emphasis>
+                    <property>JBoss Enterprise Middleware</property>
+                </emphasis> or in <emphasis>
                         <property>JBoss Community</property>
-                    </emphasis> section, select a server version</para>
+                    </emphasis> section, select a server profile</para>
             </listitem>
-
+            
             <listitem>
                 <para>If a runtime has not yet been created, you&apos;ll be prompted for the
                     server's home directory, JDK, and configuration</para>
@@ -112,7 +114,7 @@
                         <property>Servers</property> view and the <property>MBean
                         Explorer</property></para>
             </listitem>
-            
+
             <listitem>
                 <para>Start the server by right-clicking it and selecting <emphasis>
                     <property>Start</property></emphasis></para>
