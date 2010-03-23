@@ -1,3 +1,4 @@
+Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %BundleName
 Bundle-SymbolicName: org.jboss.tools.jmx.core;singleton:=true
