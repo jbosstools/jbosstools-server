@@ -16,10 +16,11 @@
             property <emphasis>
                 <property>com.sun.management.jmxremote.ssl</property>
             </emphasis> is set to false. </para>
-        <para>More information to manage Tomcat can be found in Tomcat management
-            documentation.</para>
-        <para>Instructions to manage remotely Tomcat are available in Tomcat&apos;s monitoring
-            documentation.</para>
+        <para>More information to manage Tomcat can be found in 
+            <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/">
+                Tomcat management</ulink> documentation.</para>
+        <para>Instructions to manage remotely Tomcat are available in 
+            <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/monitoring.html.">Tomcat&apos;s monitoring</ulink> documentation.</para>
 
     </section>
 

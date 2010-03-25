@@ -42,10 +42,9 @@
             property <emphasis>
                 <property>com.sun.management.jmxremote.ssl</property>
             </emphasis> is set to false. </para>
-        <para>More information to manage Tomcat can be found in Tomcat management
-            documentation.</para>
-        <para>Instructions to manage remotely Tomcat are available in Tomcat&apos;s monitoring
-            documentation.</para>
+        <para>More information to manage Tomcat can be found in <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat management documentation</ulink>.</para>
+        <para>Instructions to manage remotely Tomcat are available in <ulink url="http://tomcat.apache.org/tomcat-6.0-doc/monitoring.html">Tomcat&apos;s monitoring documentation</ulink>.</para>
+        
         
     </section>
     
@@ -62,13 +61,13 @@
                 </emphasis> and select the <property>JMX perspective</property></para>
             </listitem>
             
-            <listitem>
+            <!--<listitem>
                 <para>Select <emphasis>
                     <property>JMX Server &gt; Open Connection</property>
                 </emphasis> and click on <emphasis>
                     <property>OK</property>
                 </emphasis></para>
-            </listitem>
+            </listitem>-->
             
             <listitem>
                 <para>Switch to the <property>MBean Explorer</property> by going to <emphasis>
@@ -124,6 +123,8 @@
             
             <listitem>
                 <para>In the <emphasis>
+                    <property>JBoss Enterprise Middleware</property>
+                </emphasis> or in <emphasis>
                     <property>JBoss Community</property>
                 </emphasis> section, select a server version</para>
             </listitem>
