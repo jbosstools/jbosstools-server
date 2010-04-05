@@ -69,8 +69,7 @@
   		chapter.</para>
   	
   	<para>To start working with JBoss AS, select a <property>JBoss AS Perspective</property> via
-  		<emphasis><property>Window > Open Perspective > Other > JBoss
-  			AS</property>.</emphasis></para>
+  		<emphasis><property>Window > Show View > Other > Server > Servers</property>.</emphasis></para>
   </section>
 
   <section id="starting">
