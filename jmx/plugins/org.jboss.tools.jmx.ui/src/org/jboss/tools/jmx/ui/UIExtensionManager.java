@@ -34,14 +34,17 @@ public class UIExtensionManager {
 	private static final String NAME = "name"; //$NON-NLS-1$
 	private static final String ICON = "icon"; //$NON-NLS-1$
 	private static final String CLASS = "class";  //$NON-NLS-1$
+	private static final String EDITABLE = "editable";  //$NON-NLS-1$
 	public static class ConnectionProviderUI {
 		String id, name, icon;
+		boolean editable;
 		IConfigurationElement[] wizardPages;
 		ImageDescriptor imageDescriptor;
 		public ConnectionProviderUI(IConfigurationElement element) {
 			id = element.getAttribute(ID);
 			name = element.getAttribute(NAME);
 			icon = element.getAttribute(ICON);
+			editable = Boolean.parseBoolean(element.getAttribute(EDITABLE));
 			wizardPages = element.getChildren();
 			String pluginName = element.getDeclaringExtension().getContributor().getName();
 			imageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(pluginName, icon);
@@ -55,6 +58,10 @@ public class UIExtensionManager {
 		public String getIcon() {
 			return icon;
 		}
+		public boolean isEditable() {
+			return editable;
+		}
+		
 		public ImageDescriptor getImageDescriptor() {
 			return imageDescriptor;
 		}

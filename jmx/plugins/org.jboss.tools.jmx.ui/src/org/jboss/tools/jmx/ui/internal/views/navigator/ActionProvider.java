@@ -13,7 +13,6 @@ package org.jboss.tools.jmx.ui.internal.views.navigator;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
@@ -23,8 +22,11 @@ import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionConstants;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
+import org.jboss.tools.jmx.ui.UIExtensionManager;
+import org.jboss.tools.jmx.ui.UIExtensionManager.ConnectionProviderUI;
 import org.jboss.tools.jmx.ui.internal.actions.DeleteConnectionAction;
 import org.jboss.tools.jmx.ui.internal.actions.DoubleClickAction;
+import org.jboss.tools.jmx.ui.internal.actions.EditConnectionAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerConnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.MBeanServerDisconnectAction;
 import org.jboss.tools.jmx.ui.internal.actions.NewConnectionAction;
@@ -60,7 +62,12 @@ public class ActionProvider extends CommonActionProvider {
 	    		menu.add(new MBeanServerConnectAction(connections));
 	    	else if( allControlable(connections))
 	    		menu.add(new MBeanServerDisconnectAction(connections));
-
+	    	if( connections.length == 1 ) {
+	    		String id = connections[0].getProvider().getId();
+	    		ConnectionProviderUI ui = UIExtensionManager.getConnectionProviderUI(id);
+	    		if( ui != null && ui.isEditable() && !connections[0].isConnected()) 
+	    			menu.add(new EditConnectionAction(connections[0]));
+	    	}
 	    	menu.add(new DeleteConnectionAction(connections));
     	}
 
