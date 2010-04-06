@@ -98,6 +98,7 @@ public class MainPreferencePage extends PropertyPage implements
 		showProjectRoot.setSelection(
 				PrefsInitializer.getBoolean(PrefsInitializer.PREF_SHOW_PROJECT_ROOT, getElement(), false));
 		enableDefaultExcludes.setSelection(PrefsInitializer.getBoolean(PrefsInitializer.PREF_USE_DEFAULT_EXCLUDES, getElement(), false));
+		showNodeOnAllProjects.setSelection(PrefsInitializer.getBoolean(PrefsInitializer.PREF_ALWAYS_SHOW_PROJECT_EXPLORER_NODE, getElement(), false));
 		defaultExcludes.setText(PrefsInitializer.getString(PrefsInitializer.PREF_DEFAULT_EXCLUDE_LIST, getElement(), true));
 		showAllProjects.setEnabled(showProjectRoot.getSelection());
 		if (!showProjectRoot.getSelection())
