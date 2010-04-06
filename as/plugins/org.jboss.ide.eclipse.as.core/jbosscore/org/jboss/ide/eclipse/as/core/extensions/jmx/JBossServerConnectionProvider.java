@@ -192,4 +192,7 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	public boolean canDelete(IConnectionWrapper wrapper) {
 		return false;
 	}
+	public void connectionChanged(IConnectionWrapper connection) {
+		// do nothing
+	}
 }

@@ -35,7 +35,6 @@ import org.jboss.tools.jmx.core.tree.NodeUtils;
 import org.jboss.tools.jmx.core.tree.Root;
 
 public class DefaultConnectionWrapper implements IConnectionWrapper {
-	private JMXServiceURL url;
 	private JMXConnector connector;
 	private MBeanServerConnection connection;
 	private Root root;
@@ -55,8 +54,6 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
             String[] credentials = new String[] { username, descriptor.getPassword() };
             environment.put(JMXConnector.CREDENTIALS, credentials);
         }
-
-		url = new JMXServiceURL(descriptor.getURL());
 	}
 
 	public MBeanServerConnectionDescriptor getDescriptor() {
@@ -77,7 +74,7 @@ public class DefaultConnectionWrapper implements IConnectionWrapper {
 
 	public synchronized void connect() throws IOException {
 		// try to connect
-        connector = JMXConnectorFactory.connect(url, environment);
+        connector = JMXConnectorFactory.connect(new JMXServiceURL(descriptor.getURL()), environment);
         connection = connector.getMBeanServerConnection();
 		isConnected = true;
 		((DefaultConnectionProvider)getProvider()).fireChanged(this);

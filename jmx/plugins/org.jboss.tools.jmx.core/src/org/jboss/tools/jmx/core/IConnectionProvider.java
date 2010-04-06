@@ -69,6 +69,8 @@ public interface IConnectionProvider {
 	 */
 	public void addConnection(IConnectionWrapper connection);
 	public void removeConnection(IConnectionWrapper connection);
+	public void connectionChanged(IConnectionWrapper connection);
+	
 
 	public void addListener(IConnectionProviderListener listener);
 	public void removeListener(IConnectionProviderListener listener);

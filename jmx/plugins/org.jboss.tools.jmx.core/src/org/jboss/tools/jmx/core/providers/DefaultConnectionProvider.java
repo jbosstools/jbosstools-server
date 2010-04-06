@@ -91,6 +91,10 @@ public class DefaultConnectionProvider implements IConnectionProvider {
 	public boolean canDelete(IConnectionWrapper wrapper) {
 		return wrapper instanceof DefaultConnectionWrapper;
 	}
+	
+	public boolean canEdit(IConnectionWrapper wrapper) {
+		return wrapper instanceof DefaultConnectionWrapper;
+	}
 
 	public DefaultConnectionWrapper createConnection(Map map) throws CoreException {
 		String id = (String)map.get(ID);
@@ -147,6 +151,17 @@ public class DefaultConnectionProvider implements IConnectionProvider {
 				fireRemoved(connection);
 			} catch( IOException ioe ) {
 				IStatus s = new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DefaultConnection_ErrorRemoving, ioe);
+				JMXActivator.log(s);
+			}
+		}
+	}
+	public void connectionChanged(IConnectionWrapper connection) {
+		if( connection instanceof DefaultConnectionWrapper ) {
+			try {
+				save();
+				fireChanged(connection);
+			} catch( IOException ioe ) {
+				IStatus s = new Status(IStatus.ERROR, JMXActivator.PLUGIN_ID, JMXCoreMessages.DefaultConnection_ErrorChanging, ioe);
 				JMXActivator.log(s);
 			}
 		}

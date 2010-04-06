@@ -17,10 +17,10 @@ public class MBeanServerConnectionDescriptor implements Serializable {
 
     private static final long serialVersionUID = -8358701879017195518L;
 
-    private final String id;
-    private final String url;
-    private final String userName;
-    private final String password;
+    private String id;
+    private String url;
+    private String userName;
+	private String password;
 
     public MBeanServerConnectionDescriptor(
     		String id, String url,
@@ -30,6 +30,22 @@ public class MBeanServerConnectionDescriptor implements Serializable {
         this.userName = userName;
         this.password = password;
     }
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
     public String getID() {
         return id;
