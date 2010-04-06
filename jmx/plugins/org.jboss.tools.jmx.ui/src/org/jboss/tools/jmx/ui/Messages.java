@@ -11,6 +11,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	public static String NewConnectionAction;
+	public static String EditConnectionAction;
 	public static String NewConnectionWizard;
 	public static String NewConnectionWizard_CreateNewConnection;
 	public static String DefaultConnectionWizardPage_Title;

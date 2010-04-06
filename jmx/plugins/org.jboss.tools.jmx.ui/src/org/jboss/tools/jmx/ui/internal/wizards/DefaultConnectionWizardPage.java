@@ -14,7 +14,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -35,22 +34,29 @@ import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionWrapper;
 import org.jboss.tools.jmx.core.providers.DefaultConnectionProvider;
-import org.jboss.tools.jmx.ui.ConnectionWizardPage;
+import org.jboss.tools.jmx.core.providers.DefaultConnectionWrapper;
+import org.jboss.tools.jmx.ui.IEditableConnectionWizardPage;
 import org.jboss.tools.jmx.ui.Messages;
 
 /**
  * The connection page for the default wizard implementation.
  */
 public class DefaultConnectionWizardPage extends WizardPage implements
-		ConnectionWizardPage {
+		IEditableConnectionWizardPage {
 	private static final String _BLANK_ = ""; //$NON-NLS-1$
+	private static final String SIMPLE_PREFIX = "service:jmx:rmi:///jndi/rmi://"; //$NON-NLS-1$
+	private static final String SIMPLE_SUFFIX = "/jmxrmi"; //$NON-NLS-1$
 	private TabFolder folder;
 	private TabItem simpleItem, advancedItem;
 	private Text hostText, portText, urlText;
 	private Text nameText, userNameText, passwordText;
 	private Text advancedNameText, advancedUserNameText, advancedPasswordText;
 	private String name, url, userName, password;
-
+	private DefaultConnectionWrapper initialConnection;
+	public void setInitialConnection(IConnectionWrapper wrapper) {
+		this.initialConnection = (DefaultConnectionWrapper)wrapper;
+	}
+	
 	private void addListeners() {
 		ModifyListener listener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -120,7 +126,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		nameLabel.setText(Messages.DefaultConnectionWizardPage_Name);
 
 		nameText = new Text(fieldComposite, SWT.BORDER);
-		nameText.setText(getNextName());
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		nameText.setLayoutData(data);
@@ -131,7 +136,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// 2 host text entry
 		hostText = new Text(fieldComposite, SWT.BORDER);
-		hostText.setText("localhost"); //$NON-NLS-1$
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		hostText.setLayoutData(data);
@@ -143,7 +147,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		// 4 port text entry
 		portText = new Text(fieldComposite, SWT.BORDER);
 		portText.setTextLimit(5);
-		portText.setText("3000"); //$NON-NLS-1$
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		portText.setLayoutData(data);
@@ -154,7 +157,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// 6 user name text entry
 		userNameText = new Text(fieldComposite, SWT.BORDER);
-		userNameText.setText(_BLANK_);
 
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
@@ -166,13 +168,30 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// 8 user name text entry
 		passwordText = new Text(fieldComposite, SWT.BORDER | SWT.PASSWORD);
-		passwordText.setText(_BLANK_);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		passwordText.setLayoutData(data);
 
+		
+		if( initialConnection == null ) {
+			nameText.setText(getNextName());
+			hostText.setText("localhost"); //$NON-NLS-1$
+			portText.setText("3000"); //$NON-NLS-1$
+			userNameText.setText(_BLANK_);
+			passwordText.setText(_BLANK_);
+		} else {
+			nameText.setText(initialConnection.getDescriptor().getID());
+			userNameText.setText(initialConnection.getDescriptor().getUserName());
+			passwordText.setText(initialConnection.getDescriptor().getPassword());
+			String url = initialConnection.getDescriptor().getURL();
+			if( url.startsWith(SIMPLE_PREFIX)) {
+				String host = url.substring(SIMPLE_PREFIX.length(), url.indexOf(":", SIMPLE_PREFIX.length())); //$NON-NLS-1$
+				String port = url.substring(url.indexOf(":", SIMPLE_PREFIX.length())+1, url.indexOf("/", SIMPLE_PREFIX.length()));//$NON-NLS-1$//$NON-NLS-2$
+				hostText.setText(host);
+				portText.setText(port);
+			}
+		}
 		return fieldComposite;
-
 	}
 
 	private Control createAdvancedConnectionPage(Composite parent) {
@@ -197,7 +216,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// 2 URL text entry
 		urlText = new Text(fieldComposite, SWT.BORDER);
-		urlText.setText("service:jmx:rmi:"); //$NON-NLS-1$
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		urlText.setLayoutData(data);
@@ -208,7 +226,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 		// 4 user name text entry
 		advancedUserNameText = new Text(fieldComposite, SWT.BORDER);
-		advancedUserNameText.setText(_BLANK_);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		advancedUserNameText.setLayoutData(data);
@@ -220,11 +237,19 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 		// 6 user name text entry
 		advancedPasswordText = new Text(fieldComposite, SWT.BORDER
 				| SWT.PASSWORD);
-		advancedPasswordText.setText(_BLANK_);
 		data = new GridData(GridData.FILL_HORIZONTAL);
 		data.grabExcessHorizontalSpace = true;
 		advancedPasswordText.setLayoutData(data);
 
+		if( initialConnection == null ) {
+			urlText.setText("service:jmx:rmi:"); //$NON-NLS-1$
+			advancedUserNameText.setText(_BLANK_);
+			advancedPasswordText.setText(_BLANK_);
+		} else {
+			urlText.setText(initialConnection.getDescriptor().getURL());
+			userNameText.setText(initialConnection.getDescriptor().getUserName());
+			passwordText.setText(initialConnection.getDescriptor().getPassword());
+		}
 		return fieldComposite;
 	}
 
@@ -241,7 +266,6 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 	}
 
 	protected void validate() {
-		// TODO Validation
 		if (folder.getSelectionIndex() == 0) {
 			name = nameText.getText();
 			userName = userNameText.getText();
@@ -267,7 +291,7 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 				showError(Messages.DefaultConnectionWizardPage_Blank_Invalid);
 				return;
 			}
-			url = "service:jmx:rmi:///jndi/rmi://" + host + ":" + port + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			url = SIMPLE_PREFIX + host + ":" + port + SIMPLE_SUFFIX; //$NON-NLS-1$ 
 		} else if (folder.getSelectionIndex() == 1) {
 			name = advancedNameText.getText();
 			userName = advancedUserNameText.getText();
@@ -315,35 +339,32 @@ public class DefaultConnectionWizardPage extends WizardPage implements
 
 	protected boolean nameTaken(String s) {
 		IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
-		IConnectionWrapper[] connections = provider.getConnections();
-		for( int i = 0; i < connections.length; i++ ) {
-			if( provider.getName(connections[i]).equals(s)) {
-				return true;
+		if( initialConnection == null || !s.equals(provider.getName(initialConnection))) {
+			IConnectionWrapper[] connections = provider.getConnections();
+			for( int i = 0; i < connections.length; i++ ) {
+				if( provider.getName(connections[i]).equals(s)) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
-	String getURL() {
-		return url;
-	}
-
-	String getUserName() {
-		return userName;
-	}
-
-	String getPassword() {
-		return password;
-	}
-
 	public IConnectionWrapper getConnection() throws CoreException {
-		HashMap<String,String> map = new HashMap<String,String>();
-		map.put(DefaultConnectionProvider.ID, name);
-		map.put(DefaultConnectionProvider.URL, url);
-		map.put(DefaultConnectionProvider.USERNAME, userName);
-		map.put(DefaultConnectionProvider.PASSWORD, password);
-		IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
-
-		return provider.createConnection(map);
+		if( initialConnection == null ) {
+			HashMap<String,String> map = new HashMap<String,String>();
+			map.put(DefaultConnectionProvider.ID, name);
+			map.put(DefaultConnectionProvider.URL, url);
+			map.put(DefaultConnectionProvider.USERNAME, userName);
+			map.put(DefaultConnectionProvider.PASSWORD, password);
+			IConnectionProvider provider = ExtensionManager.getProvider(DefaultConnectionProvider.PROVIDER_ID);
+	
+			return provider.createConnection(map);
+		}
+		initialConnection.getDescriptor().setId(name);
+		initialConnection.getDescriptor().setUrl(url);
+		initialConnection.getDescriptor().setUserName(userName);
+		initialConnection.getDescriptor().setPassword(password);
+		return initialConnection;
 	}
 }

@@ -18,6 +18,7 @@ public class JMXCoreMessages extends NLS {
 	public static String ExtensionManagerError1;
 	public static String DefaultConnection_ErrorAdding;
 	public static String DefaultConnection_ErrorRemoving;
+	public static String DefaultConnection_ErrorChanging;
 	public static String DefaultConnection_ErrorLoading;
 	public static String DefaultConnection_ErrorRunningJMXCode;
 	public static String ProblemWritingToFile;
