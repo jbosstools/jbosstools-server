@@ -35,7 +35,7 @@
           
           <row>
             <entry><para>JBoss AS Perspective</para></entry>
-            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and Servers view for that purpose. </para></entry>
+            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives view and Servers view for that purpose. </para></entry>
             <entry>
               <link linkend="perspective">JBoss AS perspective</link>
             </entry>
@@ -145,7 +145,7 @@
       plugin consists primarily of a view to set up each packaging configuration <emphasis>(
           <property>Window > Show View > Other > JBoss Tools > Project archives</property>).
       </emphasis></para>
-    <para>Right clicking in the <property>Project archives view</property> you can create War,
+    <para>Right clicking in the <property>Project archives</property> view you can create War,
       EJB War, EAR or JAR archive.</para>
 
     <figure>
@@ -186,7 +186,7 @@
   	<para>To perform the building of the project archives, select the project in the <property>Package Explorer</property> view and execute the hotkey combination 
   		you assigned for this action.</para>
   	
-  	<para>Learn more about the <property>Project Archives View</property>
+  	<para>Learn more about the <property>Project Archives</property> view
   		<link linkend="Project_archivesView">here</link>.</para>
   </section>
 	
