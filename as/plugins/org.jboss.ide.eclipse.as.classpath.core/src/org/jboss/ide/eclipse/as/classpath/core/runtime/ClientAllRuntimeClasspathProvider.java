@@ -14,12 +14,14 @@ package org.jboss.ide.eclipse.as.classpath.core.runtime;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -70,28 +72,36 @@ public class ClientAllRuntimeClasspathProvider
 		IPath loc = runtime.getLocation();
 		IPath configPath = jbsrt.getConfigurationFullPath();
 		String rtID  = runtime.getRuntimeType().getId();
-		if(AS_32.equals(rtID)) return get32(loc, configPath);
-		if(AS_40.equals(rtID)) return get40(loc,configPath);
-		if(AS_42.equals(rtID)) return get42(loc,configPath);
-		if(AS_50.equals(rtID)) return get50(loc,configPath);
-		if(EAP_43.equals(rtID)) return getEAP43(loc,configPath);
+		List<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+		if(AS_32.equals(rtID)) list = get32(loc, configPath);
+		if(AS_40.equals(rtID)) list = get40(loc,configPath);
+		if(AS_42.equals(rtID)) list = get42(loc,configPath);
+		if(AS_50.equals(rtID)) list = get50(loc,configPath);
+		if(EAP_43.equals(rtID)) list = getEAP43(loc,configPath);
 		
 		// Added cautiously, not sure on changes, may change
-		if(AS_51.equals(rtID)) return get50(loc,configPath);
-		if(AS_60.equals(rtID)) return get50(loc,configPath);
-		if(EAP_50.equals(rtID)) return get50(loc,configPath);
-		return null;
+		if(AS_51.equals(rtID)) list = get50(loc,configPath);
+		if(AS_60.equals(rtID)) list = get60(loc,configPath);
+		if(EAP_50.equals(rtID)) list = get50(loc,configPath);
+		
+		if( list == null )
+			return null;
+		Collections.sort(list, new Comparator<IClasspathEntry>() {
+			public int compare(IClasspathEntry o1, IClasspathEntry o2) {
+				return o1.getPath().lastSegment().compareTo(o2.getPath().lastSegment());
+			} });
+		return list.toArray(new IClasspathEntry[list.size()]);
 	}
 	
-	protected IClasspathEntry[] get32(IPath location, IPath configPath) {
+	protected List<IClasspathEntry> get32(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		addEntries(location.append(CLIENT), list);
 		addEntries(location.append(LIB), list);
 		addEntries(configPath.append(LIB), list);
-		return list.toArray(new IClasspathEntry[list.size()]);
+		return list;
 	}
 	
-	protected IClasspathEntry[] get40(IPath location, IPath configPath) {
+	protected List<IClasspathEntry> get40(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		IPath deployPath = configPath.append(DEPLOY);
 		addEntries(location.append(CLIENT), list);
@@ -100,18 +110,18 @@ public class ClientAllRuntimeClasspathProvider
 		addEntries(deployPath.append(JBOSS_WEB_DEPLOYER).append(JSF_LIB), list);
 		addEntries(deployPath.append(AOP_JDK5_DEPLOYER), list);
 		addEntries(deployPath.append(EJB3_DEPLOYER), list);
-		return list.toArray(new IClasspathEntry[list.size()]);
+		return list;
 	}
 
-	protected IClasspathEntry[] get42(IPath location, IPath configPath) {
+	protected List<IClasspathEntry> get42(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 
-	protected IClasspathEntry[] getEAP43(IPath location, IPath configPath) {
+	protected List<IClasspathEntry> getEAP43(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 	
-	protected IClasspathEntry[] get50(IPath location, IPath configPath) {
+	protected List<IClasspathEntry> get50(IPath location, IPath configPath) {
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		IPath deployerPath = configPath.append(DEPLOYERS);
 		IPath deployPath = configPath.append(DEPLOY);
@@ -125,7 +135,14 @@ public class ClientAllRuntimeClasspathProvider
 		addEntries(deployerPath.append(AS5_AOP_DEPLOYER), list);
 		addEntries(deployerPath.append(EJB3_DEPLOYER), list);
 		addEntries(deployerPath.append(WEBBEANS_DEPLOYER).append(JSR299_API_JAR), list);
-		return list.toArray(new IClasspathEntry[list.size()]);
+		return list;
+	}
+	
+	protected List<IClasspathEntry> get60(IPath location, IPath configPath) {
+		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+		list.addAll(get50(location, configPath));
+		addEntries(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
+		return list;
 	}
 	
 	protected IClasspathEntry getEntry(IPath path) {
