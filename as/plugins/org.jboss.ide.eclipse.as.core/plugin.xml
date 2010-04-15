@@ -875,16 +875,29 @@
 	     <public publicId="-//JBoss//DTD Web Application 4.2//EN"
 				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_4_2.dtd"
 				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"/>
-
-		 <uri 
-			    name="http://www.jboss.com/ws-security/schema/jboss-ws-security_1_0.xsd"
-			    uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ws-security_1_0.xsd"/>
-		 <uri 
-			    name="jaxws-config_2_0.xsd"
-                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jaxws-config_2_0.xsd"/>
-		 <uri 
-			    name="persistence_2_0.xsd"
-                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/persistence_2_0.xsd"/>
+				
+		 <uri name="http://java.sun.com/xml/ns/javaee/javaee_6.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/javaee_6.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/ejb-jar_3_1.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/application_6.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/application_6.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-common_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-common_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-common_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-app_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/javaee_web_services_client_1_3.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/javaee_web_services_client_1_3.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/jsp_2_2.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jsp_2_2.xsd"/>
+		 <uri name="http://www.jboss.com/ws-security/schema/jboss-ws-security_1_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ws-security_1_0.xsd"/>
+		 <uri name="jaxws-config_2_0.xsd"
+              uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jaxws-config_2_0.xsd"/>
+		 <uri name="persistence_2_0.xsd"
+              uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/persistence_2_0.xsd"/>
          <public
                publicId="-//JBoss//DTD JBOSS JCA Config 1.5//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_1_5.dtd"
