@@ -92,7 +92,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		}}.start();
 	}
 	
-	public void forceStop() {
+	public synchronized void forceStop() {
 		// just terminate the process.
 		if( process != null && !process.isTerminated()) {
 			try {
@@ -132,7 +132,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 
 	
 	protected transient IDebugEventSetListener processListener;
-	public void setProcess(final IProcess newProcess) {
+	public synchronized void setProcess(final IProcess newProcess) {
 		if (process != null) { 
 			return;
 		}
@@ -175,7 +175,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
-	public IProcess getProcess() {
+	public synchronized IProcess getProcess() {
 		return process;
 	}
 	

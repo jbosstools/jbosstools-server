@@ -33,7 +33,7 @@ import org.jboss.tools.jmx.core.test.util.TestProjectProvider;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractDeploymentTest extends TestCase {
-	protected String BUNDLE_NAME = "org.jboss.ide.eclipse.as.test";
+	public static String BUNDLE_NAME = "org.jboss.ide.eclipse.as.test";
 	private TestProjectProvider[] provider;
 	protected IProject[] workspaceProject;
 	protected String[] sourceProjectName;
