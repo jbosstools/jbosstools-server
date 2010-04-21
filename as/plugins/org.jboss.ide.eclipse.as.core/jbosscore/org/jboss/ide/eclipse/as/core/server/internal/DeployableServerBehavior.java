@@ -82,6 +82,8 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 
 	public int getPublishType(int kind, int deltaKind, int modulePublishState) {
+		if( ServerBehaviourDelegate.ADDED == deltaKind ) 
+			return IJBossServerPublisher.FULL_PUBLISH;
 		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
 			return IJBossServerPublisher.REMOVE_PUBLISH;
 		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {
