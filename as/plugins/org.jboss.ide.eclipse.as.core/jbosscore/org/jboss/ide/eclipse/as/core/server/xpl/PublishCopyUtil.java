@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -199,7 +198,7 @@ public final class PublishCopyUtil {
 				if (ts != IResource.NULL_STAMP && ts != 0)
 					file.setLastModified(ts);
 			} catch (CoreException e) {
-				return e.getStatus();
+				throw e;
 			} catch (Exception e) {
 				IPath path = mf.getModuleRelativePath().append(mf.getName());
 				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null);
@@ -256,7 +255,9 @@ public final class PublishCopyUtil {
 				}
 			}
 			if (!safeRename(tempFile, file, 10))
-				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorRename, tempFile.toString()), null));
+				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
+						NLS.bind(org.jboss.ide.eclipse.as.core.Messages.PublishRenameFailure, 
+								tempFile.toString(), file.getAbsolutePath()), null));
 		}
 		
 		/**
@@ -268,15 +269,16 @@ public final class PublishCopyUtil {
 		 * @return <code>true</code> if it succeeds, <code>false</code> otherwise
 		 */
 		private boolean safeRename(File from, File to, int retrys) {
+			boolean renamedSafely = false;
 			// make sure parent dir exists
 			File dir = to.getParentFile();
 			if (dir != null && !dir.exists())
 				dir.mkdirs();
 			
 			int count = 0;
-			while (count < retrys) {
+			while (count < retrys && !renamedSafely) {
 				if (from.renameTo(to))
-					return true;
+					renamedSafely = true;
 				
 				count++;
 				// delay if we are going to try again
@@ -288,7 +290,7 @@ public final class PublishCopyUtil {
 					}
 				}
 			}
-			return false;
+			return renamedSafely;
 		}
 		
 		protected File getTempFolder() {
@@ -457,18 +459,14 @@ public final class PublishCopyUtil {
 		
 		if (resource instanceof IModuleFile) {
 			IModuleFile file = (IModuleFile) resource;
-			try {
-				if (kind2 == IModuleResourceDelta.REMOVED) {
-					IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
-					handler.deleteResource(path2, monitor);
-				}
-				else {
-					IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
-					handler.makeDirectoryIfRequired(path2.removeLastSegments(1), monitor);
-					handler.copyFile(file, path2, monitor);
-				}
-			} catch (CoreException ce) {
-				status.add(ce.getStatus());
+			if (kind2 == IModuleResourceDelta.REMOVED) {
+				IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
+				handler.deleteResource(path2, monitor);
+			}
+			else {
+				IPath path2 = path.append(file.getModuleRelativePath()).append(file.getName());
+				handler.makeDirectoryIfRequired(path2.removeLastSegments(1), monitor);
+				handler.copyFile(file, path2, monitor);
 			}
 			IStatus[] stat = new IStatus[status.size()];
 			status.toArray(stat);
@@ -551,11 +549,7 @@ public final class PublishCopyUtil {
 			if( stats.length > 0 && !stats[0].isOK())
 				addArrayToList(status, stats);
 
-			try {
-				addArrayToList(status, handler.copyFile(mf, path, monitor));
-			} catch (CoreException ce) {
-				status.add(ce.getStatus());
-			}
+			addArrayToList(status, handler.copyFile(mf, path, monitor));
 		}
 		IStatus[] stat = new IStatus[status.size()];
 		status.toArray(stat);

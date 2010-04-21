@@ -127,7 +127,7 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	public String getDefaultRunVMArgs() {
 		IConstants c = new IConstants(){};
 		String name = getRuntime().getName();
-		String ret = c.SYSPROP + c.PROGRAM_NAME_ARG + c.EQ + c.QUOTE + 
+		String ret = c.QUOTE + c.SYSPROP + c.PROGRAM_NAME_ARG + c.EQ +  
 			"JBossTools: " + name + c.QUOTE + c.SPACE; //$NON-NLS-1$
 		if( Platform.getOS().equals(Platform.OS_MACOSX))
 			ret += c.SERVER_ARG + c.SPACE;
@@ -145,7 +145,7 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 			ret += c.SYSPROP + c.JAVA_PREFER_IP4_ARG + c.EQ + true + c.SPACE; 
 		ret += c.SYSPROP + c.SUN_CLIENT_GC_ARG + c.EQ + 3600000 + c.SPACE;
 		ret += c.SYSPROP + c.SUN_SERVER_GC_ARG + c.EQ + 3600000 + c.SPACE;
-		ret += c.SYSPROP + c.ENDORSED_DIRS + c.EQ + c.QUOTE +
+		ret += c.QUOTE + c.SYSPROP + c.ENDORSED_DIRS + c.EQ + 
 			(getRuntime().getLocation().append(c.LIB).append(c.ENDORSED)) + c.QUOTE + c.SPACE;
 		if( getRuntime().getLocation().append(c.BIN).append(c.NATIVE).toFile().exists() ) 
 			ret += c.SYSPROP + c.JAVA_LIB_PATH + c.EQ + c.QUOTE + 

@@ -68,12 +68,18 @@ public class LocalPublishMethod implements IJBossServerPublishMethod {
 			if( deltaKind != ServerBehaviourDelegate.REMOVED)
 				deltas = behaviour.getPublishedResourceDelta(module);
 			if( publisher != null ) {
-				IStatus result = publisher.publishModule(
-						this, 
-						behaviour.getServer(), module, 
-						publishType, deltas, monitor);
-				if( result != null )
-			        ServerLogger.getDefault().log(behaviour.getServer(), result);
+				try {
+					IStatus result = publisher.publishModule(
+							this, 
+							behaviour.getServer(), module, 
+							publishType, deltas, monitor);
+					if( result != null )
+				        ServerLogger.getDefault().log(behaviour.getServer(), result);
+				} catch( CoreException ce) {
+					// Let the user know
+			        ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
+			        throw ce;
+				}
 				return publisher.getPublishState();
 			}
 			return IServer.PUBLISH_STATE_INCREMENTAL;

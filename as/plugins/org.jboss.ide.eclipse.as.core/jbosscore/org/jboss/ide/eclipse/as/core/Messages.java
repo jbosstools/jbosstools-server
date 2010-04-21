@@ -82,6 +82,7 @@ public class Messages extends NLS {
 	public static String JMXResumeScannerError;
 	public static String JMXScannerCanceled;
 	public static String CannotSaveServersStartArgs;
+	public static String PublishRenameFailure;
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
