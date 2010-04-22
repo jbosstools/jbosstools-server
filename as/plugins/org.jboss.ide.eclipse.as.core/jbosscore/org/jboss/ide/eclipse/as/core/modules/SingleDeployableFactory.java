@@ -17,12 +17,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -33,6 +36,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -50,6 +55,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * The factory responsible for turning regular files into modules
@@ -62,6 +68,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public static final String MODULE_TYPE = "jboss.singlefile"; //$NON-NLS-1$
 	public static final String VERSION = "1.0"; //$NON-NLS-1$
 	private static final String PREFERENCE_KEY = "org.jboss.ide.eclipse.as.core.singledeployable.deployableList"; //$NON-NLS-1$
+	private static final String STORED_IN_PROJECTS_PREF_KEY = "org.jboss.ide.eclipse.as.core.singledeployable.storedInProjectKey"; //$NON-NLS-1$
 	private static final String DELIM = "\r"; //$NON-NLS-1$
 
 	
@@ -123,6 +130,33 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		moduleIdToModule = new HashMap<IPath, IModule>();
 		moduleToDelegate = new HashMap<IModule, SingleDeployableModuleDelegate>();
 		registerListener();
+		String storeInProjects = JBossServerCorePlugin.getDefault().getPluginPreferences().getString(STORED_IN_PROJECTS_PREF_KEY);
+		if( storeInProjects != null ) {
+			projectLoad();
+		} else {
+			legacyLoad();
+		}
+	}
+	
+	protected void projectLoad() {
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		for( int i = 0; i < allProjects.length; i++) {
+			IScopeContext context = new ProjectScope(allProjects[i]);
+			IEclipsePreferences node = context.getNode(qualifier);
+			String val = node.get(PREFERENCE_KEY, ""); //$NON-NLS-1$
+			String[] paths = val.split("\n"); //$NON-NLS-1$
+			IPath tmp;
+			for( int j = 0; j < paths.length; j++ ) {
+				if( !paths[j].trim().equals("")) { //$NON-NLS-1$
+					tmp = new Path(allProjects[i].getName()).append(paths[j]);
+					addModule(tmp);
+				}
+			}
+		}
+	}
+	
+	protected void legacyLoad() {
 		String files = JBossServerCorePlugin.getDefault().getPluginPreferences().getString(PREFERENCE_KEY);
 		if( files.equals("")) return; //$NON-NLS-1$
 		String[] files2 = files.split(DELIM);
@@ -130,6 +164,46 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			addModule(new Path(files2[i]));
 		}
 	}
+
+	public void saveDeployableList() {
+		HashMap<String, String> map = new HashMap<String, String>();
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for( int i = 0; i < allProjects.length; i++) 
+			map.put(allProjects[i].getName(), ""); //$NON-NLS-1$
+		
+		Set<IPath> allPaths = moduleIdToModule.keySet();
+		Iterator<IPath> j = allPaths.iterator();
+		IPath tmp;
+		while(j.hasNext()) {
+			tmp = j.next();
+			map.put(tmp.segment(0), map.get(tmp.segment(0)) + tmp.removeFirstSegments(1).makeRelative() + "\n"); //$NON-NLS-1$
+		}
+		
+		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		for( int k = 0; k < allProjects.length; k++ ) {
+			IScopeContext context = new ProjectScope(allProjects[k]);
+			IEclipsePreferences node = context.getNode(qualifier);
+			if (node != null)
+				node.put(PREFERENCE_KEY, map.get(allProjects[k].getName()));
+			try {
+				node.flush();
+			} catch (BackingStoreException e) {
+				// TODO Log
+			}
+		}
+	}
+
+	/* This is not called but keeping it around for now just in case */
+	public void legacySaveDeployableList() {
+		Iterator<IPath> i = moduleIdToModule.keySet().iterator();
+		String val = ""; //$NON-NLS-1$
+		while(i.hasNext()) {
+			val += i.next().toString() + DELIM;
+		}
+		JBossServerCorePlugin.getDefault().getPluginPreferences().setValue(PREFERENCE_KEY, val);
+		JBossServerCorePlugin.getDefault().savePluginPreferences();
+	}
+
 	
 	protected void registerListener() {
 		UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() { 
@@ -174,16 +248,6 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	public IModule getModule(IPath path) {
 		return moduleIdToModule.get(path);
-	}
-	
-	public void saveDeployableList() {
-		Iterator<IPath> i = moduleIdToModule.keySet().iterator();
-		String val = ""; //$NON-NLS-1$
-		while(i.hasNext()) {
-			val += i.next().toString() + DELIM;
-		}
-		JBossServerCorePlugin.getDefault().getPluginPreferences().setValue(PREFERENCE_KEY, val);
-		JBossServerCorePlugin.getDefault().savePluginPreferences();
 	}
 	
 	protected boolean addModule(IPath path) {
