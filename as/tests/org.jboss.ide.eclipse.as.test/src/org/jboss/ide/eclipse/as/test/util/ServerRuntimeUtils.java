@@ -84,7 +84,7 @@ public class ServerRuntimeUtils extends TestCase {
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration) throws CoreException {
 		// if file doesnt exist, abort immediately.
-		assertTrue(new Path(location).toFile().exists());
+		assertTrue("path \"" + location + "\" does not exist", new Path(location).toFile().exists());
 
 		IRuntime currentRuntime = createRuntime(runtimeID, location,
 				configuration);
@@ -129,6 +129,7 @@ public class ServerRuntimeUtils extends TestCase {
 	public static void deleteAllRuntimes() throws CoreException {
 		IRuntime[] runtimes = ServerCore.getRuntimes();
 		for( int i = 0; i < runtimes.length; i++ ) {
+			assertNotNull("runtime " + runtimes[i].getName() + " has a null location", runtimes[i].getLocation());
 			if( mockedServers.isPrefixOf(runtimes[i].getLocation())) {
 				FileUtil.completeDelete(runtimes[i].getLocation().toFile());
 			}
