@@ -2,7 +2,7 @@
 <feature
       id="org.jboss.tools.jmx.tests.feature"
       label="%featureName"
-      version="1.0.1.qualifier"
+      version="1.1.0.qualifier"
       provider-name="%featureProvider"
       image="eclipse_update_120.jpg">
 
@@ -28,7 +28,7 @@
       <import plugin="org.eclipse.debug.core" version="3.2.0" match="compatible"/>
    </requires>
 
-   <plugin
+   <!-- <plugin
          id="org.eclipse.ant.optional.junit"
          download-size="0"
          install-size="0"
@@ -39,13 +39,13 @@
          id="org.eclipse.test"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"/> -->
 
-   <plugin
+   <!-- <plugin
          id="org.jboss.tools.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"/> --> 
 
    <plugin
          id="org.jboss.tools.jmx.core.test"
@@ -53,11 +53,11 @@
          install-size="0"
          version="0.0.0"/>
 
-   <plugin
+   <!-- <plugin
          id="org.jboss.tools.jmx.core.test.source"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"/> -->
 
    <plugin
          id="org.jboss.tools.jmx.ui.test"
@@ -65,22 +65,10 @@
          install-size="0"
          version="0.0.0"/>
 
-   <plugin
+   <!-- <plugin
          id="org.jboss.tools.jmx.ui.test.source"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jboss.tools.jmx.ui.test.interactive"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jboss.tools.jmx.ui.test.interactive.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"/> -->
 
 </feature>
