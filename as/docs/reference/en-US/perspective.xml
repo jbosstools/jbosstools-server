@@ -844,6 +844,23 @@
                 </emphasis> should add it properly. Also, <emphasis>
                     <property>Restore Default Entries</property>
                 </emphasis> will also remove any extra entries you added yourself.</para>
+            <para>Using <emphasis>Deployment tab</emphasis> you configure local deployment settings.</para>
+            
+            
+            <figure>
+                <title>Deployment tab</title>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/perspective/perspective_7a.png"/>
+                    </imageobject>
+                </mediaobject>
+            </figure>
+            <para>Using the group of radio buttons in <property>Default Settings section</property> 
+                a user can set where the application will 
+                be deployed to.By default it is deployed to the user's workspace folder, 
+                exactly to <property>[workspaceDirecotry]\.metadata\.plugins</property>.If you would like the application to be deployed to your Jboss
+                server deploy folder select <emphasis><property>Use the JBoss deploy folder</property></emphasis>.
+                The option to specify your custom deploy folder is also available.</para>
         </section>
 
         <section>
