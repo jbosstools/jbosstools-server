@@ -7,12 +7,12 @@
     <section>
         <title>Quick Start</title>
         
-        <para>To start using the <property>JMX Tools</property>, it&apos;s necessary to open
+        <para>To start using the <property>JMX Tools</property> it&apos;s necessary to open
             <property>MBean Explorer</property>. Go to <emphasis><property>Window &gt; Show View &gt; Other</property></emphasis> and then select
             <property>MBean Explorer</property> and click <emphasis><property>OK</property>.</emphasis></para>
         
-        <para>The <property>MBean Explorer</property> lists all of the domains, mbeans, attributes, and operations inside a
-            connection. When you double-click on a MBean in the <emphasis><property>MBean Explorer</property>,</emphasis> it opens a multi-page
+        <para>The <property>MBean Explorer</property> lists all  the domains, mbeans, attributes, and operations inside a
+            connection. When you double-click  a MBean in the <emphasis><property>MBean Explorer</property>,</emphasis> it opens a multi-page
             editor to manage the MBean. The <property>MBean Editor</property> is composed of these pages:</para>
         
         <itemizedlist>
@@ -30,6 +30,80 @@
             </listitem>
         </itemizedlist>
         
+    </section>
+    
+        <section>
+        <title>Managing Application</title>
+
+
+<para>Like it's said in earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
+a sample java application and run the <property>sayHello()</property> method remotely from inside the <property>MBean Explorer</property>.</para>
+<orderedlist>
+<listitem><para>Unzip the bundle of sample classes.</para></listitem>
+<listitem><para>Compile the example Java classes from within the where you unpacked the files directory.</para>
+
+            <programlisting role="XML"><![CDATA[         
+   javac com/example/*.java
+ ]]></programlisting>  
+
+</listitem>
+<listitem><para>Start the <property>Main</property> application, specifying the properties that expose Main for remote management:</para>
+
+            <programlisting role="XML"><![CDATA[         
+java -Dcom.sun.management.jmxremote.port=9999 \
+-Dcom.sun.management.jmxremote.authenticate=false \
+-Dcom.sun.management.jmxremote.ssl=false \
+com.example.Main
+ ]]></programlisting> 
+ 
+<para>If everything was done correctly you will see the "Waiting for incoming requests..." message on the screen.</para> 
+
+ 
+ </listitem>
+ <listitem><para>Now launch the Eclipse IDE, in Eclipse  open the <property>MBean Explorer</property>. Go to <emphasis><property>Window &gt; Show View &gt; Other</property></emphasis> and then select
+            <property>MBean Explorer</property> and click <emphasis><property>OK</property></emphasis>)</para></listitem>
+   <listitem>
+                <para>Click the <emphasis>
+                    <property>New Connection</property></emphasis> icon 
+                    
+                    <inlinemediaobject>   
+                        <imageobject>
+                            <imagedata fileref="images/new_connection_icon.png"/>
+                        </imageobject>
+                    </inlinemediaobject>
+                    
+                    in the <property>MBean Explorer</property> menu
+                    bar.</para>
+            </listitem>
+            
+            <listitem><para>In the <property>Create JMX Connection</property> dialog, hit <property>Next</property> and then click on the <property>Advanced</property> tab. </para></listitem>
+ 
+ 
+ <listitem><para>In the <property>JMX URL</property> input field enter the following URL:</para>
+ 
+             <programlisting role="XML"><![CDATA[         
+ service:jmx:rmi:///jndi/rmi://:9999/jmxrmi
+ ]]></programlisting> 
+  
+ </listitem>
+ 
+ <listitem><para>Press  <property>Finish</property> to esteblish the connection with the application.</para>
+ </listitem>
+ 
+ <listitem><para>Now expand the connection you have just created, then open the <property>com.example</property> package and click <property>sayHello()</property> method.  </para>
+ <para>Once the  <property>sayHello()</property> method is clicked the <property>MBean Editor</property> is activated. </para>
+ 
+ </listitem>
+ 
+  <listitem><para>In the <property>MBean Editor</property> go to the <property>Operation Details</property> section and hit the  <property>sayHello()</property> button.</para><para> You will get the "Operation inoked successfully" message. </para> 
+ </listitem>
+ 
+   <listitem><para>The final step is to make sure the application worked as it was expected. Open the terminal where you launched the application in step 3. Now you see the "hello, world" message on the screen.  </para> 
+ </listitem>
+</orderedlist>
+
+
+
     </section>
     <section>
         <title>Tomcat Managing</title>
@@ -54,7 +128,7 @@
         <para>You can manage Equinox through the Equinox monitoring framework.</para>
         <para>Once you have installed the Equinox monitoring framework and restarted Eclipse:</para>
         
-        <itemizedlist>
+        <orderedlist>
             <listitem>
                 <para>Go to <emphasis>
                     <property>Window &gt; Open Perspective &gt; Other</property>
@@ -64,7 +138,7 @@
             <!--<listitem>
                 <para>Select <emphasis>
                     <property>JMX Server &gt; Open Connection</property>
-                </emphasis> and click on <emphasis>
+                </emphasis> and click  <emphasis>
                     <property>OK</property>
                 </emphasis></para>
             </listitem>-->
@@ -76,7 +150,7 @@
             </listitem>
             
             <listitem>
-                <para>Click on the <emphasis>
+                <para>Click  the <emphasis>
                     <property>New Connection</property></emphasis> icon 
                     
                     <inlinemediaobject>   
@@ -86,7 +160,7 @@
                     </inlinemediaobject>
                     
                     in the <property>MBean Explorer</property> menu
-                    bar </para>
+                    bar.</para>
             </listitem>
             
             <listitem>
@@ -95,7 +169,7 @@
                         <property>service:jmx:rmi:///jndi/rmi://:8118/jmxserver</property>
                     </emphasis></para>
             </listitem>
-        </itemizedlist>
+        </orderedlist>
         
         <para>You now have access to the MBeans exposed by Equinox.</para>
     </section>
@@ -226,7 +300,7 @@
             
             <para> There are two ways to connect to an application with remote management enabled:</para>
             
-            <para> The first step is the same for both - to connect to a MBean Server, click on the
+            <para> The first step is the same for both - to connect to a MBean Server, click  the
                 <emphasis>
                     <property>New Connection</property></emphasis> icon 
                 
