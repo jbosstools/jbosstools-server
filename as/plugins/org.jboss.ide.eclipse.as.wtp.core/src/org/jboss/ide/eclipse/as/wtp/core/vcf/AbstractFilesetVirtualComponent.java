@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
+import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IContainer;
@@ -95,6 +96,11 @@ public abstract class AbstractFilesetVirtualComponent implements IVirtualCompone
 
 	public IVirtualReference getReference(String aComponentName) {
 		// Ignore
+		return null;
+	}
+
+	public IVirtualReference[] getReferences(Map<String, Object> options) {
+		// ignore
 		return null;
 	}
 
