@@ -126,7 +126,7 @@ The JMX technology defines standard connectors (known as JMX connectors) that en
       package you&apos;ll need to get is the JMX Tooling, however the <property>AS
         Tools</property> would give you a more full experience when using JMX with JBoss Servers.
       You can find further download and installation instructions on the JBoss Wiki in the <ulink
-        url="http://labs.jboss.com/wiki/InstallingJBossTools">InstallingJBossTools</ulink>
+        url="http://www.jboss.org/tools/download/installation">InstallingJBossTools</ulink>
       section.</para>
   </section>
  </section>
