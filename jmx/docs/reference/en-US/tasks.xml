@@ -36,11 +36,11 @@
         <title>Managing Application</title>
 
 
-<para>Like it's said in earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
-a sample java application and run the <property>sayHello()</property> method remotely from inside the <property>MBean Explorer</property>.</para>
+<para>Like it's said earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
+a sample Java application and run the <property>sayHello()</property> method remotely from inside of the <property>MBean Explorer</property>.</para>
 <orderedlist>
 <listitem><para>Unzip the bundle of sample classes.</para></listitem>
-<listitem><para>Compile the example Java classes from within the where you unpacked the files directory.</para>
+<listitem><para>Compile the example Java classes from within  where you unpacked the files directory.</para>
 
             <programlisting role="XML"><![CDATA[         
    javac com/example/*.java
@@ -76,7 +76,7 @@ com.example.Main
                     bar.</para>
             </listitem>
             
-            <listitem><para>In the <property>Create JMX Connection</property> dialog, hit <property>Next</property> and then click on the <property>Advanced</property> tab. </para></listitem>
+            <listitem><para>In the <property>Create JMX Connection</property> dialog, hit <property>Next</property> and then click  the <property>Advanced</property> tab. </para></listitem>
  
  
  <listitem><para>In the <property>JMX URL</property> input field enter the following URL:</para>
@@ -175,8 +175,11 @@ com.example.Main
     </section>
     
     
-    <section>
-        <title>Managing JBoss Instances</title>
+
+    
+    
+     <section>
+        <title>Managing JBoss AS</title>
         
         <para>Managing JBoss instances is not supported with the <property>JMX Tools</property>
             alone. You must also download and install the <property>AS Tools</property> portion of
@@ -184,7 +187,7 @@ com.example.Main
             tooling, you cannot create a JBoss JMX connection yourself or through the Connection
             Wizard. The first step is to create a JBoss Server. The full instructions for this can
             be found in the AS Tools section, however, the short summary is: </para>
-        <itemizedlist>
+        <orderedlist>
             <listitem>
                 <para>Open the <property>Servers</property> view</para>
             </listitem>
@@ -222,9 +225,53 @@ com.example.Main
                 <para>Note that once the server is started, the JMX connection can be
                     expanded</para>
             </listitem>
-        </itemizedlist>
+        </orderedlist>
         
         <para>Now you can explore MBeans exposed by a JBoss instance.</para>
+    </section>
+	
+	    <section>
+        <title>Managing JBoss AS Remotely</title>
+        
+        <para>JBoss JMX Tool allow you to easily get access and mangane  JBoss AS server remotely. 
+		In order to get connected to the instance of JBoss AS remotely you need to run the server or make sure the server is lauched. 
+		</para>
+ <orderedlist>
+            <listitem>
+                <para>Go to <emphasis>
+                    <property>Window &gt; Open Perspective &gt; Other</property>
+                </emphasis> and select the <property>JMX perspective.</property></para>
+            </listitem>         
+            <listitem>
+                <para>Switch to the <property>MBean Explorer</property> by going to <emphasis>
+                    <property>Window &gt; Show View &gt; Other</property>
+                </emphasis> and selecting the MBean Explorer.</para>
+            </listitem>
+            
+            <listitem>
+                <para>Click  the <emphasis>
+                    <property>New Connection</property></emphasis> icon 
+                    
+                    <inlinemediaobject>   
+                        <imageobject>
+                            <imagedata fileref="images/new_connection_icon.png"/>
+                        </imageobject>
+                    </inlinemediaobject>
+                    
+                    in the <property>MBean Explorer</property> menu
+                    bar.</para>
+            </listitem>
+            
+            <listitem>
+                <para>Select the <emphasis>
+                    <property>Advanced tab</property></emphasis> and set the JMX URL to:	</para>				
+	 <programlisting role="XML"><![CDATA[         
+service:jmx:rmi://localhost/jndi/rmi://localhost:1090/jmxconnector
+ ]]></programlisting> 
+					
+				<para>Please, note that in this example we connected to the local host. </para>	
+            </listitem>
+        </orderedlist>
     </section>
     <section id="extensions" xreflabel="extensions"> 
         <title>Extension Task</title>
@@ -296,7 +343,7 @@ com.example.Main
             this server is in the connected state only when the server is started. </para>
         
         
-        <section><title>The Default Connection</title>
+        <section><title>Establishing Connection</title>
             
             <para> There are two ways to connect to an application with remote management enabled:</para>
             
@@ -315,13 +362,15 @@ com.example.Main
             <para>Then to follow the simple one you just need to specify host, port (and optionally user
                 name and password) and click <emphasis>
                     <property>OK</property>.</emphasis></para>
-            
-            <para>The default JMX URL is <emphasis>
-                <property>service:jmx:rmi:///jndi/rmi://localhost:3000/jmxrmi</property>.</emphasis></para>
-            
-            <para>In case you need to connect to an application which has not used the "standard" JMX URL
-                (e.g. Eclipse Equinox), you need chose more advance way, where it&apos;s necessary to specify
-                explicitly a JMX URL in the Advanced tab of the JMX Connection window.</para>
+            <para>On the <property>Advanced</property> tab you can set the sever name (it will be displayed in <property>MBean Explorer</property>), a url to the remote server.
+         For example, to connect to JBoss AS you need to set the <property>JMX URL</property> to 
+            </para>
+           	 <programlisting role="XML"><![CDATA[         
+service:jmx:rmi://localhost/jndi/rmi://localhost:1090/jmxconnector
+ ]]></programlisting> 
+   <para>If it is required you can enter user name and password for the server connection. 
+            </para>
+           
             
             <note>
                 <title>Note</title>
