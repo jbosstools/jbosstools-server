@@ -36,6 +36,7 @@
         <title>Managing Application</title>
 
 
+
 <para>Like it's said earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
 a sample Java application and run the <property>sayHello()</property> method remotely from inside of the <property>MBean Explorer</property>.</para>
 <orderedlist>
@@ -126,13 +127,14 @@ com.example.Main
         <title>Eclipse Equinox Managing</title>
         
         <para>You can manage Equinox through the Equinox monitoring framework.</para>
-        <para>Once you have installed the Equinox monitoring framework and restarted Eclipse:</para>
+		<para>In this section we will show you how to connect to an Equinox server via JBoss JMX tools. First off, you need to make for example a simple servlet and run it on a server. This guide is not intended to teach you how to build application and run them on the server, you can read for example <ulink url="http://www.eclipse.org/equinox-portal/tutorials/server-side/"> this tutorial </ulink> to get a better idea of how to build server-based applications with Eclipse Equinox.   </para>
+ <para>Once you have run an application on the server you can connect to it using JBoss JMX tools.</para>
         
         <orderedlist>
             <listitem>
                 <para>Go to <emphasis>
                     <property>Window &gt; Open Perspective &gt; Other</property>
-                </emphasis> and select the <property>JMX perspective</property></para>
+                </emphasis> and select the <property>JMX perspective.</property></para>
             </listitem>
             
             <!--<listitem>
@@ -146,7 +148,7 @@ com.example.Main
             <listitem>
                 <para>Switch to the <property>MBean Explorer</property> by going to <emphasis>
                     <property>Window &gt; Show View &gt; Other</property>
-                </emphasis> and selecting the MBean Explorer</para>
+                </emphasis> and selecting the MBean Explorer.</para>
             </listitem>
             
             <listitem>
@@ -166,16 +168,23 @@ com.example.Main
             <listitem>
                 <para>Select the <emphasis>
                     <property>Advanced tab</property></emphasis> and set the JMX URL to <emphasis>
-                        <property>service:jmx:rmi:///jndi/rmi://:8118/jmxserver</property>
+                        <property>service:jmx:rmi:///jndi/rmi://:8118/jmxserver.</property>
                     </emphasis></para>
+                    
+                      <figure>
+    <title>Using JMX Tools to Access Equinox Server</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/equinox.png"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+
             </listitem>
         </orderedlist>
         
         <para>You now have access to the MBeans exposed by Equinox.</para>
     </section>
-    
-    
-
     
     
      <section>
