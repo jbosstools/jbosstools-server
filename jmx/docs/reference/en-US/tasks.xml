@@ -37,9 +37,13 @@
 
 
 
-<para>Like it's said earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
+<para>As it's been said earlier in the guide the JMX technology allows to monitor and manage Java applications. In this section we will show you how to get connected to 
 a sample Java application and run the <property>sayHello()</property> method remotely from inside of the <property>MBean Explorer</property>.</para>
 <orderedlist>
+
+http://java.sun.com/docs/books/tutorial/jmx/examples/jmx_examples.zip
+
+<listitem><para>Save the bundle of JMX API sample classes, <ulink url="http://java.sun.com/docs/books/tutorial/jmx/examples/jmx_examples.zip">jmx_examples.zip</ulink>, to your working directory</para></listitem>
 <listitem><para>Unzip the bundle of sample classes.</para></listitem>
 <listitem><para>Compile the example Java classes from within  where you unpacked the files directory.</para>
 
@@ -86,6 +90,14 @@ com.example.Main
  service:jmx:rmi:///jndi/rmi://:9999/jmxrmi
  ]]></programlisting> 
   
+                        <figure>
+    <title>JMX Connection</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/mbeans.png"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
  </listitem>
  
  <listitem><para>Press  <property>Finish</property> to esteblish the connection with the application.</para>
@@ -97,6 +109,15 @@ com.example.Main
  </listitem>
  
   <listitem><para>In the <property>MBean Editor</property> go to the <property>Operation Details</property> section and hit the  <property>sayHello()</property> button.</para><para> You will get the "Operation inoked successfully" message. </para> 
+ 
+                         <figure>
+    <title>Ivoking Method via JMX</title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/invokemethod.png"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
  </listitem>
  
    <listitem><para>The final step is to make sure the application worked as it was expected. Open the terminal where you launched the application in step 3. Now you see the "hello, world" message on the screen.  </para> 
