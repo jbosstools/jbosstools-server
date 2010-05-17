@@ -219,13 +219,13 @@ com.example.Main
             be found in the AS Tools section, however, the short summary is: </para>
         <orderedlist>
             <listitem>
-                <para>Open the <property>Servers</property> view</para>
+                <para>Open the <property>Servers</property> view.</para>
             </listitem>
             
             <listitem>
                 <para>Right-click in the view and select <emphasis>
                     <property>New &gt; Server</property>
-                </emphasis></para>
+                </emphasis>.</para>
             </listitem>
             
             <listitem>
@@ -233,27 +233,27 @@ com.example.Main
                     <property>JBoss Enterprise Middleware</property>
                 </emphasis> or in <emphasis>
                     <property>JBoss Community</property>
-                </emphasis> section, select a server version</para>
+                </emphasis> section, select a server version.</para>
             </listitem>
             
             <listitem>
                 <para>If a runtime has not yet been created, you&apos;ll be prompted for the
-                    server's home directory, JDK, and configuration</para>
+                    server's home directory, JDK, and configuration.</para>
             </listitem>
             
             <listitem>
                 <para>Finish the wizard and note that you have a new entry in both the
                     <property>Servers</property> view and the <property>MBean
-                        Explorer</property></para>
+                        Explorer</property>.</para>
             </listitem>
             
             <listitem>
                 <para>Start the server by right-clicking it and selecting <emphasis>
-                    <property>Start</property></emphasis></para>
+                    <property>Start</property></emphasis>.</para>
             </listitem>
             <listitem>
                 <para>Note that once the server is started, the JMX connection can be
-                    expanded</para>
+                    expanded.</para>
             </listitem>
         </orderedlist>
         
