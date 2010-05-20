@@ -21,14 +21,7 @@
  */
 package org.jboss.ide.eclipse.as.ui.launch;
 
-import java.text.MessageFormat;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
 import org.eclipse.debug.ui.CommonTab;
@@ -40,9 +33,10 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaArgumentsTab;
 import org.eclipse.jdt.debug.ui.launchConfigurations.JavaClasspathTab;
 import org.eclipse.jdt.internal.debug.ui.IJavaDebugHelpContextIds;
-import org.eclipse.jdt.internal.debug.ui.SWTFactory;
 import org.eclipse.jdt.internal.debug.ui.launcher.LauncherMessages;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -74,9 +68,20 @@ public class JBossLaunchConfigurationTabGroup extends
 		setTabs(tabs);
 	}
 	
+	public static Composite createComposite(Composite parent, Font font, int columns, int hspan, int fill) {
+    	Composite g = new Composite(parent, SWT.NONE);
+    	g.setLayout(new GridLayout(columns, false));
+    	g.setFont(font);
+    	GridData gd = new GridData(fill);
+		gd.horizontalSpan = hspan;
+    	g.setLayoutData(gd);
+    	return g;
+    }
+
+	
 	public class JavaMainTabExtension extends JavaMainTabClone {
 		public void createControl(Composite parent) {
-			Composite comp = SWTFactory.createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
+			Composite comp = createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
 			((GridLayout)comp.getLayout()).verticalSpacing = 0;
 			//createProjectEditor(comp);
 			//createVerticalSpacer(comp, 1);
