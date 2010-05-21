@@ -540,8 +540,13 @@ public final class PublishCopyUtil {
 		List status = new ArrayList(2);
 		if (resource instanceof IModuleFolder) {
 			IModuleFolder folder = (IModuleFolder) resource;
-			IStatus[] stat = publishFull(folder.members(), path, monitor);
-			addArrayToList(status, stat);
+			IModuleResource[] children = folder.members();
+			if( children.length == 0 )
+				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), monitor);		
+			else {
+				IStatus[] stat = publishFull(children, path, monitor);
+				addArrayToList(status, stat);
+			}
 		} else {
 			IModuleFile mf = (IModuleFile) resource;
 			path = path.append(mf.getModuleRelativePath()).append(name);
