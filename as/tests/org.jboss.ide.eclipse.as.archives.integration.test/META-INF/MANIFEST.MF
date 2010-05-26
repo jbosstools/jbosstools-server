@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.jboss.ide.eclipse.as.archives.integration.test
 Bundle-Version: 2.1.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.archives.integration.test.ASArchivesIntegrationTest
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: jbossasarchivesintegrationtest.jar
+Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
