@@ -60,8 +60,6 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 			
 			String eclipseHome = new File(new URL(System.getProperty("eclipse.home.location")).toURI()).getAbsolutePath();
 			String equinoxJar = FileLocator.getBundleFile(Platform.getBundle("org.eclipse.equinox.common")).getAbsolutePath();
-			System.out.println(eclipseHome);
-			System.out.println(equinoxJar);
 			map.put(ECLIPSE_LOC, eclipseHome);
 			map.put(EQUINOX_JAR, equinoxJar);
 			map.put(PROJECT_NAME, "SimpleAntTest");
