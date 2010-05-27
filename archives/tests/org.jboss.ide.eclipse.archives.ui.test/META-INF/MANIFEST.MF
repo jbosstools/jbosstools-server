@@ -14,8 +14,7 @@ Require-Bundle: org.junit,
  org.eclipse.core.runtime;bundle-version="3.5.0",
  org.jboss.ide.eclipse.archives.core;bundle-version="2.0.0",
  org.eclipse.ui.navigator;bundle-version="3.4.1",
- org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.1.0",
- org.jboss.ide.eclipse.archives.webtools;bundle-version="2.1.0"
+ org.jboss.ide.eclipse.archives.jdt.integration;bundle-version="3.1.0"
 Export-Package: org.jboss.ide.eclipse.archives.ui.test,
  org.jboss.ide.eclipse.archives.ui.test.preferences,
  org.jboss.ide.eclipse.archives.ui.test.views,
