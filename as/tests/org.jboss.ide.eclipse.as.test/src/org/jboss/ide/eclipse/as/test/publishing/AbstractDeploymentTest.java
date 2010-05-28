@@ -93,7 +93,7 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		return getFileLocation("/projects/" + name);
 	}
 	
-	protected File getFileLocation(String path) throws CoreException {
+	public static File getFileLocation(String path) throws CoreException {
 		Bundle bundle = Platform.getBundle(BUNDLE_NAME);
 		URL url = null;
 		try {
