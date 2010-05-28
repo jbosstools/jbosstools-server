@@ -9,6 +9,5 @@
   <project reference="0.9.3,http://anonsvn.jboss.org/repos///jbosstools/trunk/jmx/plugins/org.jboss.tools.jmx.ui,org.jboss.tools.jmx.ui"/>
   <project reference="0.9.3,http://anonsvn.jboss.org/repos///jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.core.test,org.jboss.tools.jmx.core.test"/>
   <project reference="0.9.3,http://anonsvn.jboss.org/repos///jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.ui.test,org.jboss.tools.jmx.ui.test"/>
-  <project reference="0.9.3,http://anonsvn.jboss.org/repos///jbosstools/trunk/jmx/tests/org.jboss.tools.jmx.ui.test.interactive,org.jboss.tools.jmx.ui.test.interactive"/>
 </provider>
 </psf>
