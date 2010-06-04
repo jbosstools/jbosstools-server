@@ -65,7 +65,7 @@ public class ModelTruezipBridgeTest extends ModelTest {
 		}
 
 		proj = ResourcesUtils.importProject("org.jboss.ide.eclipse.archives.test", "/inputs/projects/GenericProject");
-		proj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+//		proj.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 	}
 	protected void tearDown() throws Exception {
 		ResourcesUtils.deleteProject(proj.getName());
@@ -252,42 +252,26 @@ public class ModelTruezipBridgeTest extends ModelTest {
 			IClasspathEntry e = 
 				JavaCore.newLibraryEntry(new Path(file.getAbsolutePath()), null, null);
 			JavaModelManager.getUserLibraryManager().setUserLibrary(
-					 "userLibTest", new IClasspathEntry[] { e },  false);
-			try {
-				IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
-				zipped.setInWorkspace(true);
-				zipped.setExploded(false);
-				ModelTruezipBridge.createFile(zipped);
-				File zippedF = proj.getLocation().append("outputs").append("zipped.war").toFile();
-				assertTrue(zippedF.exists());
-				assertTrue(!zippedF.isDirectory());
+				 "userLibTest", new IClasspathEntry[] { e },  false);
+			IArchive zipped = createArchive("zipped.war", new Path(proj.getName()).append("outputs").makeAbsolute().toString());
+			zipped.setInWorkspace(true);
+			zipped.setExploded(false);
+			ModelTruezipBridge.createFile(zipped);
+			File zippedF = proj.getLocation().append("outputs").append("zipped.war").toFile();
+			assertTrue(zippedF.exists());
+			assertTrue(!zippedF.isDirectory());
 
-				IArchiveFileSet fs = createLibFileSet("userLibTest");
-				zipped.addChild(fs);
-				ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
+			IArchiveFileSet fs = createLibFileSet("userLibTest");
+			zipped.addChild(fs);
+			ModelTruezipBridge.fullFilesetBuild(fs, new NullProgressMonitor(), true);
 
-				// should be two less files and 3 less folders created
-				assertEquals(1, countEntries(zippedF));
-			} finally {
-				JavaModelManager.getUserLibraryManager().removeUserLibrary("userLibTest");
-			}
+			// should be two less files and 3 less folders created
+			assertEquals(1, countEntries(zippedF));
 		}
 	}
 
 	protected File findSomeJar() {
-		String loc = System.getProperty("osgi.syspath");
-		File f = new File(loc);
-		String[] children = f.list();
-		boolean found = false;
-		int i = 0;
-		File tempFile;
-		while( !found && i < children.length) {
-			tempFile = new File(f, children[i]);
-			if( tempFile.exists() && tempFile.isFile() && children[i].endsWith("jar")) {
-				return tempFile;
-			}
-		}
-		return null;
+		return bundlePath.append("libs").append("some.jar").toFile();
 	}
 	
 	protected IArchiveNode getDummyParent() {
