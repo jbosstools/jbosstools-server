@@ -41,7 +41,7 @@
 a sample Java application and run the <property>sayHello()</property> method remotely from inside of the <property>MBean Explorer</property>.</para>
 <orderedlist>
 
-http://java.sun.com/docs/books/tutorial/jmx/examples/jmx_examples.zip
+<!-- http://java.sun.com/docs/books/tutorial/jmx/examples/jmx_examples.zip -->
 
 <listitem><para>Save the bundle of JMX API sample classes, <ulink url="http://java.sun.com/docs/books/tutorial/jmx/examples/jmx_examples.zip">jmx_examples.zip</ulink>, to your working directory</para></listitem>
 <listitem><para>Unzip the bundle of sample classes.</para></listitem>
