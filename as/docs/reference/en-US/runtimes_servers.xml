@@ -90,7 +90,7 @@
 
       <note>
         <title>Note:</title>
-        <para>Currently we recommend you to use a fully supported JBoss 4.2 server adapter.</para>
+        <para>Currently we recommend you to use a fully supported JBoss 5.0 server adapter.</para>
       </note>
 
       <para>You&apos;ll also note a Deploy-Only Runtime type. This type provides no classpath
@@ -99,7 +99,7 @@
         debugging their projects inside eclipse.</para>
 
       <figure id="add_runtime_figure">
-        <title>Adding a JBoss 4.2 Runtime</title>
+        <title>Adding a JBoss 5.0 Runtime</title>
         <mediaobject>
           <imageobject>
             <imagedata fileref="images/runtimes_servers/runtimes_servers_3.png"/>

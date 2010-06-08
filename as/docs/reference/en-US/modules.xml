@@ -99,16 +99,15 @@
 
 	</section>
 	<section>
-		<title>Deploying with JBoss Server View</title>
-		<para>As it has been already mentioned <property>JBoss Server View</property> contains two
+		<title>Deploying with Servers View</title>
+		<para>As it has been already mentioned <property>Servers</property> view contains two
 			parts: the top part that displays all defined servers and the bottom part which provides
 			categories with additional information. Thus, in this section we suggest two more ways
 			to deploy resources onto the server.</para>
 		<section>
-			<title>Top part of JBoss Server View</title>
-			<para>In the top part of the <property>JBoss Servers View</property> like in the Servers
-				View you should right click on a server and select the <emphasis>
-					<property>Add and Remove Projects</property>
+			<title>Top part of Servers view</title>
+			<para>In the top part of the <property>Servers</property> view you should right click on a server and select the <emphasis>
+					<property>Add and Remove</property>
 				</emphasis> menu item.</para>
 			<figure>
 				<title>Add and Remove Projects</title>
@@ -131,9 +130,9 @@
 		</section>
 
 		<section>
-			<title>Bottom part of JBoss Server View</title>
+			<title>Bottom part of Servers view</title>
 			<para>In the bottom part of <emphasis>
-					<property>JBoss Server View</property>
+				<property>Servers</property> view
 				</emphasis> there is a category called <emphasis>
 					<property>Modules</property>
 				</emphasis> which should display all currently-published modules on the server.

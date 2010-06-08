@@ -35,7 +35,7 @@
           
           <row>
             <entry><para>JBoss AS Perspective</para></entry>
-            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives View and JBoss Server View for that purpose. </para></entry>
+            <entry><para>It makes managing installed JBoss Server quite easy and includes the standard Console and  Properties views, and specially added Project archives view and Servers view for that purpose. </para></entry>
             <entry>
               <link linkend="perspective">JBoss AS perspective</link>
             </entry>
@@ -69,15 +69,14 @@
   		chapter.</para>
   	
   	<para>To start working with JBoss AS, select a <property>JBoss AS Perspective</property> via
-  		<emphasis><property>Window > Open Perspective > Other > JBoss
-  			AS</property>.</emphasis></para>
+  		<emphasis><property>Window > Show View > Other > Server > Servers</property>.</emphasis></para>
   </section>
 
   <section id="starting">
     <title>Starting JBoss Server</title>
 
     <para>Starting <property>JBoss Server</property> is quite simple. You can control the server
-      behaviour with the help of a special toolbar in the <property>JBoss Server View</property>
+      behaviour with the help of a special toolbar in the <property>Servers</property> view
       where you could <emphasis>
         <property>start</property>
       </emphasis> it in a regular or debug mode, <emphasis>
@@ -89,7 +88,7 @@
       </emphasis> to the server.</para>
 
     <figure>
-      <title>JBoss Server Toolbar</title>
+      <title>Servers Toolbar</title>
       <mediaobject>
         <imageobject>
           <imagedata fileref="images/quick_start/quick_start_1.png"/>
@@ -97,11 +96,11 @@
       </mediaobject>
     </figure>
 
-    <para>To launch the server click the green-with-white-arrow icon on the <property>JBoss Server
-        View </property>or right click server name in this view and select <emphasis>
+    <para>To launch the server click the green-with-white-arrow icon on the <property>Servers
+        </property> view or right click server name in this view and select <emphasis>
         <property>Start</property>. </emphasis> If this view is not open, select
           <emphasis><property>Window &gt; Show View &gt; Other &gt; Server &gt;
-          JBoss Server View</property>.</emphasis></para>
+          Servers</property>.</emphasis></para>
 
     <figure>
       <title>Start JBoss Server</title>
@@ -119,7 +118,7 @@
 
     <para>To stop the server, click the <emphasis>
         <property>Stop</property>
-      </emphasis> icon in the <property>JBoss Server View</property> or right click the server name
+      </emphasis> icon in the <property>Servers</property> view or right click the server name
       and press <emphasis><property>Stop</property>.</emphasis></para>
 
     <figure>
@@ -134,7 +133,7 @@
     <para>When the server is stopped you will see <emphasis>
         <property>Stopped</property>
       </emphasis> state next to its name in the square brackets.</para>
-    <para>Learn more about the <property>JBoss Server View</property>
+    <para>Learn more about the <property>Servers</property> view
       <link linkend="JBossServerView">here</link>.</para>
   </section>
 
@@ -146,7 +145,7 @@
       plugin consists primarily of a view to set up each packaging configuration <emphasis>(
           <property>Window > Show View > Other > JBoss Tools > Project archives</property>).
       </emphasis></para>
-    <para>Right clicking in the <property>Project archives view</property> you can create War,
+    <para>Right clicking in the <property>Project archives</property> view you can create War,
       EJB War, EAR or JAR archive.</para>
 
     <figure>
@@ -187,7 +186,7 @@
   	<para>To perform the building of the project archives, select the project in the <property>Package Explorer</property> view and execute the hotkey combination 
   		you assigned for this action.</para>
   	
-  	<para>Learn more about the <property>Project Archives View</property>
+  	<para>Learn more about the <property>Project Archives</property> view
   		<link linkend="Project_archivesView">here</link>.</para>
   </section>
 	
@@ -231,7 +230,7 @@
     </figure>
 
     <para>You can deploy an existing application to a server by right-clicking the target defined
-      server in the <property>JBoss Servers View</property> and then selecting <emphasis><property>Add and
+      server in the <property>Servers</property> view and then selecting <emphasis><property>Add and
         Remove Projects</property></emphasis> from the context menu.</para>
 
     <figure>
@@ -284,7 +283,7 @@
       url="http://download.jboss.org/jbosstools/nightly-docs/"> JBoss Tools nightly builds documentation page</ulink>.</para>
 
   	<para>Find out the answers on the frequently asked questions about JBoss AS 5 usage in the 
-  		<ulink url="http://www.jboss.org/community/wiki/jboss5faq">JBoss5FAQ</ulink>.
+  	  <ulink url="http://community.jboss.org/wiki/JBossAS5FAQ">JBossAS5FAQ</ulink>.
   	</para>
   	
   	<para>The information on how to monitor a remote JBoss Server from Eclipse you can find in the following

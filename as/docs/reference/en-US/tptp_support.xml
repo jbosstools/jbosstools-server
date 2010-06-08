@@ -8,12 +8,21 @@
         <title>TPTP Profiling</title>
 
         <para>To get TPTP profiling work on <property>JBoss Application Server</property> you should
-            first download <ulink
-                url="http://www.eclipse.org/downloads/download.php?file=/tptp/4.5.0/TPTP-4.5.0/tptp.runtime-TPTP-4.5.0.zip"
-                >TPTP 4.5.0 Runtime</ulink> and install it, i. e. just add the content of <emphasis>
-                <property>plugins/features</property>
-            </emphasis> folders from downloaded directory to the same folders in your eclipse
-            installation directory.</para>
+        do the following:</para>
+        
+            <itemizedlist>
+                <listitem><para>Download <ulink
+                    url="http://www.eclipse.org/tptp/home/downloads/"
+                    >TPTP Runtime</ulink> and install it, i. e. just add the content of <emphasis>
+                        <code>plugins/features</code>
+                    </emphasis> folders from downloaded directory to the same folders in your eclipse
+                    installation directory or use the <emphasis><property>Help &gt; Install New Software</property></emphasis>
+                    command.</para>
+                </listitem>
+                <listitem><para>Install <property>JBoss TPTP Tools</property>
+                    which provide TPTP support for JBoss AS servers (find the latest stable version of the JBoss TPTP profile feature at 
+                    <ulink url="http://www.jboss.org/tools/download/stable">http://www.jboss.org/tools/download/stable</ulink>).</para></listitem>
+            </itemizedlist>
 
         <para>And now all profile actions should work for you. To start <property>JBoss
             AS</property> in profiling mode use <emphasis>
