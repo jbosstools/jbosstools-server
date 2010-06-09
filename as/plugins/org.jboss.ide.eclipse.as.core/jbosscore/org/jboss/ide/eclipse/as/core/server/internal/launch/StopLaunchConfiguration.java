@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 
 public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
@@ -99,8 +100,17 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
 		IJBossRuntimeConstants c = new IJBossRuntimeConstants() {};
+		IJBossToolingConstants tc = new IJBossToolingConstants() {};
+		
+		String runtimeTypeId = jbs.getRuntime().getRuntime().getRuntimeType().getId();
+		String serverUrl;
+		if (runtimeTypeId.equals(tc.AS_60)){
+			serverUrl = "service:jmx:rmi:///jndi/rmi://" + jbs.getHost() + ":" + 1090 + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		} else {
+			serverUrl = jbs.getHost() + ":" + jbs.getJNDIPort(); //$NON-NLS-1$
+		}
 		String args = c.SHUTDOWN_STOP_ARG + c.SPACE;
-		args += c.SHUTDOWN_SERVER_ARG + c.SPACE + jbs.getHost() + ":" + jbs.getJNDIPort() + c.SPACE; //$NON-NLS-1$
+		args += c.SHUTDOWN_SERVER_ARG + c.SPACE + serverUrl + c.SPACE;
 		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
 			args += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
 		if( jbs.getPassword() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
