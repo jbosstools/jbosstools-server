@@ -260,7 +260,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 				for (int i = 0; i < size; i++) {
 					IServer server = servers[i];
 					if (server.getServerType() != null && server.getServerState() == IServer.STATE_UNKNOWN) {
-						UpdateServerJob job2 = new UpdateServerJob(server);
+						UpdateServerJob job2 = new UpdateServerJob(new IServer[]{server});
 						job2.schedule();
 					}
 				}

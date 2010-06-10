@@ -75,7 +75,7 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 		
 		if( !prefs.getBoolean(IPreferenceKeys.DISABLE_SHOW_SERVER_VIEW)) {
-			new ServerUIPreferences().setShowOnActivity(false);
+			ServerUIPreferences.getInstance().setShowOnActivity(false);
 			prefs.setValue(IPreferenceKeys.DISABLE_SHOW_SERVER_VIEW, true);
 		}
 		savePluginPreferences();

@@ -236,7 +236,7 @@ public class BuildDeployTest extends TestCase {
 			swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeploy.toOSString());
 			swc.setRuntime(runtime);
 			swc.setAutoPublishTime(1);
-			swc.setAutoPublishSetting(Server.AUTO_PUBLISH_ENABLE);
+			swc.setAutoPublishSetting(Server.AUTO_PUBLISH_RESOURCE);
 		}
 		server = wc.save(true, new NullProgressMonitor());
 		

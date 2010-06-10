@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.util;
 
 public interface IWTPConstants {
 	/* Facet / Module Names */
+	@Deprecated // DO NOT USE THIS
 	public static final String FACET_JST_JAVA = "jst.java"; //$NON-NLS-1$
 	public static final String FACET_WEB = "jst.web";//$NON-NLS-1$
 	public static final String FACET_EJB = "jst.ejb";//$NON-NLS-1$

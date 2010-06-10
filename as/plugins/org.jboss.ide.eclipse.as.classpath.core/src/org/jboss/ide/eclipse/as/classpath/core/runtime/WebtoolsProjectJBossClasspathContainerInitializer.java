@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IRuntime;
@@ -48,7 +49,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer implements ClasspathConstants {
 	
-	public static final IProjectFacet JST_JAVA_FACET = ProjectFacetsManager.getProjectFacet(FACET_JST_JAVA);
 	public static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet(FACET_WEB);
 	public static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet(FACET_EJB);
 	public static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet(FACET_EAR);
@@ -141,7 +141,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		protected IClasspathEntry[] loadClasspathEntries2(String runtimeId, String facetId, 
 				String facetVersion, String serverHome, String configName, String jbVersion, 
 				IJBossServerRuntime jbsRuntime) {
-			if( facetId.equals(JST_JAVA_FACET.getId())) {
+			if( ProjectFacetsManager.getProjectFacet(facetId).equals(JavaFacet.FACET)) {
 				return loadJREClasspathEntries(jbsRuntime);
 			} else if(V5_0.equals(jbVersion)) {
 				return loadClasspathEntriesDefault(facetId, facetVersion, serverHome, configName);

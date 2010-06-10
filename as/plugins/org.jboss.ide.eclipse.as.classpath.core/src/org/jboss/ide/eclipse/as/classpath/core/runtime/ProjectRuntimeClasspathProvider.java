@@ -28,6 +28,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jst.common.project.facet.core.IClasspathProvider;
+import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -58,7 +59,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 
 	public List getClasspathEntries(final IProjectFacetVersion fv) {
 		IPath path = null;
-		if( fv.getProjectFacet().getId().equals(ClasspathConstants.FACET_JST_JAVA) ) {
+		if( fv.getProjectFacet().equals(JavaFacet.FACET)) {
 			path = new Path(CONTAINER_ID);
 			path = path.append(rc.getProperty("id")); //$NON-NLS-1$
 			path = path.append(fv.getProjectFacet().getId());

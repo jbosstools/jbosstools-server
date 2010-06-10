@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -21,7 +22,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
@@ -148,6 +151,26 @@ public class PublishUtil {
 		return defaultName;
 
 	}
+	
+	public static ArrayList<String> moduleCoreFactories = new ArrayList<String>();
+	static {
+		moduleCoreFactories.add("org.eclipse.jst.j2ee.server"); //$NON-NLS-1$
+		moduleCoreFactories.add("org.eclipse.jst.jee.server"); //$NON-NLS-1$
+	}
+	public static void addModuleCoreFactory(String s) {
+		if( !moduleCoreFactories.contains(s))
+			moduleCoreFactories.add(s);
+	}
+	public static boolean isModuleCoreProject(IModule[] module) {
+		IModule lastmod = module[module.length-1];
+		if( lastmod.getProject() == null && lastmod instanceof DeletedModule) {
+			int colon = lastmod.getId().indexOf(':');
+			String factory = lastmod.getId().substring(0,colon == -1 ? lastmod.getId().length() : colon);
+			return moduleCoreFactories.contains(factory);
+		}
+		return ModuleCoreNature.isFlexibleProject(lastmod.getProject());
+	}
+
 	
 	private static String getSuffix(String type) {
 		String suffix = null;

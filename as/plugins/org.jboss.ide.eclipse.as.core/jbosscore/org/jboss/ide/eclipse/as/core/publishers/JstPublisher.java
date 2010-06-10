@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
@@ -38,10 +37,10 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.LocalCopyCallback;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * This class provides a default implementation for packaging different types of
@@ -63,8 +62,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 	public boolean accepts(String type, IServer server, IModule[] module) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		boolean shouldAccept = ds != null && LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(type)
-			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
-			&& !ds.zipsWTPDeployments();
+			&& !ds.zipsWTPDeployments()
+			&& PublishUtil.isModuleCoreProject(module);
 		return shouldAccept;
 	}
 	

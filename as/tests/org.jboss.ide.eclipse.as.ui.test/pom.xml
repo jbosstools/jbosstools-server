@@ -30,7 +30,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<argLine>-Djbosstools.test.jboss.home.4.2=$${projectRoot}/requirements/target/jboss-4.2.3.GA</argLine>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--
+                        <plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 					<execution>
@@ -49,6 +50,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					</execution>
 				</executions>
 			</plugin>
+                        -->
 		</plugins>
 	</build>
 </project>
