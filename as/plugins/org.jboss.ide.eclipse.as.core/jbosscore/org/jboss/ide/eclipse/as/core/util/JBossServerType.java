@@ -31,7 +31,7 @@ public class JBossServerType {
 	public static final JBossServerType AS = new JBossServerType(
 			"AS", //$NON-NLS-1$
 			"bin"+File.separatorChar + SYSTEM_JAR_NAME, //$NON-NLS-1$
-			new String[]{"5.0", "4.2", "4.0", "3.2"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			new String[]{"6.0", "5.0", "4.2", "4.0", "3.2"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	
 	public static final JBossServerType EAP = new JBossServerType(
 			"EAP", //$NON-NLS-1$

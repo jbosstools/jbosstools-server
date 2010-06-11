@@ -564,5 +564,13 @@
              id="org.jboss.ide.eclipse.as.ui.launchConfigurationTypeImage1">
        </launchConfigurationTypeImage>
     </extension>
+   <extension
+         point="org.eclipse.wst.server.core.runtimeLocators">
+      <runtimeLocator
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeLocator"
+            id="org.jboss.ide.eclipse.as.ui.wizards.jboss.runtimeLocator"
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
+      </runtimeLocator>
+   </extension>
 	
 </plugin>
