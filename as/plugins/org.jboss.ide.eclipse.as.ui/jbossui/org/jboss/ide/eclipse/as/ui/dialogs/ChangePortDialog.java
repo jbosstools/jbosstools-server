@@ -198,7 +198,8 @@ public class ChangePortDialog extends TitleAreaDialog {
 		}
 		if(currentQuery != null) {
 			editXPathButton.setEnabled(true);
-			currentValueText.setText(currentQuery.getFirstResult());
+			String result = currentQuery.getFirstResult();
+			currentValueText.setText(result == null ? "" : result);
 		} else {
 		}
 	}
