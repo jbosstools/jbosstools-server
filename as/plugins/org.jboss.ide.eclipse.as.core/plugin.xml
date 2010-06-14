@@ -96,7 +96,7 @@
             
       <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
-            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBoss6Server"
             description="%jboss.version.60.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.60"

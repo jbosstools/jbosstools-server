@@ -1,8 +1,17 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -38,6 +47,7 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -57,21 +67,35 @@ public class PortSection extends ServerEditorSection {
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
+		String serverTypeId = server.getServerType().getId();
 		if (sectionList.size() <= 0) {
 			IExtensionRegistry registry = Platform.getExtensionRegistry();
 			IConfigurationElement[] cf = registry.getConfigurationElementsFor(
 					JBossServerUIPlugin.PLUGIN_ID, "ServerEditorPortSection"); //$NON-NLS-1$
 			for (int i = 0; i < cf.length; i++) {
 				try {
-					Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
-					if (o != null && o instanceof IPortEditorExtension)
-						sectionList.add((IPortEditorExtension) o);
+					String approvedTypes = cf[i].getAttribute("serverIds"); //$NON-NLS-1$
+					if( serverTypeMatches(serverTypeId, approvedTypes)) {
+						Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
+						if (o != null && o instanceof IPortEditorExtension)
+							sectionList.add((IPortEditorExtension) o);
+					}
 				} catch (CoreException ce) { /* ignore */
 				}
 			}
 		}
 	}
 
+	protected boolean serverTypeMatches(String serverType, String approvedTypes) {
+		if( approvedTypes == null || approvedTypes.equals(""))
+			return true;
+		String[] split = approvedTypes.split(",");
+		for( int i = 0; i < split.length; i++ )
+			if( split[i].equals(serverType))
+				return true;
+		return false;
+	}
+	
 	public void createSection(Composite parent) {
 		super.createSection(parent);
 		createUI(parent);
@@ -90,21 +114,8 @@ public class PortSection extends ServerEditorSection {
 					IJBossServerConstants.JNDI_PORT_DETECT_XPATH,
 					IJBossServerConstants.JNDI_PORT_DETECT,
 					IJBossServerConstants.JNDI_PORT,
-					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH);
-		}
-		public ServerCommand getCommand() {
-			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeJNDICommandName,
-					IJBossServerConstants.JNDI_PORT, IJBossServerConstants.JNDI_PORT_DETECT,
-					IJBossServerConstants.JNDI_PORT_DETECT_XPATH, IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
-					this);
-		}
-		protected ChangePortDialogInfo getDialogInfo() {
-			ChangePortDialogInfo info = new ChangePortDialogInfo();
-			info.port = Messages.EditorJNDIPort;
-			info.defaultValue = IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH;
-			info.server = helper.getWorkingCopy().getOriginal();
-			info.currentXPath = currentXPath;
-			return info;
+					IJBossServerConstants.JNDI_PORT_DEFAULT_XPATH,
+					Messages.EditorChangeJNDICommandName);
 		}
 	}
 
@@ -114,24 +125,22 @@ public class PortSection extends ServerEditorSection {
 					IJBossServerConstants.WEB_PORT_DETECT_XPATH,
 					IJBossServerConstants.WEB_PORT_DETECT,
 					IJBossServerConstants.WEB_PORT,
-					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH);
-		}
-
-		public ServerCommand getCommand() {
-			return new SetPortCommand(helper.getWorkingCopy(), helper, Messages.EditorChangeWebCommandName,
-					IJBossServerConstants.WEB_PORT, IJBossServerConstants.WEB_PORT_DETECT,
-					IJBossServerConstants.WEB_PORT_DETECT_XPATH, IJBossServerConstants.WEB_PORT_DEFAULT_XPATH,
-					this);
-		}
-		protected ChangePortDialogInfo getDialogInfo() {
-			ChangePortDialogInfo info = new ChangePortDialogInfo();
-			info.port = Messages.EditorWebPort;
-			info.defaultValue = IJBossServerConstants.WEB_PORT_DEFAULT_XPATH;
-			info.server = helper.getWorkingCopy().getOriginal();
-			info.currentXPath = currentXPath;
-			return info;
+					IJBossServerConstants.WEB_PORT_DEFAULT_XPATH, 
+					Messages.EditorChangeWebCommandName);
 		}
 	}
+	
+	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorExtension {
+		public JBoss6JMXRMIPortEditorExtension() {
+			super(Messages.EditorJMXRMIPort, 
+					IJBoss6Server.JMX_RMI_PORT_DETECT_XPATH,
+					IJBoss6Server.JMX_RMI_PORT_DETECT,
+					IJBoss6Server.JMX_RMI_PORT,
+					IJBoss6Server.JMX_RMI_PORT_DEFAULT_XPATH,
+					Messages.EditorChangeJMXRMICommandName);
+		}
+	}
+
 
 	public static abstract class PortEditorExtension implements IPortEditorExtension {
 		protected Button detect;
@@ -139,17 +148,19 @@ public class PortSection extends ServerEditorSection {
 		protected Label label;
 		protected Link link;
 		protected String labelText, currentXPathKey, detectXPathKey, overrideValueKey, defaultXPath;
-		protected String currentXPath;
+		protected String currentXPath, changeValueCommandName;
 		protected ServerAttributeHelper helper;
 		protected Listener listener;
 		protected PortSection section;
 		public PortEditorExtension(String labelText, String currentXPathKey, 
-				String detectXPathKey, String overrideValueKey, String defaultXPath) {
+				String detectXPathKey, String overrideValueKey, String defaultXPath,
+				String changeValueCommandName) {
 			this.labelText = labelText;
 			this.currentXPathKey = currentXPathKey;
 			this.detectXPathKey = detectXPathKey;
 			this.overrideValueKey = overrideValueKey;
 			this.defaultXPath = defaultXPath;
+			this.changeValueCommandName = changeValueCommandName;
 		}
 		public void setServerAttributeHelper(ServerAttributeHelper helper) {
 			this.helper = helper;
@@ -238,10 +249,17 @@ public class PortSection extends ServerEditorSection {
 		public ChangePortDialog getDialog() {
 			return new ChangePortDialog(section.getShell(), getDialogInfo());
 		}
-		protected abstract ChangePortDialogInfo getDialogInfo();
-
-		protected /* abstract */ ServerCommand getCommand() {
-			return null;
+		public ServerCommand getCommand() {
+			return new SetPortCommand(helper.getWorkingCopy(), helper, changeValueCommandName,
+					overrideValueKey, detectXPathKey,currentXPathKey, defaultXPath, this);
+		}
+		protected ChangePortDialogInfo getDialogInfo() {
+			ChangePortDialogInfo info = new ChangePortDialogInfo();
+			info.port = labelText;
+			info.defaultValue = defaultXPath;
+			info.server = helper.getWorkingCopy().getOriginal();
+			info.currentXPath = currentXPath;
+			return info;
 		}
 		public String getValue() {
 			return text.getText();

@@ -248,6 +248,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.AS_42, properties.append(IJBossToolingConstants.DEFAULT_PROPS_42));
 		rtToPortsFile.put(IConstants.AS_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_50));
 		rtToPortsFile.put(IConstants.AS_51, properties.append(IJBossToolingConstants.DEFAULT_PROPS_51));
+		rtToPortsFile.put(IConstants.AS_60, properties.append(IJBossToolingConstants.DEFAULT_PROPS_60));
 		rtToPortsFile.put(IConstants.EAP_43, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 		rtToPortsFile.put(IConstants.EAP_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
 	}

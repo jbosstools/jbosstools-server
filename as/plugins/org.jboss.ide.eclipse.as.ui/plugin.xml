@@ -9,11 +9,11 @@
          point="org.eclipse.wst.server.ui.serverImages">
       <image
             icon="$nl$/icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"
+            typeIds="%AllJBossServerTypes"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
       <image
             icon="$nl$/icons/jboss.gif"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.60,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50"
+            typeIds="%AllJBossRuntimeTypes"
             id="org.jboss.ide.eclipse.as.ui.jbossIcon"/>
 
       <image
@@ -35,7 +35,7 @@
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
+            typeIds="%AllJBossServerTypes"/>
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
@@ -141,7 +141,7 @@
              class="org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage"
              id="org.jboss.ide.eclipse.as.ui.editor.deploymentPage"
              name="Deployment"
-             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, %AllJBossServerTypes%">
        </page>
     </extension>
 
@@ -161,19 +161,19 @@
             id="org.jboss.ide.eclipse.as.ui.editor.pollerSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
+            typeIds="%AllJBossServerTypes"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection"
             id="org.jboss.ide.eclipse.as.ui.editor.portSection"
             insertionId="org.eclipse.wst.server.editor.overview.right"
             order="11"
-            typeIds="org.jboss.ide.eclipse.as.32, org.jboss.ide.eclipse.as.40, org.jboss.ide.eclipse.as.42, org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
+            typeIds="%AllJBossServerTypes"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerPasswordSection"
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"/>
+            typeIds="%AllJBossServerTypes"/>
    </extension>
 
 
@@ -253,10 +253,16 @@
    <extension
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
-            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension">
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
+            serverIds="%AllJBossServerTypes">
       </section>
       <section
-            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension">
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension"
+            serverIds="%AllJBossServerTypes">
+      </section>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss6JMXRMIPortEditorExtension"
+            serverIds="%ServerTypesJBoss6OrHigher">
       </section>
    </extension>
 
@@ -569,7 +575,7 @@
       <runtimeLocator
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeLocator"
             id="org.jboss.ide.eclipse.as.ui.wizards.jboss.runtimeLocator"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50">
+            typeIds="%AllJBossServerTypes">
       </runtimeLocator>
    </extension>
 	

@@ -187,10 +187,12 @@ public class Messages extends NLS {
 	public static String EditorServerPortsDescription;
 	public static String EditorJNDIPort;
 	public static String EditorWebPort;
+	public static String EditorJMXRMIPort;
 	public static String EditorAutomaticallyDetectPort;
 	public static String EditorPortInvalid;
 	public static String EditorChangeJNDICommandName;
 	public static String EditorChangeWebCommandName;
+	public static String EditorChangeJMXRMICommandName;
 	public static String EditorChangeUsernameCommandName;
 	public static String EditorChangePasswordCommandName;
 	public static String EditorCPD_Value;

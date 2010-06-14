@@ -59,6 +59,7 @@ public interface IJBossToolingConstants {
 	public static final String DEFAULT_PROPS_42 = "jboss.42.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_50 = "jboss.50.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_51 = "jboss.51.default.ports.properties"; //$NON-NLS-1$
+	public static final String DEFAULT_PROPS_60 = "jboss.60.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_43 = "jboss.eap.43.default.ports.properties"; //$NON-NLS-1$
 	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
 	
