@@ -38,7 +38,6 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.util
 Bundle-ClassPath: dom4j-1.6.1.jar,
  jaxen-1.1-beta-6.jar,
- jbossascore.jar,
  getopt.jar,
  .
 Bundle-Vendor: %Bundle-Vendor.0
