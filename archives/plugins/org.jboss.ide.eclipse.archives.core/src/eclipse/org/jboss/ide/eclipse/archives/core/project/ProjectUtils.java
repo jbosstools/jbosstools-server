@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 public class ProjectUtils {
 	
 	public static boolean addProjectNature(IPath path) {
-		String loc = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-		if( path.toOSString().startsWith(loc)) {
-			String proj = path.toOSString().substring(loc.length()+1);
-			IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(proj);
-			return addProjectNature(p, ArchivesNature.NATURE_ID);
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for( int i = 0; i < allProjects.length; i++ ) {
+			if( allProjects[i].getLocation().equals(path)) {
+				return addProjectNature(allProjects[i], ArchivesNature.NATURE_ID);
+			}
 		}
 		return false;
 	}
