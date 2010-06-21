@@ -124,15 +124,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		else
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
 		
-		// adjust timestamps
-		FileFilter filter = new FileFilter() {
-			public boolean accept(File pathname) {
-				if( pathname.getAbsolutePath().toLowerCase().endsWith(IConstants.EXT_XML))
-					return true;
-				return false;
-			}
-		};
-		FileUtil.touch(filter, deployPath.toFile(), true);
+
+		touchXMLFiles(deployPath);
 
 		if( list.size() > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
@@ -142,20 +135,31 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			return ms;
 		}
 
-		
 		publishState = IServer.PUBLISH_STATE_NONE;
-		
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, countMembers(module), module.getName()), null);
 		return ret;
+	}
+	
+	private void touchXMLFiles(IPath deployPath) {
+		// adjust timestamps
+		FileFilter filter = new FileFilter() {
+			public boolean accept(File pathname) {
+				if( pathname.getAbsolutePath().toLowerCase().endsWith(IConstants.EXT_XML))
+					return true;
+				return false;
+			}
+		};
+		FileUtil.touch(filter, deployPath.toFile(), true);
 	}
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
+		LocalCopyCallback handler = null;
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
-			LocalCopyCallback handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
+			handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
 			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
 		} else if( delta.length > 0 ) {
 			if( isBinaryObject(moduleTree))
@@ -170,6 +174,10 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 				ms.add(results[i]);
 			return ms;
 		}
+		
+		if( handler != null && handler.shouldRestartModule() )
+			touchXMLFiles(deployPath);
+
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, countChanges(delta), module.getName()), null);
 		return ret;
