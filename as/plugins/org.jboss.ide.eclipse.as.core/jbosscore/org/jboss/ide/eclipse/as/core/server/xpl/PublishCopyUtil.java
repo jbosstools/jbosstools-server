@@ -100,6 +100,8 @@ public final class PublishCopyUtil {
 		private static final File tempDir = ServerPlugin.getInstance().getStateLocation().toFile();
 		private static final String TEMPFILE_PREFIX = "tmp"; //$NON-NLS-1$
 
+		private boolean shouldRestartModule = false;
+		
 		private IServer server;
 		private IPath deployRootFolder;
 		private IPath tmpDeployRootFolder;
@@ -109,8 +111,18 @@ public final class PublishCopyUtil {
 			this.tmpDeployRootFolder = temporaryFolder;
 		}
 		
+		public boolean shouldRestartModule() {
+			return shouldRestartModule;
+		}
+		
+		private void checkRestartModule(File file) {
+			if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+				shouldRestartModule = true;
+		}
+		
 		public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
 			File file = PublishUtil.getFile(mf);
+			checkRestartModule(file);
 			if( file != null ) {
 				InputStream in = null;
 				try {
