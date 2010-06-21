@@ -226,8 +226,12 @@ public class ArchiveBuildDelegate {
 				referencingArchives.size() * 1000);
 		for( Iterator<IArchive> i = referencingArchives.iterator(); i.hasNext();) {
 			IArchive toBuild = i.next();
-			errors.add(fullArchiveBuild(
-					toBuild, new SubProgressMonitor(referenceMon, 1000), log));
+			if( !toBuild.equals(pkg)) {
+				errors.add(fullArchiveBuild(
+						toBuild, new SubProgressMonitor(referenceMon, 1000), log));
+			} else {
+				// RECURSE ERROR
+			}
 		}
 
 		
@@ -359,13 +363,13 @@ public class ArchiveBuildDelegate {
 				cce.printStackTrace();  
 			}
 		}
-		incrementalBuild(null, changedPaths, new TreeSet(), false, 
-				new SubProgressMonitor(consumedMon, 500));
 		
-
 		if( errors.size() > 0 )
 			EventManager.error(null, errors.toArray(new IStatus[errors.size()]));
-
+		else {
+			incrementalBuild(null, changedPaths, new TreeSet(), false, 
+					new SubProgressMonitor(consumedMon, 500));
+		}
 		monitor.worked(50);
 		monitor.done();
 	}
