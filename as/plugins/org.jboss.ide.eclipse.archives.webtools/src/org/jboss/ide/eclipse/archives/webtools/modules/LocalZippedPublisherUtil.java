@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 import de.schlichtherle.io.ArchiveDetector;
 
@@ -174,6 +175,21 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
 	
+	protected IStatus[] fullBinaryPublish(IServer server, String deployRoot, IModule[] parent, IModule last) {
+		ArrayList<IStatus> results = new ArrayList<IStatus>();
+		try {
+			IPath path = getOutputFilePath(combine(parent, last));
+			path = path.removeLastSegments(1);
+			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
+			IModuleResource[] resources = getResources(last);
+			results.addAll(Arrays.asList(copy(root, resources)));
+			TrueZipUtil.umount();
+			return (IStatus[]) results.toArray(new IStatus[results.size()]);
+		} catch( CoreException ce) {
+			results.add(generateCoreExceptionStatus(ce));
+			return (IStatus[]) results.toArray(new IStatus[results.size()]);
+		}
+	}
 	protected IStatus[] fullPublish(IServer server, String deployRoot, IModule[] module) {
 		ArrayList<IStatus> results = new ArrayList<IStatus>();
 		try {
@@ -187,8 +203,12 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			results.addAll(Arrays.asList(copy(root, resources)));
 			
 			IModule[] children = server.getChildModules(module, new NullProgressMonitor());
-			for( int i = 0; i < children.length; i++ ) 
-				results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
+			for( int i = 0; i < children.length; i++ ) {
+				if( ServerModelUtilities.isBinaryModule(children[i]))
+					results.addAll(Arrays.asList(fullBinaryPublish(server, deployRoot, module, children[i])));
+				else
+					results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
+			}
 			TrueZipUtil.umount();
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
 		} catch( CoreException ce) {

@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
@@ -47,17 +48,31 @@ public class ServerModelUtilities {
 	}
 	
 	public static IModule[] getChildModules(IModule[] module) {
-		int last = module.length-1;
-		if (module[last] != null && module[last].getModuleType() != null) {
-			IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) module[last]
-			                           .loadAdapter(IEnterpriseApplication.class, null);
-			if( enterpriseApplication != null )
-				return enterpriseApplication.getModules() == null ? new IModule[]{} : enterpriseApplication.getModules();
-			
-			IJBTModule jbtMod = (IJBTModule)module[last].loadAdapter(IJBTModule.class, null);
-			if( jbtMod != null )
-				return jbtMod.getModules();
-		}
+		int last = module.length -1;
+		if( module[last] != null && module[last].getModuleType() != null)
+			return getChildModules(module[last]);
 		return new IModule[0];
+	}
+	
+	public static IModule[] getChildModules(IModule module) {
+		IEnterpriseApplication enterpriseApplication = (IEnterpriseApplication) 
+		                           module.loadAdapter(IEnterpriseApplication.class, null);
+		if( enterpriseApplication != null )
+			return enterpriseApplication.getModules() == null ? new IModule[]{} : enterpriseApplication.getModules();
+		
+		IJBTModule jbtMod = (IJBTModule)module.loadAdapter(IJBTModule.class, null);
+		if( jbtMod != null )
+			return jbtMod.getModules();
+		return new IModule[0];
+	}
+	
+	public static boolean isBinaryModule(IModule module) {
+		IJ2EEModule jee = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);
+		if( jee != null )
+			return jee.isBinary();
+		IJBTModule jbtMod = (IJBTModule)module.loadAdapter(IJBTModule.class, null);
+		if( jbtMod != null )
+			return jbtMod.isBinary();
+		return false;
 	}
 }

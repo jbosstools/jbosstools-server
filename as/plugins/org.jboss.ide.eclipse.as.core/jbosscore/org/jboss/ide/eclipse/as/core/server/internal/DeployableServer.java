@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class DeployableServer extends ServerDelegate implements IDeployableServer {
 
@@ -62,11 +63,6 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return Status.OK_STATUS;
 	}
 
-	public IModule[] getChildModules(IModule[] module) {
-		IModule[] children = ModuleUtil.getChildModules(module);
-		return children;
-	}
-
     public IModule[] getRootModules(IModule module) throws CoreException {
         IStatus status = canModifyModules(new IModule[] { module }, null);
         if (status != null && !status.isOK())
@@ -77,6 +73,9 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
         return new IModule[] { module };
     }
 
+	public IModule[] getChildModules(IModule[] module) {
+		return ServerModelUtilities.getChildModules(module);
+	}
 
 	private IModule[] doGetParentModules(IModule module) {
 		// get all supported modules
@@ -86,20 +85,10 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		ArrayList<IModule> list = new ArrayList<IModule>();
 		
 		for( int i = 0; i < supported.length; i++ ) {
-			IEnterpriseApplication jeeMod = (IEnterpriseApplication)supported[i].loadAdapter(IEnterpriseApplication.class,null);
-			IJBTModule jbtMod = (IJBTModule)supported[i].loadAdapter(IJBTModule.class, null);
-			if( jeeMod != null ) {
-				IModule[] childs = jeeMod.getModules();
-				for (int j = 0; j < childs.length; j++) {
-					if(childs[j].equals(module))
-						list.add(supported[i]);
-				}
-			} else if( jbtMod != null ) {
-				IModule[] childs = jbtMod.getModules();
-				for (int j = 0; j < childs.length; j++) {
-					if(childs[j].equals(module))
-						list.add(supported[i]);
-				}
+			IModule[] childs = ServerModelUtilities.getChildModules(supported[i]);
+			for (int j = 0; j < childs.length; j++) {
+				if(childs[j].equals(module))
+					list.add(supported[i]);
 			}
 		}
 		return list.toArray(new IModule[list.size()]);
