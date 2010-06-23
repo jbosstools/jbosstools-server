@@ -22,13 +22,16 @@
 package org.jboss.ide.eclipse.as.classpath.ui.ejb3;
 
 import java.text.MessageFormat;
+
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.ui.wizards.IClasspathContainerPage;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB30SupportVerifier;
 import org.jboss.ide.eclipse.as.classpath.core.ejb3.EJB3ClasspathContainer;
-import org.jboss.ide.eclipse.as.classpath.ui.ClasspathUIPlugin;
 import org.jboss.ide.eclipse.as.classpath.ui.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
@@ -49,31 +52,44 @@ public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClass
       
    }
 
+   public void createControl(Composite parent) {
+	   super.createControl(parent);
+	   servers.addSelectionChangedListener(new ISelectionChangedListener() {
+		@Override
+		public void selectionChanged(SelectionChangedEvent event) {
+			validateSelection();
+		}
+	});
+   }
+   
+   
+   protected void validateSelection() {
+	   if( !jbossServerHasEJB3(jbossServer)) {
+		   String error = MessageFormat.format(
+					Messages.JBossEJB3LibrariesPage_ConfigurationDoesNotContainEJB3Libraries,
+					jbossServer.getServer().getName());
+		   setErrorMessage(error);
+		   getContainer().updateButtons();
+	   } else {
+		   setErrorMessage(null);
+	   }
+   }
+   
    private boolean jbossServerHasEJB3(JBossServer jbossServer) {
 	   return EJB30SupportVerifier.verify(jbossServer.getServer().getRuntime());
    }
 
    public boolean finish() {
-
-      if (jbossServer != null) {
-         if (jbossServerHasEJB3(jbossServer)) {
+      if (jbossServer != null && jbossServerHasEJB3(jbossServer)) {
             classpathEntry = JavaCore.newContainerEntry(new Path(EJB3ClasspathContainer.CONTAINER_ID)
                   .append(jbossServer.getServer().getName()), true);
             return true;
-         } else {
-            ClasspathUIPlugin
-                  .error(MessageFormat
-						.format(
-								Messages.JBossEJB3LibrariesPage_ConfigurationDoesNotContainEJB3Libraries,
-								jbossServer.getServer().getName()));
-         }
       }
-
       return false;
    }
 
    public boolean isPageComplete()  {
-      return jbossServer != null && isCurrentPage();
+      return jbossServer != null && isCurrentPage() && jbossServerHasEJB3(jbossServer);
    }
 
    public IClasspathEntry getSelection() {

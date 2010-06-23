@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 /**
  * 
@@ -24,7 +25,18 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
  *
  */
 public class EJB30SupportVerifier {
+	protected static boolean definitelySupports(IRuntime rt) {
+		IJBossServerRuntime  jbRuntime = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
+		String jbossVersion = jbRuntime.getRuntime().getRuntimeType().getVersion();
+		if( jbossVersion.compareTo(IJBossToolingConstants.V5_0) < 0)
+			return false;
+		return true;
+	}
+	
 	public static boolean verify(IRuntime rt) {
+		if( definitelySupports(rt))
+			return true;
+		
 		IJBossServerRuntime ajbsr = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
 		//		 i refuse to verify. if they say they support, believe them
 		if( ajbsr == null ) return true;  

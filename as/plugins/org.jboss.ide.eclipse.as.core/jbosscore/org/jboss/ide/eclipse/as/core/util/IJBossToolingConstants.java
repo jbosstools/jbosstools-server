@@ -41,6 +41,8 @@ public interface IJBossToolingConstants {
 	public static final String V4_0 = "4.0"; //$NON-NLS-1$
 	public static final String V4_2 = "4.2"; //$NON-NLS-1$
 	public static final String V5_0 = "5.0"; //$NON-NLS-1$
+	public static final String V5_1 = "5.1"; //$NON-NLS-1$
+	public static final String V6_0 = "6.0"; //$NON-NLS-1$
 	
 	
 	/* Files or folders inside the TOOLING */
