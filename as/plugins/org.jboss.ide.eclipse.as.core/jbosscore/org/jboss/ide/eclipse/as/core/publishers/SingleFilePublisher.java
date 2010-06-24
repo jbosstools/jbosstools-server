@@ -18,10 +18,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -32,8 +34,8 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class SingleFilePublisher implements IJBossServerPublisher {
 
@@ -117,12 +119,19 @@ public class SingleFilePublisher implements IJBossServerPublisher {
 
 	protected IStatus unpublish(IDeployableServer server, IModule module, IProgressMonitor monitor) throws CoreException {
 		// delete file
-		SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
-		if( delegate != null ) {
+		String fileName = null;
+		if( module instanceof DeletedModule ) {
+			String path = module.getId().substring(SingleDeployableFactory.FACTORY_ID.length()+1);
+			fileName = new Path(path).lastSegment();
+		} else {
+			SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module.loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
 			IPath sourcePath = delegate.getGlobalSourcePath();
+			fileName = sourcePath.lastSegment();
+		}
+		if( fileName != null ) {
 			IPath destFolder = PublishUtil.getDeployPath(new IModule[]{module}, server).removeLastSegments(1);
 			FileUtilListener l = new FileUtilListener();
-			File destFile = destFolder.append(sourcePath.lastSegment()).toFile();
+			File destFile = destFolder.append(fileName).toFile();
 			FileUtil.safeDelete(destFile, l);
 			if( l.errorFound ) {
 				publishState = IServer.PUBLISH_STATE_FULL;
