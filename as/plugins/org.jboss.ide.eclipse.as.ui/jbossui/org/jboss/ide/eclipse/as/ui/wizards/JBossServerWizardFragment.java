@@ -44,6 +44,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -187,7 +188,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		jbs.setUsername("admin"); //$NON-NLS-1$
 		jbs.setPassword("admin"); //$NON-NLS-1$
-		jbs.setDeployLocationType(isAS5() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
+		jbs.setDeployLocationType(isAS50() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
 	}
@@ -204,9 +205,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		return ajbsrt;
 	}
 
-	protected boolean isAS5() {
-		return getRuntime().getRuntime().getRuntimeType().
-				getVersion().equals("5.0"); //$NON-NLS-1$
+	protected boolean isAS50() {
+		return getRuntime().getRuntime().getRuntimeType().equals(IJBossToolingConstants.SERVER_AS_50);
 	}
 	
 	public boolean isComplete() {
