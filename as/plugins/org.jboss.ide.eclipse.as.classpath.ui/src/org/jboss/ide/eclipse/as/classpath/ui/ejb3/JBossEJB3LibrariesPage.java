@@ -55,7 +55,6 @@ public class JBossEJB3LibrariesPage extends JBossSelectionPage implements IClass
    public void createControl(Composite parent) {
 	   super.createControl(parent);
 	   servers.addSelectionChangedListener(new ISelectionChangedListener() {
-		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
 			validateSelection();
 		}
