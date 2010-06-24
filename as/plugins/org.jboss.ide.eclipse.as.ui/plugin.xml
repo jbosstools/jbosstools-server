@@ -141,7 +141,7 @@
              class="org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage"
              id="org.jboss.ide.eclipse.as.ui.editor.deploymentPage"
              name="Deployment"
-             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, %AllJBossServerTypes%">
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer, %AllJBossServerTypes">
        </page>
     </extension>
 
