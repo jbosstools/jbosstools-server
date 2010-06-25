@@ -16,6 +16,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<requirements>jbossas</requirements>
 		<projectRoot>${basedir}/../../..</projectRoot>
 		<requirements.build>${projectRoot}/requirements/target</requirements.build>
+		<systemProperties>-Djbosstools.test.jboss.home.4.2=$${projectRoot}/requirements/target/jboss-4.2.3.GA</systemProperties>
 	</properties>
 
 	<build>
@@ -27,30 +28,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<explodedBundles>
 						<bundle>org.jboss.ide.eclipse.as.ui.test</bundle>
 					</explodedBundles>
-					<argLine>-Djbosstools.test.jboss.home.4.2=$${projectRoot}/requirements/target/jboss-4.2.3.GA</argLine>
 				</configuration>
 			</plugin>
-			<!--
-                        <plugin>
+			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>prepare-eclipse-base</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<ant dir="${projectRoot}/requirements" inheritAll="true">
-									<property name="requirements" value="${requirements}" />
-								</ant> 
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
-                        -->
 		</plugins>
 	</build>
 </project>

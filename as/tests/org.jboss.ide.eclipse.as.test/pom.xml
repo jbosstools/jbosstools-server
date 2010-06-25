@@ -16,8 +16,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<requirements>jbossas</requirements>
 		<projectRoot>${basedir}/../../..</projectRoot>
 		<requirements.build>${projectRoot}/requirements/target</requirements.build>
+		<systemProperties>-Djbosstools.test.jboss.home.3.2=${requirements.build}/jboss-3.2.8.SP1 -Djbosstools.test.jboss.home.4.0=${requirements.build}/jboss-4.0.5.GA -Djbosstools.test.jboss.home.4.2=${requirements.build}/jboss-4.2.3.GA -Djbosstools.test.jboss.home.5.0=${requirements.build}/jboss-5.0.1.GA -Djbosstools.test.jboss.home.5.1=${requirements.build}/jboss-5.1.0.GA</systemProperties>
 	</properties>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -27,28 +28,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<explodedBundles>
 						<bundle>org.jboss.ide.eclipse.as.test</bundle>
 					</explodedBundles>
-					<argLine>-Djbosstools.test.jboss.home.3.2=${requirements.build}/jboss-3.2.8.SP1 -Djbosstools.test.jboss.home.4.0=${requirements.build}/jboss-4.0.5.GA -Djbosstools.test.jboss.home.4.2=${requirements.build}/jboss-4.2.3.GA -Djbosstools.test.jboss.home.5.0=${requirements.build}/jboss-5.0.1.GA -Djbosstools.test.jboss.home.5.1=${requirements.build}/jboss-5.1.0.GA</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.3</version>
-				<executions>
-					<execution>
-						<id>prepare-eclipse-base</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<tasks>
-								<ant dir="${projectRoot}/requirements" inheritAll="true">
-									<property name="requirements" value="${requirements}" />
-								</ant> 
-							</tasks>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
