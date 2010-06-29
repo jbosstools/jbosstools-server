@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -39,7 +38,6 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.LocalCopyCallbac
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -124,7 +122,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
 		
 
-		touchXMLFiles(deployPath);
+		touchXMLFiles(deployPath, module);
 
 		if( list.size() > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_FAIL, 
@@ -140,16 +138,8 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		return ret;
 	}
 	
-	private void touchXMLFiles(IPath deployPath) {
-		// adjust timestamps
-		FileFilter filter = new FileFilter() {
-			public boolean accept(File pathname) {
-				if( pathname.getAbsolutePath().toLowerCase().endsWith(IConstants.EXT_XML))
-					return true;
-				return false;
-			}
-		};
-		FileUtil.touch(filter, deployPath.toFile(), true);
+	private void touchXMLFiles(IPath deployPath, IModule module) {
+		JSTPublisherXMLToucher.getInstance().touch(deployPath, module);
 	}
 
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
@@ -175,7 +165,7 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		}
 		
 		if( handler != null && handler.shouldRestartModule() )
-			touchXMLFiles(deployPath);
+			touchXMLFiles(deployPath, module);
 
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, countChanges(delta), module.getName()), null);
