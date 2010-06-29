@@ -7,10 +7,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	  <artifactId>org.jboss.tools.parent.pom</artifactId>
 	  <version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.jboss.tools</groupId>
+	<groupId>org.jboss.tools.archives.tests</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.test</artifactId> 
 	<version>3.1.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
+	<properties>
+		<emma.filter>org.jboss.ide.eclipse.archives.core*</emma.filter>
+		<emma.instrument.bundles>org.jboss.ide.eclipse.archives.core</emma.instrument.bundles>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
