@@ -49,10 +49,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
@@ -79,8 +78,21 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 	private static final String LOCAL_COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
 	private static final String LOCAL_COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
 
+	protected ServerAttributeHelper getHelper() {
+		if( helper == null ) {
+			helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
+		} else {
+			String helperTS = helper.getWorkingCopy().getAttribute("timestamp", (String)null);
+			String officialTS = page.getServer().getAttribute("timestamp", (String)null);
+			if( !helperTS.equals(officialTS)) {
+				helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
+			}
+		}
+		return helper;
+	}
+	
 	public Control createControl(Composite parent) {
-		helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
+		getHelper();
 
 		Composite random = new Composite(parent, SWT.NONE);
 		GridData randomData = new GridData(GridData.FILL_BOTH);
@@ -341,16 +353,16 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			this.text = deployText;
 			this.newDir = deployText.getText();
 			this.listener = deployListener;
-			this.oldDir = helper.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
+			this.oldDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		}
 		public void execute() {
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
 			lastCustomDeploy = newDir;
 			page.getSaveStatus();
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
 			page.getSaveStatus();
@@ -362,17 +374,17 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		boolean newVal;
 		public SetZipCommand() {
 			super(page.getServer(), Messages.EditorZipDeployments);
-			oldVal = helper.getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
+			oldVal = getHelper().getAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, false);
 			newVal = zipDeployWTPProjects.getSelection();
 		}
 		public void execute() {
-			helper.setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, newVal);
+			getHelper().setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, newVal);
 			page.getSaveStatus();
 		}
 		public void undo() {
 			zipDeployWTPProjects.removeSelectionListener(zipListener);
 			zipDeployWTPProjects.setSelection(oldVal);
-			helper.setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, oldVal);
+			getHelper().setAttribute(IDeployableServer.ZIP_DEPLOYMENTS_PREF, oldVal);
 			zipDeployWTPProjects.addSelectionListener(zipListener);
 			page.getSaveStatus();
 		}
@@ -388,16 +400,16 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			text = tempDeployText;
 			newDir = tempDeployText.getText();
 			listener = tempDeployListener;
-			oldDir = helper.getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
+			oldDir = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
 		}
 		public void execute() {
-			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
+			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
 			lastCustomTemp = newDir;
 			page.getSaveStatus();
 		}
 		public void undo() {
 			text.removeModifyListener(listener);
-			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
+			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
 			text.setText(oldDir);
 			text.addModifyListener(listener);
 			page.getSaveStatus();
@@ -476,26 +488,26 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			newTemp = newTemp == null ? oldTemp : newTemp; 
 			
 			deployText.removeModifyListener(deployListener);
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
 			deployText.setText(newDir);
 			deployText.addModifyListener(deployListener);
 
 			tempDeployText.removeModifyListener(tempDeployListener);
-			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
+			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
 			tempDeployText.setText(newTemp);
 			tempDeployText.addModifyListener(tempDeployListener);
 			
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, type);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, type);
 			page.getSaveStatus();
 		}
 		public void undo() {
 			deployText.removeModifyListener(deployListener);
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
 			deployText.setText(oldDir);
 			deployText.addModifyListener(deployListener);
 
 			tempDeployText.removeModifyListener(tempDeployListener);
-			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
+			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
 			tempDeployText.setText(oldTemp);
 			tempDeployText.addModifyListener(tempDeployListener);
 			
@@ -513,7 +525,7 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
 				 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
 				 				IDeployableServer.DEPLOY_METADATA;
-			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, oldType);
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, oldType);
 			page.getSaveStatus();
 		}
 	}
