@@ -89,4 +89,10 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String DEFAULT_CONFIGURATION = CONFIG_DEFAULT;
 	public static final String CONFIG_ALL = "all"; //$NON-NLS-1$
 	public static final String CONFIG_MINIMAL = "minimal"; //$NON-NLS-1$
+	
+	public static final String DESCRIPTOR_WEB = "WEB-INF/web.xml"; //$NON-NLS-1$
+	public static final String DESCRIPTOR_EJB = "META-INF/ejb-jar.xml"; //$NON-NLS-1$
+	public static final String DESCRIPTOR_EAR = "META-INF/application.xml"; //$NON-NLS-1$
+	public static final String DESCRIPTOR_CLIENT = "META-INF/application-client.xml"; //$NON-NLS-1$
+	public static final String DESCRIPTOR_CONNECTOR = "META-INF/ra.xml"; //$NON-NLS-1$
 }
