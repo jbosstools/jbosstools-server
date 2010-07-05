@@ -149,7 +149,7 @@ public class SSHDeploymentModuleTab implements IDeploymentEditorTab {
 		Label passLabel = toolkit.createLabel(inner,
 				Messages.PassLabel);
 		passLabel.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		passText = toolkit.createText(inner, SSHPublishUtil.getPass(page.getServer().getOriginal()), SWT.BORDER);
+		passText = toolkit.createText(inner, SSHPublishUtil.getPass(page.getServer().getOriginal()), SWT.BORDER | SWT.PASSWORD);
 		passListener = new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				page.execute(new SetPasswordCommand());

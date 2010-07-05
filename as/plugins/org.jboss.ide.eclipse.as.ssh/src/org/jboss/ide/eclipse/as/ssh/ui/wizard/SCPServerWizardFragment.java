@@ -96,7 +96,7 @@ public class SCPServerWizardFragment extends WizardFragment {
 		
 		Label passLabel = new Label(inner, SWT.NONE);
 		passLabel.setText(Messages.PassLabel);
-		passText = new Text(inner, SWT.BORDER);
+		passText = new Text(inner, SWT.BORDER | SWT.PASSWORD);
 		passText.setText("password");
 		passText.addModifyListener(listener);
 		passText.setEnabled(true);
