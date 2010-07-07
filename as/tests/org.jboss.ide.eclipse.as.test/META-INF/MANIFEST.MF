@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.test
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.2.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.test.ASTest
 Require-Bundle: org.eclipse.core.runtime,
  org.junit,
@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jst.jee,
  org.eclipse.jst.server.core;bundle-version="1.1.0",
  org.jboss.tools.jmx.core.test,
- org.jboss.ide.eclipse.as.ui;bundle-version="1.0.0",
+ org.jboss.ide.eclipse.as.ui,
  org.eclipse.ui.navigator;bundle-version="3.3.101",
  org.eclipse.jst.common.frameworks;bundle-version="1.1.300",
  org.eclipse.jst.j2ee;bundle-version="1.1.301",
@@ -36,10 +36,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jem.util;bundle-version="2.0.200",
  org.eclipse.jst.j2ee.web;bundle-version="1.1.301",
  org.jboss.tools.tests;bundle-version="2.0.0",
- org.jboss.ide.eclipse.as.classpath.core;bundle-version="2.1.0",
- org.jboss.ide.eclipse.as.classpath.ui;bundle-version="2.1.0",
- org.jboss.ide.eclipse.as.wtp.core;bundle-version="2.1.0",
- org.jboss.ide.eclipse.as.wtp.ui;bundle-version="2.1.0",
+ org.jboss.ide.eclipse.as.classpath.core,
+ org.jboss.ide.eclipse.as.classpath.ui,
+ org.jboss.ide.eclipse.as.wtp.core,
+ org.jboss.ide.eclipse.as.wtp.ui,
  org.eclipse.jst.jsf.core;bundle-version="1.2.5",
  org.eclipse.jpt.core;bundle-version="2.2.1"
 Bundle-ActivationPolicy: lazy
