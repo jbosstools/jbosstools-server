@@ -12,5 +12,8 @@ public class JMXCoreAllTests extends TestSuite {
 		super("JMX Core All Tests");
 		addTest(new TestSuite(DefaultProviderTest.class));
 		addTest(new TestSuite(NodeBuilderTestCase.class));
+		addTestSuite(JMXExceptionTest.class);
+		addTestSuite(ImpactTest.class);
+		addTestSuite(ErrorRootTest.class);
 	}
 }

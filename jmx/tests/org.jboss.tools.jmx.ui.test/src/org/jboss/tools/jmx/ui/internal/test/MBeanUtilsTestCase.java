@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
 
-package org.jboss.tools.jmx.ui.internal;
+package org.jboss.tools.jmx.ui.internal.test;
 
 import org.jboss.tools.jmx.ui.internal.MBeanUtils;
 
