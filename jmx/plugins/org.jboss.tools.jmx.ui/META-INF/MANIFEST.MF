@@ -13,6 +13,16 @@ Require-Bundle: org.eclipse.ui,
  org.jboss.tools.jmx.core;bundle-version="[1.0.0,2.0.0)"
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.jboss.tools.jmx.ui.extensions,
- org.jboss.tools.jmx.ui.internal.views.navigator
+Export-Package: org.jboss.tools.jmx.ui,
+ org.jboss.tools.jmx.ui.extensions,
+ org.jboss.tools.jmx.ui.internal;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.actions;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.adapters;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.controls;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.dialogs;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.editors;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.perspectives;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.tables;x-internal:=true,
+ org.jboss.tools.jmx.ui.internal.views.navigator,
+ org.jboss.tools.jmx.ui.internal.wizards;x-internal:=true
 Bundle-ActivationPolicy: lazy
