@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -107,8 +108,13 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IModuleResource[] members = getResources(module);
  
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
+		IJ2EEModule j2eeModule = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);
+		boolean delete = true;
+		if (j2eeModule != null && j2eeModule.isBinary()) {
+			delete = false;
+		}
 		// if the module we're publishing is a project, not a binary, clean it's folder
-		if( !(new Path(module.getName()).segmentCount() > 1 ))
+		if( !(new Path(module.getName()).segmentCount() > 1 ) && delete)
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
 		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {

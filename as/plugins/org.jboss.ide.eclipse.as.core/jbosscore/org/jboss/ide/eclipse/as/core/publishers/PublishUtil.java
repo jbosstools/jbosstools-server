@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
+import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.DeletedModule;
@@ -37,11 +38,11 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
 public class PublishUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -126,7 +127,11 @@ public class PublishUtil {
 	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
 		IPath root = new Path( deployFolder );
 		String type, modName, name, uri, suffixedName;
-		for( int i = 0; i < moduleTree.length; i++ ) {
+		for( int i = 0; i < moduleTree.length; i++ ) {	
+			IJ2EEModule j2eeModule = (IJ2EEModule) moduleTree[i].loadAdapter(IJ2EEModule.class, null);
+			if (j2eeModule != null && j2eeModule.isBinary()) {
+				continue;
+			}
 			type = moduleTree[i].getModuleType().getId();
 			modName = moduleTree[i].getName();
 			name = new Path(modName).lastSegment();
