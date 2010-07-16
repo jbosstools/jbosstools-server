@@ -117,12 +117,12 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		if( !(new Path(module.getName()).segmentCount() > 1 ) && delete)
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
-		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
+		if( !deployPackaged(moduleTree) && !j2eeModule.isBinary()) {
 			LocalCopyCallback handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
 			PublishCopyUtil util = new PublishCopyUtil(handler);
 			list.addAll(Arrays.asList(util.publishFull(members, monitor)));
 		}
-		else if( isBinaryObject(moduleTree))
+		else if(j2eeModule.isBinary())
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
 		else
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
@@ -152,12 +152,13 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
+		IJ2EEModule j2eeModule = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);		
 		LocalCopyCallback handler = null;
-		if( !deployPackaged(moduleTree) && !isBinaryObject(moduleTree)) {
+		if( !deployPackaged(moduleTree) && !j2eeModule.isBinary()) {
 			handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
 			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
 		} else if( delta.length > 0 ) {
-			if( isBinaryObject(moduleTree))
+			if( j2eeModule.isBinary())
 				results = copyBinaryModule(moduleTree);
 			else
 				results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);

@@ -129,9 +129,6 @@ public class PublishUtil {
 		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {	
 			IJ2EEModule j2eeModule = (IJ2EEModule) moduleTree[i].loadAdapter(IJ2EEModule.class, null);
-			if (j2eeModule != null && j2eeModule.isBinary()) {
-				continue;
-			}
 			type = moduleTree[i].getModuleType().getId();
 			modName = moduleTree[i].getName();
 			name = new Path(modName).lastSegment();
