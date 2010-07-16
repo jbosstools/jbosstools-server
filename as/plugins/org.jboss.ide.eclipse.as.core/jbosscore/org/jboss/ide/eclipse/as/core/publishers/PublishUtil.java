@@ -194,14 +194,8 @@ public class PublishUtil {
 	
 	// TODO This can also change to find the isBinaryModule method 
 	public static boolean isBinaryObject(IModule[] moduleTree) {
-		String name;
-		for( int i = 0; i < moduleTree.length; i++ ) {
-			name = moduleTree[i].getName();
-			if( new Path(name).segmentCount() > 1 )
-				// we strongly suspect this is a binary object and not a project
-				return true;
-		}
-		return false;
+		IJ2EEModule j2eeModule = (IJ2EEModule) moduleTree[moduleTree.length-1].loadAdapter(IJ2EEModule.class, null);
+		return j2eeModule != null && j2eeModule.isBinary();
 	}
 	
 	public static IModuleResource[] getResources(IModule module) throws CoreException {
