@@ -43,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentP
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentTypePrefs;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 public class PublishUtil {
 	public static int countChanges(IModuleResourceDelta[] deltas) {
@@ -192,10 +193,10 @@ public class PublishUtil {
 		return suffix;
 	}
 	
-	// TODO This can also change to find the isBinaryModule method 
+	@Deprecated 
 	public static boolean isBinaryObject(IModule[] moduleTree) {
-		IJ2EEModule j2eeModule = (IJ2EEModule) moduleTree[moduleTree.length-1].loadAdapter(IJ2EEModule.class, null);
-		return j2eeModule != null && j2eeModule.isBinary();
+		IModule lastMod = moduleTree[moduleTree.length-1];
+		return ServerModelUtilities.isBinaryModule(lastMod);
 	}
 	
 	public static IModuleResource[] getResources(IModule module) throws CoreException {

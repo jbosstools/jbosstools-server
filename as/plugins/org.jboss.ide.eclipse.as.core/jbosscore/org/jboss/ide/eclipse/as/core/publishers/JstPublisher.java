@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -40,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.FileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil.IFileUtilListener;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
  * This class provides a default implementation for packaging different types of
@@ -108,21 +108,21 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IModuleResource[] members = getResources(module);
  
 		ArrayList<IStatus> list = new ArrayList<IStatus>();
-		IJ2EEModule j2eeModule = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);
+		boolean isBinary = ServerModelUtilities.isBinaryModule(module);
 		boolean delete = true;
-		if (j2eeModule != null && j2eeModule.isBinary()) {
+		if (isBinary) {
 			delete = false;
 		}
 		// if the module we're publishing is a project, not a binary, clean it's folder
 		if( !(new Path(module.getName()).segmentCount() > 1 ) && delete)
 			list.addAll(Arrays.asList(localSafeDelete(deployPath)));
 
-		if( !deployPackaged(moduleTree) && !j2eeModule.isBinary()) {
+		if( !deployPackaged(moduleTree) && !isBinary) {
 			LocalCopyCallback handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
 			PublishCopyUtil util = new PublishCopyUtil(handler);
 			list.addAll(Arrays.asList(util.publishFull(members, monitor)));
 		}
-		else if(j2eeModule.isBinary())
+		else if(isBinary)
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree)));
 		else
 			list.addAll(Arrays.asList(packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath)));
@@ -152,13 +152,13 @@ public class JstPublisher extends PublishUtil implements IJBossServerPublisher {
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPath tempDeployPath = getTempDeployFolder(moduleTree, server);
-		IJ2EEModule j2eeModule = (IJ2EEModule) module.loadAdapter(IJ2EEModule.class, null);		
+		boolean isBinary = ServerModelUtilities.isBinaryModule(module);
 		LocalCopyCallback handler = null;
-		if( !deployPackaged(moduleTree) && !j2eeModule.isBinary()) {
+		if( !deployPackaged(moduleTree) && !isBinary) {
 			handler = new LocalCopyCallback(server.getServer(), deployPath, tempDeployPath);
 			results = new PublishCopyUtil(handler).publishDelta(delta, monitor);
 		} else if( delta.length > 0 ) {
-			if( j2eeModule.isBinary())
+			if( isBinary)
 				results = copyBinaryModule(moduleTree);
 			else
 				results = packModuleIntoJar(moduleTree[moduleTree.length-1], deployPath);
