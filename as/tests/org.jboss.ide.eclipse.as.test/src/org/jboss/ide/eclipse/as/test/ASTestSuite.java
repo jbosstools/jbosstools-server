@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.test.projectcreation.TestEar5WithJBossRuntime;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512aTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
+import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 
@@ -48,6 +49,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(JBIDE4184Test.class);
         suite.addTestSuite(TestEar5WithJBossRuntime.class);
         suite.addTestSuite(JSTDeploymentTester.class);
+        suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
         suite.addTestSuite(SingleFileDeploymentTester.class);
         return suite; 
    }
