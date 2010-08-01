@@ -578,5 +578,31 @@
             typeIds="%AllJBossServerTypes">
       </runtimeLocator>
    </extension>
-	
+
+   <extension point="org.eclipse.ui.popupMenus">
+        <objectContribution
+                adaptable="true"
+                id="org.jboss.ide.eclipse.as.ui.actions.exploreAction"
+                objectClass="org.eclipse.wst.server.core.IServer">
+                enablesFor="1"
+            <enablement>
+              <adapt type="org.eclipse.wst.server.core.IServer">
+              	<test forcePluginActivation="true"
+                	property="org.eclipse.wst.server.ui.serverType"
+                	value="org.jboss.ide.eclipse.as*" />
+               </adapt>
+            </enablement>
+      
+            <action
+                label="Explore"
+                icon="icons/actions/xpl/explore.gif"
+                class="org.jboss.ide.eclipse.as.ui.actions.ExploreActionDelegate"
+                tooltip="Explore"
+                menubarPath="org.eclipse.wst.server.ui.internal.cnf.controlServerSectionEnd"
+                id="org.jboss.ide.eclipse.as.ui.actions.ExploreAction">
+            </action>
+         </objectContribution>
+    
+    </extension>
+   
 </plugin>

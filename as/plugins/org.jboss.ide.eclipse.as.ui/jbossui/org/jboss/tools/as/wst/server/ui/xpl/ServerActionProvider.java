@@ -137,7 +137,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		clipboard = new Clipboard(tableViewer.getTree().getDisplay());
 		Shell shell = tableViewer.getTree().getShell();
 		
-		actions = new Action[6];
+		actions = new Action[5];
 		// create the start actions
 		actions[0] = new StartAction(shell, provider, ILaunchManager.DEBUG_MODE);
 		actions[1] = new StartAction(shell, provider, ILaunchManager.RUN_MODE);
@@ -148,7 +148,7 @@ public class ServerActionProvider extends CommonActionProvider {
 		
 		// create the publish actions
 		actions[4] = new PublishAction(shell, provider);
-		actions[5] = new ExploreAction(shell,provider);
+		//actions[5] = new ExploreAction(shell,provider);
 
 		// create the open action
 		openAction = new OpenAction(provider);

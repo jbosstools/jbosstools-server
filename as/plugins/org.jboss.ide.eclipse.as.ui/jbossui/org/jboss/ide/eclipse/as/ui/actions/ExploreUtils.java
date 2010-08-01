@@ -14,8 +14,10 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -95,7 +97,7 @@ public class ExploreUtils {
 	
 	public static boolean canExplore(IServer server) {
 		String deployDirectory = ExploreUtils.getDeployDirectory(server);
-		if (deployDirectory == null || deployDirectory.length() <= 0) {
+		if (deployDirectory == null || deployDirectory.length() <= 0 && new File(deployDirectory).exists()) {
 			return false;
 		}
 		if (ExploreUtils.getExploreCommand() == null) {
@@ -122,8 +124,15 @@ public class ExploreUtils {
 					int len = exploreFolderCommandArray.length;
 					exploreFolderCommandArray[len-1] = name;
 					Runtime.getRuntime().exec(exploreFolderCommandArray);
+				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
+					command = command.replace(ExploreUtils.PATH, name);
+					Runtime.getRuntime().exec(command);
 				} else {
 					command = command.replace(ExploreUtils.PATH, name);
+					if (JBossServerUIPlugin.getDefault().isDebugging()) {
+						IStatus status = new Status(IStatus.WARNING, JBossServerUIPlugin.PLUGIN_ID, "command=" + command, null); //$NON-NLS-1$
+						JBossServerUIPlugin.getDefault().getLog().log(status);
+					}
 					Runtime.getRuntime().exec(command);
 				}
 			} catch (IOException e) {
