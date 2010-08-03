@@ -55,12 +55,9 @@ public class ExploreUtils {
 		return exploreFileCommand;
 	}
 
-	@SuppressWarnings("nls")
 	private static void setExploreCommands() {
 		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-			exploreFolderCommand = "/usr/bin/open -a /System/Library/CoreServices/Finder.app \"" //$NON-NLS-1$
-					+ PATH + "\""; //$NON-NLS-1$
-			exploreFileCommand = exploreFolderCommand;
+			exploreFolderCommandArray = new String[] {"/usr/bin/open", "-a", "/System/Library/CoreServices/Finder.app", ""};   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
 			exploreFolderCommand = "cmd /C start explorer /root,/e,\"" //$NON-NLS-1$
 					+ PATH + "\""; //$NON-NLS-1$
@@ -120,7 +117,7 @@ public class ExploreUtils {
 			}
 			
 			try {
-				if (Platform.OS_LINUX.equals(Platform.getOS())) {
+				if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS())) {
 					int len = exploreFolderCommandArray.length;
 					exploreFolderCommandArray[len-1] = name;
 					Runtime.getRuntime().exec(exploreFolderCommandArray);
@@ -141,7 +138,6 @@ public class ExploreUtils {
 		}
 	}
 	
-	@SuppressWarnings("nls")
 	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
 		IPath root = new Path( server.getDeployFolder() );
 		String type, name;
