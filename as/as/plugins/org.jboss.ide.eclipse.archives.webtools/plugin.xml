@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.wst.server.core.moduleTypes">
+      <moduleType
+            id="jboss.package"
+            name="Project Package"/>
+   </extension>
+
+   <extension
+         point="org.jboss.ide.eclipse.archives.core.archiveTypes">
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.warArchive"
+            label="WAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EjbArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.ejbPackageType"
+            label="EJB JAR"/>
+      <packageType
+            class="org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType"
+            id="org.jboss.ide.eclipse.as.core.packages.earPackageType"
+            label="EAR"/>
+   </extension>
+
+   <!-- Adapters and clients to make stuff 'runnable' on server -->
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackagedArtifactAdapter"
+            id="org.jboss.ide.eclipse.as.core.PackagedArtifactAdapter"
+            priority="0">
+         <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IProject"/>
+               <instanceof value="org.eclipse.jdt.core.IJavaProject"/>
+            </or>
+         </enablement>
+	  </moduleArtifactAdapter>
+   </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+      <moduleFactory
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackageModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.PackageModuleFactory"
+            projects="true">
+         <moduleType
+               types="jboss.package"
+               versions="1.0"/>
+      </moduleFactory>
+   </extension>
+
+      <extension
+         point="org.jboss.ide.eclipse.archives.ui.nodePopupMenus">
+      <nodeContribution
+            class="org.jboss.ide.eclipse.archives.webtools.ui.PublishAction"
+            icon="$nl$/icons/publish.gif"
+            id="org.jboss.ide.eclipse.as.ui.publishNodeContextContrib"
+            label="%nodeContribution.label.publishToServer"
+            weight="1"/>
+      <nodeContribution
+            class="org.jboss.ide.eclipse.archives.webtools.ui.EditPublishAction"
+            icon="$nl$/icons/publishDetails.gif "
+            id="org.jboss.ide.eclipse.as.ui.modifyPublishNodeContextContrib"
+            label="%nodeContribution.label.editPublishSettings">
+      </nodeContribution>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewWARAction"
+            icon="$nl$/icons/war.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newWARAction"
+            label="%newPackageAction.label.war"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEJBJARAction"
+            icon="$nl$/icons/EJBJar.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEJBJarAction"
+            label="%newPackageAction.label.ejbJar"/>
+      <newPackageAction
+            class="org.jboss.ide.eclipse.archives.webtools.ui.NewEARAction"
+            icon="$nl$/icons/ear.gif"
+            id="org.jboss.ide.eclipse.packages.ui.newEARAction"
+            label="%newPackageAction.label.ear"/>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
+            priority="5">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher"
+            priority="2"
+            zipDelegate="true">
+      </publisher>
+   </extension>
+
+
+
+	<extension
+      point="org.eclipse.ui.navigator.navigatorContent">
+	   <navigatorContent
+	         id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets"
+	         activeByDefault="true"
+	         icon="$nl$/icons/multiple_files.gif"
+	         contentProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider"
+	         labelProvider="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetLabelProvider"
+	         name="%NavigatorContent_Filesets"
+	         priority="normal">
+	      <triggerPoints>
+	         <instanceof
+	               value="org.eclipse.wst.server.core.IServer">
+	         </instanceof>
+	      </triggerPoints>
+	      <possibleChildren>
+	         <or>
+             <instanceof
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$ServerWrapper">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.Fileset">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$FolderWrapper">
+             </instanceof>
+             <instanceof
+                   value="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetContentProvider$PathWrapper">
+             </instanceof>
+	         </or></possibleChildren>
+	      <actionProvider
+	            class="org.jboss.ide.eclipse.archives.webtools.filesets.FilesetActionProvider"
+	            id="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets.actions"
+	            priority="highest">
+	      </actionProvider>
+	   </navigatorContent>
+	</extension>
+	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
+	      <includes>
+	         <contentExtension
+	               isRoot="false"
+	               pattern="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets">
+	         </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+	</extension>
+	<extension
+	      point="org.eclipse.ui.navigator.viewer">
+	   <viewerContentBinding
+	         viewerId="org.eclipse.wst.server.ui.ServersView">
+	      <includes>
+	         <contentExtension
+	               isRoot="false"
+	               pattern="org.jboss.ide.eclipse.archives.webtools.ui.extensions.filesets">
+	         </contentExtension>
+	      </includes>
+	   </viewerContentBinding>
+	</extension>
+	
+    <extension
+          point="org.eclipse.ui.preferencePages">
+       <page
+             id="org.jboss.ide.eclipse.archives.webtools.defaultFileFilters.page"
+             name="%defaultFilesetPreferencePageTitle"
+             category="org.eclipse.wst.server.ui.preferencePage"
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.DefaultFilesetPreferencePage">
+                 <keywordReference id="org.eclipse.wst.server.preferenceKeywords"/>
+       </page>
+  </extension>
+
+    <!-- Fileset integration for WTP Projects -->
+	<extension
+         point="org.jboss.ide.eclipse.as.wtp.core.referenceResolver">
+      <resolver
+            class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver"
+            id="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver">
+      </resolver>
+	</extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.referenceWizardFragment">
+       <referenceFragment
+             class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetReferenceWizardFragment"
+             icon="$nl$/icons/multiple_files.gif"
+             id="org.jboss.ide.eclipse.archives.webtools.FilesetReferenceWizardFragment"
+             name="Fileset">
+       </referenceFragment>
+	</extension>
+    <extension
+          point="org.jboss.ide.eclipse.as.wtp.ui.virtualComponentLabelProvider">
+       <provider
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetVCLabelProvider"
+             weight="5">
+       </provider>
+    </extension>
+</plugin>

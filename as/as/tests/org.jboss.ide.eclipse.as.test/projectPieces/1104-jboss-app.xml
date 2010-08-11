@@ -1,0 +1,5 @@
+<jboss-app>
+	<module>
+		<service>directory-monitor.sar</service>
+	</module>
+</jboss-app> 

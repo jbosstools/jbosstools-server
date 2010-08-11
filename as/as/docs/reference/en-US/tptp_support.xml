@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="tptp_support">
+    <title>TPTP Support</title>
+    <para>This chapter provides an overview on how to enable TPTP Profiling for <property>JBoss
+        AS</property> adapters in <property>JBoss Tools</property>.</para>
+
+    <section>
+        <title>TPTP Profiling</title>
+
+        <para>To get TPTP profiling work on <property>JBoss Application Server</property> you should
+        do the following:</para>
+        
+            <itemizedlist>
+                <listitem><para>Download <ulink
+                    url="http://www.eclipse.org/tptp/home/downloads/"
+                    >TPTP Runtime</ulink> and install it, i. e. just add the content of <emphasis>
+                        <code>plugins/features</code>
+                    </emphasis> folders from downloaded directory to the same folders in your eclipse
+                    installation directory or use the <emphasis><property>Help &gt; Install New Software</property></emphasis>
+                    command.</para>
+                </listitem>
+                <listitem><para>Install <property>JBoss TPTP Tools</property>
+                    which provide TPTP support for JBoss AS servers (find the latest stable version of the JBoss TPTP profile feature at 
+                    <ulink url="http://www.jboss.org/tools/download/stable">http://www.jboss.org/tools/download/stable</ulink>).</para></listitem>
+            </itemizedlist>
+
+        <para>And now all profile actions should work for you. To start <property>JBoss
+            AS</property> in profiling mode use <emphasis>
+                <property>Start the server in profiling mode</property>
+            </emphasis> button or <emphasis>
+                <property>Profile As > Profile on Server</property>
+            </emphasis> option in the context menu of the project.</para>
+
+        <figure>
+            <title>Start the Server in Profiling mode</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/tptp_support/tptp_support_1.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+
+        <para>To enable TPTP features in your workbench use <property>Profiling and Logging
+                Perspective</property> that you can find in the list of proposed perspectives: <emphasis>
+                <property>Window > Open Perspective > Other…</property>
+            </emphasis>
+        </para>
+
+        <figure>
+            <title>Profiling and Logging Perspective</title>
+            <mediaobject>
+                <imageobject>
+                    <imagedata fileref="images/tptp_support/tptp_support_2.png"/>
+                </imageobject>
+            </mediaobject>
+        </figure>
+    </section>
+
+    <section>
+        <title>Relevant Resources Links</title>
+        <para>All additional information on TPTP(Test and Performance Tools Platform) you can find
+            in <ulink
+                url="http://www.eclipse.org/tptp/home/downloads/4.5.0/documents/quicktour/quick_tour.html"
+                >eclipse documentation</ulink>.</para>
+        <para>In summary, this reference should help you to start with <ulink
+            url="http://www.jboss.org/jbossas">JBoss AS</ulink> and get to know with functionality
+            for work with it.</para>
+    </section>
+</chapter>

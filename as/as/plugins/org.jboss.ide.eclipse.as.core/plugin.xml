@@ -1,0 +1,1050 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension-point id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers" schema="schema/pollers.exsd"/>
+   <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
+   <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
+   <extension-point id="publishMethod" name="org.jboss.ide.eclipse.as.core.publishMethod" schema="schema/publishMethod.exsd"/>
+
+   <extension
+         point="org.eclipse.wst.server.core.serverTypes">
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.version.32.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.32"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.32.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.version.40.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.40"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.40.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.version.42.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.42"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.42.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.42"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.version.50.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.50"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.50.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.50"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.version.51.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.51"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.51.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.51"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+            
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBoss6Server"
+            description="%jboss.version.60.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.60"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.60.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.60"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.eap.version.43.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.eap.43"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.eap.version.43.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.43"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
+            description="%jboss.eap.version.50.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.eap.50"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.eap.version.50.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.50"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="false"/>
+
+
+      <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServer"
+            description="%deploy.server.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.systemCopyServer"
+            name="%deploy.server.name"
+            runtime="false"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
+            supportsRemoteHosts="true"/>
+
+ </extension>
+
+   <extension
+         point="org.eclipse.wst.server.core.runtimeTypes">
+      <runtimeType
+            vendor="%providerName"
+            class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+            description="%jboss.version.32.description"
+            name="%jboss.version.32.runtime.name"
+            id="org.jboss.ide.eclipse.as.runtime.32"
+            version="3.2">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1"/>
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+      </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.version.40.description"
+             name="%jboss.version.40.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.40"
+             version="4.0">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4"/>
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4">
+          </moduleType>
+      </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.version.42.description"
+             name="%jboss.version.42.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.42"
+             version="4.2">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+      </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.version.50.description"
+             name="%jboss.version.50.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.50"
+             version="5.0">
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.version.51.description"
+             name="%jboss.version.51.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.51"
+             version="5.1">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+      <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.version.60.description"
+             name="%jboss.version.60.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.60"
+             version="6.0">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+
+
+      <runtimeType
+             vendor="%enterpriseProviderName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.eap.version.43.description"
+             name="%jboss.eap.version.43.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.eap.43"
+             version="4.3">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+      </runtimeType>
+
+      <runtimeType
+             vendor="%enterpriseProviderName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
+             description="%jboss.eap.version.50.description"
+             name="%jboss.eap.version.50.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.eap.50"
+             version="5.0">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+
+
+
+      <runtimeType
+            class="org.jboss.ide.eclipse.as.core.server.internal.DeployableServerRuntime"
+            description="%deploy.runtime.description"
+            id="org.jboss.ide.eclipse.as.runtime.stripped"
+            name="%deploy.runtime.name"
+            vendor="%basicProviderName"
+            version="1.0">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+   </extension>
+
+
+	<!-- Launch Configuration for the servers -->
+	<extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            category="JBoss"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
+            modes="run,debug,profile"
+            name="JBoss Application Server Startup Configuration"
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
+            modes="run"
+            name="Twiddle"
+            public="false">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
+            modes="run"
+            name="Stop Server"
+            public="false">
+      </launchConfigurationType>
+   </extension>
+
+   <extension
+         point="org.eclipse.debug.core.sourcePathComputers">
+      <sourcePathComputer
+            class="org.jboss.ide.eclipse.as.core.server.xpl.ServerSourcePathComputerDelegate"
+            id="org.jboss.ide.eclipse.as.core.serverSourcePathComputer">
+      </sourcePathComputer>
+   </extension>
+
+	<!-- Module Factory Stuff -->
+
+   <extension
+         point="org.eclipse.wst.server.core.moduleFactories">
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory"
+            id="org.jboss.ide.eclipse.as.core.singledeployablefactory"
+            projects="false">
+         <moduleType
+               types="jboss.singlefile"
+               versions="1.0">
+         </moduleType>
+      </moduleFactory>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.as.core.modules.SingleDeployableAdapter"
+            id="org.jboss.ide.eclipse.as.core.modules.SingleDeployableAdapter"
+            priority="0">
+         <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IFile"/>
+            </or>
+         </enablement>
+	  </moduleArtifactAdapter>
+   </extension>
+
+   <extension
+         point="org.eclipse.wst.server.core.launchableAdapters">
+      <launchableAdapter
+            class="org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter"
+            id="org.jboss.ide.eclipse.as.core.launchableAdapter1"/>
+   </extension>
+
+   <!-- How to determine whether the server is up or down -->
+   <extension
+         point="org.jboss.ide.eclipse.as.core.pollers">
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.TimeoutPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
+            name="Timeout Poller"
+            supportsStartup="true"
+            supportsShutdown="true"/>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
+            name="JMX Poller"
+            supportsStartup="true"
+            supportsShutdown="false"/>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
+            name="Process Terminated Poller"
+            supportsShutdown="true"
+            supportsStartup="false">
+      </serverPoller>
+   </extension>
+
+
+
+
+   <!-- Stuff for the dual model of runtimes... facet time baby! -->
+   <extension
+         point="org.eclipse.jst.server.core.runtimeFacetMappings">
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.32"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="3.2"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.40"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="4.0"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.42"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="4.2"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.50"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="5.0"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.51"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="5.1"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.60"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="6.0"/>
+       <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.stripped.component"
+            version="1.0"/>
+
+
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.43"
+            runtime-component="org.jboss.ide.eclipse.eap.runtime.component"
+            version="4.3"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.eap.50"
+            runtime-component="org.jboss.ide.eclipse.eap.runtime.component"
+            version="5.0"/>
+   </extension>
+
+
+<extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.stripped.component"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.stripped.component"
+            version="1.0"/>
+
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.stripped.component"
+         	version="1.0"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+   </extension>
+
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+      		<runtime-component-type id="org.jboss.ide.eclipse.eap.runtime.component"/>
+      		<runtime-component-version
+            	type="org.jboss.ide.eclipse.eap.runtime.component"
+            	version="4.3"/>
+      		<runtime-component-version
+            	type="org.jboss.ide.eclipse.eap.runtime.component"
+            	version="5.0"/>
+   	
+   			<supported>
+        		<runtime-component
+         			id="org.jboss.ide.eclipse.eap.runtime.component"
+         			version="4.3"/>
+       			<facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       			<facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       			<facet id="jst.utility" version="1.0"/>
+       			<facet id="jst.connector" version="1.0,1.5"/>
+       			<facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       			<facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       			<facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     		</supported>
+   			<supported>
+        		<runtime-component
+         			id="org.jboss.ide.eclipse.eap.runtime.component"
+         			version="5.0"/>
+       			<facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       			<facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       			<facet id="jst.utility" version="1.0"/>
+       			<facet id="jst.connector" version="1.0,1.5"/>
+       			<facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       			<facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       			<facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     		</supported>
+   </extension>
+		
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+      <runtime-component-type id="org.jboss.ide.eclipse.as.runtime.component"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="3.2"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="4.0"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="4.2"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="5.0"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="5.1"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="6.0"/>
+
+
+      <supported>
+        <runtime-component
+         id="org.jboss.ide.eclipse.as.runtime.component"
+         version="3.2"/>
+       <facet id="jst.web" version="2.2,2.3,2.4"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.ejb" version="2.0,2.1"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4"/>
+     </supported>
+
+
+      <supported>
+        <runtime-component
+         id="org.jboss.ide.eclipse.as.runtime.component"
+         version="4.0"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.component"
+         	version="4.2"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.component"
+         	version="5.0"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.component"
+         	version="5.1"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="1.3,1.4,5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.component"
+         	version="6.0"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5"/>
+       <facet id="jst.java" version="5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0"/>
+     </supported>
+
+   </extension>
+
+
+
+   <extension
+         point="org.eclipse.jst.j2ee.classpathdep">
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeInitializer">
+      </filteredClasspathContainer>
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.ejb3.classpathContainer">
+      </filteredClasspathContainer>
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.j2ee-1.3">
+      </filteredClasspathContainer>
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.j2ee-1.4">
+      </filteredClasspathContainer>
+      <filteredClasspathContainer
+            containerID="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
+      </filteredClasspathContainer>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.defaultFacets">
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.as.runtime.component"
+               version="4.2">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.as.runtime.component"
+               version="5.1">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.as.runtime.component"
+               version="6.0">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.eap.runtime.component"
+               version="4.3">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.eap.runtime.component"
+               version="5.0">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="5.0">
+         </facet>
+      </default-facets>
+   </extension>
+
+   <extension
+         point="org.eclipse.wst.xml.core.catalogContributions">
+     <catalogContribution>
+	     <public publicId="-//JBoss//DTD JBOSS 4.0//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd"/>
+	     <public publicId="-//JBoss//DTD JBOSS 4.2//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss_4_2.dtd"/>
+
+	     <public publicId="-//JBoss//DTD J2EE Application 1.4//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_0.dtd"/>
+	     <public publicId="-//JBoss//DTD J2EE Application 4.2//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-app_4_2.dtd"/>
+	     <public publicId="-//JBoss//DTD Web Application 2.4//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_4_0.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_0.dtd"/>
+	     <public publicId="-//JBoss//DTD Web Application 4.2//EN"
+				uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_4_2.dtd"
+				webURL="http://www.jboss.org/j2ee/dtd/jboss-web_4_2.dtd"/>
+				
+		 <uri name="http://java.sun.com/xml/ns/javaee/javaee_6.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/javaee_6.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/ejb-jar_3_1.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/application_6.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/application_6.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-common_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-common_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-common_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/web-app_3_0.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/javaee_web_services_client_1_3.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/javaee_web_services_client_1_3.xsd"/>
+		 <uri name="http://java.sun.com/xml/ns/javaee/jsp_2_2.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jsp_2_2.xsd"/>
+		 <uri name="http://www.jboss.com/ws-security/schema/jboss-ws-security_1_0.xsd"
+			  uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ws-security_1_0.xsd"/>
+		 <uri name="jaxws-config_2_0.xsd"
+              uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jaxws-config_2_0.xsd"/>
+		 <uri name="persistence_2_0.xsd"
+              uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/persistence_2_0.xsd"/>
+         <public
+               publicId="-//JBoss//DTD JBOSS JCA Config 1.5//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_1_5.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_1_5.dtd"/>
+         <public
+               publicId="-//JBoss//DTD MBean Service 4.2//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-service_4_2.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_4_2.dtd"/>
+         <public
+               publicId="-//JBoss//DTD Web Service Reference 4.2//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/service-ref_4_2.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/service-ref_4_2.dtd"/>
+         <public
+               publicId="-//JBoss//DTD Java EE Application 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-app_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-app_5_0.dtd"/>
+         <public
+               publicId="-//JBoss//DTD JBOSS 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss_5_0.dtd"/>
+         <public
+               publicId="-//JBoss//DTD Web Application 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-web_5_0.dtd"/>
+         <public
+               publicId="-//JBoss//DTD JBOSS JCA Config 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd"/>
+         <public
+               publicId="-//JBoss//DTD MBean Service 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-service_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-service_5_0.dtd"/>
+         <public
+               publicId="-//JBoss//DTD Web Service Reference 5.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/service-ref_5_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/service-ref_5_0.dtd"/>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss_5_1.xsd"/>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-common_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-common_5_1.xsd"/>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-ds_5_0.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.xsd"/>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-web_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-web_5_1.xsd"/>
+         <uri
+               name="http://www.jboss.org/j2ee/schema/jboss-client_5_1.xsd"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-client_5_1.xsd"/>
+			
+     </catalogContribution>
+   </extension>
+
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
+            priority="7">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"
+            priority="5">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
+            priority="0">
+      </publisher>
+   </extension>
+   <extension
+         point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
+      <connectionProvider
+            class="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider">
+      </connectionProvider>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.core.classpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarContainerInitializer"
+            id="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer">
+      </classpathContainerInitializer>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.launching.runtimeClasspathEntryResolvers">
+      <runtimeClasspathEntryResolver
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarResolver"
+            container="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer"
+            id="org.jboss.ide.eclipse.as.core.server.launch.runJarContainer.resolver">
+      </runtimeClasspathEntryResolver>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.launching.classpathProviders">
+      <classpathProvider
+            class="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil$JBossServerDefaultClasspathProvider"
+            id="org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider">
+      </classpathProvider>
+   </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            name="jboss_config"
+            description="Returns the configuration name for the server who&apos;s name matches the variable"
+            resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
+            supportsArgument="true">
+      </variable>
+      <variable
+            name="jboss_config_dir"
+            description="Returns the full path of the configuration folder for the server who&apos;s name matches the variable"
+            resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
+            supportsArgument="true">
+      </variable>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishMethod">
+      <publishMethod
+      		id="local"
+            name="Local"
+            class="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
+            serverTypes="%AllJBTServerTypes">
+      </publishMethod>
+   </extension>
+</plugin>

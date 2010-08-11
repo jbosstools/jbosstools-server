@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.jboss.com/ws-security/config" targetNamespace="http://www.jboss.com/ws-security/config" elementFormDefault="qualified">
+  <xs:element name="jboss-ws-security">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="key-store-file" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The key store file that will be used for all operations. This file is relative to the deployment. For example, WEB-INF/foo.keystore </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="key-store-type" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The type of the key store. For example, JKS.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="key-store-password" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>This specifies the key store's password.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="trust-store-file" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>This specifies the trust store. The truststore is used to validate all X.509v3 tokens that are included in the message. This file is relative to the deployment. For example, WEB-INF/foo.truststore.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="trust-store-type" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>This specifies the type of the trust store. For example, JKS.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="trust-store-password" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>This specifies the trust store's password.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="key-passwords" type="passwordsType" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The passwords for the private keys in the keystore. Only required if the passwords are different from that of the keystore.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="timestamp-verification" type="timestampVerificationType" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The tolerances and logging required when verifying the 'created' and 'expires' value of the timestamps.</xs:documentation>
+          </xs:annotation>        
+        </xs:element>
+        <xs:element name="config" type="configType" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The default security configuration that is applied to all operations on all ports. This is only used if there is no port/operation config.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="port" type="portType" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>The WSDL port.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+        <xs:element name="nonce-factory-class" type="xs:string" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>This specifies the nonce factory class name. It is used to get the custom generator and store of nonces.</xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="passwordsType">
+    <xs:sequence>
+      <xs:element name="key-password" type="passwordType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>The password for a private key in the keystore. Necessary only if the password is different from that of the keystore.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="passwordType">
+    <xs:attribute name="alias" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>The name of the private key.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="password" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>The password of this private key. If not specified, the keystore password will be used.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="timestampVerificationType">
+    <xs:attribute name="createdTolerance" type="xs:long" use="optional">
+      <xs:annotation>
+        <xs:documentation>The number of seconds in the future the created value on a message will be accepted.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="warnCreated" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Specifies if a WARN should be logged if a message in the future is accepted within the configured 'createdTolerance'.</xs:documentation>
+      </xs:annotation>      
+    </xs:attribute>  
+    <xs:attribute name="expiresTolerance" type="xs:long" use="optional">
+      <xs:annotation>
+        <xs:documentation>The number of seconds tolerance when checking the expires value of the timestamp.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="warnExpires" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Specifies if a WARN should be logged if an expired message is accepted that is within the 'expiresTolerance'.</xs:documentation>
+      </xs:annotation>      
+    </xs:attribute>    
+  </xs:complexType>
+  <xs:complexType name="configType" mixed="true">
+    <xs:all>
+      <xs:element name="timestamp" type="timestampType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The timestamp options that can be used to configure WS-Security message expiration.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="username" type="usernameType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that the message should include a username token if there is a username set on the Call or Proxy object.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="encrypt" type="encryptType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that the message should be encrypted. If no targets are specified, then just the body will be encrypted.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="sign" type="signType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that the message should be signed. If no targets are specified then the entire body will be signed.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="requires" type="requiresType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies the security requirements that should be applied when receiving a response from the communicating party. If this is not specified, all messages will be allowed through.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="authenticate" type="authenticateType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies the token to be used for JAAS authentication. If this is not specified, the username token will be used if available.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="requireTimestampType">
+    <xs:attribute name="maxAge" type="xs:long" use="optional">
+      <xs:annotation>
+        <xs:documentation>The maximum age that a message can be and still be processed.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="requireEncryptionType">
+    <xs:sequence>
+      <xs:element name="targets" type="targetsType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="requireSignatureType">
+    <xs:sequence>
+      <xs:element name="targets" type="targetsType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="requiresType">
+    <xs:all>
+      <xs:element name="timestamp" type="requireTimestampType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Indicates that a timestamp element must be present in the message, and that the message can not be older than maxAge.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="encryption" type="requireEncryptionType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Indicates that the specified targets in this message must be encrypted. If no targets are specified, then the full body of the message must be encrypted</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signature" type="requireSignatureType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Indicates that the specified targets in this message must be signed. If no targets are specified, then the full body of the message must be signed.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:all>
+  </xs:complexType>
+  <xs:complexType name="timestampType">
+    <xs:attribute name="ttl" use="optional">
+      <xs:annotation>
+        <xs:documentation>The Time-To-Live for a message in seconds. The default is no expiration.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="usernameType">
+    <xs:attribute name="digestPassword" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>If true a password digest will be used as password element. The default is false.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="useNonce" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Enables/disables nonce usage in the password digest. The default is true.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="useCreated" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Enables/disables usage of the Created element in the password digest. The default is true.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="encryptType">
+    <xs:sequence>
+      <xs:element name="targets" type="targetsType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>A list of targets to apply the parent operation on.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="type" use="required">
+      <xs:annotation>
+        <xs:documentation>The type of token that should should be used when performing encryption. The only supported value is "x509v3", which means to use an X.509v3 cert to encrypt the symmetric key.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="x509v3"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="alias" type="xs:string">
+      <xs:annotation>
+        <xs:documentation>The name of the certificate to use.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="algorithm">
+      <xs:annotation>
+        <xs:documentation>The symmetric encryption algorithm to use.  If not specified aes-128 will be used.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="aes-128"/>
+          <xs:enumeration value="aes-192"/>
+          <xs:enumeration value="aes-256"/>
+          <xs:enumeration value="tripledes"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="keyWrapAlgorithm">
+      <xs:annotation>
+        <xs:documentation>The algorithm to use to encrypt the symmetric secret key.  If not specified rsa_15 will be used.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="rsa_15"/>
+          <xs:enumeration value="rsa_oaep"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="tokenReference" type="tokenReferenceType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Specify the token reference type to be used; default direct reference to the token.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="signType">
+    <xs:sequence>
+      <xs:element name="targets" type="targetsType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="x509v3"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="alias" type="xs:string" use="required"/>
+    <xs:attribute name="includeTimestamp" type="xs:boolean" use="optional"/>
+    <xs:attribute name="tokenReference" type="tokenReferenceType" use="optional">
+      <xs:annotation>
+        <xs:documentation>Specify the token reference type to be used; default direct reference to the token.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="tokenReferenceType">
+  	<xs:restriction base="xs:string">
+      <xs:enumeration value="directReference"/>
+      <xs:enumeration value="keyIdentifier"/>
+      <xs:enumeration value="x509IssuerSerial"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="operationType">
+    <xs:sequence>
+      <xs:element name="config" type="configType">
+        <xs:annotation>
+          <xs:documentation>The security configuration for a specific operation on a specific port. If specified the default configuration values are not used.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="portType">
+    <xs:sequence>
+      <xs:element name="config" type="configType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The default security configuration that is applied to all operations on this port. This is only used if there is no operation configuration defined.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="operation" type="operationType">
+        <xs:annotation>
+          <xs:documentation>The WSDL operation.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="targetType" mixed="true">
+    <xs:attribute name="contentOnly" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>If true, the content of this element will be encrypted as opposed to the entire element.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="type" use="required">
+      <xs:annotation>
+        <xs:documentation>The type of target. Current allowed values are qname, which specifies an XML fully qualified name, and wsuid which maps to an internal WS-Security id</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="qname"/>
+          <xs:enumeration value="wsuid"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="targetsType">
+    <xs:sequence>
+      <xs:element name="target" type="targetType" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>An element in the message to perform an operation on. The content of this field should match the rules of the specified type.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="authenticateType">
+    <xs:choice minOccurs="1" maxOccurs="1">
+      <xs:element name="usernameAuth" type="usernameAuthType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that the username token should be used for JAAS authentication.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="signatureCertAuth" type="signatureCertAuthType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that the certificate token referenced from the signature should be used for JAAS authentication.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="usernameAuthType"/>
+  <xs:complexType name="signatureCertAuthType">
+    <xs:attribute name="certificatePrincipal" use="optional">
+      <xs:annotation>
+        <xs:documentation>This specifies the class to be used to map certificates to principal. It must implement org.jboss.security.auth.certs.CertificatePrincipal. Default is org.jboss.security.auth.certs.SubjectCNMapping</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+</xs:schema>
