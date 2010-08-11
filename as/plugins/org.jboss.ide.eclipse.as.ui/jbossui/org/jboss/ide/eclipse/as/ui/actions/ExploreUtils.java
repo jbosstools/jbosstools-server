@@ -58,6 +58,7 @@ public class ExploreUtils {
 	private static void setExploreCommands() {
 		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
 			exploreFolderCommandArray = new String[] {"/usr/bin/open", "-a", "/System/Library/CoreServices/Finder.app", ""};   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
+			exploreFolderCommand = "";
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
 			exploreFolderCommand = "cmd /C start explorer /root,/e,\"" //$NON-NLS-1$
 					+ PATH + "\""; //$NON-NLS-1$
