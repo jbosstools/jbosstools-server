@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
+      <ui
+            class="org.jboss.tools.as.rse.ui.RSEDeploymentPreferenceUI"
+            deployMethodId="rse">
+      </ui>
+   </extension>
+</plugin>
