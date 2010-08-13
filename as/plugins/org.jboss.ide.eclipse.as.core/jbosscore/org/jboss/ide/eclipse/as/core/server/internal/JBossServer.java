@@ -10,37 +10,23 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
-import java.util.Map;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jst.server.core.IWebModule;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -59,83 +45,14 @@ public class JBossServer extends DeployableServer
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-
-	public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
-		// here we update the launch configuration with any details that might have changed. 
-		try {
-			Server s = (Server)getServer();
-			ILaunchConfiguration lc = s.getLaunchConfiguration(false, new NullProgressMonitor());
-			if( lc != null ) {
-				String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-				String originalArgs = startArgs;
-				if( !getServer().getHost().equals(getHost(true)))
-					startArgs = ArgsUtil.setArg(startArgs, 
-							IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
-							IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG, 
-							getServer().getHost());
-				
-				IJBossServerRuntime runtime = (IJBossServerRuntime)
-					getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-				String config = runtime.getJBossConfiguration();
-				startArgs = ArgsUtil.setArg(startArgs, 
-						IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT, 
-						IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);
-				
-				if( startArgs != null && !startArgs.trim().equals(originalArgs)) {
-					ILaunchConfigurationWorkingCopy wc = lc.getWorkingCopy();
-					wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, startArgs);
-					wc.doSave();
-				}
-			}
-		} catch( CoreException ce )  {
-			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-					NLS.bind(Messages.CannotSaveServersStartArgs, getServer().getName()), ce);
-			JBossServerCorePlugin.getDefault().getLog().log(s);
-		}
-	}
 	
 	public String getHost() {
-		String host = getHost(true);
-		return host == null ? getServer().getHost() : host;
+		return getServer().getHost();
 	}
-	
-	public String getHost(boolean checkLaunchConfig) {
-		String host = null;
-		if( checkLaunchConfig ) {
-			try {
-				Server s = (Server)getServer();
-				ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-				if(lc!=null) {
-					String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-					String val = ArgsUtil.getValue(startArgs, 
-							IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT, 
-							IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG); 
-					if( val != null ) {
-						host = val;
-					}
-				}
-			} catch( CoreException ce )  {}
-		}
-		return host;
-	}
-	
-	public String getConfigDirectory() {
-		return getConfigDirectory(true);
-	}
-	
-	public String getConfigDirectory(boolean checkLaunchConfig) {
-		if( !checkLaunchConfig ) 
-			return getRuntimeConfigDirectory();
 		
-		String configDir = getLaunchConfigConfigurationDirectory();
-		if( configDir == null )  
-			return getRuntimeConfigDirectory();
-
-		File f = new File(configDir);
-		if( !f.exists() || !f.canRead() || !f.isDirectory())
-			return getRuntimeConfigDirectory();
-
-		return new Path(configDir).toOSString();
+	public String getConfigDirectory() {
+		IJBossServerRuntime runtime = (IJBossServerRuntime)getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+		return runtime.getConfigLocationFullPath().toOSString();
 	}
 	
 	public String getDeployFolder() {
@@ -167,18 +84,17 @@ public class JBossServer extends DeployableServer
 		return null;
 	}
 	
-	protected String getDeployFolder(boolean checkLaunchConfig) {
-		return new Path(getConfigDirectory(checkLaunchConfig) + Path.SEPARATOR + DEPLOY).toOSString();
-	}
-
-	
 	public String getTempDeployFolder() {
-		IJBossServerRuntime jbsrt = getRuntime();
-		String type = getDeployLocationType();
+		return getTempDeployFolder(this, getDeployLocationType());
+	}
+	
+	public static String getTempDeployFolder(JBossServer jbs, String type) {
+		IServer server = jbs.getServer();
+		IJBossServerRuntime jbsrt = getRuntime(server);
 		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+			return ServerUtil.makeGlobal(jbsrt, new Path(server.getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
-			return JBossServerCorePlugin.getServerStateLocation(getServer()).
+			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
 			String loc = jbsrt.getConfigLocation();
@@ -189,40 +105,6 @@ public class JBossServer extends DeployableServer
 			return ServerUtil.makeGlobal(jbsrt, p).toString();
 		}
 		return null;
-	}
-
-	
-	protected String getLaunchConfigConfigurationDirectory() {
-		try {
-			Server s = (Server)getServer();
-			ILaunchConfiguration lc = s.getLaunchConfiguration(true, new NullProgressMonitor());
-			String startArgs = lc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String)null);
-			Map map = ArgsUtil.getSystemProperties(startArgs);
-			
-			if( map.get(JBOSS_SERVER_HOME_DIR) != null ) 
-				return (String)map.get(JBOSS_SERVER_HOME_DIR);
-
-			if( map.get(JBOSS_SERVER_BASE_DIR) != null ) {
-				String name = map.get(JBOSS_SERVER_NAME) != null ? 
-						(String)map.get(JBOSS_SERVER_NAME) : DEFAULT_CONFIGURATION;
-				return (String)map.get(JBOSS_SERVER_BASE_DIR) + Path.SEPARATOR + name;
-			}
-			
-			if( map.get(JBOSS_HOME_DIR) != null ) {
-				return (String)map.get(JBOSS_HOME_DIR) + Path.SEPARATOR + SERVER 
-					+ Path.SEPARATOR + DEFAULT_CONFIGURATION;
-			}
-		} catch( CoreException ce ) {
-		}
-		return null;
-	}
-	
-	protected String getRuntimeConfigDirectory() {
-		IJBossServerRuntime runtime = (IJBossServerRuntime)
-			getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-		String p = getServer().getRuntime().getLocation().toOSString() + Path.SEPARATOR + SERVER + 
-				Path.SEPARATOR + runtime.getJBossConfiguration();
-		return new Path(p).toOSString();
 	}
 	
 	public int getJNDIPort() {
@@ -257,8 +139,6 @@ public class JBossServer extends DeployableServer
 		}
 		return defaultValue;
 	}
-	
-	
 	
 	public URL getModuleRootURL(IModule module) {
 

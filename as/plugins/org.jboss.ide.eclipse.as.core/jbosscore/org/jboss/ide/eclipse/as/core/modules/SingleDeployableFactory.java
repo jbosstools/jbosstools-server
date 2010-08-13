@@ -55,6 +55,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 import org.osgi.service.prefs.BackingStoreException;
 
 /**
@@ -277,7 +278,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		return moduleToDelegate.get(module);
 	}
 
-	public class SingleDeployableModuleDelegate extends ModuleDelegate {
+	public class SingleDeployableModuleDelegate extends ModuleDelegate implements IJBTModule {
 		private IPath global;
 		private IPath workspaceRelative;
 		public SingleDeployableModuleDelegate(IPath workspaceRelative) {
@@ -291,9 +292,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 
 		public IModuleResource[] members() throws CoreException {
 			return new IModuleResource[] { 
-					new ModuleFile(global.lastSegment(), 
-					new Path(global.lastSegment()), 
-					global.toFile().lastModified()) };
+					new ModuleFile(global.toFile(), 
+					global.lastSegment(), 
+					global.removeLastSegments(1)) };
 		}
 
 		public IStatus validate() {
@@ -306,6 +307,15 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		
 		public IPath getWorkspaceRelativePath() {
 			return workspaceRelative;
+		}
+		public IModule[] getModules() {
+			return new IModule[0]; // no children
+		}
+		public String getURI(IModule module) {
+			return null; // never called
+		}
+		public boolean isBinary() {
+			return true;
 		}
 	}
 	

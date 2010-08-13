@@ -69,7 +69,7 @@
             zipDelegate="true">
       </publisher>
       <publisher
-            class="org.jboss.ide.eclipse.as.ssh.server.SSHPublisher"
+            class="org.jboss.ide.eclipse.as.ssh.server.SSHJstPublisher"
             priority="3"
             zipDelegate="false">
       </publisher>
@@ -111,6 +111,15 @@
             id="org.jboss.ide.eclipse.as.ssh.server.remoteServerWizardFragment"
             typeIds="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
       </fragment>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishMethod">
+      <publishMethod
+            class="org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate$SSHPublishMethod"
+            id="ssh"
+            name="SSH Remote Deployment"
+            serverTypes="org.jboss.ide.eclipse.as.ssh.server.remoteServerType">
+      </publishMethod>
    </extension>
    
 </plugin>

@@ -82,7 +82,7 @@ public class RunJarContainerWrapper {
 			if( s != null ) {
 				IRuntime rt = s.getRuntime();
 				IPath home = rt.getLocation();
-				IPath runJar = home.append(JBossServerStartupLaunchConfiguration.START_JAR_LOC);
+				IPath runJar = home.append(LocalJBossServerStartupLaunchUtil.START_JAR_LOC);
 				
 				return new IClasspathEntry[] {
 						JavaRuntime.newArchiveRuntimeClasspathEntry(

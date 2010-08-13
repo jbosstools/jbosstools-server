@@ -13,10 +13,13 @@ package org.jboss.ide.eclipse.as.core.util;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
@@ -106,5 +109,12 @@ public class ServerConverter {
 		servers.toArray(ret);
 		return ret;
 	}
+	public static IJBossServerRuntime getJBossRuntime(IServer server) {
+		return getJBossRuntime((IServerAttributes)server);
+	}
 
+	public static IJBossServerRuntime getJBossRuntime(IServerAttributes server) {
+		IRuntime rt = server.getRuntime();
+		return (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
+	}
 }

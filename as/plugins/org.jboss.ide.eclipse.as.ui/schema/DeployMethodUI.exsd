@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.core" xmlns="http://www.w3.org/2001/XMLSchema">
+<schema targetNamespace="org.jboss.ide.eclipse.as.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.jboss.ide.eclipse.as.core" id="publishMethod" name="org.jboss.ide.eclipse.as.core.publishMethod"/>
+         <meta.schema plugin="org.jboss.ide.eclipse.as.ui" id="DeployMethodUI" name="org.jboss.ide.as.ui.deployMethodUI"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <sequence minOccurs="1" maxOccurs="unbounded">
-            <element ref="publishMethod" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="ui"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,19 +47,12 @@
       </complexType>
    </element>
 
-   <element name="publishMethod">
+   <element name="ui">
       <complexType>
-         <attribute name="id" type="string" use="required">
+         <attribute name="deployMethodId" type="string" use="required">
             <annotation>
                <documentation>
                   
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="name" type="string" use="required">
-            <annotation>
-               <documentation>
-                  String representation of this publish method
                </documentation>
             </annotation>
          </attribute>
@@ -69,15 +62,8 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod"/>
+                  <meta.attribute kind="java" basedOn=":org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI"/>
                </appInfo>
-            </annotation>
-         </attribute>
-         <attribute name="serverTypes" type="string" use="required">
-            <annotation>
-               <documentation>
-                  A list of comma-separated server types this publish method is available to.
-               </documentation>
             </annotation>
          </attribute>
       </complexType>

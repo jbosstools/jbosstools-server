@@ -218,14 +218,14 @@ public class PollThread extends Thread {
 	protected void alertBehavior(boolean currentState, boolean finalAlert) {
 		if (currentState != expectedState) {
 			// it didnt work... cancel all processes! force stop
-			behavior.forceStop();
+			behavior.stop(true);
 			if (finalAlert)
 				alertEventLogFailure();
 		} else {
 			if (currentState == IServerStatePoller.SERVER_UP)
 				behavior.setServerStarted();
 			else 
-				behavior.forceStop();
+				behavior.stop(true);
 
 			if (finalAlert)
 				alertEventLogSuccess(currentState);

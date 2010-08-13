@@ -17,13 +17,14 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IEnterpriseApplication;
-import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.internal.DeletedModule;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -80,12 +81,28 @@ public class PublishUtil {
 		return count;
 	}
 
+	/**
+	 * All preferences are stored in the "local" setting as it was decided
+	 * having to replicate deploy paths for each publish method was not good
+	 * 
+	 * @param moduleTree
+	 * @param server
+	 * @param defaultFolder
+	 * @param moduleProperty
+	 * @return
+	 */
 	public static String getDeployRootFolder(IModule[] moduleTree, 
+			IDeployableServer server, String defaultFolder, String moduleProperty) {
+		return getDeployRootFolder(moduleTree, LocalPublishMethod.LOCAL_PUBLISH_METHOD,
+				server, defaultFolder, moduleProperty);
+	}
+	
+	public static String getDeployRootFolder(IModule[] moduleTree, String publishMethod,
 			IDeployableServer server, String defaultFolder, String moduleProperty) {
 		String folder = defaultFolder;
 		// TODO bug 286699
 		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getServer());
-		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences("local"); //$NON-NLS-1$
+		DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences(publishMethod);
 		DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
 		if( modPrefs != null ) {
 			String loc = modPrefs.getProperty(moduleProperty);
@@ -129,7 +146,6 @@ public class PublishUtil {
 		IPath root = new Path( deployFolder );
 		String type, modName, name, uri, suffixedName;
 		for( int i = 0; i < moduleTree.length; i++ ) {	
-			IJ2EEModule j2eeModule = (IJ2EEModule) moduleTree[i].loadAdapter(IJ2EEModule.class, null);
 			type = moduleTree[i].getModuleType().getId();
 			modName = moduleTree[i].getName();
 			name = new Path(modName).lastSegment();
@@ -176,6 +192,9 @@ public class PublishUtil {
 
 	
 	private static String getSuffix(String type) {
+		// TODO
+		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
+
 		String suffix = null;
 		if( IJBossServerConstants.FACET_EAR.equals(type)) 
 			suffix = IJBossServerConstants.EXT_EAR;
@@ -188,6 +207,8 @@ public class PublishUtil {
 		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
 			// no suffix required, name already has it
 			suffix = ""; //$NON-NLS-1$
+		else if( "jboss.singlefile".equals(type)) //$NON-NLS-1$
+			suffix = ""; //$NON-NLS-1$
 		else
 			suffix = IJBossServerConstants.EXT_JAR;
 		return suffix;
@@ -199,11 +220,19 @@ public class PublishUtil {
 		return ServerModelUtilities.isBinaryModule(lastMod);
 	}
 	
+	@Deprecated
 	public static IModuleResource[] getResources(IModule module) throws CoreException {
-		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, new NullProgressMonitor());
+		return getResources(module, new NullProgressMonitor());
+	}
+	
+	public static IModuleResource[] getResources(IModule module, IProgressMonitor monitor) throws CoreException {
+		monitor.beginTask("Fetching Module Resources", 100); //$NON-NLS-1$
+		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, ProgressMonitorUtil.submon(monitor, 100));
 		IModuleResource[] members = md.members();
+		monitor.done();
 		return members;
 	}
+	
 	public static IModuleResource[] getResources(IModule[] tree) throws CoreException {
 		return getResources(tree[tree.length-1]);
 	}
@@ -234,18 +263,23 @@ public class PublishUtil {
 	 * Just package into a jar raw.  Don't think about it, just do it
 	 */
 	public static IStatus[] packModuleIntoJar(IModule module, IPath destination)throws CoreException {
+		ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
+		IModuleResource[] resources = pm.members();
+		return packModuleIntoJar(module.getName(), resources, destination);
+	}
+	
+	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, IPath destination)throws CoreException {
+	
 		String dest = destination.toString();
 		ModulePackager packager = null;
 		try {
 			packager = new ModulePackager(dest, false);
-			ProjectModule pm = (ProjectModule) module.loadAdapter(ProjectModule.class, null);
-			IModuleResource[] resources = pm.members();
 			for (int i = 0; i < resources.length; i++) {
 				doPackModule(resources[i], packager);
 			}
 		} catch (IOException e) {
 			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
-					"unable to assemble module " + module.getName(), e); //$NON-NLS-1$
+					"unable to assemble module " + moduleName, e); //$NON-NLS-1$
 			return new IStatus[]{status};
 		}
 		finally{
@@ -255,7 +289,7 @@ public class PublishUtil {
 			}
 			catch(IOException e){
 				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL,
-						"unable to assemble module "+ module.getName(), e); //$NON-NLS-1$
+						"unable to assemble module "+ moduleName, e); //$NON-NLS-1$
 				return new IStatus[]{status};
 			}
 		}

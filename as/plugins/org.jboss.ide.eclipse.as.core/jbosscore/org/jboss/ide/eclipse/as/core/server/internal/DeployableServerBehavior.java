@@ -26,8 +26,10 @@ import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
@@ -73,8 +75,11 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	 * 
 	 * @return
 	 */
-	protected IJBossServerPublishMethod createPublishMethod() {
-		return new LocalPublishMethod(); // TODO FIX THIS
+	public IJBossServerPublishMethod createPublishMethod() {
+		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
+		if( type != null )
+			return type.createPublishMethod();
+		return new LocalPublishMethod(); // sensible default
 	}
 	
 	public IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {

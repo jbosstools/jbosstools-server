@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.io.ByteArrayOutputStream;
@@ -9,18 +19,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.editor.IServerEditorPartInput;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
@@ -30,17 +41,30 @@ import org.eclipse.wst.server.ui.internal.editor.ServerResourceCommandManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class ModuleDeploymentPage extends ServerEditorPart {
 	protected ServerResourceCommandManager commandManager;
 	protected ArrayList<IModule> possibleModules;
 	protected DeploymentPreferences preferences;
-	protected ArrayList<IDeploymentEditorTab> tabs;
 	protected ServerAttributeHelper helper; 
+	protected DeploymentModuleOptionCompositeAssistant tab;
 	
+	public ServerAttributeHelper getHelper() {
+		if( helper == null ) {
+			helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
+		} else {
+			String helperTS = helper.getWorkingCopy().getAttribute("timestamp", (String)null);
+			String officialTS = getServer().getAttribute("timestamp", (String)null);
+			if( !helperTS.equals(officialTS)) {
+				helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
+			}
+		}
+		return helper;
+	}
+
 	public IModule[] getPossibleModules() {
 		return (IModule[]) possibleModules.toArray(new IModule[possibleModules.size()]);
 	}
@@ -79,37 +103,47 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 
 	public void createPartControl(Composite parent) {
 		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
-		tabs = new ArrayList<IDeploymentEditorTab>();
-		
-		FormToolkit toolkit = getFormToolkit(parent);
-		
-		ScrolledForm form = toolkit.createScrolledForm(parent);
-		toolkit.decorateFormHeading(form.getForm());
-		form.setText("Deployment");
-		form.getBody().setLayout(new GridLayout());
-
-		final TabFolder tabFolder = new TabFolder(form.getBody(), SWT.NONE);
-	    tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
-	    toolkit.adapt(tabFolder);
-	    toolkit.adapt(form);
-	    toolkit.adapt(form.getBody());
-	    IDeploymentEditorTab[] newItems = createTabs(toolkit, tabFolder);
-	    for( int i = 0; i < newItems.length; i++ ) {
-	    	tabs.add(newItems[i]);
-	    }
+		Composite innerContent = createPageStructure(parent);
+		addDeploymentLocationControls(innerContent, null);
 	}
 	
-	protected IDeploymentEditorTab[] createTabs(FormToolkit toolkit, TabFolder tabFolder) {
-		TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
-		IDeploymentEditorTab tab = new LocalDeploymentModuleTab();
-	    tabItem.setText(tab.getTabName());
+	private Composite createPageStructure(Composite parent) {
+		FormToolkit toolkit = getFormToolkit(parent);
+		ScrolledForm allContent = toolkit.createScrolledForm(parent);
+		toolkit.decorateFormHeading(allContent.getForm());
+		allContent.setText("Deployment");
+		allContent.getBody().setLayout(new GridLayout());
+		Composite random = new Composite(allContent.getBody(), SWT.NONE);
+		GridData randomData = new GridData(GridData.FILL_BOTH);
+		random.setLayoutData(randomData);
+		random.setLayout(new FormLayout());
+		return random;
+	}
+	
+	private void addDeploymentLocationControls(Composite parent, Control top) {
+		tab = new DeploymentModuleOptionCompositeAssistant();
 		tab.setDeploymentPage(this);
 		tab.setDeploymentPrefs(preferences);
-	    tabItem.setControl(tab.createControl(tabFolder));
-	    toolkit.adapt((Composite)tabItem.getControl());
-
-	    return new IDeploymentEditorTab[] { tab };
+		Composite defaultComposite = tab.createDefaultComposite(parent);
+		FormData fd = new FormData();
+		fd.left = new FormAttachment(0, 5);
+		if( top == null )
+			fd.top = new FormAttachment(0, 5);
+		else
+			fd.top = new FormAttachment(top, 5);
+		fd.right = new FormAttachment(100, -5);
+		defaultComposite.setLayoutData(fd);
+		
+		Composite viewComposite = tab.createViewerPortion(parent);
+		fd = new FormData();
+		fd.left = new FormAttachment(0, 5);
+		fd.top = new FormAttachment(defaultComposite, 5);
+		fd.right = new FormAttachment(100, -5);
+		fd.bottom = new FormAttachment(100, -5);
+		viewComposite.setLayoutData(fd);
 	}
+	
+	
 	
 	public void execute(ServerCommand command) {
 		commandManager.execute(command);
@@ -118,9 +152,6 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public void firePropertyChangeCommand(DeploymentModulePrefs p, String key, String val, String cmdName) {
 		commandManager.execute(new ChangePropertyCommand(p,key,val,cmdName));
 	}
-	
-
-	
 	
 	private class ChangePropertyCommand extends ServerCommand {
 		private DeploymentModulePrefs p;
@@ -136,23 +167,21 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		}
 		public void execute() {
 			p.setProperty(key, newVal);
-			saveToWC();
+			savePreferencesToWorkingCopy();
 		}
 		public void undo() {
 			p.setProperty(key, oldVal);
-			saveToWC();
-		}
-		
-		protected void saveToWC() {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			DeploymentPreferenceLoader.savePreferences(bos, preferences);
-			String asXML = new String(bos.toByteArray());
-			helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+			savePreferencesToWorkingCopy();
 		}
 	}
 	
+	public void savePreferencesToWorkingCopy() {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DeploymentPreferenceLoader.savePreferences(bos, preferences);
+		String asXML = new String(bos.toByteArray());
+		getHelper().setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+	}
 
-	
 	public String makeGlobal(String path) {
 		return makeGlobal(path, server.getRuntime());
 	}
@@ -196,10 +225,11 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	
 	// Currently inactive!!! See bug 286699
 	public void doSave(IProgressMonitor monitor) {
-		try {
-			DeploymentPreferenceLoader.savePreferences(server.getOriginal(), preferences);
-		} catch( IOException ioe ) {
-			// TODO eh?
-		}
+		tab.updateListeners();
+//		try {
+//			DeploymentPreferenceLoader.savePreferences(server.getOriginal(), preferences);
+//		} catch( IOException ioe ) {
+//			// TODO eh?
+//		}
 	}
 }

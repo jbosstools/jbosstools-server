@@ -55,11 +55,11 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return true;
 	}
 
-	protected void preLaunch(ILaunchConfiguration configuration, 
+	public void preLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
-	protected void postLaunch(ILaunchConfiguration configuration, 
+	public void postLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
@@ -135,7 +135,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 
 	
-	protected static JBossServer findJBossServer(String serverId) throws CoreException {
+	public static JBossServer findJBossServer(String serverId) throws CoreException {
 		if( serverId == null ) 
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 					NLS.bind(Messages.ServerNotFound, serverId)));
@@ -153,7 +153,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return jbs;
 	}
 	
-	protected static IJBossServerRuntime findJBossServerRuntime(IServer server) throws CoreException {
+	public static IJBossServerRuntime findJBossServerRuntime(IServer server) throws CoreException {
 		IRuntime rt = server.getRuntime();
 		IJBossServerRuntime jbrt = null;
 		if( rt != null ) 
@@ -164,14 +164,14 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return jbrt;
 	}
 	
-	protected static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
+	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
 		addCPEntry(list, new Path(getServerHome(jbs)).append(relative));
 	}
-	protected static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, IPath path) {
+	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, IPath path) {
 		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(path));
 	}
 	
-	protected static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
+	public static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
@@ -186,7 +186,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		}
 	}
 	
-	protected static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
+	public static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		File f = vmInstall.getInstallLocation();
 		File c1 = new File(f, IConstants.LIB);
 		File c2 = new File(c1, IConstants.TOOLS_JAR);
@@ -195,7 +195,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 
 	
-	protected static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
+	public static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
@@ -211,7 +211,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return list;
 	}
 
-	protected static void addDirectory(String serverHome, ArrayList<IRuntimeClasspathEntry> classpath,
+	public static void addDirectory(String serverHome, ArrayList<IRuntimeClasspathEntry> classpath,
 			String dirName) {
 		String libPath = serverHome + File.separator + dirName;
 		File libDir = new File(libPath);

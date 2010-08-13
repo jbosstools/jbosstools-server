@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2007 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -8,11 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.publishers;
+package org.jboss.ide.eclipse.as.ssh.server;
 
 
-public class JstPublisher extends AbstractJSTPublisher {
+import org.jboss.ide.eclipse.as.core.publishers.AbstractJSTPublisher;
+import org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate.SSHPublishMethod;
+
+
+public class SSHJstPublisher extends AbstractJSTPublisher {
+	public SSHJstPublisher() {}
+
+	@Override
 	protected String getTargetedPublishMethodId() {
-		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+		return SSHPublishMethod.SSH_PUBLISH_METHOD;
 	}
 }

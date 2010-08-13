@@ -1,6 +1,19 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -39,6 +52,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
@@ -48,23 +62,86 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
-public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
+public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
+	public static interface IDeploymentPageCallback {
+		public boolean metadataEnabled();
+		public String getServerLocation(IServerWorkingCopy wc);
+		public String getServerConfigName(IServerWorkingCopy wc);
+		public void propertyChange(PropertyChangeEvent evt, DeploymentModuleOptionCompositeAssistant composite);
+	}
+	
+	public static class LocalDeploymentPageCallback implements IDeploymentPageCallback {
+		public boolean metadataEnabled() {
+			return true;
+		}
+
+		@Override
+		public String getServerLocation(IServerWorkingCopy wc) {
+			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+			return jbsrt.getConfigLocation();
+		}
+
+		@Override
+		public String getServerConfigName(IServerWorkingCopy wc) {
+			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+			return jbsrt.getJBossConfiguration();
+		}
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt,
+				DeploymentModuleOptionCompositeAssistant composite) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	private static HashMap<String, IDeploymentPageCallback> callbackMappings;
+	static {
+		callbackMappings = new HashMap<String, IDeploymentPageCallback>();
+		callbackMappings.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalDeploymentPageCallback());
+	}
+	
+	public static void addMapping(String mode, IDeploymentPageCallback callback) {
+		callbackMappings.put(mode, callback);
+	}
+	
 	private ModuleDeploymentPage page;
 	private DeploymentPreferences preferences;
-
-	public LocalDeploymentModuleTab() {
+	private TreeViewer viewer;
+	protected String COLUMN_NAME;
+	protected String COLUMN_LOC;
+	protected String COLUMN_TEMP_LOC;
+	protected String currentDeployType;
+	
+	private IServerWorkingCopy lastWC;
+	
+	public DeploymentModuleOptionCompositeAssistant() {
+		COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
+		COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
+		COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
+		currentDeployType = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	}
 
-	public String getTabName() {
-		return Messages.EditorLocalDeployment;
+	public ModuleDeploymentPage getPage() {
+		return page;
 	}
-
+	
+	public String getCurrentDeployType() {
+		return currentDeployType;
+	}
+	
+	public void setCurrentDeployType(String type) {
+		this.currentDeployType = type;
+	}
+	
 	public void setDeploymentPage(ModuleDeploymentPage page) {
 		this.page = page;
 	}
@@ -73,59 +150,26 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		this.preferences = prefs;
 	}
 
-	private TreeViewer viewer;
-	private static final String LOCAL_COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
-	private static final String LOCAL_COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
-	private static final String LOCAL_COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
-
 	protected ServerAttributeHelper getHelper() {
-		if( helper == null ) {
-			helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
-		} else {
-			String helperTS = helper.getWorkingCopy().getAttribute("timestamp", (String)null);
-			String officialTS = page.getServer().getAttribute("timestamp", (String)null);
-			if( !helperTS.equals(officialTS)) {
-				helper = new ServerAttributeHelper(page.getServer().getOriginal(), page.getServer());
-			}
-		}
-		return helper;
+		return page.getHelper();
 	}
 	
-	public Control createControl(Composite parent) {
-		getHelper();
-
-		Composite random = new Composite(parent, SWT.NONE);
-		GridData randomData = new GridData(GridData.FILL_BOTH);
-		random.setLayoutData(randomData);
-		random.setLayout(new FormLayout());
-
-		Composite defaultComposite = createDefaultComposite(random);
-		FormData fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		fd.top = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(100, -5);
-		defaultComposite.setLayoutData(fd);
-		
-		Composite viewComposite = createViewerPortion(random);
-		fd = new FormData();
-		fd.left = new FormAttachment(0, 5);
-		fd.top = new FormAttachment(defaultComposite, 5);
-		fd.right = new FormAttachment(100, -5);
-		fd.bottom = new FormAttachment(100, -5);
-		viewComposite.setLayoutData(fd);
-
-		return random;
-	}
-
 	private Text deployText, tempDeployText;
 	private Button metadataRadio, serverRadio, customRadio, currentSelection;
 	private Button deployButton, tempDeployButton;
 	private ModifyListener deployListener, tempDeployListener;
 	private SelectionListener radioListener, zipListener;
-	private ServerAttributeHelper helper;
 	private Button zipDeployWTPProjects;
 	private String lastCustomDeploy, lastCustomTemp;
+	
+	public Button getServerRadio() {
+		return serverRadio;
+	}
 
+	public Button getCurrentSelection() {
+		return currentSelection;
+	}
+	
 	protected Composite createDefaultComposite(Composite parent) {
 
 		FormToolkit toolkit = new FormToolkit(parent.getDisplay());
@@ -134,6 +178,7 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 				ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
 						| ExpandableComposite.TITLE_BAR);
 		section.setText(Messages.swf_DeployEditorHeading);
+		section.setToolTipText(Messages.swf_DeploymentDescription);
 		section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
 				| GridData.VERTICAL_ALIGN_FILL));
 
@@ -142,20 +187,16 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		composite.setLayout(new FormLayout());
 
 		Label descriptionLabel = toolkit.createLabel(composite,
-				Messages.swf_DeploymentDescription);
+				Messages.swf_DeploymentDescriptionLabel);
+		descriptionLabel.setToolTipText(Messages.swf_DeploymentDescription);
 		Control top = descriptionLabel;
 		Composite inner = toolkit.createComposite(composite);
 		inner.setLayout(new GridLayout(1, false));
 
 		IRuntime rt = getServer().getServer().getRuntime();
 		boolean showRadios = true;
-		if( rt == null )
+		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
 			showRadios = false;
-		else {
-			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-			if( jbsrt == null )
-				showRadios = false;
-		}
 
 		if( showRadios ) {
 			metadataRadio = toolkit.createButton(inner,
@@ -165,31 +206,20 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			customRadio = toolkit.createButton(inner,
 					Messages.EditorUseCustomDeployFolder, SWT.RADIO);
 	
-			metadataRadio.setSelection(getDeployType().equals(
-					IDeployableServer.DEPLOY_METADATA));
-			serverRadio.setSelection(getDeployType().equals(
-					IDeployableServer.DEPLOY_SERVER));
-			customRadio.setSelection(getDeployType().equals(
-					IDeployableServer.DEPLOY_CUSTOM));
-			currentSelection = metadataRadio.getSelection() ? metadataRadio
-					: serverRadio.getSelection() ? serverRadio : customRadio;
-	
 			radioListener = new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
 					widgetSelected(e);
 				}
 	
 				public void widgetSelected(SelectionEvent e) {
-					if (e.getSource() == currentSelection)
-						return; // do nothing
-					page.execute(new RadioClickedCommand((Button) e.getSource(),
-							currentSelection));
-					currentSelection = (Button) e.getSource();
+					radioSelected(e.getSource());
 				}
 			};
 			metadataRadio.addSelectionListener(radioListener);
 			serverRadio.addSelectionListener(radioListener);
 			customRadio.addSelectionListener(radioListener);
+			lastWC = page.getServer();
+			lastWC.addPropertyChangeListener(this);
 		}
 		
 		FormData radios = new FormData();
@@ -255,11 +285,6 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			}
 		});
 
-		deployText
-				.setEnabled(customRadio == null || customRadio.getSelection());
-		tempDeployText.setEnabled(customRadio == null
-				|| customRadio.getSelection());
-
 		FormData descriptionLabelData = new FormData();
 		descriptionLabelData.left = new FormAttachment(0, 5);
 		descriptionLabelData.top = new FormAttachment(0, 5);
@@ -305,7 +330,7 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 		zipDeployWTPProjects = toolkit.createButton(composite,
 				Messages.EditorZipDeployments, SWT.CHECK);
-		boolean zippedPublisherAvailable = isLocalZippedPublisherAvailable(); 
+		boolean zippedPublisherAvailable = isZippedPublisherAvailable(); 
 		boolean value = getServer().zipsWTPDeployments();
 		zipDeployWTPProjects.setEnabled(zippedPublisherAvailable);
 		zipDeployWTPProjects.setSelection(zippedPublisherAvailable && value);
@@ -330,14 +355,61 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		toolkit.paintBordersFor(composite);
 		section.setClient(composite);
 		page.getSaveStatus();
+		updateWidgets();
 		return section;
 	}
+	
+	private void updateWidgets() {
+		metadataRadio.setSelection(getDeployType().equals(
+				IDeployableServer.DEPLOY_METADATA));
+		serverRadio.setSelection(getDeployType().equals(
+				IDeployableServer.DEPLOY_SERVER));
+		customRadio.setSelection(getDeployType().equals(
+				IDeployableServer.DEPLOY_CUSTOM));
+		currentSelection = metadataRadio.getSelection() ? metadataRadio
+				: serverRadio.getSelection() ? serverRadio : customRadio;
+		
+		String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		boolean metaEnabled = callbackMappings.get(mode).metadataEnabled();
+		metadataRadio.setEnabled(metaEnabled);
+		JBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
+		String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
+				jbs == null ? "" : jbs.getDeployFolder(jbs, getDeployType()));
+		String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
+				jbs == null ? "" : jbs.getTempDeployFolder(jbs, getDeployType()));
+		deployText.removeModifyListener(deployListener);
+		deployText.setText(newDir);
+		deployText.addModifyListener(deployListener);
+		tempDeployText.removeModifyListener(tempDeployListener);
+		tempDeployText.setText(newTemp);
+		tempDeployText.addModifyListener(tempDeployListener);
+		
+		deployText.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		tempDeployText.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		deployButton.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+		tempDeployButton.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
+	}
+	
+	public void radioSelected(Object c) {
+		if (c == currentSelection)
+			return; // do nothing
+		page.execute(new RadioClickedCommand((Button)c, currentSelection));
+		currentSelection = (Button)c;
+	}
+	
+	protected boolean isZippedPublisherAvailable() {
+		/*
+		 * Maybe use IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
+		 * But this class has no reference to the server, and it also might not want to go by stored data,
+		 * but rather the combo in the ModuleDeploymentPage somehow? 
+		 */
 
-	protected boolean isLocalZippedPublisherAvailable() {
+		// String method = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer()).getId();
+		String method = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 		IJBossServerPublisher[] publishers = 
 			ExtensionManager.getDefault().getZippedPublishers();
 		for( int i = 0; i < publishers.length; i++ ) {
-			if( publishers[i].accepts(LocalPublishMethod.LOCAL_PUBLISH_METHOD, getServer().getServer(), null))
+			if( publishers[i].accepts(method, getServer().getServer(), null))
 				return true;
 		}
 		return false;
@@ -358,13 +430,12 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		public void execute() {
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
 			lastCustomDeploy = newDir;
+			updateWidgets();
 			page.getSaveStatus();
 		}
 		public void undo() {
-			text.removeModifyListener(listener);
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
-			text.setText(oldDir);
-			text.addModifyListener(listener);
+			updateWidgets();
 			page.getSaveStatus();
 		}
 	}
@@ -405,13 +476,12 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		public void execute() {
 			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
 			lastCustomTemp = newDir;
+			updateWidgets();
 			page.getSaveStatus();
 		}
 		public void undo() {
-			text.removeModifyListener(listener);
 			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
-			text.setText(oldDir);
-			text.addModifyListener(listener);
+			updateWidgets();
 			page.getSaveStatus();
 		}
 	}
@@ -428,108 +498,66 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 			id = server.getId();
 		}
 		public void execute() {
-			boolean custom = newSelection == customRadio;
-			deployText.setEnabled(custom);
-			tempDeployText.setEnabled(custom);
-			deployButton.setEnabled(custom);
-			tempDeployButton.setEnabled(custom);
 			oldDir = deployText.getText();
 			oldTemp = tempDeployText.getText();
-			
-			String type = null;
-			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
-	 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
+			String newType = newSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
+	 			newSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
 	 				IDeployableServer.DEPLOY_METADATA;
-			
+			discoverNewFolders();
+			ServerAttributeHelper helper = getHelper();
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
+			helper.setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
+			helper.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, newType);
+			updateWidgets();
+			page.getSaveStatus();
+		}
+		
+		protected void discoverNewFolders() {
+			// Discover the new folders
 			if( newSelection == metadataRadio  ) {
 				newDir = JBossServerCorePlugin.getServerStateLocation(id)
 					.append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
 				newTemp = JBossServerCorePlugin.getServerStateLocation(id)
 					.append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
-				type = IDeployableServer.DEPLOY_METADATA;
 				new File(newDir).mkdirs();
 				new File(newTemp).mkdirs();
 			} else if( newSelection == serverRadio ) {
-				IRuntime rt = server.getRuntime();
-				if( rt != null ) {
-					IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-					if( jbsrt != null ) {
-						String loc = jbsrt.getConfigLocation();
-						String config = jbsrt.getJBossConfiguration();
-						newDir = new Path(loc)
-							.append(config)
-							.append(IJBossServerConstants.DEPLOY).toString();
-						newTemp = new Path(loc).append(config)
-							.append(IJBossServerConstants.TMP)
-							.append(IJBossServerConstants.JBOSSTOOLS_TMP).toString();
+				if( server.getRuntime() != null && 
+						server.getRuntime().loadAdapter(IJBossServerRuntime.class, null) != null) {
+					String loc, config;
+					loc = config = null;
+					String mode = getHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
+					IDeploymentPageCallback cb = callbackMappings.get(mode);
+					loc = cb.getServerLocation(page.getServer());
+					config = cb.getServerConfigName(page.getServer());
+					newDir = new Path(loc)
+						.append(config)
+						.append(IJBossServerConstants.DEPLOY).toString();
+					newTemp = new Path(loc).append(config)
+						.append(IJBossServerConstants.TMP)
+						.append(IJBossServerConstants.JBOSSTOOLS_TMP).toString();
+					if( mode.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
 						new File(newTemp).mkdirs();
-						type = IDeployableServer.DEPLOY_SERVER;
-					}
 				}
 			} else {
 				newDir = lastCustomDeploy;
 				newTemp = lastCustomTemp;
-				type = IDeployableServer.DEPLOY_CUSTOM;
 			}
-			
-			if( !newSelection.getSelection() ) {
-				// REDO, so no one actually clicked the radio. UGH!
-				oldSelection.removeSelectionListener(radioListener);
-				oldSelection.setSelection(false);
-				oldSelection.addSelectionListener(radioListener);
-				
-				newSelection.removeSelectionListener(radioListener);
-				newSelection.setSelection(true);
-				newSelection.addSelectionListener(radioListener);
-			}
-			
-			type = type == null ? oldType : type;
 			newDir = newDir == null ? oldDir : newDir;
 			newTemp = newTemp == null ? oldTemp : newTemp; 
-			
-			deployText.removeModifyListener(deployListener);
-			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, newDir);
-			deployText.setText(newDir);
-			deployText.addModifyListener(deployListener);
-
-			tempDeployText.removeModifyListener(tempDeployListener);
-			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, newTemp);
-			tempDeployText.setText(newTemp);
-			tempDeployText.addModifyListener(tempDeployListener);
-			
-			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, type);
-			page.getSaveStatus();
 		}
+		
 		public void undo() {
-			deployText.removeModifyListener(deployListener);
-			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
-			deployText.setText(oldDir);
-			deployText.addModifyListener(deployListener);
-
-			tempDeployText.removeModifyListener(tempDeployListener);
-			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
-			tempDeployText.setText(oldTemp);
-			tempDeployText.addModifyListener(tempDeployListener);
-			
-			oldSelection.removeSelectionListener(radioListener);
-			oldSelection.setSelection(true);
-			oldSelection.addSelectionListener(radioListener);
-			
-			newSelection.removeSelectionListener(radioListener);
-			newSelection.setSelection(false);
-			newSelection.addSelectionListener(radioListener);
-			
-			deployText.setEnabled(customRadio.getSelection());
-			tempDeployText.setEnabled(customRadio.getSelection());
-			
 			String oldType = oldSelection == customRadio ? IDeployableServer.DEPLOY_CUSTOM :
-				 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
-				 				IDeployableServer.DEPLOY_METADATA;
+	 			oldSelection == serverRadio ? IDeployableServer.DEPLOY_SERVER :
+	 				IDeployableServer.DEPLOY_METADATA;
+			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY, oldDir);
+			getHelper().setAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldTemp);
 			getHelper().setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, oldType);
+			updateWidgets();
 			page.getSaveStatus();
 		}
 	}
-	
 	
 	private String getDeployType() {
 		return getServer().getDeployLocationType();
@@ -590,8 +618,8 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		viewer.setContentProvider(new ModulePageContentProvider());
 
 		viewer.setLabelProvider(new ModulePageLabelProvider());
-		viewer.setColumnProperties(new String[] { LOCAL_COLUMN_NAME,
-				LOCAL_COLUMN_LOC, LOCAL_COLUMN_TEMP_LOC });
+		viewer.setColumnProperties(new String[] { COLUMN_NAME,
+				COLUMN_LOC, COLUMN_TEMP_LOC });
 		viewer.setInput(""); // irrelevent
 		CellEditor[] editors = new CellEditor[] {
 				new TextCellEditor(viewer.getTree()),
@@ -605,20 +633,20 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 
 	private class LocalDeploymentCellModifier implements ICellModifier {
 		public boolean canModify(Object element, String property) {
-			if( property == LOCAL_COLUMN_NAME)
+			if( property == COLUMN_NAME)
 				return false;
 			return true;
 		}
 
 		public Object getValue(Object element, String property) {
-			DeploymentModulePrefs p = preferences.getPreferences("local")
-					.getModulePrefs((IModule) element);
-			if (property == LOCAL_COLUMN_LOC) {
-				String ret = p.getProperty(LOCAL_COLUMN_LOC);
+			DeploymentModulePrefs p = preferences.getOrCreatePreferences(currentDeployType)
+					.getOrCreateModulePrefs((IModule) element);
+			if (property == COLUMN_LOC) {
+				String ret = p.getProperty(COLUMN_LOC);
 				return ret == null ? "" : ret;
 			}
-			if (property == LOCAL_COLUMN_TEMP_LOC) {
-				String ret = p.getProperty(LOCAL_COLUMN_TEMP_LOC);
+			if (property == COLUMN_TEMP_LOC) {
+				String ret = p.getProperty(COLUMN_TEMP_LOC);
 				return ret == null ? "" : ret;
 			}
 
@@ -628,14 +656,14 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		public void modify(Object element, String property, Object value) {
 
 			IModule module = (IModule) ((TreeItem) element).getData();
-			DeploymentModulePrefs p = preferences.getPreferences("local")
-					.getModulePrefs(module);
-			if (property == LOCAL_COLUMN_LOC) {
-				page.firePropertyChangeCommand(p, LOCAL_COLUMN_LOC,
+			DeploymentModulePrefs p = preferences.getOrCreatePreferences(currentDeployType)
+					.getOrCreateModulePrefs(module);
+			if (property == COLUMN_LOC) {
+				page.firePropertyChangeCommand(p, COLUMN_LOC,
 						(String) value, Messages.EditorEditDeployLocCommand);
 				viewer.refresh();
-			} else if (property == LOCAL_COLUMN_TEMP_LOC) {
-				page.firePropertyChangeCommand(p, LOCAL_COLUMN_TEMP_LOC,
+			} else if (property == COLUMN_TEMP_LOC) {
+				page.firePropertyChangeCommand(p, COLUMN_TEMP_LOC,
 						(String) value, Messages.EditorEditDeployLocCommand);
 				viewer.refresh();
 			}
@@ -684,22 +712,22 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 					return m.getName();
 				if (columnIndex == 1) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences("local")
+							.getOrCreatePreferences(currentDeployType)
 							.getOrCreateModulePrefs(m);
-					String result = modPref.getProperty(LOCAL_COLUMN_LOC);
+					String result = modPref.getProperty(COLUMN_LOC);
 					if (result != null)
 						return result;
-					modPref.setProperty(LOCAL_COLUMN_LOC, "");
+					modPref.setProperty(COLUMN_LOC, "");
 					return "";
 				}
 				if (columnIndex == 2) {
 					DeploymentModulePrefs modPref = preferences
-							.getOrCreatePreferences("local")
+							.getOrCreatePreferences(currentDeployType)
 							.getOrCreateModulePrefs(m);
-					String result = modPref.getProperty(LOCAL_COLUMN_TEMP_LOC);
+					String result = modPref.getProperty(COLUMN_TEMP_LOC);
 					if (result != null)
 						return result;
-					modPref.setProperty(LOCAL_COLUMN_TEMP_LOC, "");
+					modPref.setProperty(COLUMN_TEMP_LOC, "");
 					return "";
 				}
 			}
@@ -720,4 +748,23 @@ public class LocalDeploymentModuleTab implements IDeploymentEditorTab {
 		}
 	}
 
+	public void updateListeners() {
+		// server has been saved. Remove property change listener from last wc and add to newest
+		lastWC.removePropertyChangeListener(this);
+		lastWC = page.getServer();
+		lastWC.addPropertyChangeListener(this);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if( evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
+			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			metadataRadio.setEnabled(callbackMappings.get(mode).metadataEnabled());
+			String originalDeployLocation = page.getServer().getOriginal().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
+			String wcDeployLocation = page.getServer().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
+			if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {
+				page.execute(new RadioClickedCommand(serverRadio, currentSelection));
+			}
+		} 
+	}
 }

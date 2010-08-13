@@ -4,6 +4,7 @@
    <extension-point id="EventLogLabelProvider" name="org.jboss.ide.as.ui.eventLogLabelProvider" schema="schema/EventLogLabelProvider.exsd"/>
    <extension-point id="EventLogMajorType" name="org.jboss.ide.eclipse.as.ui.eventLogMajorType" schema="schema/EventLogMajorType.exsd"/>
    <extension-point id="ServerEditorPortSection" name="org.jboss.ide.as.ui.editor.portSection" schema="schema/ServerEditorPortSection.exsd"/>
+   <extension-point id="DeployMethodUI" name="org.jboss.ide.as.ui.deployMethodUI" schema="schema/DeployMethodUI.exsd"/>
 
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
@@ -173,6 +174,12 @@
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
+            typeIds="%AllJBossServerTypes"/>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.ServerModeSection"
+            id="org.jboss.ide.eclipse.as.ui.editor.serverModeSection"
+            insertionId="org.eclipse.wst.server.editor.overview.left"
+            order="9"
             typeIds="%AllJBossServerTypes"/>
    </extension>
 
@@ -578,13 +585,11 @@
             typeIds="%AllJBossServerTypes">
       </runtimeLocator>
    </extension>
-
-   <extension point="org.eclipse.ui.popupMenus">
+      <extension point="org.eclipse.ui.popupMenus">
         <objectContribution
                 adaptable="true"
                 id="org.jboss.ide.eclipse.as.ui.actions.exploreAction"
                 objectClass="org.eclipse.wst.server.core.IServer">
-                enablesFor="1"
             <enablement>
               <adapt type="org.eclipse.wst.server.core.IServer">
               	<test forcePluginActivation="true"
@@ -599,10 +604,9 @@
                 class="org.jboss.ide.eclipse.as.ui.actions.ExploreActionDelegate"
                 tooltip="Explore"
                 menubarPath="org.eclipse.wst.server.ui.internal.cnf.controlServerSectionEnd"
+                enablesFor="1"
                 id="org.jboss.ide.eclipse.as.ui.actions.ExploreAction">
             </action>
          </objectContribution>
-    
     </extension>
-   
 </plugin>

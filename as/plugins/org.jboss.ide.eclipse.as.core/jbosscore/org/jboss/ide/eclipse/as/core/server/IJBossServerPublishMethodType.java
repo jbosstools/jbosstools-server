@@ -8,16 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.ui.editor;
+package org.jboss.ide.eclipse.as.core.server;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
-
-@Deprecated
-public interface IDeploymentEditorTab {
-	public void setDeploymentPage(ModuleDeploymentPage page);
-	public void setDeploymentPrefs(DeploymentPreferences prefs);
-	public Control createControl(Composite parent);
-	public String getTabName();
+public interface IJBossServerPublishMethodType {
+	public String getId();
+	public String getName();
+	public boolean accepts(String serverTypeId);
+	public IJBossServerPublishMethod createPublishMethod();
 }

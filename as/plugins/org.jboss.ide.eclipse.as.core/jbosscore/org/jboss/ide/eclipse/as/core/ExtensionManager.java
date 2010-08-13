@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,9 +25,11 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
@@ -147,7 +150,8 @@ public class ExtensionManager {
 		PublisherWrapper wrapper;
 		while(i.hasNext()) {
 			wrapper = i.next();
-			if( wrapper.publisher.accepts(deployMethod, server, module))
+			IJBossServerPublisher publisher = wrapper.publisher;
+			if( publisher.accepts(deployMethod, server, module))
 				return wrapper.getNewInstance();
 		}
 		return null;
@@ -182,6 +186,7 @@ public class ExtensionManager {
 				} catch( NumberFormatException nfe) {}
 				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz, cf[i]));
 			} catch( CoreException e ) {
+				e.printStackTrace();
 			} catch( ClassCastException cce ) {
 			}
 		}
@@ -213,5 +218,41 @@ public class ExtensionManager {
 			}
 			return publisher;
 		}
+	}
+	
+	private ServerPublishMethodType[] publishMethodTypes;
+	public ServerPublishMethodType[] getPublishMethodTypes() {
+		if(publishMethodTypes == null ) 
+			publishMethodTypes = loadPublishMethodTypes();
+		return publishMethodTypes;
+	}
+	
+	public ServerPublishMethodType[] loadPublishMethodTypes() {
+		ArrayList<ServerPublishMethodType> types = new ArrayList<ServerPublishMethodType>();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishMethod"); //$NON-NLS-1$
+		for( int i = 0; i < cf.length; i++ ) {
+			types.add(new ServerPublishMethodType(cf[i]));
+		}
+		return types.toArray(new ServerPublishMethodType[types.size()]);
+	}
+	
+	public IJBossServerPublishMethodType getPublishMethod(String id) {
+		ServerPublishMethodType[] publishMethods = getPublishMethodTypes();
+		for( int i = 0; i < publishMethods.length; i++ ) 
+			if( publishMethods[i].getId().equals(id))
+				return publishMethods[i];
+		return null;
+	}
+	
+	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
+		ArrayList<IJBossServerPublishMethodType> list = new ArrayList<IJBossServerPublishMethodType>();
+		list.addAll(Arrays.asList(getPublishMethodTypes()));
+		Iterator<IJBossServerPublishMethodType> i = list.iterator();
+		while(i.hasNext()) {
+			if( !i.next().accepts(server.getServerType().getId()))
+				i.remove();
+		}
+		return list.toArray(new IJBossServerPublishMethodType[list.size()]);
 	}
 }

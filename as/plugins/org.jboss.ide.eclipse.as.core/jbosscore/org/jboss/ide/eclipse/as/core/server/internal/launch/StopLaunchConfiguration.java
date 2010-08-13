@@ -68,7 +68,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		}
 	}
 	
-	protected void preLaunch(ILaunchConfiguration configuration, 
+	public void preLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) {
 	}
 

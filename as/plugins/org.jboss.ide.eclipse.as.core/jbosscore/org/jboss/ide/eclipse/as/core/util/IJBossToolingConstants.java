@@ -48,6 +48,7 @@ public interface IJBossToolingConstants {
 	/* Files or folders inside the TOOLING */
 	public static final String LOG = "log"; //$NON-NLS-1$
 	public static final String TEMP_DEPLOY = "tempDeploy"; //$NON-NLS-1$
+	public static final String TEMP_REMOTE_DEPLOY = "tempRemoteDeploy"; //$NON-NLS-1$
 	public static final String JBOSSTOOLS_TMP = "jbosstoolsTemp"; //$NON-NLS-1$
 	public static final String TMP = "tmp"; //$NON-NLS-1$
 	public static final String CONFIG_IN_METADATA = "jbossConfig"; //$NON-NLS-1$
@@ -72,7 +73,6 @@ public interface IJBossToolingConstants {
 	/* 
 	 * Property keys stored in the server object
 	 */
-	public static final String DEPLOYMENT_METHOD = "org.jboss.ide.eclipse.as.core.server.attributes.deploymentMethod"; //$NON-NLS-1$
 	public static final String STARTUP_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.startupPollerKey"; //$NON-NLS-1$
 	public static final String SHUTDOWN_POLLER_KEY = "org.jboss.ide.eclipse.as.core.server.attributes.shutdownPollerKey"; //$NON-NLS-1$
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName"; //$NON-NLS-1$

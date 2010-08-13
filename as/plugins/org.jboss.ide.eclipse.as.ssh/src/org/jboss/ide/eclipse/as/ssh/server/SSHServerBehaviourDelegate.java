@@ -11,14 +11,19 @@
 package org.jboss.ide.eclipse.as.ssh.server;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.Server;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.ssh.SSHDeploymentPlugin;
 
 import com.jcraft.jsch.JSch;
@@ -37,23 +42,21 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 		setServerState(IServer.STATE_STOPPED);
 	}
 	
-	protected IJBossServerPublishMethod createPublishMethod() {
+	@Override
+	public IJBossServerPublishMethod createPublishMethod() {
 		return new SSHPublishMethod(); // TODO FIX THIS in superclass
 	}
 	
 	public class SSHPublishMethod extends LocalPublishMethod {
 		public static final String SSH_PUBLISH_METHOD = "ssh";  //$NON-NLS-1$
-		
-		@Override
-		public String getPublishMethodId() {
-			return SSH_PUBLISH_METHOD;
-		}
-		
 		private Session session;
 		public Session getSession() {
 			return session;
 		}
-
+		@Override
+		public IJBossServerPublishMethodType getPublishMethodType() {
+			return ExtensionManager.getDefault().getPublishMethod(SSH_PUBLISH_METHOD);
+		}
 		@Override
 		public void publishStart(DeployableServerBehavior behaviour,
 				IProgressMonitor monitor) throws CoreException {
@@ -78,6 +81,10 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 				session.disconnect();
 			session = null;
 			return ret;
+		}
+		
+		public String getPublishDefaultRootFolder(IServer server) {
+			return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, (String)null);
 		}
 	}
 	
@@ -126,5 +133,16 @@ public class SSHServerBehaviourDelegate extends DeployableServerBehavior {
 			return false;
 		}
 	}
+	
+	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
+			IServer server, IJBossServerPublishMethod method) {
+		return new SSHCopyCallback(path, (SSHPublishMethod)method);
+	}
+
+	public String getPublishDefaultRootFolder(IServer server) {
+		return getPublishDefaultRootFolder(server);
+	}
+
+
 	
 }

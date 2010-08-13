@@ -11,13 +11,21 @@
 package org.jboss.ide.eclipse.as.ui.editor;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 
-@Deprecated
-public interface IDeploymentEditorTab {
-	public void setDeploymentPage(ModuleDeploymentPage page);
-	public void setDeploymentPrefs(DeploymentPreferences prefs);
-	public Control createControl(Composite parent);
-	public String getTabName();
+public interface IDeploymentTypeUI {
+	/**
+	 * The parent in this call has no layout and is basically a positioned, 
+	 * but unconfigured, composite. 
+	 * 
+	 * Fill her up!
+	 * 
+	 * Don't forget this UI element is a singleton, similar to a factory, 
+	 * so you should probably make your first widget in the parent a
+	 * new class which extends Composite and can maintain state.
+	 * 
+	 * @param parent
+	 * @param modeSection
+	 */
+	public void fillComposite(Composite parent, ServerModeSection modeSection);
 }

@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
  * @author rob.stryker@jboss.com
  */
 public interface IDeployableServer {
+	public static final String SERVER_MODE = "org.jboss.ide.eclipse.as.core.server.serverMode"; //$NON-NLS-1$
 	public static final String DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.deployDirectory"; //$NON-NLS-1$
 	public static final String TEMP_DEPLOY_DIRECTORY = "org.jboss.ide.eclipse.as.core.server.tempDeployDirectory"; //$NON-NLS-1$
 	public static final String DEPLOY_DIRECTORY_TYPE = "org.jboss.ide.eclipse.as.core.server.deployDirectoryType"; //$NON-NLS-1$

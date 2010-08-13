@@ -179,7 +179,7 @@ public class PortSection extends ServerEditorSection {
 			Composite child = new Composite(parent, SWT.NONE);
 			child.setLayout(new FormLayout());
 			label = new Label(child, SWT.NONE);
-			text = new Text(child, SWT.DEFAULT);
+			text = new Text(child, SWT.SINGLE | SWT.BORDER);
 			detect = new Button(child, SWT.CHECK);
 			link = new Link(child, SWT.NONE);
 

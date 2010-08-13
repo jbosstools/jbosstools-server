@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.ByteArrayInputStream;
@@ -13,11 +23,34 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
 public class DeploymentPreferenceLoader {
 	public static final String DEPLOYMENT_PREFERENCES_KEY = "org.jboss.ide.eclipse.as.core.util.deploymentPreferenceKey"; //$NON-NLS-1$
+	public static final String CURRENT_METHOD_PROPERTY = "publishMethod"; //$NON-NLS-1$	
+	
+	/**
+	 * This method can return null and is only meant to show what deployment method
+	 * is currently stored in a server's deployment preferences.
+	 * 
+	 * To get a more accurate version (with a default) please use
+	 * DeployableServerBehavior.createPublishMethod().getPublishMethodType()
+	 * 
+	 * @param server
+	 * @return
+	 */
+	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server) {
+		String type = server.getAttribute(IDeployableServer.SERVER_MODE, (String)null);
+		if( type != null ) {
+			return ExtensionManager.getDefault().getPublishMethod(type);
+		}
+		return null;
+	}
 	
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
@@ -92,6 +125,30 @@ public class DeploymentPreferenceLoader {
 		protected XMLMemento getMemento() {
 			return memento;
 		}
+		public String getProperty(String key) {
+			IMemento[] children = memento.getChildren("property"); //$NON-NLS-1$
+			for( int i = 0; i < children.length; i++ ) {
+				if( key.equals(children[i].getString("key"))) { //$NON-NLS-1$
+					return children[i].getString("value"); //$NON-NLS-1$
+				}
+			}
+			return null;
+		}
+		
+		public void setProperty(String key, String val) {
+			IMemento[] children = memento.getChildren("property"); //$NON-NLS-1$
+			for( int i = 0; i < children.length; i++ ) {
+				if( key.equals(children[i].getString("key"))) { //$NON-NLS-1$
+					children[i].putString("key", key); //$NON-NLS-1$
+					children[i].putString("value", val);//$NON-NLS-1$
+					return;
+				}
+			}
+			// not found
+			IMemento child = memento.createChild("property"); //$NON-NLS-1$
+			child.putString("key", key);//$NON-NLS-1$
+			child.putString("value", val);//$NON-NLS-1$
+		}
 	}
 	
 	public static class DeploymentTypePrefs {
@@ -107,7 +164,6 @@ public class DeploymentPreferenceLoader {
 				String id = mementos[i].getString("id"); //$NON-NLS-1$
 				this.children.put(id, new DeploymentModulePrefs(id, mementos[i]));
 			}
-			// TODO properties? 
 		}
 		
 		public DeploymentModulePrefs getModulePrefs(IModule module) {
@@ -122,6 +178,31 @@ public class DeploymentPreferenceLoader {
 								childMemento));
 			}
 			return children.get(module.getId());
+		}
+		
+		public String getProperty(String key) {
+			IMemento[] children = memento.getChildren("property"); //$NON-NLS-1$
+			for( int i = 0; i < children.length; i++ ) {
+				if( key.equals(children[i].getString("key"))) { //$NON-NLS-1$
+					return children[i].getString("value"); //$NON-NLS-1$
+				}
+			}
+			return null;
+		}
+		
+		public void setProperty(String key, String val) {
+			IMemento[] children = memento.getChildren("property"); //$NON-NLS-1$
+			for( int i = 0; i < children.length; i++ ) {
+				if( key.equals(children[i].getString("key"))) { //$NON-NLS-1$
+					children[i].putString("key", key); //$NON-NLS-1$
+					children[i].putString("value", val);//$NON-NLS-1$
+					return;
+				}
+			}
+			// not found
+			IMemento child = memento.createChild("property"); //$NON-NLS-1$
+			child.putString("key", key);//$NON-NLS-1$
+			child.putString("value", val);//$NON-NLS-1$
 		}
 	}
 	public static class DeploymentModulePrefs {

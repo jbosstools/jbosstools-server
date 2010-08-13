@@ -14,9 +14,11 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -32,6 +34,10 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 public class ProcessTerminatedPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
+	public static interface IProcessProvider {
+		public IProcess getProcess();
+	}
+	
 	
 	private ServerStatePollerType type;
 	private JBossServerBehavior server;
@@ -55,7 +61,12 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
-		return server.getProcess() == null || server.getProcess().isTerminated();
+		JBossBehaviourDelegate del = server.getDelegate();
+		if( del instanceof IProcessProvider ) {
+			IProcess p = ((IProcessProvider)del).getProcess();
+			return p == null || p.isTerminated();
+		} 
+		return true;
 	}
 
 	public void failureHandled(Properties properties) {

@@ -73,6 +73,7 @@ public class Messages extends NLS {
 	public static String swf_NameInUse;
 	public static String swf_DeployEditorHeading;
 	public static String swf_DeploymentDescription;
+	public static String swf_DeploymentDescriptionLabel;
 	public static String swf_DeployDirectory;
 	public static String swf_TempDeployDirectory;
 	public static String swf_CloneConfiguration;

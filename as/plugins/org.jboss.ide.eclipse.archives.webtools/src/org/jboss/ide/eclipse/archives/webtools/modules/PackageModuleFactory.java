@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeVisitor;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 /**
  *
@@ -285,7 +286,7 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 	}
 
 
-	public static class PackagedModuleDelegate extends ModuleDelegate {
+	public static class PackagedModuleDelegate extends ModuleDelegate implements IJBTModule {
 		private IArchive pack;
 		private IModuleResource rootResource;
 		private DelegateInitVisitor initVisitor;
@@ -316,6 +317,18 @@ public class PackageModuleFactory extends ModuleFactoryDelegate {
 
 		public IStatus validate() {
 			return Status.OK_STATUS;
+		}
+
+		public IModule[] getModules() {
+			return new IModule[]{};
+		}
+
+		public String getURI(IModule module) {
+			return null; // not called i hope
+		}
+
+		public boolean isBinary() {
+			return rootResource instanceof IModuleFile;
 		}
 	}
 	
