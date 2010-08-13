@@ -255,6 +255,10 @@ public class JSTZippedDeploymentTester extends TestCase {
 		unzipFile(unzip1.append("mvel2.jar"), unzip2);
 		assertTrue(unzip2.toFile().list().length > 1);
 		System.out.println("end");
+		
+		removeModule(mod);
+		publish();
+		assertFalse(zipped.toFile().exists());
 	}
 	
 	

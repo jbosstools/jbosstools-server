@@ -4,13 +4,13 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
@@ -90,10 +90,10 @@ public class MockTests extends TestCase {
 		
 		int loops = 0;
 		JBossServerBehavior behavior = (JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, null);
-
+		
 		while(loops < 50) {
-			if( behavior.getProcess() != null ) {
-				return behavior.getProcess();
+			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
+				return ((IProcessProvider)behavior.getDelegate()).getProcess();
 			}
 			try {
 				loops++;

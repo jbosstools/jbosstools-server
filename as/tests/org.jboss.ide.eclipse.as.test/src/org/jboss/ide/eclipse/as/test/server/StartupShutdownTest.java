@@ -34,9 +34,10 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServer.IOperationListener;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
-import org.eclipse.wst.server.core.IServer.IOperationListener;
+import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
@@ -259,8 +260,8 @@ public class StartupShutdownTest extends ServerRuntimeUtils {
 		JBossServerBehavior behavior = 
 			(JBossServerBehavior)currentServer.loadAdapter(JBossServerBehavior.class, null);
 		if( behavior != null ) {
-			if( behavior.getProcess() != null ) {
-				return behavior.getProcess().getStreamsProxy().getOutputStreamMonitor();
+			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
+				return ((IProcessProvider)behavior.getDelegate()).getProcess().getStreamsProxy().getOutputStreamMonitor();
 			}
 		}
 		return null;
