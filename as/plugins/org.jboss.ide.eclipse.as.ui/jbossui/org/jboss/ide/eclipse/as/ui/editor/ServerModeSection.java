@@ -138,7 +138,6 @@ public class ServerModeSection extends ServerEditorSection {
 				deployTypeCombo.select(index);
 		}
 	    deployTypeCombo.addModifyListener(new ModifyListener(){
-			@Override
 			public void modifyText(ModifyEvent e) {
 				deployTypeChanged(true);
 			}});

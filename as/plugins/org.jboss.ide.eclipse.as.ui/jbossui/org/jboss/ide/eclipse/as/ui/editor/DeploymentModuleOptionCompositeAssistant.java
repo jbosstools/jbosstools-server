@@ -83,19 +83,16 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			return true;
 		}
 
-		@Override
 		public String getServerLocation(IServerWorkingCopy wc) {
 			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 			return jbsrt.getConfigLocation();
 		}
 
-		@Override
 		public String getServerConfigName(IServerWorkingCopy wc) {
 			IJBossServerRuntime jbsrt = (IJBossServerRuntime)wc.getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 			return jbsrt.getJBossConfiguration();
 		}
 
-		@Override
 		public void propertyChange(PropertyChangeEvent evt,
 				DeploymentModuleOptionCompositeAssistant composite) {
 			// TODO Auto-generated method stub
@@ -755,7 +752,6 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		lastWC.addPropertyChangeListener(this);
 	}
 
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if( evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
 			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
