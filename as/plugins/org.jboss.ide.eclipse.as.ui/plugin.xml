@@ -95,17 +95,6 @@
    </extension>
 
    <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.TaskList"/>
-      </perspectiveExtension>
-   </extension>
-
-      <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.jboss.ide.eclipse.as.ui.perspective.ASPerspective"
@@ -278,12 +267,6 @@
 <!-- Provisional stuff to be contributed to Webtools -->
 
    <extension point="org.eclipse.ui.views"> 
-   	  <view
-         id="org.jboss.ide.eclipse.as.ui.views.JBossServerView"
-         name="%ViewName_JBossServerView"
-         category="org.eclipse.wst.server.ui"
-         class="org.jboss.tools.as.wst.server.ui.xpl.ServersView"
-         icon="$nl$/icons/jboss.gif"/>
       <view
             category="org.eclipse.wst.server.ui"
             class="org.jboss.ide.eclipse.as.ui.views.ServerLogView"
@@ -347,56 +330,6 @@
        </dropAssistant>
 	   </navigatorContent>
 	</extension>
-	<extension
-	      point="org.eclipse.ui.navigator.viewer">
-	   <viewerContentBinding
-	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
-	      <includes>
-	         <contentExtension
-	               isRoot="true"
-	               pattern="org.jboss.tools.as.wst.server.ui.ServersView.content.root">
-	         </contentExtension>
-	      </includes>
-	   </viewerContentBinding>
-	</extension>
-	
-		<extension
-	      point="org.eclipse.ui.navigator.viewer">
-	   <viewerContentBinding
-	         viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
-	      <includes>
-             <contentExtension
-                isRoot="false"
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.xml">
-             </contentExtension>
-             <contentExtension
-                   isRoot="false"
-                   pattern="org.jboss.ide.eclipse.as.ui.extensions.jmx">
-             </contentExtension>
-             <contentExtension
-                   isRoot="false"
-                   pattern="org.jboss.tools.jmx.ui.internal.views.navigator.JMXLinkHelper">
-             </contentExtension>
-	      </includes>
-	   </viewerContentBinding>
-    <viewerActionBinding
-          viewerId="org.jboss.ide.eclipse.as.ui.views.JBossServerView">
-       <includes>
-          <actionExtension
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.modules"/>
-          <actionExtension
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog"/>
-          <actionExtension
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView"/>
-          <actionExtension
-                pattern="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
-          </actionExtension>
-       </includes>
-    </viewerActionBinding>
-	</extension>
-	
-	
-	
 	
 	<!-- Extensions to new Server View -->
 	
