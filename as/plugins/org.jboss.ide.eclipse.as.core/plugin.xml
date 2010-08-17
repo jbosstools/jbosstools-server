@@ -954,6 +954,10 @@
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_5_0.dtd"
                webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_5_0.dtd"/>
          <public
+               publicId="-//JBoss//DTD JBOSS JCA Config 6.0//EN"
+               uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-ds_6_0.dtd"
+               webURL="http://www.jboss.org/j2ee/dtd/jboss-ds_6_0.dtd"/>
+         <public
                publicId="-//JBoss//DTD MBean Service 5.0//EN"
                uri="platform:/plugin/org.jboss.ide.eclipse.as.core/dtd/jboss-service_5_0.dtd"
                webURL="http://www.jboss.org/j2ee/dtd/jboss-service_5_0.dtd"/>
