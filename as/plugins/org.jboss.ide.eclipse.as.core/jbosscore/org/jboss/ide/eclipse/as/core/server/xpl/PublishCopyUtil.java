@@ -20,6 +20,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ProgressMonitor;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -536,31 +538,30 @@ public final class PublishCopyUtil {
 	 *    reporting and cancellation are not desired
 	 * @return a possibly-empty array of error and warning status
 	 */
-	public IStatus[] publishFull(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
-		monitor.beginTask("Publishing " + resources.length + " resources", 100 * (resources.length) + 100); //$NON-NLS-1$ //$NON-NLS-2$
+	public IStatus[] initFullPublish(IModuleResource[] resources, IProgressMonitor monitor) throws CoreException  {
+		int count = PublishUtil.countMembers(resources);
+		monitor = ProgressUtil.getMonitorFor(monitor);
+		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
+				(100 * (count)) + 200);
 		handler.makeDirectoryIfRequired(new Path("/"), ProgressMonitorUtil.submon(monitor, 100)); //$NON-NLS-1$
 		if( monitor.isCanceled())
 			return canceledStatus();
-		IStatus[] results = publishFull(resources, new Path("/"), ProgressMonitorUtil.submon(monitor, 100*resources.length)); //$NON-NLS-1$
+		IStatus[] results = publishFull(resources, new Path("/"), monitor); //$NON-NLS-1$
 		monitor.done();
 		return results;
 	}
 	
-	public IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) throws CoreException {
+	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) throws CoreException {
 		if (resources == null)
 			return EMPTY_STATUS;
-		
-		monitor = ProgressUtil.getMonitorFor(monitor);
-		monitor.beginTask("Publishing " + resources.length + " resources", 100 * (resources.length)); //$NON-NLS-1$ //$NON-NLS-2$
 		List status = new ArrayList(2);
 		int size = resources.length;
 		for (int i = 0; i < size; i++) {
 			if( monitor.isCanceled())
 				return canceledStatus();
-			IStatus[] stat = copy(resources[i], relative, ProgressMonitorUtil.submon(monitor, 100)); 
+			IStatus[] stat = copy(resources[i], relative, monitor); 
 			addArrayToList(status, stat);
 		}
-		monitor.done();
 		IStatus[] stat = new IStatus[status.size()];
 		status.toArray(stat);
 		return stat;
@@ -574,7 +575,8 @@ public final class PublishCopyUtil {
 			IModuleFolder folder = (IModuleFolder) resource;
 			IModuleResource[] children = folder.members();
 			if( children.length == 0 )
-				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), monitor);
+				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), 
+						ProgressUtil.getSubMonitorFor(monitor, 5));
 			else {
 				IStatus[] stat = publishFull(children, path, monitor);
 				addArrayToList(status, stat);
@@ -586,7 +588,8 @@ public final class PublishCopyUtil {
 			if( stats != null && stats.length > 0 && !stats[0].isOK())
 				addArrayToList(status, stats);
 
-			addArrayToList(status, handler.copyFile(mf, path, monitor));
+			addArrayToList(status, handler.copyFile(mf, path, 
+					ProgressUtil.getSubMonitorFor(monitor, 100)));
 		}
 		IStatus[] stat = new IStatus[status.size()];
 		status.toArray(stat);

@@ -171,7 +171,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		if( !forceZip && !isBinaryObject) {
 			PublishCopyUtil util = new PublishCopyUtil(callback);
-			list.addAll(Arrays.asList(util.publishFull(members, ProgressMonitorUtil.submon(monitor, 700))));
+			list.addAll(Arrays.asList(util.initFullPublish(members, ProgressMonitorUtil.submon(monitor, 700))));
 		} else if( isBinaryObject )
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, ProgressMonitorUtil.submon(monitor, 700))));
 		else {
