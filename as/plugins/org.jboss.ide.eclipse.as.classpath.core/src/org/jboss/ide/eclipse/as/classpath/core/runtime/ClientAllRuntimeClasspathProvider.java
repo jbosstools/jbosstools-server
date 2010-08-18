@@ -142,6 +142,7 @@ public class ClientAllRuntimeClasspathProvider
 		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 		list.addAll(get50(location, configPath));
 		addEntries(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
+		addEntries(configPath.append(DEPLOYERS).append(JSF_DEPLOYER).append(MOJARRA_20).append(JSF_LIB), list);
 		return list;
 	}
 	

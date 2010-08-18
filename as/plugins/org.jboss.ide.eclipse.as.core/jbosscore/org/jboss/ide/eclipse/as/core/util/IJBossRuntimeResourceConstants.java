@@ -49,6 +49,9 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String JBOSS_AOP_JDK5_JAR = "jboss-aop-jdk50.jar"; //$NON-NLS-1$
 	public static final String JBOSS_WEB_DEPLOYER = "jboss-web.deployer"; //$NON-NLS-1$
 	public static final String REST_EASY_DEPLOYER = "resteasy.deployer"; //$NON-NLS-1$
+	public static final String JSF_DEPLOYER = "jsf.deployer"; //$NON-NLS-1$
+	public static final String MOJARRA_12 = "Mojarra-1.2"; //$NON-NLS-1$
+	public static final String MOJARRA_20 = "Mojarra-2.0"; //$NON-NLS-1$
 	public static final String JSP_API_JAR = "jsp-api.jar"; //$NON-NLS-1$
 	public static final String SERVLET_API_JAR = "servlet-api.jar"; //$NON-NLS-1$
 	public static final String JSF_API_JAR = "jsf-api.jar"; //$NON-NLS-1$
