@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.common.modulecore,
  org.eclipse.wst.common.emfworkbench.integration,
  org.eclipse.jem.util,
- org.jboss.ide.eclipse.archives.webtools;resolution:=optional
+ org.jboss.ide.eclipse.archives.webtools;resolution:=optional,
+ org.eclipse.debug.core
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core

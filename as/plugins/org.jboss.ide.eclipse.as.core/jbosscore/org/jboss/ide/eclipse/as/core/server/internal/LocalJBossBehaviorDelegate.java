@@ -57,22 +57,13 @@ import org.jboss.tools.jmx.core.JMXException;
  * @author Rob Stryker
  *
  */
-public class LocalJBossBehaviorDelegate implements JBossBehaviourDelegate, IProcessProvider {
+public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate implements IProcessProvider {
 	
 	private PollThread pollThread = null;
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
-	private JBossServerBehavior actualBehavior;
 	public LocalJBossBehaviorDelegate() {
 		super();
-	}
-
-	public void setActualBehaviour(JBossServerBehavior actualBehaviour) {
-		this.actualBehavior = actualBehaviour;
-	}
-	
-	protected IServer getServer() {
-		return actualBehavior.getServer();
 	}
 	
 	public void stop(boolean force) {
@@ -95,7 +86,7 @@ public class LocalJBossBehaviorDelegate implements JBossBehaviourDelegate, IProc
 			boolean success = StopLaunchConfiguration.stop(getServer());
 			if( !success ) {
 				if( process != null && !process.isTerminated() ) { 
-					actualBehavior.setServerStarted();
+					getActualBehavior().setServerStarted();
 					pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
 					nextStopRequiresForce = true;
 				}
@@ -114,7 +105,7 @@ public class LocalJBossBehaviorDelegate implements JBossBehaviourDelegate, IProc
 			}
 		}
 		process = null;
-		actualBehavior.setServerStopped();
+		getActualBehavior().setServerStopped();
 	}
 	
 	protected void addForceStopFailedEvent(DebugException e) {
@@ -177,7 +168,7 @@ public class LocalJBossBehaviorDelegate implements JBossBehaviourDelegate, IProc
 	}
 	
 	public void serverStopping() {
-		actualBehavior.setServerStopping();
+		getActualBehavior().setServerStopping();
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
@@ -189,7 +180,7 @@ public class LocalJBossBehaviorDelegate implements JBossBehaviourDelegate, IProc
 		if( this.pollThread != null ) {
 			pollThread.cancel();
 		}
-		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, actualBehavior);
+		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, getActualBehavior());
 		pollThread.start();
 	}
 	
