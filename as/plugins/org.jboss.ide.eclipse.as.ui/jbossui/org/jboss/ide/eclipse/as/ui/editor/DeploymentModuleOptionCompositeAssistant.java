@@ -190,12 +190,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		Composite inner = toolkit.createComposite(composite);
 		inner.setLayout(new GridLayout(1, false));
 
-		IRuntime rt = getServer().getServer().getRuntime();
-		boolean showRadios = true;
-		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
-			showRadios = false;
-
-		if( showRadios ) {
+		if( getShowRadios() ) {
 			metadataRadio = toolkit.createButton(inner,
 					Messages.EditorUseWorkspaceMetadata, SWT.RADIO);
 			serverRadio = toolkit.createButton(inner,
@@ -356,19 +351,31 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		return section;
 	}
 	
+	protected boolean getShowRadios() {
+		IRuntime rt = getServer().getServer().getRuntime();
+		boolean showRadios = true;
+		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
+			showRadios = false;
+		return showRadios;
+	}
+	
 	private void updateWidgets() {
-		metadataRadio.setSelection(getDeployType().equals(
-				IDeployableServer.DEPLOY_METADATA));
-		serverRadio.setSelection(getDeployType().equals(
-				IDeployableServer.DEPLOY_SERVER));
-		customRadio.setSelection(getDeployType().equals(
-				IDeployableServer.DEPLOY_CUSTOM));
-		currentSelection = metadataRadio.getSelection() ? metadataRadio
-				: serverRadio.getSelection() ? serverRadio : customRadio;
+		if( getShowRadios()) {
+			metadataRadio.setSelection(getDeployType().equals(
+					IDeployableServer.DEPLOY_METADATA));
+			serverRadio.setSelection(getDeployType().equals(
+					IDeployableServer.DEPLOY_SERVER));
+			customRadio.setSelection(getDeployType().equals(
+					IDeployableServer.DEPLOY_CUSTOM));
+			currentSelection = metadataRadio.getSelection() ? metadataRadio
+					: serverRadio.getSelection() ? serverRadio : customRadio;
+			
+			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			boolean metaEnabled = callbackMappings.get(mode).metadataEnabled();
+			metadataRadio.setEnabled(metaEnabled);
+		}
 		
-		String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		boolean metaEnabled = callbackMappings.get(mode).metadataEnabled();
-		metadataRadio.setEnabled(metaEnabled);
+		
 		JBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
 		String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
 				jbs == null ? "" : jbs.getDeployFolder(jbs, getDeployType()));
