@@ -30,8 +30,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.emf.ecore;bundle-version="2.5.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.jboss.ide.eclipse.archives.webtools,
+Export-Package: org.jboss.ide.eclipse.archives,
+ org.jboss.ide.eclipse.archives.webtools,
  org.jboss.ide.eclipse.archives.webtools.archivetypes,
+ org.jboss.ide.eclipse.archives.webtools.filesets,
+ org.jboss.ide.eclipse.archives.webtools.filesets.vcf,
  org.jboss.ide.eclipse.archives.webtools.modules,
  org.jboss.ide.eclipse.archives.webtools.ui
 Bundle-Vendor: %Bundle-Vendor.0
