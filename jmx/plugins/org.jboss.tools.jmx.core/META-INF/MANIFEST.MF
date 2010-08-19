@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.jboss.tools.jmx.core;singleton:=true
 Bundle-Version: 1.2.0.qualifier
 Bundle-Activator: org.jboss.tools.jmx.core.JMXActivator
 Bundle-Vendor: %BundleProvider
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.jboss.tools.usage;bundle-version="1.0.0";resolution:=optional
 Export-Package: org.jboss.tools.jmx.core,
  org.jboss.tools.jmx.core.providers;
   x-friends:="org.jboss.tools.jmx.core,
