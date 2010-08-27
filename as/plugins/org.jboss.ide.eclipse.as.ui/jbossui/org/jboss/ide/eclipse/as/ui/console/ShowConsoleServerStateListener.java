@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.ui.console;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -18,8 +19,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.ui.internal.view.servers.ShowInConsoleAction;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 public class ShowConsoleServerStateListener extends UnitedServerListener {
 	private static ShowConsoleServerStateListener instance;
@@ -37,6 +41,11 @@ public class ShowConsoleServerStateListener extends UnitedServerListener {
 				// server change event
 				if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
 					if( event.getServer().getServerState() == IServer.STATE_STARTING ) {
+						// do not launch console for remotes, for now
+						IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(jbs.getServer());
+						if( !type.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
+							return;
+						
 						new Thread() {
 							public void run() {
 								try {
@@ -45,7 +54,9 @@ public class ShowConsoleServerStateListener extends UnitedServerListener {
 								} catch(InterruptedException ie) {}
 								Display.getDefault().asyncExec(new Runnable() { 
 									public void run() {
-										new ShowInConsoleAction(getNullSelectionProvider()).perform(server);
+										ILaunch launch = server.getLaunch();
+										if( launch != null && launch.getProcesses().length > 0)
+											new ShowInConsoleAction(getNullSelectionProvider()).perform(server);
 									}
 								});
 							}
