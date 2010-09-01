@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core.vcf;
 
-import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -20,6 +19,7 @@ import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 

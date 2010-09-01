@@ -27,6 +27,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
+@Deprecated
 public class ReferenceResolverUtil {
 	public static ReferenceResolverUtil instance = null;
 	public static ReferenceResolverUtil getDefault() {

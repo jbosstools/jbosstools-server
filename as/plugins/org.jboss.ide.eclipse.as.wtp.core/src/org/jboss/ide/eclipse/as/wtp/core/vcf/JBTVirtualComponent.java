@@ -90,20 +90,20 @@ public class JBTVirtualComponent
 		return DependencyGraphManager.getInstance().checkIfStillValid(depGraphModStamp);
 	}
 	
-	private static IVirtualReference[] getHardReferences(IVirtualComponent earComponent) {
+	private static IVirtualReference[] getHardReferences(IVirtualComponent component) {
 		StructureEdit core = null;
 		List hardReferences = new ArrayList();
 		try {
-			core = StructureEdit.getStructureEditForRead(earComponent.getProject());
+			core = StructureEdit.getStructureEditForRead(component.getProject());
 			if (core != null && core.getComponent() != null) {
-				WorkbenchComponent component = core.getComponent();
+				WorkbenchComponent component2 = core.getComponent();
 				if (component != null) {
-					List referencedComponents = component.getReferencedComponents();
+					List referencedComponents = component2.getReferencedComponents();
 					for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
 						ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
 						if (referencedComponent == null)
 							continue;
-						IVirtualReference vReference = createVirtualReference(earComponent, referencedComponent);
+						IVirtualReference vReference = StructureEdit.createVirtualReference(component, referencedComponent);
 						if (vReference != null) {
 							IVirtualComponent referencedIVirtualComponent = vReference.getReferencedComponent();
 							if (referencedIVirtualComponent != null && referencedIVirtualComponent.exists()) {
@@ -193,145 +193,4 @@ public class JBTVirtualComponent
 		}
 		return uri;
 	}
-	/*
-	
-	private static List getLooseArchiveReferences(JBTVirtualComponent component, List hardReferences) {
-		return  getLooseArchiveReferences(component, hardReferences, null, (EARVirtualRootFolder)component.getRootFolder());
-	}
-		
-	private static List getLooseArchiveReferences(JBTVirtualComponent component, List hardReferences, List dynamicReferences, EARVirtualRootFolder folder) {
-		return null;
-	}
-*/
-	
-	// Potentially to be overridden (awesome?)
-	protected static IVirtualReference createVirtualReference(IVirtualComponent context, ReferencedComponent referencedComponent) {
-		IReferenceResolver res = ReferenceResolverUtil.getDefault().getResolver(context, referencedComponent);
-		return res.resolve(context, referencedComponent);
-	}
-	
-	protected static ReferencedComponent createReferencedComponent(IVirtualReference reference) {
-		IReferenceResolver res = ReferenceResolverUtil.getDefault().getResolver(reference);
-		return res.resolve(reference);
-	}
-	
-	/* *******************************************
-	 * Overrides from VirtualComponent class
-	 * These are mostly here because of the extrapolation 
-	 * of createVirtualReference into its own method.
-	 * 
-	 * These can probably be removed in WTP 3.2
-	 * *******************************************/
-	@Override
-	public IVirtualReference[] getAllReferences() { 
-		StructureEdit core = null;
-		List references = new ArrayList();
-		try {
-			core = StructureEdit.getStructureEditForRead(getProject());
-			if (core!=null && core.getComponent()!=null) {
-				WorkbenchComponent component = core.getComponent();
-				if (component!=null) {
-					List referencedComponents = component.getReferencedComponents();
-					for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
-						ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
-						if (referencedComponent==null) 
-							continue;
-						IVirtualReference vReference = createVirtualReference(this, referencedComponent);
-						if( vReference != null ){
-							vReference.setArchiveName( referencedComponent.getArchiveName() );
-						}
-						if (vReference != null && vReference.getReferencedComponent() != null)
-							references.add(vReference); 
-					}
-				}
-			}
-			return (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
-		} finally {
-			if(core != null)
-				core.dispose();
-		}		
-	}
-	
-	@Override
-	protected ReferencedComponent getWorkbenchReferencedComponent(IVirtualReference aReference, WorkbenchComponent component) {
-		if (aReference == null || aReference.getReferencedComponent() == null || component == null)
-			return null;
-		List referencedComponents = component.getReferencedComponents();
-		URI uri = createReferencedComponent(aReference).getHandle(); 
-		for (int i=0; i<referencedComponents.size(); i++) {
-			ReferencedComponent ref = (ReferencedComponent) referencedComponents.get(i);
-			if( ref.getHandle().equals(uri))
-				return ref;
-		}
-		return null;
-	}
-	
-	@Override
-	public void addReferences(IVirtualReference[] references) {
-		if (references==null || references.length==0)
-			return;
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForWrite(getProject());
-			if (core == null)
-				return;
-			WorkbenchComponent component = core.getComponent();
-			ReferencedComponent referencedComponent = null;
-			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
-			for (int i=0; i<references.length; i++) {
-				if (references[i] == null)
-					continue;
-				referencedComponent = createReferencedComponent(references[i]);
-				if( referencedComponent != null ) 
-					component.getReferencedComponents().add(referencedComponent);
-			}
-			//clean up any old obsolete references
-			if (component != null){
-				cleanUpReferences(component);
-			}
-		} finally {
-			if(core != null) {
-				core.saveIfNecessary(null);
-				core.dispose();
-			}
-		}	
-	}
-	
-	/* @Override */
-	private void cleanUpReferences(WorkbenchComponent component) {
-		List referencedComponents = component.getReferencedComponents();
-		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
-			ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
-			if (referencedComponent==null) 
-				continue;
-			IVirtualReference vReference = createVirtualReference(this, referencedComponent);
-			if (vReference == null || vReference.getReferencedComponent() == null || !vReference.getReferencedComponent().exists()){
-				iter.remove();
-			}
-		}
-	}
-	
-	@Override
-	public void setReferences(IVirtualReference[] references) { 
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.getComponent();
-			ReferencedComponent referencedComponent = null;
-			  
-			component.getReferencedComponents().clear();
-			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
-			for (int i=0; i<references.length; i++) {
-				referencedComponent = createReferencedComponent(references[i]);
-				if( referencedComponent != null ) 
-					component.getReferencedComponents().add(referencedComponent);
-			}
-		} finally {
-			if(core != null) {
-				core.saveIfNecessary(null);
-				core.dispose();
-			}
-		}	
-	}
-
 }

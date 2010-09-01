@@ -20,14 +20,16 @@ import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
-public class OutputFolderReferenceResolver implements IReferenceResolver {
+public class OutputFolderReferenceResolver  implements IReferenceResolver {
 	public static final String OUTPUT_FOLDER_SEGMENT = "org.jboss.ide.eclipse.as.wtp.core.vcf.outputFolders";
 	public static final String OUTPUT_FOLDER_PROTOCOL = PlatformURLModuleConnection.MODULE_PROTOCOL
 								+IPath.SEPARATOR+ OUTPUT_FOLDER_SEGMENT + IPath.SEPARATOR;
 	public OutputFolderReferenceResolver() {
+		
 	}
 
 	public boolean canResolve(IVirtualComponent context,
