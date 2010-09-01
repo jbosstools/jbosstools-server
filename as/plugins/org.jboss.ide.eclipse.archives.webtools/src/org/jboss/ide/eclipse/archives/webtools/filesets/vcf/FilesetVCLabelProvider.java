@@ -2,8 +2,8 @@ package org.jboss.ide.eclipse.archives.webtools.filesets.vcf;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.IVirtualComponentLabelProvider;
 import org.jboss.ide.eclipse.archives.webtools.SharedImages;
-import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IVirtualComponentLabelProvider;
 
 public class FilesetVCLabelProvider implements IVirtualComponentLabelProvider {
 
@@ -28,4 +28,6 @@ public class FilesetVCLabelProvider implements IVirtualComponentLabelProvider {
 		return base;
 	}
 
+	public void dispose() {
+	}
 }

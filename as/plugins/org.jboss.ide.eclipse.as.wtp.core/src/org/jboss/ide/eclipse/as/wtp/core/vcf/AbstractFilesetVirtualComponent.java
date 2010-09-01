@@ -101,7 +101,7 @@ public abstract class AbstractFilesetVirtualComponent implements IVirtualCompone
 
 	public IVirtualReference[] getReferences(Map<String, Object> options) {
 		// ignore
-		return null;
+		return new IVirtualReference[]{};
 	}
 
 	public IVirtualReference[] getReferences() {

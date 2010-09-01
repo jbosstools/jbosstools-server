@@ -171,14 +171,28 @@
                  <keywordReference id="org.eclipse.wst.server.preferenceKeywords"/>
        </page>
   </extension>
+    <extension
+          point="org.eclipse.wst.common.modulecore.referenceResolver">
+       <resolver
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver"
+             id="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver">
+       </resolver>
+    </extension>
+    <extension
+          point="org.eclipse.wst.common.modulecore.ui.referenceWizardFragment">
+       <referenceFragment
+             class="org.jboss.ide.eclipse.archives.webtools.ui.FilesetReferenceWizardFragment"
+             icon="$nl$/icons/multiple_files.gif"
+             id="org.jboss.ide.eclipse.archives.webtools.FilesetReferenceWizardFragment"
+             name="Fileset">
+       </referenceFragment>
+    </extension>
 
-    <!-- Fileset integration for WTP Projects -->
-	<extension
-         point="org.jboss.ide.eclipse.as.wtp.core.referenceResolver">
-      <resolver
-            class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver"
-            id="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver">
-      </resolver>
-	</extension>
-
+    <extension
+          point="org.eclipse.wst.common.modulecore.ui.virtualComponentLabelProvider">
+       <provider
+             class="org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetVCLabelProvider"
+             weight="5">
+       </provider>
+    </extension>
 </plugin>

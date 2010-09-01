@@ -5,7 +5,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -13,10 +12,9 @@ import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.resolvers.IReferenceResolver;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
-import org.jboss.ide.eclipse.as.wtp.core.vcf.IReferenceResolver;
-import org.jboss.ide.eclipse.as.wtp.core.vcf.OutputFoldersVirtualComponent;
 
 public class FilesetComponentResolver implements IReferenceResolver {
 	public static final String FILESET_SEGMENT = "org.jboss.ide.eclipse.archives.webtools.filesets.vcf.FilesetComponentResolver"; //$NON-NLS-1$

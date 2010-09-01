@@ -21,13 +21,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.server.ui.wizard.IWizardHandle;
-import org.eclipse.wst.server.ui.wizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.IReferenceEditor;
+import org.eclipse.wst.common.componentcore.ui.internal.propertypage.NewReferenceWizard;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.IWizardHandle;
+import org.eclipse.wst.common.componentcore.ui.internal.taskwizard.WizardFragment;
+import org.eclipse.wst.common.componentcore.ui.propertypage.IReferenceWizardConstants;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.filesets.vcf.WorkspaceFilesetVirtualComponent;
-import org.jboss.ide.eclipse.as.wtp.ui.propertypage.IReferenceEditor;
-import org.jboss.ide.eclipse.as.wtp.ui.propertypage.NewReferenceWizard;
 
 public class FilesetReferenceWizardFragment extends WizardFragment implements IReferenceEditor {
 	public boolean hasComposite() {
@@ -136,9 +139,12 @@ public class FilesetReferenceWizardFragment extends WizardFragment implements IR
 	}
 	
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
-		getTaskModel().putObject(NewReferenceWizard.COMPONENT, getFilesetComponent());
-		getTaskModel().putObject(NewReferenceWizard.COMPONENT_PATH, "/"); //$NON-NLS-1$
-		getTaskModel().putObject(NewReferenceWizard.DEPENDENCY_TYPE, DependencyType.CONSUMES_LITERAL);
+		IVirtualComponent comp = getFilesetComponent();
+		IVirtualComponent rootComponent = (IVirtualComponent)getTaskModel().getObject(IReferenceWizardConstants.ROOT_COMPONENT);
+		VirtualReference ref = new VirtualReference(rootComponent, comp);
+		ref.setDependencyType(DependencyType.CONSUMES);
+		ref.setRuntimePath(new Path("/")); //$NON-NLS-1$
+		getTaskModel().putObject(NewReferenceWizard.FINAL_REFERENCE, ref);
 	}
 	
 	protected IVirtualComponent getFilesetComponent() {
@@ -151,10 +157,10 @@ public class FilesetReferenceWizardFragment extends WizardFragment implements IR
 	}
 
 	private WorkspaceFilesetVirtualComponent original;
-	public boolean canEdit(IVirtualComponent vc) {
+	public boolean canEdit(IVirtualReference vr) {
+		IVirtualComponent vc = vr.getReferencedComponent();
 		if( vc instanceof WorkspaceFilesetVirtualComponent)
 			original = (WorkspaceFilesetVirtualComponent)vc;
 		return original != null;
 	}
-
 }
