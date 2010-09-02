@@ -434,8 +434,9 @@ public final class PublishCopyUtil {
 
 		public IStatus[] touchResource(IPath path) {
 			File tmp = deployRootFolder.append(path).toFile();
-			if( tmp.exists())
-				tmp.setLastModified(new Date().getTime());
+			if( !tmp.exists())
+				tmp = deployRootFolder.toFile();
+			tmp.setLastModified(new Date().getTime());
 			return null;
 		}
 		

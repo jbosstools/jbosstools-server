@@ -91,6 +91,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		IPath file = root.append(path);
 		try {
 			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
+			if( !rf.exists()) {
+				rf = method.getFileServiceSubSystem().getRemoteFileObject(root.toString(), new NullProgressMonitor());
+			}
 			method.getFileServiceSubSystem().setLastModified(rf, new Date().getTime(), null);
 		} catch(SystemMessageException sme) {
 		}
