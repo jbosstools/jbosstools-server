@@ -23,10 +23,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
@@ -46,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
@@ -53,21 +52,13 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
-public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate {
+public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
-	static final char[] INVALID_CHARS = new char[] {'\\', '/', ':', '*', '?', '"', '<', '>', '|', '\0', '@', '&'};
-	static final String LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.startupConfiguration"; //$NON-NLS-1$
 	static final String DEFAULTS_SET = "jboss.defaults.been.set"; //$NON-NLS-1$
 	static final String START_JAR_LOC = IJBossRuntimeResourceConstants.BIN + Path.SEPARATOR + IJBossRuntimeResourceConstants.START_JAR;
 	static final String START_MAIN_TYPE = IJBossRuntimeConstants.START_MAIN_TYPE;
 	
-	public static ILaunchConfigurationWorkingCopy setupLaunchConfiguration(IServer server, String action) throws CoreException {
-		ILaunchConfigurationWorkingCopy config = createLaunchConfiguration(server);
-		setupLaunchConfiguration(config, server);
-		return config;
-	}
-
-	public static void setupLaunchConfiguration(
+	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
 		if(!workingCopy.getAttributes().containsKey(DEFAULTS_SET)) {
 			forceDefaultsSet(workingCopy, server);
@@ -282,55 +273,6 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate {
 		JBossServerBehavior jbossServerBehavior = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
 		return jbossServerBehavior;
 	}
-	
-	protected static String getValidLaunchConfigurationName(String s) {
-		if (s == null || s.length() == 0)
-			return "1"; //$NON-NLS-1$
-		int size = INVALID_CHARS.length;
-		for (int i = 0; i < size; i++) {
-			s = s.replace(INVALID_CHARS[i], '_');
-		}
-		return s;
-	}
-
-	/**
-	 * Will create a launch configuration for the server 
-	 * if one does not already exist. 
-	 */
-	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
-		ILaunchConfigurationType launchConfigType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(LAUNCH_TYPE);
-		if (launchConfigType == null)
-			return null;
-		
-		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfiguration[] launchConfigs = null;
-		try {
-			launchConfigs = launchManager.getLaunchConfigurations(launchConfigType);
-		} catch (CoreException e) {
-			// ignore
-		}
-		
-		if (launchConfigs != null) {
-			int size = launchConfigs.length;
-			for (int i = 0; i < size; i++) {
-				try {
-					String serverId = launchConfigs[i].getAttribute(AbstractJBossLaunchConfigType.SERVER_ID, (String) null);
-					if (server.getId().equals(serverId)) {
-						ILaunchConfigurationWorkingCopy wc = launchConfigs[i].getWorkingCopy();
-						return wc;
-					}
-				} catch (CoreException e) {
-				}
-			}
-		}
-		
-		// create a new launch configuration
-		String launchName = getValidLaunchConfigurationName(server.getName());
-		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
-		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		wc.setAttribute(AbstractJBossLaunchConfigType.SERVER_ID, server.getId());
-		return wc;
-	}	
 	
 	/* For "restore defaults" functionality */
 	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$

@@ -21,6 +21,9 @@
  */
 package org.jboss.ide.eclipse.as.ui.launch;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTabGroup;
@@ -53,19 +56,52 @@ import org.jboss.ide.eclipse.as.ui.xpl.JavaMainTabClone;
 public class JBossLaunchConfigurationTabGroup extends
 		AbstractLaunchConfigurationTabGroup {
 
+	/*
+	 * Unfortunately the jdt api does not allow me to add a set number
+	 * of tabs based on what is in the launch configuration already.
+	 * Each server type / launch config type must have a standard set of tabs.
+	 * This means that even a standard jboss server must have all tabs that might 
+	 * be used, whether they are used now or not. 
+	 *   Ex - if RSE is installed, all jboss servers need an RSE start / stop command tab
+	 */
+	
+	public static interface IJBossLaunchTabProvider {
+		public ILaunchConfigurationTab[] createTabs();
+	}
+	public static ArrayList<IJBossLaunchTabProvider> providers = 
+			new ArrayList<IJBossLaunchTabProvider>();
+	static {
+		providers.add(new JBossStandardTabProvider());
+	}
+	public static void addTabProvider(IJBossLaunchTabProvider provider) {
+		providers.add(provider);
+	}
+	
+	public static class JBossStandardTabProvider implements IJBossLaunchTabProvider {
+		public ILaunchConfigurationTab[] createTabs() {
+			ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
+					new JavaArgumentsTabExtension(),
+					new JavaMainTabExtension(),
+					new JavaClasspathTab(),
+					new SourceLookupTab(),
+					new EnvironmentTab(),
+					new CommonTab()
+			};
+			return tabs;
+		}
+	}
+	
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] {
-				new JavaArgumentsTabExtension(),
-				new JavaMainTabExtension(),
-				new JavaClasspathTab(),
-				new SourceLookupTab(),
-				new EnvironmentTab(),
-				new CommonTab()
-		};
-
-		for( int i = 0; i < tabs.length; i++ )
-			tabs[i].setLaunchConfigurationDialog(dialog);
-		setTabs(tabs);
+		Iterator<IJBossLaunchTabProvider> i = providers.iterator();
+		ArrayList<ILaunchConfigurationTab> tabs = new ArrayList<ILaunchConfigurationTab>();
+		while(i.hasNext()) {
+			ILaunchConfigurationTab[] tabs2 = i.next().createTabs();
+			for( int j = 0; j < tabs2.length; j++ ) {
+				tabs2[j].setLaunchConfigurationDialog(dialog);
+				tabs.add(tabs2[j]);
+			}
+		}
+		setTabs(tabs.toArray(new ILaunchConfigurationTab[tabs.size()]));
 	}
 	
 	public static Composite createComposite(Composite parent, Font font, int columns, int hspan, int fill) {
@@ -79,7 +115,7 @@ public class JBossLaunchConfigurationTabGroup extends
     }
 
 	
-	public class JavaMainTabExtension extends JavaMainTabClone {
+	public static class JavaMainTabExtension extends JavaMainTabClone {
 		public void createControl(Composite parent) {
 			Composite comp = createComposite(parent, parent.getFont(), 1, 1, GridData.FILL_BOTH);
 			((GridLayout)comp.getLayout()).verticalSpacing = 0;
@@ -114,7 +150,7 @@ public class JBossLaunchConfigurationTabGroup extends
 
 	}
 	
-	public class JavaArgumentsTabExtension extends JavaArgumentsTab {
+	public static class JavaArgumentsTabExtension extends JavaArgumentsTab {
 		private String originalHost=null;
 		private String originalConf=null;
 		public void initializeFrom(ILaunchConfiguration configuration) {

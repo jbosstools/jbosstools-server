@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
+import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -20,6 +21,7 @@ public class RSEUIPlugin implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		RSEUIPlugin.context = bundleContext;
 		DeploymentModuleOptionCompositeAssistant.addMapping(RSEPublishMethod.RSE_ID, new RSEDeploymentPageCallback());
+		JBossLaunchConfigurationTabGroup.addTabProvider(new RSELaunchTabProvider());
 	}
 
 	/*

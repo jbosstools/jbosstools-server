@@ -110,6 +110,7 @@ public class ArgsUtil {
 	}
 	
 	public static String setArg(String allArgs, String shortOpt, String longOpt, String value, boolean addQuotes ) {
+		String originalValue = value;
 		if( addQuotes ) 
 			value = QUOTE + value + QUOTE;
 		boolean found = false;
@@ -120,8 +121,15 @@ public class ArgsUtil {
 				args[i+1] = value;
 				retVal += args[i] + SPACE + args[++i] + SPACE;
 				found = true;
-			} else if( longOpt != null && args[i].startsWith(longOpt + EQ)) { 
-				args[i] = longOpt + EQ + value;
+			} else if( longOpt != null && 
+					(args[i].startsWith(longOpt + EQ) || args[i].startsWith(QUOTE + longOpt + EQ))) { 
+				String newVal = null;
+				if( args[i].startsWith(QUOTE)) {
+					newVal = QUOTE + longOpt + EQ + originalValue + QUOTE;
+				} else {
+					newVal = longOpt + EQ + value;
+				}
+				args[i] = newVal;
 				retVal += args[i] + SPACE;
 				found = true;
 			} else {

@@ -1,0 +1,233 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ * 
+ * TODO: Logging and Progress Monitors
+ ******************************************************************************/ 
+package org.jboss.ide.eclipse.as.rse.core;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.rse.core.RSECorePlugin;
+import org.eclipse.rse.core.model.IHost;
+import org.eclipse.rse.core.subsystems.ISubSystem;
+import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.shells.IHostOutput;
+import org.eclipse.rse.services.shells.IHostShell;
+import org.eclipse.rse.services.shells.IHostShellChangeEvent;
+import org.eclipse.rse.services.shells.IHostShellOutputListener;
+import org.eclipse.rse.services.shells.IShellService;
+import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
+import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+
+public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
+
+	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.STARTUP_COMMAND";
+	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.SHUTDOWN_COMMAND";
+	
+	public void actualLaunch(
+			JBossServerStartupLaunchConfiguration launchConfig,
+			ILaunchConfiguration configuration, String mode, ILaunch launch,
+			IProgressMonitor monitor) throws CoreException {
+		JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
+		beh.setServerStarting();
+		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
+		IShellService service = findShellService(beh);
+		try {
+			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
+			
+			// TODO clean this shit up. It works now, and this is great, but 
+			// lets handle the listener, make sure to remove it at the right time,
+			// check output for obvious errors, launch a poller, etc
+			hs.addOutputListener(new IHostShellOutputListener(){
+				public void shellOutputChanged(IHostShellChangeEvent event) {
+					IHostOutput[] out = event.getLines();
+					for(int i = 0; i < out.length; i++ ) {
+						System.out.println(out[i]);
+					}
+				}
+			});
+			int x = 0;
+			while( x < 30000) {
+				x+=1000;
+				try {
+					Thread.sleep(1000);
+				} catch(InterruptedException ie) {
+				}
+			}
+			
+			// Now launch ping thread
+		} catch(SystemMessageException sme) {
+			sme.printStackTrace();
+		}
+
+		beh.setServerStarted();
+	}
+
+	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
+		behaviour.setServerStopping();
+		IPath home = new Path(RSEUtils.getRSEHomeDir(behaviour.getServer()));
+		IPath shutdown = home.append(IJBossRuntimeResourceConstants.BIN)
+							.append(IJBossRuntimeResourceConstants.SHUTDOWN_SH);
+		String hostname = behaviour.getServer().getHost();
+		JBossServer jbs = ServerConverter.getJBossServer(behaviour.getServer());
+		
+		String user = jbs.getUsername();
+		String pass = jbs.getPassword(); 
+		IJBossRuntimeConstants rc = new IJBossRuntimeConstants() {};
+		final String command = shutdown.toString() + rc.SPACE + rc.SHUTDOWN_STOP_ARG + rc.SPACE
+						+ rc.SHUTDOWN_SERVER_ARG + rc.SPACE + hostname + rc.SPACE + rc.SHUTDOWN_USER_ARG 
+						+ rc.SPACE + user + rc.SPACE + rc.SHUTDOWN_PASS_ARG + rc.SPACE + pass;
+		IShellService service = findShellService(behaviour);
+		if( service != null ) {
+			final boolean[] saving = new boolean[1];
+			saving[0] = false;
+			final String[] output = new String[1];
+			output[0] = null;
+			try {
+				final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
+				hs.addOutputListener(new IHostShellOutputListener(){
+					public void shellOutputChanged(IHostShellChangeEvent event) {
+						IHostOutput[] out = event.getLines();
+						for(int i = 0; i < out.length; i++ ) {
+							if( saving[0] ) {
+								output[0] = out[i].getString();
+								saving[0] = false;
+								hs.exit();
+							}
+							/* 
+							 * This is an extreme hack, because for some reason, 
+							 * when the command line comes back, there's an extra space
+							 * "shutdown .sh"
+							 */
+							String outNoSpace = out[i].getString().replaceAll(" ", "");
+							String commandNoSpace = command.replaceAll(" ", "");
+							boolean contains = outNoSpace.contains(commandNoSpace);
+							if(!saving[0] && contains)
+								saving[0] = true;
+						}
+					}
+				});
+				
+				while(output[0] != null ) {
+					try {
+						Thread.sleep(200);
+					} catch(InterruptedException ie) {
+					}
+				}
+				// can log the output somewhere? 
+				behaviour.setServerStopped();
+//				if( output[0].contains("Exception in thread")) {
+//					behaviour.setServerStopped();
+//				} else {
+//					// launch ping thread? Just mark it stopped and trust the server to figure it out?
+//				}
+			} catch( SystemMessageException sme) {
+				// TODO
+				sme.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public boolean preLaunchCheck(ILaunchConfiguration configuration,
+			String mode, IProgressMonitor monitor) throws CoreException {
+		return true;
+	}
+
+	public void preLaunch(ILaunchConfiguration configuration, String mode,
+			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+	}
+
+	public void postLaunch(ILaunchConfiguration configuration, String mode,
+			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+	}
+
+	public void setupLaunchConfiguration(
+			ILaunchConfigurationWorkingCopy workingCopy, IServer server)
+			throws CoreException {
+		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		String currentStartupCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, (String)null);
+		if( currentStartupCmd == null || "".equals(currentStartupCmd)) {
+			// initialize startup command to something reasonable
+			String currentArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
+			String currentVMArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
+			
+			currentVMArgs= ArgsUtil.setArg(currentVMArgs, null,
+					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
+					new Path(rseHome).append(
+							IJBossRuntimeResourceConstants.LIB).append(
+									IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
+
+			
+			String cmd = "java " + currentVMArgs + "-classpath " + 
+				new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
+						IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE + 
+						IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
+			workingCopy.setAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, cmd);
+		}
+
+		String currentStopCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, (String)null);
+		if( currentStopCmd == null || "".equals(currentStopCmd)) {
+			JBossServer jbs = ServerConverter.getJBossServer(server);
+			// initialize stop command to something reasonable
+			String username = jbs.getUsername();
+			String pass = jbs.getPassword();
+			
+			String stop = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString() + 
+			IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_STOP_ARG + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG + 
+			IJBossRuntimeConstants.SPACE + server.getHost() + IJBossRuntimeConstants.SPACE +
+			IJBossRuntimeConstants.SHUTDOWN_USER_ARG + IJBossRuntimeConstants.SPACE + 
+			username + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_PASS_ARG + IJBossRuntimeConstants.SPACE + pass;
+			workingCopy.setAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, stop);
+		}
+		/*
+		 *   /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M -Xmx1530M 
+		 *   -XX:PermSize=425M -XX:MaxPermSize=425M -Dorg.jboss.resolver.warning=true 
+		 *   -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 
+		 *   -Djboss.partition.udpGroup=228.1.2.3 -Djboss.webpartition.mcast_port=45577 
+		 *   -Djboss.hapartition.mcast_port=45566 -Djboss.ejb3entitypartition.mcast_port=43333 
+		 *   -Djboss.ejb3sfsbpartition.mcast_port=45551 -Djboss.jvmRoute=node-10.209.183.100 
+		 *   -Djboss.gossip_port=12001 -Djboss.gossip_refresh=5000 -Djava.awt.headless=true 
+		 *   -Djava.net.preferIPv4Stack=true 
+		 *   -Djava.endorsed.dirs=/opt/jboss-eap-5.1.0.Beta/jboss-as/lib/endorsed 
+		 *   -classpath /opt/jboss-eap-5.1.0.Beta/jboss-as/bin/run.jar org.jboss.Main 
+		 *   -c default -b 10.209.183.100
+		 */
+	}
+	
+	protected static IShellService findShellService(JBossServerBehavior behaviour) {
+		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
+		IHost host = RSEUtils.findHost(connectionName);
+		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
+		for( int i = 0; i < systems.length; i++ ) {
+			if( systems[i] instanceof IShellServiceSubSystem)
+				return ((IShellServiceSubSystem)systems[i]).getShellService();
+		}
+		return null;
+	}
+
+}

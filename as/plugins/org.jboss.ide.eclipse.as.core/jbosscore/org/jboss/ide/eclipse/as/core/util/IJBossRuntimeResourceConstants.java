@@ -30,6 +30,7 @@ public interface IJBossRuntimeResourceConstants {
 
 	public static final String TWIDDLE_JAR = "twiddle.jar"; //$NON-NLS-1$
 	public static final String SHUTDOWN_JAR = "shutdown.jar"; //$NON-NLS-1$
+	public static final String SHUTDOWN_SH = "shutdown.sh"; //$NON-NLS-1$
 	public static final String START_JAR = "run.jar"; //$NON-NLS-1$
 	public static final String TOOLS_JAR = "tools.jar"; //$NON-NLS-1$
 	

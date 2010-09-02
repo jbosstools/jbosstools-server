@@ -18,6 +18,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -32,7 +33,7 @@ public class JSTPublisherXMLToucher {
 	}
 	
 	public interface IDescriptorToucher {
-		public void touchDescriptors(IPath moduleRoot);
+		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler);
 	}
 	
 	public static class PathDescriptorToucher implements IDescriptorToucher {
@@ -47,12 +48,10 @@ public class JSTPublisherXMLToucher {
 		public PathDescriptorToucher(IPath[] path) {
 			this.paths = path == null ? new IPath[0] : path;
 		}
-		public void touchDescriptors(IPath moduleRoot) {
+		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler) {
 			File tmp;
 			for( int i = 0; i < paths.length; i++ ) {
-				tmp = moduleRoot.append(paths[i]).toFile();
-				if( tmp.exists())
-					tmp.setLastModified(new Date().getTime());
+				handler.touchResource(paths[i]);
 			}
 		}
 	}
@@ -79,13 +78,13 @@ public class JSTPublisherXMLToucher {
 		map.put(typeId, toucher);
 	}
 	
-	public void touch(IPath root, IModule module) {
+	public void touch(IPath root, IModule module, IPublishCopyCallbackHandler handler) {
 		String id = module.getModuleType().getId();
 		IDescriptorToucher toucher = map.get(id);
 		if( toucher == null )
 			defaultTouch(root);
 		else
-			toucher.touchDescriptors(root);
+			toucher.touchDescriptors(root, handler);
 	}
 	
 	

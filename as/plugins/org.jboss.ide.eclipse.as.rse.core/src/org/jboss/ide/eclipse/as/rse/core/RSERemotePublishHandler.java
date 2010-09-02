@@ -14,16 +14,21 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.files.IHostFile;
+import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 
 public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
@@ -34,9 +39,14 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		this.root = path;
 		this.method = method;
 	}
+	private boolean shouldRestartModule = false;
+	public boolean shouldRestartModule() {
+		return shouldRestartModule;
+	}
 	public IStatus[] copyFile(IModuleFile mf, IPath path,
 			IProgressMonitor monitor) throws CoreException {
 		File file = PublishUtil.getFile(mf);
+		shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
 		IPath remotePath = root.append(path);
 		try {
 			method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
@@ -74,6 +84,16 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		}
 		createdFolders.add(toMake);
 		monitor.done();
+		return null;
+	}
+
+	public IStatus[] touchResource(IPath path) {
+		IPath file = root.append(path);
+		try {
+			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
+			method.getFileServiceSubSystem().setLastModified(rf, new Date().getTime(), null);
+		} catch(SystemMessageException sme) {
+		}
 		return null;
 	}
 }

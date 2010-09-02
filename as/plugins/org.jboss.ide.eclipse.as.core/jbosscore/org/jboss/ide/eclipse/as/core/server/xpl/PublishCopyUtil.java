@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.ProgressMonitor;
@@ -96,6 +97,19 @@ public final class PublishCopyUtil {
 		 * @return a list of error status objects. 
 		 */
 		public IStatus[] makeDirectoryIfRequired(IPath dir, IProgressMonitor monitor) throws CoreException;
+		
+		/**
+		 * Verify whether any changes made require a module restart
+		 * @return
+		 */
+		public boolean shouldRestartModule();
+		
+		/**
+		 * For touching / updating timestamp
+		 * @param path
+		 * @return
+		 */
+		public IStatus[] touchResource(IPath path);
 	}
 	
 	public static class LocalCopyCallback implements IPublishCopyCallbackHandler {
@@ -120,14 +134,9 @@ public final class PublishCopyUtil {
 			return shouldRestartModule;
 		}
 		
-		private void checkRestartModule(File file) {
-			if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
-				shouldRestartModule = true;
-		}
-		
 		public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
 			File file = PublishUtil.getFile(mf);
-			checkRestartModule(file);
+			shouldRestartModule |= checkRestartModule(file);
 			if( file != null ) {
 				InputStream in = null;
 				try {
@@ -422,6 +431,13 @@ public final class PublishCopyUtil {
 			deployRootFolder.append(relativeDir).toFile().mkdirs();
 			return new IStatus[] {Status.OK_STATUS};
 		}
+
+		public IStatus[] touchResource(IPath path) {
+			File tmp = deployRootFolder.append(path).toFile();
+			if( tmp.exists())
+				tmp.setLastModified(new Date().getTime());
+			return null;
+		}
 		
 	}
 
@@ -604,4 +620,11 @@ public final class PublishCopyUtil {
 		for (int i = 0; i < size; i++)
 			list.add(a[i]);
 	}
+	
+	public static boolean checkRestartModule(File file) {
+		if( file.getName().toLowerCase().endsWith(".jar")) //$NON-NLS-1$
+			return true;
+		return false;
+	}
+
 }

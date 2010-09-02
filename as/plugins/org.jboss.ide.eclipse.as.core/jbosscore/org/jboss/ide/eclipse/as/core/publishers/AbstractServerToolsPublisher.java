@@ -34,14 +34,12 @@ import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
@@ -205,8 +203,9 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		IPath deployPath = getDeployPath(moduleTree, server);
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		boolean forceZip = forceZipModule(moduleTree);
+		IPublishCopyCallbackHandler  handler = null;
 		if( !forceZip && !isBinaryObject) {
-			IPublishCopyCallbackHandler handler = getCallbackHandler(deployPath);
+			handler = getCallbackHandler(deployPath);
 			results = new PublishCopyUtil(handler).publishDelta(delta, ProgressMonitorUtil.submon(monitor, 100));
 		} else if( delta.length > 0 ) {
 			if( isBinaryObject)
@@ -219,7 +218,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 					File temp = File.createTempFile(module.getName(), ".tmp", localDeployRoot.toFile()); //$NON-NLS-1$
 					IPath tempFile = new Path(temp.getAbsolutePath());
 					PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile);
-					IPublishCopyCallbackHandler handler = getCallbackHandler(new Path("/"));		 //$NON-NLS-1$
+					handler = getCallbackHandler(new Path("/"));		 //$NON-NLS-1$
 					String parentFolder = deployPath.removeLastSegments(1).toString();
 					handler.makeDirectoryIfRequired(new Path(parentFolder), ProgressMonitorUtil.submon(monitor, 50));
 					ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
@@ -240,6 +239,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			return ms;
 		}
 		
+		if( handler != null && handler.shouldRestartModule() ) {
+			JSTPublisherXMLToucher.getInstance().touch(deployPath, module, handler);
+		}
+
 		IStatus ret = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FULL_SUCCESS, 
 				NLS.bind(Messages.CountModifiedMembers, PublishUtil.countChanges(delta), module.getName()), null);
 		return ret;

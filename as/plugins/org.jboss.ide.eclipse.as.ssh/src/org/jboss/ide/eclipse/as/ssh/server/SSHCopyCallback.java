@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.ssh.server.SSHServerBehaviourDelegate.SSHPublishMethod;
 
@@ -32,10 +33,15 @@ public class SSHCopyCallback implements IPublishCopyCallbackHandler {
 		this.root = deployRoot;
 		this.method = method;
 	}
-	
+	private boolean shouldRestartModule = false;
+	public boolean shouldRestartModule() {
+		return shouldRestartModule;
+	}
+
 	public IStatus[] copyFile(IModuleFile mf, IPath path,
 			IProgressMonitor monitor) throws CoreException {
 		File sourceFile = PublishUtil.getFile(mf);
+		shouldRestartModule |= PublishCopyUtil.checkRestartModule(sourceFile);
 		IPath destination = root.append(path);
 		String parentFolder = destination.removeLastSegments(1).toString();
 		SSHCommandUtil.launchCommand(getSession(), "mkdir -p " + parentFolder, new NullProgressMonitor());
@@ -65,5 +71,10 @@ public class SSHCopyCallback implements IPublishCopyCallbackHandler {
 			return new IStatus[]{ce.getStatus()};
 		}
 		return new IStatus[] {};
+	}
+
+	public IStatus[] touchResource(IPath path) {
+		// not implemented
+		return null;
 	}
 }

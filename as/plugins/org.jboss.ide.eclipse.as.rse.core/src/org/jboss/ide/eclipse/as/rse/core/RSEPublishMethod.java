@@ -88,21 +88,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(jbs));
 		this.remoteTemporaryFolder = new Path("/home/rob/redhat/tmp"); //$NON-NLS-1$
 		
-		IHost host = findHost(connectionName);
+		IHost host = RSEUtils.findHost(connectionName);
 		if( host != null ) {
 			fileSubSystem = findFileTransferSubSystem(host);
 		} else {
 			// TODO error host not found in RSE
 		}
-	}
-	
-	protected IHost findHost(String connectionName) {
-		IHost[] allHosts = RSECorePlugin.getTheSystemRegistry().getHosts();
-		for( int i = 0; i < allHosts.length; i++ ) {
-			if( allHosts[i].getAliasName().equals(connectionName))
-				return allHosts[i];
-		}
-		return null;
 	}
 	
 	/*  approved files subsystems *

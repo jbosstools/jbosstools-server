@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.rse.core.RSECorePlugin;
+import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -91,5 +93,13 @@ public class RSEUtils {
 		return p;
 	}
 
+	public static IHost findHost(String connectionName) {
+		IHost[] allHosts = RSECorePlugin.getTheSystemRegistry().getHosts();
+		for( int i = 0; i < allHosts.length; i++ ) {
+			if( allHosts[i].getAliasName().equals(connectionName))
+				return allHosts[i];
+		}
+		return null;
+	}
 	
 }

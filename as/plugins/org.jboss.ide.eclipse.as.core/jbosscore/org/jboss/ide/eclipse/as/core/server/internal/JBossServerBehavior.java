@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
 /**
@@ -30,7 +31,6 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	public static interface JBossBehaviourDelegate {
 		public void setActualBehaviour(JBossServerBehavior actualBehaviour);
 		public void stop(boolean force);
-		public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException;
 		public void publishStart(final IProgressMonitor monitor) throws CoreException;
 		public void publishFinish(final IProgressMonitor monitor) throws CoreException;
 		public void serverStarting();
@@ -78,8 +78,13 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		getDelegate().stop(force);
 	}
 	
+	/*
+	 * This shouldn't be done in the delegate. 
+	 * The launch config class directly should do it and allow all modes 
+	 * to participate? 
+	 */
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		getDelegate().setupLaunchConfiguration(workingCopy, monitor);
+		JBossServerStartupLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer());
 	}
 
 	public void setRunMode(String mode) {

@@ -20,7 +20,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.common.emfworkbench.integration,
  org.eclipse.jem.util,
  org.jboss.ide.eclipse.archives.webtools,
- org.eclipse.debug.core
+ org.eclipse.debug.core,
+ org.eclipse.jdt.launching,
+ org.eclipse.rse.subsystems.shells.core;bundle-version="3.1.100"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core

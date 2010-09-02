@@ -35,10 +35,6 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 	}
 
 	public abstract void stop(boolean force);
-	public abstract void setupLaunchConfiguration(
-			ILaunchConfigurationWorkingCopy workingCopy,
-			IProgressMonitor monitor) throws CoreException;
-
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
 	}
 
