@@ -590,13 +590,20 @@
             id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
             name="JMX Poller"
             supportsStartup="true"
-            supportsShutdown="false"/>
+            supportsShutdown="true"/>
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
             name="Process Terminated Poller"
             supportsShutdown="true"
             supportsStartup="false">
+      </serverPoller>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller"
+            id="org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"
+            name="Web Port Poller"
+            supportsShutdown="true"
+            supportsStartup="true">
       </serverPoller>
    </extension>
 
