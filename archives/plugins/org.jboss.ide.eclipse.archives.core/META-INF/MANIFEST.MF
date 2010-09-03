@@ -12,7 +12,7 @@ Require-Bundle: org.apache.ant,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.core.variables,
- org.jboss.tools.usage;bundle-version="1.0.0";resolution:=optional
+ org.jboss.tools.usage;resolution:=optional
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: archivescore.jar,
  archivescore-eclipse.jar,
