@@ -295,16 +295,15 @@ public final class PublishCopyUtil {
 		 * @return <code>true</code> if it succeeds, <code>false</code> otherwise
 		 */
 		private boolean safeRename(File from, File to, int retrys) {
-			boolean renamedSafely = false;
 			// make sure parent dir exists
 			File dir = to.getParentFile();
 			if (dir != null && !dir.exists())
 				dir.mkdirs();
 			
 			int count = 0;
-			while (count < retrys && !renamedSafely) {
+			while (count < retrys ) {
 				if (from.renameTo(to))
-					renamedSafely = true;
+					return true;
 				
 				count++;
 				// delay if we are going to try again
@@ -316,7 +315,7 @@ public final class PublishCopyUtil {
 					}
 				}
 			}
-			return renamedSafely;
+			return false;
 		}
 		
 		protected File getTempFolder() {
