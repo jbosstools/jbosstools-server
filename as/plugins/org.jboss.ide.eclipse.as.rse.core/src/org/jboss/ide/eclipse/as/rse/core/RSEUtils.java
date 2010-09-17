@@ -94,6 +94,7 @@ public class RSEUtils {
 	}
 
 	public static IHost findHost(String connectionName) {
+		// TODO ensure that all hosts are actually loaded, christ
 		IHost[] allHosts = RSECorePlugin.getTheSystemRegistry().getHosts();
 		for( int i = 0; i < allHosts.length; i++ ) {
 			if( allHosts[i].getAliasName().equals(connectionName))

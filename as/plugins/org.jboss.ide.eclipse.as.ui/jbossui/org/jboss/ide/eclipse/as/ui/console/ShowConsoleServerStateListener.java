@@ -22,8 +22,10 @@ import org.eclipse.wst.server.ui.internal.view.servers.ShowInConsoleAction;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class ShowConsoleServerStateListener extends UnitedServerListener {
 	private static ShowConsoleServerStateListener instance;
@@ -42,7 +44,9 @@ public class ShowConsoleServerStateListener extends UnitedServerListener {
 				if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
 					if( event.getServer().getServerState() == IServer.STATE_STARTING ) {
 						// do not launch console for remotes, for now
-						IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(jbs.getServer());
+						DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+						IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
+						//IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(jbs.getServer());
 						if( !type.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
 							return;
 						

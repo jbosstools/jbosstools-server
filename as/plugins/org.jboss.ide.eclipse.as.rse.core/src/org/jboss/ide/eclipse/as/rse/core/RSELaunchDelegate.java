@@ -15,8 +15,10 @@ package org.jboss.ide.eclipse.as.rse.core;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -55,21 +57,28 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
 		beh.setServerStarting();
 		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
-		IShellService service = findShellService(beh);
+		IShellService service = null;
 		try {
-			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
-			
-			// TODO clean this shit up. It works now, and this is great, but 
-			// lets handle the listener, make sure to remove it at the right time,
-			// check output for obvious errors, launch a poller, etc
-			hs.addOutputListener(new IHostShellOutputListener(){
-				public void shellOutputChanged(IHostShellChangeEvent event) {
-					IHostOutput[] out = event.getLines();
-					for(int i = 0; i < out.length; i++ ) {
-						System.out.println(out[i]);
-					}
+			service = findShellService(beh);
+		} catch(CoreException ce) {
+			beh.setServerStopped();
+			throw ce;
+		}
+		IHostShell hs = null;
+		IHostShellOutputListener listener = null;
+		listener = new IHostShellOutputListener(){
+			public void shellOutputChanged(IHostShellChangeEvent event) {
+				IHostOutput[] out = event.getLines();
+				for(int i = 0; i < out.length; i++ ) {
+					// TODO listen here for obvious exceptions or failures
+					System.out.println(out[i]);
 				}
-			});
+			}
+		};
+
+		try {
+			hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
+			hs.addOutputListener(listener);
 			int x = 0;
 			while( x < 30000) {
 				x+=1000;
@@ -82,8 +91,19 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			// Now launch ping thread
 		} catch(SystemMessageException sme) {
 			sme.printStackTrace();
+		} catch(RuntimeException re) {
+			String className = service.getClass().getName(); 
+			if(re instanceof NullPointerException && className.endsWith(".DStoreShellService")) {
+				beh.setServerStopped();
+				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+						"no remote daemon installed. Please install a remote daemon or use an RSE server configured for ssh rather than dstore"));
+			}
 		}
 
+		// Exiting the shell cancels the process. PROBLEM!!!
+//		if( hs != null ) {
+//			hs.exit();
+//		}
 		beh.setServerStarted();
 	}
 
@@ -101,53 +121,59 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		final String command = shutdown.toString() + rc.SPACE + rc.SHUTDOWN_STOP_ARG + rc.SPACE
 						+ rc.SHUTDOWN_SERVER_ARG + rc.SPACE + hostname + rc.SPACE + rc.SHUTDOWN_USER_ARG 
 						+ rc.SPACE + user + rc.SPACE + rc.SHUTDOWN_PASS_ARG + rc.SPACE + pass;
-		IShellService service = findShellService(behaviour);
-		if( service != null ) {
-			final boolean[] saving = new boolean[1];
-			saving[0] = false;
-			final String[] output = new String[1];
-			output[0] = null;
-			try {
-				final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
-				hs.addOutputListener(new IHostShellOutputListener(){
-					public void shellOutputChanged(IHostShellChangeEvent event) {
-						IHostOutput[] out = event.getLines();
-						for(int i = 0; i < out.length; i++ ) {
-							if( saving[0] ) {
-								output[0] = out[i].getString();
-								saving[0] = false;
-								hs.exit();
-							}
-							/* 
-							 * This is an extreme hack, because for some reason, 
-							 * when the command line comes back, there's an extra space
-							 * "shutdown .sh"
-							 */
-							String outNoSpace = out[i].getString().replaceAll(" ", "");
-							String commandNoSpace = command.replaceAll(" ", "");
-							boolean contains = outNoSpace.contains(commandNoSpace);
-							if(!saving[0] && contains)
-								saving[0] = true;
+		
+		IShellService service = null;
+		try {
+			service = findShellService(behaviour);
+		} catch(CoreException ce) {
+			// TODO log and return
+			return;
+		}
+		
+		final boolean[] saving = new boolean[1];
+		saving[0] = false;
+		final String[] output = new String[1];
+		output[0] = null;
+		try {
+			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
+			hs.addOutputListener(new IHostShellOutputListener(){
+				public void shellOutputChanged(IHostShellChangeEvent event) {
+					IHostOutput[] out = event.getLines();
+					for(int i = 0; i < out.length; i++ ) {
+						if( saving[0] ) {
+							output[0] = out[i].getString();
+							saving[0] = false;
+							hs.exit();
 						}
-					}
-				});
-				
-				while(output[0] != null ) {
-					try {
-						Thread.sleep(200);
-					} catch(InterruptedException ie) {
+						/* 
+						 * This is an extreme hack, because for some reason, 
+						 * when the command line comes back, there's an extra space
+						 * "shutdown .sh"
+						 */
+						String outNoSpace = out[i].getString().replaceAll(" ", "");
+						String commandNoSpace = command.replaceAll(" ", "");
+						boolean contains = outNoSpace.contains(commandNoSpace);
+						if(!saving[0] && contains)
+							saving[0] = true;
 					}
 				}
-				// can log the output somewhere? 
-				behaviour.setServerStopped();
-//				if( output[0].contains("Exception in thread")) {
-//					behaviour.setServerStopped();
-//				} else {
-//					// launch ping thread? Just mark it stopped and trust the server to figure it out?
-//				}
-			} catch( SystemMessageException sme) {
-				// TODO
-				sme.printStackTrace();
+			});
+			
+			while(output[0] != null ) {
+				try {
+					Thread.sleep(200);
+				} catch(InterruptedException ie) {
+				}
+			}
+			// can log the output somewhere? 
+			behaviour.setServerStopped();
+		} catch( SystemMessageException sme) {
+			// TODO
+			sme.printStackTrace();
+		} catch( RuntimeException re ) {
+			if( re instanceof NullPointerException && service.getClass().getName().equals("DStoreShellService")) {
+				// remote server has no dstore shell service
+				behaviour.setServerStopped(); // behaviour.setServerStarted(); // failed
 			}
 		}
 	}
@@ -219,15 +245,19 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		 */
 	}
 	
-	protected static IShellService findShellService(JBossServerBehavior behaviour) {
+	protected static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
 		IHost host = RSEUtils.findHost(connectionName);
+		if( host == null ) {
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+					"Host not found. Host may have been deleted or RSE model may not be completely loaded"));
+		}
 		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
 		for( int i = 0; i < systems.length; i++ ) {
 			if( systems[i] instanceof IShellServiceSubSystem)
 				return ((IShellServiceSubSystem)systems[i]).getShellService();
 		}
-		return null;
+		throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "No Shell Service Found"));
 	}
 
 }
