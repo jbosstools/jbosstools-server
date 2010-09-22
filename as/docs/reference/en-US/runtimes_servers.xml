@@ -65,6 +65,31 @@
 	    </imageobject>
 	 </mediaobject>
       </figure>
+      <para>
+	 The <guibutton>Export</guibutton> button opens the <guilabel>Export Preferences</guilabel> dialog. The <guilabel>Export all</guilabel> box will automatically be selected, however you can choose to only export specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the displayed list.
+      </para>
+      <figure>
+	 <title>JBoss Runtime search results</title>
+	 <mediaobject>
+	    <imageobject>
+	       <imagedata fileref="images/runtimes_servers/runtimes_servers-export_runtime_1.png"/>
+	    </imageobject>
+	 </mediaobject>
+      </figure>
+      <para>
+	 To export the preference settings you must specify a preference file that the information will be written to. This file, once exported, can be used to reapply your settings by clicking on the <guilabel>Import</guilabel> button. 
+      </para>
+      <para>
+	 The <guibutton>Import</guibutton> button opens the <guilabel>Import Preferences</guilabel> dialog. The <guilabel>Import all</guilabel> box will automatically be selected, however you can choose to only import specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the list that displays after using the <guibutton>Browse</guibutton> button to select your exported preference file (for example: preference_file.epf).
+      </para>
+      <figure>
+	 <title>JBoss Runtime search results</title>
+	 <mediaobject>
+	    <imageobject>
+	       <imagedata fileref="images/runtimes_servers/runtimes_servers-import_runtime_1.png"/>
+	    </imageobject>
+	 </mediaobject>
+      </figure>
    </section>
 
     <section id="InstNewRuntime">
