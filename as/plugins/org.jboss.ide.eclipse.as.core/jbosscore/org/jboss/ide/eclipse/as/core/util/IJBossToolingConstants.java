@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import org.eclipse.core.runtime.IPath;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 
 public interface IJBossToolingConstants {
 	/* Server runtime types */
@@ -67,8 +69,8 @@ public interface IJBossToolingConstants {
 	public static final String DEFAULT_PROPS_EAP_50 = "jboss.eap.50.default.ports.properties"; //$NON-NLS-1$
 	
 	// Poller constants
-	public static final String DEFAULT_STARTUP_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"; //$NON-NLS-1$
-	public static final String DEFAULT_SHUTDOWN_POLLER = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
+	public static final String DEFAULT_STARTUP_POLLER = WebPortPoller.WEB_POLLER_ID;
+	public static final String DEFAULT_SHUTDOWN_POLLER = ProcessTerminatedPoller.POLLER_ID;
 	
 	/* 
 	 * Property keys stored in the server object

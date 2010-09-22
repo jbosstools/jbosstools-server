@@ -17,6 +17,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class WebPortPoller implements IServerStatePoller {
 
+	public static final String WEB_POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
 	private IServer server;
 	private ServerStatePollerType type;
 	private boolean canceled, done;
