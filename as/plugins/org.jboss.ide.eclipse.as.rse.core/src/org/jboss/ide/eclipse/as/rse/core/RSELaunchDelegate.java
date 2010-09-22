@@ -36,6 +36,7 @@ import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShell
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
@@ -49,6 +50,9 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 
 	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.STARTUP_COMMAND";
 	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.SHUTDOWN_COMMAND";
+	public static final String DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_STARTUP_COMMAND";
+	public static final String DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_SHUTDOWN_COMMAND";
+	
 	
 	public void actualLaunch(
 			JBossServerStartupLaunchConfiguration launchConfig,
@@ -195,46 +199,18 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {
-		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		boolean detectStartupCommand, detectShutdownCommand;
+		detectStartupCommand = workingCopy.getAttribute(DETECT_STARTUP_COMMAND, true);
+		detectShutdownCommand = workingCopy.getAttribute(DETECT_SHUTDOWN_COMMAND, true);
+		
 		String currentStartupCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, (String)null);
-		if( currentStartupCmd == null || "".equals(currentStartupCmd)) {
-			// initialize startup command to something reasonable
-			String currentArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
-			String currentVMArgs = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
-			
-			currentVMArgs= ArgsUtil.setArg(currentVMArgs, null,
-					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
-					new Path(rseHome).append(
-							IJBossRuntimeResourceConstants.LIB).append(
-									IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
-
-			String libPath = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN)
-					.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
-			currentVMArgs= ArgsUtil.setArg(currentVMArgs, null,
-					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
-					libPath, true);
-
-			
-			String cmd = "java " + currentVMArgs + "-classpath " + 
-				new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
-						IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE + 
-						IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
-			workingCopy.setAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, cmd);
+		if( detectStartupCommand || currentStartupCmd == null || "".equals(currentStartupCmd)) {
+			workingCopy.setAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, getDefaultLaunchCommand(workingCopy));
 		}
 
 		String currentStopCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, (String)null);
-		if( currentStopCmd == null || "".equals(currentStopCmd)) {
-			JBossServer jbs = ServerConverter.getJBossServer(server);
-			// initialize stop command to something reasonable
-			String username = jbs.getUsername();
-			String pass = jbs.getPassword();
-			
-			String stop = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString() + 
-			IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_STOP_ARG + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG + 
-			IJBossRuntimeConstants.SPACE + server.getHost() + IJBossRuntimeConstants.SPACE +
-			IJBossRuntimeConstants.SHUTDOWN_USER_ARG + IJBossRuntimeConstants.SPACE + 
-			username + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_PASS_ARG + IJBossRuntimeConstants.SPACE + pass;
-			workingCopy.setAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, stop);
+		if( detectShutdownCommand || currentStopCmd == null || "".equals(currentStopCmd)) {
+			workingCopy.setAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, getDefaultStopCommand(server));
 		}
 		/*
 		 *   /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M -Xmx1530M 
@@ -249,6 +225,54 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		 *   -classpath /opt/jboss-eap-5.1.0.Beta/jboss-as/bin/run.jar org.jboss.Main 
 		 *   -c default -b 10.209.183.100
 		 */
+	}
+	
+	public static String getDefaultStopCommand(IServer server) {
+		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		JBossServer jbs = ServerConverter.getJBossServer(server);
+		// initialize stop command to something reasonable
+		String username = jbs.getUsername();
+		String pass = jbs.getPassword();
+		
+		String stop = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString() + 
+			IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_STOP_ARG + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG + 
+			IJBossRuntimeConstants.SPACE + server.getHost() + IJBossRuntimeConstants.SPACE +
+			IJBossRuntimeConstants.SHUTDOWN_USER_ARG + IJBossRuntimeConstants.SPACE + 
+			username + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_PASS_ARG + IJBossRuntimeConstants.SPACE + pass;
+		return stop;
+	}
+	
+	public static IServer findServer(ILaunchConfiguration config) throws CoreException {
+		String serverId = config.getAttribute("server-id", (String)null);
+		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(serverId);
+		return jbs.getServer();
+	}
+	
+	public static String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
+		IServer server = findServer(config);
+		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		// initialize startup command to something reasonable
+		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
+		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
+		
+		currentVMArgs= ArgsUtil.setArg(currentVMArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
+				new Path(rseHome).append(
+						IJBossRuntimeResourceConstants.LIB).append(
+								IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
+
+		String libPath = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN)
+				.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
+		currentVMArgs= ArgsUtil.setArg(currentVMArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
+				libPath, true);
+
+		
+		String cmd = "java " + currentVMArgs + "-classpath " + 
+			new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
+					IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE + 
+					IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
+		return cmd;
 	}
 	
 	protected static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {
