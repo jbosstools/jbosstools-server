@@ -37,61 +37,6 @@
           configuration to use.</para>
       </listitem>
     </itemizedlist>
-
-   <section id="Detecting_a_new_runtime">
-      <title>Detecting a new runtime</title>
-      <para>
-	 JBoss Tools features the ability to search, detect and add existing JBoss server runtimes installed on your system. If you don't have an existing runtime <xref linkend="InstNewRuntime"/> will guide you through the creation process. To begin searching for your existing JBoss runtime navigate to <menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Preferences</guimenuitem><guimenuitem>JBoss Tools</guimenuitem><guimenuitem>JBoss Runtimes</guimenuitem></menuchoice>.  
-      </para>
-      <figure>
-	 <title>Preference page for JBoss Runtimes</title>
-	 <mediaobject>
-	    <imageobject>
-	       <imagedata fileref="images/runtimes_servers/runtimes_servers-detecting_new_runtime_1.png"/>
-	    </imageobject>
-	 </mediaobject>
-      </figure>
-      <para>
-	 The JBoss Runtimes preference page allows you to perform three different actions: <guibutton>Search</guibutton> for a JBoss runtime installation, <guibutton>Export</guibutton> a JBoss runtime configuration and <guibutton>Import</guibutton> the configuration of a JBoss runtime.
-      </para>
-      <para>
-	 The <guibutton>Search</guibutton> button opens a file system browser window. Select a directory where you wish JBoss Tools to begin recursively searching for JBoss runtimes and upon completion it will return all those found. From the returned list, choose the runtimes you wish to make available to your JBoss Tools instance by clicking the box beside each runtime and clicking the <guibutton>OK</guibutton> button.
-      </para>
-      <figure>
-	 <title>JBoss Runtime search results</title>
-	 <mediaobject>
-	    <imageobject>
-	       <imagedata fileref="images/runtimes_servers/runtimes_servers-detecting_new_runtime_2.png"/>
-	    </imageobject>
-	 </mediaobject>
-      </figure>
-      <para>
-	 The <guibutton>Export</guibutton> button opens the <guilabel>Export Preferences</guilabel> dialog. The <guilabel>Export all</guilabel> box will automatically be selected, however you can choose to only export specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the displayed list.
-      </para>
-      <figure>
-	 <title>JBoss Runtime search results</title>
-	 <mediaobject>
-	    <imageobject>
-	       <imagedata fileref="images/runtimes_servers/runtimes_servers-export_runtime_1.png"/>
-	    </imageobject>
-	 </mediaobject>
-      </figure>
-      <para>
-	 To export the preference settings you must specify a preference file that the information will be written to. This file, once exported, can be used to reapply your settings by clicking on the <guilabel>Import</guilabel> button. 
-      </para>
-      <para>
-	 The <guibutton>Import</guibutton> button opens the <guilabel>Import Preferences</guilabel> dialog. The <guilabel>Import all</guilabel> box will automatically be selected, however you can choose to only import specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the list that displays after using the <guibutton>Browse</guibutton> button to select your exported preference file (for example: preference_file.epf).
-      </para>
-      <figure>
-	 <title>JBoss Runtime search results</title>
-	 <mediaobject>
-	    <imageobject>
-	       <imagedata fileref="images/runtimes_servers/runtimes_servers-import_runtime_1.png"/>
-	    </imageobject>
-	 </mediaobject>
-      </figure>
-   </section>
-
     <section id="InstNewRuntime">
       <title>Installing a new runtime</title>
       <para>You can install runtimes into eclipse from the <emphasis>
@@ -254,8 +199,72 @@
           ,make sure that necessary configuration is chosen,click <emphasis><property>Finish</property> </emphasis> and then  <emphasis><property>Save</property></emphasis> button.</para>
       </note>
     </section>
+    <section id="Detecting_an_existing_runtime">
+       <title>Detecting an existing runtime</title>
+       <para>
+       JBoss Tools features the ability to search, detect and add existing JBoss server runtimes installed on your system. If you don't have an existing runtime <xref linkend="InstNewRuntime"/> will guide you through the creation process. To begin searching for your existing JBoss runtime navigate to <menuchoice>
+	  <guimenuitem>Window</guimenuitem>
+	  <guimenuitem>Preferences</guimenuitem>
+	  <guimenuitem>JBoss Tools</guimenuitem>
+	  <guimenuitem>JBoss Runtimes</guimenuitem>
+       </menuchoice>.  
+    </para>
+    <figure>
+       <title>Preference page for JBoss Runtimes</title>
+       <mediaobject>
+	  <imageobject>
+	     <imagedata fileref="images/runtimes_servers/runtimes_servers-detecting_new_runtime_1.png"/>
+	  </imageobject>
+       </mediaobject>
+    </figure>
+    <para>
+       The JBoss Runtimes preference page allows you to perform three different actions: <guibutton>Search</guibutton> for a JBoss runtime installation, <guibutton>Export</guibutton> a JBoss runtime configuration and <guibutton>Import</guibutton> the configuration of a JBoss runtime.
+    </para>
+    <para>
+       The <guibutton>Search</guibutton> button opens a file system browser window. Select a directory where you wish JBoss Tools to begin recursively searching for JBoss runtimes and upon completion it will return all those found. From the returned list, choose the runtimes you wish to make available to your JBoss Tools instance by clicking the box beside each runtime and clicking the <guibutton>OK</guibutton> button.
+    </para>
+    <figure>
+       <title>JBoss Runtime search results</title>
+       <mediaobject>
+	  <imageobject>
+	       <imagedata fileref="images/runtimes_servers/runtimes_servers-detecting_new_runtime_2.png"/>
+	    </imageobject>
+	 </mediaobject>
+      </figure>
+   </section>
+    <section id="Exporting_and_Importing_runtime_preferences">
+       <title>Exporting and Importing runtime preferences</title>
+       <para>
+	 The <guimenuitem>JBoss Runtimes</guimenuitem> <guilabel>Preferences</guilabel> interface seen in <xref linkend="Detecting_an_existing_runtime"/> also allows you to export and import your runtime preferences. You can navigate to the page through <menuchoice><guimenuitem>Window</guimenuitem><guimenuitem>Preferences</guimenuitem><guimenuitem>JBoss Tools</guimenuitem><guimenuitem>JBoss Runtimes</guimenuitem></menuchoice>.
+       </para>
+       <para>
+	 The <guibutton>Export</guibutton> button opens the <guilabel>Export Preferences</guilabel> dialog. The <guilabel>Export all</guilabel> box will automatically be selected, however you can choose to only export specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the displayed list.
+       </para>
+       <figure>
+	  <title>Export Preferences dialog</title>
+	  <mediaobject>
+	     <imageobject>
+		<imagedata fileref="images/runtimes_servers/runtimes_servers-export_runtime_1.png"/>
+	     </imageobject>
+	  </mediaobject>
+       </figure>
+       <para>
+	  To export the preference settings you must specify a preference file that the information will be written to. This file, once exported, can be used to reapply your settings by clicking on the <guilabel>Import</guilabel> button. 
+       </para>
+       <para>
+	  The <guibutton>Import</guibutton> button opens the <guilabel>Import Preferences</guilabel> dialog. The <guilabel>Import all</guilabel> box will automatically be selected, however you can choose to only import specific preference settings (such as only those related to your JBoss runtime) by selecting individual entries from the list that displays after using the <guibutton>Browse</guibutton> button to select your exported preference file (for example: preference_file.epf).
+       </para>
+       <figure>
+	  <title>Import Preferences dialog</title>
+	  <mediaobject>
+	     <imageobject>
+		<imagedata fileref="images/runtimes_servers/runtimes_servers-import_runtime_1.png"/>
+	     </imageobject>
+	  </mediaobject>
+       </figure>
+    </section>
     <section id="CopyRuntime">
-      <title>Copying the existing runtime configuration</title>
+      <title>Duplicating a runtime configuration</title>
       <para>While installing a new runtime you can copy the configuration from the existing one.
         To do this you should perform all the steps in the <link linkend="InstNewRuntime">previous</link> section except pressing  <emphasis>
           <property>Finish</property></emphasis>
