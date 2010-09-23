@@ -97,7 +97,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	public static boolean makeDeployable(IPath workspaceRelative) {
 		boolean ret = getFactory().addModule(workspaceRelative);
-		getFactory().saveDeployableList();
+		getFactory().saveDeployableList(workspaceRelative.segment(0));
 		return ret;
 	}
 
@@ -107,7 +107,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	
 	public static void unmakeDeployable(IPath workspaceRelative) {
 		getFactory().removeModule(workspaceRelative);
-		getFactory().saveDeployableList();
+		getFactory().saveDeployableList(workspaceRelative.segment(0));
 	}
 
 	public static IModule findModule(IResource resource) {
@@ -166,6 +166,11 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		}
 	}
 
+	/**
+	 * Saves the deployable list for ALL files.
+	 * Should not be used
+	 * @deprecated
+	 */
 	public void saveDeployableList() {
 		HashMap<String, String> map = new HashMap<String, String>();
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
@@ -191,6 +196,29 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 			} catch (BackingStoreException e) {
 				// TODO Log
 			}
+		}
+	}
+	
+	public void saveDeployableList(String projectName) {
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		String list = ""; //$NON-NLS-1$
+		Set<IPath> allPaths = moduleIdToModule.keySet();
+		Iterator<IPath> j = allPaths.iterator();
+		IPath tmp;
+		while(j.hasNext()) {
+			tmp = j.next();
+			list += tmp.removeFirstSegments(1).makeRelative() + "\n"; //$NON-NLS-1$
+		}
+		
+		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
+		IScopeContext context = new ProjectScope(project);
+		IEclipsePreferences node = context.getNode(qualifier);
+		if (node != null)
+			node.put(PREFERENCE_KEY, list);
+		try {
+			node.flush();
+		} catch (BackingStoreException e) {
+			// TODO Log
 		}
 	}
 
