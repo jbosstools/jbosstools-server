@@ -14,12 +14,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
+import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -69,14 +73,13 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			child.setLayout(new GridLayout());
 			String current = modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, RSEUtils.RSE_SERVER_DEFAULT_HOST);
 			combo = new CustomSystemHostCombo(child, SWT.NULL, current, "files"); //$NON-NLS-1$
-					/* ISubSystemConfigurationCategories.SUBSYSTEM_CATEGORY_FILES*/ 
-					// "files");
 			comboMListener = new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					rseHostChanged();
 				}
 			};
 			combo.getCombo().addModifyListener(comboMListener);
+			
 			Label serverHomeLabel = new Label(this, SWT.NONE);
 			serverHomeLabel.setText("Remote Server Home: ");
 			rseBrowse = new Button(this, SWT.DEFAULT);
@@ -184,6 +187,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		public class CustomSystemHostCombo extends Composite implements ModifyListener, ISystemModelChangeListener {
 			private String fileSubSystem;
 			private Combo combo;
+			private Button newHost;
 			private IHost currentHost;
 			private String currentHostName;
 			private IHost[] hosts;
@@ -211,11 +215,28 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				setLayout(new FormLayout());
 				Label l = new Label(this, SWT.NONE);
 				l.setText("Host");
+				newHost = new Button(this, SWT.DEFAULT);
+				newHost.setText("New Host...");
+				newHost.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, null, 0, 100, -5));
+				newHost.addSelectionListener(new SelectionListener() {
+					public void widgetSelected(SelectionEvent e) {
+						newHostClicked();
+					}
+					public void widgetDefaultSelected(SelectionEvent e) {
+					}
+				});
+				
 				combo = new Combo(this, SWT.DEFAULT | SWT.READ_ONLY);
 				l.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 0, null, 0));
-				combo.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, l, 5, 100, -5));
+				combo.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, l, 5, newHost, -5));
 				refreshConnections();
 				combo.addModifyListener(this);
+			}
+			
+			protected void newHostClicked() {
+				RSEMainNewConnectionWizard newConnWizard = new RSEMainNewConnectionWizard();
+				WizardDialog d = new WizardDialog(getShell(), newConnWizard);
+				d.open();
 			}
 			
 			public IHost findHost(String name) {
