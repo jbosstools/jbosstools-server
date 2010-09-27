@@ -69,13 +69,13 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot);
 		IModule lastMod = module[module.length-1];
 		IPath destFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteRootFolder());
-		IPath tempDestFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteTemporaryFolder());
+		//IPath tempDestFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteTemporaryFolder());
 		String name = sourcePath.lastSegment();
 		
 		// Now transfer the file to RSE
 		try {
-			method2.getFileService().upload(sourcePath.toFile(), tempDestFolder.toString(), name, true, null, null, new NullProgressMonitor());
-			method2.getFileService().move(tempDestFolder.toString(), name, destFolder.toString(), name, new NullProgressMonitor());
+			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, new NullProgressMonitor());
+			//method2.getFileService().move(tempDestFolder.toString(), name, destFolder.toString(), name, new NullProgressMonitor());
 		} catch( SystemMessageException sme ) {
 			// TODO fix or return error
 			sme.printStackTrace();

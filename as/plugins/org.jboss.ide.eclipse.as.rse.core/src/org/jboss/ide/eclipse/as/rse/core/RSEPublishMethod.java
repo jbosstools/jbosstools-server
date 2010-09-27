@@ -16,7 +16,10 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
@@ -29,7 +32,9 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -46,53 +51,99 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	private IFileServiceSubSystem fileSubSystem = null;
 	private IPath remoteRootFolder;
-	private IPath remoteTemporaryFolder;
+	@Deprecated	private IPath remoteTemporaryFolder;
+	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
 		this.behaviour = behaviour;
 		loadRemoteDeploymentDetails();
+		ensureConnection(monitor);
+		if( getServer().getServerState() == IServer.STATE_STARTED ) {
+			stopDeploymentScanner();
+		}
+		super.publishStart(behaviour, monitor);
+	}
+	
+	public int publishFinish(DeployableServerBehavior behaviour,
+			IProgressMonitor monitor) throws CoreException {
+		if( getServer().getServerState() == IServer.STATE_STARTED ) {
+			startDeploymentScanner();
+		}
+		return super.publishFinish(behaviour, monitor);
+	}
+	
+	protected void startDeploymentScanner() {
+		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
+		RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+	}
+
+	protected void stopDeploymentScanner() {
+		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
+		RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+	}
+
+	protected String getDeploymentScannerCommand(IProgressMonitor monitor, boolean start) {
+		//   ./twiddle.sh -s localhost -u admin -p admin invoke 
+		//   jboss.deployment:flavor=URL,type=DeploymentScanner start
+		IPath home = new Path(RSEUtils.getRSEHomeDir(behaviour.getServer()));
+		IPath twiddle = home.append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.TWIDDLE_SH);
+
+		String cmd = twiddle.toString() + " -s " + getServer().getHost() + " -u " + getJBossServer().getUsername() 
+			+ " -p " + getJBossServer().getPassword() + " invoke jboss.deployment:flavor=URL,type=DeploymentScanner " 
+			+ (start ? "start" : "stop"); 
+		return cmd;
+	}
+
+	protected JBossServer getJBossServer() {
+		return (JBossServer)getServer().loadAdapter(JBossServer.class, new NullProgressMonitor());
+	}
+	
+	protected IServer getServer() {
+		return behaviour.getServer();
+	}
+	
+	private void ensureConnection(IProgressMonitor monitor) {
 		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
 		    try {
 		    	fileSubSystem.connect(monitor, false);
 		    } catch (Exception e) {
 		    }
 		}
-		super.publishStart(behaviour, monitor);
 	}
 	public IPath getRemoteRootFolder() {
 		return remoteRootFolder;
 	}
+	
+	@Deprecated
 	public IPath getRemoteTemporaryFolder() {
+		// This should not be used anymore. We do not need to upload and move the file if 
+		// deployment scanner is disabled
 		return remoteTemporaryFolder;
 	}
 	public IFileServiceSubSystem getFileServiceSubSystem() {
 		return fileSubSystem;
 	}
-	public IFileService getFileService() {
+	public IFileService getFileService() throws CoreException {
+		if( fileSubSystem == null ) {
+			try {
+				loadRemoteDeploymentDetails();
+			} catch(CoreException ce) {
+				// TODO log
+			}
+		}
 		return fileSubSystem.getFileService();
 	}
 	
-	public int publishFinish(DeployableServerBehavior behaviour,
-			IProgressMonitor monitor) throws CoreException {
-		return super.publishFinish(behaviour, monitor);
-	}
-	
 	protected void loadRemoteDeploymentDetails() throws CoreException{
-		// TODO obviously fix this
-//		String homeDir = RSEUtils.getRSEHomeDir(behaviour.getServer());
-//		String conf = RSEUtils.getRSEConfigName(behaviour.getServer());
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
-//		this.remoteRootFolder = new Path("/home/rob/redhat/deploy"); //$NON-NLS-1$
-//		this.remoteTemporaryFolder = new Path("/home/rob/redhat/tmp"); //$NON-NLS-1$
 		JBossServer jbs = ServerConverter.getJBossServer(behaviour.getServer());
 		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(jbs));
-		this.remoteTemporaryFolder = new Path("/home/rob/redhat/tmp"); //$NON-NLS-1$
 		
 		IHost host = RSEUtils.findHost(connectionName);
 		if( host != null ) {
 			fileSubSystem = findFileTransferSubSystem(host);
 		} else {
-			// TODO error host not found in RSE
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "RSE Host Not Found."));
 		}
 	}
 	

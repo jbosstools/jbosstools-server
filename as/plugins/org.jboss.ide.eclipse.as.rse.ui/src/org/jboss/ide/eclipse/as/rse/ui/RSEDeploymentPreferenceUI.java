@@ -156,7 +156,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				String oldVal = modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
 				if( !hostName.equals(oldVal) && !updatingFromModelChange) {
 					modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-							modeSection.getServer(), RSEUtils.RSE_SERVER_HOST, hostName, 
+							modeSection.getServer(), RSEUtils.RSE_SERVER_HOST, hostName, "localhost", 
 							"Change RSE Host"));
 					modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
 							modeSection.getServer(), "hostname", combo.getHost().getHostName(), 
@@ -168,7 +168,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		protected void serverHomeChanged() {
 			if( !updatingFromModelChange) {
 				modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-						modeSection.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
+						modeSection.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), getRuntime().getRuntime().getLocation().toString(),
 						"Change RSE Server's Home Directory"));
 			}
 		}
@@ -176,7 +176,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		protected void serverConfigChanged() {
 			if( !updatingFromModelChange ) {
 				modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-						modeSection.getServer(), RSEUtils.RSE_SERVER_CONFIG, rseServerConfig.getText(), 
+						modeSection.getServer(), RSEUtils.RSE_SERVER_CONFIG, rseServerConfig.getText(), getRuntime().getJBossConfiguration(),
 						"Change RSE Server's Configuration"));
 			}
 		}

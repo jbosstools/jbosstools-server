@@ -279,6 +279,14 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		return moduleIdToModule.get(path);
 	}
 	
+	@Override
+	public IModule findModule(String id) {
+		IModule s = super.findModule(id);
+		if( s == null && new Path(id).isAbsolute()) 
+			s = super.findModule(id.substring(1));
+		return s;
+	}
+	
 	protected boolean addModule(IPath path) {
 		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
 		if( resource != null && resource.exists() ) {

@@ -171,12 +171,17 @@ public class ServerModeSection extends ServerEditorSection {
 		private String oldVal;
 		private String newVal;
 		public ChangeServerPropertyCommand(IServerWorkingCopy server, String key, String val, String commandName) {
+			this(server, key, val, LocalPublishMethod.LOCAL_PUBLISH_METHOD, commandName);
+		}
+		
+		public ChangeServerPropertyCommand(IServerWorkingCopy server, String key, String val, String oldDefault, String commandName) {
 			super(server, commandName);
 			this.server = server;
 			this.key = key;
 			this.newVal = val;
-			this.oldVal = server.getAttribute(key, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			this.oldVal = server.getAttribute(key, oldDefault);
 		}
+		
 		public void execute() {
 			server.setAttribute(key, newVal);
 		}

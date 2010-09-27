@@ -111,6 +111,32 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		beh.setServerStarted();
 	}
 
+	public static void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
+		IShellService service = null;
+		try {
+			service = findShellService(behaviour);
+		} catch(CoreException ce) {
+			// TODO log and return
+			return;
+		}
+		try {
+			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
+			if( hs != null ) {
+				try {
+					Thread.sleep(delay);
+				} catch(InterruptedException ie) {
+					// ignore
+				}
+			}
+		} catch( SystemMessageException sme) {
+			// TODO
+			sme.printStackTrace();
+		} catch( RuntimeException re ) {
+			// TODO
+			re.printStackTrace();
+		}
+	}
+	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
 		behaviour.setServerStopping();
 		IPath home = new Path(RSEUtils.getRSEHomeDir(behaviour.getServer()));

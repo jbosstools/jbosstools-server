@@ -228,6 +228,10 @@ public class PublishUtil {
 	public static IModuleResource[] getResources(IModule module, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Fetching Module Resources", 100); //$NON-NLS-1$
 		ModuleDelegate md = (ModuleDelegate)module.loadAdapter(ModuleDelegate.class, ProgressMonitorUtil.submon(monitor, 100));
+		if( md == null ) {
+			// Deleted Module, TODO handle this differently!
+			return new IModuleResource[]{};
+		}
 		IModuleResource[] members = md.members();
 		monitor.done();
 		return members;
