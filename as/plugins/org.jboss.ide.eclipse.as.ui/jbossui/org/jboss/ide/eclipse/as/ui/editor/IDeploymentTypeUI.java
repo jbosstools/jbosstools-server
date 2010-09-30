@@ -10,10 +10,19 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.swt.widgets.Composite;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 
 public interface IDeploymentTypeUI {
+	
+	public interface IServerModeUICallback {
+		public IServerWorkingCopy getServer();
+		public IRuntime getRuntime();
+		public void execute(IUndoableOperation operation);
+	}
+	
 	/**
 	 * The parent in this call has no layout and is basically a positioned, 
 	 * but unconfigured, composite. 
@@ -27,5 +36,8 @@ public interface IDeploymentTypeUI {
 	 * @param parent
 	 * @param modeSection
 	 */
+	@Deprecated
 	public void fillComposite(Composite parent, ServerModeSection modeSection);
+	
+	public void fillComposite(Composite parent, IServerModeUICallback callback);
 }

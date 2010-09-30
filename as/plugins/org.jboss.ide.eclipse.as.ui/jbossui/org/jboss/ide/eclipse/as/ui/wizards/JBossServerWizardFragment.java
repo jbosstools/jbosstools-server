@@ -21,6 +21,8 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -28,6 +30,7 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -47,6 +50,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
+import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite;
 
 /**
  * 
@@ -68,13 +73,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 	
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
-		
-		Composite main = new Composite(parent, SWT.NONE);
-		main.setLayout(new FormLayout());
-		
-		createExplanationLabel(main);
-		createRuntimeGroup(main);
-
 		// make modifications to parent
 		handle.setTitle(Messages.swf_Title);
 		handle.setImageDescriptor (getImageDescriptor());
@@ -86,6 +84,14 @@ public class JBossServerWizardFragment extends WizardFragment {
 				version);
 		handle.setDescription(description);
 		
+		
+		Composite main = new Composite(parent, SWT.NONE);
+		main.setLayout(new FormLayout());
+		
+		createExplanationLabel(main);
+		createRuntimeGroup(main);
+		createBehaviourGroup(main);
+
 		return main;
 	}
 
@@ -152,6 +158,36 @@ public class JBossServerWizardFragment extends WizardFragment {
 		configValLabel = new Label(runtimeGroup, SWT.NONE);
 		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
 		configValLabel.setLayoutData(d);
+	}
+	
+	protected void createBehaviourGroup(Composite main) {
+		Group g = new Group(main, SWT.NONE);
+		g.setText("Server Behaviour");
+		FormData groupData = new FormData();
+		groupData.left = new FormAttachment(0,5);
+		groupData.right = new FormAttachment(100, -5);
+		groupData.top = new FormAttachment(runtimeGroup, 5);
+		groupData.bottom = new FormAttachment(100,-5);
+		g.setLayoutData(groupData);
+		
+		g.setLayout(new FillLayout());
+		Composite child = new ServerModeSectionComposite(g, SWT.NONE, new NewServerWizardBehaviourCallback());
+	}
+	
+	private class NewServerWizardBehaviourCallback implements IServerModeUICallback {
+		public IRuntime getRuntime() {
+			return (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		}
+		public IServerWorkingCopy getServer() {
+			return (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
+		}
+		public void execute(IUndoableOperation operation) {
+			try {
+				operation.execute(new NullProgressMonitor(), null);
+			} catch(ExecutionException  ee) {
+				// TODO
+			}
+		}
 	}
 	
 	private void updateErrorMessage() {

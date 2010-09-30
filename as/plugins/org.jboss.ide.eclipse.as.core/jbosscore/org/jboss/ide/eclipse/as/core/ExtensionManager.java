@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
@@ -244,15 +245,18 @@ public class ExtensionManager {
 				return publishMethods[i];
 		return null;
 	}
-	
-	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
+	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServerType type) {
 		ArrayList<IJBossServerPublishMethodType> list = new ArrayList<IJBossServerPublishMethodType>();
 		list.addAll(Arrays.asList(getPublishMethodTypes()));
 		Iterator<IJBossServerPublishMethodType> i = list.iterator();
 		while(i.hasNext()) {
-			if( !i.next().accepts(server.getServerType().getId()))
+			if( !i.next().accepts(type.getId()))
 				i.remove();
 		}
 		return list.toArray(new IJBossServerPublishMethodType[list.size()]);
+	}
+	
+	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
+		return findPossiblePublishMethods(server.getServerType());
 	}
 }

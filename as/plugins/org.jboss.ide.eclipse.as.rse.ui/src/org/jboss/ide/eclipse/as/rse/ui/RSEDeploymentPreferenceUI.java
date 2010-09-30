@@ -14,8 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
@@ -39,39 +37,45 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
-import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection.ChangeServerPropertyCommand;
+import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	public RSEDeploymentPreferenceUI() {
 		// Do nothing
 	}
 
-	@Override
+	@Override @Deprecated
 	public void fillComposite(Composite parent, ServerModeSection modeSection) {
-		parent.setLayout(new FillLayout());
-		new RSEDeploymentPreferenceComposite(parent, SWT.NONE, modeSection);
+		return;
 	}
 
+	@Override 
+	public void fillComposite(Composite parent, IServerModeUICallback callback) {
+		parent.setLayout(new FillLayout());
+		new RSEDeploymentPreferenceComposite(parent, SWT.NONE, callback);
+	}
+	
 	public static class RSEDeploymentPreferenceComposite extends Composite implements PropertyChangeListener {
-		private ServerModeSection modeSection;
+		private IServerModeUICallback callback;
 		private CustomSystemHostCombo combo;
 		private Text rseServerHome,rseServerConfig;
 		private Button rseBrowse;
 		private ModifyListener comboMListener;
-		public RSEDeploymentPreferenceComposite(Composite parent, int style, ServerModeSection modeSection) {
+		public RSEDeploymentPreferenceComposite(Composite parent, int style, IServerModeUICallback callback) {
 			super(parent, style);
-			this.modeSection = modeSection;
+			this.callback = callback;
 			setLayout(new FormLayout());
 			Composite child = new Composite(this, SWT.None);
 			child.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, 0, 5, 100, 0));
 			child.setLayout(new GridLayout());
-			String current = modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, RSEUtils.RSE_SERVER_DEFAULT_HOST);
+			String current = callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, RSEUtils.RSE_SERVER_DEFAULT_HOST);
 			combo = new CustomSystemHostCombo(child, SWT.NULL, current, "files"); //$NON-NLS-1$
 			comboMListener = new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
@@ -96,7 +100,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			rseServerHome = new Text(this, SWT.SINGLE | SWT.BORDER);
 			serverHomeLabel.setLayoutData(UIUtil.createFormData2(child, 7, null, 0, 0, 10, null, 0));
 			rseServerHome.setLayoutData(UIUtil.createFormData2(child, 5, null, 0, serverHomeLabel, 5, rseBrowse, -5));
-			rseServerHome.setText(modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, 
+			rseServerHome.setText(callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, 
 					getRuntime().getRuntime().getLocation().toString()));
 			rseServerHome.addModifyListener(new ModifyListener(){
 				public void modifyText(ModifyEvent e) {
@@ -108,19 +112,19 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			rseServerConfig= new Text(this, SWT.SINGLE | SWT.BORDER);
 			serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
 			rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, serverConfigLabel, 5, 100, -5));
-			rseServerConfig.setText(modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
+			rseServerConfig.setText(callback.getServer().getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
 					getRuntime().getJBossConfiguration()));
 			rseServerConfig.addModifyListener(new ModifyListener(){
 				public void modifyText(ModifyEvent e) {
 					serverConfigChanged();
 				}});
-			modeSection.getServer().addPropertyChangeListener(this);
+			callback.getServer().addPropertyChangeListener(this);
 		}
 		
 		@Override
 		public void dispose () {
 			super.dispose();
-			modeSection.getServer().removePropertyChangeListener(this);
+			callback.getServer().removePropertyChangeListener(this);
 		}
 
 		private boolean updatingFromModelChange = false;
@@ -150,19 +154,21 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		}
 		
 		protected IJBossServerRuntime getRuntime() {
-			return ServerConverter.getJBossRuntime(modeSection.getServer().getOriginal());
+			IRuntime rt = callback.getRuntime();
+			if( rt == null ) return null;
+			return (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
 		}
 		
 		protected void rseHostChanged() {
 			if( !updatingFromModelChange ) {
 				String hostName = combo.getHost() == null ? null : combo.getHost().getAliasName();
-				String oldVal = modeSection.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+				String oldVal = callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
 				if( !hostName.equals(oldVal) && !updatingFromModelChange) {
-					modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-							modeSection.getServer(), RSEUtils.RSE_SERVER_HOST, hostName, "localhost", 
+					callback.execute(new ChangeServerPropertyCommand(
+							callback.getServer(), RSEUtils.RSE_SERVER_HOST, hostName, "localhost", 
 							"Change RSE Host"));
-					modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-							modeSection.getServer(), "hostname", combo.getHost().getHostName(), 
+					callback.execute(new ChangeServerPropertyCommand(
+							callback.getServer(), "hostname", combo.getHost().getHostName(), 
 							"Change Hostname"));
 				}
 			}
@@ -170,16 +176,16 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		
 		protected void serverHomeChanged() {
 			if( !updatingFromModelChange) {
-				modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-						modeSection.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), getRuntime().getRuntime().getLocation().toString(),
+				callback.execute(new ChangeServerPropertyCommand(
+						callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), getRuntime().getRuntime().getLocation().toString(),
 						"Change RSE Server's Home Directory"));
 			}
 		}
 
 		protected void serverConfigChanged() {
 			if( !updatingFromModelChange ) {
-				modeSection.getCommandManager().execute(new ChangeServerPropertyCommand(
-						modeSection.getServer(), RSEUtils.RSE_SERVER_CONFIG, rseServerConfig.getText(), getRuntime().getJBossConfiguration(),
+				callback.execute(new ChangeServerPropertyCommand(
+						callback.getServer(), RSEUtils.RSE_SERVER_CONFIG, rseServerConfig.getText(), getRuntime().getJBossConfiguration(),
 						"Change RSE Server's Configuration"));
 			}
 		}

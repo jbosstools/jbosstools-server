@@ -52,6 +52,7 @@ public class ServerConverter {
 	}
 	
 	public static DeployableServerBehavior getDeployableServerBehavior(IServer server) {
+		if( server == null ) return null;
 		return (DeployableServerBehavior)server.loadAdapter(
 				DeployableServerBehavior.class, new NullProgressMonitor());
 	}
@@ -114,6 +115,7 @@ public class ServerConverter {
 	}
 
 	public static IJBossServerRuntime getJBossRuntime(IServerAttributes server) {
+		if( server == null ) return null;
 		IRuntime rt = server.getRuntime();
 		return (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
 	}
