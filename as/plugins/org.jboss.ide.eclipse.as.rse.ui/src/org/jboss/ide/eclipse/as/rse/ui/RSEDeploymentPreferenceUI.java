@@ -75,7 +75,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			Composite child = new Composite(this, SWT.None);
 			child.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, 0, 5, 100, 0));
 			child.setLayout(new GridLayout());
-			String current = callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, RSEUtils.RSE_SERVER_DEFAULT_HOST);
+			String current = discoverCurrentHost(callback);
 			combo = new CustomSystemHostCombo(child, SWT.NULL, current, "files"); //$NON-NLS-1$
 			comboMListener = new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
@@ -119,6 +119,22 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					serverConfigChanged();
 				}});
 			callback.getServer().addPropertyChangeListener(this);
+		}
+		
+		private String discoverCurrentHost(IServerModeUICallback callback) {
+			String current = callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+			if( current == null ) {
+				String serverHost = callback.getServer().getHost().toLowerCase();
+				IHost[] hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory("files");
+				String name, hostName;
+				for( int i = 0; i < hosts.length; i++ ) {
+					name = hosts[i].getName();
+					hostName = hosts[i].getHostName();
+					if( hosts[i].getHostName().toLowerCase().equals(serverHost))
+						return hosts[i].getName();
+				}
+			}
+			return current;
 		}
 		
 		@Override
