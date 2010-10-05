@@ -43,24 +43,39 @@ public class WebPortPoller implements IServerStatePoller {
 	
 	public void pollerRun() {
 		done = false;
-		String url = "http://"+getServer().getHost(); //$NON-NLS-1$
+		String url = getURL(getServer());
+		while(!canceled && !done) {
+			boolean up = onePing(url);
+			if( up ) {
+				done = true;
+				state = SERVER_UP;
+			}
+		}
+	}
+	
+	public static String getURL(IServer server) {
+		String url = "http://"+server.getHost(); //$NON-NLS-1$
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		int port = jbs.getJBossWebPort();
 		url += ":" + port; //$NON-NLS-1$
-
-		while(!canceled && !done) {
-			try {
-				URL pingUrl = new URL(url);
-				URLConnection conn = pingUrl.openConnection();
-				((HttpURLConnection)conn).getResponseCode();
-				done = true;
-				state = SERVER_UP;
-			} catch( FileNotFoundException fnfe ) {
-				done = true;
-				state = SERVER_UP;
-			} catch( Exception e) {
-			}
+		return url;
+	}
+	
+	public static boolean onePing(IServer server) {
+		return onePing(getURL(server));
+	}
+	
+	public static boolean onePing(String url) {
+		try {
+			URL pingUrl = new URL(url);
+			URLConnection conn = pingUrl.openConnection();
+			((HttpURLConnection)conn).getResponseCode();
+			return true;
+		} catch( FileNotFoundException fnfe ) {
+			return true;
+		} catch( Exception e) {
 		}
+		return false;
 	}
 	
 	public ServerStatePollerType getPollerType() {
