@@ -13,7 +13,10 @@ package org.jboss.ide.eclipse.archives.ui.providers;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -21,6 +24,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
@@ -32,6 +36,7 @@ import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.build.SaveArchivesJob;
+import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
@@ -79,6 +84,11 @@ public class ArchivesActionProvider extends CommonActionProvider {
 	}
 
 	public void fillContextMenu(IMenuManager manager) {
+		if (getContext() != null) {
+			enableBuildAction(buildAction, getContext().getSelection());
+		} else {
+			buildAction.setEnabled(false);
+		}
 		menuAboutToShow2(manager);
 	}
 
@@ -172,7 +182,26 @@ public class ArchivesActionProvider extends CommonActionProvider {
 		};
 	}
 
-
+	private void enableBuildAction(IAction action, ISelection selection) {
+		Object selected = null;
+		if( !selection.isEmpty() && selection instanceof IStructuredSelection ) {
+			Object o = ((IStructuredSelection)selection).getFirstElement();
+			if(o instanceof WrappedProject )
+				o = ((WrappedProject)o).getElement();
+			if( o instanceof IAdaptable ) {
+				IResource res = (IResource)  ((IAdaptable)o).getAdapter(IResource.class);
+				if( res != null ) {
+					selected = res.getProject();
+				}
+			}
+			if( o instanceof IArchiveNode )
+				selected = o;
+			boolean enabled = selected instanceof IArchiveNode
+					|| ArchivesModel.instance().canReregister(
+							((IProject) selected).getLocation());
+			action.setEnabled(enabled);
+		}
+	}
 
 
 	private void addContextMenuContributions (final IArchiveNode context, IMenuManager mgr) {
