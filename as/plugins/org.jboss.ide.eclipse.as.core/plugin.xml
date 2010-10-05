@@ -298,6 +298,10 @@
                 types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -338,6 +342,10 @@
                 types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
       </runtimeType>
       <runtimeType
              vendor="%providerName"
@@ -376,6 +384,10 @@
           </moduleType>
           <moduleType
                 types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+          <moduleType
+                types="bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
@@ -455,6 +467,10 @@
           </moduleType>
           <moduleType
                 types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+          <moduleType
+                types="bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
       </runtimeType>
