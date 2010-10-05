@@ -77,8 +77,10 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		if( createdFolders.contains(toMake)) 
 			return new IStatus[]{Status.OK_STATUS};
 		try {
-			method.getFileService().createFolder(toMake.removeLastSegments(1).toString(), 
-					toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
+			if( toMake.segmentCount() > 0 ) {
+				method.getFileService().createFolder(toMake.removeLastSegments(1).toString(), 
+						toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
+			}
 		} catch( SystemMessageException sme ) {
 			System.err.println("failed to make folder " + toMake.toString()); //$NON-NLS-1$
 		}
