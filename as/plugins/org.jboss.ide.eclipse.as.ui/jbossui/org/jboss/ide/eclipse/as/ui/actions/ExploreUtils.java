@@ -49,6 +49,9 @@ public class ExploreUtils {
 	}
 	
 	public static String getExploreFileCommand() {
+		exploreFileCommand = null;
+		exploreFolderCommandArray = null;
+		exploreFolderCommand = null;
 		if (exploreFileCommand == null) {
 			setExploreCommands();
 		}
@@ -120,7 +123,8 @@ public class ExploreUtils {
 			try {
 				if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS())) {
 					int len = exploreFolderCommandArray.length;
-					exploreFolderCommandArray[len-1] = name;
+					String name2 = file.isFile() ? new Path(name).removeLastSegments(1).toString() : name;
+					exploreFolderCommandArray[len-1] = name2;
 					Runtime.getRuntime().exec(exploreFolderCommandArray);
 				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
 					command = command.replace(ExploreUtils.PATH, name);
