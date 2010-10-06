@@ -86,6 +86,8 @@ public class ModuleActionProvider extends CommonActionProvider {
 				if (ExploreUtils.canExplore(server)) {
 					if (getDeployPath() != null) {
 						menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
+						boolean exists = getDeployPath().toFile().exists();
+						exploreAction.setEnabled(exists);
 					}
 				}
 			}
