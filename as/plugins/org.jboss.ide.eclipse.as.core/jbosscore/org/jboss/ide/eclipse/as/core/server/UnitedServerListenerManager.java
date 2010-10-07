@@ -54,6 +54,9 @@ public class UnitedServerListenerManager implements
 			}
 		}
 	}
+	public synchronized UnitedServerListener[] getListeners() {
+		return (UnitedServerListener[]) list.toArray(new UnitedServerListener[list.size()]);
+	}
 	
 	
 	private boolean isJBossServer(IServer server) {
@@ -72,7 +75,7 @@ public class UnitedServerListenerManager implements
 	}
 
 
-	public void addListener(UnitedServerListener listener) {
+	public synchronized void addListener(UnitedServerListener listener) {
 		if( !list.contains(listener)) {
 			list.add(listener);
 			IServer[] allServers = ServerCore.getServers();
@@ -83,7 +86,7 @@ public class UnitedServerListenerManager implements
 			}
 		}
 	}
-	public void removeListener(UnitedServerListener listener) {
+	public synchronized void removeListener(UnitedServerListener listener) {
 		list.remove(listener);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
@@ -99,16 +102,18 @@ public class UnitedServerListenerManager implements
 		}
 		server.addServerListener(this);
 		server.addPublishListener(this);
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) {
-			i.next().serverAdded(server);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].serverAdded(server);
 		}
 	}
 	public void serverChanged(IServer server) {
 		if (!isJBossServer(server)) {
 			return;
 		}
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) {
-			i.next().serverChanged(server);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].serverChanged(server);
 		}
 	}
 	public void serverRemoved(IServer server) {
@@ -117,8 +122,9 @@ public class UnitedServerListenerManager implements
 		}
 		server.removeServerListener(this);
 		server.removePublishListener(this);
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) {
-			i.next().serverRemoved(server);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].serverRemoved(server);
 		}
 	}
 	
@@ -127,8 +133,9 @@ public class UnitedServerListenerManager implements
 		if (!isJBossServer(server)) {
 			return;
 		}
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) {
-			i.next().serverChanged(event);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].serverChanged(event);
 		}
 	}
 
@@ -136,16 +143,19 @@ public class UnitedServerListenerManager implements
 		if (!isJBossServer(server)) {
 			return;
 		}
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) 
-			i.next().publishStarted(server);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].publishStarted(server);
+		}
 	}
 
 	public void publishFinished(IServer server, IStatus status) {
 		if (!isJBossServer(server)) {
 			return;
 		}
-		for( Iterator<UnitedServerListener> i = list.iterator(); i.hasNext(); ) 
-			i.next().publishFinished(server, status);
+		UnitedServerListener[] listeners = getListeners();
+		for( int i = 0; i < listeners.length; i++) {
+			listeners[i].publishFinished(server, status);
+		}
 	}
-	
 }
