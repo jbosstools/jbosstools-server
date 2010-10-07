@@ -103,21 +103,18 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 
 	public void createPartControl(Composite parent) {
 		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
-		Composite innerContent = createPageStructure(parent);
-		addDeploymentLocationControls(innerContent, null);
+		ScrolledForm innerContent = createPageStructure(parent);
+		addDeploymentLocationControls(innerContent.getBody(), null);
+		innerContent.reflow(true);
 	}
 	
-	private Composite createPageStructure(Composite parent) {
+	private ScrolledForm createPageStructure(Composite parent) {
 		FormToolkit toolkit = getFormToolkit(parent);
 		ScrolledForm allContent = toolkit.createScrolledForm(parent);
 		toolkit.decorateFormHeading(allContent.getForm());
 		allContent.setText("Deployment");
-		allContent.getBody().setLayout(new GridLayout());
-		Composite random = new Composite(allContent.getBody(), SWT.NONE);
-		GridData randomData = new GridData(GridData.FILL_BOTH);
-		random.setLayoutData(randomData);
-		random.setLayout(new FormLayout());
-		return random;
+		allContent.getBody().setLayout(new FormLayout());
+		return allContent;
 	}
 	
 	private void addDeploymentLocationControls(Composite parent, Control top) {
@@ -142,9 +139,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		fd.bottom = new FormAttachment(100, -5);
 		viewComposite.setLayoutData(fd);
 	}
-	
-	
-	
+
 	public void execute(ServerCommand command) {
 		commandManager.execute(command);
 	}
