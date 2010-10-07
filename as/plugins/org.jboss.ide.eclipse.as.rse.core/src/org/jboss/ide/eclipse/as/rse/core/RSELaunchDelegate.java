@@ -302,7 +302,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 				libPath, true);
 
 		
-		String cmd = "java " + currentVMArgs + "-classpath " + 
+		String cmd = "java " + currentVMArgs + " -classpath " + 
 			new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
 					IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE + 
 					IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
