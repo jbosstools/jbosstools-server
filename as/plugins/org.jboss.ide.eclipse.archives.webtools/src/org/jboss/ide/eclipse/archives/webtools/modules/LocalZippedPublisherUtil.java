@@ -262,7 +262,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 				IModuleFile mf = (IModuleFile)children[i];
 				java.io.File source = getFile(mf);
 				de.schlichtherle.io.File destination = getFileInArchive(root, mf.getModuleRelativePath().append(mf.getName()));
-				boolean b = new de.schlichtherle.io.File(source).copyAllTo(destination);
+				boolean b = new de.schlichtherle.io.File(source).archiveCopyAllTo(destination);
 				if( !b )
 					results.add(generateCopyFailStatus(source, destination));
 			} else if( children[i] instanceof IModuleFolder ) {
