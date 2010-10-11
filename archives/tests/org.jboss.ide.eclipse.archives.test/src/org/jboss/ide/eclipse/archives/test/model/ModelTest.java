@@ -27,39 +27,32 @@ import org.jboss.ide.eclipse.archives.jdt.integration.model.LibFileSetNodeProvid
  *
  */
 public abstract class ModelTest extends TestCase {
-	protected static IArchiveNodeFactory getFactory() {
+	public static IArchiveNodeFactory getFactory() {
 		return ArchivesCore.getInstance().getNodeFactory();
 	}
 	/*
 	 * Utility methods
 	 */
-	protected IArchiveFolder createFolder(String name) {
+	public static IArchiveFolder createFolder(String name) {
 		IArchiveFolder folder = getFactory().createFolder();
 		folder.setName(name);
 		return folder;
 	}
 	
-	protected IArchiveStandardFileSet createFileSet(String includes, String path) {
+	public static IArchiveStandardFileSet createFileSet(String includes, String path) {
 		IArchiveStandardFileSet fs = getFactory().createFileset();
 		fs.setIncludesPattern(includes);
 		fs.setRawSourcePath( path );
 		return fs;
 	}
 	
-	protected IArchiveFileSet createLibFileSet(String name) {
+	public static IArchiveFileSet createLibFileSet(String name) {
 		ArchiveLibFileSetImpl lfsi = LibFileSetNodeProvider.createLibFileset();
 		lfsi.setId(name);
 		return lfsi;
 	}
-
-//	protected IArchiveAction createAction() {
-//		IArchiveAction action = ArchiveNodeFactory.createAction();
-//		action.setTime(IArchiveAction.POST_BUILD);
-//		action.setType("ant");
-//		return action;
-//	}
 	
-	protected IArchive createArchive(String name, String dest) {
+	public static IArchive createArchive(String name, String dest) {
 		IArchive archive = getFactory().createArchive();
 		archive.setName(name);
 		archive.setDestinationPath(new Path(dest));

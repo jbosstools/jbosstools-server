@@ -57,7 +57,7 @@ public class TrueZipUtil {
 
 	public static boolean copyFile(String source, de.schlichtherle.io.File file) {
 		file.getParentFile().mkdirs();
-		boolean b = new de.schlichtherle.io.File(source).copyAllTo(file);
+		boolean b = new de.schlichtherle.io.File(source).archiveCopyAllTo(file);
 	    return b && updateParentTimestamps(file);
 	}
 
@@ -143,7 +143,7 @@ public class TrueZipUtil {
 	}
 	public static boolean updateParentTimestamps(de.schlichtherle.io.File file) {
 		long time = System.currentTimeMillis();
-		de.schlichtherle.io.File parent = file.getEnclArchive();
+		de.schlichtherle.io.File parent = file;
 		boolean b = true;
 		while( parent != null ) {
 			b &= parent.setLastModified(time);

@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.archives.test.model.ModelTruezipBridgeTest;
 import org.jboss.ide.eclipse.archives.test.model.ModelUtilTest;
 import org.jboss.ide.eclipse.archives.test.model.XBMarshallTest;
 import org.jboss.ide.eclipse.archives.test.model.XBUnmarshallTest;
+import org.jboss.ide.eclipse.archives.test.projects.InnerZipResourceTimestampTest;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE1406Test;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE2099Test;
 import org.jboss.ide.eclipse.archives.test.projects.JBIDE2296Test;
@@ -52,7 +53,7 @@ public class ArchivesTestSuite extends TestSuite {
         suite.addTestSuite(JBIDE2311Test.class);
         suite.addTestSuite(JBIDE2315Test.class);
         suite.addTestSuite(JBIDE2439Test.class);
-        
+        suite.addTestSuite(InnerZipResourceTimestampTest.class);
         
         // UI
         suite.addTestSuite(BuildActionTest.class);
