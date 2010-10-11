@@ -130,8 +130,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				for( int i = 0; i < hosts.length; i++ ) {
 					name = hosts[i].getName();
 					hostName = hosts[i].getHostName();
-					if( hosts[i].getHostName().toLowerCase().equals(serverHost))
+					if( hosts[i].getHostName().toLowerCase().equals(serverHost)) {
+						callback.getServer().setAttribute(RSEUtils.RSE_SERVER_HOST, hosts[i].getName());
 						return hosts[i].getName();
+					}
 				}
 			}
 			return current;

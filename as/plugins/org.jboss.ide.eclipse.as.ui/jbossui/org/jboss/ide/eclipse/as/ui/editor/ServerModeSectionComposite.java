@@ -68,12 +68,17 @@ public class ServerModeSectionComposite extends Composite {
 			current = ds.createPublishMethod().getPublishMethodType().getName();
 		} else {
 			String host = callback.getServer().getHost();
+			IJBossServerPublishMethodType behType = null;
 			if( SocketUtil.isLocalhost(host)) {
-				current = ExtensionManager.getDefault().getPublishMethod(LocalPublishMethod.LOCAL_PUBLISH_METHOD).getName();
+				behType = ExtensionManager.getDefault().getPublishMethod(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 			} else {
 				// socket is not localhost, hard code this for now
-				current = ExtensionManager.getDefault().getPublishMethod("rse").getName();
+				behType = ExtensionManager.getDefault().getPublishMethod("rse");
 			}
+			current = behType.getName();
+			callback.execute(new ChangeServerPropertyCommand(
+					callback.getServer(), IDeployableServer.SERVER_MODE, 
+					behType.getId(), "Change server mode"));
 		}
 		if( current != null ) {
 			int index = deployTypeCombo.indexOf(current);
