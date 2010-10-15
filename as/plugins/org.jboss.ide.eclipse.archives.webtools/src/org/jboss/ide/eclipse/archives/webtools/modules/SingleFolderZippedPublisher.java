@@ -7,23 +7,27 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
+ * 
+ * TODO: Logging and Progress Monitors
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.rse.core;
+package org.jboss.ide.eclipse.archives.webtools.modules;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
+import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
-@Deprecated
-public class RSESingleFilePublisher extends AbstractServerToolsPublisher {
-
+public class SingleFolderZippedPublisher extends WTPZippedPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
-//		if( RSEPublishMethod.RSE_ID.equals(method) 
-//				&& module != null && module.length > 0 
-//				&& module[module.length-1] != null  
-//				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE))
-//			return true;
+		if( module != null && module.length > 0 
+				&& module[module.length-1] != null  
+				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE)) {
+			IModule mod = module[module.length-1];
+			IJBTModule del = (IJBTModule)mod.loadAdapter(IJBTModule.class, new NullProgressMonitor());
+			if( del != null && !del.isBinary())
+				return true; // we have a folder
+		}
 		return false;
 	}
 }

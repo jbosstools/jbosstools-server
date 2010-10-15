@@ -95,6 +95,11 @@
             priority="2"
             zipDelegate="true">
       </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.SingleFolderZippedPublisher"
+            priority="2"
+            zipDelegate="true">
+      </publisher>
    </extension>
 
 

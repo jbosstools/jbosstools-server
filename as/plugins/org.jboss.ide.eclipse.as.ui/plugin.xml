@@ -196,7 +196,7 @@
        adaptable="true"
        id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.contrib"
        nameFilter="*"
-       objectClass="org.eclipse.core.resources.IFile">
+       objectClass="org.eclipse.core.resources.IResource">
       <action
          id="org.jboss.ide.eclipse.as.ui.popups.makeDeployable.action"
          label="Make Publishable"

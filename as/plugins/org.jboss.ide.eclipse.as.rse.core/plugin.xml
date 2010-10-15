@@ -13,6 +13,7 @@
    </extension>
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
+<!--
       <publisher
             class="org.jboss.ide.eclipse.as.rse.core.RSESingleFilePublisher"
             priority="7">
@@ -21,9 +22,15 @@
             class="org.jboss.ide.eclipse.as.rse.core.RSEJSTPublisher"
             priority="5">
       </publisher>
+-->
       <publisher
             class="org.jboss.ide.eclipse.as.rse.core.archives.RSEZippedJSTPublisher"
             priority="3"
+            zipDelegate="true">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.rse.core.archives.RSEZippedFolderPublisher"
+            priority="8"
             zipDelegate="true">
       </publisher>
    </extension>

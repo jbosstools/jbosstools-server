@@ -15,6 +15,7 @@ package org.jboss.ide.eclipse.as.rse.core;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractJSTPublisher;
 
 
+@Deprecated
 public class RSEJSTPublisher extends AbstractJSTPublisher {
 
 	@Override

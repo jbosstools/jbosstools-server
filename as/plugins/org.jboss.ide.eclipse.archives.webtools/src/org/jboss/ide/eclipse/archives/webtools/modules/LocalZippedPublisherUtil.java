@@ -1,3 +1,14 @@
+/******************************************************************************* 
+ * Copyright (c) 2010 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ * 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.archives.webtools.modules;
 
 import java.io.File;
@@ -36,21 +47,12 @@ import de.schlichtherle.io.ArchiveDetector;
 
 public class LocalZippedPublisherUtil extends PublishUtil {
 	
-	private IServer server;
 	private String deployRoot;
-	private IModule[] module;
-	private int publishType;
-	private IModuleResourceDelta[] delta;
 	
 	public IStatus publishModule(IServer server, String deployRoot, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
-		this.server = server;
 		this.deployRoot = deployRoot;
-		this.module = module;
-		this.publishType = publishType;
-		this.delta = delta;
-		
 		IStatus[] returnStatus;
 		
 		

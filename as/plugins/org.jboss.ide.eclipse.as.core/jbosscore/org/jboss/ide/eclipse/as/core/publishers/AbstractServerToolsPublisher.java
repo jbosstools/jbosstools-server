@@ -156,7 +156,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		// First delete it
 		// if the module we're publishing is a project, not a binary, clean it's folder
-		if( !(new Path(module.getName()).segmentCount() > 1 ))
+		//if( !(new Path(module.getName()).segmentCount() > 1 ))
+		if( !ServerModelUtilities.isBinaryModule(module))
 			callback.deleteResource(new Path("/"), ProgressMonitorUtil.submon(monitor, 100)); //$NON-NLS-1$
 
 		if( monitor.isCanceled())

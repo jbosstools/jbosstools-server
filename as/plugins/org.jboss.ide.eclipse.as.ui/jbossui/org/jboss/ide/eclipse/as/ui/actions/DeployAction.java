@@ -24,7 +24,7 @@ package org.jboss.ide.eclipse.as.ui.actions;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -89,7 +89,7 @@ public class DeployAction implements IObjectActionDelegate {
 				return false;
 			Iterator i = sel.iterator();
 			while(i.hasNext())
-				if( !(i.next() instanceof IFile ))
+				if( !(i.next() instanceof IResource ))
 					return false;
 		}
 		return true;
@@ -101,7 +101,7 @@ public class DeployAction implements IObjectActionDelegate {
 		return Messages.ActionDelegateMakeDeployable;
 	}
 	
-	// True if we want to unpublish, false if we wantt to publish
+	// True if we want to unpublish, false if we want to publish
 	protected boolean verifyType() {
 		if( selection instanceof IStructuredSelection ) {
 			IStructuredSelection sel = (IStructuredSelection)selection;
@@ -111,7 +111,7 @@ public class DeployAction implements IObjectActionDelegate {
 			Object o;
 			while(i.hasNext()) {
 				o = i.next();
-				if( !(o instanceof IFile) || SingleDeployableFactory.findModule(((IFile)o).getFullPath()) == null)
+				if( !(o instanceof IResource) || SingleDeployableFactory.findModule(((IResource)o).getFullPath()) == null)
 					return false;
 			}
 		}
@@ -136,8 +136,8 @@ public class DeployAction implements IObjectActionDelegate {
 		Object[] objs = sel2.toArray();
 		IModule[] modules = new IModule[objs.length];
 		for( int i = 0; i < objs.length; i++ ) {
-			SingleDeployableFactory.makeDeployable(((IFile)objs[i]).getFullPath());
-			modules[i] = SingleDeployableFactory.findModule(((IFile)objs[i]).getFullPath());
+			SingleDeployableFactory.makeDeployable(((IResource)objs[i]).getFullPath());
+			modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
 		}
 		
 		tryToPublish();
@@ -148,8 +148,8 @@ public class DeployAction implements IObjectActionDelegate {
 		Object[] objs = sel2.toArray();
 		ArrayList<IPath> paths = new ArrayList<IPath>();
 		for( int i = 0; i < objs.length; i++ )
-			if(objs[i] instanceof IFile )
-				paths.add(((IFile)objs[i]).getFullPath());
+			if(objs[i] instanceof IResource )
+				paths.add(((IResource)objs[i]).getFullPath());
 		new UndeployFromServerJob(paths).schedule();
 	}
 	
@@ -182,7 +182,7 @@ public class DeployAction implements IObjectActionDelegate {
 			} else {
 				IModule[] modules = new IModule[objs.length];
 				for( int i = 0; i < objs.length; i++ ) {
-					modules[i] = SingleDeployableFactory.findModule(((IFile)objs[i]).getFullPath());
+					modules[i] = SingleDeployableFactory.findModule(((IResource)objs[i]).getFullPath());
 				}
 				try {
 					IServerWorkingCopy copy = server.createWorkingCopy();
@@ -204,7 +204,7 @@ public class DeployAction implements IObjectActionDelegate {
 	
 	protected boolean allFiles(Object[] objs) {
 		for( int i = 0; i < objs.length; i++ ) 
-			if( !(objs[i] instanceof IFile) )
+			if( !(objs[i] instanceof IResource) )
 				return false;
 		return true;
 	}

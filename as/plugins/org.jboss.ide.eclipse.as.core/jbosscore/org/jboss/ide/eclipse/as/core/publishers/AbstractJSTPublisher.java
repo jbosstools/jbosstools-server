@@ -24,12 +24,21 @@ public abstract class AbstractJSTPublisher extends AbstractServerToolsPublisher 
 	 * This abstract publisher is only suitable for non force-zipped deployments
 	 */
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( module == null || !method.equals(getTargetedPublishMethodId()))
+		if( module == null || (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
 			return false;
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		return ds != null 
 			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
 			&& !ds.zipsWTPDeployments();
+	}
+	
+	/**
+	 * Return true if this publisher requires a specific 
+	 * publish method / publish method id. 
+	 * Clients are expected to override
+	 */
+	protected boolean publishMethodSpecific() {
+		return false;
 	}
 	
 	/**

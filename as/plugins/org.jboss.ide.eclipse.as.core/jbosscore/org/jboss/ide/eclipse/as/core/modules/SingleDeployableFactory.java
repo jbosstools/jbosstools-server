@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -45,9 +47,9 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ModuleFactory;
-import org.eclipse.wst.server.core.internal.ModuleFile;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
 import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
@@ -116,8 +118,6 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public static IModule findModule(IPath workspaceRelative) {
 		return getFactory().getModule(workspaceRelative);
 	}
-	
-	
 	
 	private HashMap<IPath, IModule> moduleIdToModule;
 	private HashMap<IModule, SingleDeployableModuleDelegate> moduleToDelegate;
@@ -317,20 +317,33 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public class SingleDeployableModuleDelegate extends ModuleDelegate implements IJBTModule {
 		private IPath global;
 		private IPath workspaceRelative;
+		private IResource resource;
 		public SingleDeployableModuleDelegate(IPath workspaceRelative) {
 			this.workspaceRelative = workspaceRelative;
-			IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(workspaceRelative);
-			global = res.getLocation();
+			resource = ResourcesPlugin.getWorkspace().getRoot().findMember(workspaceRelative);
+			global = resource.getLocation();
 		}
 		public IModule[] getChildModules() {
 			return new IModule[0];
 		}
 
 		public IModuleResource[] members() throws CoreException {
-			return new IModuleResource[] { 
-					new ModuleFile(global.toFile(), 
-					global.lastSegment(), 
-					global.removeLastSegments(1)) };
+			if( isBinary() && resource instanceof IFile) {
+				IModuleResource resource2 = ResourceModuleResourceUtil.createResource(resource);
+				return new IModuleResource[]{resource2};
+			}
+			/*
+			 * Single deployable modules that are folders are not treated as
+			 * binary modules, but rather regular modules with no extension. 
+			 * This means all module resource paths must be relative to the root folder,
+			 * and so we ensure that here. 
+			 */
+			if( !isBinary() && resource instanceof IContainer) {
+				IModuleResource[] resource2 = ResourceModuleResourceUtil.createChildrenResources(
+						(IContainer)resource, new Path("/")); //$NON-NLS-1$
+				return resource2;
+			}
+			return new IModuleResource[]{};
 		}
 
 		public IStatus validate() {
@@ -350,8 +363,11 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		public String getURI(IModule module) {
 			return null; // never called
 		}
+		
+		// folders are not binary
 		public boolean isBinary() {
-			return true;
+			boolean b = global.toFile().exists() && global.toFile().isFile();
+			return b;
 		}
 	}
 	
