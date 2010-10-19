@@ -154,10 +154,9 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	 */
 	protected static List<String> APPROVED_FILE_SYSTEMS = 
 		Arrays.asList(new String[]{ "ftp.files", "local.files", "ssh.files", "dstore.files"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	protected IFileServiceSubSystem findFileTransferSubSystem(IHost host) {
+	public static IFileServiceSubSystem findFileTransferSubSystem(IHost host) {
 		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
 		for( int i = 0; i < systems.length; i++ ) {
-			String tmp = systems[i].getConfigurationId();
 			if( APPROVED_FILE_SYSTEMS.contains(systems[i].getConfigurationId()))
 				return (IFileServiceSubSystem)systems[i];
 		}

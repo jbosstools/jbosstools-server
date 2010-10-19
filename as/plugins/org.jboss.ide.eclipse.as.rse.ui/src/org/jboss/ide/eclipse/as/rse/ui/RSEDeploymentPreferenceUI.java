@@ -12,14 +12,27 @@ package org.jboss.ide.eclipse.as.rse.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
+import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.files.IFileService;
+import org.eclipse.rse.services.files.IHostFile;
+import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
@@ -37,9 +50,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
@@ -66,7 +83,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		private IServerModeUICallback callback;
 		private CustomSystemHostCombo combo;
 		private Text rseServerHome,rseServerConfig;
-		private Button rseBrowse;
+		private Button rseBrowse, rseTest;
 		private ModifyListener comboMListener;
 		public RSEDeploymentPreferenceComposite(Composite parent, int style, IServerModeUICallback callback) {
 			super(parent, style);
@@ -111,7 +128,6 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			serverConfigLabel.setText("Remote Server Configuration: ");
 			rseServerConfig= new Text(this, SWT.SINGLE | SWT.BORDER);
 			serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
-			rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, serverConfigLabel, 5, 100, -5));
 			rseServerConfig.setText(callback.getServer().getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
 					getRuntime().getJBossConfiguration()));
 			rseServerConfig.addModifyListener(new ModifyListener(){
@@ -119,6 +135,114 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					serverConfigChanged();
 				}});
 			callback.getServer().addPropertyChangeListener(this);
+			
+			rseTest = new Button(this, SWT.NONE);
+			rseTest.setText("Test...");
+			rseTest.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, null, 0, 100, -5));
+			rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, serverConfigLabel, 5, rseTest, -5));
+			rseTest.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					testPressed();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
+		
+		private void testPressed(){
+			rseTest.setEnabled(false);
+			   IWorkbench wb = PlatformUI.getWorkbench();
+			   IProgressService ps = wb.getProgressService();
+			   final IStatus[] s = new IStatus[1];
+			   Throwable e = null;
+			   final String home = rseServerHome.getText();
+			   final String config = rseServerConfig.getText();
+			   try {
+				   ps.busyCursorWhile(new IRunnableWithProgress() {
+				      public void run(IProgressMonitor pm) {
+				    	  s[0] = testPressed(home, config, pm);
+				      }
+				   });
+			   } catch(InvocationTargetException ite) {
+				   e = ite;
+			   } catch(InterruptedException ie) {
+				   e = ie;
+			   }
+			   if( s[0] == null && e != null ) {
+				   s[0] = new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, e.getMessage(), e);
+			   }
+			   rseTest.setEnabled(true);
+			   showMessageDialog(s[0]);
+		}
+		
+		private void showMessageDialog(IStatus s) {
+			if( s.isOK() ) 
+				s = new Status(IStatus.INFO, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+						"The remote server is properly configured.");
+			ErrorDialog d = new ErrorDialog(rseServerHome.getShell(), "Title", null, s, IStatus.INFO | IStatus.ERROR);
+			d.open();
+		}
+		
+		private IStatus testPressed(String home, String config, IProgressMonitor pm) {
+			pm.beginTask("Validating Remote Configuration", 1200);
+			IHost host = combo.getHost();
+			if( host == null ) {
+				pm.done(); 
+				return getTestFailStatus("NoHost");
+			}
+			pm.worked(100);
+			
+			IFileServiceSubSystem fileSubSystem = RSEPublishMethod.findFileTransferSubSystem(host);
+			if( fileSubSystem == null ) {
+				pm.done(); 
+				return getTestFailStatus("No File Sub System");
+			}
+			pm.worked(100);
+
+			if(!fileSubSystem.isConnected()) {
+			    try {
+			    	fileSubSystem.connect(new NullProgressMonitor(), false);
+			    } catch (Exception e) {
+			    	pm.done(); 
+			    	return getTestFailStatus(e.getLocalizedMessage()); 
+			    }
+			}
+			pm.worked(300);
+
+			IFileService service = fileSubSystem.getFileService();
+			if( service == null ) {
+				pm.done(); 
+				return getTestFailStatus("No File Service");
+			}
+			pm.worked(100);
+			
+			String root = home;
+			IPath root2 = new Path(root);
+			try {
+				IHostFile file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
+				if( file == null || !file.exists()) {
+					pm.done(); 
+					return getTestFailStatus("Folder Home does not exist");
+				}
+				pm.worked(300);
+				
+				root2 = root2.append(IConstants.SERVER).append(config);
+				file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
+				if( file == null || !file.exists()) {
+					pm.done(); 
+					return getTestFailStatus("Server's config folder does not exist");
+				}
+				pm.worked(300);
+			} catch(SystemMessageException sme) {
+				pm.done();
+				return getTestFailStatus(sme.getLocalizedMessage());
+			}
+			pm.done(); 
+			return Status.OK_STATUS;
+		}
+		
+		private IStatus getTestFailStatus(String string) {
+			return new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, string);
 		}
 		
 		private String discoverCurrentHost(IServerModeUICallback callback) {
@@ -130,8 +254,8 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				for( int i = 0; i < hosts.length; i++ ) {
 					name = hosts[i].getName();
 					hostName = hosts[i].getHostName();
-					if( hosts[i].getHostName().toLowerCase().equals(serverHost)) {
-						callback.getServer().setAttribute(RSEUtils.RSE_SERVER_HOST, hosts[i].getName());
+					if( hostName.toLowerCase().equals(serverHost)) {
+						callback.getServer().setAttribute(RSEUtils.RSE_SERVER_HOST, name);
 						return hosts[i].getName();
 					}
 				}
