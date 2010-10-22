@@ -136,6 +136,16 @@
           <xs:documentation>Specifies the token to be used for JAAS authentication. If this is not specified, the username token will be used if available.</xs:documentation>
         </xs:annotation>
       </xs:element>
+      <xs:element name="authorize" type="authorizeType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies that authentication is required and either provides a list of roles authorized to access the endpoint or unchecked if any 
+            authenticated user can access the endpoint.
+            
+            This should only be used for POJO endpoints, EJB3 endpoints should configure security as for any other EJB3 session bean.          
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:all>
   </xs:complexType>
   <xs:complexType name="requireTimestampType">
@@ -351,4 +361,19 @@
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>
+  <xs:complexType name="authorizeType">
+    <xs:choice minOccurs="1" maxOccurs="1">
+      <xs:element name="role" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Specifies a role that is allowed to call the endpoint.</xs:documentation>
+        </xs:annotation>
+      </xs:element>    
+      <xs:element name="unchecked" type="uncheckedType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Specifies that any authenticated user can call the endpoint.</xs:documentation>
+        </xs:annotation>      
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="uncheckedType"/>
 </xs:schema>
