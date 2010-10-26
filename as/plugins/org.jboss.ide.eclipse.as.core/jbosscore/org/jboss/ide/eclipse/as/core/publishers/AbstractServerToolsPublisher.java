@@ -105,6 +105,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @return
 	 */
 	protected IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		String s = publishMethod.getPublishDefaultRootFolder(server.getServer());
 		String folder = PublishUtil.getDeployRootFolder(
 				moduleTree, server, 
 				publishMethod.getPublishDefaultRootFolder(server.getServer()),

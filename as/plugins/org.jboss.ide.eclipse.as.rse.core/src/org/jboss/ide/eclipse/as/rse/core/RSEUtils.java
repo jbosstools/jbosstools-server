@@ -17,6 +17,7 @@ import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -47,7 +48,7 @@ public class RSEUtils {
 		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, runtime.getJBossConfiguration());
 	}
 	
-	public static String getDeployRootFolder(JBossServer server) {
+	public static String getDeployRootFolder(IDeployableServer server) {
 		return getDeployRootFolder(server.getServer(), server.getDeployLocationType());
 	}
 	

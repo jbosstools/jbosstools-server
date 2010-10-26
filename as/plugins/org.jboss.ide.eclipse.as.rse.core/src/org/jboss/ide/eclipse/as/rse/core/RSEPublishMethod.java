@@ -136,8 +136,8 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	protected void loadRemoteDeploymentDetails() throws CoreException{
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
-		JBossServer jbs = ServerConverter.getJBossServer(behaviour.getServer());
-		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(jbs));
+		IDeployableServer ds = ServerConverter.getDeployableServer(behaviour.getServer());
+		this.remoteRootFolder = new Path(RSEUtils.getDeployRootFolder(ds));
 		
 		IHost host = RSEUtils.findHost(connectionName);
 		if( host != null ) {

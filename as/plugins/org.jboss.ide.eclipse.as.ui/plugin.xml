@@ -169,7 +169,7 @@
             id="org.jboss.ide.eclipse.as.ui.editor.serverModeSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="9"
-            typeIds="%AllJBossServerTypes"/>
+            typeIds="%AllJBTServerTypes"/>
    </extension>
 
 

@@ -754,9 +754,11 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 
 	public void updateListeners() {
 		// server has been saved. Remove property change listener from last wc and add to newest
-		lastWC.removePropertyChangeListener(this);
+		if( lastWC != null )
+			lastWC.removePropertyChangeListener(this);
 		lastWC = page.getServer();
-		lastWC.addPropertyChangeListener(this);
+		if( lastWC != null )
+			lastWC.addPropertyChangeListener(this);
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
