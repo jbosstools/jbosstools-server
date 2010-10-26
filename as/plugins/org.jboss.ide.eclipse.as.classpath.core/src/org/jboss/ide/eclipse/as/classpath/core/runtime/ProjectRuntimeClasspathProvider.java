@@ -82,21 +82,21 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 	// Bad name, I know, but checks if this is 
 	// an ear, war, ejb, or other top level facet
 	protected boolean isPrimaryFacet(IProjectFacet facet) {
-		WebtoolsProjectJBossClasspathContainerInitializer del = new WebtoolsProjectJBossClasspathContainerInitializer();
-		return facet.equals(del.WEB_FACET) 
-			|| facet.equals(del.EJB_FACET) 
-			|| facet.equals(del.EAR_FACET) 
-			|| facet.equals(del.CONNECTOR_FACET) 
-			|| facet.equals(del.APP_CLIENT_FACET);
+
+		return facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.WEB_FACET)
+			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.EJB_FACET)
+			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.EAR_FACET)
+			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.CONNECTOR_FACET)
+			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.APP_CLIENT_FACET);
 	}
-	
+
 	// Also a bad name, but facets the server automatically knows
 	// how to provide classpath entries for
 	protected boolean isSecondaryFacet(IProjectFacet facet) {
-		WebtoolsProjectJBossClasspathContainerInitializer del = new WebtoolsProjectJBossClasspathContainerInitializer();
-		return facet.equals(del.JSF_FACET) || facet.equals(del.JPA_FACET); 
+		return facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.JSF_FACET)
+			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.JPA_FACET); 
 	}
-	
+
 	public static final class Factory implements IAdapterFactory {
 		private static final Class[] ADAPTER_TYPES = { IClasspathProvider.class };
 
@@ -109,9 +109,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			return ADAPTER_TYPES;
 		}
 	}
-	
-	
-	
+
 	public static class RuntimeClasspathContainerInitializer extends ClasspathContainerInitializer {
 		public void initialize(IPath containerPath, IJavaProject project)
 				throws CoreException {
@@ -121,7 +119,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 					new IJavaProject[] {project}, new IClasspathContainer[] {container}, null);
 		}
 	}
-	
+
 	public static class RuntimeClasspathContainer implements IClasspathContainer {
 		private IPath path;
 		private IRuntime rt;
