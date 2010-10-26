@@ -58,6 +58,8 @@ Export-Package: org.jboss.ide.eclipse.as.ui,
  org.jboss.ide.eclipse.as.ui.dialogs,
  org.jboss.ide.eclipse.as.ui.editor,
  org.jboss.ide.eclipse.as.ui.launch,
+ org.jboss.ide.eclipse.as.ui.perspective,
+ org.jboss.ide.eclipse.as.ui.views,
  org.jboss.ide.eclipse.as.ui.views.server.extensions,
  org.jboss.ide.eclipse.as.ui.wizards,
  org.jboss.tools.as.wst.server.ui.xpl

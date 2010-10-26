@@ -37,6 +37,8 @@ import org.eclipse.ui.progress.IProgressConstants;
  */
 public class ASPerspective implements IPerspectiveFactory {
 
+	public static final String ID = "org.jboss.ide.eclipse.as.ui.ASPerspective";
+	
 	public void createInitialLayout(IPageLayout layout) {
  		String editorArea = layout.getEditorArea();
 		
