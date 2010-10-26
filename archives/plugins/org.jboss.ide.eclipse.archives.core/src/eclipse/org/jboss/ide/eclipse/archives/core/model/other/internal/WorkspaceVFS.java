@@ -31,7 +31,7 @@ public class WorkspaceVFS implements IArchivesVFS, IDynamicVariableResolver {
 
 	public IPath[] getWorkspaceChildren(IPath path) {
 		IResource res = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
-		if( res != null || !(res instanceof IContainer)) {
+		if( res != null && res instanceof IContainer) {
 			try {
 				IResource[] resources = ((IContainer)res).members();
 				IPath[] paths = new IPath[resources.length];
