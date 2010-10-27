@@ -64,6 +64,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 			return createRuntime(path, loader);
 		}
 		File[] children = path.toFile().listFiles();
+		children = (children == null ? new File[]{} : children);
 		monitor.beginTask("Searching for JBoss runtime...", children.length); //$NON-NLS-1$
 		if( children != null ) {
 			for( int i = 0; i < children.length; i++ ) {
