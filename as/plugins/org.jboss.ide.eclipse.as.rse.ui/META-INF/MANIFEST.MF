@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ui
+Bundle-Name: %Bundle-Name.0
+Bundle-Vendor: %Bundle-Vendor.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.rse.ui;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.rse.ui.RSEUIPlugin
