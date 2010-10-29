@@ -101,4 +101,5 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String DESCRIPTOR_EAR = "META-INF/application.xml"; //$NON-NLS-1$
 	public static final String DESCRIPTOR_CLIENT = "META-INF/application-client.xml"; //$NON-NLS-1$
 	public static final String DESCRIPTOR_CONNECTOR = "META-INF/ra.xml"; //$NON-NLS-1$
+	public static final String JBOSS_AS = "JBOSS_AS";  //$NON-NLS-1$
 }
