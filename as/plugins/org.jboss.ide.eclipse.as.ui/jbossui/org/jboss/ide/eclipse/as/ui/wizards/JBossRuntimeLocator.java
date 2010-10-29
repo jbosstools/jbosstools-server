@@ -131,9 +131,10 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		else 
 			runtimeTypeId=IJBossToolingConstants.EAP_50;
 		
+		IPath path2 = path.append(IJBossRuntimeResourceConstants.JBOSS_AS);
 		if( runtimeTypeId != null ) {
 			try {
-				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
+				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path2.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 				return launchRuntimeWizard(wc);
 			} catch( CoreException ce) {
 			}
