@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -26,9 +27,14 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
+import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 import org.osgi.framework.Bundle;
@@ -70,7 +76,34 @@ public class ServerRuntimeUtils extends TestCase {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_60, IJBossToolingConstants.AS_60);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_43, IJBossToolingConstants.EAP_43);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
-}
+	}
+	public static IServer createMockDeployOnlyServer() throws CoreException {
+		IPath state = ASTest.getDefault().getStateLocation();
+		IPath deploy = state.append("testDeployments").append("deploy");
+		IPath tmpDeploy = state.append("testDeployments").append("tmpDeploy");
+		return ServerRuntimeUtils.createMockDeployOnlyServer(deploy.toOSString(), 
+				tmpDeploy.toOSString());
+	}
+	
+	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {
+		return createMockDeployOnlyServer(deployLocation, tempDeployLocation, "testRuntime", "testServer");
+	}
+	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation, 
+			String rtName, String serverName) throws CoreException {
+		IRuntimeType rt = ServerCore.findRuntimeType("org.jboss.ide.eclipse.as.runtime.stripped");
+		IRuntimeWorkingCopy wc = rt.createRuntime(rtName, null);
+		IRuntime runtime = wc.save(true, null);
+		IServerType st = ServerCore.findServerType("org.jboss.ide.eclipse.as.systemCopyServer");
+		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer(serverName, null, null);
+		swc.setServerConfiguration(null);
+		swc.setName(serverName);
+		swc.setRuntime(runtime);
+		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
+		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
+		IServer server = swc.save(true, null);
+		return server;
+	}
+
 	
 	public static IServer createMockServerWithRuntime(String serverType, String name, String config) {
 		try {
@@ -176,4 +209,38 @@ public class ServerRuntimeUtils extends TestCase {
 		String location = url.getFile();
 		return new File(location);
 	}
+	
+	public static String getDeployRoot(IServer server) {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		return ds.getDeployFolder();
+	}
+	
+	public static IServer setServerAttribute(IServer server, String attribute, boolean value) {
+		ServerAttributeHelper helper = 
+			new ServerAttributeHelper(server, server.createWorkingCopy());
+		helper.setAttribute(attribute, value);
+		return helper.save();
+	}
+	
+	public static IServer addModule(IServer server, IModule module) throws CoreException  {
+		IServerWorkingCopy copy = server.createWorkingCopy();
+		copy.modifyModules(new IModule[]{module}, new IModule[0], new NullProgressMonitor());
+		return copy.save(false, new NullProgressMonitor());
+	}
+
+	public static IServer removeModule(IServer server, IModule module) throws CoreException  {
+		IServerWorkingCopy copy = server.createWorkingCopy();
+		copy.modifyModules(new IModule[]{}, new IModule[] {module}, new NullProgressMonitor());
+		return copy.save(false, new NullProgressMonitor());
+	}
+
+	public static IStatus publish(IServer server) throws CoreException {
+		return server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+	}
+
+	public static IServer setZipped(IServer server, boolean val) {
+		return ServerRuntimeUtils.setServerAttribute(server, IDeployableServer.ZIP_DEPLOYMENTS_PREF, val);
+	}
+
+
 }

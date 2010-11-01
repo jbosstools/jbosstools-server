@@ -18,7 +18,8 @@ import org.eclipse.wst.server.core.internal.Server;
 
 public class SSHPublishUtil {
 	public static boolean getZipsSSHDeployments(IServer server) {
-		return ((Server)server).getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, false);
+		boolean defaultVal = ((Server)server).getAttribute(ISSHDeploymentConstants.SSH_ZIP_DEPLOYMENTS_PREF_LEGACY, false);
+		return ((Server)server).getAttribute(ISSHDeploymentConstants.ZIP_DEPLOYMENTS_PREF, defaultVal);
 	}
 	public static String getDeployDir(IServer server) {
 		return ((Server)server).getAttribute(ISSHDeploymentConstants.DEPLOY_DIRECTORY, "/home"); 

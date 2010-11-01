@@ -21,7 +21,11 @@
  */
 package org.jboss.ide.eclipse.as.test;
 
+import java.io.File;
+
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Plugin;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.osgi.framework.BundleContext;
 
@@ -81,4 +85,17 @@ public class ASTest extends Plugin {
 	public static final String JBOSS_AS_52_HOME = System.getProperty("jbosstools.test.jboss.home.5.2", "C:\\apps\\jboss\\jboss-5.2.0.GA\\");
 
 	public static final String JBOSS_AS_HOME = System.getProperty("jbosstools.test.jboss.home", JBOSS_AS_42_HOME);
+	
+	public static void clearStateLocation() {
+		IPath state = ASTest.getDefault().getStateLocation();
+		if( state.toFile().exists()) {
+			File[] children = state.toFile().listFiles();
+			for( int i = 0; i < children.length; i++ ) {
+				FileUtil.safeDelete(children[i]);
+			}
+		}
+	}
+
+
+
 }
