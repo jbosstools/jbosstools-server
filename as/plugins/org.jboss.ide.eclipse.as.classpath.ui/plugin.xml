@@ -29,7 +29,7 @@
             id="org.jboss.ide.eclipse.as.classpath.core.j2ee-1.4">
       </classpathContainerPage>
       <classpathContainerPage
-            name="JEE 5.0 libraries"
+            name="Java EE 5 libraries"
             class="org.jboss.ide.eclipse.as.classpath.ui.jee.JEE50ClasspathContainerPage"
             id="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </classpathContainerPage>
