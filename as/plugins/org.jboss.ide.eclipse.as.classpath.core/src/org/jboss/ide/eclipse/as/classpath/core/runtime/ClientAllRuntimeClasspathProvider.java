@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -72,7 +73,7 @@ public class ClientAllRuntimeClasspathProvider
 		IPath loc = runtime.getLocation();
 		IPath configPath = jbsrt.getConfigurationFullPath();
 		String rtID  = runtime.getRuntimeType().getId();
-		List<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+		List<IPath> list = new ArrayList<IPath>();
 		if(AS_32.equals(rtID)) list = get32(loc, configPath);
 		if(AS_40.equals(rtID)) list = get40(loc,configPath);
 		if(AS_42.equals(rtID)) list = get42(loc,configPath);
@@ -86,63 +87,69 @@ public class ClientAllRuntimeClasspathProvider
 		
 		if( list == null )
 			return null;
-		Collections.sort(list, new Comparator<IClasspathEntry>() {
-			public int compare(IClasspathEntry o1, IClasspathEntry o2) {
-				return o1.getPath().lastSegment().compareTo(o2.getPath().lastSegment());
-			} });
-		return list.toArray(new IClasspathEntry[list.size()]);
+		List<IClasspathEntry> entries = convert(list);
+		return entries.toArray(new IClasspathEntry[entries.size()]);
+	}
+
+	protected List<IClasspathEntry> convert(List<IPath> list) {
+		ArrayList<IClasspathEntry> fin = new ArrayList<IClasspathEntry>();
+		Iterator<IPath> i = list.iterator();
+		while(i.hasNext()) {
+			fin.add(getEntry(i.next()));
+		}
+		return fin;
 	}
 	
-	protected List<IClasspathEntry> get32(IPath location, IPath configPath) {
-		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-		addEntries(location.append(CLIENT), list);
-		addEntries(location.append(LIB), list);
-		addEntries(configPath.append(LIB), list);
+	protected List<IPath> get32(IPath location, IPath configPath) {
+		ArrayList<IPath> list = new ArrayList<IPath>();
+		addPaths(location.append(LIB), list);
+		addPaths(configPath.append(LIB), list);
+		addPaths(location.append(CLIENT), list);
 		return list;
 	}
 	
-	protected List<IClasspathEntry> get40(IPath location, IPath configPath) {
-		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+	protected List<IPath> get40(IPath location, IPath configPath) {
+		ArrayList<IPath> list = new ArrayList<IPath>();
+		addPaths(location.append(LIB), list);
+		addPaths(configPath.append(LIB), list);
 		IPath deployPath = configPath.append(DEPLOY);
-		addEntries(location.append(CLIENT), list);
-		addEntries(location.append(LIB), list);
-		addEntries(configPath.append(LIB), list);
-		addEntries(deployPath.append(JBOSS_WEB_DEPLOYER).append(JSF_LIB), list);
-		addEntries(deployPath.append(AOP_JDK5_DEPLOYER), list);
-		addEntries(deployPath.append(EJB3_DEPLOYER), list);
+		addPaths(deployPath.append(JBOSS_WEB_DEPLOYER).append(JSF_LIB), list);
+		addPaths(deployPath.append(AOP_JDK5_DEPLOYER), list);
+		addPaths(deployPath.append(EJB3_DEPLOYER), list);
+		addPaths(location.append(CLIENT), list);
 		return list;
 	}
 
-	protected List<IClasspathEntry> get42(IPath location, IPath configPath) {
+	protected List<IPath> get42(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 
-	protected List<IClasspathEntry> getEAP43(IPath location, IPath configPath) {
+	protected List<IPath> getEAP43(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 	
-	protected List<IClasspathEntry> get50(IPath location, IPath configPath) {
-		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+	protected List<IPath> get50(IPath location, IPath configPath) {
+		ArrayList<IPath> list = new ArrayList<IPath>();
+		addPaths(location.append(COMMON).append(LIB), list);
+		addPaths(location.append(LIB), list);
+		addPaths(configPath.append(LIB), list);
 		IPath deployerPath = configPath.append(DEPLOYERS);
 		IPath deployPath = configPath.append(DEPLOY);
-		addEntries(location.append(CLIENT), list);
-		addEntries(location.append(LIB), list);
-		addEntries(location.append(COMMON).append(LIB), list);
-		addEntries(configPath.append(LIB), list);
-		addEntries(deployPath.append(JBOSSWEB_SAR).append(JSF_LIB),list);
-		addEntries(deployPath.append(JBOSSWEB_SAR).append(JBOSS_WEB_SERVICE_JAR),list);
-		addEntries(deployPath.append(JBOSSWEB_SAR).append(JSTL_JAR),list);
-		addEntries(deployerPath.append(AS5_AOP_DEPLOYER), list);
-		addEntries(deployerPath.append(EJB3_DEPLOYER), list);
-		addEntries(deployerPath.append(WEBBEANS_DEPLOYER).append(JSR299_API_JAR), list);
+		addPaths(deployPath.append(JBOSSWEB_SAR).append(JSF_LIB),list);
+		addPaths(deployPath.append(JBOSSWEB_SAR).append(JBOSS_WEB_SERVICE_JAR),list);
+		addPaths(deployPath.append(JBOSSWEB_SAR).append(JSTL_JAR),list);
+		addPaths(deployerPath.append(AS5_AOP_DEPLOYER), list);
+		addPaths(deployerPath.append(EJB3_DEPLOYER), list);
+		addPaths(deployerPath.append(WEBBEANS_DEPLOYER).append(JSR299_API_JAR), list);
+		addPaths(location.append(CLIENT), list);
 		return list;
 	}
 	
-	protected List<IClasspathEntry> get60(IPath location, IPath configPath) {
-		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
+	protected List<IPath> get60(IPath location, IPath configPath) {
+		ArrayList<IPath> list = new ArrayList<IPath>();
 		list.addAll(get50(location, configPath));
-		addEntries(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
-		addEntries(configPath.append(DEPLOYERS).append(JSF_DEPLOYER).append(MOJARRA_20).append(JSF_LIB), list);
+		addPaths(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
+		addPaths(configPath.append(DEPLOYERS).append(JSF_DEPLOYER).append(MOJARRA_20).append(JSF_LIB), list);
 		return list;
 	}
 	
@@ -150,20 +157,34 @@ public class ClientAllRuntimeClasspathProvider
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
 	}
 
-	protected void addEntries(IPath folder, ArrayList<IClasspathEntry> list) {
+	protected void addPaths(IPath folder, ArrayList<IPath> list) {
 		if( folder.toFile().exists()) {
 			File f = folder.toFile();
 			if(f.isDirectory()) {
 				String[] files = f.list();
 				for( int i = 0; i < files.length; i++ ) {
 					if( files[i].endsWith(EXT_JAR) && ClientAllFilter.accepts(folder.append(files[i]))) {
-						list.add(getEntry(folder.append(files[i])));
+						addSinglePath(folder.append(files[i]), list);
 					}
 				}
-			} else {
-				list.add(getEntry(folder));
+			} else { // folder is a file, not a folder
+				addSinglePath(folder, list);
 			}
 		}
+	}
+	
+	protected void addSinglePath(IPath p, ArrayList<IPath> list) {
+		Iterator<IPath> i = list.iterator();
+		IPath l;
+		while(i.hasNext()) {
+			l = i.next();
+			if( !p.toFile().exists() || 
+					(p.lastSegment().equals(l.lastSegment()) 
+						&& p.toFile().length() == l.toFile().length() )) {
+				return;
+			}
+		}
+		list.add(p);
 	}
 
 }
