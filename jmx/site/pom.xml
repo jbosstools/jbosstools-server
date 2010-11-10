@@ -7,8 +7,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.jmx</groupId>
-	<artifactId>jmx.site</artifactId> 
-	<name>jmx.site</name>
+	<artifactId>org.jboss.tools.jmx.site</artifactId> 
+	<name>org.jboss.tools.jmx.site</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>eclipse-update-site</packaging>
 </project>
