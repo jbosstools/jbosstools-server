@@ -46,12 +46,21 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	private String getNextRuntimeName() {
 		String version = getRuntime().getRuntimeType().getVersion(); 
 		String base = null;
+		
+		// hack for eap 5.1, which is now using the 5.0 runtime type id
+		if( isEAP(getRuntime()) && version.equals(IConstants.V5_0))
+			version = "5.x"; //$NON-NLS-1$
+		
 		if( getRuntime().getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap.")) { //$NON-NLS-1$
 			base = Messages.jboss + " EAP " + version + " " + Messages.runtime; //$NON-NLS-1$ //$NON-NLS-2$
 		} else {
 			base = Messages.jboss + " " + version + " " + Messages.runtime;  //$NON-NLS-1$//$NON-NLS-2$
 		}
 		return getNextRuntimeName(base);
+	}
+	
+	public static boolean isEAP(IRuntime rt) {
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
 	}
 	
 	public static String getNextRuntimeName(String base) {

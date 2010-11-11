@@ -142,6 +142,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
+		if( isEAP() && version.startsWith("5."))
+			version = "5.x";
 		handle.setTitle( Messages.rwf_JBossRuntime);
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
@@ -153,9 +155,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected boolean isEAP() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
+		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		return LocalJBossServerRuntime.isEAP(rt);
 	}
 	
 	protected ImageDescriptor getImageDescriptor() {
@@ -624,10 +625,19 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 	
 	protected String getHomeVersionWarning() {
-		String version = new ServerBeanLoader().getFullServerVersion(new File(homeDir, JBossServerType.AS.getSystemJarPath()));
+		File loc = new File(homeDir, JBossServerType.AS.getSystemJarPath());
+		String version = new ServerBeanLoader().getFullServerVersion(loc);
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
+		
+		/* 
+		 * CHEAP WARNING HACK - 
+		 *   EAP 5.0 was started as named 5.0, but is now 5.x.
+		 *   So a jar with 5.1 should work here also.  
+		 */
+		if( isEAP() && v.startsWith("5."))
+			v = "5.";
 		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 

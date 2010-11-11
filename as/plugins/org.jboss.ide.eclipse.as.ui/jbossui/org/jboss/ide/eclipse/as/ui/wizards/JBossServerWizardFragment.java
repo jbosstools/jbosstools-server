@@ -47,6 +47,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -79,6 +80,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
+		if( isEAP() && version.startsWith("5."))
+			version = "5.x";
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
 				version);
@@ -96,9 +99,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 	}
 
 	protected boolean isEAP() {
-		IRuntime rt = (IRuntime) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
+		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		return LocalJBossServerRuntime.isEAP(rt);
 	}
 	
 	public ImageDescriptor getImageDescriptor() {
