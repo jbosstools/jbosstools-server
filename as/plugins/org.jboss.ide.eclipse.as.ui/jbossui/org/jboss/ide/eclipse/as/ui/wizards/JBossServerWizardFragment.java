@@ -223,12 +223,12 @@ public class JBossServerWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
-		JBossServer jbs = (JBossServer)serverWC.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		jbs.setUsername("admin"); //$NON-NLS-1$
-		jbs.setPassword("admin"); //$NON-NLS-1$
-		jbs.setDeployLocationType(isAS50() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
+		// just make sure the shouldnt-happen doesn't happen
+		String tmp = serverWC.getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, (String)null);
+		if( IDeployableServer.DEPLOY_METADATA.equals(tmp))
+			serverWC.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_SERVER);
 	}
 	
 	private IJBossServerRuntime getRuntime() {
@@ -243,10 +243,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		return ajbsrt;
 	}
 
-	protected boolean isAS50() {
-		return getRuntime().getRuntime().getRuntimeType().equals(IJBossToolingConstants.SERVER_AS_50);
-	}
-	
 	public boolean isComplete() {
 		return getErrorString() == null ? true : false;
 	}

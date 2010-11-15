@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -44,6 +45,13 @@ public class JBossServer extends DeployableServer
 		super.setDefaults(monitor);
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		setUsername("admin"); //$NON-NLS-1$
+		setPassword("admin"); //$NON-NLS-1$
+		setDeployLocationType(isAS50() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
+	}
+	
+	private boolean isAS50() {
+		return getServer().getServerType().getRuntimeType().getId().equals(IJBossToolingConstants.SERVER_AS_50);
 	}
 	
 	public String getHost() {

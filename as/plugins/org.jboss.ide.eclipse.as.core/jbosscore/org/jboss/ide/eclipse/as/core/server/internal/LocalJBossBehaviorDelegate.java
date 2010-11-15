@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
@@ -55,7 +56,9 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	public LocalJBossBehaviorDelegate() {
 		super();
 	}
-	
+	public String getBehaviourTypeId() {
+		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
+	}
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
 		if( force || process == null || process.isTerminated() || state == IServer.STATE_STOPPED || nextStopRequiresForce) {

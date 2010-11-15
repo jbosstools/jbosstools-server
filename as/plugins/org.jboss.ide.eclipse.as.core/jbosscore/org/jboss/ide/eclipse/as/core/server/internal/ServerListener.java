@@ -16,13 +16,10 @@ import java.util.ArrayList;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -31,9 +28,6 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -64,19 +58,22 @@ public class ServerListener extends UnitedServerListener {
 		IServer server = event.getServer();
 		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
 		if( jbs != null ) {
-			doDeploymentAddition(event);
+			String[] folders = getDeployLocationFolders(server);
+			if( folders.length > 0 ) 
+				doDeploymentAddition(event, folders);
 		}
 	}
 	
-	protected void doDeploymentAddition(final ServerEvent event) {
+	protected void doDeploymentAddition(final ServerEvent event, final String[] folders) {
 		int eventKind = event.getKind();
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
 				if( event.getServer().getServerState() == IServer.STATE_STARTED ) {
+					
 					IJMXRunnable r = new IJMXRunnable() {
 						public void run(MBeanServerConnection connection) throws Exception {
-							ensureDeployLocationAdded(event.getServer(), connection);
+							ensureDeployLocationAdded(event.getServer(), connection, folders);
 						}
 					};
 					try {
@@ -92,21 +89,22 @@ public class ServerListener extends UnitedServerListener {
 		}
 	}
 	
-	protected void ensureDeployLocationAdded(IServer server, MBeanServerConnection connection) throws Exception {
+	protected String[] getDeployLocationFolders(IServer server) {
 		JBossServer ds = ServerConverter.getJBossServer(server);
 		ArrayList<String> folders = new ArrayList<String>();
 		// add the server folder deploy loc. first
 		String insideServer = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_SERVER);
 		String metadata = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_METADATA);
 		String custom = JBossServer.getDeployFolder(ds, JBossServer.DEPLOY_CUSTOM);
+		String type = ds.getDeployLocationType();
 		String serverHome = null;
 		if (server != null && server.getRuntime()!= null && server.getRuntime().getLocation() != null) {
 			serverHome = server.getRuntime().getLocation().toString();
 		}
 		folders.add(insideServer);
-		if( !folders.contains(metadata))
+		if( type.equals(JBossServer.DEPLOY_METADATA) && !folders.contains(metadata))
 			folders.add(metadata);
-		if( !folders.contains(custom) && !custom.equals(serverHome))
+		if( type.equals(JBossServer.DEPLOY_CUSTOM) && !folders.contains(custom) && !custom.equals(serverHome))
 			folders.add(custom);
 
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
@@ -124,6 +122,16 @@ public class ServerListener extends UnitedServerListener {
 		}
 		folders.remove(insideServer); // doesn't need to be added to deployment scanner
 		String[] folders2 = (String[]) folders.toArray(new String[folders.size()]);
+		return folders2;
+	}
+
+	protected void ensureDeployLocationAdded(IServer server, MBeanServerConnection connection) throws Exception {
+		String[] folders2 = getDeployLocationFolders(server);
+		ensureDeployLocationAdded(server, connection, folders2);
+	}
+	
+	protected void ensureDeployLocationAdded(IServer server, 
+			MBeanServerConnection connection, String[] folders2) throws Exception {
 		for( int i = 0; i < folders2.length; i++ ) {
 			String asURL = new File(folders2[i]).toURL().toString(); 
 			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);

@@ -46,6 +46,7 @@ import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
 
 public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
@@ -166,6 +167,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		final String[] output = new String[1];
 		output[0] = null;
 		try {
+			System.out.println(command);
 			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			hs.addOutputListener(new IHostShellOutputListener(){
 				public void shellOutputChanged(IHostShellChangeEvent event) {
@@ -200,7 +202,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			behaviour.setServerStopped();
 		} catch( SystemMessageException sme) {
 			// TODO
-			sme.printStackTrace();
+			behaviour.setServerStarted(); // unable to stop the server
 		} catch( RuntimeException re ) {
 			if( re instanceof NullPointerException && service.getClass().getName().equals("DStoreShellService")) {
 				// remote server has no dstore shell service
@@ -316,6 +318,10 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 					"Host not found. Host may have been deleted or RSE model may not be completely loaded"));
 		}
+		
+		// ensure connections 
+		new ConnectAllSubsystemsUtil(host).run(new NullProgressMonitor());
+		
 		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
 		for( int i = 0; i < systems.length; i++ ) {
 			if( systems[i] instanceof IShellServiceSubSystem)

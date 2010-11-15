@@ -29,6 +29,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	public static interface JBossBehaviourDelegate {
+		public String getBehaviourTypeId();
 		public void setActualBehaviour(JBossServerBehavior actualBehaviour);
 		public void stop(boolean force);
 		public void publishStart(final IProgressMonitor monitor) throws CoreException;
@@ -56,7 +57,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	public JBossBehaviourDelegate getDelegate() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
 		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
-		if( id.equals(lastModeId))
+		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			return delegate;
 		
 		Class c = delegateClassMap.get(id);

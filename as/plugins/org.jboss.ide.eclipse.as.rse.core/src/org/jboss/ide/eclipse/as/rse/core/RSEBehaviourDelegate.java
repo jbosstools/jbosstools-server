@@ -15,7 +15,10 @@ package org.jboss.ide.eclipse.as.rse.core;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 
 public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
-
+	public String getBehaviourTypeId() {
+		return RSEPublishMethod.RSE_ID;
+	}
+	
 	@Override
 	public void stop(boolean force) {
 		if( force ) {
