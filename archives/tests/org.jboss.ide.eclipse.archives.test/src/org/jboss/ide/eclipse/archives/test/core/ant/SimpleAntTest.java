@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -107,10 +108,7 @@ public class SimpleAntTest extends TestCase implements IProcessListener {
 		if( !done || !success )
 			fail("The ant task did not successfully complete. " + errorString);
 		
-		assertTrue(outputFolder.toFile().list().length == 1);
-		File out = outputFolder.toFile().listFiles()[0];
-		assertTrue(out.exists());
-		
+		assertTrue(outputFolder.append("SimpleAntTest.jar").toFile().exists());
 	}
 	public void out(String text) {
 		if( "BUILD SUCCESSFUL\n".equals(text)) //$NON-NLS-1$
