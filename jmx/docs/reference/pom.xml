@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.jboss.tools</groupId>
-    <artifactId>jmx-tools-ref-guide-en-US</artifactId>
+    <artifactId>org.jboss.tools.jmx-tools-ref-guide-en-US</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jdocbook</packaging>
     <name>JMX_Tools_Reference_Guide</name>
