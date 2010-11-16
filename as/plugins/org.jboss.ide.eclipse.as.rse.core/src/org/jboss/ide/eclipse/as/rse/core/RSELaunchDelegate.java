@@ -219,13 +219,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		boolean started = new WebPortPoller().onePing(beh.getServer());
 		if( started ) {
 			beh.setServerStarting();
-			new Job("Setting server as started") {
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					beh.setServerStarted();
-					return Status.OK_STATUS;
-				}
-			}.schedule();
+			beh.setServerStarted();
 			return false;
 		}
 		return true;

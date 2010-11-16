@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
@@ -109,7 +110,13 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
 			// server change event
 			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-				checkState();
+				new Job("Connecting to " + event.getServer().getName() + " via JMX") { //$NON-NLS-1$ //$NON-NLS-2$
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						checkState();
+						return Status.OK_STATUS;
+					} 
+				}.schedule();
 			}
 		}
 	}

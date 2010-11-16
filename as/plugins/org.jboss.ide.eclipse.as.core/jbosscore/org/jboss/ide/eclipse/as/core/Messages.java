@@ -81,6 +81,7 @@ public class Messages extends NLS {
 	public static String JMXPauseScannerError;
 	public static String JMXResumeScannerError;
 	public static String JMXScannerCanceled;
+	public static String ConnectingToServerViaJMX;
 	public static String CannotSaveServersStartArgs;
 	public static String PublishRenameFailure;
 	static {
