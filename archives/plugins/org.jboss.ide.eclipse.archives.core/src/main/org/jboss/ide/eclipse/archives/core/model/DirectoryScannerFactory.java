@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
@@ -56,7 +58,12 @@ public class DirectoryScannerFactory {
 		fs.version = version;
 		DirectoryScannerExtension scanner = new DirectoryScannerExtension(fs);
 		if (scan) {
-			scanner.scan();
+			try {
+				scanner.scan();
+			} catch(IllegalStateException ise) {
+				IStatus status = new Status(IStatus.WARNING, ArchivesCore.PLUGIN_ID, ise.getMessage(), ise);
+				ArchivesCore.getInstance().getLogger().log(status);
+			}
 		}
 		return scanner;
 	}
