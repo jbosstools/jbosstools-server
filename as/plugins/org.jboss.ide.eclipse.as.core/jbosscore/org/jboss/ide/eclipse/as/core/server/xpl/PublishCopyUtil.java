@@ -517,7 +517,7 @@ public final class PublishCopyUtil {
 		if (kind2 == IModuleResourceDelta.ADDED) {
 			IPath path2 = path.append(resource.getModuleRelativePath()).append(resource.getName());
 			IStatus[] s = handler.makeDirectoryIfRequired(path2, monitor);
-			if( s.length > 0 && !s[0].isOK()) {
+			if( s != null && s.length > 0 && !s[0].isOK()) {
 				return s;
 			}
 		}
