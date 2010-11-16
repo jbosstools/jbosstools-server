@@ -69,7 +69,7 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 	}
 
 	private static String LAST_SERVER_CREATED_KEY = "org.jboss.ide.eclipse.as.ui.wizards.LAST_SERVER_CREATED"; //$NON-NLS-1$
-	@Override
+
 	public void serverAdded(IServer server) {
 		if( server != null ) {
 			IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerUIPlugin.PLUGIN_ID);
@@ -80,13 +80,10 @@ public class JBInitialSelectionProvider extends InitialSelectionProvider impleme
 			}
 		}
 	}
-
-	@Override
 	public void serverChanged(IServer server) {
 		// Do Nothing
 	}
 
-	@Override
 	public void serverRemoved(IServer server) {
 		// Do Nothing
 	}
