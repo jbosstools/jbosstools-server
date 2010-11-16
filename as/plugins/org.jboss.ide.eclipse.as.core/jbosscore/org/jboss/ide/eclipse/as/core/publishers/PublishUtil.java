@@ -108,7 +108,8 @@ public class PublishUtil {
 			String loc = modPrefs.getProperty(moduleProperty);
 			if( loc != null && !loc.equals("") ) { //$NON-NLS-1$
 				if( !new Path(loc).isAbsolute()) {
-					folder = server.getServer().getRuntime().getLocation().append(loc).toString();
+					IPath p = new Path(server.getDeployFolder());
+					folder = p.append(loc).toOSString();
 				} else {
 					folder = loc;
 				}
@@ -274,7 +275,7 @@ public class PublishUtil {
 	
 	public static IStatus[] packModuleIntoJar(String moduleName, IModuleResource[] resources, IPath destination)throws CoreException {
 	
-		String dest = destination.toString();
+		String dest = destination.toOSString();
 		ModulePackager packager = null;
 		try {
 			packager = new ModulePackager(dest, false);
