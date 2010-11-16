@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -141,19 +142,18 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
 		behaviour.setServerStopping();
-		IPath home = new Path(RSEUtils.getRSEHomeDir(behaviour.getServer()));
-		IPath shutdown = home.append(IJBossRuntimeResourceConstants.BIN)
-							.append(IJBossRuntimeResourceConstants.SHUTDOWN_SH);
-		String hostname = behaviour.getServer().getHost();
-		JBossServer jbs = ServerConverter.getJBossServer(behaviour.getServer());
 		
-		String user = jbs.getUsername();
-		String pass = jbs.getPassword(); 
-		IJBossRuntimeConstants rc = new IJBossRuntimeConstants() {};
-		final String command = shutdown.toString() + rc.SPACE + rc.SHUTDOWN_STOP_ARG + rc.SPACE
-						+ rc.SHUTDOWN_SERVER_ARG + rc.SPACE + hostname + rc.SPACE + rc.SHUTDOWN_USER_ARG 
-						+ rc.SPACE + user + rc.SPACE + rc.SHUTDOWN_PASS_ARG + rc.SPACE + pass;
+		ILaunchConfiguration config = null;
+		String command2 = "";
+		try {
+			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+			String defaultCmd = getDefaultStopCommand(behaviour.getServer());
+			command2 = config == null ? defaultCmd :
+				config.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCmd);
+		} catch(CoreException ce) {
+		}
 		
+		final String command = command2;
 		IShellService service = null;
 		try {
 			service = findShellService(behaviour);
@@ -215,10 +215,17 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// ping if up 
-		JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
+		final JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
 		boolean started = new WebPortPoller().onePing(beh.getServer());
 		if( started ) {
-			beh.setServerStarted();
+			beh.setServerStarting();
+			new Job("Setting server as started") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					beh.setServerStarted();
+					return Status.OK_STATUS;
+				}
+			}.schedule();
 			return false;
 		}
 		return true;
