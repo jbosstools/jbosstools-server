@@ -54,7 +54,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		} catch( SystemMessageException sme ) {
 			System.err.println("failed to copy to " + remotePath.toString()); //$NON-NLS-1$
 		}
-		return null;
+		return new IStatus[]{};
 	}
 
 	public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
@@ -65,7 +65,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		} catch( SystemMessageException sme ) {
 			System.err.println("failed to delete " + remotePath.toString()); //$NON-NLS-1$
 		}
-		return null;
+		return new IStatus[]{};
 	}
 
 	public IStatus[] makeDirectoryIfRequired(IPath dir,
@@ -86,7 +86,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		}
 		createdFolders.add(toMake);
 		monitor.done();
-		return null;
+		return new IStatus[]{};
 	}
 
 	public IStatus[] touchResource(IPath path) {
@@ -99,7 +99,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			method.getFileServiceSubSystem().setLastModified(rf, new Date().getTime(), null);
 		} catch(SystemMessageException sme) {
 		}
-		return null;
+		return new IStatus[]{};
 	}
 }
 
