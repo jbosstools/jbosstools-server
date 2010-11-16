@@ -31,10 +31,12 @@ import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
+import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -60,11 +62,13 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 	}
 
+	private static JBInitialSelectionProvider selectionProvider;
 	/**
 	 * This method is called upon plug-in activation
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		selectionProvider = new JBInitialSelectionProvider();
 		Preferences prefs = getPluginPreferences();
 
 		if( !prefs.getBoolean(IPreferenceKeys.ENABLED_DECORATORS)) {
@@ -80,12 +84,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		}
 		savePluginPreferences();
 		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
+		ServerCore.addServerLifecycleListener(selectionProvider);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
+		ServerCore.removeServerLifecycleListener(selectionProvider);
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
 		JBossServerUISharedImages.instance().cleanup();
 		super.stop(context);
