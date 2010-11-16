@@ -182,7 +182,12 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				File temp = deployRoot.toFile().createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path("/")); //$NON-NLS-1$
+				String device = deployPath.getDevice();
+				String root = "/"; //$NON-NLS-1$
+				if (device != null) {
+					root = device + root;
+				}
+				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path(root));
 				String parentFolder = deployPath.removeLastSegments(1).toString();
 				handler.makeDirectoryIfRequired(new Path(parentFolder), ProgressMonitorUtil.submon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
