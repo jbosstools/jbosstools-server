@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,9 +25,11 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
@@ -106,6 +109,11 @@ public class DeploymentPreferenceLoader {
 
 		public DeploymentTypePrefs getPreferences(String deploymentType) {
 			return children.get(deploymentType);
+		}
+		
+		// prefs are all in "local" now, even for rse stuff. 
+		public DeploymentTypePrefs getOrCreatePreferences() {
+			return getOrCreatePreferences(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		}
 		
 		public DeploymentTypePrefs getOrCreatePreferences(String deploymentType) {
@@ -242,4 +250,12 @@ public class DeploymentPreferenceLoader {
 			child.putString("value", val);//$NON-NLS-1$
 		}
 	}
+	
+	public static void savePreferencesToServerWorkingCopy(ServerAttributeHelper helper, DeploymentPreferences prefs) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DeploymentPreferenceLoader.savePreferences(bos, prefs);
+		String asXML = new String(bos.toByteArray());
+		helper.setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+	}
+
 }

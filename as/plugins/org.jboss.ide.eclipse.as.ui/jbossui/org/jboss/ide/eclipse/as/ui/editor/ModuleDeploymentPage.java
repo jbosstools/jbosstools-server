@@ -171,10 +171,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	public void savePreferencesToWorkingCopy() {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DeploymentPreferenceLoader.savePreferences(bos, preferences);
-		String asXML = new String(bos.toByteArray());
-		getHelper().setAttribute(DeploymentPreferenceLoader.DEPLOYMENT_PREFERENCES_KEY, asXML);
+		DeploymentPreferenceLoader.savePreferencesToServerWorkingCopy(helper, preferences);
 	}
 
 	public String makeGlobal(String path) {
