@@ -37,23 +37,23 @@ public class ProjectCreationUtil {
 		
 	} 
 	
-	private static final String APP_CLIENT_PROJ_12 = "myAppClient_12";
-	private static final String APP_CLIENT_PROJ_13 = "myAppClient_13";
-	private static final String APP_CLIENT_PROJ_14 = "myAppClient_14";
-	private static final String APP_CLIENT_PROJ_5 = "myAppClient_5";
+	public static final String APP_CLIENT_PROJ_12 = "myAppClient_12";
+	public static final String APP_CLIENT_PROJ_13 = "myAppClient_13";
+	public static final String APP_CLIENT_PROJ_14 = "myAppClient_14";
+	public static final String APP_CLIENT_PROJ_5 = "myAppClient_5";
 	
-	private static final String EJB_PROJ_11 = "myEJB_11";
-	private static final String EJB_PROJ_2 = "myEJB_2";
-	private static final String EJB_PROJ_21 = "myEJB_21";
-	private static final String EJB_PROJ_3 = "myEJB_3";
+	public static final String EJB_PROJ_11 = "myEJB_11";
+	public static final String EJB_PROJ_2 = "myEJB_2";
+	public static final String EJB_PROJ_21 = "myEJB_21";
+	public static final String EJB_PROJ_3 = "myEJB_3";
 	
-	private static final String WEB_PROJ_22 = "myWeb_22";
-	private static final String WEB_PROJ_23 = "myWeb_23";
-	private static final String WEB_PROJ_24 = "myWeb_24";
-	private static final String WEB_PROJ_25 = "myWeb_25";
+	public static final String WEB_PROJ_22 = "myWeb_22";
+	public static final String WEB_PROJ_23 = "myWeb_23";
+	public static final String WEB_PROJ_24 = "myWeb_24";
+	public static final String WEB_PROJ_25 = "myWeb_25";
 	
-	private static final String CONNECTOR_PROJ_1 = "myConnector_1";
-	private static final String CONNECTOR_PROJ_15 = "myConnector_15";
+	public static final String CONNECTOR_PROJ_1 = "myConnector_1";
+	public static final String CONNECTOR_PROJ_15 = "myConnector_15";
 
     /**
      * Creates and returns an Connector Data Model with the given name and of the given version.

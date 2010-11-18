@@ -235,7 +235,11 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 
 	public static IStatus publish(IServer server) throws CoreException {
-		return server.publish(IServer.PUBLISH_INCREMENTAL, new NullProgressMonitor());
+		return publish(IServer.PUBLISH_INCREMENTAL, server);
+	}
+	
+	public static IStatus publish(int type, IServer server) throws CoreException {
+		return server.publish(type, new NullProgressMonitor());
 	}
 
 	public static IServer setZipped(IServer server, boolean val) {

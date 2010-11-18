@@ -171,6 +171,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		if( !forceZip && !isBinaryObject) {
 			PublishCopyUtil util = new PublishCopyUtil(callback);
 			list.addAll(Arrays.asList(util.initFullPublish(members, ProgressMonitorUtil.submon(monitor, 700))));
+			JSTPublisherXMLToucher.getInstance().touch(deployPath, module, callback);
 		} else if( isBinaryObject )
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, ProgressMonitorUtil.submon(monitor, 700))));
 		else {
@@ -182,11 +183,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				File temp = deployRoot.toFile().createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				String device = deployPath.getDevice();
-				String root = "/"; //$NON-NLS-1$
-				if (device != null) {
-					root = device + root;
-				}
+				String root = (deployPath.getDevice() == null ? "" : deployPath.getDevice()) + "/";  //$NON-NLS-1$//$NON-NLS-2$
 				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path(root));
 				String parentFolder = deployPath.removeLastSegments(1).toString();
 				handler.makeDirectoryIfRequired(new Path(parentFolder), ProgressMonitorUtil.submon(monitor, 200));
