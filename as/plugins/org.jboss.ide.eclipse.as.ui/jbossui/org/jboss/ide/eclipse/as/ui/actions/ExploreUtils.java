@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -85,15 +86,10 @@ public class ExploreUtils {
 	
 	public static String getDeployDirectory(IServer server) {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		if (server.getRuntime() != null && deployableServer != null) {
+		if (server != null && deployableServer != null) {
 			return deployableServer.getDeployFolder();
 		}
-		IServerWorkingCopy swc = server.createWorkingCopy();
-		ServerAttributeHelper helper = new ServerAttributeHelper(swc
-				.getOriginal(), swc);
-		String deployDirectory = helper.getAttribute(
-				IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
-		return deployDirectory.trim();
+		return server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "").trim();
 	}
 	
 	public static boolean canExplore(IServer server) {
@@ -104,6 +100,13 @@ public class ExploreUtils {
 		if (ExploreUtils.getExploreCommand() == null) {
 			return false;
 		}
+		return true;
+	}
+	public static boolean canExplore(IServer server, IModule[] modules) {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		IPath p = PublishUtil.getDeployRootFolder(modules, ds);
+		if (p == null || !p.toFile().exists() || ExploreUtils.getExploreCommand() == null)
+			return false;
 		return true;
 	}
 	
@@ -144,28 +147,11 @@ public class ExploreUtils {
 	}
 	
 	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
-		IPath root = new Path( server.getDeployFolder() );
-		String type, name;
-		for( int i = 0; i < moduleTree.length; i++ ) {
-			type = moduleTree[i].getModuleType().getId();
-			name = moduleTree[i].getName();
-			if( new Path(name).segmentCount() > 1 )
-				// we strongly suspect this is a binary object and not a project
-				return root.append(new Path(name).lastSegment());
-			if( "jst.ear".equals(type))  //$NON-NLS-1$
-				root = root.append(name + ".ear"); //$NON-NLS-1$
-			else if( "jst.web".equals(type))  //$NON-NLS-1$
-				root = root.append(name + ".war"); //$NON-NLS-1$
-			else if( "jst.utility".equals(type) && i >= 1 && "jst.web".equals(moduleTree[i-1].getModuleType().getId()))  //$NON-NLS-1$ //$NON-NLS-2$
-				root = root.append("WEB-INF").append("lib").append(name + ".jar");			 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			else if( "jst.connector".equals(type)) { //$NON-NLS-1$
-				root = root.append(name + ".rar"); //$NON-NLS-1$
-			} else if( "jst.jboss.esb".equals(type)){ //$NON-NLS-1$
-				root = root.append(name + ".esb"); //$NON-NLS-1$
-			}else
-				root = root.append(name + ".jar"); //$NON-NLS-1$
+		IPath p = PublishUtil.getDeployRootFolder(moduleTree, server);
+		if( !PublishUtil.isBinaryObject(moduleTree)) {
+			return PublishUtil.getDeployPath(moduleTree, server);
 		}
-		return root;
+		return p;
 	}
 	
 }

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,12 +25,8 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
-import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -197,28 +192,8 @@ public class ModuleActionProvider extends CommonActionProvider {
 	private IPath getDeployPath() {
 		ModuleServer ms = selection[0];
 		IModule[] module = ms.module;
-		IJBossServerPublisher publisher = ExtensionManager.getDefault()
-				.getPublisher(ms.getServer(), module, "local");
-		IPath path = null;
-		IDeployableServer deployableServer = ServerConverter
-				.getDeployableServer(ms.server);
-		if (deployableServer != null) {
-			if (publisher instanceof JstPublisher) {
-				path = ExploreUtils.getDeployPath(deployableServer,
-						module);
-			} else if (publisher instanceof SingleFilePublisher) {
-				SingleDeployableModuleDelegate delegate = (SingleDeployableModuleDelegate)module[0].loadAdapter(SingleDeployableModuleDelegate.class, new NullProgressMonitor());
-				if (delegate != null) {
-					IPath sourcePath = delegate.getGlobalSourcePath();
-					IPath destFolder = new Path(deployableServer.getDeployFolder());
-					path = destFolder.append(sourcePath.lastSegment());
-				} else {
-					path = new Path(deployableServer.getDeployFolder());
-				}
-			} else {
-				path = new Path(deployableServer.getDeployFolder());
-			}
-		}
+		IDeployableServer deployableServer = ServerConverter.getDeployableServer(ms.server);
+		IPath path = ExploreUtils.getDeployPath(deployableServer, module);
 		return path;
 	}
 }
