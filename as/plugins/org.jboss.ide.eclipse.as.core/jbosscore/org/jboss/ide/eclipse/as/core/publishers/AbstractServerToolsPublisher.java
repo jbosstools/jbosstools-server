@@ -105,13 +105,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @return
 	 */
 	protected IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
-		String defaultFolder = publishMethod.getPublishDefaultRootFolder(server.getServer());
-		String folder = PublishUtil.getDeployRootFolder(
-				moduleTree, server, defaultFolder,
-				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return PublishUtil.getDeployPath(moduleTree, folder);
+		return PublishUtil.getDeployPath(publishMethod, moduleTree, server);
 	}
 		
+	
 	/**
 	 * Finish up the publishing. This may be moving a final zipped entity into the proper
 	 * folder or sending it over the wire to a remote machine.

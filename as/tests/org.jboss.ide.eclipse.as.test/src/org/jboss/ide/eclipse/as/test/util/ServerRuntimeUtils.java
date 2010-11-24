@@ -3,8 +3,10 @@ package org.jboss.ide.eclipse.as.test.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
@@ -15,22 +17,31 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStreamListener;
+import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
+import org.eclipse.jdt.launching.environments.IExecutionEnvironment;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServer.IOperationListener;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -104,7 +115,6 @@ public class ServerRuntimeUtils extends TestCase {
 		return server;
 	}
 
-	
 	public static IServer createMockServerWithRuntime(String serverType, String name, String config) {
 		try {
 			IPath serverDir = createMockServerDirectory(name, twiddleMap.get(serverType), config);
@@ -114,13 +124,39 @@ public class ServerRuntimeUtils extends TestCase {
 		return null;
 	}
 	
+	public static IServer create32Server() throws CoreException {
+		return createServer(IJBossToolingConstants.AS_32, IJBossToolingConstants.SERVER_AS_32, ASTest.JBOSS_AS_32_HOME, DEFAULT_CONFIG);
+	}
+	public static IServer create40Server() throws CoreException {
+		return createServer(IJBossToolingConstants.AS_40, IJBossToolingConstants.SERVER_AS_40, ASTest.JBOSS_AS_40_HOME, DEFAULT_CONFIG);
+	}
+	public static IServer create42Server() throws CoreException {
+		return createServer(IJBossToolingConstants.AS_42, IJBossToolingConstants.SERVER_AS_42, ASTest.JBOSS_AS_42_HOME, DEFAULT_CONFIG);
+	}
+	public static IServer create50Server() throws CoreException {
+		return createServer(IJBossToolingConstants.AS_50, IJBossToolingConstants.SERVER_AS_50, ASTest.JBOSS_AS_50_HOME, DEFAULT_CONFIG);
+	}
+	
+	public static IServer create51Server() throws CoreException {
+		return createServer(IJBossToolingConstants.AS_51, IJBossToolingConstants.SERVER_AS_51, ASTest.JBOSS_AS_51_HOME, DEFAULT_CONFIG);
+	}
+	
+//	public static IServer create60Server() throws CoreException {
+//	}
+	
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration) throws CoreException {
-		// if file doesnt exist, abort immediately.
-		assertTrue("path \"" + location + "\" does not exist", new Path(location).toFile().exists());
-
+		IRuntime currentRuntime = createRuntime(runtimeID, location,configuration);
+		return createServer2(currentRuntime, serverID);
+	}
+	public static IServer createServer(String runtimeID, String serverID,
+			String location, String configuration, IVMInstall install) throws CoreException {
 		IRuntime currentRuntime = createRuntime(runtimeID, location,
-				configuration);
+				configuration, install);
+		return createServer2(currentRuntime, serverID);
+	}
+	
+	private static IServer createServer2(IRuntime currentRuntime, String serverID) throws CoreException {
 		IServerType serverType = ServerCore.findServerType(serverID);
 		IServerWorkingCopy serverWC = serverType.createServer(null, null,
 				new NullProgressMonitor());
@@ -129,11 +165,17 @@ public class ServerRuntimeUtils extends TestCase {
 		serverWC.setServerConfiguration(null);
 		return serverWC.save(true, new NullProgressMonitor());
 	}
+	
 
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,
-				runtimeId);
+		return createRuntime(runtimeId, homeDir, config, VM_INSTALL);
+	}
+	
+	public static IRuntime createRuntime(String runtimeId, String homeDir,
+			String config, IVMInstall install) throws CoreException {
+		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
 		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
 		IRuntimeType runtimeType = runtimeTypes[0];
 		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
@@ -141,9 +183,9 @@ public class ServerRuntimeUtils extends TestCase {
 		runtimeWC.setName(runtimeId);
 		runtimeWC.setLocation(new Path(homeDir));
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, VM_INSTALL.getId());
+				IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, VM_INSTALL
+				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, install
 						.getVMInstallType().getId());
 		((RuntimeWorkingCopy) runtimeWC).setAttribute(
 				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
@@ -151,7 +193,26 @@ public class ServerRuntimeUtils extends TestCase {
 		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
 		return savedRuntime;
 	}
-	
+
+	public static IRuntime createRuntime(String runtimeId, String homeDir,
+			String config, IExecutionEnvironment environment) throws CoreException {
+		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
+		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
+		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
+		IRuntimeType runtimeType = runtimeTypes[0];
+		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
+				new NullProgressMonitor());
+		runtimeWC.setName(runtimeId);
+		runtimeWC.setLocation(new Path(homeDir));
+		((RuntimeWorkingCopy) runtimeWC).setAttribute(
+				IJBossServerRuntime.PROPERTY_EXECUTION_ENVIRONMENT, environment.getId());
+		((RuntimeWorkingCopy) runtimeWC).setAttribute(
+				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
+
+		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
+		return savedRuntime;
+	}
+
 	public static void deleteAllServers() throws CoreException {
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
@@ -245,6 +306,140 @@ public class ServerRuntimeUtils extends TestCase {
 	public static IServer setZipped(IServer server, boolean val) {
 		return ServerRuntimeUtils.setServerAttribute(server, IDeployableServer.ZIP_DEPLOYMENTS_PREF, val);
 	}
+
+	public static final int DEFAULT_STARTUP_TIME = 150000;
+	public static final int DEFAULT_SHUTDOWN_TIME = 90000;
+	public static void startup(IServer server) { startup(server, DEFAULT_STARTUP_TIME); }
+	public static void startup(final IServer currentServer, int maxWait) {
+		long finishTime = new Date().getTime() + maxWait;
+		
+		// operation listener, which is only alerted when the startup is *done*
+		final StatusWrapper opWrapper = new StatusWrapper();
+		final IOperationListener listener = new IOperationListener() {
+			public void done(IStatus result) {
+				opWrapper.setStatus(result);
+			} };
+			
+			
+		// a stream listener to listen for errors
+		ErrorStreamListener streamListener = new ErrorStreamListener();
+		
+		// the thread to actually start the server
+		Thread startThread = new Thread() { 
+			public void run() {
+				currentServer.start(ILaunchManager.RUN_MODE, listener);
+			}
+		};
+		
+		startThread.start();
+		
+		boolean addedStream = false;
+		while( finishTime > new Date().getTime() && opWrapper.getStatus() == null) {
+			// we're waiting for startup to finish
+			if( !addedStream ) {
+				IStreamMonitor mon = getStreamMonitor(currentServer);
+				if( mon != null ) {
+					mon.addListener(streamListener);
+					addedStream = true;
+				}
+			}
+			try {
+				Display.getDefault().readAndDispatch();
+			} catch( SWTException swte ) {}
+		}
+		
+		try {
+			assertTrue("Startup has taken longer than what is expected for a default startup", finishTime >= new Date().getTime());
+			assertNotNull("Startup never finished", opWrapper.getStatus());
+			assertFalse("Startup failed", opWrapper.getStatus().getSeverity() == IStatus.ERROR);
+			assertFalse("Startup had System.error output", streamListener.hasError());
+		} catch( AssertionFailedError afe ) {
+			// cleanup
+			currentServer.stop(true);
+			// rethrow
+			throw afe;
+		}
+		if( getStreamMonitor(currentServer) != null )
+			getStreamMonitor(currentServer).removeListener(streamListener);
+	}
+
+	
+	public static void shutdown(IServer currentServer) { shutdown(currentServer, DEFAULT_SHUTDOWN_TIME); }
+	public static void shutdown(final IServer currentServer, int maxWait) {
+		long finishTime = new Date().getTime() + maxWait;
+		
+		// operation listener, which is only alerted when the startup is *done*
+		final StatusWrapper opWrapper = new StatusWrapper();
+		final IOperationListener listener = new IOperationListener() {
+			public void done(IStatus result) {
+				opWrapper.setStatus(result);
+			} };
+			
+			
+		// a stream listener to listen for errors
+		ErrorStreamListener streamListener = new ErrorStreamListener();
+		if( getStreamMonitor(currentServer) != null ) 
+			getStreamMonitor(currentServer).addListener(streamListener);
+		
+		// the thread to actually start the server
+		Thread stopThread = new Thread() { 
+			public void run() {
+				currentServer.stop(false, listener);
+			}
+		};
+		
+		stopThread.start();
+		
+		while( finishTime > new Date().getTime() && opWrapper.getStatus() == null) {
+			// we're waiting for startup to finish
+			try {
+				Display.getDefault().readAndDispatch();
+			} catch( SWTException swte ) {}
+		}
+		
+		try {
+			assertTrue("Startup has taken longer than what is expected for a default startup", finishTime >= new Date().getTime());
+			assertNotNull("Startup never finished", opWrapper.getStatus());
+			assertFalse("Startup had System.error output", streamListener.hasError());
+		} catch( AssertionFailedError afe ) {
+			// cleanup
+			currentServer.stop(true);
+			// rethrow
+			throw afe;
+		}
+	}
+	
+	protected static class ErrorStreamListener implements IStreamListener {
+		protected boolean errorFound = false;
+		String entireLog = "";
+		public void streamAppended(String text, IStreamMonitor monitor) {
+			entireLog += text;
+		} 
+		
+		// will need to be fixed or decided how to figure out errors
+		public boolean hasError() {
+			return errorFound;
+		}
+	}
+
+		
+	protected static IStreamMonitor getStreamMonitor(IServer server) {
+		JBossServerBehavior behavior = 
+			(JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, null);
+		if( behavior != null ) {
+			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
+				return ((IProcessProvider)behavior.getDelegate()).getProcess().getStreamsProxy().getOutputStreamMonitor();
+			}
+		}
+		return null;
+	}
+	
+	public static class StatusWrapper {
+		protected IStatus status;
+		public IStatus getStatus() { return this.status; }
+		public void setStatus(IStatus s) { this.status = s; }
+	}
+
 
 
 }

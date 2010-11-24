@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
@@ -191,7 +192,14 @@ public class PublishUtil {
 		return ModuleCoreNature.isFlexibleProject(lastmod.getProject());
 	}
 
-	
+	public static IPath getDeployPath(IJBossServerPublishMethod method, IModule[] moduleTree, IDeployableServer server) {
+		String defaultFolder = method.getPublishDefaultRootFolder(server.getServer());
+		String folder = PublishUtil.getDeployRootFolder(
+				moduleTree, server, defaultFolder,
+				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
+		return PublishUtil.getDeployPath(moduleTree, folder);
+	}
+
 	private static String getSuffix(String type) {
 		// TODO
 		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!

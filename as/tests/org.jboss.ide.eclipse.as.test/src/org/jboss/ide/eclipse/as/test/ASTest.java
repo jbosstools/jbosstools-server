@@ -83,6 +83,9 @@ public class ASTest extends Plugin {
 	public static final String JBOSS_AS_50_HOME = System.getProperty("jbosstools.test.jboss.home.5.0", "C:\\apps\\jboss\\jboss-5.0.0.GA\\");
 	public static final String JBOSS_AS_51_HOME = System.getProperty("jbosstools.test.jboss.home.5.1", "C:\\apps\\jboss\\jboss-5.1.0.GA\\");
 	public static final String JBOSS_AS_52_HOME = System.getProperty("jbosstools.test.jboss.home.5.2", "C:\\apps\\jboss\\jboss-5.2.0.GA\\");
+	public static final String JRE_14_HOME = System.getProperty("jbosstools.test.jre.1.4", "C:\\apps\\jboss\\jboss-5.2.0.GA\\");
+	public static final String JRE_5_HOME = System.getProperty("jbosstools.test.jre.5", "C:\\apps\\jboss\\jboss-5.2.0.GA\\");
+	public static final String JRE_6_HOME = System.getProperty("jbosstools.test.jre.6", "C:\\apps\\jboss\\jboss-5.2.0.GA\\");
 
 	public static final String JBOSS_AS_HOME = System.getProperty("jbosstools.test.jboss.home", JBOSS_AS_42_HOME);
 	
