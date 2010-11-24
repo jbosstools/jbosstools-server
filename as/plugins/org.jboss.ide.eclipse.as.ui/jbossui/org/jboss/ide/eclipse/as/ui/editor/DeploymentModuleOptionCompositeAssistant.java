@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.ui.editor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
 
@@ -43,13 +42,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IFormColors;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
@@ -67,7 +70,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
-import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -615,12 +617,6 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		publishLocColumn.setWidth(200);
 		publishTempLocColumn.setWidth(200);
 
-		FormData treeData = new FormData();
-		treeData.top = new FormAttachment(0, 5);
-		treeData.bottom = new FormAttachment(100, -5);
-		treeData.left = new FormAttachment(0, 5);
-		treeData.right = new FormAttachment(100, -5);
-		viewer.getTree().setLayoutData(treeData);
 		viewer.setContentProvider(new ModulePageContentProvider());
 
 		viewer.setLabelProvider(new ModulePageLabelProvider());
@@ -633,10 +629,36 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				new TextCellEditor(viewer.getTree()) };
 		viewer.setCellModifier(new LocalDeploymentCellModifier());
 		viewer.setCellEditors(editors);
+		
+		Link link = new Link(root, SWT.DEFAULT);
+		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>");
+		link.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				refreshViewer();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
+		FormData linkData = new FormData();
+		linkData.bottom = new FormAttachment(100,-5);
+		linkData.left = new FormAttachment(0, 5);
+		link.setLayoutData(linkData);
+		
+		FormData treeData = new FormData();
+		treeData.top = new FormAttachment(0, 5);
+		treeData.bottom = new FormAttachment(link, -5);
+		treeData.left = new FormAttachment(0, 5);
+		treeData.right = new FormAttachment(100, -5);
+		viewer.getTree().setLayoutData(treeData);
 
 		return root;
 	}
 
+	private void refreshViewer() {
+		page.refreshPossibleModules();
+		viewer.setInput(""); // irrelevent		
+	}
+	
 	private class LocalDeploymentCellModifier implements ICellModifier {
 		public boolean canModify(Object element, String property) {
 			if( property == COLUMN_NAME)

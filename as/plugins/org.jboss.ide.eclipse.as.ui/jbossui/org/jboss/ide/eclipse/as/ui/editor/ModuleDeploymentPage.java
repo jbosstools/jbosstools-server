@@ -79,6 +79,17 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
+		refreshPossibleModules();
+		if (input instanceof IServerEditorPartInput) {
+			IServerEditorPartInput sepi = (IServerEditorPartInput) input;
+			server = sepi.getServer();
+			commandManager = ((ServerEditorPartInput) sepi).getServerCommandManager();
+			readOnly = sepi.isServerReadOnly();
+		}
+		helper = new ServerAttributeHelper(server.getOriginal(), server);
+	}
+	
+	public void refreshPossibleModules() {
 		ArrayList<IModule> possibleChildren = new ArrayList<IModule>();
 		IModule[] modules2 = org.eclipse.wst.server.core.ServerUtil.getModules(server.getServerType().getRuntimeType().getModuleTypes());
 		if (modules2 != null) {
@@ -91,20 +102,13 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 			}
 		}
 		this.possibleModules = possibleChildren;
-		if (input instanceof IServerEditorPartInput) {
-			IServerEditorPartInput sepi = (IServerEditorPartInput) input;
-			server = sepi.getServer();
-			commandManager = ((ServerEditorPartInput) sepi).getServerCommandManager();
-			readOnly = sepi.isServerReadOnly();
-		}
-		helper = new ServerAttributeHelper(server.getOriginal(), server);
-
 	}
 
 	public void createPartControl(Composite parent) {
 		preferences = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getOriginal());
 		ScrolledForm innerContent = createPageStructure(parent);
 		addDeploymentLocationControls(innerContent.getBody(), null);
+		
 		innerContent.reflow(true);
 	}
 	
