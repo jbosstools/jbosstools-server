@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.ProgressMonitor;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -43,6 +41,7 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 /**
@@ -135,6 +134,7 @@ public final class PublishCopyUtil {
 		}
 		
 		public IStatus[] copyFile(IModuleFile mf, IPath relativePath, IProgressMonitor monitor) throws CoreException {
+			monitor.beginTask("Copying " + relativePath.toString(), 100); //$NON-NLS-1$
 			File file = PublishUtil.getFile(mf);
 			shouldRestartModule |= checkRestartModule(file);
 			if( file != null ) {
@@ -146,6 +146,8 @@ public final class PublishCopyUtil {
 							NLS.bind(Messages.errorReading, file.getAbsolutePath()), e)};
 				}
 				IStatus ret = copyFile(in, deployRootFolder.append(relativePath), file.lastModified(), mf);
+				monitor.worked(100);
+				monitor.done();
 				if( ret != null && ret.isOK())
 					return new IStatus[] { ret };
 			} // else silently ignore I guess
@@ -376,7 +378,8 @@ public final class PublishCopyUtil {
 						monitor.worked(10);
 					} else if (current.isDirectory()) {
 						monitor.subTask(NLS.bind(Messages.deletingTask, new String[] {current.getAbsolutePath()}));
-						IStatus[] stat = deleteDirectory(current, ProgressUtil.getSubMonitorFor(monitor, 10));
+						IStatus[] stat = deleteDirectory(current, 
+								AbstractServerToolsPublisher.getSubMon(monitor, 10));
 						if (stat != null && stat.length > 0) {
 							deleteCurrent = false;
 							addArrayToList(status, stat);
@@ -559,7 +562,8 @@ public final class PublishCopyUtil {
 		monitor = ProgressUtil.getMonitorFor(monitor);
 		monitor.beginTask("Publishing " + count + " resources", //$NON-NLS-1$ //$NON-NLS-2$ 
 				(100 * (count)) + 200);
-		handler.makeDirectoryIfRequired(new Path("/"), ProgressMonitorUtil.submon(monitor, 100)); //$NON-NLS-1$
+		handler.makeDirectoryIfRequired(new Path("/"),  //$NON-NLS-1$
+				AbstractServerToolsPublisher.getSubMon(monitor, 100)); 
 		if( monitor.isCanceled())
 			return canceledStatus();
 		IStatus[] results = publishFull(resources, new Path("/"), monitor); //$NON-NLS-1$
@@ -592,7 +596,7 @@ public final class PublishCopyUtil {
 			IModuleResource[] children = folder.members();
 			if( children.length == 0 )
 				handler.makeDirectoryIfRequired(folder.getModuleRelativePath().append(folder.getName()), 
-						ProgressUtil.getSubMonitorFor(monitor, 5));
+						AbstractServerToolsPublisher.getSubMon(monitor, 5));
 			else {
 				IStatus[] stat = publishFull(children, path, monitor);
 				addArrayToList(status, stat);
@@ -605,7 +609,7 @@ public final class PublishCopyUtil {
 				addArrayToList(status, stats);
 
 			addArrayToList(status, handler.copyFile(mf, path, 
-					ProgressUtil.getSubMonitorFor(monitor, 100)));
+					AbstractServerToolsPublisher.getSubMon(monitor, 100)));
 		}
 		IStatus[] stat = new IStatus[status.size()];
 		status.toArray(stat);

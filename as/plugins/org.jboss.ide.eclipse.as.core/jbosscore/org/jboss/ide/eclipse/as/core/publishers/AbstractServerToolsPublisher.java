@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
@@ -64,6 +65,21 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		this.publishState = state;
 	}
 
+	public static class CustomSubProgress extends SubProgressMonitor {
+		public CustomSubProgress(IProgressMonitor monitor, int ticks, int style) {
+			super(monitor, ticks, style);
+		}
+		public void beginTask(String name, int totalWork) {
+			super.beginTask(null, totalWork);
+			setTaskName(name);
+		}
+	}
+	
+	public static IProgressMonitor getSubMon(IProgressMonitor parent, int ticks) {
+		IProgressMonitor subMon = new CustomSubProgress(parent, ticks, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
+		return subMon;
+	}
+	
 	public IStatus publishModule(IJBossServerPublishMethod method,
 			IServer server, IModule[] module, int publishType,
 			IModuleResourceDelta[] delta, IProgressMonitor monitor)
@@ -80,7 +96,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		}
 
 		// Monitor at this point has been begun with 1000 monitor
-		IProgressMonitor subMon = ProgressMonitorUtil.submon(monitor, 1000);
+		IProgressMonitor subMon = getSubMon(monitor, 1000);
 		if (publishType == REMOVE_PUBLISH ) {
 			status = unpublish(this.server, module, subMon);
 		} else {
@@ -142,11 +158,11 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	}
 	
 	protected IStatus fullPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Full Publish", 1000); //$NON-NLS-1$
+		monitor.beginTask("Full Publish: " + moduleTree[moduleTree.length-1].getName(), 1000); //$NON-NLS-1$
 		
 		IPath deployPath = getDeployPath(moduleTree, server);
 		IPublishCopyCallbackHandler callback = getCallbackHandler(deployPath);
-		IModuleResource[] members = PublishUtil.getResources(module, ProgressMonitorUtil.submon(monitor, 200));
+		IModuleResource[] members = PublishUtil.getResources(module, getSubMon(monitor, 200));
  
 		if( monitor.isCanceled())
 			return canceledStatus();
@@ -155,7 +171,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		// if the module we're publishing is a project, not a binary, clean it's folder
 		//if( !(new Path(module.getName()).segmentCount() > 1 ))
 		if( !ServerModelUtilities.isBinaryModule(module))
-			callback.deleteResource(new Path("/"), ProgressMonitorUtil.submon(monitor, 100)); //$NON-NLS-1$
+			callback.deleteResource(new Path("/"), getSubMon(monitor, 100)); //$NON-NLS-1$
 
 		if( monitor.isCanceled())
 			return canceledStatus();
@@ -167,10 +183,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		
 		if( !forceZip && !isBinaryObject) {
 			PublishCopyUtil util = new PublishCopyUtil(callback);
-			list.addAll(Arrays.asList(util.initFullPublish(members, ProgressMonitorUtil.submon(monitor, 700))));
+			list.addAll(Arrays.asList(util.initFullPublish(members, getSubMon(monitor, 700))));
 			JSTPublisherXMLToucher.getInstance().touch(deployPath, module, callback);
 		} else if( isBinaryObject )
-			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, ProgressMonitorUtil.submon(monitor, 700))));
+			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, getSubMon(monitor, 700))));
 		else {
 			// A child that must be zipped, forceZip is true
 			IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
@@ -183,9 +199,9 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				String root = (deployPath.getDevice() == null ? "" : deployPath.getDevice()) + "/";  //$NON-NLS-1$//$NON-NLS-2$
 				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path(root));
 				String parentFolder = deployPath.removeLastSegments(1).toString();
-				handler.makeDirectoryIfRequired(new Path(parentFolder), ProgressMonitorUtil.submon(monitor, 200));
+				handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
-				handler.copyFile(mf, deployPath, ProgressMonitorUtil.submon(monitor, 500));
+				handler.copyFile(mf, deployPath, getSubMon(monitor, 500));
 			} catch( IOException ioe) {
 				list.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 			}
@@ -198,7 +214,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	}
 		
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Incremental Publish", 100); //$NON-NLS-1$
+		monitor.beginTask("Incremental Publish: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
@@ -206,10 +222,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		IPublishCopyCallbackHandler  handler = null;
 		if( !forceZip && !isBinaryObject) {
 			handler = getCallbackHandler(deployPath);
-			results = new PublishCopyUtil(handler).publishDelta(delta, ProgressMonitorUtil.submon(monitor, 100));
+			results = new PublishCopyUtil(handler).publishDelta(delta, getSubMon(monitor, 100));
 		} else if( delta.length > 0 ) {
 			if( isBinaryObject)
-				results = copyBinaryModule(moduleTree, ProgressMonitorUtil.submon(monitor, 100));
+				results = copyBinaryModule(moduleTree, getSubMon(monitor, 100));
 			else {
 				// forceZip a child module
 				IPath localDeployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
@@ -220,9 +236,9 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 					PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile);
 					handler = getCallbackHandler(new Path("/"));		 //$NON-NLS-1$
 					String parentFolder = deployPath.removeLastSegments(1).toString();
-					handler.makeDirectoryIfRequired(new Path(parentFolder), ProgressMonitorUtil.submon(monitor, 50));
+					handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 50));
 					ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
-					handler.copyFile(mf, deployPath, ProgressMonitorUtil.submon(monitor, 50));
+					handler.copyFile(mf, deployPath, getSubMon(monitor, 50));
 				} catch( IOException ioe) {
 					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe);
 					results = new IStatus[] { s };
@@ -257,7 +273,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	}
 	
 	protected IStatus[] copyBinaryModule(IModule[] moduleTree, IProgressMonitor monitor) {
-		monitor.beginTask("Copy Binary Module", 100); //$NON-NLS-1$
+		monitor.beginTask("Copying Child Module: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		try {
 			IPath destinationPath = getDeployPath(moduleTree, server);
 			IModuleResource[] members = PublishUtil.getResources(moduleTree);
@@ -283,10 +299,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Begin Unpublish", 100); //$NON-NLS-1$
+		monitor.beginTask("Removing Module: " + module[module.length-1].getName(), 100); //$NON-NLS-1$
 		IPath remotePath = getDeployPath(module, server);
 		IPublishCopyCallbackHandler handler = getCallbackHandler(new Path("/")); //$NON-NLS-1$
-		handler.deleteResource(remotePath, ProgressMonitorUtil.submon(monitor, 100));
+		handler.deleteResource(remotePath, getSubMon(monitor, 100));
 		monitor.done();
 		return Status.OK_STATUS;
 	}
