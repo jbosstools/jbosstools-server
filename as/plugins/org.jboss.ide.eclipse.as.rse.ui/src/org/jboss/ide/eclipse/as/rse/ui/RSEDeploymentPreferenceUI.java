@@ -54,8 +54,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
@@ -103,8 +104,11 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			};
 			combo.getCombo().addModifyListener(comboMListener);
 			
-			IServer original = callback.getServer().getOriginal();
-			if( original != null && ServerConverter.getJBossServer(original) != null ) {
+			IServerWorkingCopy cServer = callback.getServer();
+			JBossServer jbs = cServer.getOriginal() == null ? 
+					ServerConverter.getJBossServer(cServer) :
+						ServerConverter.getJBossServer(cServer.getOriginal());
+			if( jbs != null ) {
 			
 				Label serverHomeLabel = new Label(this, SWT.NONE);
 				serverHomeLabel.setText("Remote Server Home: ");
