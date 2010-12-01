@@ -147,11 +147,11 @@ public class ExploreUtils {
 	}
 	
 	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
-		IPath p = PublishUtil.getDeployRootFolder(moduleTree, server);
+		IPath fullPath = PublishUtil.getDeployPath(moduleTree, server);
 		if( !PublishUtil.isBinaryObject(moduleTree)) {
-			return PublishUtil.getDeployPath(moduleTree, server);
+			return fullPath;
 		}
-		return p;
+		return fullPath.removeLastSegments(1);
 	}
 	
 }
