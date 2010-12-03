@@ -211,14 +211,16 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		}
 		
 		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
-		IScopeContext context = new ProjectScope(project);
-		IEclipsePreferences node = context.getNode(qualifier);
-		if (node != null)
-			node.put(PREFERENCE_KEY, list);
-		try {
-			node.flush();
-		} catch (BackingStoreException e) {
-			// TODO Log
+		if( project.exists() ) {
+			IScopeContext context = new ProjectScope(project);
+			IEclipsePreferences node = context.getNode(qualifier);
+			if (node != null)
+				node.put(PREFERENCE_KEY, list);
+			try {
+				node.flush();
+			} catch (BackingStoreException e) {
+				// TODO Log
+			}
 		}
 	}
 
