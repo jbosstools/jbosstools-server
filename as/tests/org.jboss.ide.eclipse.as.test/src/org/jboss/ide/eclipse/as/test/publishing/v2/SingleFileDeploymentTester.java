@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -190,12 +191,23 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		assertEquals(mods.length, 1);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
-		deployRoot.toFile().mkdirs();
+		File f0 = deployRoot.toFile();
+		assertFalse(f0.exists());
+		assertTrue(deployRoot.toFile().mkdirs());
 		assertEquals(IOUtil.countFiles(deployRoot.toFile()), 0);
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 1);
-
+		
 		// publish and verify deployment
+		File publishLog = ServerLogger.getDefault().getServerLogFile(server);
+		publishLog.delete();
+		assertTrue(!publishLog.exists());
+		IJBossServerPublisher publisher = ExtensionManager.getDefault().getPublisher(server, mods, "local");
+		assertNotNull(publisher);
+		assertTrue(publisher.getClass().getName() + " not equal to WTPZippedPublisher", 
+				publisher.getClass().getName().contains("WTPZippedPublisher"));
 		ServerRuntimeUtils.publish(server);
+		assertTrue(publishLog.exists());
+		System.out.println(IOUtil.getContents(publishLog));
 		assertEquals(IOUtil.countFiles(deployRoot.toFile()), 1);
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 2);
 		
