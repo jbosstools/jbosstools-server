@@ -10,25 +10,29 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.test.projects;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.test.ArchivesTest;
-import org.jboss.tools.test.util.ResourcesUtils;
 import org.osgi.framework.Bundle;
 
+import de.schlichtherle.io.AbstractArchiveDetector;
+import de.schlichtherle.io.ArchiveDetector;
 import de.schlichtherle.io.File;
+import de.schlichtherle.io.archive.spi.ArchiveDriver;
 
 /**
  * This class tests first and foremost
@@ -45,25 +49,14 @@ import de.schlichtherle.io.File;
 public class InnerZipResourceTimestampTest extends TestCase {
 	private long startTime;
 	private Bundle bundle;
-	private final String projName = "InnerZipProj";
-	private IProject project;
-	IPath projLocation;
-	private IFolder outputDir, libDir;
 	protected void setUp() throws Exception {
 		startTime = new Date().getTime();
 		bundle = ArchivesTest.getDefault().getBundle();
-		project = ResourcesUtils.createEclipseProject(projName, new NullProgressMonitor());
-		projLocation = project.getLocation(); // for debugging
-		assertTrue(project.exists());
-		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
-		outputDir = project.getFolder("output");
-		outputDir.create(true, true, new NullProgressMonitor());
-		assertTrue(outputDir.exists());
-		libDir = project.getFolder("libs");
-		libDir.create(true, true, new NullProgressMonitor());
-		assertTrue(libDir.exists());
 	}
-
+	
+	protected void tearDown() throws Exception {
+	}
+	
 	protected java.io.File findSomeJar() {
 		try {
 			URL bundleURL = FileLocator.toFileURL(bundle.getEntry(""));
@@ -73,28 +66,91 @@ public class InnerZipResourceTimestampTest extends TestCase {
 		return null;
 	}
 
+	public void testRawTruezipTimestamps() {
+		java.io.File someJar = findSomeJar();
+		IPath src = new Path(someJar.getAbsolutePath());
+		IPath dest = ArchivesTest.getDefault().getStateLocation().append("some.jar");
+		//File destFile = new de.schlichtherle.io.File(dest.toOSString(), new PureSourceArchiveDetector());
+		File destFile = new de.schlichtherle.io.File(dest.toOSString(), ArchiveDetector.NULL);
+
+		boolean copySuccess = new de.schlichtherle.io.File(someJar).archiveCopyAllTo(destFile);
+		destFile.setLastModified(new Date().getTime());
+		TrueZipUtil.umount();
+		assertTrue(copySuccess);
+		java.io.File destNonTruezip = new java.io.File(destFile.getAbsolutePath());
+		assertTrue(destNonTruezip.exists());
+		assertTrue(destNonTruezip.isFile());
+		assertTrue(destNonTruezip.lastModified() > someJar.lastModified());
+		
+		verifyEquals(src, dest, "plugin.xml");
+		verifyEquals(src, dest, "plugin.properties");
+		verifyEquals(src, dest, "about.html");
+		verifyEquals(src, dest, ".options");
+		verifyEquals(src, dest, ".api_description");
+		verifyEquals(src, dest, "jdtCompilerAdapter.jar");
+		
+		IPath tmp1 = ArchivesTest.getDefault().getStateLocation().append("tmp1");
+		IPath tmp2 = ArchivesTest.getDefault().getStateLocation().append("tmp2");
+		tmp1.toFile().mkdir();
+		tmp2.toFile().mkdir();
+		unzipFile(src, tmp1);
+		unzipFile(dest, tmp2);
+		
+		String[] children = tmp1.toFile().list();
+		for( int i = 0; i < children.length; i++ ) {
+			assertTrue(tmp1.append(children[i]).toFile().exists());
+			assertTrue(tmp1.append(children[i]).toFile().isFile());
+			assertTrue(tmp2.append(children[i]).toFile().isFile());
+			assertTrue(tmp2.append(children[i]).toFile().isFile());
+			assertEquals(tmp1.append(children[i]).toFile().length(), 
+					tmp2.append(children[i]).toFile().length());
+		}
+		System.out.println("DONE");
+	}
 	
-	protected void tearDown() throws Exception {
-		ResourcesUtils.deleteProject(projName);
+	private void verifyEquals(IPath src, IPath dest, String relative) {
+		File prePath = new File(src.append(relative).toOSString());
+		File postPath = new File(dest.append(relative).toOSString());
+		assertEquals(prePath.lastModified(), postPath.lastModified());
+		assertEquals(prePath.length(), postPath.length());
+	}
+	
+	
+	
+	public static void unzipFile(IPath zipped, IPath toLoc) {
+		toLoc.toFile().mkdirs();
+		final int BUFFER = 2048;
+		try {
+			  BufferedOutputStream dest = null;
+		      FileInputStream fis = new 
+		 	  FileInputStream(zipped.toFile());
+			  ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+	          ZipEntry entry;
+	          while((entry = zis.getNextEntry()) != null) {
+	             int count;
+	             byte data[] = new byte[BUFFER];
+	             // write the files to the disk
+	             toLoc.append(entry.getName()).toFile().getParentFile().mkdirs();
+	             if( !toLoc.append(entry.getName()).toFile().exists()) {
+		             FileOutputStream fos = new FileOutputStream(toLoc.append(entry.getName()).toOSString());
+		             dest = new BufferedOutputStream(fos, BUFFER);
+		             while ((count = zis.read(data, 0, BUFFER)) != -1) {
+		                dest.write(data, 0, count);
+		             }
+		             dest.flush();
+		             dest.close();
+	             }
+	          }
+	          zis.close();
+	       } catch(Exception e) {
+	          e.printStackTrace();
+	       }
 	}
 
-	public void testInnerZipTimestamps() {
-		// test the original
-		java.io.File someJar = findSomeJar();
-		File file = TrueZipUtil.getFile(new Path(someJar.getAbsolutePath()).append("META-INF").append("MANIFEST.MF"));
-		long last = file.lastModified();
-		assertTrue(last < startTime);
-		
-		try {
-			boolean copyVal = TrueZipUtil.copyFile(someJar.getAbsolutePath(), libDir.getLocation().append("some.jar"));
-			TrueZipUtil.umount();
-			IPath workspaceJarPath = libDir.getLocation().append("some.jar");
-			long workspaceJarLastModified = workspaceJarPath.toFile().lastModified();
-			assertTrue(workspaceJarLastModified > startTime);
-			File workspaceFile = TrueZipUtil.getFile(workspaceJarPath.append("META-INF").append("MANIFEST.MF"));
-			long workspaceResourceMod = workspaceFile.lastModified();
-			assertTrue(workspaceResourceMod < startTime);
-		} catch(IOException ioe) {
-		} finally {}
+	
+	private static class PureSourceArchiveDetector extends AbstractArchiveDetector {
+		public ArchiveDriver getArchiveDriver(String path) {
+			return null;
+		}
 	}
 }
