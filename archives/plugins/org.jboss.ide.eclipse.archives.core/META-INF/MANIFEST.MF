@@ -24,6 +24,7 @@ Bundle-ClassPath: archivescore.jar,
  lib/jboss-common-core-2.2.1.GA.jar,
  lib/truezip-6.6.jar
 Export-Package: de.schlichtherle.io;x-friends:="org.jboss.ide.eclipse.archives.test",
+ de.schlichtherle.io.archive.spi,
  org.jboss.ide.eclipse.archives.core,
  org.jboss.ide.eclipse.archives.core.ant,
  org.jboss.ide.eclipse.archives.core.asf,
