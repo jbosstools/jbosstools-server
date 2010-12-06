@@ -264,7 +264,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 				IModuleFile mf = (IModuleFile)children[i];
 				java.io.File source = getFile(mf);
 				de.schlichtherle.io.File destination = getFileInArchive(root, mf.getModuleRelativePath().append(mf.getName()));
-				boolean b = new de.schlichtherle.io.File(source).archiveCopyAllTo(destination);
+				boolean b = new de.schlichtherle.io.File(source, ArchiveDetector.NULL).archiveCopyAllTo(destination);
 				if( !b )
 					results.add(generateCopyFailStatus(source, destination));
 			} else if( children[i] instanceof IModuleFolder ) {
@@ -290,7 +290,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	protected de.schlichtherle.io.File getFileInArchive(de.schlichtherle.io.File root, IPath relative) {
 		while(relative.segmentCount() > 0 ) {
 			root = new de.schlichtherle.io.File(root, 
-					relative.segment(0), ArchiveDetector.DEFAULT);
+					relative.segment(0), ArchiveDetector.NULL);
 			relative = relative.removeFirstSegments(1);
 		}
 		return root;

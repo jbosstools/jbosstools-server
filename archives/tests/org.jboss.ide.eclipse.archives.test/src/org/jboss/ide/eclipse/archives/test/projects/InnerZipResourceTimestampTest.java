@@ -65,15 +65,14 @@ public class InnerZipResourceTimestampTest extends TestCase {
 		} catch(IOException ioe){}
 		return null;
 	}
-
+	
 	public void testRawTruezipTimestamps() {
 		java.io.File someJar = findSomeJar();
 		IPath src = new Path(someJar.getAbsolutePath());
 		IPath dest = ArchivesTest.getDefault().getStateLocation().append("some.jar");
-		//File destFile = new de.schlichtherle.io.File(dest.toOSString(), new PureSourceArchiveDetector());
-		File destFile = new de.schlichtherle.io.File(dest.toOSString(), ArchiveDetector.NULL);
+		File destFile = new de.schlichtherle.io.File(dest.toOSString(), ArchiveDetector.DEFAULT);
 
-		boolean copySuccess = new de.schlichtherle.io.File(someJar).archiveCopyAllTo(destFile);
+		boolean copySuccess = new de.schlichtherle.io.File(someJar, ArchiveDetector.NULL).archiveCopyAllTo(destFile);
 		destFile.setLastModified(new Date().getTime());
 		TrueZipUtil.umount();
 		assertTrue(copySuccess);
@@ -145,12 +144,5 @@ public class InnerZipResourceTimestampTest extends TestCase {
 	       } catch(Exception e) {
 	          e.printStackTrace();
 	       }
-	}
-
-	
-	private static class PureSourceArchiveDetector extends AbstractArchiveDetector {
-		public ArchiveDriver getArchiveDriver(String path) {
-			return null;
-		}
 	}
 }
