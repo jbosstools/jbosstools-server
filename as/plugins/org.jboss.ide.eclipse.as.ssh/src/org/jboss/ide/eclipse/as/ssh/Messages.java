@@ -15,6 +15,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.ssh.Messages"; //$NON-NLS-1$
 	
+	public static String SCPEditorLoginCredentials;
 	public static String browse;
 	public static String UserLabel;
 	public static String PassLabel;

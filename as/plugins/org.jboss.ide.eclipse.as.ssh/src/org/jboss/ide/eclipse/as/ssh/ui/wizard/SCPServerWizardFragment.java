@@ -1,36 +1,27 @@
 package org.jboss.ide.eclipse.as.ssh.ui.wizard;
 
-import java.io.File;
-
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jst.j2ee.model.internal.validation.ValidateBMPBean;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.internal.ImageResource;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ssh.Messages;
 import org.jboss.ide.eclipse.as.ssh.server.SSHServerDelegate;
 
@@ -135,5 +126,7 @@ public class SCPServerWizardFragment extends WizardFragment {
 		server.setPassword(pass); //$NON-NLS-1$
 		server.setHostsFile(null);
 		server.setDeployFolder(deploy);
+		IServer tmp = serverWC.save(true, monitor);
+		getTaskModel().putObject(TaskModel.TASK_SERVER, tmp);
 	}
 }
