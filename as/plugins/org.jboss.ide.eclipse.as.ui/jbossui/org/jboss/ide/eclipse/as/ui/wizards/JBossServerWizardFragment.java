@@ -225,10 +225,6 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IServerWorkingCopy serverWC = (IServerWorkingCopy) getTaskModel().getObject(TaskModel.TASK_SERVER);
 		serverWC.setRuntime((IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME));
 		serverWC.setServerConfiguration(null); // no inside jboss folder
-		// just make sure the shouldnt-happen doesn't happen
-		String tmp = serverWC.getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, (String)null);
-		if( IDeployableServer.DEPLOY_METADATA.equals(tmp))
-			serverWC.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_SERVER);
 	}
 	
 	private IJBossServerRuntime getRuntime() {
