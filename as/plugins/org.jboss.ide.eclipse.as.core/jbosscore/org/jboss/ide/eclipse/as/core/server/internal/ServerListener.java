@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.management.MBeanServerConnection;
@@ -133,9 +135,19 @@ public class ServerListener extends UnitedServerListener {
 	protected void ensureDeployLocationAdded(IServer server, 
 			MBeanServerConnection connection, String[] folders2) throws Exception {
 		for( int i = 0; i < folders2.length; i++ ) {
-			String asURL = new File(folders2[i]).toURL().toString(); 
+			String asURL = encode(folders2[i]);
 			ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
 			connection.invoke(name, IJBossRuntimeConstants.addURL, new Object[] { asURL }, new String[] {String.class.getName()});
 		}
+	}
+
+	private String encode(String folder) throws Exception {
+		folder = folder.replace("\\", "/");  //$NON-NLS-1$//$NON-NLS-2$
+		if (! folder.startsWith("/")) { //$NON-NLS-1$
+			folder = "/" + folder; //$NON-NLS-1$
+		}
+		URI uri = new URI("file", null, folder, null); //$NON-NLS-1$
+		//return URLEncoder.encode(uri.toASCIIString());
+		return uri.toASCIIString();
 	}
 }
