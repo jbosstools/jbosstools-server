@@ -173,6 +173,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 				public void shellOutputChanged(IHostShellChangeEvent event) {
 					IHostOutput[] out = event.getLines();
 					for(int i = 0; i < out.length; i++ ) {
+						System.out.println(out[i]);
 						if( saving[0] ) {
 							output[0] = out[i].getString();
 							saving[0] = false;
@@ -313,6 +314,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	protected static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {
+		RSEUtils.waitForFullInit();
 		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
 		IHost host = RSEUtils.findHost(connectionName);
 		if( host == null ) {

@@ -10,8 +10,11 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
@@ -102,6 +105,15 @@ public class RSEUtils {
 				return allHosts[i];
 		}
 		return null;
+	}
+	
+	public static void waitForFullInit() throws CoreException {
+		try {
+			RSECorePlugin.waitForInitCompletion();
+		} catch (InterruptedException e) {
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+				"The RSE model initialization has been interrupted."));
+		}
 	}
 	
 }
