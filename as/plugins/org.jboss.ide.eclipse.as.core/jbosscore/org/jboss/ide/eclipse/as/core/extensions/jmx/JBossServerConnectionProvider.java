@@ -46,9 +46,9 @@ public class JBossServerConnectionProvider implements IConnectionProvider, IServ
 	// If the connection doesn't exist, make a new one
 	public static void run(IServer s, IJMXRunnable r) throws JMXException {
 		JBossServerConnection c = getConnection(s);
-		if( c == null )
-			c = getConnection(s);
-		c.run(r);
+		if( c != null )
+			// JMX is not installed here
+			c.run(r);
 	}
 	
 	
