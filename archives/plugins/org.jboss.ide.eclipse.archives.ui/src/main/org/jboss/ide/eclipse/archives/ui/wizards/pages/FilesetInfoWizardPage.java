@@ -94,7 +94,7 @@ public class FilesetInfoWizardPage extends WizardPage {
 	}
 
 	public void createControl (Composite parent) {
-		mainComposite = new Composite(parent, SWT.NONE);
+		mainComposite = new Composite(parent, SWT.BORDER);
 		mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		mainComposite.setLayout(new FormLayout());
@@ -104,18 +104,20 @@ public class FilesetInfoWizardPage extends WizardPage {
 		restrainerData.left = new FormAttachment(0,5);
 		restrainerData.top = new FormAttachment(0,5);
 		restrainerData.bottom = new FormAttachment(100,-5);
-		restrainerData.right = new FormAttachment(0,600);
+		restrainerData.right = new FormAttachment(100,-5);
 		restrainer.setLayoutData(restrainerData);
 		
 		Group info = createInfoGroup(restrainer);
 		createPreviewGroup(restrainer, info);
-		mainComposite.layout();
-		fillDefaults();
-		addListeners();
-		changePreview();
-
-		includesText.setFocus();
-
+		//mainComposite.layout();
+		Display.getDefault().asyncExec(new Runnable(){
+			public void run() {
+				fillDefaults();
+				addListeners();
+				changePreview();
+				includesText.setFocus();
+			}
+		});
 		setControl(mainComposite);
 	}
 
@@ -211,9 +213,9 @@ public class FilesetInfoWizardPage extends WizardPage {
 		excludesText = new Text(infoGroup, SWT.BORDER);
 		excludesImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
 		excludesTextLabel.setLayoutData(createFormData(0,0,null,0,excludesImage,5,null,0));
-
 		excludesKey.setLayoutData(createFormData(includesText,5,null,0,null,5,0,100));
 		excludesText.setLayoutData(createFormData(includesText,5,100,-5,excludesKey,10,100,-5));
+		
 
 		// customize widgets
 		destinationKey.setText(ArchivesUIMessages.FilesetInfoWizardPage_destination_label);
