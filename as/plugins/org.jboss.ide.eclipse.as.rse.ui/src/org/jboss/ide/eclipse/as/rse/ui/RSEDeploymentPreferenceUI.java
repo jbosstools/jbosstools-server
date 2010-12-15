@@ -182,14 +182,14 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				   s[0] = new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, e.getMessage(), e);
 			   }
 			   rseTest.setEnabled(true);
-			   showMessageDialog(s[0]);
+			   showMessageDialog("Test of Remote System", s[0]);
 		}
 		
-		private void showMessageDialog(IStatus s) {
+		private void showMessageDialog(String title, IStatus s) {
 			if( s.isOK() ) 
 				s = new Status(IStatus.INFO, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
 						"The remote server is properly configured.");
-			ErrorDialog d = new ErrorDialog(rseServerHome.getShell(), "Title", null, s, IStatus.INFO | IStatus.ERROR);
+			ErrorDialog d = new ErrorDialog(rseServerHome.getShell(), title, null, s, IStatus.INFO | IStatus.ERROR);
 			d.open();
 		}
 		
@@ -198,14 +198,14 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			IHost host = combo.getHost();
 			if( host == null ) {
 				pm.done(); 
-				return getTestFailStatus("NoHost");
+				return getTestFailStatus("Host is empty!");
 			}
 			pm.worked(100);
 			
 			IFileServiceSubSystem fileSubSystem = RSEPublishMethod.findFileTransferSubSystem(host);
 			if( fileSubSystem == null ) {
 				pm.done(); 
-				return getTestFailStatus("No File Sub System");
+				return getTestFailStatus("No File Sub System found on " + host.getName());
 			}
 			pm.worked(100);
 
@@ -214,7 +214,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			    	fileSubSystem.connect(new NullProgressMonitor(), false);
 			    } catch (Exception e) {
 			    	pm.done(); 
-			    	return getTestFailStatus(e.getLocalizedMessage()); 
+			    	return getTestFailStatus("Error when connecting to file system: " + e.getLocalizedMessage()); 
 			    }
 			}
 			pm.worked(300);
@@ -222,7 +222,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			IFileService service = fileSubSystem.getFileService();
 			if( service == null ) {
 				pm.done(); 
-				return getTestFailStatus("No File Service");
+				return getTestFailStatus("No File Service for " + host.getName());
 			}
 			pm.worked(100);
 			
@@ -232,7 +232,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				IHostFile file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
-					return getTestFailStatus("Folder Home does not exist");
+					return getTestFailStatus("Server's Home folder " + root2 + " not found on " + service.getName() + " for " + host.getName());
 				}
 				pm.worked(300);
 				
@@ -240,12 +240,12 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
-					return getTestFailStatus("Server's config folder does not exist");
+					return getTestFailStatus("Server's config folder " + root2 + " does not exist");
 				}
 				pm.worked(300);
 			} catch(SystemMessageException sme) {
 				pm.done();
-				return getTestFailStatus(sme.getLocalizedMessage());
+				return getTestFailStatus("Error while checking remote folders: " + sme.getLocalizedMessage());
 			}
 			pm.done(); 
 			return Status.OK_STATUS;
@@ -288,7 +288,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				rseServerConfig.setText(evt.getNewValue().toString());
 			} else if( evt.getPropertyName().equals(RSEUtils.RSE_SERVER_HOST)) {
 				combo.setHostName(evt.getNewValue().toString());
-			}
+			}		
 			updatingFromModelChange = false;
 		}
 
