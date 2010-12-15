@@ -283,13 +283,19 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		public void propertyChange(PropertyChangeEvent evt) {
 			updatingFromModelChange = true;
 			if( evt.getPropertyName().equals(RSEUtils.RSE_SERVER_HOME_DIR)) {
-				rseServerHome.setText(evt.getNewValue().toString());
+				updateTextIfChanges(rseServerHome, evt.getNewValue().toString());
 			} else if( evt.getPropertyName().equals(RSEUtils.RSE_SERVER_CONFIG)) {
-				rseServerConfig.setText(evt.getNewValue().toString());
+				updateTextIfChanges(rseServerConfig, evt.getNewValue().toString());
 			} else if( evt.getPropertyName().equals(RSEUtils.RSE_SERVER_HOST)) {
 				combo.setHostName(evt.getNewValue().toString());
 			}		
 			updatingFromModelChange = false;
+		}
+		
+		private void updateTextIfChanges(Text control, String newValue) {
+			if(!control.getText().equals(newValue)) {
+				control.setText(newValue);
+			}
 		}
 
 		protected void browseClicked() {
