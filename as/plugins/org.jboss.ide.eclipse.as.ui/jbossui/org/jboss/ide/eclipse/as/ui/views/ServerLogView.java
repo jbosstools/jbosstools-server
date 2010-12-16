@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -23,15 +22,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -52,14 +51,19 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.views.log.Messages;
 import org.eclipse.ui.internal.views.log.SharedImages;
 import org.eclipse.ui.part.FileEditorInput;
@@ -70,7 +74,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IServerLogListener;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
-public class ServerLogView extends ViewPart implements IServerLogListener {
+public class ServerLogView extends ViewPart implements IServerLogListener, ISelectionListener {
 	public static final String VIEW_ID = "org.jboss.ide.eclipse.as.ui.view.serverLogView"; //$NON-NLS-1$
 	public final static byte MESSAGE = 0x0;
 	public final static byte DATE = 0x1;
@@ -90,7 +94,8 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 	private String fDirectory;
 	private IMemento fMemento;
 	private Action fDeleteLogAction, fOpenLogAction, 
-					fReadLogAction, fExportLogAction;
+					fReadLogAction, fExportLogAction,
+					fReLogErrorsAction;
 	private TreeColumn fColumn1;
 	private TreeColumn fColumn2;
 	private Comparator fComparator;
@@ -102,6 +107,8 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 	
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
+		ISelectionService service = (ISelectionService) getSite().getService(ISelectionService.class);
+		service.addSelectionListener(this);
 		if (memento == null)
 			this.fMemento = XMLMemento.createWriteRoot("SERVERLOGVIEW"); //$NON-NLS-1$
 		else
@@ -163,6 +170,10 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 		
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 
+		fReLogErrorsAction = createReLogErrorAction();
+		updateReLogActionText();
+		toolBarManager.add(fReLogErrorsAction);
+		toolBarManager.add(new Separator());
 		fExportLogAction = createExportLogAction();
 		toolBarManager.add(fExportLogAction);
 		toolBarManager.add(new Separator());
@@ -174,7 +185,6 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 		toolBarManager.add(fOpenLogAction);
 		fReadLogAction = createReadLogAction();
 		toolBarManager.add(fReadLogAction);
-
 		setLogFile(null);
 	}
 
@@ -227,6 +237,8 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 	}
 	
 	public void dispose() {
+		ISelectionService service = (ISelectionService) getSite().getService(ISelectionService.class);
+		service.removeSelectionListener(this);
 		super.dispose();
 	}
 	
@@ -237,25 +249,37 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 		reloadLog();
 	}
 	
-	protected void reloadLog() {
-		IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) {
-				monitor.beginTask(org.jboss.ide.eclipse.as.ui.Messages.ServerLogView_ImportingLogTaskName, IProgressMonitor.UNKNOWN);
-				List<AbstractEntry> entries = new ArrayList<AbstractEntry>();
-				LogReader.parseLogFile(fInputFile, entries, fMemento);
+	private class ReloadLogJob extends Job {
+
+		public ReloadLogJob() {
+			super(org.jboss.ide.eclipse.as.ui.Messages.ServerLogView_ImportingLogTaskName);
+		}
+
+		protected IStatus run(IProgressMonitor monitor) {
+			List<AbstractEntry> entries = new ArrayList<AbstractEntry>();
+			LogReader.parseLogFile(fInputFile, entries, fMemento);
+			if( !monitor.isCanceled()) {
 				elements.addAll(entries);
+				Display.getDefault().asyncExec(new Runnable(){
+						public void run(){
+							asyncRefresh(false);
+							updateButtons();
+						}
+					});
 			}
-		};
-		ProgressMonitorDialog pmd = new ProgressMonitorDialog(getViewSite().getShell());
-		try {
-			pmd.run(true, true, op);
-		} catch (InvocationTargetException e) { // do nothing
-		} catch (InterruptedException e) { // do nothing
-		} finally {
-			asyncRefresh(false);
-			updateButtons();
+			return Status.OK_STATUS;
 		}
 		
+	}
+	
+	private ReloadLogJob reloadJob = null;
+	protected void reloadLog() {
+		if( reloadJob != null && reloadJob.getResult() == null ) {
+			reloadJob.cancel();
+		}
+		
+		reloadJob = new ReloadLogJob();
+		reloadJob.schedule();
 	}
 
 	private void updateButtons() {
@@ -426,6 +450,30 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 		action.setEnabled(fInputFile != null && fInputFile.exists());
 		action.setToolTipText(Messages.LogView_view_currentLog_tooltip);
 		return action;
+	}
+	
+	private Action createReLogErrorAction() {
+		Action action = new Action("") {
+			public void run() {
+				handleLogErrorAction();
+			}
+		};
+		action.setImageDescriptor(SharedImages.getImageDescriptor(SharedImages.DESC_ERROR_ST_OBJ));
+		return action;
+	}
+	
+	private void handleLogErrorAction() {
+		boolean currentVal = ServerLogger.shouldDoubleLogErrors();
+		ServerLogger.setDoubleLogErrors(!currentVal);
+		updateReLogActionText();
+	}
+	
+	private void updateReLogActionText() {
+		String newVal = !ServerLogger.shouldDoubleLogErrors() ?
+				org.jboss.ide.eclipse.as.ui.Messages.LogAction_DoNotLogErrorsToErrorLog :
+				org.jboss.ide.eclipse.as.ui.Messages.LogAction_AlsoLogErrorsToErrorLog;
+		fReLogErrorsAction.setText(newVal);
+		fReLogErrorsAction.setToolTipText(newVal);
 	}
 	
 	private Action createExportLogAction() {
@@ -638,6 +686,18 @@ public class ServerLogView extends ViewPart implements IServerLogListener {
 					return date1 < date2 ? DESCENDING : ASCENDING;
 				}
 			};
+		}
+	}
+
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if( selection != null && selection instanceof IStructuredSelection ) {
+			IStructuredSelection sel2 = (IStructuredSelection)selection;
+			if( sel2.size() > 0 ) {
+				Object o = sel2.getFirstElement();
+				if( o instanceof IServer ) {
+					setServer((IServer)o);
+				}
+			}
 		}
 	}
 	

@@ -25,7 +25,7 @@ public class LogReader {
 	private static final int UNKNOWN_STATE = 70;
 
 	public static LogSession parseLogFile(File file, List entries, IMemento memento) {
-		if (!file.exists())
+		if (file == null || !file.exists())
 			return null;
 
 //		if (memento.getString(LogView.P_USE_LIMIT).equals("true") //$NON-NLS-1$

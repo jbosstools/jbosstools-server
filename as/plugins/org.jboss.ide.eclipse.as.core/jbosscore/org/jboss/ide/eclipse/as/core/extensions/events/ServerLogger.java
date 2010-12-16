@@ -15,12 +15,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.osgi.service.prefs.BackingStoreException;
 
 public class ServerLogger {
+	private static final String RELOG_ERROR_PREF_KEY = "package org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger.RELOG_ERROR_PREF_KEY"; //$NON-NLS-1$
 	private static ServerLogger instance;
 	public static ServerLogger getDefault() {
 		if( instance == null ) {
@@ -56,6 +60,9 @@ public class ServerLogger {
 			map.put(server.getId(), log);
 		}
 		log.log(status);
+		if( shouldDoubleLogErrors() && status.getSeverity() == IStatus.ERROR) {
+			JBossServerCorePlugin.getDefault().getLog().log(status);
+		}
 		
 		ArrayList<IServerLogListener> list = listeners.get(server.getId());
 		if( list != null ) {
@@ -63,6 +70,20 @@ public class ServerLogger {
 				list.toArray(new IServerLogListener[list.size()]);
 			for( int i = 0; i < listeners.length;i++) 
 				listeners[i].logging(status, server);
+		}
+	}
+	
+	public static boolean shouldDoubleLogErrors() {
+		IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+		return prefs.getBoolean(RELOG_ERROR_PREF_KEY, true);
+	}
+	
+	public static void setDoubleLogErrors(boolean val) {
+		IEclipsePreferences prefs = new InstanceScope().getNode(JBossServerCorePlugin.PLUGIN_ID);
+		prefs.putBoolean(RELOG_ERROR_PREF_KEY, val);
+		try {
+			prefs.flush();
+		} catch( BackingStoreException bse) {
 		}
 	}
 	

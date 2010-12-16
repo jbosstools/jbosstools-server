@@ -231,6 +231,9 @@ public class Messages extends NLS {
 	public static String LogLabelProvider_SecondsAgo;
 	public static String LogLabelProvider_StartupShutdownEventType;
 	public static String LogLabelProvider_UnknownEventType;
+	public static String LogAction_AlsoLogErrorsToErrorLog;
+	public static String LogAction_DoNotLogErrorsToErrorLog;
+	
 	public static String RequiredCredentialsDialog_IgnoreButton;
 	public static String RequiredCredentialsDialog_ShellText;
 
