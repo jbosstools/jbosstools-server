@@ -54,4 +54,5 @@ Export-Package: org.jboss.ide.eclipse.as.test,
  org.jboss.ide.eclipse.as.test.publishing.v2,
  org.jboss.ide.eclipse.as.test.server,
  org.jboss.ide.eclipse.as.test.util,
+ org.jboss.ide.eclipse.as.test.util.jdt,
  org.jboss.ide.eclipse.as.test.util.wtp
