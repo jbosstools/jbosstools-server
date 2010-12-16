@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
+import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
@@ -51,6 +52,7 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(JSTDeploymentTester.class);
         suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
         suite.addTestSuite(SingleFileDeploymentTester.class);
+        suite.addTestSuite(JBossServerAPITest.class);
         return suite; 
    }
 

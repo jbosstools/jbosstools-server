@@ -58,9 +58,15 @@ public class JBossServer extends DeployableServer
 		return getServer().getHost();
 	}
 		
+	/**
+	 * The full path of the configuration, ex:
+	 *  /home/rob/tmp/default_copy3 would return /home/rob/tmp/default_copy3 
+	 *  /home/rob/jboss-5.x.x/server/default would return /home/rob/jboss-5.x.x/server/default
+	 * @return
+	 */
 	public String getConfigDirectory() {
 		IJBossServerRuntime runtime = (IJBossServerRuntime)getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-		return runtime.getConfigLocationFullPath().toOSString();
+		return runtime.getConfigurationFullPath().toOSString();
 	}
 	
 	public String getDeployFolder() {
