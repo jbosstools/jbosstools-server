@@ -46,6 +46,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 import org.osgi.framework.Bundle;
@@ -101,18 +102,7 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation, 
 			String rtName, String serverName) throws CoreException {
-		IRuntimeType rt = ServerCore.findRuntimeType("org.jboss.ide.eclipse.as.runtime.stripped");
-		IRuntimeWorkingCopy wc = rt.createRuntime(rtName, null);
-		IRuntime runtime = wc.save(true, null);
-		IServerType st = ServerCore.findServerType("org.jboss.ide.eclipse.as.systemCopyServer");
-		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer(serverName, null, null);
-		swc.setServerConfiguration(null);
-		swc.setName(serverName);
-		swc.setRuntime(runtime);
-		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
-		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
-		IServer server = swc.save(true, null);
-		return server;
+		return ServerCreationUtils.createDeployOnlyServer(deployLocation, tempDeployLocation, rtName, serverName);
 	}
 
 	public static IServer createMockServerWithRuntime(String serverType, String name, String config) {
@@ -146,71 +136,31 @@ public class ServerRuntimeUtils extends TestCase {
 	
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration) throws CoreException {
-		IRuntime currentRuntime = createRuntime(runtimeID, location,configuration);
-		return createServer2(currentRuntime, serverID);
+		IRuntime currentRuntime = ServerCreationUtils.createRuntime(runtimeID, location,configuration);
+		return ServerCreationUtils.createServer2(currentRuntime, serverID);
 	}
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration, IVMInstall install) throws CoreException {
-		IRuntime currentRuntime = createRuntime(runtimeID, location,
+		IRuntime currentRuntime = ServerCreationUtils.createRuntime(runtimeID, location,
 				configuration, install);
-		return createServer2(currentRuntime, serverID);
+		return ServerCreationUtils.createServer2(currentRuntime, serverID);
 	}
-	
-	private static IServer createServer2(IRuntime currentRuntime, String serverID) throws CoreException {
-		IServerType serverType = ServerCore.findServerType(serverID);
-		IServerWorkingCopy serverWC = serverType.createServer(null, null,
-				new NullProgressMonitor());
-		serverWC.setRuntime(currentRuntime);
-		serverWC.setName(serverID);
-		serverWC.setServerConfiguration(null);
-		return serverWC.save(true, new NullProgressMonitor());
-	}
-	
 
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config) throws CoreException {
-		return createRuntime(runtimeId, homeDir, config, VM_INSTALL);
+		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config, VM_INSTALL);
 	}
 	
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config, IVMInstall install) throws CoreException {
 		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
-		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
-		IRuntimeType runtimeType = runtimeTypes[0];
-		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
-				new NullProgressMonitor());
-		runtimeWC.setName(runtimeId);
-		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, install
-						.getVMInstallType().getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
-
-		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
-		return savedRuntime;
+		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config, install);
 	}
 
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config, IExecutionEnvironment environment) throws CoreException {
 		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
-		assertEquals("expects only one runtime type", runtimeTypes.length, 1);
-		IRuntimeType runtimeType = runtimeTypes[0];
-		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
-				new NullProgressMonitor());
-		runtimeWC.setName(runtimeId);
-		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_EXECUTION_ENVIRONMENT, environment.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
-
-		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
-		return savedRuntime;
+		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config);
 	}
 
 	public static void deleteAllServers() throws CoreException {

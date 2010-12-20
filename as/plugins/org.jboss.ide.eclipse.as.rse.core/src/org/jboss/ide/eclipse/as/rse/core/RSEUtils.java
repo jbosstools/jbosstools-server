@@ -13,12 +13,14 @@ package org.jboss.ide.eclipse.as.rse.core;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
+import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -37,6 +39,7 @@ public class RSEUtils {
 	public static final String RSE_SERVER_HOME_DIR = "org.jboss.ide.eclipse.as.rse.core.RSEServerHomeDir";  //$NON-NLS-1$
 	public static final String RSE_SERVER_HOST = "org.jboss.ide.eclipse.as.rse.core.ServerHost";  //$NON-NLS-1$
 	public static final String RSE_SERVER_DEFAULT_HOST = "Local";  //$NON-NLS-1$
+	public static final String RSE_MODE = "rse";
 	
 	public static String getRSEConnectionName(IServer server) {
 		return server.getAttribute(RSEUtils.RSE_SERVER_HOST, RSE_SERVER_DEFAULT_HOST);
@@ -116,4 +119,27 @@ public class RSEUtils {
 		}
 	}
 	
+	public static IServer setServerToRSEMode(IServer server, IHost newHost) throws CoreException {
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(IDeployableServer.SERVER_MODE, RSE_MODE);
+		wc.setAttribute(RSE_SERVER_HOST, newHost.getAliasName());
+		wc.setAttribute("hostname", newHost.getHostName());
+		return wc.save(false, new NullProgressMonitor());
+	}
+	
+	public static IServer setServerToRSEMode(IServer server, IHost newHost, 
+			String jbossHome, String config) throws CoreException {
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(IDeployableServer.SERVER_MODE, RSE_MODE);
+		wc.setAttribute(RSE_SERVER_CONFIG, config);
+		wc.setAttribute(RSE_SERVER_HOME_DIR, jbossHome);
+		wc.setAttribute(RSE_SERVER_HOST, newHost.getAliasName());
+		wc.setAttribute("hostname", newHost.getHostName());
+		wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, 
+				IDeployableServer.DEPLOY_SERVER);
+		return wc.save(false, new NullProgressMonitor());
+	}
+	
+	
+
 }

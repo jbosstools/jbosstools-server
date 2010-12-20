@@ -35,6 +35,8 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
 	
+	public static final String DEPLOY_ONLY_RUNTIME = "org.jboss.ide.eclipse.as.runtime.stripped"; //$NON-NLS-1$
+	public static final String DEPLOY_ONLY_SERVER = "org.jboss.ide.eclipse.as.systemCopyServer"; //$NON-NLS-1$
 	
 	
 	/* Version Strings */

@@ -12,6 +12,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.rse.services.files.ftp,
  org.eclipse.rse.services.local,
  org.eclipse.rse.services.ssh,
+ org.eclipse.rse.subsystems.shells.core,
  org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.wtp.core,
  org.eclipse.wst.server.core,
@@ -22,8 +23,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jem.util,
  org.jboss.ide.eclipse.archives.webtools,
  org.eclipse.debug.core,
- org.eclipse.jdt.launching,
- org.eclipse.rse.subsystems.shells.core;bundle-version="3.1.100"
+ org.eclipse.jdt.launching
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core
