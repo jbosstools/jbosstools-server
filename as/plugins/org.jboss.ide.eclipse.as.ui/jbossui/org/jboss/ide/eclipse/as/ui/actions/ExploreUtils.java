@@ -20,10 +20,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -40,6 +38,7 @@ public class ExploreUtils {
 	public final static String EXPLORE_DESCRIPTION = Messages.ExploreUtils_Description;
 	private static String exploreFolderCommand;
 	private static String[] exploreFolderCommandArray;
+	private static String[] exploreFileCommandArray;
 	private static String exploreFileCommand;
 	
 	public static String getExploreCommand() {
@@ -62,11 +61,24 @@ public class ExploreUtils {
 	private static void setExploreCommands() {
 		if (Platform.OS_MACOSX.equals(Platform.getOS())) {
 			exploreFolderCommandArray = new String[] {"/usr/bin/open", "-a", "/System/Library/CoreServices/Finder.app", ""};   //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
-			exploreFolderCommand = "";
+			exploreFolderCommand = ""; //$NON-NLS-1$
 		} else if (Platform.OS_WIN32.equals(Platform.getOS())) {
-			exploreFolderCommand = "cmd /C start explorer /root,/e,\"" //$NON-NLS-1$
+			exploreFolderCommandArray = new String[5];
+			exploreFolderCommandArray[0]= "cmd"; //$NON-NLS-1$
+			exploreFolderCommandArray[1]= "/C"; //$NON-NLS-1$
+			exploreFolderCommandArray[2]= "start"; //$NON-NLS-1$
+			exploreFolderCommandArray[3]= "explorer"; //$NON-NLS-1$
+			
+			exploreFileCommandArray = new String[6];
+			exploreFileCommandArray[0]= "cmd"; //$NON-NLS-1$
+			exploreFileCommandArray[1]= "/C"; //$NON-NLS-1$
+			exploreFileCommandArray[2]= "start"; //$NON-NLS-1$
+			exploreFileCommandArray[3]= "explorer"; //$NON-NLS-1$
+			exploreFileCommandArray[4]= "/select,"; //$NON-NLS-1$
+			
+			exploreFolderCommand = "cmd /C start explorer \"" //$NON-NLS-1$
 					+ PATH + "\""; //$NON-NLS-1$
-			exploreFileCommand = "cmd /C start explorer /select,/e,\"" //$NON-NLS-1$
+			exploreFileCommand = "cmd /C start explorer /select,\"" //$NON-NLS-1$
 					+ PATH + "\""; //$NON-NLS-1$
 		} else if (Platform.OS_LINUX.equals(Platform.getOS())) {
 			
@@ -89,7 +101,7 @@ public class ExploreUtils {
 		if (server != null && deployableServer != null) {
 			return deployableServer.getDeployFolder();
 		}
-		return server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "").trim();
+		return server.getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "").trim(); //$NON-NLS-1$
 	}
 	
 	public static boolean canExplore(IServer server) {
@@ -122,7 +134,6 @@ public class ExploreUtils {
 			if (Platform.getOS().equals(Platform.OS_WIN32)) {
 				name = name.replace('/', '\\');
 			}
-			
 			try {
 				if (Platform.OS_LINUX.equals(Platform.getOS()) || Platform.OS_MACOSX.equals(Platform.getOS())) {
 					int len = exploreFolderCommandArray.length;
@@ -130,8 +141,15 @@ public class ExploreUtils {
 					exploreFolderCommandArray[len-1] = name2;
 					Runtime.getRuntime().exec(exploreFolderCommandArray);
 				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					command = command.replace(ExploreUtils.PATH, name);
-					Runtime.getRuntime().exec(command);
+					if (file.isDirectory()) {
+						int len = exploreFolderCommandArray.length;
+						exploreFolderCommandArray[len-1] = "\"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+						Runtime.getRuntime().exec(exploreFolderCommandArray);
+					} else {
+						int len = exploreFileCommandArray.length;
+						exploreFileCommandArray[len-1] = "\"" + name + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+						Runtime.getRuntime().exec(exploreFileCommandArray);
+					}
 				} else {
 					command = command.replace(ExploreUtils.PATH, name);
 					if (JBossServerUIPlugin.getDefault().isDebugging()) {
@@ -148,6 +166,9 @@ public class ExploreUtils {
 	
 	public static IPath getDeployPath(IDeployableServer server,IModule[] moduleTree) {
 		IPath fullPath = PublishUtil.getDeployPath(moduleTree, server);
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			return fullPath;
+		}
 		if( !PublishUtil.isBinaryObject(moduleTree)) {
 			return fullPath;
 		}
