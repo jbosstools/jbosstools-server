@@ -236,6 +236,9 @@ public class Messages extends NLS {
 	
 	public static String RequiredCredentialsDialog_IgnoreButton;
 	public static String RequiredCredentialsDialog_ShellText;
+	
+	public static String ChangeTimestampServerListDialog_Title;
+	public static String ChangeTimestampServerListDialog_Message;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME,
