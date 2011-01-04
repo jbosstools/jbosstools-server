@@ -28,8 +28,8 @@ import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 
 public class JSTDeploymentTester extends TestCase {
 	
-	IProject project;
-	IServer server;
+	protected IProject project;
+	protected IServer server;
 	final String MODULE_NAME = "newModule";
 	final String CONTENT_DIR = "contentDirS"; 
 	final String TEXT_FILE = "test.txt";
