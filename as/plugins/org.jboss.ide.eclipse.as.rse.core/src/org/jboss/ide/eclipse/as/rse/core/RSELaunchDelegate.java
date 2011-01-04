@@ -167,16 +167,17 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		final String[] output = new String[1];
 		output[0] = null;
 		try {
-			System.out.println(command);
 			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			hs.addOutputListener(new IHostShellOutputListener(){
 				public void shellOutputChanged(IHostShellChangeEvent event) {
 					IHostOutput[] out = event.getLines();
 					for(int i = 0; i < out.length; i++ ) {
-						System.out.println(out[i]);
 						if( saving[0] ) {
 							output[0] = out[i].getString();
 							saving[0] = false;
+							try {
+								Thread.sleep(1000);
+							} catch(InterruptedException ie) {}
 							hs.exit();
 						}
 						/* 
@@ -193,13 +194,6 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 				}
 			});
 			
-			while(output[0] != null ) {
-				try {
-					Thread.sleep(200);
-				} catch(InterruptedException ie) {
-				}
-			}
-			// can log the output somewhere? 
 			behaviour.setServerStopped();
 		} catch( SystemMessageException sme) {
 			// TODO
