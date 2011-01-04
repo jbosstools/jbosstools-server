@@ -16,22 +16,24 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.classpath.core.RuntimeKey;
 
 /**
  * This class uses the "throw everything you can find" strategy
@@ -49,10 +51,55 @@ public class ClientAllRuntimeClasspathProvider
 		// TODO Auto-generated constructor stub
 	}
 
+	public static class Entry {
+		private IPath path;
+		private String name;
+		private long length;
+		
+		public Entry(IPath path, String name, long length) {
+			super();
+			this.path = path;
+			this.name = name;
+			this.length = length;
+		}
+		
+		public IPath getPath() {
+			return path;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (int) (length ^ (length >>> 32));
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Entry other = (Entry) obj;
+			if (length != other.length)
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			return true;
+		}
+	}
+	
 	public static class ClientAllFilter {
 		public static boolean accepts(IPath path) {
 			if( !path.lastSegment().endsWith(EXT_JAR)) return false;
-			if( path.lastSegment().toLowerCase().endsWith("jaxb-xjc.jar")) return false;
+			if( path.lastSegment().toLowerCase().endsWith("jaxb-xjc.jar")) return false; //$NON-NLS-1$
 			return true;
 		}
 	}
@@ -61,19 +108,22 @@ public class ClientAllRuntimeClasspathProvider
 		if( runtime == null ) 
 			return new IClasspathEntry[0];
 
-		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		if( jbsrt == null ) {
+		RuntimeKey key = ClasspathCorePlugin.getRuntimeKey(runtime);
+		if( key == null ) {
 			// log error
 			IStatus status = new Status(IStatus.WARNING, ClasspathCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.ClientAllRuntimeClasspathProvider_wrong_runtime_type,
 					runtime.getName()));
 			ClasspathCorePlugin.getDefault().getLog().log(status);
 			return new IClasspathEntry[0];
 		}
-		
-		IPath loc = runtime.getLocation();
-		IPath configPath = jbsrt.getConfigurationFullPath();
-		String rtID  = runtime.getRuntimeType().getId();
-		List<IPath> list = new ArrayList<IPath>();
+		IClasspathEntry[] runtimeClasspath = ClasspathCorePlugin.getRuntimeClasspaths().get(key);
+		if (runtimeClasspath != null) {
+			return runtimeClasspath;
+		}
+		IPath loc = key.getLocation();
+		IPath configPath = key.getConfigPath();
+		String rtID  = key.getId();
+		Set<Entry> list = new HashSet<Entry>();
 		if(AS_32.equals(rtID)) list = get32(loc, configPath);
 		if(AS_40.equals(rtID)) list = get40(loc,configPath);
 		if(AS_42.equals(rtID)) list = get42(loc,configPath);
@@ -85,31 +135,35 @@ public class ClientAllRuntimeClasspathProvider
 		if(AS_60.equals(rtID)) list = get60(loc,configPath);
 		if(EAP_50.equals(rtID)) list = get50(loc,configPath);
 		
-		if( list == null )
-			return null;
-		List<IClasspathEntry> entries = convert(list);
-		return entries.toArray(new IClasspathEntry[entries.size()]);
+		if( list == null ) {
+			runtimeClasspath = new IClasspathEntry[0];
+		} else {
+			List<IClasspathEntry> entries = convert(list);
+			runtimeClasspath = entries.toArray(new IClasspathEntry[entries.size()]);
+		}
+		ClasspathCorePlugin.getRuntimeClasspaths().put(key, runtimeClasspath);
+		return runtimeClasspath;
 	}
 
-	protected List<IClasspathEntry> convert(List<IPath> list) {
-		ArrayList<IClasspathEntry> fin = new ArrayList<IClasspathEntry>();
-		Iterator<IPath> i = list.iterator();
+	protected List<IClasspathEntry> convert(Set<Entry> list) {
+		List<IClasspathEntry> fin = new ArrayList<IClasspathEntry>();
+		Iterator<Entry> i = list.iterator();
 		while(i.hasNext()) {
 			fin.add(getEntry(i.next()));
 		}
 		return fin;
 	}
 	
-	protected List<IPath> get32(IPath location, IPath configPath) {
-		ArrayList<IPath> list = new ArrayList<IPath>();
+	protected Set<Entry> get32(IPath location, IPath configPath) {
+		Set<Entry> list = new HashSet<Entry>();
 		addPaths(location.append(LIB), list);
 		addPaths(configPath.append(LIB), list);
 		addPaths(location.append(CLIENT), list);
 		return list;
 	}
 	
-	protected List<IPath> get40(IPath location, IPath configPath) {
-		ArrayList<IPath> list = new ArrayList<IPath>();
+	protected Set<Entry> get40(IPath location, IPath configPath) {
+		Set<Entry> list = new HashSet<Entry>();
 		addPaths(location.append(LIB), list);
 		addPaths(configPath.append(LIB), list);
 		IPath deployPath = configPath.append(DEPLOY);
@@ -120,16 +174,16 @@ public class ClientAllRuntimeClasspathProvider
 		return list;
 	}
 
-	protected List<IPath> get42(IPath location, IPath configPath) {
+	protected Set<Entry> get42(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 
-	protected List<IPath> getEAP43(IPath location, IPath configPath) {
+	protected Set<Entry> getEAP43(IPath location, IPath configPath) {
 		return get40(location, configPath);
 	}
 	
-	protected List<IPath> get50(IPath location, IPath configPath) {
-		ArrayList<IPath> list = new ArrayList<IPath>();
+	protected Set<Entry> get50(IPath location, IPath configPath) {
+		Set<Entry> list = new HashSet<Entry>();
 		addPaths(location.append(COMMON).append(LIB), list);
 		addPaths(location.append(LIB), list);
 		addPaths(configPath.append(LIB), list);
@@ -145,19 +199,19 @@ public class ClientAllRuntimeClasspathProvider
 		return list;
 	}
 	
-	protected List<IPath> get60(IPath location, IPath configPath) {
-		ArrayList<IPath> list = new ArrayList<IPath>();
+	protected Set<Entry> get60(IPath location, IPath configPath) {
+		Set<Entry> list = new HashSet<Entry>();
 		list.addAll(get50(location, configPath));
 		addPaths(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
 		addPaths(configPath.append(DEPLOYERS).append(JSF_DEPLOYER).append(MOJARRA_20).append(JSF_LIB), list);
 		return list;
 	}
 	
-	protected IClasspathEntry getEntry(IPath path) {
-		return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
+	protected IClasspathEntry getEntry(Entry entry) {
+		return JavaRuntime.newArchiveRuntimeClasspathEntry(entry.getPath()).getClasspathEntry();
 	}
 
-	protected void addPaths(IPath folder, ArrayList<IPath> list) {
+	protected void addPaths(IPath folder, Set<Entry> list) {
 		if( folder.toFile().exists()) {
 			File f = folder.toFile();
 			if(f.isDirectory()) {
@@ -173,18 +227,12 @@ public class ClientAllRuntimeClasspathProvider
 		}
 	}
 	
-	protected void addSinglePath(IPath p, ArrayList<IPath> list) {
-		Iterator<IPath> i = list.iterator();
-		IPath l;
-		while(i.hasNext()) {
-			l = i.next();
-			if( !p.toFile().exists() || 
-					(p.lastSegment().equals(l.lastSegment()) 
-						&& p.toFile().length() == l.toFile().length() )) {
-				return;
-			}
+	protected void addSinglePath(IPath p, Set<Entry> list) {
+		if (!p.toFile().exists()) {
+			return;
 		}
-		list.add(p);
+		list.add(new Entry(p, p.lastSegment(), p.toFile().length()));
+		
 	}
 
 }

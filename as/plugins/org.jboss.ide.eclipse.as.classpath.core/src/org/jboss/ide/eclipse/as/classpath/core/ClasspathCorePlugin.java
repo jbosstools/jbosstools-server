@@ -10,10 +10,20 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IRuntimeLifecycleListener;
+import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -27,6 +37,32 @@ public class ClasspathCorePlugin extends Plugin {
 	// The shared instance
 	private static ClasspathCorePlugin plugin;
 	
+	private static Map<RuntimeKey, IClasspathEntry[]> runtimeClasspaths;
+	
+	private IRuntimeLifecycleListener listener = new IRuntimeLifecycleListener() {
+		
+		public void runtimeRemoved(IRuntime runtime) {
+			removeRuntimeClasspath(runtime);
+		}
+		
+		public void runtimeChanged(IRuntime runtime) {
+			removeRuntimeClasspath(runtime);
+		}
+		
+		public void runtimeAdded(IRuntime runtime) {
+			
+		}
+		
+		private void removeRuntimeClasspath(IRuntime runtime) {
+			if (runtime == null) {
+				return;
+			}
+			RuntimeKey key = getRuntimeKey(runtime);
+			if (key != null) {
+				runtimeClasspaths.remove(key);
+			}
+		}
+	};
 	/**
 	 * The constructor
 	 */
@@ -40,6 +76,8 @@ public class ClasspathCorePlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		runtimeClasspaths = new HashMap<RuntimeKey, IClasspathEntry[]>();
+		ServerCore.addRuntimeLifecycleListener(listener);
 	}
 
 	/*
@@ -49,6 +87,8 @@ public class ClasspathCorePlugin extends Plugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		runtimeClasspaths = null;
+		ServerCore.removeRuntimeLifecycleListener(listener);
 	}
 
 	/**
@@ -64,5 +104,24 @@ public class ClasspathCorePlugin extends Plugin {
 		ILog log = ClasspathCorePlugin.getDefault().getLog();
         IStatus status = new Status(Status.ERROR,ClasspathCorePlugin.PLUGIN_ID,msg,e);
         log.log(status);
+	}
+
+	public static Map<RuntimeKey, IClasspathEntry[]> getRuntimeClasspaths() {
+		return runtimeClasspaths;
+	}
+	
+	public static RuntimeKey getRuntimeKey(IRuntime runtime) {
+		if( runtime == null ) 
+			return null;
+
+		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+		if( jbsrt == null ) {
+			return null;
+		}
+		
+		IPath loc = runtime.getLocation();
+		IPath configPath = jbsrt.getConfigurationFullPath();
+		String rtID  = runtime.getRuntimeType().getId();
+		return new RuntimeKey(loc, configPath, rtID);
 	}
 }
