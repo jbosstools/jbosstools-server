@@ -12,7 +12,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.classpath.ui</module>
 		<module>org.jboss.ide.eclipse.as.core</module>
 		<module>org.jboss.ide.eclipse.as.doc.user</module>
-		<module>org.jboss.ide.eclipse.as.ssh</module>
 		<module>org.jboss.ide.eclipse.as.ui</module>
 		<module>org.jboss.ide.eclipse.as.ui.mbeans</module>
 		<module>org.jboss.ide.eclipse.as.wtp.core</module>
