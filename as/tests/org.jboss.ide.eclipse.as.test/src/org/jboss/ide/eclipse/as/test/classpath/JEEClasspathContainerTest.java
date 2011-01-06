@@ -71,7 +71,7 @@ public class JEEClasspathContainerTest extends TestCase {
 	}
 
 	public void testJEE50ClasspathContainer() {
-		testGenericClasspathContainer("org.jboss.ide.eclipse.as.classpath.core.javaee-5.0", 21);
+		testGenericClasspathContainer("org.jboss.ide.eclipse.as.classpath.core.javaee-5.0", 3);
 	}
 
 	
