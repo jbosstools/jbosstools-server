@@ -214,9 +214,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			metadataRadio.addSelectionListener(radioListener);
 			serverRadio.addSelectionListener(radioListener);
 			customRadio.addSelectionListener(radioListener);
-			lastWC = page.getServer();
-			lastWC.addPropertyChangeListener(this);
 		}
+		lastWC = page.getServer();
+		lastWC.addPropertyChangeListener(this);
 		
 		FormData radios = new FormData();
 		radios.top = new FormAttachment(descriptionLabel, 5);
@@ -786,7 +786,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 
 	public void propertyChange(PropertyChangeEvent evt) {
-		if( evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
+		if( getShowRadios() && evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
 			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 			metadataRadio.setEnabled(callbackMappings.get(mode).metadataEnabled());
 			String originalDeployLocation = page.getServer().getOriginal().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
@@ -795,6 +795,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				page.execute(new RadioClickedCommand(serverRadio, currentSelection));
 			}
 		} 
+		updateWidgets();
+		
 	}
 	
 }

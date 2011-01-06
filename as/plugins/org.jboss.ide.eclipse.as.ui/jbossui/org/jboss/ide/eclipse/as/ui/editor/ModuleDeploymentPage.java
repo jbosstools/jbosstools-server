@@ -51,7 +51,6 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	protected DeploymentPreferences preferences;
 	protected ServerAttributeHelper helper; 
 	protected DeploymentModuleOptionCompositeAssistant tab;
-	
 	public ServerAttributeHelper getHelper() {
 		if( helper == null ) {
 			helper = new ServerAttributeHelper(getServer().getOriginal(), getServer());
