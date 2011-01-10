@@ -148,7 +148,7 @@ public final class PublishCopyUtil {
 				IStatus ret = copyFile(in, deployRootFolder.append(relativePath), file.lastModified(), mf);
 				monitor.worked(100);
 				monitor.done();
-				if( ret != null && ret.isOK())
+				if( ret != null && !ret.isOK()) 
 					return new IStatus[] { ret };
 			} // else silently ignore I guess
 			return new IStatus[]{};

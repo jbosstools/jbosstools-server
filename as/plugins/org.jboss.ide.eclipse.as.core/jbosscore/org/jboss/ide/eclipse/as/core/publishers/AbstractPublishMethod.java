@@ -78,7 +78,7 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 							this, 
 							behaviour.getServer(), module, 
 							publishType, deltas, monitor);
-					if( result != null )
+					if( result != null && result.isOK())
 				        ServerLogger.getDefault().log(behaviour.getServer(), result);
 				} catch( CoreException ce) {
 					// Let the user know

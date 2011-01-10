@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResource;
@@ -41,7 +40,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -196,8 +194,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				File temp = deployRoot.toFile().createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				String root = (deployPath.getDevice() == null ? "" : deployPath.getDevice()) + "/";  //$NON-NLS-1$//$NON-NLS-2$
-				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path(root));
+				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPath));
 				String parentFolder = deployPath.removeLastSegments(1).toString();
 				handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
@@ -210,9 +207,19 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		monitor.done();
 		if( list.size() > 0 ) 
 			return createMultiStatus(list, module);
-		return Status.OK_STATUS;
+
+		Status status = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
+				IEventCodes.JST_PUB_FULL_SUCCESS, 
+				NLS.bind(Messages.ModulePublished, module.getName()), null);
+		return status;
 	}
 		
+	private Path getRootPath(IPath deployPath) {
+		String root = (deployPath.getDevice() == null ? "" : deployPath.getDevice()) + "/";  //$NON-NLS-1$//$NON-NLS-2$
+		return new Path(root);
+	}
+
+	
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Incremental Publish: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		IStatus[] results = new IStatus[] {};
@@ -234,7 +241,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 					File temp = File.createTempFile(module.getName(), ".tmp", localDeployRoot.toFile()); //$NON-NLS-1$
 					IPath tempFile = new Path(temp.getAbsolutePath());
 					PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile);
-					handler = getCallbackHandler(new Path("/"));		 //$NON-NLS-1$
+					handler = getCallbackHandler(getRootPath(deployPath));
 					String parentFolder = deployPath.removeLastSegments(1).toString();
 					handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 50));
 					ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
@@ -279,7 +286,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			IModuleResource[] members = PublishUtil.getResources(moduleTree);
 			File source = PublishUtil.getFile(members[0]);
 			if( source != null ) {
-				IPublishCopyCallbackHandler handler = getCallbackHandler(new Path("/"));		 //$NON-NLS-1$
+				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(destinationPath));
 				IPath localFilePath = new Path(source.getAbsolutePath());
 				ModuleFile mf = new ModuleFile(localFilePath.toFile(), localFilePath.lastSegment(), localFilePath);
 				handler.copyFile(mf, destinationPath, new NullProgressMonitor());
@@ -294,14 +301,14 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			return new IStatus[] {ce.getStatus()};
 		}
 		monitor.done();
-		return new IStatus[]{Status.OK_STATUS};
+		return new IStatus[]{};
 	}
 	
 	protected IStatus unpublish(IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Removing Module: " + module[module.length-1].getName(), 100); //$NON-NLS-1$
 		IPath remotePath = getDeployPath(module, server);
-		IPublishCopyCallbackHandler handler = getCallbackHandler(new Path("/")); //$NON-NLS-1$
+		IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(remotePath));
 		handler.deleteResource(remotePath, getSubMon(monitor, 100));
 		monitor.done();
 		return Status.OK_STATUS;
