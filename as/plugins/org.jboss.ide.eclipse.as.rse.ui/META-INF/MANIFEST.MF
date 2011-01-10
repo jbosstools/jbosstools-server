@@ -30,7 +30,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.rse.files.ui,
  org.eclipse.rse.ui,
  org.eclipse.wst.server.ui,
- org.eclipse.debug.ui;bundle-version="[3.6.0,4.0.0)"
+ org.eclipse.debug.ui;bundle-version="[3.6.0,4.0.0)",
+ org.eclipse.rse.subsystems.shells.dstore;bundle-version="2.1.200",
+ org.eclipse.rse.subsystems.shells.local;bundle-version="2.1.100",
+ org.eclipse.rse.subsystems.shells.ssh;bundle-version="2.1.100",
+ org.eclipse.rse.subsystems.shells.telnet;bundle-version="1.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Localization: plugin
