@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="mbean_editor" xreflabel="mbean_editor">
+<chapter id="mbean_editor">
     <?dbhtml filename="mbean_editor.html"?>
 
     <title>MBean Editor</title>

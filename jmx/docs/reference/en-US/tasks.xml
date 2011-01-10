@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="tasks" xreflabel="tasks">
+<chapter id="tasks">
     <?dbhtml filename="tasks.html"?>
     <title>JMX Tools Tasks</title>
     <para>This chapter will give you answers on most popular questions asked by <property>JMX

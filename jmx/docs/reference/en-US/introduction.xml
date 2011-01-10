@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="intruduction" xreflabel="introduction">
+<chapter id="intruduction">
   <?dbhtml filename="introduction.html"?>
 
   <title>Introduction</title>
@@ -80,7 +80,7 @@ The JMX technology defines standard connectors (known as JMX connectors) that en
             <entry><para>MBean Explorer</para></entry>
             <entry><para>MBean Explorer is a useful view with a text filter that displays domains, mbeans, attributes, and operations inside a connection.</para></entry>
             <entry>
-              <link linkend="mbean_explorer">MBean Explorer</link>
+              <xref linkend="mbean_explorer"/>
             </entry>
           </row>
           
@@ -88,7 +88,7 @@ The JMX technology defines standard connectors (known as JMX connectors) that en
             <entry><para>MBean Editor</para></entry>
             <entry><para>MBean Editor is a multi-page editor to manage MBeans.</para></entry>
             <entry>
-              <link linkend="mbean_editor">MBean Editor</link>
+              <xref linkend="mbean_editor"/>
             </entry>
           </row>
        </tbody>

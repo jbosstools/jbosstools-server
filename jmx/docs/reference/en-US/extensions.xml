@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<chapter id="extensions" xreflabel="extensions">
+<chapter id="extensions">
    <?dbhtml filename="extensions"?>
    <title>Extension API</title>
    <para>This chapter will outline how to contribute your own Server type with some default
