@@ -324,7 +324,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			String root = home;
 			IPath root2 = new Path(root);
 			try {
-				IHostFile file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
+				IHostFile file = service.getFile(root2.removeLastSegments(1).toPortableString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
 					return getTestFailStatus("Server's Home folder " + root2 + " not found on " + service.getName() + " for " + host.getName());
@@ -332,7 +332,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				pm.worked(300);
 				
 				root2 = root2.append(IConstants.SERVER).append(config);
-				file = service.getFile(root2.removeLastSegments(1).toOSString(), root2.lastSegment(), new NullProgressMonitor());
+				file = service.getFile(root2.removeLastSegments(1).toPortableString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
 					return getTestFailStatus("Server's config folder " + root2 + " does not exist");
