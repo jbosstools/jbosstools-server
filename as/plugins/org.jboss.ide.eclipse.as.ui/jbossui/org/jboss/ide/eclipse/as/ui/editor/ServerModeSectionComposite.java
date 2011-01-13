@@ -141,6 +141,15 @@ public class ServerModeSectionComposite extends Composite {
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), IDeployableServer.SERVER_MODE, 
 						ui.getPublishType().getId(), "Change server mode"));
+				String deployType = null;
+				if( ui.getPublishType().getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+					deployType = IDeployableServer.DEPLOY_METADATA;
+				} else {
+					deployType = IDeployableServer.DEPLOY_SERVER;
+				}
+				callback.execute(new ChangeServerPropertyCommand(
+						callback.getServer(), IDeployableServer.DEPLOY_DIRECTORY_TYPE, 
+						deployType, "Change server's deploy location"));
 			}
 		} else {
 			// null selection

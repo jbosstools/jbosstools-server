@@ -55,12 +55,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.ui.internal.command.ServerCommand;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
@@ -109,54 +112,146 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					ServerConverter.getJBossServer(cServer) :
 						ServerConverter.getJBossServer(cServer.getOriginal());
 			if( jbs != null ) {
-			
-				Label serverHomeLabel = new Label(this, SWT.NONE);
-				serverHomeLabel.setText("Remote Server Home: ");
-				rseBrowse = new Button(this, SWT.DEFAULT);
-				rseBrowse.setText("Browse...");
-				rseBrowse.setLayoutData(UIUtil.createFormData2(child, 5, null, 0, null, 0, 100, -5));
-				rseBrowse.addSelectionListener(new SelectionListener(){
-					public void widgetSelected(SelectionEvent e) {
-						browseClicked();
-					}
-					public void widgetDefaultSelected(SelectionEvent e) {
-						browseClicked();
-					}
-				});
-				rseServerHome = new Text(this, SWT.SINGLE | SWT.BORDER);
-				serverHomeLabel.setLayoutData(UIUtil.createFormData2(child, 7, null, 0, 0, 10, null, 0));
-				rseServerHome.setLayoutData(UIUtil.createFormData2(child, 5, null, 0, serverHomeLabel, 5, rseBrowse, -5));
-				rseServerHome.setText(callback.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, 
-						getRuntime() == null ? "" : getRuntime().getRuntime().getLocation().toString()));
-				rseServerHome.addModifyListener(new ModifyListener(){
-					public void modifyText(ModifyEvent e) {
-						serverHomeChanged();
-					}});
-				
-				Label serverConfigLabel = new Label(this, SWT.NONE);
-				serverConfigLabel.setText("Remote Server Configuration: ");
-				rseServerConfig= new Text(this, SWT.SINGLE | SWT.BORDER);
-				serverConfigLabel.setLayoutData(UIUtil.createFormData2(rseServerHome, 7, null, 0, 0, 10, null, 0));
-				rseServerConfig.setText(callback.getServer().getAttribute(RSEUtils.RSE_SERVER_CONFIG, 
-						getRuntime() == null ? "" : getRuntime().getJBossConfiguration()));
-				rseServerConfig.addModifyListener(new ModifyListener(){
-					public void modifyText(ModifyEvent e) {
-						serverConfigChanged();
-					}});
-				callback.getServer().addPropertyChangeListener(this);
-				
-				rseTest = new Button(this, SWT.NONE);
-				rseTest.setText("Test...");
-				rseTest.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, null, 0, 100, -5));
-				rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome, 5, null, 0, serverConfigLabel, 5, rseTest, -5));
-				rseTest.addSelectionListener(new SelectionListener(){
-					public void widgetSelected(SelectionEvent e) {
-						testPressed();
-					}
-					public void widgetDefaultSelected(SelectionEvent e) {
-					}
-				});
+				handleJBossServer(child);
+			} else {
+				handleDeployOnlyServer(child);
 			}
+		}
+		private IDeployableServer getServer() {
+			return (IDeployableServer) callback.getServer().loadAdapter(
+					IDeployableServer.class, new NullProgressMonitor());
+		}
+
+		private Text deployText, tempDeployText;
+		private Button deployButton, tempDeployButton;
+		private ModifyListener deployListener, tempDeployListener;
+
+		private void handleJBossServer(Composite composite) {
+			Label serverHomeLabel = new Label(this, SWT.NONE);
+			serverHomeLabel.setText("Remote Server Home: ");
+			rseBrowse = new Button(this, SWT.DEFAULT);
+			rseBrowse.setText("Browse...");
+			rseBrowse.setLayoutData(UIUtil.createFormData2(composite, 5, null,
+					0, null, 0, 100, -5));
+			rseBrowse.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					browseClicked2();
+				}
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+					browseClicked2();
+				}
+			});
+			rseServerHome = new Text(this, SWT.SINGLE | SWT.BORDER);
+			serverHomeLabel.setLayoutData(UIUtil.createFormData2(composite, 7,
+					null, 0, 0, 10, null, 0));
+			rseServerHome.setLayoutData(UIUtil.createFormData2(composite, 5,
+					null, 0, serverHomeLabel, 5, rseBrowse, -5));
+			rseServerHome.setText(callback.getServer().getAttribute(
+					RSEUtils.RSE_SERVER_HOME_DIR,
+					getRuntime() == null ? "" : getRuntime().getRuntime()
+							.getLocation().toString()));
+			rseServerHome.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					serverHomeChanged();
+				}
+			});
+
+			Label serverConfigLabel = new Label(this, SWT.NONE);
+			serverConfigLabel.setText("Remote Server Configuration: ");
+			rseServerConfig = new Text(this, SWT.SINGLE | SWT.BORDER);
+			serverConfigLabel.setLayoutData(UIUtil.createFormData2(
+					rseServerHome, 7, null, 0, 0, 10, null, 0));
+			rseServerConfig.setText(callback.getServer().getAttribute(
+					RSEUtils.RSE_SERVER_CONFIG,
+					getRuntime() == null ? "" : getRuntime()
+							.getJBossConfiguration()));
+			rseServerConfig.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					serverConfigChanged();
+				}
+			});
+			callback.getServer().addPropertyChangeListener(this);
+
+			rseTest = new Button(this, SWT.NONE);
+			rseTest.setText("Test...");
+			rseTest.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
+					null, 0, null, 0, 100, -5));
+			rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome,
+					5, null, 0, serverConfigLabel, 5, rseTest, -5));
+			rseTest.addSelectionListener(new SelectionListener() {
+				public void widgetSelected(SelectionEvent e) {
+					testPressed();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+			});
+		}
+
+
+
+		private void handleDeployOnlyServer(Composite composite) {
+			Label label = new Label(this, SWT.NONE);
+			label.setText(Messages.swf_DeployDirectory);
+			deployText = new Text(this, SWT.BORDER);
+			deployText.setText(getServer().getDeployFolder());
+			deployListener = new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					callback.execute(new SetDeployDirCommand());
+				}
+			};
+			deployText.addModifyListener(deployListener);
+
+			deployButton = new Button(this, SWT.PUSH);
+			deployButton.setText(Messages.browse);
+			label.setLayoutData(UIUtil.createFormData2(composite, 7, null, 0, 0, 10, null, 0));
+			deployButton.setLayoutData(UIUtil.createFormData2(composite, 5, null, 0, null, 0, 100, -5));
+			deployText.setLayoutData(UIUtil.createFormData2(composite, 5, null, 0, label, 5, deployButton, -5));
+
+			deployButton.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+				}
+			});
+
+			Label tempDeployLabel = new Label(this, SWT.NONE);
+			tempDeployLabel.setText(Messages.swf_TempDeployDirectory);
+			tempDeployText = new Text(this, SWT.BORDER);
+			tempDeployText.setText(getServer().getTempDeployFolder());
+			tempDeployListener = new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					callback.execute(new SetTempDeployDirCommand());
+				}
+			};
+			tempDeployText.addModifyListener(tempDeployListener);
+
+			tempDeployButton = new Button(this, SWT.PUSH);
+			tempDeployButton.setText(Messages.browse);
+			
+			tempDeployLabel.setLayoutData(UIUtil.createFormData2(deployText, 7, null, 0, 0, 10, null, 0));
+			tempDeployButton.setLayoutData(UIUtil.createFormData2(deployText, 5, null, 0, null, 0, 100, -5));
+			tempDeployText.setLayoutData(UIUtil.createFormData2(deployText, 5, null, 0, tempDeployLabel, 5, deployButton, -5));
+
+			tempDeployButton.addSelectionListener(new SelectionListener() {
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+				}
+			});
+		}
+		
+		private void updateDeployOnlyWidgets() {
+			String newDir = callback.getServer().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, "");
+			String newTemp = callback.getServer().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, "");
+			deployText.removeModifyListener(deployListener);
+			deployText.setText(newDir);
+			deployText.addModifyListener(deployListener);
+			tempDeployText.removeModifyListener(tempDeployListener);
+			tempDeployText.setText(newTemp);
+			tempDeployText.addModifyListener(tempDeployListener);
 		}
 		
 		private void testPressed(){
@@ -298,17 +393,25 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 		}
 
-		protected void browseClicked() {
+		protected void browseClicked2() {
+			String browseVal = browseClicked3();
+			if (browseVal != null) {
+				rseServerHome.setText(browseVal);
+				serverHomeChanged();
+			}
+		}
+
+		protected String browseClicked3() {
 			SystemRemoteFileDialog d = new SystemRemoteFileDialog(
 					rseBrowse.getShell(), "Browse remote system", combo.getHost());
 			if( d.open() == Dialog.OK) {
 				Object o = d.getOutputObject();
 				if( o instanceof IRemoteFile ) {
 					String path = ((IRemoteFile)o).getAbsolutePath();
-					rseServerHome.setText(path);
-					serverHomeChanged();
+					return path;
 				}
 			}
+			return null;
 		}
 		
 		protected IJBossServerRuntime getRuntime() {
@@ -492,6 +595,59 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				RSECorePlugin.getTheSystemRegistry().removeSystemModelChangeListener(this);			
 			}
 		}
-	}
 
+		public class SetDeployDirCommand extends ServerCommand {
+			private String oldDir;
+			private String newDir;
+			private Text text;
+			private ModifyListener listener;
+
+			public SetDeployDirCommand() {
+				super(callback.getServer(), Messages.EditorSetDeployLabel);
+				this.text = deployText;
+				this.newDir = deployText.getText();
+				this.listener = deployListener;
+				this.oldDir = callback.getServer().getAttribute(
+						IDeployableServer.DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
+			}
+
+			public void execute() {
+				callback.getServer().setAttribute(
+						IDeployableServer.DEPLOY_DIRECTORY, newDir);
+				updateDeployOnlyWidgets();
+			}
+
+			public void undo() {
+				callback.getServer().setAttribute(
+						IDeployableServer.DEPLOY_DIRECTORY, oldDir);
+				updateDeployOnlyWidgets();
+			}
+		}
+
+		public class SetTempDeployDirCommand extends ServerCommand {
+			private String oldDir;
+			private String newDir;
+			private Text text;
+			private ModifyListener listener;
+
+			public SetTempDeployDirCommand() {
+				super(callback.getServer(), Messages.EditorSetTempDeployLabel);
+				text = tempDeployText;
+				newDir = tempDeployText.getText();
+				listener = tempDeployListener;
+				oldDir = callback.getServer().getAttribute(
+						IDeployableServer.TEMP_DEPLOY_DIRECTORY, ""); //$NON-NLS-1$
+			}
+
+			public void execute() {
+				callback.getServer().setAttribute(
+						IDeployableServer.TEMP_DEPLOY_DIRECTORY, newDir);
+			}
+
+			public void undo() {
+				callback.getServer().setAttribute(
+						IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
+			}
+		}
+	}
 }

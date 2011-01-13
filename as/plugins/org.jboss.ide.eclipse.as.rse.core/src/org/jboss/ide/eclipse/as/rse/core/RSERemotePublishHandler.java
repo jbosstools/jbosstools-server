@@ -52,7 +52,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
 					remotePath.lastSegment(), true, null, null, monitor);
 		} catch( SystemMessageException sme ) {
-			System.err.println("failed to copy to " + remotePath.toString()); //$NON-NLS-1$
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+					"failed to copy to " + remotePath.toString(), sme);
+			return new IStatus[]{s};
 		}
 		return new IStatus[]{};
 	}
@@ -63,7 +65,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		try {
 			method.getFileService().delete(remotePath.removeLastSegments(1).toString(), remotePath.lastSegment(), monitor);
 		} catch( SystemMessageException sme ) {
-			System.err.println("failed to delete " + remotePath.toString()); //$NON-NLS-1$
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+					"failed to delete " + remotePath.toString(), sme);
+			return new IStatus[]{s};
 		}
 		return new IStatus[]{};
 	}
@@ -82,7 +86,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 						toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
 			}
 		} catch( SystemMessageException sme ) {
-			System.err.println("failed to make folder " + toMake.toString()); //$NON-NLS-1$
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+					"failed to create folder " + toMake.toString(), sme);
+			return new IStatus[]{s};
 		}
 		createdFolders.add(toMake);
 		monitor.done();
@@ -98,6 +104,9 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			}
 			method.getFileServiceSubSystem().setLastModified(rf, new Date().getTime(), null);
 		} catch(SystemMessageException sme) {
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+					"failed to touch remote resource " + file.toString(), sme);
+			return new IStatus[]{s};
 		}
 		return new IStatus[]{};
 	}
