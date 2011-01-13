@@ -69,11 +69,11 @@ public class RSEUtils {
 			// if no value is set, default to metadata
 			type = JBossServer.DEPLOY_SERVER;
 		}
-		// TODO error here, or sensible default?
+		// This should *NOT* happen, so if it does, we will default to server location
 		if( type.equals(JBossServer.DEPLOY_METADATA)) {
-			return JBossServerCorePlugin.getServerStateLocation(server).
-				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
-		} else if( type.equals(JBossServer.DEPLOY_SERVER)) {
+			type = JBossServer.DEPLOY_SERVER;
+		} 
+		if( type.equals(JBossServer.DEPLOY_SERVER)) {
 			String loc = IConstants.SERVER;
 			String config = getRSEConfigName(server);
 			IPath p = new Path(loc).append(config)
