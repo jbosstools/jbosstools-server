@@ -24,6 +24,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
@@ -148,9 +149,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			rseServerHome.setLayoutData(UIUtil.createFormData2(composite, 5,
 					null, 0, serverHomeLabel, 5, rseBrowse, -5));
 			rseServerHome.setText(callback.getServer().getAttribute(
-					RSEUtils.RSE_SERVER_HOME_DIR,
-					getRuntime() == null ? "" : getRuntime().getRuntime()
-							.getLocation().toString()));
+					RSEUtils.RSE_SERVER_HOME_DIR, RSEUIMessages.UNSET_REMOTE_SERVER_HOME));
 			rseServerHome.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
 					serverHomeChanged();
@@ -158,7 +157,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			});
 
 			Label serverConfigLabel = new Label(this, SWT.NONE);
-			serverConfigLabel.setText("Remote Server Configuration: ");
+			serverConfigLabel.setText(RSEUIMessages.REMOTE_SERVER_CONFIG);
 			rseServerConfig = new Text(this, SWT.SINGLE | SWT.BORDER);
 			serverConfigLabel.setLayoutData(UIUtil.createFormData2(
 					rseServerHome, 7, null, 0, 0, 10, null, 0));
@@ -174,7 +173,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			callback.getServer().addPropertyChangeListener(this);
 
 			rseTest = new Button(this, SWT.NONE);
-			rseTest.setText("Test...");
+			rseTest.setText(RSEUIMessages.TEST);
 			rseTest.setLayoutData(UIUtil.createFormData2(rseServerHome, 5,
 					null, 0, null, 0, 100, -5));
 			rseServerConfig.setLayoutData(UIUtil.createFormData2(rseServerHome,
@@ -277,30 +276,30 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				   s[0] = new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, e.getMessage(), e);
 			   }
 			   rseTest.setEnabled(true);
-			   showMessageDialog("Test of Remote System", s[0]);
+			   showMessageDialog(RSEUIMessages.REMOTE_SERVER_TEST, s[0]);
 		}
 		
 		private void showMessageDialog(String title, IStatus s) {
 			if( s.isOK() ) 
 				s = new Status(IStatus.INFO, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
-						"The remote server is properly configured.");
+						RSEUIMessages.REMOTE_SERVER_TEST_SUCCESS);
 			ErrorDialog d = new ErrorDialog(rseServerHome.getShell(), title, null, s, IStatus.INFO | IStatus.ERROR);
 			d.open();
 		}
 		
 		private IStatus testPressed(String home, String config, IProgressMonitor pm) {
-			pm.beginTask("Validating Remote Configuration", 1200);
+			pm.beginTask(RSEUIMessages.VALIDATING_REMOTE_CONFIG, 1200);
 			IHost host = combo.getHost();
 			if( host == null ) {
 				pm.done(); 
-				return getTestFailStatus("Host is empty!");
+				return getTestFailStatus(RSEUIMessages.EMPTY_HOST);
 			}
 			pm.worked(100);
 			
 			IFileServiceSubSystem fileSubSystem = RSEPublishMethod.findFileTransferSubSystem(host);
 			if( fileSubSystem == null ) {
 				pm.done(); 
-				return getTestFailStatus("No File Sub System found on " + host.getName());
+				return getTestFailStatus(NLS.bind(RSEUIMessages.FILE_SUBSYSTEM_NOT_FOUND, host.getName()));
 			}
 			pm.worked(100);
 
@@ -309,7 +308,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			    	fileSubSystem.connect(new NullProgressMonitor(), false);
 			    } catch (Exception e) {
 			    	pm.done(); 
-			    	return getTestFailStatus("Error when connecting to file system: " + e.getLocalizedMessage()); 
+			    	return getTestFailStatus(NLS.bind(RSEUIMessages.REMOTE_FILESYSTEM_CONNECT_FAILED, e.getLocalizedMessage())); 
 			    }
 			}
 			pm.worked(300);
@@ -317,7 +316,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			IFileService service = fileSubSystem.getFileService();
 			if( service == null ) {
 				pm.done(); 
-				return getTestFailStatus("No File Service for " + host.getName());
+				return getTestFailStatus(NLS.bind(RSEUIMessages.FILESERVICE_NOT_FOUND, host.getName()));
 			}
 			pm.worked(100);
 			
@@ -327,7 +326,9 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				IHostFile file = service.getFile(root2.removeLastSegments(1).toPortableString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
-					return getTestFailStatus("Server's Home folder " + root2 + " not found on " + service.getName() + " for " + host.getName());
+					return getTestFailStatus(NLS.bind(RSEUIMessages.REMOTE_HOME_NOT_FOUND, 
+							new Object[]{root2, service.getName(), host.getName()}));
+					
 				}
 				pm.worked(300);
 				
@@ -335,12 +336,12 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				file = service.getFile(root2.removeLastSegments(1).toPortableString(), root2.lastSegment(), new NullProgressMonitor());
 				if( file == null || !file.exists()) {
 					pm.done(); 
-					return getTestFailStatus("Server's config folder " + root2 + " does not exist");
+					return getTestFailStatus(NLS.bind(RSEUIMessages.REMOTE_CONFIG_NOT_FOUND, root2));
 				}
 				pm.worked(300);
 			} catch(SystemMessageException sme) {
 				pm.done();
-				return getTestFailStatus("Error while checking remote folders: " + sme.getLocalizedMessage());
+				return getTestFailStatus(RSEUIMessages.ERROR_CHECKING_REMOTE_SYSTEM + sme.getLocalizedMessage());
 			}
 			pm.done(); 
 			return Status.OK_STATUS;
@@ -403,7 +404,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 
 		protected String browseClicked3() {
 			SystemRemoteFileDialog d = new SystemRemoteFileDialog(
-					rseBrowse.getShell(), "Browse remote system", combo.getHost());
+					rseBrowse.getShell(), RSEUIMessages.BROWSE_REMOTE_SYSTEM, combo.getHost());
 			if( d.open() == Dialog.OK) {
 				Object o = d.getOutputObject();
 				if( o instanceof IRemoteFile ) {
@@ -427,10 +428,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				if( !hostName.equals(oldVal) && !updatingFromModelChange) {
 					callback.execute(new ChangeServerPropertyCommand(
 							callback.getServer(), RSEUtils.RSE_SERVER_HOST, hostName, "localhost", 
-							"Change RSE Host"));
+							RSEUIMessages.CHANGE_RSE_HOST));
 					callback.execute(new ChangeServerPropertyCommand(
 							callback.getServer(), "hostname", combo.getHost().getHostName(), 
-							"Change Hostname"));
+							RSEUIMessages.CHANGE_HOSTNAME));
 				}
 			}
 		}
@@ -440,7 +441,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
 						getRuntime() == null ? "" : getRuntime().getRuntime().getLocation().toString(),
-						"Change RSE Server's Home Directory"));
+						RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
 			}
 		}
 
@@ -449,7 +450,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), RSEUtils.RSE_SERVER_CONFIG, rseServerConfig.getText(), 
 						getRuntime() == null ? "" : getRuntime().getJBossConfiguration(),
-						"Change RSE Server's Configuration"));
+								RSEUIMessages.CHANGE_REMOTE_SERVER_CONFIG));
 			}
 		}
 

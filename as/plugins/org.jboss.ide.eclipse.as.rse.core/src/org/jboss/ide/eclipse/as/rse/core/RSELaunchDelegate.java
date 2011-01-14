@@ -141,17 +141,24 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
-		behaviour.setServerStopping();
-		
 		ILaunchConfiguration config = null;
 		String command2 = "";
 		try {
 			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+			String rseHome = behaviour.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, (String)null);
+			if( rseHome == null ) {
+				RSECorePlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+								"Remote Server Home not set."));
+				return;
+			}
 			String defaultCmd = getDefaultStopCommand(behaviour.getServer());
 			command2 = config == null ? defaultCmd :
 				config.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCmd);
 		} catch(CoreException ce) {
 		}
+		
+		behaviour.setServerStopping();
 		
 		final String command = command2;
 		IShellService service = null;
@@ -185,6 +192,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 						 * when the command line comes back, there's an extra space
 						 * "shutdown .sh"
 						 */
+						System.out.println(out[i]);
 						String outNoSpace = out[i].getString().replaceAll(" ", "");
 						String commandNoSpace = command.replaceAll(" ", "");
 						boolean contains = outNoSpace.contains(commandNoSpace);
@@ -261,6 +269,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	
 	public static String getDefaultStopCommand(IServer server) {
 		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		// initialize stop command to something reasonable
 		String username = jbs.getUsername();

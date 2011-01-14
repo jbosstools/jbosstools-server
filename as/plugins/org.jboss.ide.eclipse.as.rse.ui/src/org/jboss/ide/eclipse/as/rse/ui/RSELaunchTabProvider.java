@@ -56,13 +56,13 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			setControl(comp);
 			comp.setLayout(new FormLayout());
 			Group startGroup = new Group(comp, SWT.NONE);
-			startGroup.setText("Start Command");
+			startGroup.setText(RSEUIMessages.RSE_START_COMMAND);
 			FormData data = UIUtil.createFormData2(0, 5, 0, 150, 0, 5, 100, -5);
 			startGroup.setLayoutData(data);
 			startGroup.setLayout(new FormLayout());
 			
 			autoStartArgs = new Button(startGroup, SWT.CHECK);
-			autoStartArgs.setText("Automatically calculate");
+			autoStartArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
 			data = UIUtil.createFormData2(null, 0, 100, -5, 0, 5, 100, -5);
 			autoStartArgs.setLayoutData(data);
 
@@ -72,13 +72,13 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			
 			// start stop group
 			Group stopGroup = new Group(comp, SWT.NONE);
-			stopGroup.setText("Stop Command");
+			stopGroup.setText(RSEUIMessages.RSE_STOP_COMMAND);
 			data = UIUtil.createFormData2(startGroup, 5, startGroup, 300, 0, 5, 100, -5);
 			stopGroup.setLayoutData(data);
 			stopGroup.setLayout(new FormLayout());
 			
 			autoStopArgs = new Button(stopGroup, SWT.CHECK);
-			autoStopArgs.setText("Automatically calculate");
+			autoStopArgs.setText(RSEUIMessages.RSE_AUTOMATICALLY_CALCULATE);
 			data = UIUtil.createFormData2(null, 0, 100, -5, 0, 5, 100, -5);
 			autoStopArgs.setLayoutData(data);
 
@@ -146,7 +146,7 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			configuration.setAttribute(RSELaunchDelegate.DETECT_SHUTDOWN_COMMAND, autoStopArgs.getSelection());
 		}
 		public String getName() {
-			return "RSE Remote Launch";
+			return RSEUIMessages.RSE_REMOTE_LAUNCH;
 		}
 		
 	}
