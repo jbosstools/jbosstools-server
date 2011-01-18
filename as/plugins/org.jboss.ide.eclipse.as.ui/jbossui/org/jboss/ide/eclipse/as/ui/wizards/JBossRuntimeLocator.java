@@ -131,7 +131,7 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		else 
 			runtimeTypeId=IJBossToolingConstants.EAP_50;
 		
-		IPath path2 = path.append(IJBossRuntimeResourceConstants.JBOSS_AS);
+		IPath path2 = path.append(IJBossRuntimeResourceConstants.JBOSS_AS_EAP_DIRECTORY);
 		if( runtimeTypeId != null ) {
 			try {
 				IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path2.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
