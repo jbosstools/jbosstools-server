@@ -59,9 +59,15 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 	}
 	
 	public IRuntimeWorkingCopy searchForRuntimes(IPath path, ServerBeanLoader loader, IProgressMonitor monitor) {
+		if( monitor.isCanceled())
+			return null;
+		
 		if( loader.getServerType(path.toFile()) != JBossServerType.UNKNOWN) {
 			// return found
-			return createRuntime(path, loader);
+			IRuntimeWorkingCopy wc = createRuntime(path, loader);
+			if( wc == null )
+				monitor.setCanceled(true);
+			return wc;
 		}
 		File[] children = path.toFile().listFiles();
 		children = (children == null ? new File[]{} : children);
