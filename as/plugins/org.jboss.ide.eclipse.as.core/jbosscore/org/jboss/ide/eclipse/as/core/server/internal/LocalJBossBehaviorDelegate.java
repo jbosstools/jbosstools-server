@@ -262,6 +262,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				t.interrupt();
 				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_CANCELED, Messages.JMXScannerCanceled, null);
 				ServerLogger.getDefault().log(getServer(), status);
+			} else if( e[0] != null ) {
+				String error = methodName.equals(IJBossRuntimeConstants.START) ? Messages.JMXResumeScannerError : Messages.JMXPauseScannerError;
+				IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.DEPLOYMENT_SCANNER_TRANSITION_FAILED, error, e[0]);
+				ServerLogger.getDefault().log(getServer(), status);
 			}
 		}
 	}
