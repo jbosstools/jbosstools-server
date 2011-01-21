@@ -35,6 +35,7 @@ import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
@@ -86,14 +87,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		try {
 			hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			hs.addOutputListener(listener);
-			int x = 0;
-			while( x < 30000) {
-				x+=1000;
-				try {
-					Thread.sleep(1000);
-				} catch(InterruptedException ie) {
-				}
-			}
+			delay(30);
 			
 			// Now launch ping thread
 		} catch(SystemMessageException sme) {
@@ -114,6 +108,18 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		beh.setServerStarted();
 	}
 
+	private static void delay(int delay) {
+		int x = 1;
+		while( x < (delay)) {
+			x+=1;
+			try {
+				Thread.sleep(1000);
+			} catch(InterruptedException ie) {
+			}
+		}
+	}
+
+	
 	public static void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
 		IShellService service = null;
 		try {
@@ -125,11 +131,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		try {
 			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			if( hs != null ) {
-				try {
-					Thread.sleep(delay);
-				} catch(InterruptedException ie) {
-					// ignore
-				}
+				delay(delay/1000);
 			}
 		} catch( SystemMessageException sme) {
 			// TODO
@@ -141,18 +143,25 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
-		behaviour.setServerStopping();
-		
 		ILaunchConfiguration config = null;
 		String command2 = "";
 		try {
 			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+			String rseHome = behaviour.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, (String)null);
+			if( rseHome == null ) {
+				RSECorePlugin.getDefault().getLog().log(
+						new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+								"Remote Server Home not set."));
+				return;
+			}
 			String defaultCmd = getDefaultStopCommand(behaviour.getServer());
 			command2 = config == null ? defaultCmd :
 				config.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCmd);
 		} catch(CoreException ce) {
 		}
 		
+		behaviour.setServerStopping();
+		final JBossServerBehavior behaviour2 = behaviour;
 		final String command = command2;
 		IShellService service = null;
 		try {
@@ -175,16 +184,17 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 						if( saving[0] ) {
 							output[0] = out[i].getString();
 							saving[0] = false;
-							try {
-								Thread.sleep(1000);
-							} catch(InterruptedException ie) {}
+							delay(10);
+							behaviour2.setServerStopped();
 							hs.exit();
+							return;
 						}
 						/* 
 						 * This is an extreme hack, because for some reason, 
 						 * when the command line comes back, there's an extra space
 						 * "shutdown .sh"
 						 */
+						System.out.println(out[i]);
 						String outNoSpace = out[i].getString().replaceAll(" ", "");
 						String commandNoSpace = command.replaceAll(" ", "");
 						boolean contains = outNoSpace.contains(commandNoSpace);
@@ -194,7 +204,6 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 				}
 			});
 			
-			behaviour.setServerStopped();
 		} catch( SystemMessageException sme) {
 			// TODO
 			behaviour.setServerStarted(); // unable to stop the server
@@ -261,6 +270,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	
 	public static String getDefaultStopCommand(IServer server) {
 		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		// initialize stop command to something reasonable
 		String username = jbs.getUsername();
