@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
@@ -29,8 +28,6 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -103,14 +100,14 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		variablesButton.setLayoutData(createFormData(text,5,null,0,null,0,workspaceButton,-5));
 		fsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,variablesButton,-5));
 		wsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,fsRadioButton,-5));
-		relativeTo.setLayoutData(createFormData(text,8,null,0,null,0,wsRadioButton,-5));
+		relativeTo.setLayoutData(createFormData(text,8,null,0,0,5,0,5));
 	}
 
 	protected void setWidgetData() {
 		filesystemButton.setText(ArchivesUIMessages.Filesystem);
 		workspaceButton.setText(ArchivesUIMessages.Workspace);
 		variablesButton.setText(ArchivesUIMessages.Variables);
-		wsRadioButton.setText(ArchivesUIMessages.Workspace2);
+		wsRadioButton.setText(ArchivesUIMessages.Workspace2 );
 		fsRadioButton.setText(ArchivesUIMessages.Filesystem2);
 		relativeTo.setText(ArchivesUIMessages.RelativeTo);
 		pathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
