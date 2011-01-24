@@ -130,7 +130,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		private void handleJBossServer(Composite composite) {
 			Label serverHomeLabel = new Label(this, SWT.NONE);
 			serverHomeLabel.setText("Remote Server Home: ");
-			rseBrowse = new Button(this, SWT.DEFAULT);
+			rseBrowse = new Button(this, SWT.NONE);
 			rseBrowse.setText("Browse...");
 			rseBrowse.setLayoutData(UIUtil.createFormData2(composite, 5, null,
 					0, null, 0, 100, -5));
@@ -485,7 +485,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				setLayout(new FormLayout());
 				Label l = new Label(this, SWT.NONE);
 				l.setText("Host");
-				newHost = new Button(this, SWT.DEFAULT);
+				newHost = new Button(this, SWT.NONE);
 				newHost.setText("New Host...");
 				newHost.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, null, 0, 100, -5));
 				newHost.addSelectionListener(new SelectionListener() {
