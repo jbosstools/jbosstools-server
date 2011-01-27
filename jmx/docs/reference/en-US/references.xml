@@ -8,7 +8,7 @@
 
 		<title>MBean Explorer</title>
 		<para>
-			The <guilabel>MBean Explorer</guilabel> displays the MBean features (both attributes and operations) in its hierarchy. Double-clicking on a feature will open a <property>MBean Editor</property>, displaying the page corresponding to the feature type and select the feature.
+			The <guilabel>MBean Explorer</guilabel> displays the MBean features (both attributes and operations) in its hierarchy. Double-clicking on a feature will open an <property>MBean Editor</property>, displaying the page corresponding to the feature type and select the feature.
 		</para>
 
 		<figure>
@@ -21,7 +21,7 @@
 		</figure>
 
 		<para>
-			Since it is possible to have many MBean Editors opened at the same time, the <guilabel>MBean Explorer</guilabel> has the Link With Editor button <inlinemediaobject> <imageobject> <imagedata fileref="images/link-with-editor_0.2.0.png"/></imageobject></inlinemediaobject> to synchronize selections between the active <guilabel>MBean Editor</guilabel> and the <guilabel>MBean Explorer</guilabel> (and vice versa).
+			Since it is possible to have many MBean Editors opened at the same time, the <guilabel>MBean Explorer</guilabel> has the <guibutton>Link With Editor</guibutton> button <inlinemediaobject> <imageobject> <imagedata fileref="images/link-with-editor_0.2.0.png"/></imageobject></inlinemediaobject> to synchronize selections between the active <guilabel>MBean Editor</guilabel> and the <guilabel>MBean Explorer</guilabel> (and vice versa).
 		</para>
 
 		<para>
@@ -29,7 +29,7 @@
 		</para>
 
 		<para>
-			For example, if you are only interested by MBeans related to memory, typing "memo" will show any node (domain, mbean, attribute, or operation) that matches that text, as well as that node&apos;s parents and children. So if an MBean matches, all attributes and operations from that bean will show. If, however, an attribute or operation name (a leaf node) matches, only that node and its parents in the tree will show.
+			For example, if you are only interested by MBeans related to memory, typing "memo" will show any node (domain, mbean, attribute, or operation) that matches that text, as well as that node&apos;s parents and children. So if an MBean matches, all attributes and operations from that bean will be displayed. If, however, an attribute or operation name (a leaf node) matches, only that node and its parents in the tree will be displayed.
 		</para>
 
 		<figure>
@@ -79,11 +79,11 @@
 		</itemizedlist>
 
 		<para>
-			The <guilabel>Attributes</guilabel> and <guilabel>Operations</guilabel> pages display a list for either the MBean attributes or operations as well as details for the selection.
+			The <guilabel>Attributes</guilabel> and <guilabel>Operations</guilabel> pages display a list for either the MBean attributes or operations, as well as details about the selection.
 		</para>
 
 		<para>
-			It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally with the help of the special icons <inlinemediaobject><imageobject><imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"/></imageobject></inlinemediaobject>in the right top corner of the editor.
+			It is possible to toggle the layout between the list and the details either vertically (by default) or horizontally with the help of the special icons <inlinemediaobject><imageobject><imagedata fileref="images/mbean-editor-layout-buttons_0.2.0.png"/></imageobject></inlinemediaobject> in the right top corner of the editor.
 		</para>
 
 		<figure>
@@ -108,7 +108,7 @@
 		<section>
 			<title>Notifications Page</title>
 			<para>
-				One more page in the <guilabel>MBean Editor</guilabel> is the <guilabel>Notifications</guilabel> page, which gives the possibility to subscribe or unsubscribe to an MBean to receive its notifications by checking or unchecking the <guibutton>Subscribe</guibutton> button in the right top corner. 
+				The <guilabel>Notifications</guilabel> page provides the ability to subscribe or unsubscribe to an MBean to receive its notifications by checking or unchecking the <guibutton>Subscribe</guibutton> button in the right top corner. 
 			</para>
 			<para>The list of notifications is refreshed every time a new notification is received:</para>
 
@@ -123,7 +123,7 @@
 
 			<note>
 				<title>Note</title>
-				<para>It is only possible to subscribe to MBean that emits notifications (i.e. they must be a NotificationBroadcaster).</para>
+				<para>It is only possible to subscribe to an MBean that emits notifications (i.e. they must be a NotificationBroadcaster).</para>
 			</note>
 
 		</section>
