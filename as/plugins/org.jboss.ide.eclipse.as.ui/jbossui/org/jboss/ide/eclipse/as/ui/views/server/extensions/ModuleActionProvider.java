@@ -193,7 +193,8 @@ public class ModuleActionProvider extends CommonActionProvider {
 		ModuleServer ms = selection[0];
 		IModule[] module = ms.module;
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(ms.server);
-		IPath path = ExploreUtils.getDeployPath(deployableServer, module);
-		return path;
+		if( deployableServer != null )
+			return ExploreUtils.getDeployPath(deployableServer, module);
+		return null;
 	}
 }
