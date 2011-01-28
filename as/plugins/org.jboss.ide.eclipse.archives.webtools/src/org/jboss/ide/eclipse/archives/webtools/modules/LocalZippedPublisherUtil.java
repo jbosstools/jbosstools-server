@@ -132,7 +132,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 
 				// recurse
 				IModule[] children2 = server.getChildModules(combinedChild, new NullProgressMonitor());
-				results.addAll(Arrays.asList(handleChildrenDeltas(server, deployRoot, children, children2)));
+				results.addAll(Arrays.asList(handleChildrenDeltas(server, deployRoot, module, children2)));
 			}
 		}
 		return (IStatus[]) results.toArray(new IStatus[results.size()]);
