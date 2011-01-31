@@ -420,7 +420,7 @@
                 what its current value is.</para-->
 
 				<para>
-					By right-clicking on the <guilabel>XML Configuration</guilabel> node you can create a new category. Besides, context menu for <emphasis> <property>XML Configuration</property></emphasis> category makes possible to disable it. You can disable any category in the bottom part of the <guilabel>Servers</guilabel> view. Look for them in the <guilabel>Inactive Categories</guilabel> afterwards to re-enable.
+					By right-clicking on the <guilabel>XML Configuration</guilabel> node you can create a new category. Besides, context menu for <guilabel>XML Configuration</guilabel> category makes possible to disable it. You can disable any category in the bottom part of the <guilabel>Servers</guilabel> view. Look for them in the <guilabel>Inactive Categories</guilabel> afterwards to re-enable.
 				</para>
 
 				<figure>
@@ -432,11 +432,9 @@
 					</mediaobject>
 				</figure>
 
-				<para>By right-clicking on <emphasis>
-                        <property>Ports</property>
-					</emphasis> or any other category in <emphasis>
-                        <property>XML Configuration</property>
-					</emphasis>, you can create a new xpath.</para>
+				<para>
+					By right-clicking on the <guilabel>Ports</guilabel> category, or any other category in <guilabel>XML Configuration</guilabel>, you can create a new XPath.
+				</para>
 
 				<figure>
 					<title>Adding New XPath</title>
@@ -458,14 +456,9 @@
 					</mediaobject>
 				</figure>
 
-				<para>The goal here is to get an end result where the XPath matches up with a
-                    necessary property. With that in mind, let&apos;s look how it works. If the
-                    property you want to reach is the value of the <emphasis>name</emphasis>
-                    attribute in the element <code>&lt;mbean&gt;</code>, then your <emphasis>
-                        <property>XPath Patten</property>
-					</emphasis>should end with <emphasis>mbean</emphasis> and your <emphasis>
-                        <property>Attribute Name</property>
-					</emphasis> should be <emphasis>name</emphasis> like on the next figure.</para>
+				<para>
+					The goal here is to get an end result where the XPath matches up with a necessary property. With that in mind, let&apos;s look how it works. If the property you want to reach is the value of the <code>name</code> attribute in the element <code>&lt;mbean&gt;</code>, then your <guilabel>XPath Patten</guilabel> should end with <code>mbean</code> and your <guilabel>Attribute Name</guilabel> should be <code>name</code>, as demonstrated in the next figure.
+				</para>
 
 				<programlisting role="XML"><![CDATA[...
 <server>
@@ -492,20 +485,14 @@
 					</mediaobject>
 				</figure>
 
-				<tip>
+				<note>
 					<title>Tip:</title>
-					<para>Notice, when you type the fields autocomplete to help you locate exactly
-                        what xpath you&apos;re looking for.</para>
-				</tip>
+					<para>Notice when you type the fields autocomplete to help you locate exactly what XPath you&apos;re looking for.</para>
+				</note>
 
-				<para>Then, on the other hand, if your desired field is the text of an element
-                        <code>&lt;description&gt;</code>, your <emphasis>
-                        <property>XPath Patten</property>
-					</emphasis> should end with <emphasis>description</emphasis> and <emphasis>
-                        <property>Attribute Name</property>
-					</emphasis> field should be left blank. When finished, click <emphasis>
-                        <property>Preview</property>
-					</emphasis> to see how many matches you have for that particular XPath.</para>
+				<para>
+					If your desired field is the text of an element <code>&lt;description&gt;</code>, your <guilabel>XPath Patten</guilabel> should end with <code>description</code> and <guilabel>Attribute Name</guilabel> field should be left blank. When finished, click the <guibutton>Preview</guibutton> button to see how many matches are found for that particular XPath.
+				</para>
 
 				<figure>
 					<title>XPath Preview</title>
@@ -522,9 +509,9 @@
 		<section id="dragndrop_to_jboss_server_view">
 			<title>Drag-n-Drop to Servers view</title>
 
-			<para>Starting from 2.0.0.CR2 version of <property>JBoss AS Tools</property> the
-                    <property>Servers</property> view supports drag-n-drop of deployable and
-                runnable projects/resources.</para>
+			<para>
+				Starting from <productname>JBoss AS Tools</productname> 2.0.0.CR2 the <guilabel>Servers</guilabel> view supports drag-n-drop of deployable and runnable projects and resources.
+			</para>
 
 			<figure>
 				<title>Dragging to the Servers view</title>
@@ -539,48 +526,37 @@
 
 			<itemizedlist>
 				<listitem>
-					<para>dragging a project to a server will deploy it to the server and run it by
-                        showing the main page in a browser</para>
+					<para>Dragging a project to a server will deploy it to the server and run it by showing the main page in a browser.</para>
 				</listitem>
 
 				<listitem>
-					<para>dragging an <emphasis>
-                            <property>.xhtml</property>
-						</emphasis> file from <emphasis>
-                            <property>WebContent</property>
-						</emphasis> will do the same and show the corresponding page in a
-                        browser</para>
+					<para>
+						Dragging an <filename>.xhtml</filename> file from the <filename>WebContent</filename> folder will do the same and show the corresponding page in a browser.
+					</para>
 				</listitem>
 
 				<listitem>
-					<para>dragging a deployable resource (i.e. a datasource (<emphasis>
-                            <property>-ds.xml</property>
-						</emphasis>) file that has been made deployable) will simply deploy that
-                        resource directly to the server</para>
+					<para>
+						Dragging a deployable resource (i.e. a datasource <filename>-ds.xml</filename> file that has been made deployable) will simply deploy that resource directly to the server.
+					</para>
 				</listitem>
 			</itemizedlist>
 
-			<para>In short, the feature does the same thing as if you used the <emphasis>
-                    <property>Run On Server</property>
-				</emphasis> option or <emphasis>
-                    <property>Add and Remove Projects</property>
-				</emphasis> option in the context menu of the server.</para>
+			<para>
+				In short, the feature does the same thing as if you used the <guimenuitem>Run On Server</guimenuitem> or <guimenuitem>Add and Remove Projects</guimenuitem> option in the context menu of the server.
+			</para>
 		</section>
 
 		<section id="server_log">
 			<title>Server Log View</title>
 
-			<para>You can monitor the current server behavior with the help of the <property>Server
-                    Log</property>. To open a server in the <property>Server Log view</property> you
-                should right-click on the server and follow to <emphasis>
-                    <property>Open in > Server Log</property>.</emphasis>
+			<para>
+				You can monitor the current server behavior with the help of the <property>Server Log</property>. To open a server in the <property>Server Log view</property> you should right-click on the server and follow to <menuchoice><guimenuitem>Open in</guimenuitem><guimenuitem>Server Log</guimenuitem></menuchoice>.
 			</para>
 
-			<para>The <emphasis>
-                    <property>Server Log</property>
-				</emphasis> shows relevant information to your server&apos;s startup, shutdown,
-                and publish processes. This allows you to keep an eye on what&apos;s going on
-                (such as automatic incremental deployment if you have it enabled).</para>
+			<para>
+				The <guilabel>Server Log</guilabel> view shows relevant information to your server&apos;s startup, shutdown, and publish processes. This allows you to keep an eye on what&apos;s going on (such as automatic incremental deployment if you have it enabled).
+			</para>
 
 			<figure>
 				<title>Event Log Actions</title>
@@ -591,8 +567,7 @@
 				</mediaobject>
 			</figure>
 
-			<para>The <property>Server Log</property> toolbar contains several icons that perform
-                the following actions:</para>
+			<para>The <guilabel>Server Log</guilabel> view toolbar contains several icons that perform the following actions:</para>
 
 			<table>
 				<title>Server Log Toolbar Icons</title>
@@ -618,7 +593,7 @@
 								<para>Export Log</para>
 							</entry>
 							<entry>
-								<para>Possibility to export the log into a text file</para>
+								<para>Allows you to export the log into a text file</para>
 							</entry>
 						</row>
 
@@ -627,7 +602,7 @@
 								<para>Clear Log Viewer</para>
 							</entry>
 							<entry>
-								<para>The option clears the current server log</para>
+								<para>This option clears the current server log</para>
 							</entry>
 						</row>
 
@@ -666,8 +641,7 @@
 
 		<section id="server_editor">
 			<title>Server Editor</title>
-			<para>By double-clicking on any server, an editor window will appear allowing you to
-                edit parts of that server.</para>
+			<para>By double-clicking on any server, an window will appear allowing you to edit the servers settings.</para>
 
 			<figure>
 				<title>Preferences Page for the Chosen Server</title>
@@ -678,28 +652,20 @@
 				</mediaobject>
 			</figure>
 
-			<tip>
+			<note>
 				<title>Tip:</title>
-				<para>On the figure you can see that a username/password is available in the UI when
-                    configuring the server. If you get a SecurityException when trying to launch the
-                    server, it is most likely because your server is protected and hence you need to
-                    fill the username/password fields with appropriate values.</para>
-			</tip>
+				<para>
+					On the figure you can see that the username and password fields are available. If you get a SecurityException when trying to launch the server, it is most likely because your server is protected, which requires that you need to fill the username and password fields with appropriate values.
+				</para>
+			</note>
         	
-			<para>Under the <emphasis>
-        		<property>Publishing</property>
-				</emphasis> section it&apos; possible to disable/inable the automatic publishing of the changes in the workspace.</para>
+			<para>
+				Under the <guilabel>Publishing</guilabel> section it is possible to disable or enable the automatic publishing of the changes in the workspace.
+			</para>
 
-			<para>It should be pointed out that our server adapter by default tries to automatically
-                detect the ports it needs for integrating with a <property>JBoss Server</property>.
-                Sometimes it can though be relevant to override this automatic detection if you are
-                using some custom configuration. For this purposes the <emphasis>
-                    <property>Server Ports</property>
-				</emphasis> section in the <property>Server editor</property> is provided where the
-                port settings are configurable. Click the <emphasis>
-                    <property>Configure...</property>
-				</emphasis> link to bring up the wizard for adjusting the settings for the
-                ports.</para>
+			<para>
+				It should be pointed out that the server adapter tries to automatically detect the ports it needs for integrating with a <property>JBoss Server</property> by default. Sometimes it is necessary to override this automatic detection if you are using a custom configuration. The <guilabel>Server Ports</guilabel> section in the <guilabel>Server editor</guilabel> provides fields to customize port settings. Click the <guilabel>Configure...</guilabel> link to bring up the wizard for adjusting the settings for the ports.
+			</para>
 
 			<figure>
 				<title>Server Ports Preferences</title>
@@ -710,9 +676,7 @@
 				</mediaobject>
 			</figure>
 
-			<para>Press <emphasis>
-                    <property>Edit XPath</property>
-				</emphasis> button for the chosen port to configure its XPath's values.</para>
+			<para>Click the <guilabel>Edit XPath</guilabel> button for the chosen port to configure its XPath's values.</para>
 
 			<figure>
 				<title>XPath Pattern for a Server Port</title>
@@ -723,26 +687,18 @@
 				</mediaobject>
 			</figure>
 
-			<para>In the <property>Server editor</property> you are able to edit the timeouts and the server pollers to use.</para>
+			<para>In the <guilabel>Server editor</guilabel> you are able to edit the timeouts and the server pollers to use.</para>
 
 			<note>
 				<title>Note:</title>
-				<para>By default, the Startup poller is set to JMX Poller (see the <emphasis>
-                    <property>Server Polling</property>
-					</emphasis> section). If you change the Startup poller
-                to Timeout Poller (it may need in case, for example, you&apos;re using the minimal configuration for your server), this will do no polling at all and will only set the server
-                state to <emphasis>
-                    <property>&quot;Started&quot;</property>
-					</emphasis> after your startup timeout is reached.</para>
+				<para>
+					By default, the Startup poller is set to JMX Poller. If you change the Startup poller to Timeout Poller (which may be required if you are using the minimal configuration for your server), this will do no polling at all and will only set the server state to <guilabel>&quot;Started&quot;</guilabel> after your startup timeout is reached.
+				</para>
 			</note>
 
 			<para id="com_line_arg">
-				<property>Server editor</property> makes it also possible to
-                modify the server&apos;s launch configuration. It&apos;s just after clicking <emphasis>
-                    <property>Open launch configuration</property>
-				</emphasis> link. In the open window there are the tabs for setting command line
-                arguments, main, classpaths and other things that are relevant to launching the
-                server.</para>
+				The <guilabel>Server editor</guilabel> window also allows you to modify the server&apos;s launch configuration. The settings is available by clicking the the <guilabel>Open launch configuration</guilabel> link. The resulting window provides tabs for setting command line arguments, main, classpaths and other things that are relevant to launching the server.
+			</para>
 
 			<figure>
 				<title>Launch Configuration Properties</title>
@@ -755,37 +711,34 @@
             
 
 			<para>The first tab shows the Jboss server arguments</para>
-			<para>Look up <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find parameters which can be specified for <property>JBoss
-                    Server</property>.</para>
+			<para>
+				See the <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find the parameters that can be specified for <productname>JBoss Server</productname>.
+			</para>
 
 			<note>
 				<title>Note:</title>
-				<para>Please note, that the Launch Configurations for JBoss Servers are enough
-                    strict in enforcing the configured values in the server in order to avoid
-                    inconsistencies between server&apos;s and their configured runtime.</para>
+				<para>
+					Please note that the values in the Launch Configurations for JBoss Servers are strictly enforced in order to avoid inconsistencies between server&apos;s and their configured runtime.
+				</para>
 
-				<para>For example, if you change the launch configuration program arguments to
-                        <emphasis>&quot;-c myConfig&quot;</emphasis> but do not change the
-                    targeted runtime configuration, then your program arguments will be ignored. The
-                    server runtime &quot;wins&quot; so to speak. This ensures consistency
-                    and if you change the location of the runtime, your launch configurations will
-                    automatically pick that up.</para>
+				<para>
+					For example, if you change the launch configuration program arguments to <code>&quot;-c myConfig&quot;</code> but do not change the targeted runtime configuration, then your program arguments will be ignored. The configuration of the server runtime &quot;wins&quot; so to speak. This ensures consistency and if you change the location of the runtime, your launch configurations will automatically pick that up.
+				</para>
 
-				<para>Values are not controlled by the server and its runtime setup will be passed
-                    on unaltered.</para>
+				<para>Values are not controlled by the server and its runtime setup will be passed on unaltered.</para>
 			</note>
 
-			<para>On the second tab you find the main class used for launching JBoss AS (default is org.jboss.Main), you can change it, if necessary. </para>
+			<para>
+				On the second tab you find the main class used for launching JBoss AS (the default is <code>org.jboss.Main</code>). this value can be changed if necessary.
+			</para>
 
-			<para>Until 3.0.0.GA release of <property>JBoss Tools</property>, the servers classpath
-                was readonly, but that caused problems for users wanting to add their own jars in
-                the startup classpath. That is relevant if you need to patch the server, add a
-                custom charset or other tweaks that require early access to the classpath.</para>
+			<para>
+				Until <property>JBoss Tools</property> 3.0.0.GA the servers classpath was read only, but that caused problems for users wanting to add their own JARs in the startup classpath. That is relevant if you need to patch the server, add a custom charset or other tweaks that require early access to the classpath.
+			</para>
 
-			<para>Now all servers have a custom &apos;server runtime classpath
-                container&apos;, which is there by default and point to the default jars in
-                JBoss. You can now adjust the classpath. Then just make sure this container is there
-                if you want the classpath to be picked up.</para>
+			<para>
+				Now all servers have a custom &apos;server runtime classpath container&apos;, which is there by default and point to the default JARs in JBoss. You can now adjust the classpath. Then just make sure this container is there if you want the classpath to be picked up.
+			</para>
 
 			<figure>
 				<title>Server Classpaths</title>
