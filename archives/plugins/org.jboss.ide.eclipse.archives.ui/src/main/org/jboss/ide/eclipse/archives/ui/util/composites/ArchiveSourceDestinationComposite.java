@@ -95,11 +95,11 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	protected void layoutWidgets() {
 		pathImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
 		text.setLayoutData(createFormData(0,0,null,0,pathImage,5,100,0));
-		filesystemButton.setLayoutData(createFormData(text,5,null,0,null,0,100,-5));
-		workspaceButton.setLayoutData(createFormData(text,5,null,0,null,0,filesystemButton,-5));
-		variablesButton.setLayoutData(createFormData(text,5,null,0,null,0,workspaceButton,-5));
-		fsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,variablesButton,-5));
-		wsRadioButton.setLayoutData(createFormData(text,5,null,0,null,0,fsRadioButton,-5));
+		filesystemButton.setLayoutData(createFormData(text,5,null,0,workspaceButton,5,null,0));
+		workspaceButton.setLayoutData(createFormData(text,5,null,0,variablesButton,5,null,0));
+		variablesButton.setLayoutData(createFormData(text,5,null,0,wsRadioButton,5,null,0));
+		fsRadioButton.setLayoutData(createFormData(text,5,null,0,0,0,null,0));
+		wsRadioButton.setLayoutData(createFormData(text,5,null,0,fsRadioButton,5,null,0));
 		relativeTo.setLayoutData(createFormData(text,8,null,0,0,5,0,5));
 	}
 
