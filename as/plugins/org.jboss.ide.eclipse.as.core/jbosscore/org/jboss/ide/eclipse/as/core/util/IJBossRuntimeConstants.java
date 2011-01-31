@@ -29,6 +29,7 @@ public interface IJBossRuntimeConstants {
 	public static final String SHUTDOWN_PASS_ARG = "-p";//$NON-NLS-1$
 	public static final String SHUTDOWN_ADAPTER_ARG = "-a";//$NON-NLS-1$
 	public static final String SHUTDOWN_STOP_ARG = "-S"; //$NON-NLS-1$
+	public static final String SHUTDOWN_ARG_PORT_LONG = "--port"; //$NON-NLS-1$
 	public static final String STARTUP_ARG_HOST_SHORT = "-b"; //$NON-NLS-1$
 	public static final String STARTUP_ARG_HOST_LONG = "--host"; //$NON-NLS-1$
 	public static final String STARTUP_ARG_CONFIG_SHORT = "-c"; //$NON-NLS-1$

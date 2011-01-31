@@ -99,7 +99,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		return wc;
 	}
 
-	public static String getDefaultArgs(JBossServer jbs) throws CoreException {
+	public static String getDefaultArgs(JBossServer jbs) {
 		IJBossRuntimeConstants c = new IJBossRuntimeConstants() {};
 		IJBossToolingConstants tc = new IJBossToolingConstants() {};
 		

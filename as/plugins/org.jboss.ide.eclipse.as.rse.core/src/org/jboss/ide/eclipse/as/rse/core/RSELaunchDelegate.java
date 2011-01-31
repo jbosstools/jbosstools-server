@@ -13,13 +13,11 @@
 package org.jboss.ide.eclipse.as.rse.core;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -35,12 +33,12 @@ import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
-import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
@@ -272,15 +270,12 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
 		
 		JBossServer jbs = ServerConverter.getJBossServer(server);
-		// initialize stop command to something reasonable
-		String username = jbs.getUsername();
-		String pass = jbs.getPassword();
 		
-		String stop = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString() + 
-			IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_STOP_ARG + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG + 
-			IJBossRuntimeConstants.SPACE + server.getHost() + IJBossRuntimeConstants.SPACE +
-			IJBossRuntimeConstants.SHUTDOWN_USER_ARG + IJBossRuntimeConstants.SPACE + 
-			username + IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.SHUTDOWN_PASS_ARG + IJBossRuntimeConstants.SPACE + pass;
+		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants(){};
+		String stop = new Path(rseHome).append(c.BIN).append(c.SHUTDOWN_SH).toString() + IJBossRuntimeConstants.SPACE;
+		
+		// Pull args from single utility method
+		stop += StopLaunchConfiguration.getDefaultArgs(jbs);
 		return stop;
 	}
 	
