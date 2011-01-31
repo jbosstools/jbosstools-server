@@ -37,7 +37,6 @@ import org.jboss.ide.eclipse.archives.core.model.ArchivesModel;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
-import org.jboss.ide.eclipse.archives.core.model.internal.ArchiveNodeFactory;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.PathUtils;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
@@ -81,25 +80,18 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 		infoGroup.setText(ArchivesUIMessages.PackageInfoWizardPage_infoGroup_label);
 		expand(infoGroup);
 
-		new Label(infoGroup, SWT.NONE).setText(ArchivesUIMessages.PackageInfoWizardPage_packageName_label);
-		Composite pkgNameComposite = new Composite(infoGroup, SWT.NONE);
-		GridLayout pkgNameLayout = new GridLayout(2, false);
-		pkgNameLayout.marginHeight = 0;
-		pkgNameLayout.marginWidth = 0;
-		pkgNameComposite.setLayout(pkgNameLayout);
-		pkgNameComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Label archName = new Label(infoGroup, SWT.NONE);
+		archName.setText(ArchivesUIMessages.PackageInfoWizardPage_packageName_label);
+		archName.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
 
-		new Label(pkgNameComposite, SWT.NONE).setImage(ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE));
+		Label archImage = new Label(infoGroup, SWT.NONE);
+		archImage.setImage(ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_PACKAGE));
 
-		packageNameText = new Text(pkgNameComposite, SWT.BORDER);
+		packageNameText = new Text(infoGroup, SWT.BORDER);
 		packageName = wizard.getProject().getName() + "." + wizard.getArchiveExtension(); //$NON-NLS-1$
 		packageNameText.setText(packageName);
 		packageNameText.setSelection(0, wizard.getProject().getName().length());
 		expand(packageNameText);
-
-		GridData pkgNameData = new GridData(GridData.FILL_HORIZONTAL);
-		pkgNameData.horizontalSpan = 2;
-		pkgNameComposite.setLayoutData(pkgNameData);
 
 		packageNameText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -109,24 +101,15 @@ public class ArchiveInfoWizardPage extends WizardPageWithNotification {
 			}
 		});
 
-		Label l = new Label(infoGroup, SWT.NONE);
-		l.setText(ArchivesUIMessages.PackageInfoWizardPage_destination_label);
-		GridData lData = new GridData(GridData.BEGINNING, GridData.BEGINNING,false,false);
-		l.setLayoutData(lData);
-
 		GridData destinationTextData = new GridData(GridData.FILL_BOTH);
-		destinationTextData.horizontalSpan = 2;
-		GridData buttonData = new GridData(GridData.FILL_HORIZONTAL);
-		buttonData.horizontalSpan = 3;
-		buttonData.horizontalAlignment = SWT.END;
+		destinationTextData.horizontalSpan = 3;
 
-		destinationComposite = new ArchiveSourceDestinationComposite(infoGroup, wizard.getProject().getName(), getDescriptorVersion());
+		destinationComposite = new ArchiveSourceDestinationComposite(ArchivesUIMessages.PackageInfoWizardPage_destination_label, infoGroup, wizard.getProject().getName(), getDescriptorVersion());
 		destinationComposite.addChangeListener(new ChangeListener () {
 			public void compositeChanged() {
 				validate();
 			}
 		});
-		destinationComposite.setLayoutData(destinationTextData);
 
 		Group packageTypeGroup = new Group(main, SWT.NONE);
 		packageTypeGroup.setLayout(new GridLayout(1, false));
