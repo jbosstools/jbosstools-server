@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.variables.IStringVariable;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
@@ -29,15 +28,11 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -58,7 +53,7 @@ import org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin;
  * @author "Rob Stryker" <rob.stryker@redhat.com>
  *
  */
-public class ArchiveSourceDestinationComposite extends Composite {
+public class ArchiveSourceDestinationComposite {
 	private Text text;
 	private Label pathImage, relativeTo;
 	private Button workspaceButton, filesystemButton, variablesButton,
@@ -72,12 +67,16 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	private String message;
 	private double version;
 	private ArrayList<ChangeListener> listeners = new ArrayList<ChangeListener>();
+	private String label;
+	private Label destination;
+	private Composite parent;
+	private Composite relativeToEditor;
 
-	public ArchiveSourceDestinationComposite(Composite parent, String project, double version) {
-		super(parent, SWT.NONE);
+	public ArchiveSourceDestinationComposite(String label, Composite parent, String project, double version) {
+		this.parent = parent;
+		this.label = label;
 		this.projectName = project;
 		this.version = version;
-		setLayout(new FormLayout());
 		createWidgets();
 		layoutWidgets();
 		setWidgetData();
@@ -85,25 +84,31 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	}
 
 	protected void createWidgets() {
-		text = new Text(this, SWT.SINGLE | SWT.BORDER);
-		pathImage = new Label(this, SWT.NONE);
-		workspaceButton = new Button(this, SWT.PUSH);
-		filesystemButton = new Button(this, SWT.PUSH);
-		variablesButton = new Button(this, SWT.PUSH);
-		wsRadioButton = new Button(this, SWT.RADIO);
-		fsRadioButton = new Button(this, SWT.RADIO);
-		relativeTo = new Label(this, SWT.NONE);
+		destination = new Label(this.parent, SWT.NONE);
+		destination.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
+		pathImage = new Label(this.parent, SWT.NONE);
+		text = new Text(this.parent, SWT.SINGLE | SWT.BORDER);
+		
+		relativeTo = new Label(this.parent, SWT.NONE);
+		relativeTo.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
+		new Label(this.parent,SWT.NONE);
+		relativeToEditor = new Composite(parent,SWT.NONE);
+		GridLayout gl = new GridLayout(6,false);
+		gl.marginHeight = 0;
+		gl.marginWidth = 0;
+		relativeToEditor.setLayout(gl);
+		fsRadioButton = new Button(relativeToEditor, SWT.RADIO);
+		wsRadioButton = new Button(relativeToEditor, SWT.RADIO);
+		variablesButton = new Button(relativeToEditor, SWT.PUSH);
+		filesystemButton = new Button(relativeToEditor, SWT.PUSH);
+		workspaceButton = new Button(relativeToEditor, SWT.PUSH);
+		new Label(relativeToEditor,SWT.NONE);
+		
 	}
 
 	protected void layoutWidgets() {
-		pathImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
-		text.setLayoutData(createFormData(0,0,null,0,pathImage,5,100,0));
-		relativeTo.setLayoutData(createFormData(text,10,null,0,null,0,null,-5));
-		fsRadioButton.setLayoutData(createFormData(text,8,null,0,relativeTo,5,null,0));
-		wsRadioButton.setLayoutData(createFormData(text,8,null,0,fsRadioButton,5,null,0));
-		variablesButton.setLayoutData(createFormData(text,5,null,0,wsRadioButton,5,null,0));
-		workspaceButton.setLayoutData(createFormData(text,5,null,0,variablesButton,5,null,0));
-		filesystemButton.setLayoutData(createFormData(text,5,null,0,workspaceButton,5,null,0));
+		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		relativeToEditor.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	}
 
 	protected void setWidgetData() {
@@ -114,6 +119,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 		fsRadioButton.setText(ArchivesUIMessages.Filesystem2);
 		relativeTo.setText(ArchivesUIMessages.RelativeTo);
 		pathImage.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER));
+		destination.setText(label);
 	}
 
 	protected void addListeners() {
@@ -167,7 +173,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	}
 
 	protected void openDestinationDialog() {
-		ArchiveNodeDestinationDialog dialog = new ArchiveNodeDestinationDialog(getShell(), true, true);
+		ArchiveNodeDestinationDialog dialog = new ArchiveNodeDestinationDialog(parent.getShell(), true, true);
 		if( dialog.open() == Dialog.OK ) {
 			Object result = dialog.getResult()[0];
 			if( result instanceof IArchiveNode ) {
@@ -189,7 +195,7 @@ public class ArchiveSourceDestinationComposite extends Composite {
 	}
 
 	protected void browseFilesystem () {
-		DirectoryDialog dialog = new DirectoryDialog(getShell());
+		DirectoryDialog dialog = new DirectoryDialog(parent.getShell());
 		String currentPath = null;
 		try {
 			currentPath = getTranslatedGlobalPath();
@@ -298,40 +304,6 @@ public class ArchiveSourceDestinationComposite extends Composite {
 			throw new CoreException(s);
 		}
 	}
-
-	private FormData createFormData(Object topStart, int topOffset,
-			Object bottomStart, int bottomOffset, Object leftStart,
-			int leftOffset, Object rightStart, int rightOffset) {
-		FormData data = new FormData();
-
-		if (topStart != null) {
-			data.top = topStart instanceof Control ? new FormAttachment(
-					(Control) topStart, topOffset) : new FormAttachment(
-					((Integer) topStart).intValue(), topOffset);
-		}
-
-		if (bottomStart != null) {
-			data.bottom = bottomStart instanceof Control ? new FormAttachment(
-					(Control) bottomStart, bottomOffset) : new FormAttachment(
-					((Integer) bottomStart).intValue(), bottomOffset);
-		}
-
-		if (leftStart != null) {
-			data.left = leftStart instanceof Control ? new FormAttachment(
-					(Control) leftStart, leftOffset) : new FormAttachment(
-					((Integer) leftStart).intValue(), leftOffset);
-		}
-
-		if (rightStart != null) {
-			data.right = rightStart instanceof Control ? new FormAttachment(
-					(Control) rightStart, rightOffset) : new FormAttachment(
-					((Integer) rightStart).intValue(), rightOffset);
-		}
-
-		return data;
-	}
-
-
 
 	// APIs
 	public void init(IArchiveNode dest) {

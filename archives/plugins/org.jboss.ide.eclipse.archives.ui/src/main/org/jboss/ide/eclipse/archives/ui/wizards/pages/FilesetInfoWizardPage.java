@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.wizards.pages;
 
+import java.awt.FlowLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,10 +25,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -38,10 +41,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
-import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension;
 import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveStandardFileSet;
 import org.jboss.ide.eclipse.archives.core.model.other.internal.WorkspacePreferenceManager;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
@@ -76,6 +79,7 @@ public class FilesetInfoWizardPage extends WizardPage {
 	private Text includesText;
 	private Text excludesText;
 	private ArchiveFilesetDestinationComposite destinationComposite;
+	private Composite flattenedEditor;
 
 	public FilesetInfoWizardPage (Shell parent, IArchiveStandardFileSet fileset, IArchiveNode parentNode) {
 		super(ArchivesUIMessages.FilesetInfoWizardPage_new_title, ArchivesUIMessages.FilesetInfoWizardPage_new_title, null);
@@ -97,18 +101,9 @@ public class FilesetInfoWizardPage extends WizardPage {
 		mainComposite = new Composite(parent, SWT.BORDER);
 		mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		mainComposite.setLayout(new FormLayout());
-		Composite restrainer = new Composite(mainComposite, SWT.NONE);
-		restrainer.setLayout(new FormLayout());
-		FormData restrainerData = new FormData();
-		restrainerData.left = new FormAttachment(0,5);
-		restrainerData.top = new FormAttachment(0,5);
-		restrainerData.bottom = new FormAttachment(100,-5);
-		restrainerData.right = new FormAttachment(100,-5);
-		restrainer.setLayoutData(restrainerData);
-		
-		Group info = createInfoGroup(restrainer);
-		createPreviewGroup(restrainer, info);
+		mainComposite.setLayout(new GridLayout(1, false));
+		Group info = createInfoGroup(mainComposite);
+		createPreviewGroup(mainComposite, info);
 		//mainComposite.layout();
 		Display.getDefault().asyncExec(new Runnable(){
 			public void run() {
@@ -121,105 +116,52 @@ public class FilesetInfoWizardPage extends WizardPage {
 		setControl(mainComposite);
 	}
 
-	private FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset,
-			Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
-		FormData data = new FormData();
-
-		if( topStart != null ) {
-			data.top = topStart instanceof Control ? new FormAttachment((Control)topStart, topOffset) :
-				new FormAttachment(((Integer)topStart).intValue(), topOffset);
-		}
-
-		if( bottomStart != null ) {
-			data.bottom = bottomStart instanceof Control ? new FormAttachment((Control)bottomStart, bottomOffset) :
-				new FormAttachment(((Integer)bottomStart).intValue(), bottomOffset);
-		}
-
-		if( leftStart != null ) {
-			data.left = leftStart instanceof Control ? new FormAttachment((Control)leftStart, leftOffset) :
-				new FormAttachment(((Integer)leftStart).intValue(), leftOffset);
-		}
-
-		if( rightStart != null ) {
-			data.right = rightStart instanceof Control ? new FormAttachment((Control)rightStart, rightOffset) :
-				new FormAttachment(((Integer)rightStart).intValue(), rightOffset);
-		}
-
-		return data;
-	}
-
-
 	private Group createPreviewGroup(Composite mainComposite, Group info) {
 		Group previewGroup = new Group(mainComposite, SWT.NONE);
-		previewGroup.setLayoutData(createFormData(info,5,100,-5,0,5,100,-5));
-		previewGroup.setLayout(new FormLayout());
-		Label invisibleLabel = new Label(previewGroup, SWT.NONE);
-		invisibleLabel.setLayoutData(createFormData(0,0,0,200,0,0,0,1));
+		previewGroup.setLayoutData(new GridData(GridData.FILL_BOTH));
+		previewGroup.setLayout(new GridLayout());
 		previewComposite = new FilesetPreviewComposite(previewGroup, SWT.NONE);
-		previewComposite.setLayoutData(createFormData(0,0,100,0,0,0,100,0));
+		previewComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 		previewGroup.setText(ArchivesUIMessages.FilesetInfoWizardPage_previewGroup_label);
+
 		return previewGroup;
 	}
 
 	private Group createInfoGroup(Composite mainComposite) {
 		Group infoGroup = new Group(mainComposite, SWT.NONE);
 		infoGroup.setText(ArchivesUIMessages.FilesetInfoWizardPage_infoGroup_title);
-
-		// positioning in parent
-		infoGroup.setLayoutData(createFormData(0,5,null,0,0,5,100,-5));
-
-		// my layout
-		infoGroup.setLayout(new FormLayout());
-
-		// destination row
-		Label destinationKey = new Label(infoGroup, SWT.NONE);
+		infoGroup.setLayout(new GridLayout(3,false));
+		infoGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		destinationComposite = new ArchiveFilesetDestinationComposite(infoGroup, SWT.NONE, parentNode);
 
-		destinationKey.setLayoutData(createFormData(0,10,null,0,null,5, 0, 100));
-		destinationComposite.setLayoutData(createFormData(0,5,null,0,destinationKey,5, 100, -5));
-
 		// root dir
-		Label rootDirectoryLabel = new Label(infoGroup, SWT.NONE);
-		srcDestComposite = new ArchiveSourceDestinationComposite(infoGroup, projectName, getDescriptorVersion());
-		Composite rootDirValue = srcDestComposite;
-		rootDirectoryLabel.setLayoutData(createFormData(destinationComposite,10,null,0,null,5,0,100));
-		rootDirValue.setLayoutData(createFormData(destinationComposite,5,null,0,rootDirectoryLabel,5,100,-5));
+		srcDestComposite = new ArchiveSourceDestinationComposite(ArchivesUIMessages.FilesetInfoWizardPage_rootDirectory_label, infoGroup, projectName, getDescriptorVersion());
 
 		flattenedLabel = new Label(infoGroup, SWT.NONE);
-		flattenedYes = new Button(infoGroup, SWT.RADIO);
-		flattenedNo = new Button(infoGroup, SWT.RADIO);
-		flattenedLabel.setLayoutData(createFormData(rootDirValue,5,null,0,null,0,rootDirValue,-5));
-		flattenedYes.setLayoutData(createFormData(rootDirValue, 5, null,0,flattenedLabel,5,null,0));
-		flattenedNo.setLayoutData(createFormData(rootDirValue, 5, null,0,flattenedYes,5,null,0));
-
-		// includes composite and it's internals
-		Composite includesKey = new Composite(infoGroup, SWT.NONE);
-		includesKey.setLayout(new FormLayout());
-		Label includesImage = new Label(includesKey, SWT.NONE);
-		Label includesTextLabel = new Label(includesKey, SWT.NONE);
-		includesText = new Text(infoGroup, SWT.BORDER);
-		includesImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
-		includesTextLabel.setLayoutData(createFormData(0,0,null,0,includesImage,5,null,0));
-
-		includesKey.setLayoutData(createFormData(flattenedLabel,5,null,0,null,5,0,100));
-		includesText.setLayoutData(createFormData(flattenedLabel,5,null,0,includesKey,10,100,-5));
-
-
-		// excludes composite and it's internals
-		Composite excludesKey = new Composite(infoGroup, SWT.NONE);
-		excludesKey.setLayout(new FormLayout());
-		Label excludesImage = new Label(excludesKey, SWT.NONE);
-		Label excludesTextLabel = new Label(excludesKey, SWT.NONE);
-		excludesText = new Text(infoGroup, SWT.BORDER);
-		excludesImage.setLayoutData(createFormData(0,0,null,0,0,0,null,0));
-		excludesTextLabel.setLayoutData(createFormData(0,0,null,0,excludesImage,5,null,0));
-		excludesKey.setLayoutData(createFormData(includesText,5,null,0,null,5,0,100));
-		excludesText.setLayoutData(createFormData(includesText,5,100,-5,excludesKey,10,100,-5));
+		flattenedLabel.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
+		new Label(infoGroup, SWT.NONE); // no icon for this field
 		
+		flattenedEditor = new Composite(infoGroup,SWT.NONE);
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.marginHeight = 0;
+		fillLayout.marginWidth = 0;
+		flattenedEditor.setLayout(fillLayout);
+		flattenedYes = new Button(flattenedEditor, SWT.RADIO);
+		flattenedNo = new Button(flattenedEditor, SWT.RADIO);
+
+		Label includesTextLabel = new Label(infoGroup, SWT.NONE);
+		includesTextLabel.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
+		Label includesImage = new Label(infoGroup, SWT.NONE);		
+		includesText = new Text(infoGroup, SWT.BORDER);
+		includesText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		Label excludesTextLabel = new Label(infoGroup, SWT.NONE);
+		excludesTextLabel.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
+		Label excludesImage = new Label(infoGroup, SWT.NONE);
+		excludesText = new Text(infoGroup, SWT.BORDER);
+		excludesText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// customize widgets
-		destinationKey.setText(ArchivesUIMessages.FilesetInfoWizardPage_destination_label);
-		rootDirectoryLabel.setText(ArchivesUIMessages.FilesetInfoWizardPage_rootDirectory_label);
 		includesImage.setImage(ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_INCLUDES));
 		includesTextLabel.setText(ArchivesUIMessages.FilesetInfoWizardPage_includes_label);
 		excludesImage.setImage(ArchivesSharedImages.getImage(ArchivesSharedImages.IMG_EXCLUDES));

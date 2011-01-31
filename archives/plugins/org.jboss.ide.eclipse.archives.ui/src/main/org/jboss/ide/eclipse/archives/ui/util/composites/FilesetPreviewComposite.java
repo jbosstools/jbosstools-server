@@ -37,13 +37,14 @@ public class FilesetPreviewComposite extends Composite  {
 		previewTable = new TableViewer(this, SWT.BORDER);
 		previewTable.setContentProvider(new ArrayContentProvider());
 		previewTable.setLabelProvider(new ResourceLabelProvider());
-
+		
 		setLayout(new FormLayout());
 		FormData data = new FormData();
 		data.left = new FormAttachment(0,5);
 		data.right = new FormAttachment(100,-5);
 		data.top = new FormAttachment(0,5);
 		data.bottom = new FormAttachment(100,-5);
+		data.height = 200;
 		previewTable.getTable().setLayoutData(data);
 	}
 	

@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.ui.util.composites;
 
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
@@ -21,8 +22,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -46,15 +46,16 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages;
  * @author "Rob Stryker" <rob.stryker@redhat.com>
  *
  */
-public class ArchiveFilesetDestinationComposite extends Composite {
+public class ArchiveFilesetDestinationComposite {
 
 	protected Composite parent;
 	protected Label destinationImage;
 	protected Text destinationText;
 	protected Object nodeDestination;
+	private Label destinationKey;
+	private Composite browseComposite;
 
 	public ArchiveFilesetDestinationComposite(Composite parent, int style, Object destination) {
-		super(parent, style);
 		this.parent = parent;
 		this.nodeDestination = destination;
 
@@ -62,54 +63,30 @@ public class ArchiveFilesetDestinationComposite extends Composite {
 	}
 
 	protected void createComposite() {
-		setLayout(new FormLayout());
-
+		destinationKey = new Label(this.parent,SWT.NONE);
+		destinationKey.setText(ArchivesUIMessages.FilesetInfoWizardPage_destination_label);
+		destinationKey.setLayoutData(new GridData(SWT.END,SWT.CENTER,false,false));
 		// create widgets
-		destinationImage = new Label(this, SWT.NONE);
-		destinationText = new Text(this, SWT.BORDER);
-		Composite browseComposite = new Composite(this, SWT.NONE);
-
-		// set up their layout positioning
-		destinationImage.setLayoutData(createFormData(0,5,null, 0, 0, 0, null, 0));
-		destinationText.setLayoutData(createFormData(0, 5, null, 0, destinationImage, 5, destinationImage, 205));
-
-
-		// set text, add listeners, etc
+		destinationImage = new Label(this.parent, SWT.NONE);
+		
+		browseComposite = new Composite(this.parent, SWT.NONE);
+		GridLayout gl = new GridLayout(2,false);
+		gl.marginHeight = 0;
+		gl.marginWidth = 0;
+		browseComposite.setLayout(gl);
+		browseComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		destinationText = new Text(this.browseComposite, SWT.BORDER);
 		destinationText.setEditable(false);
-
-		browseComposite.setLayout(new FillLayout());
-		browseComposite.setLayoutData(createFormData(0,0,null,0,destinationText,5,100,-5));
-		fillBrowseComposite(browseComposite);
-
-		// call other functions required for startup
+		destinationText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		Button filesystemBrowseButton = new Button(browseComposite, SWT.PUSH);
+		filesystemBrowseButton.setText(ArchivesUIMessages.PackageDestinationComposite_workspaceBrowseButton_label);
+		filesystemBrowseButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected(SelectionEvent e) {
+				openDestinationDialog();
+			}
+		});
 		updateDestinationViewer();
-	}
-
-	private FormData createFormData(Object topStart, int topOffset, Object bottomStart, int bottomOffset,
-									Object leftStart, int leftOffset, Object rightStart, int rightOffset) {
-		FormData data = new FormData();
-
-		if( topStart != null ) {
-			data.top = topStart instanceof Control ? new FormAttachment((Control)topStart, topOffset) :
-				new FormAttachment(((Integer)topStart).intValue(), topOffset);
-		}
-
-		if( bottomStart != null ) {
-			data.bottom = bottomStart instanceof Control ? new FormAttachment((Control)bottomStart, bottomOffset) :
-				new FormAttachment(((Integer)bottomStart).intValue(), bottomOffset);
-		}
-
-		if( leftStart != null ) {
-			data.left = leftStart instanceof Control ? new FormAttachment((Control)leftStart, leftOffset) :
-				new FormAttachment(((Integer)leftStart).intValue(), leftOffset);
-		}
-
-		if( rightStart != null ) {
-			data.right = rightStart instanceof Control ? new FormAttachment((Control)rightStart, rightOffset) :
-				new FormAttachment(((Integer)rightStart).intValue(), rightOffset);
-		}
-
-		return data;
 	}
 
 	public void setPackageNodeDestination (Object destination) {
@@ -148,21 +125,9 @@ public class ArchiveFilesetDestinationComposite extends Composite {
 		return nodeDestination;
 	}
 
-	protected void fillBrowseComposite(Composite parent) {
-		Composite browseComposite = new Composite(parent, SWT.NONE);
-		browseComposite.setLayout(new GridLayout(2, false));
-
-		Button filesystemBrowseButton = new Button(browseComposite, SWT.PUSH);
-		filesystemBrowseButton.setText(ArchivesUIMessages.PackageDestinationComposite_workspaceBrowseButton_label);
-		filesystemBrowseButton.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent e) {
-				openDestinationDialog();
-			}
-		});
-	}
 
 	protected void openDestinationDialog() {
-		ArchiveNodeDestinationDialog dialog = new ArchiveNodeDestinationDialog(getShell(), false, true);
+		ArchiveNodeDestinationDialog dialog = new ArchiveNodeDestinationDialog(parent.getShell(), false, true);
 		dialog.setValidator(new ISelectionStatusValidator() {
 			public IStatus validate(Object[] selection) {
 				if( selection != null && selection.length == 1 ) {
