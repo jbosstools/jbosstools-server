@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
@@ -74,12 +75,14 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	protected void startDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
-		RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+		if( cmd != null )
+			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
-		RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+		if( cmd != null )
+			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
 	}
 
 	protected String getDeploymentScannerCommand(IProgressMonitor monitor, boolean start) {
@@ -87,11 +90,26 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		//   jboss.deployment:flavor=URL,type=DeploymentScanner start
 		IPath home = new Path(RSEUtils.getRSEHomeDir(behaviour.getServer()));
 		IPath twiddle = home.append(IJBossRuntimeResourceConstants.BIN).append(IJBossRuntimeResourceConstants.TWIDDLE_SH);
-
-		String cmd = twiddle.toString() + " -s " + getServer().getHost() + " -u " + getJBossServer().getUsername() 
-			+ " -p " + getJBossServer().getPassword() + " invoke jboss.deployment:flavor=URL,type=DeploymentScanner " 
-			+ (start ? "start" : "stop"); 
-		return cmd;
+		
+		JBossServer jbs = (JBossServer)behaviour.getServer().loadAdapter(JBossServer.class, new NullProgressMonitor());
+		if( jbs != null ) {
+			String runtimeTypeId = jbs.getRuntime().getRuntime().getRuntimeType().getId();
+			String serverUrl;
+			if (runtimeTypeId.equals(IJBossToolingConstants.AS_60)){
+				IJBoss6Server server6 = (IJBoss6Server)jbs.getServer().loadAdapter(IJBoss6Server.class, new NullProgressMonitor());
+				serverUrl = "service:jmx:rmi:///jndi/rmi://" + jbs.getHost() + ":" + server6.getJMXRMIPort() + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			} else {
+				serverUrl = jbs.getHost() + ":" + jbs.getJNDIPort(); //$NON-NLS-1$
+			}
+ 
+			String cmd = twiddle.toString() + " -s " + serverUrl + 
+				  " -u " + getJBossServer().getUsername() +
+				  " -p " + getJBossServer().getPassword() + 
+				  " invoke jboss.deployment:flavor=URL,type=DeploymentScanner " 
+				+ (start ? "start" : "stop"); 
+			return cmd;
+		}
+		return null;
 	}
 
 	protected JBossServer getJBossServer() {
