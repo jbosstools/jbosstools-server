@@ -18,7 +18,7 @@
 		First of all it is necessary to mention that the JBoss AS plugin makes use of WTP. This includes starting and stopping servers in run or debug mode. It also includes targeting WTP projects, such as Dynamic Web Projects, to certain server runtimes in order to ensure that the proper JARs from a specific server are added to the project's classpath properly.
 	</para>
 	<para>
-		In order to get started creating, running, and debugging J2EE applications, we should create our <property>runtime</property> and <property>server</property> instances.
+		In order to get started creating, running and debugging J2EE applications, we should create our <property>runtime</property> and <property>server</property> instances.
 	</para>
 	
 	<section>
@@ -32,7 +32,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					For <property>JBoss server</property> at least, it provides the necessary information to allow the server to be started and stopped, and provides information on which JARs to run and which configuration to use.
+					For <property>JBoss server</property> at least, it provides the necessary information to allow the server to be started and stopped and provides information on which JARs to run and which configuration to use.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -41,7 +41,7 @@
 			<para>
 				You can install runtimes into Eclipse by selecting <menuchoice><guimenuitem>Window</guimenuitem>
 					<guimenuitem>Preferences</guimenuitem>
-				</menuchoice> menu, and then selecting <menuchoice><guimenuitem>Server</guimenuitem>
+				</menuchoice> menu and then selecting <menuchoice><guimenuitem>Server</guimenuitem>
 					<guimenuitem>Runtime Environments</guimenuitem>
 				</menuchoice> from the categories available on the left.
 			</para>
@@ -88,7 +88,7 @@
 			</note>
 			
 			<para>
-				You will also note a Deploy-Only Runtime type. This type does not provide a classpath for WTP projects. It is used solely by its server type for the purpose of setting up a deploy directory for users who do not wish to make use of starting, stopping, or debugging their projects inside Eclipse.
+				You will also note a Deploy-Only Runtime type. This type does not provide a classpath for WTP projects. It is used solely by it&apos;s server type for the purpose of setting up a deploy directory for users who do not wish to make use of starting, stopping, or debugging their projects inside Eclipse.
 			</para>
 			
 			<figure id="add_runtime_figure">
@@ -100,7 +100,7 @@
 				</mediaobject>
 			</figure>
 			
-			<para>The following table describes all the available options of the currant wizard page.</para>
+			<para>The following table describes all the available options of the current wizard page.</para>
 			<table>
 				<title>Server Runtime Wizard Parameters</title>
 				<tgroup cols="2">
@@ -173,14 +173,14 @@
 			</table>
 			
 			<para>
-				As a result of having each runtime represent a specific configuration rather than the server installation as a whole, it is very likely you will create several different runtimes to test each of your configurations. So it becomes important to ensure your runtimes, and later your servers, are given descriptive names that help you to remember which is which.
+				As a result of having each runtime represent a specific configuration rather than the server installation as a whole, it is very likely you will create several different runtimes to test each of your configurations. So it becomes important to ensure your runtimes and later your servers, are given descriptive names that help you to remember which is which.
 			</para>
 			
 			<para>Click the <guibutton>Finish</guibutton> button to see your new runtime in the list.</para>
 			<note>
 				<title>Note:</title>
 				<para>
-					If you edit the configuration of a runtime, the changes don't affect the settings of the servers that currently use the runtime. To apply the changes to them also, you should double right click the server, select <menuchoice><guimenuitem>Overview</guimenuitem>
+					If you edit the configuration of a runtime, the changes don't affect the settings of the servers that currently use the runtime. To apply the changes to them also, you should double left click on the server, select <menuchoice><guimenuitem>Overview</guimenuitem>
 						<guimenuitem>Runtime Environment</guimenuitem>
 					</menuchoice>, make sure that necessary configuration is chosen, click the <guibutton>Finish</guibutton> button and then  <guibutton>Save</guibutton> button.
 				</para>
@@ -271,7 +271,7 @@
 				</mediaobject>
 			</figure>
 			<para>
-				Change the name, click the <guibutton>Browse</guibutton> button, and select your configuration location or leave as it is if you want it to be located together with other runtime configurations.
+				Change the name, click the <guibutton>Browse</guibutton> button and select your configuration location or leave as it is if you want it to be located together with other runtime configurations.
       </para>
 			<figure>
 				<title>Copy the existing configuration</title>
@@ -301,7 +301,7 @@
 	<section>
 		<title>Servers</title>
 		<para>
-			WTP servers are Eclipse-representations of a back end server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of the modules (JARs, WARs, etc) you deploy to the server, and also allow you to undeploy those modules (see <xref linkend="run_on_server_wizard"/>). 
+			WTP servers are Eclipse-representations of a back end server installation. They are used to start or stop servers, deploy to servers, or debug code that will run on the server. They keep track of the modules (JARs, WARs, etc) you deploy to the server and also allow you to undeploy those modules (see <xref linkend="run_on_server_wizard"/>). 
 		</para>
 		<para>
 			Servers can be started or stopped with different <link linkend="com_line_arg">command-line arguments</link>. They are often backed by a runtime object representing that server's location.
@@ -322,14 +322,14 @@
 				</mediaobject>
 			</figure>
 			<para>
-				A server object keeps track of things like command line arguments when starting or stopping, and the runtimes keep track of the location of the installation. Thus, each server instance must be backed by an appropriate runtime.
+				A server object keeps track of things like command line arguments when starting or stopping and the runtimes keep track of the location of the installation. Thus, each server instance must be backed by an appropriate runtime.
 			</para>
 			
 			<para>
 				The <guilabel>New server wizard</guilabel> allows you to name the server via the <guilabel>Server name</guilabel> field, or you can use a generated default name .If it is necessary to restore the default name, click the <guibutton>Reset default</guibutton> button (<inlinemediaobject>          <imageobject><imagedata fileref="images/runtimes_servers/runtimes_servers_4d.png"/></imageobject></inlinemediaobject>).
 			</para>
 			<para>
-				You can select the appropriate runtime you from the <guilabel>Server runtime environment</guilabel> combobox. If there is no runtime that matches your needs just press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtimes you should go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
+				You can select the appropriate runtime from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs just press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtimes you should go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
 			</para>
 			
 			<para>If the server you want to create does not have any installed runtime yet, the combo box and the links are absent.</para>
@@ -344,7 +344,7 @@
 			</figure>
 			
 			<para>
-				In this case the next page of the wizard which has the same form as in <link linkend="add_runtime_figure">the previous section</link>, and will ask you to create the associated runtime.
+				In this case the next page of the wizard which has the same form as in <link linkend="add_runtime_figure">the previous section</link> and will ask you to create the associated runtime.
 			</para>
 			<para>
 				Either way, after targeting your server to a runtime, the final screen in this wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.

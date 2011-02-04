@@ -220,7 +220,7 @@
 								<para>Stop</para>
 							</entry>
 							<entry>
-								<para>this will stop the server</para>
+								<para>This will stop the server</para>
 							</entry>
 						</row>
 
@@ -249,7 +249,7 @@
 								<para>Add and Remove Projects</para>
 							</entry>
 							<entry>
-								<para>This option will publish a new project to the server (if its type is supported)</para>
+								<para>This option will publish a new project to the server (if it&apos;s type is supported)</para>
 							</entry>
 						</row>
 
@@ -279,7 +279,7 @@
 				Under the server element in the <guilabel>Servers</guilabel> view, you can see modules that are currently deployed to the server and some server extensions that provide additional information on the server.
 			</para>
 
-			<para>The context menu for any module allows you to remove it from the server, and force a full or incremental republish upon it.</para>
+			<para>The context menu for any module allows you to remove it from the server and force a full or incremental republish upon it.</para>
 
 			<figure>
 				<title>Modules Action</title>
@@ -379,7 +379,7 @@
 					</mediaobject>
 				</figure>
 				<para>
-					On this preference page you can add a fileset to any server type or to all servers at once. To do this you should select the server type in the combo box and click the <guibutton>Add fileset...</guibutton> button. In the opened <guilabel>New File Filter wizard</guilabel> follow the steps described in <xref linkend="filefilterWiz"/>, and finally click the <guibutton>Apply</guibutton> button on the preference page.
+					On this preference page you can add a fileset to any server type or to all servers at once. To do this you should select the server type in the combo box and click the <guibutton>Add fileset...</guibutton> button. In the opened <guilabel>New File Filter wizard</guilabel> follow the steps described in <xref linkend="filefilterWiz"/> and finally click the <guibutton>Apply</guibutton> button on the preference page.
 				</para>
 				<para>The defined file filter will be automatically added to new servers during their creation.</para>
                 
@@ -400,7 +400,7 @@
 				</note>
 
 				<para>
-					The <guilabel>XML Configuration</guilabel> category itself contains only a list of categories. <guilabel>Ports</guilabel> are provided by default, and display many of the most commonly used ports in the <productname>JBoss Server</productname>.
+					The <guilabel>XML Configuration</guilabel> category itself contains only a list of categories. <guilabel>Ports</guilabel> are provided by default and display many of the most commonly used ports in the <productname>JBoss Server</productname>.
 				</para>
 
 				<figure>
@@ -555,7 +555,7 @@
 			</para>
 
 			<para>
-				The <guilabel>Server Log</guilabel> view shows relevant information to your server&apos;s startup, shutdown, and publish processes. This allows you to keep an eye on what&apos;s going on (such as automatic incremental deployment if you have it enabled).
+				The <guilabel>Server Log</guilabel> view shows relevant information to your server&apos;s startup, shutdown and publish processes. This allows you to keep an eye on what&apos;s going on (such as automatic incremental deployment if you have it enabled).
 			</para>
 
 			<figure>
@@ -710,7 +710,7 @@
 			</figure>
             
 
-			<para>The first tab shows the Jboss server arguments</para>
+			<para>The first tab shows the JBoss server arguments</para>
 			<para>
 				See the <ulink url="http://docs.jboss.org/jbossas/guides/installguide/r1/en/html/start-stop.html">AS Installation Guide </ulink> to find the parameters that can be specified for <productname>JBoss Server</productname>.
 			</para>
@@ -729,7 +729,7 @@
 			</note>
 
 			<para>
-				On the second tab you find the main class used for launching JBoss AS (the default is <code>org.jboss.Main</code>). this value can be changed if necessary.
+				On the second tab you find the main class used for launching JBoss AS (the default is <code>org.jboss.Main</code>). This value can be changed if necessary.
 			</para>
 
 			<para>
@@ -855,11 +855,11 @@
 			</note>
 
 			<para>
-				<filename>JAR</filename> is the standard archive type, and does very little configuration, leaving most of the work up to you. You can customize the name, add folders, filesets, and inner JARs to it.
+				<filename>JAR</filename> is the standard archive type and does very little configuration, leaving most of the work up to you. You can customize the name, add folders, filesets and inner JARs to it.
 			</para>
 
 			<para>
-				The other types, for the most part, simply start off with a default setting, usually the JAR with some specific children based on an expected structure of the project. For example, if the project is a Dynamic Web Project, and you create a <filename>WAR</filename> archive, the archive will be created with a few filesets relevant to the known structure of the project.
+				The other types, for the most part, simply start off with a default setting, usually the JAR with some specific children based on an expected structure of the project. For example, if the project is a Dynamic Web Project and you create a <filename>WAR</filename> archive, the archive will be created with a few filesets relevant to the known structure of the project.
 			</para>
 
 			<para>
@@ -936,10 +936,10 @@
 			<section id="CreatingaFileSet">
 				<title>Creating a FileSet</title>
 				<para>
-					To create a new fileset, right click on an available target location such as an archive, a nested archive, or a folder within an archive, and select the <guimenuitem>New Fileset</guimenuitem> option.
+					To create a new fileset, right click on an available target location such as an archive, a nested archive, or a folder within an archive and select the <guimenuitem>New Fileset</guimenuitem> option.
 				</para>				
 				<para>
-					The <guilabel>New Fileset</guilabel> wizard requires a destination (where the files will be located), and a root directory (or where the files are coming from). The source can be anywhere in the workspace or from the filesystem at large.
+					The <guilabel>New Fileset</guilabel> wizard requires a destination (where the files will be located) and a root directory (or where the files are coming from). The source can be anywhere in the workspace or from the filesystem at large.
 				</para>
 
 				<figure>
@@ -1043,7 +1043,7 @@
 							</entry>
 
 							<entry>
-								<para>This action is enabled only on top-level archives, and initiates a full build on that archive</para>
+								<para>This action is enabled only on top-level archives and initiates a full build on that archive</para>
 							</entry>
 						</row>
 

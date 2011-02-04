@@ -31,11 +31,11 @@
 						</entry>
 						<entry>
 							<para>
-								Using WTP, the JBoss AS plugin allows you to work with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.
+								Using WTP the JBoss AS plugin allows you to work with the server in run or debug mode. You can easily install runtimes and servers, copy the existing runtime configuration or configure it up to your needs.
 							</para>
 						</entry>
 						<entry>
-							<link linkend="runtimes_servers">runtimes and servers</link>
+							<link linkend="runtimes_servers">Runtimes and servers</link>
 						</entry>
 					</row>
 
@@ -45,7 +45,7 @@
 						</entry>
 						<entry>
 							<para>
-								It allows for easy management of an installed JBoss Server and includes the standard Console and  Properties views, and the specially added Project archives and Servers views.
+								It provides easy management of an installed JBoss Server and includes the standard Console and Properties views and the specially added Project archives and Servers views.
 							</para>
 						</entry>
 						<entry>
@@ -61,7 +61,7 @@
 							<para>Provides a number of ways, using WTP and JBoss Tools, to deploy either a project or a single file on the server.</para>
 						</entry>
 						<entry>
-							<link linkend="modules">deploying modules</link>
+							<link linkend="modules">Deploying modules</link>
 						</entry>
 					</row>
 
@@ -95,7 +95,7 @@
 		<title>Starting JBoss Server</title>
 
 		<para>
-			Starting <productname>JBoss Server</productname> is quite simple. You can control the server behavior with the help of a special toolbar in the <guilabel>Servers</guilabel> view where you can <guibutton>start</guibutton> it in a regular or debug mode, <guibutton>stop</guibutton> or <guibutton>restart</guibutton> it, and <guibutton>publish</guibutton> to the server.
+			Starting <productname>JBoss Server</productname> is quite simple. You can control the server behavior with the help of a special toolbar in the <guilabel>Servers</guilabel> view where you can <guibutton>start</guibutton> it in a regular or debug mode, <guibutton>stop</guibutton> or <guibutton>restart</guibutton> it and <guibutton>publish</guibutton> to the server.
 		</para>
 
 		<figure>

@@ -2,7 +2,7 @@
 <chapter id="webtools">
 	<title>Projects</title>
 	<para>
-		The most popular of the projects we deal with are the J2EE ones, such as Dynamic Web Project, EJB Project, or EAR project. <productname>JBoss Tools</productname> web projects include Struts, JSF and Seam projects. These are referred to as faceted projects. This chapter will cover facets, which are used to provide provide a consistent structure and packaging features to any type of project.
+		The most popular of the projects we deal with are the J2EE ones, such as Dynamic Web Project, EJB Project, or EAR project. <productname>JBoss Tools</productname> web projects include Struts, JSF and Seam projects. These are referred to as faceted projects. This chapter will cover facets, which are used to provide a consistent structure and packaging features to any type of project.
 	</para>
 	
 	<section>
@@ -16,7 +16,7 @@
 		</para>
 		
 		<para>
-			However, the benefit of this is that the structure of your projects is then known, and packaging it up <emphasis>should</emphasis> be trivial. If your project is non-standard, or you feel too confined by such rigid structural requirements, you can still choose to package your project using the Archives plugin (see <xref linkend="Project_archivesView"/>).
+			However, the benefit of this is that the structure of your projects is then known and packaging it up <emphasis>should</emphasis> be trivial. If your project is non-standard, or you feel too confined by such rigid structural requirements, you can still choose to package your project using the Archives plugin (see <xref linkend="Project_archivesView"/>).
 		</para>
 	</section>
 
@@ -42,7 +42,7 @@
 		<para>Click the <guibutton>Next</guibutton> button and you will see a Dynamic Web Project page like on the figure below.</para>
 		
 		<para>
-			The first page of most WTP projects allows you to target a specific runtime, which represents a server's library location. It will also provide you the ability to add this project to an EAR project, and select a preselected default set of facets, called a configuration, rather than manually select each required facet.
+			The first page of most WTP projects allows you to target a specific runtime, which represents a server's library location. It will also provide you the ability to add this project to an EAR project and select a preselected default set of facets, called a configuration, rather than manually select each required facet.
 		</para>
 		<para>
 			Selecting the runtime allows the project to install the proper classpaths to the project so it knows what code to compile against.

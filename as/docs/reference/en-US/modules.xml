@@ -4,7 +4,7 @@
 	
 	<para>In this chapter it will be described how to deploy modules onto the server.</para>
 	<para> 
-		First of all it is necessary to say that deploying to a server is mostly painless. There are several ways to do it provided by WTP, and some additional methods provided by JBoss Tools. These methods are described further in this chapter.
+		First of all it is necessary to say that deploying to a server is mostly painless. There are several ways to do it provided by WTP and some additional methods provided by JBoss Tools. These methods are described further in this chapter.
 	</para>
 	
 	<section>
@@ -37,7 +37,7 @@
 				This page of the wizard also allows to undeploy modules from the server. For that choose proper module(s) from the right and click the <guibutton> &lt; Remove</guibutton>. The modules will be completely undeployed after restarting your server or republishing.
 			</para>
 			<para>
-				Generally, for the JBoss AS Server Adapters, publishing using this method will force a default, best-guess, packaging configuration for your project. This best-guess does not publish incrementally, but instead repackages your entire project into a <filename>.war</filename>, <filename>.jar</filename>, or <filename>.ear</filename> as appropriate, and then copies that file into the proper deploy directory. For quicker smarter deployment, you will need to create archives using the Project Archives view (see <xref linkend="Project_archivesView"/>) and customize packaging yourself.
+				Generally, for the JBoss AS Server Adapters, publishing using this method will force a default, best-guess, packaging configuration for your project. This best-guess does not publish incrementally, but instead repackages your entire project into a <filename>.war</filename>, <filename>.jar</filename>, or <filename>.ear</filename> as appropriate and then copies that file into the proper deploy directory. For quicker smarter deployment, you will need to create archives using the Project Archives view (see <xref linkend="Project_archivesView"/>) and customize packaging yourself.
 			</para>
 			
 			
