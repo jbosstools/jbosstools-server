@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -26,9 +25,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
@@ -53,7 +54,7 @@ public class MainPreferencePage extends PropertyPage implements
 	private Text defaultExcludes;
 	private Group corePrefGroup, viewPrefGroup, packageExplorerGroup, filesetGroup;
 	private Composite overrideComp;
-
+	private Link fChangeWorkspaceSettings;
 
 	public MainPreferencePage() {
 		super();
@@ -63,8 +64,9 @@ public class MainPreferencePage extends PropertyPage implements
 
 	protected Control createContents(Composite parent) {
 		Composite main = new Composite(parent, SWT.NONE);
-		main.setLayout(new GridLayout(1, false));
-
+		GridLayout gl = new GridLayout(1, false);
+		main.setLayout(gl);
+		
 		createOverridePrefs(main);
 		createCorePrefs(main);
 		createViewPrefs(main);
@@ -112,7 +114,9 @@ public class MainPreferencePage extends PropertyPage implements
 	protected void createOverridePrefs(Composite main) {
 		if( getResourceLocationIfExists() != null ) {
 			overrideComp = new Composite(main, SWT.NONE);
-			overrideComp.setLayout(new FillLayout());
+			overrideComp.setLayout(new FormLayout());
+			overrideComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			
 			overrideButton = new Button(overrideComp, SWT.CHECK);
 			overrideButton.setText(ArchivesUIMessages.ProjectSpecificSettings);
 
@@ -124,7 +128,42 @@ public class MainPreferencePage extends PropertyPage implements
 					setWidgetsEnabled(overrideButton.getSelection());
 				}
 			});
+			FormData fd = new FormData();
+			fd.top = new FormAttachment(0,5);
+			fd.left = new FormAttachment(0,5);
+			overrideButton.setLayoutData(fd);
+			
+			fd = new FormData();
+			fd.top = new FormAttachment(0,0);
+			fd.left = new FormAttachment(overrideButton,5);
+			fd.right = new FormAttachment(100,-5);
+			fd.right.alignment = SWT.RIGHT;
+			Composite tmp = new Composite(overrideComp, SWT.NONE);
+			tmp.setLayoutData(fd);
+			tmp.setLayout(new GridLayout(1,true));
+			fChangeWorkspaceSettings= createLink(tmp, "Configure Workspace Settings..."); //$NON-NLS-1$
+			fChangeWorkspaceSettings.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
 		}
+	}
+
+	private void openGlobalPrefs() {
+		String id= "org.jboss.ide.eclipse.archives.ui.archivesPreferencePage"; //$NON-NLS-1$
+		PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, getElement()).open();
+	}
+	
+	private Link createLink(Composite composite, String text) {
+		Link link= new Link(composite, SWT.BORDER);
+		link.setFont(composite.getFont());
+		link.setText("<A>" + text + "</A>");  //$NON-NLS-1$//$NON-NLS-2$
+		link.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent e) {
+				openGlobalPrefs();
+			}
+			public void widgetDefaultSelected(SelectionEvent e) {
+				openGlobalPrefs();
+			}
+		});
+		return link;
 	}
 
 	protected void setWidgetsEnabled(boolean val) {
@@ -137,6 +176,7 @@ public class MainPreferencePage extends PropertyPage implements
 		showErrorDialog.setEnabled(val);
 		enableDefaultExcludes.setEnabled(val);
 		defaultExcludes.setEnabled(val);
+		showNodeOnAllProjects.setEnabled(val);
 	}
 
 	protected void createCorePrefs(Composite main) {

@@ -109,6 +109,7 @@ public class ArchivesUIMessages extends NLS {
 	public static String ShowAllProjects;
 	public static String FilesetPreferences;
 	public static String EnableDefaultExcludes;
+	public static String ConfigureWorkspacePrefs;
 
 	static {
 		NLS.initializeMessages("org.jboss.ide.eclipse.archives.ui.ArchivesUIMessages", ArchivesUIMessages.class); //$NON-NLS-1$
