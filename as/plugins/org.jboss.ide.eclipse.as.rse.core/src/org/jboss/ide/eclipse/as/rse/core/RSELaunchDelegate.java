@@ -122,7 +122,8 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		IShellService service = null;
 		try {
 			service = findShellService(behaviour);
-		} catch(CoreException ce) {
+			service.initService(new NullProgressMonitor());
+		} catch(Exception ce) {
 			// TODO log and return
 			return;
 		}
@@ -130,6 +131,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			if( hs != null ) {
 				delay(delay/1000);
+				hs.exit();
 			}
 		} catch( SystemMessageException sme) {
 			// TODO
