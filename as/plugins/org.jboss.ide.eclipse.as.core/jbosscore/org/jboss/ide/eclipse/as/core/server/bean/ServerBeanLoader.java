@@ -35,6 +35,8 @@ public class ServerBeanLoader {
 	public JBossServerType getServerType(File location) {
 		if(JBossServerType.AS.isServerRoot(location)) {
 			return JBossServerType.AS;
+		} else if(JBossServerType.EAP_STD.isServerRoot(location)) {
+				return JBossServerType.EAP_STD;
 		} else if(JBossServerType.EAP.isServerRoot(location) && JBossServerType.SOAP.isServerRoot(location)) {
 			return JBossServerType.SOAP;
 		} else if(JBossServerType.SOAP_STD.isServerRoot(location)) {
@@ -55,15 +57,24 @@ public class ServerBeanLoader {
 	
 	public String getFullServerVersion(File systemJarFile) {
 		String version = null;
+		ZipFile jar = null;
 		if(systemJarFile.canRead()) {
 			try {
-				ZipFile jar = new ZipFile(systemJarFile);
+				jar = new ZipFile(systemJarFile);
 				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
 				Properties props = new Properties();
 				props.load(jar.getInputStream(manifest));
 				version = (String)props.get("Specification-Version");//$NON-NLS-1$
 			} catch (IOException e) {
 				// version = ""
+			} finally {
+				if (jar != null) {
+					try {
+						jar.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
 			}
 		}
 		return version;

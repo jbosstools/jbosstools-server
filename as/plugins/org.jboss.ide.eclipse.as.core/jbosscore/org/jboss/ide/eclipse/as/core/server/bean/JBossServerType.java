@@ -11,6 +11,11 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -48,6 +53,12 @@ public class JBossServerType implements IJBossToolingConstants {
 			"Application Server", //$NON-NLS-1$
 			BIN_PATH+File.separatorChar + TWIDDLE_JAR_NAME,
 			new String[]{V6_0,V5_1, V5_0, V4_2, V4_0, V3_2}, new ASServerTypeCondition());
+	
+	public static final JBossServerType EAP_STD = new JBossServerType(
+			"EAP_STD",//$NON-NLS-1$
+			"Enterprise Application Platform",//$NON-NLS-1$
+			BIN_PATH+ File.separatorChar + TWIDDLE_JAR_NAME, 
+			new String[]{V4_2,V4_3,V5_0,V5_1}, new EAPStandaloneServerTypeCondition());
 	
 	public static final JBossServerType EAP = new JBossServerType(
 			"EAP",//$NON-NLS-1$
@@ -123,6 +134,31 @@ public class JBossServerType implements IJBossToolingConstants {
 		return this.condition.isServerRoot(location);
 	}
 	
+	public static boolean isEAP(File systemJarFile) {
+		if (systemJarFile.canRead()) {
+			ZipFile jar = null;
+			try {
+				jar = new ZipFile(systemJarFile);
+				ZipEntry manifest = jar.getEntry("META-INF/MANIFEST.MF");//$NON-NLS-1$
+				Properties props = new Properties();
+				props.load(jar.getInputStream(manifest));
+				String title = (String) props.get("Implementation-Title");//$NON-NLS-1$
+				return title != null && title.contains("EAP"); //$NON-NLS-1$
+			} catch (IOException e) {
+				// ignore
+			} finally {
+				if (jar != null) {
+					try {
+						jar.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static final JBossServerType[] KNOWN_TYPES = {AS, EAP, SOAP, SOAP_STD, EWP, EPP};
 
 	static interface Condition {
@@ -137,11 +173,24 @@ public class JBossServerType implements IJBossToolingConstants {
 		}
 	}
 	
+	public static class EAPStandaloneServerTypeCondition implements Condition {
+		public boolean isServerRoot(File location) {
+			File asSystemJar = new File(location, JBossServerType.EAP_STD.getSystemJarPath());
+			if (asSystemJar.exists() && asSystemJar.isFile()) {
+				return isEAP(asSystemJar);
+			}
+			return false;
+		}
+	}
+	
 	public static class ASServerTypeCondition implements Condition {
 		
 		public boolean isServerRoot(File location) {
 			File asSystemJar = new File(location, JBossServerType.AS.getSystemJarPath());
-			return asSystemJar.exists() && asSystemJar.isFile();
+			if (asSystemJar.exists() && asSystemJar.isFile()) {
+				return !isEAP(asSystemJar);
+			}
+			return false;
 		}
 	}
 	
