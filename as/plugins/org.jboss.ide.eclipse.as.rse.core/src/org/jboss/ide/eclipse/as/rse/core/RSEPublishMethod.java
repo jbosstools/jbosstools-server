@@ -76,13 +76,13 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	protected void startDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
-			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
 		if( cmd != null )
-			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 1000, cmd);
+			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected String getDeploymentScannerCommand(IProgressMonitor monitor, boolean start) {

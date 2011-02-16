@@ -130,6 +130,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
 			if( hs != null ) {
 				delay(delay/1000);
+				hs.exit();
 			}
 		} catch( SystemMessageException sme) {
 			// TODO
