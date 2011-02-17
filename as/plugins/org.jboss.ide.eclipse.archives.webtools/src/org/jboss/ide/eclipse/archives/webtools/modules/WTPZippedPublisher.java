@@ -15,7 +15,6 @@ package org.jboss.ide.eclipse.archives.webtools.modules;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -62,12 +61,14 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 			IProgressMonitor monitor) throws CoreException {
 		// Build all parts together at once. 
 		// When a call for [ear, childWar] comes in, ignore it. 
-		if( module.length > 1 ) { 
-			return Status.OK_STATUS;
-		}
+		if( module.length > 1 ) 
+			return null;
+	
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String deployRoot = getDeployRoot(module, ds); 
 		LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
-		return util.publishModule(server, deployRoot, module, publishType, delta, monitor);
+		IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
+		monitor.done();
+		return s;
 	}
 }

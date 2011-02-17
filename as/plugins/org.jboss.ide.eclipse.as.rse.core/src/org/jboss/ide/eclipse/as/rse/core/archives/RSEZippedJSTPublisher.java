@@ -12,20 +12,28 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core.archives;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
+import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -62,11 +70,23 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
 		
-		if( module.length > 1 ) 
-			return Status.OK_STATUS;
+		String taskName = "Publishing " + module[0].getName();
+		monitor.beginTask(taskName, 200); //$NON-NLS-1$
+		monitor.setTaskName(taskName);
+		if( module.length > 1 ) {
+			monitor.done();
+			return null;
+		}
 		
 		// Locally zip it up into the remote tmp folder
-		IStatus sup = super.publishModule(method, server, module, publishType, delta, monitor);
+		IStatus sup = super.publishModule(method, server, module, publishType, delta, 
+				AbstractServerToolsPublisher.getSubMon(monitor, 50));
+		if( !sup.isOK() ) {
+			monitor.done();
+			return sup;
+		}
+		
+		monitor.setTaskName("Publishing to remote server (dummy)");
 		
 		// set up needed vars
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
@@ -81,12 +101,26 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		// Now transfer the file to RSE
 		IFileService fs = method2.getFileService();
 		IFileServiceSubSystem system = method2.getFileServiceSubSystem();
+		ArrayList<IStatus> results = new ArrayList<IStatus>();
+		if( !sup.isOK())
+			results.add(sup);
+		
 		try {
-			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, new NullProgressMonitor());
-			//method2.getFileService().move(tempDestFolder.toString(), name, destFolder.toString(), name, new NullProgressMonitor());
+			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
+					AbstractServerToolsPublisher.getSubMon(monitor, 150));
 		} catch( SystemMessageException sme ) {
-			// TODO fix or return error
-			sme.printStackTrace();
+			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
+			results.add(s);
+		}
+
+		monitor.done();
+		if( results != null && results.size() > 0 ) {
+			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
+					NLS.bind(Messages.IncrementalPublishFail, module[0].getName()), null);
+			IStatus[] results2 = results.toArray(new IStatus[results.size()]);
+			for( int i = 0; i < results.size(); i++ )
+				ms.add(results2[i]);
+			return ms;
 		}
 
 		return sup;
