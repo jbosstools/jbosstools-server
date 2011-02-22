@@ -23,30 +23,28 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.rse.core.RSECorePlugin;
-import org.eclipse.rse.core.model.IHost;
-import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
-import org.eclipse.rse.services.shells.IShellService;
-import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
+import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
@@ -63,82 +61,46 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
 		beh.setServerStarting();
 		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
-		IShellService service = null;
 		try {
-			service = findShellService(beh);
-		} catch(CoreException ce) {
-			beh.setServerStopped();
-			throw ce;
-		}
-		IHostShell hs = null;
+			ServerShellModel model = RSEHostShellModel.getInstance().getModel(beh.getServer());
+			IHostShell shell = model.createStartupShell("/", command, new String[]{}, new NullProgressMonitor());
+			addShellOutputListener(shell);
+			launchPingThread(beh);
+		} catch(SystemMessageException sme) {
+			beh.setServerStopped(); // Not sure when this comes, but we should try to keep track
+			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
+									sme.getMessage(), sme));
+		} 
+	}
+	
+	private void launchPingThread(DeployableServerBehavior beh) {
+		// TODO do it properly here
+		RSEHostShellModel.delay(30000);
+		beh.setServerStarted();
+	}
+	
+	
+	// Only for debugging
+	private void addShellOutputListener(IHostShell shell) {
 		IHostShellOutputListener listener = null;
 		listener = new IHostShellOutputListener(){
 			public void shellOutputChanged(IHostShellChangeEvent event) {
 				IHostOutput[] out = event.getLines();
 				for(int i = 0; i < out.length; i++ ) {
 					// TODO listen here for obvious exceptions or failures
-					System.out.println(out[i]);
+					// System.out.println(out[i]);
 				}
 			}
 		};
-
-		try {
-			hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
-			hs.addOutputListener(listener);
-			delay(30);
-			
-			// Now launch ping thread
-		} catch(SystemMessageException sme) {
-			sme.printStackTrace();
-		} catch(RuntimeException re) {
-			String className = service.getClass().getName(); 
-			if(re instanceof NullPointerException && className.endsWith(".DStoreShellService")) {
-				beh.setServerStopped();
-				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
-						"no remote daemon installed. Please install a remote daemon or use an RSE server configured for ssh rather than dstore"));
-			}
-		}
-
-		// Exiting the shell cancels the process. PROBLEM!!!
-//		if( hs != null ) {
-//			hs.exit();
-//		}
-		beh.setServerStarted();
+		//shell.addOutputListener(listener);
 	}
-
-	private static void delay(int delay) {
-		int x = 1;
-		while( x < (delay)) {
-			x+=1;
-			try {
-				Thread.sleep(1000);
-			} catch(InterruptedException ie) {
-			}
-		}
-	}
-
 	
 	public static void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
-		IShellService service = null;
 		try {
-			service = findShellService(behaviour);
-			service.initService(new NullProgressMonitor());
-		} catch(Exception ce) {
-			// TODO log and return
-			return;
-		}
-		try {
-			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
-			if( hs != null ) {
-				delay(delay/1000);
-				hs.exit();
-			}
-		} catch( SystemMessageException sme) {
-			// TODO
-			sme.printStackTrace();
-		} catch( RuntimeException re ) {
-			// TODO
-			re.printStackTrace();
+			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
+			model.executeRemoteCommand("/", command, new String[]{}, new NullProgressMonitor(), delay, true);
+		} catch( CoreException ce ) {
+			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
 		}
 	}
 	
@@ -147,71 +109,18 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		String command2 = "";
 		try {
 			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-			String rseHome = behaviour.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, (String)null);
-			if( rseHome == null ) {
-				RSECorePlugin.getDefault().getLog().log(
-						new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
-								"Remote Server Home not set."));
-				return;
-			}
-			String defaultCmd = getDefaultStopCommand(behaviour.getServer());
+			String defaultCmd = getDefaultStopCommand(behaviour.getServer(), true);
 			command2 = config == null ? defaultCmd :
 				config.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCmd);
+			behaviour.setServerStopping();
+			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
+			model.executeRemoteCommand("/", command2, new String[]{}, new NullProgressMonitor(), 10000, true);
+			if( model.getStartupShell() != null && model.getStartupShell().isActive())
+				model.getStartupShell().writeToShell("exit");
+			behaviour.setServerStopped();
 		} catch(CoreException ce) {
-		}
-		
-		behaviour.setServerStopping();
-		final JBossServerBehavior behaviour2 = behaviour;
-		final String command = command2;
-		IShellService service = null;
-		try {
-			service = findShellService(behaviour);
-		} catch(CoreException ce) {
-			// TODO log and return
-			return;
-		}
-		
-		final boolean[] saving = new boolean[1];
-		saving[0] = false;
-		final String[] output = new String[1];
-		output[0] = null;
-		try {
-			final IHostShell hs = service.runCommand("/", command, new String[]{}, new NullProgressMonitor());
-			hs.addOutputListener(new IHostShellOutputListener(){
-				public void shellOutputChanged(IHostShellChangeEvent event) {
-					IHostOutput[] out = event.getLines();
-					for(int i = 0; i < out.length; i++ ) {
-						if( saving[0] ) {
-							output[0] = out[i].getString();
-							saving[0] = false;
-							delay(10);
-							behaviour2.setServerStopped();
-							hs.exit();
-							return;
-						}
-						/* 
-						 * This is an extreme hack, because for some reason, 
-						 * when the command line comes back, there's an extra space
-						 * "shutdown .sh"
-						 */
-						System.out.println(out[i]);
-						String outNoSpace = out[i].getString().replaceAll(" ", "");
-						String commandNoSpace = command.replaceAll(" ", "");
-						boolean contains = outNoSpace.contains(commandNoSpace);
-						if(!saving[0] && contains)
-							saving[0] = true;
-					}
-				}
-			});
-			
-		} catch( SystemMessageException sme) {
-			// TODO
-			behaviour.setServerStarted(); // unable to stop the server
-		} catch( RuntimeException re ) {
-			if( re instanceof NullPointerException && service.getClass().getName().equals("DStoreShellService")) {
-				// remote server has no dstore shell service
-				behaviour.setServerStopped(); // behaviour.setServerStarted(); // failed
-			}
+			behaviour.setServerStarted();
+			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
 		}
 	}
 	
@@ -269,7 +178,20 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static String getDefaultStopCommand(IServer server) {
-		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		try {
+			return getDefaultStopCommand(server, false);
+		} catch(CoreException ce) {/* ignore, INTENTIONAL */}
+		return null;
+	}
+	
+	public static String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
+		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, (String)null);
+		if( errorOnFail && rseHome == null ) {
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+							"Remote Server Home not set.");
+			throw new CoreException(s);
+		}
+		rseHome = rseHome == null ? "" : rseHome;
 		
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		
@@ -313,25 +235,4 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 					IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
 		return cmd;
 	}
-	
-	protected static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {
-		RSEUtils.waitForFullInit();
-		String connectionName = RSEUtils.getRSEConnectionName(behaviour.getServer());
-		IHost host = RSEUtils.findHost(connectionName);
-		if( host == null ) {
-			throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
-					"Host not found. Host may have been deleted or RSE model may not be completely loaded"));
-		}
-		
-		// ensure connections 
-		new ConnectAllSubsystemsUtil(host).run(new NullProgressMonitor());
-		
-		ISubSystem[] systems = RSECorePlugin.getTheSystemRegistry().getSubSystems(host);
-		for( int i = 0; i < systems.length; i++ ) {
-			if( systems[i] instanceof IShellServiceSubSystem)
-				return ((IShellServiceSubSystem)systems[i]).getShellService();
-		}
-		throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, "No Shell Service Found"));
-	}
-
 }
