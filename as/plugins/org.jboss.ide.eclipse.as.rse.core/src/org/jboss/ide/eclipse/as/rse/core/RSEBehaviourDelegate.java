@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -12,9 +12,13 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
+import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 
 public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
+	private PollThread pollThread = null;
 	public String getBehaviourTypeId() {
 		return RSEPublishMethod.RSE_ID;
 	}
@@ -27,4 +31,22 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 		}
 		RSELaunchDelegate.launchStopServerCommand(getActualBehavior());
 	}
+	
+	public void serverStarting() {
+		pollServer(IServerStatePoller.SERVER_UP);
+	}
+	
+	public void serverStopping() {
+		getActualBehavior().setServerStopping();
+		pollServer(IServerStatePoller.SERVER_DOWN);
+	}
+	
+	protected void pollServer(final boolean expectedState) {
+		if( this.pollThread != null ) {
+			pollThread.cancel();
+		}
+		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, getActualBehavior());
+		pollThread.start();
+	}
+
 }
