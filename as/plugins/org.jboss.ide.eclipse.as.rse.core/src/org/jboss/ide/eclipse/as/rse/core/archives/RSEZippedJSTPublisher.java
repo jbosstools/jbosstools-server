@@ -17,7 +17,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.files.IFileService;
+import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
@@ -59,6 +62,9 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
 		
+		if( module.length > 1 ) 
+			return Status.OK_STATUS;
+		
 		// Locally zip it up into the remote tmp folder
 		IStatus sup = super.publishModule(method, server, module, publishType, delta, monitor);
 		
@@ -73,6 +79,8 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		String name = sourcePath.lastSegment();
 		
 		// Now transfer the file to RSE
+		IFileService fs = method2.getFileService();
+		IFileServiceSubSystem system = method2.getFileServiceSubSystem();
 		try {
 			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, new NullProgressMonitor());
 			//method2.getFileService().move(tempDestFolder.toString(), name, destFolder.toString(), name, new NullProgressMonitor());
