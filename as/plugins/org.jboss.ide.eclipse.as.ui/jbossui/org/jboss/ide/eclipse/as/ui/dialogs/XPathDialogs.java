@@ -202,6 +202,7 @@ public class XPathDialogs {
 				this.rootDir = original.getBaseDir();
 				this.category = original.getCategory();
 				this.xpath = original.getXpathPattern();
+				this.attribute = original.getAttribute();
 			} 
 			if( this.xpath == null ) this.xpath = "//server/mbean"; //$NON-NLS-1$
 			if( this.filePattern == null ) this.filePattern = "**/*.xml"; //$NON-NLS-1$
