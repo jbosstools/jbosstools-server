@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
@@ -34,6 +35,7 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.core.util.internal.TrueZipUtil;
 import org.jboss.ide.eclipse.archives.webtools.IntegrationPlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
@@ -52,6 +54,9 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	public IStatus publishModule(IServer server, String deployRoot, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
+		String name = "Compressing " + module[0].getName(); //$NON-NLS-1$
+		monitor.beginTask(name, 200);
+		monitor.setTaskName(name);
 		this.deployRoot = deployRoot;
 		IStatus[] returnStatus;
 		
@@ -87,16 +92,20 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		}
 		TrueZipUtil.umount();
 		
-		IStatus finalStatus;
+		IStatus finalStatus = null;
 		if( returnStatus.length > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
 					"Publish Failed for module " + module[0].getName(), null); //$NON-NLS-1$
 			for( int i = 0; i < returnStatus.length; i++ )
 				ms.add(returnStatus[i]);
 			finalStatus = ms;
-		} else
-			finalStatus = Status.OK_STATUS;
+		}  else {
+			finalStatus = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
+					IEventCodes.JST_PUB_FULL_SUCCESS, 
+					NLS.bind(Messages.ModulePublished, module[0].getName()), null);
+		}
 
+		monitor.done();
 		return finalStatus;
 	}
 	
