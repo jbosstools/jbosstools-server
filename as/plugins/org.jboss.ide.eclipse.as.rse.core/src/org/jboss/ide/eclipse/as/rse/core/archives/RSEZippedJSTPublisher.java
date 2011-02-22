@@ -12,32 +12,24 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core.archives;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.util.NLS;
+import org.eclipse.rse.services.clientserver.messages.SystemElementNotFoundException;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.files.IFileService;
-import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
-import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 
@@ -78,51 +70,72 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			return null;
 		}
 		
-		// Locally zip it up into the remote tmp folder
-		IStatus sup = super.publishModule(method, server, module, publishType, delta, 
-				AbstractServerToolsPublisher.getSubMon(monitor, 50));
-		if( !sup.isOK() ) {
-			monitor.done();
-			return sup;
-		}
-		
-		monitor.setTaskName("Publishing to remote server (dummy)");
+		monitor.setTaskName("Publishing to remote server " + server.getName());
 		
 		// set up needed vars
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot);
 		IModule lastMod = module[module.length-1];
+		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		IPath destFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteRootFolder());
 		//IPath tempDestFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteTemporaryFolder());
 		String name = sourcePath.lastSegment();
+		IStatus result = null;
 		
-		// Now transfer the file to RSE
-		IFileService fs = method2.getFileService();
-		IFileServiceSubSystem system = method2.getFileServiceSubSystem();
-		ArrayList<IStatus> results = new ArrayList<IStatus>();
-		if( !sup.isOK())
-			results.add(sup);
 		
-		try {
-			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
-					AbstractServerToolsPublisher.getSubMon(monitor, 150));
-		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
-			results.add(s);
+		// Am I a removal? If yes, remove me, and return
+		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+			result = removeRemoteDeployment(method2, sourcePath, destFolder, name, monitor);
+		} else {
+			// Locally zip it up into the remote tmp folder
+			result = super.publishModule(method, server, module, publishType, delta, 
+					AbstractServerToolsPublisher.getSubMon(monitor, 50));
+			if( !result.isOK() ) {
+				monitor.done();
+			} else {
+				result = remoteFullPublish(method, sourcePath, destFolder, name, 
+						AbstractServerToolsPublisher.getSubMon(monitor, 150));
+			}
 		}
 
 		monitor.done();
-		if( results != null && results.size() > 0 ) {
-			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
-					NLS.bind(Messages.IncrementalPublishFail, module[0].getName()), null);
-			IStatus[] results2 = results.toArray(new IStatus[results.size()]);
-			for( int i = 0; i < results.size(); i++ )
-				ms.add(results2[i]);
-			return ms;
+		if( result != null ) {
+			return result;
 		}
 
-		return sup;
+		return Status.OK_STATUS;
+	}
+	
+	private IStatus remoteFullPublish( IJBossServerPublishMethod method, IPath sourcePath, 
+			IPath destFolder, String name, IProgressMonitor monitor) {
+		// Now transfer the file to RSE
+		RSEPublishMethod method2 = (RSEPublishMethod)method;
+		try {
+			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
+					AbstractServerToolsPublisher.getSubMon(monitor, 150));
+		} catch( SystemElementNotFoundException senfe ) {
+			/* Ignore intentionally... file already does not exist on remote server */
+			return Status.OK_STATUS;
+		} catch( SystemMessageException sme ) {
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
+		} catch(CoreException ce) {
+			return ce.getStatus();
+		}
+		return Status.OK_STATUS;
+	}
+
+	private IStatus removeRemoteDeployment( IJBossServerPublishMethod method, IPath sourcePath, 
+			IPath destFolder, String name, IProgressMonitor monitor) {
+		// Now transfer the file to RSE
+		RSEPublishMethod method2 = (RSEPublishMethod)method;
+		try {
+			method2.getFileService().delete(destFolder.toString(), name, monitor);
+		} catch( SystemMessageException sme ) {
+			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
+		} catch(CoreException ce) {
+			return ce.getStatus();
+		}
+		return Status.OK_STATUS;
 	}
 }
