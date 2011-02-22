@@ -115,7 +115,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		args += c.SHUTDOWN_SERVER_ARG + c.SPACE + serverUrl + c.SPACE;
 		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
 			args += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
-		if( jbs.getPassword() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
+		if( jbs.getPassword() != null && !jbs.getPassword().equals(""))  //$NON-NLS-1$
 			args += c.SHUTDOWN_PASS_ARG + c.SPACE + jbs.getPassword() + c.SPACE;
 		return args;
 	}
