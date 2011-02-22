@@ -14,6 +14,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.navigator.CommonActionProvider;
 import org.eclipse.ui.navigator.ICommonActionExtensionSite;
 import org.eclipse.ui.navigator.ICommonViewerSite;
@@ -25,7 +26,6 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -73,8 +73,10 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, incrementalPublishModuleAction);
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, fullPublishModuleAction);
-			if( selection.size() > 1 ) 
+			if( selection.size() > 1 ) {
+				deleteModuleAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
 				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, deleteModuleAction);
+			}
 			if (selection.size() == 1) {
 				ModuleServer moduleServer = (ModuleServer) selection.getFirstElement();
 				IServer server = moduleServer.getServer();
@@ -110,7 +112,7 @@ public class ModuleActionProvider extends CommonActionProvider {
 		deleteModuleAction.setText(Messages.DeleteModuleText);
 		deleteModuleAction.setDescription(Messages.DeleteModuleDescription);
 		deleteModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.UNPUBLISH_IMAGE));
-		
+
 		fullPublishModuleAction = new Action() {
 			public void run() {
 				actionPublish(IServer.PUBLISH_STATE_FULL);
