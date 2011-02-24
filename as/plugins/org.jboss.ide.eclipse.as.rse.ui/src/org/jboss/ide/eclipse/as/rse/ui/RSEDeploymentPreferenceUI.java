@@ -496,7 +496,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 					}
 				});
 				
-				combo = new Combo(this, SWT.DEFAULT | SWT.READ_ONLY);
+				combo = new Combo(this, SWT.BORDER | SWT.READ_ONLY);
 				l.setLayoutData(UIUtil.createFormData2(0, 5, null, 0, 0, 0, null, 0));
 				combo.setLayoutData(UIUtil.createFormData2(0, 0, null, 0, l, 5, newHost, -5));
 				refreshConnections();
