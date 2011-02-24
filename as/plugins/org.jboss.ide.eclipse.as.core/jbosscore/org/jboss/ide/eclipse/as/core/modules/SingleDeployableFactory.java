@@ -211,7 +211,7 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		}
 		
 		String qualifier = JBossServerCorePlugin.getDefault().getDescriptor().getUniqueIdentifier();
-		if( project.exists() ) {
+		if( project.exists() && project.isAccessible() ) {
 			IScopeContext context = new ProjectScope(project);
 			IEclipsePreferences node = context.getNode(qualifier);
 			if (node != null)
