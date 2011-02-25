@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.services.clientserver.messages.SystemElementNotFoundException;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
@@ -87,7 +88,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 			result = removeRemoteDeployment(method2, sourcePath, destFolder, name, monitor);
-		} else {
+		} else if( publishType != IJBossServerPublisher.NO_PUBLISH ){
 			// Locally zip it up into the remote tmp folder
 			result = super.publishModule(method, server, module, publishType, delta, 
 					AbstractServerToolsPublisher.getSubMon(monitor, 50));
@@ -112,11 +113,9 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		// Now transfer the file to RSE
 		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		try {
+			removeRemoteDeployment(method2, sourcePath, destFolder, name, new NullProgressMonitor());
 			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
 					AbstractServerToolsPublisher.getSubMon(monitor, 150));
-		} catch( SystemElementNotFoundException senfe ) {
-			/* Ignore intentionally... file already does not exist on remote server */
-			return Status.OK_STATUS;
 		} catch( SystemMessageException sme ) {
 			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
 		} catch(CoreException ce) {
@@ -131,6 +130,9 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		try {
 			method2.getFileService().delete(destFolder.toString(), name, monitor);
+		} catch( SystemElementNotFoundException senfe ) {
+			/* Ignore intentionally... file already does not exist on remote server */
+			return Status.OK_STATUS;
 		} catch( SystemMessageException sme ) {
 			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
 		} catch(CoreException ce) {
