@@ -16,6 +16,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
@@ -24,8 +25,10 @@ import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -190,6 +193,18 @@ public class JBossServer extends DeployableServer
 	}
 	public void setPassword(String pass) {
 		setAttribute(SERVER_PASSWORD, pass);
+	}
+	
+	public boolean hasJMXProvider() {
+		DeployableServerBehavior beh = (DeployableServerBehavior)getServer().loadAdapter(
+				DeployableServerBehavior.class, new NullProgressMonitor());
+		if( beh == null )
+			return false;
+		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
+		if( type.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+			return true;
+		}
+		return false;
 	}
 
 }
