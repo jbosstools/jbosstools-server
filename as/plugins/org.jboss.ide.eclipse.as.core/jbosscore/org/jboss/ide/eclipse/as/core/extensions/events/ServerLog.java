@@ -15,10 +15,9 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.adaptor.EclipseLog;
 import org.eclipse.osgi.framework.log.FrameworkLogEntry;
 
-public class ServerLog extends EclipseLog {
+public class ServerLog extends DeprecatedEclipseLog {
 	public ServerLog(File file) {
 		super(file);
 	}
