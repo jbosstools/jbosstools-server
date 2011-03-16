@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -209,9 +209,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 
 	protected boolean shouldSuspendScanner() {
-		if( getServer().getServerState() != IServer.STATE_STARTED)
-			return false;
-		return true;
+		return getActualBehavior().shouldSuspendScanner();
 	}
 	
 	protected void suspendDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {

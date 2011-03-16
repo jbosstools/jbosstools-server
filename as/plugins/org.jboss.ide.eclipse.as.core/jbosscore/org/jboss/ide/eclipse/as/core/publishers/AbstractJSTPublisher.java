@@ -13,12 +13,19 @@ package org.jboss.ide.eclipse.as.core.publishers;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJSTPublisher extends AbstractServerToolsPublisher {
 	public AbstractJSTPublisher() {}
+	
+	public boolean verifyModuleType(IModule[] module, String type) {
+		if( module != null && module.length > 0 
+				&& module[module.length-1] != null  
+				&& module[module.length-1].getModuleType().getId().equals(type)) 
+			return true;
+		return false;
+	}
 	
 	/**
 	 * This abstract publisher is only suitable for non force-zipped deployments
@@ -45,7 +52,9 @@ public abstract class AbstractJSTPublisher extends AbstractServerToolsPublisher 
 	 * Get the publish method this publisher is associated with
 	 * @return
 	 */
-	protected abstract String getTargetedPublishMethodId();
+	protected String getTargetedPublishMethodId() {
+		return null;
+	}
 	
 	/**
 	 * JST projects require certain children (utility, etc) to be zipped up

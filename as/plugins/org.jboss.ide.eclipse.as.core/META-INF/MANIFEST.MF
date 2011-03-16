@@ -35,6 +35,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.server.bean,
  org.jboss.ide.eclipse.as.core.server.internal,
  org.jboss.ide.eclipse.as.core.server.internal.launch,
+ org.jboss.ide.eclipse.as.core.server.internal.v7,
  org.jboss.ide.eclipse.as.core.server.xpl,
  org.jboss.ide.eclipse.as.core.util
 Bundle-ClassPath: dom4j-1.6.1.jar,

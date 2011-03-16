@@ -40,7 +40,7 @@
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
-             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"/>
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer,org.jboss.ide.eclipse.as.70"/>
    </extension>
 
    <extension point="org.eclipse.ui.startup">
@@ -55,6 +55,12 @@
             description="%jbossLaunchconfigurationTabGroupDescription"
             id="org.jboss.ide.eclipse.as.core.jbossLaunchTabGroup"
             type="org.jboss.ide.eclipse.as.core.server.startupConfiguration"/>
+
+      <launchConfigurationTabGroup
+            class="org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup"
+            description="%jbossLaunchconfigurationTabGroupDescription"
+            id="org.jboss.ide.eclipse.as.core.jboss7LaunchTabGroup"
+            type="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"/>
    </extension>
 
 
@@ -250,7 +256,7 @@
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
-            serverIds="%AllJBossServerTypes">
+            serverIds="%JBossServer6AndBelow">
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension"
@@ -258,7 +264,7 @@
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss6JMXRMIPortEditorExtension"
-            serverIds="%ServerTypesJBoss6OrHigher">
+            serverIds="org.jboss.ide.eclipse.as.60">
       </section>
    </extension>
 

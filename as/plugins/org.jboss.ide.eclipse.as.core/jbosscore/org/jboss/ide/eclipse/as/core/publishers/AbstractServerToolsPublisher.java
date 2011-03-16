@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -134,9 +134,10 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @param server
 	 * @param monitor
 	 */
-	protected void finishPublish(int publishType, IModule[] moduleTree, IDeployableServer server, IProgressMonitor monitor){}
+	protected void finishPublish(int publishType, IModule[] moduleTree, IDeployableServer server, IProgressMonitor monitor){
+	}
 	
-	private IPublishCopyCallbackHandler getCallbackHandler(IPath path) {
+	protected IPublishCopyCallbackHandler getCallbackHandler(IPath path) {
 		return publishMethod.getCallbackHandler(path, server.getServer());
 	}
 	
@@ -159,7 +160,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		monitor.beginTask("Full Publish: " + moduleTree[moduleTree.length-1].getName(), 1000); //$NON-NLS-1$
 		
 		IPath deployPath = getDeployPath(moduleTree, server);
-		IPublishCopyCallbackHandler callback = getCallbackHandler(deployPath);
+		IPublishCopyCallbackHandler callback = getCallbackHandler(getRootPath(deployPath).append(deployPath));
 		IModuleResource[] members = PublishUtil.getResources(module, getSubMon(monitor, 200));
  
 		if( monitor.isCanceled())
@@ -168,7 +169,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		// First delete it
 		// if the module we're publishing is a project, not a binary, clean it's folder
 		//if( !(new Path(module.getName()).segmentCount() > 1 ))
-		if( !ServerModelUtilities.isBinaryModule(module))
+		//if( !ServerModelUtilities.isBinaryModule(module))
 			callback.deleteResource(new Path("/"), getSubMon(monitor, 100)); //$NON-NLS-1$
 
 		if( monitor.isCanceled())
@@ -194,8 +195,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				File temp = deployRoot.toFile().createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPath));
 				String parentFolder = deployPath.removeLastSegments(1).toString();
+				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPath));
 				handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
 				handler.copyFile(mf, deployPath, getSubMon(monitor, 500));
@@ -308,8 +309,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			IProgressMonitor monitor) throws CoreException {
 		monitor.beginTask("Removing Module: " + module[module.length-1].getName(), 100); //$NON-NLS-1$
 		IPath remotePath = getDeployPath(module, server);
-		IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(remotePath));
-		handler.deleteResource(remotePath, getSubMon(monitor, 100));
+		IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(remotePath).append(remotePath));
+		handler.deleteResource(new Path("/"), getSubMon(monitor, 100)); //$NON-NLS-1$
 		monitor.done();
 		return Status.OK_STATUS;
 	}

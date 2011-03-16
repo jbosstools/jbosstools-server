@@ -61,6 +61,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
@@ -112,7 +113,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			JBossServer jbs = cServer.getOriginal() == null ? 
 					ServerConverter.getJBossServer(cServer) :
 						ServerConverter.getJBossServer(cServer.getOriginal());
-			if( jbs != null ) {
+			if( jbs != null && !cServer.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70) ) {
 				handleJBossServer(child);
 			} else {
 				handleDeployOnlyServer(child);
@@ -438,10 +439,11 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		
 		protected void serverHomeChanged() {
 			if( !updatingFromModelChange) {
+				String safeString = callback.getRuntime() != null ? callback.getRuntime().getLocation() != null ? 
+						callback.getRuntime().getLocation().toString() : "" : "";
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), RSEUtils.RSE_SERVER_HOME_DIR, rseServerHome.getText(), 
-						getRuntime() == null ? "" : getRuntime().getRuntime().getLocation().toString(),
-						RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
+						safeString, RSEUIMessages.CHANGE_REMOTE_SERVER_HOME));
 			}
 		}
 

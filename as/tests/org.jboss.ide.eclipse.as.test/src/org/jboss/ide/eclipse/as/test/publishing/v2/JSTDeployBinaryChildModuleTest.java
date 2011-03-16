@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
-public class JSTDeployBinaryChildModuleTest extends JSTDeploymentTester {
+public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester {
 	protected IProject createProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, null, null, JavaEEFacetConstants.WEB_24, false);
 		OperationTestCase.runAndVerify(dm);
@@ -34,7 +34,7 @@ public class JSTDeployBinaryChildModuleTest extends JSTDeploymentTester {
 		return p;
 	}
 
-	public void testMain() throws CoreException, IOException {
+	public void testStandardBinaryChildDeployment() throws CoreException, IOException {
 		IModule mod = ServerUtil.getModule(project);
 		IModule[] module = new IModule[] { mod };
 		verifyJSTPublisher(module);
@@ -47,4 +47,27 @@ public class JSTDeployBinaryChildModuleTest extends JSTDeploymentTester {
 		assertTrue("test.jar exists in deployment", webinf_lib_testjar.toFile().exists());
 		assertTrue("test.jar File is actually a file", webinf_lib_testjar.toFile().isFile());
 	}
+	
+	public void testStandardBinaryChildDeploymentMockPublishMethod() throws CoreException, IOException {
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		MockPublishMethod.HANDLER.reset();
+		testJBoss7BinaryChildDeployment(8);
+	}
+
+	public void testJBoss7BinaryChildDeployment() throws CoreException, IOException {
+		server = ServerRuntimeUtils.createMockJBoss7Server();
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		MockPublishMethod.HANDLER.reset();
+		testJBoss7BinaryChildDeployment(9);
+	}
+
+	private void testJBoss7BinaryChildDeployment(int count) throws CoreException, IOException  {
+		IModule mod = ServerUtil.getModule(project);
+		IModule[] module = new IModule[] { mod };
+		server = ServerRuntimeUtils.addModule(server, mod);
+		ServerRuntimeUtils.publish(server);
+		assertEquals(count,MockPublishMethod.HANDLER.getChanged().length);
+		MockPublishMethod.HANDLER.reset();
+	}
+
 }

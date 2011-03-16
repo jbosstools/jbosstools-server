@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -48,8 +48,11 @@ public class ServerUtil {
 	}
 	
 	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( !p.isAbsolute() && rt != null) {
-			return rt.getRuntime().getLocation().append(p).makeAbsolute();
+		if( !p.isAbsolute() ) {
+			if( rt != null && rt.getRuntime() != null && rt.getRuntime().getLocation() != null ) {
+				return rt.getRuntime().getLocation().append(p).makeAbsolute();
+			}
+			return p.makeAbsolute();
 		}
 		return p;
 	}
@@ -77,6 +80,10 @@ public class ServerUtil {
 //		}
 //	}
 	
+	public static boolean isJBoss7(IServer server) {
+		return server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70);
+	}
+	
 	public static void createStandardFolders(IServer server) {
 		// create metadata area
 		File location = JBossServerCorePlugin.getServerStateLocation(server).toFile();
@@ -84,7 +91,7 @@ public class ServerUtil {
 		
 		// create temp deploy folder
 		JBossServer ds = ( JBossServer)server.loadAdapter(JBossServer.class, null);
-		if( ds != null ) {
+		if( ds != null && !isJBoss7(server)) {
 			File d1 = new File(location, IJBossServerConstants.DEPLOY);
 			File d2 = new File(location, IJBossServerConstants.TEMP_DEPLOY);
 			d1.mkdirs();
@@ -95,12 +102,14 @@ public class ServerUtil {
 				new File(ds.getTempDeployFolder()).mkdirs();
 			IRuntime rt = server.getRuntime();
 			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-			String config = jbsrt.getJBossConfiguration();
-			IPath newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-				.append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
-			IPath newTempAsGlobal = ServerUtil.makeGlobal(jbsrt, newTemp);
-			newTempAsGlobal.toFile().mkdirs();
+			if( jbsrt != null ) {
+				String config = jbsrt.getJBossConfiguration();
+				IPath newTemp = new Path(IJBossServerConstants.SERVER).append(config)
+					.append(IJBossServerConstants.TMP)
+					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+				IPath newTempAsGlobal = ServerUtil.makeGlobal(jbsrt, newTemp);
+				newTempAsGlobal.toFile().mkdirs();
+			}
 		}
 	}
 	
@@ -121,6 +130,9 @@ public class ServerUtil {
 		else 
 			base = NLS.bind(Messages.serverName, runtimeName);
 		
+		return getDefaultServerName( base);
+	}
+	public static String getDefaultServerName( String base) {
 		if( ServerUtil.findServer(base) == null ) return base;
 		int i = 1;
 		while( ServerUtil.findServer(

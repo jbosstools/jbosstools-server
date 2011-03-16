@@ -50,6 +50,8 @@ import de.schlichtherle.io.ArchiveDetector;
 public class LocalZippedPublisherUtil extends PublishUtil {
 	
 	private String deployRoot;
+	private boolean hasBeenChanged = false;
+	private IModule[] module;
 	
 	public IStatus publishModule(IServer server, String deployRoot, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
@@ -58,6 +60,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		monitor.beginTask(name, 200);
 		monitor.setTaskName(name);
 		this.deployRoot = deployRoot;
+		this.module = module;
 		IStatus[] returnStatus;
 		
 		
@@ -183,6 +186,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			} 
 		};
 		FileUtil.safeDelete(deployPath.toFile(), listener);
+		hasBeenChanged = true;
 		return (IStatus[]) status.toArray(new IStatus[status.size()]);
 	}
 	
@@ -221,6 +225,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 					results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
 			}
 			TrueZipUtil.umount();
+			hasBeenChanged = true;
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
 		} catch( CoreException ce) {
 			results.add(generateCoreExceptionStatus(ce));
@@ -257,6 +262,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 				boolean b = f.deleteAll();
 				if( !b )
 					results.add(generateDeleteFailedStatus(f));
+				hasBeenChanged = true;
 			} else if( dKind == IModuleResourceDelta.NO_CHANGE  ) {
 				results.addAll(Arrays.asList(publishChanges(server, deltas[i].getAffectedChildren(), root)));
 			}
@@ -283,6 +289,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 				results.addAll(Arrays.asList(copy(root, mf.members())));
 			}
 		}
+		hasBeenChanged = true;
 		return (IStatus[]) results.toArray(new IStatus[results.size()]);
 	}
 	
@@ -313,7 +320,18 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		return retval;
 	}
 	
+	public IPath getOutputFilePath() {
+		return getOutputFilePath(module);
+	}
+	
 	public IPath getOutputFilePath(IModule[] module) {
 		return getDeployPath(module, deployRoot);
+	}
+	
+	public boolean hasBeenChanged() {
+		return hasBeenChanged;
+	}
+	public IModule[] getModule() {
+		return module;
 	}
 }

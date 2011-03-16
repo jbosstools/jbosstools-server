@@ -221,12 +221,8 @@ public class StrippedServerWizardFragment extends WizardFragment {
 	}
 	
 	private String getDefaultNameText() {
-		String base = Messages.sswf_BaseName;
-		if( findServer(base) == null ) return base;
-		int i = 1;
-		while( ServerCore.findServer(base + " (" + i + ")") != null )  //$NON-NLS-1$ //$NON-NLS-2$
-			i++;
-		return base + " (" + i + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+		Object o = getTaskModel().getObject(TaskModel.TASK_SERVER);
+		return ((ServerWorkingCopy)o).getName();
 	}
 	
 	private IServer findServer(String name) {

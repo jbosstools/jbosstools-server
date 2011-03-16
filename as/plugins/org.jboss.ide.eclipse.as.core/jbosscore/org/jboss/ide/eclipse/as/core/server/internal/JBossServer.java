@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -73,9 +73,22 @@ public class JBossServer extends DeployableServer
 	}
 	
 	public String getDeployFolder() {
-		return getDeployFolder(this, getDeployLocationType());
+		return getDeployFolder(getDeployLocationType());
 	}
 	
+	public String getDeployFolder(String type) {
+		return getDeployFolder(this, type);
+	}
+	
+	/**
+	 * No changes will be made to this API and new server
+	 * types are expected to subclass the getDeployFolder() api's
+	 * 
+	 * @param jbs
+	 * @param type
+	 * @return
+	 */
+	@Deprecated
 	public static String getDeployFolder(JBossServer jbs, String type) {
 		IServer server = jbs.getServer();
 		IJBossServerRuntime jbsrt = getRuntime(server);

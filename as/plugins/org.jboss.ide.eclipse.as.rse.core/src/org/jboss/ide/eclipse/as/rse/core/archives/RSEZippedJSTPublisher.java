@@ -31,6 +31,8 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 
@@ -56,12 +58,19 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		return deployRoot.toString();
 	}
 	
+	private IModule[] module;
+	private IServer server;
+	private IJBossServerPublishMethod method;
+	
 	@Override
 	public IStatus publishModule(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
+		this.module = module;
+		this.server = server;
+		this.method = method;
 		
 		String taskName = "Publishing " + module[0].getName();
 		monitor.beginTask(taskName, 200); //$NON-NLS-1$
@@ -87,7 +96,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			result = removeRemoteDeployment(method2, sourcePath, destFolder, name, monitor);
+			result = removeRemoteDeployment(sourcePath, destFolder, name, monitor);
 		} else if( publishType != IJBossServerPublisher.NO_PUBLISH ){
 			// Locally zip it up into the remote tmp folder
 			result = super.publishModule(method, server, module, publishType, delta, 
@@ -95,7 +104,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			if( !result.isOK() ) {
 				monitor.done();
 			} else {
-				result = remoteFullPublish(method, sourcePath, destFolder, name, 
+				result = remoteFullPublish(sourcePath, destFolder, name, 
 						AbstractServerToolsPublisher.getSubMon(monitor, 150));
 			}
 		}
@@ -108,14 +117,16 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		return Status.OK_STATUS;
 	}
 	
-	private IStatus remoteFullPublish( IJBossServerPublishMethod method, IPath sourcePath, 
+	private IStatus remoteFullPublish(IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) {
 		// Now transfer the file to RSE
 		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		try {
-			removeRemoteDeployment(method2, sourcePath, destFolder, name, new NullProgressMonitor());
+			removeRemoteDeploymentFolder(sourcePath, destFolder, name, new NullProgressMonitor());
 			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
 					AbstractServerToolsPublisher.getSubMon(monitor, 150));
+			if( JBoss7Server.supportsJBoss7Deployment(server)) 
+				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch( SystemMessageException sme ) {
 			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
 		} catch(CoreException ce) {
@@ -124,12 +135,13 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		return Status.OK_STATUS;
 	}
 
-	private IStatus removeRemoteDeployment( IJBossServerPublishMethod method, IPath sourcePath, 
-			IPath destFolder, String name, IProgressMonitor monitor) {
-		// Now transfer the file to RSE
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
+	private IStatus removeRemoteDeployment( IPath sourcePath, 
+			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		try {
-			method2.getFileService().delete(destFolder.toString(), name, monitor);
+			if( JBoss7Server.supportsJBoss7Deployment(server))
+				return JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+			return removeRemoteDeploymentFolder(sourcePath, destFolder, name, monitor);
 		} catch( SystemElementNotFoundException senfe ) {
 			/* Ignore intentionally... file already does not exist on remote server */
 			return Status.OK_STATUS;
@@ -138,6 +150,13 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		} catch(CoreException ce) {
 			return ce.getStatus();
 		}
+	}
+	
+	private IStatus removeRemoteDeploymentFolder(IPath sourcePath, 
+			IPath destFolder, String name, IProgressMonitor monitor) throws SystemMessageException, CoreException {
+		// Now transfer the file to RSE
+		RSEPublishMethod method2 = (RSEPublishMethod)method;
+		method2.getFileService().delete(destFolder.toString(), name, monitor);
 		return Status.OK_STATUS;
 	}
 }

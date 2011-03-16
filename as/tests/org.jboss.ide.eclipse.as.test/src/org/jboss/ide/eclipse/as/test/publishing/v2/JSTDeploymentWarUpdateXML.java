@@ -26,25 +26,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 
-public class JSTDeploymentWarUpdateXML extends TestCase {
-	
-	IProject project;
-	IServer server;
-	final String MODULE_NAME = "newModule";
-	final String CONTENT_DIR = "contentDirS"; 
-	final String TEXT_FILE = "test.txt";
-	final IPath CONTENT_TEXT_FILE = new Path(CONTENT_DIR).append(TEXT_FILE);
-	public void setUp() throws Exception {
-		project = createProject();
-		server = ServerRuntimeUtils.createMockDeployOnlyServer();
-	}
-	
-	public void tearDown() throws Exception {
-		ServerRuntimeUtils.deleteAllServers();
-		ServerRuntimeUtils.deleteAllRuntimes();
-		ProjectUtility.deleteAllProjects();
-		ASTest.clearStateLocation();
-	}
+public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
 	protected IProject createProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, CONTENT_DIR, null, JavaEEFacetConstants.WEB_25, true);
@@ -54,28 +36,6 @@ public class JSTDeploymentWarUpdateXML extends TestCase {
 		return p;
 	}
 		
-	protected void verifyJSTPublisher(IModule[] module) {
-		IJBossServerPublisher publisher = ExtensionManager
-			.getDefault().getPublisher(server, module, "local");
-		assertTrue(publisher instanceof JstPublisher);
-	}
-
-	protected void assertContents(IFile file, int val) throws IOException, CoreException {
-		assertContents(file, "" + val);
-	}
-	
-	protected void assertContents(IFile file, String val) throws IOException, CoreException {
-		assertEquals(val, IOUtil.getContents(file));
-	}
-
-	protected void assertContents(File file, int val) throws IOException, CoreException {
-		assertContents(file, "" + val);
-	}
-	
-	protected void assertContents(File file, String val) throws IOException, CoreException {
-		assertEquals(val, IOUtil.getContents(file));
-	}
-
 	public void testMain() throws CoreException, IOException {
 		IModule mod = ServerUtil.getModule(project);
 		IModule[] module = new IModule[] { mod };
@@ -104,5 +64,29 @@ public class JSTDeploymentWarUpdateXML extends TestCase {
 		assertTrue(rootFolder.toFile().exists());
 		ServerRuntimeUtils.publish(server);
 		assertFalse(rootFolder.toFile().exists());
+	}
+	
+	public void testWarUpdateMockPublishMethod() throws CoreException, IOException {
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		testMockPublishMethod(7,1,"");
+	}
+	
+	public void testWarUpdateMockPublishMethodJBoss7() throws CoreException, IOException {
+		server = ServerRuntimeUtils.createMockJBoss7Server();
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		testMockPublishMethod(8,1,"newModule.war.isdeployed");
+	}
+	
+	private void testMockPublishMethod(int initial, int remove, String removedFile) throws CoreException, IOException {
+		IModule mod = ServerUtil.getModule(project);
+		server = ServerRuntimeUtils.addModule(server,mod);
+		ServerRuntimeUtils.publish(server);
+		assertEquals(initial, MockPublishMethod.HANDLER.getChanged().length);
+		MockPublishMethod.HANDLER.reset();
+		
+		server = ServerRuntimeUtils.removeModule(server, mod);
+		ServerRuntimeUtils.publish(server);
+		assertEquals(remove, MockPublishMethod.HANDLER.getRemoved().length);
+		assertEquals(removedFile, MockPublishMethod.HANDLER.getRemoved()[0].toString());
 	}
 }

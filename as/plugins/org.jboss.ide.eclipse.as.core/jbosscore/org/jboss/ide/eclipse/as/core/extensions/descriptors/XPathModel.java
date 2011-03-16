@@ -32,12 +32,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.tools.jmx.core.IMemento;
 import org.jboss.tools.jmx.core.util.XMLMemento;
 
@@ -73,23 +73,38 @@ public class XPathModel extends UnitedServerListener {
 		final IServer server2 = server;
 		new Job(Messages.AddXPathDetailsJob) {
 			protected IStatus run(IProgressMonitor monitor) {
-				
 				if(server2==null || server2.getRuntime()==null) {
 					return Status.OK_STATUS; // server has no runtime so we can't set this up.
 				}
 				
-				LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
-				server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
-				if(ajbsr != null ) {
-					IPath configFolder = ajbsr.getConfigurationFullPath();
-					ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder.toOSString());
-					serverToCategories.put(server2.getId(), defaults);
-					save(server2);
+				if( ServerUtil.isJBoss7(server2)) {
+					return handleAddJBoss7XPaths(server2);
+				} else {
+					return handleAddJBossXPaths(server2);
 				}
-				return Status.OK_STATUS;
 			}
 		}.schedule();
 	}
+	
+	private IStatus handleAddJBoss7XPaths(IServer server2) {
+		// TODO
+		return Status.OK_STATUS;
+	}
+	
+	private IStatus handleAddJBossXPaths(IServer server2) {
+		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
+		server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
+		if(ajbsr != null ) {
+			IPath configFolder = ajbsr.getConfigurationFullPath();
+			if( configFolder != null ) {
+				ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder.toOSString());
+				serverToCategories.put(server2.getId(), defaults);
+				save(server2);
+			}
+		}
+		return Status.OK_STATUS;
+	}
+	
 	
 	public XPathQuery getQuery(IServer server, IPath path) {
 		XPathCategory cat = getCategory(server, path.segment(0));

@@ -43,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -95,6 +96,29 @@ public class ServerRuntimeUtils extends TestCase {
 		IPath tmpDeploy = state.append("testDeployments").append("tmpDeploy");
 		return ServerRuntimeUtils.createMockDeployOnlyServer(deploy.toOSString(), 
 				tmpDeploy.toOSString());
+	}
+	public static IServer createMockJBoss7Server() throws CoreException {
+		IPath state = ASTest.getDefault().getStateLocation();
+		IPath deploy = state.append("testDeployments").append("deploy");
+		IPath tmpDeploy = state.append("testDeployments").append("tmpDeploy");
+		return createMockJBoss7Server(deploy.toOSString(), tmpDeploy.toOSString());
+	}
+	
+	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
+		IServer s = ServerCreationUtils.createServer(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70, 
+				"/", "default");
+		ServerWorkingCopy swc = (ServerWorkingCopy) s.createWorkingCopy();
+		swc.setServerConfiguration(null);
+		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
+		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
+		IServer server = swc.save(true, null);
+		return server;
+	}
+	
+	public static IServer useMockPublishMethod(IServer server) throws CoreException {
+		IServerWorkingCopy wc = server.createWorkingCopy();
+		wc.setAttribute(IDeployableServer.SERVER_MODE, "mock");
+		return wc.save(true, new NullProgressMonitor());
 	}
 	
 	public static IServer createMockDeployOnlyServer(String deployLocation, String tempDeployLocation) throws CoreException {

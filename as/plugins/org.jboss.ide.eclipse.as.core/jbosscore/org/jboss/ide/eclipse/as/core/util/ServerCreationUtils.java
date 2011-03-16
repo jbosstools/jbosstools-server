@@ -32,6 +32,7 @@ public class ServerCreationUtils {
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_50, IJBossToolingConstants.SERVER_AS_50);
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_51, IJBossToolingConstants.SERVER_AS_51);
 		runtimeServerTypeMap.put(IJBossToolingConstants.AS_60, IJBossToolingConstants.SERVER_AS_60);
+		runtimeServerTypeMap.put(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_43, IJBossToolingConstants.SERVER_EAP_43);
 		runtimeServerTypeMap.put(IJBossToolingConstants.EAP_50, IJBossToolingConstants.SERVER_EAP_50);
 	}

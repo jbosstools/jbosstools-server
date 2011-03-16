@@ -18,7 +18,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
@@ -31,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
@@ -142,20 +142,26 @@ public class ServerModeSectionComposite extends Composite {
 						callback.getServer(), IDeployableServer.SERVER_MODE, 
 						ui.getPublishType().getId(), "Change server mode"));
 				String deployType = null;
-				if( ui.getPublishType().getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
-					deployType = IDeployableServer.DEPLOY_METADATA;
-				} else {
-					deployType = IDeployableServer.DEPLOY_SERVER;
+				if( shouldChangeDefaultDeployType(callback.getServer())) {
+					if( ui.getPublishType().getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+						deployType = IDeployableServer.DEPLOY_METADATA;
+					} else {
+						deployType = IDeployableServer.DEPLOY_SERVER;
+					}
+					callback.execute(new ChangeServerPropertyCommand(
+							callback.getServer(), IDeployableServer.DEPLOY_DIRECTORY_TYPE, 
+							deployType, "Change server's deploy location"));
 				}
-				callback.execute(new ChangeServerPropertyCommand(
-						callback.getServer(), IDeployableServer.DEPLOY_DIRECTORY_TYPE, 
-						deployType, "Change server's deploy location"));
 			}
 		} else {
 			// null selection
 		}
 	}
 
+	private boolean shouldChangeDefaultDeployType(IServerWorkingCopy server) {
+		return !server.getServerType().getId().equals(IJBossToolingConstants.DEPLOY_ONLY_SERVER) &&
+				!server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70);
+	}
 	
 	public static class ChangeServerPropertyCommand extends ServerCommand {
 		private IServerWorkingCopy server;

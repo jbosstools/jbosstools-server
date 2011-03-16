@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -14,6 +14,7 @@ import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 
@@ -24,6 +25,7 @@ public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 	private IConfigurationElement element;
 	public ServerPublishMethodType(IConfigurationElement element) {
 		this.element = element;
+		IContributor c = element.getContributor();
 		this.typeId = element.getAttribute("id"); //$NON-NLS-1$
 		this.name = element.getAttribute("name"); //$NON-NLS-1$
 		String tmp = element.getAttribute("serverTypes"); //$NON-NLS-1$

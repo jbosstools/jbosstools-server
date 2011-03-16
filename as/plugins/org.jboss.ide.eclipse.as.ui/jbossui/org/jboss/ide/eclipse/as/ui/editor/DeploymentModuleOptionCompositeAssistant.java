@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -48,11 +48,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IFormColors;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
@@ -72,6 +69,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentM
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
@@ -360,6 +358,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		boolean showRadios = true;
 		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
 			showRadios = false;
+		if( ServerUtil.isJBoss7(getServer().getServer()))
+			showRadios = false;
 		return showRadios;
 	}
 	
@@ -572,13 +572,16 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 
 	private String getDeployDir() {
-		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
-			ModuleDeploymentPage.makeRelative(getServer().getDeployFolder(), 
+		if( page.getServer().getRuntime() == null || ServerUtil.isJBoss7(page.getServer().getOriginal()))
+			return "";//$NON-NLS-1$
+		return ModuleDeploymentPage.makeRelative(getServer().getDeployFolder(), 
 					page.getServer().getRuntime());
 	}
 
 	private String getTempDeployDir() {
-		return page.getServer().getRuntime() == null ? "" : //$NON-NLS-1$
+		if( page.getServer().getRuntime() == null || ServerUtil.isJBoss7(page.getServer().getOriginal()))
+			return "";//$NON-NLS-1$
+		return 
 			ModuleDeploymentPage.makeRelative(getServer().getTempDeployFolder(), 
 					page.getServer().getRuntime());
 	}

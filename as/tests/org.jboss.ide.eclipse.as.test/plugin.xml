@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishMethod">
+      <publishMethod
+            class="org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod"
+            id="mock"
+            name="mock"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </publishMethod>
+   </extension>
+
+</plugin>

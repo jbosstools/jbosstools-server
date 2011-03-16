@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2010 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -15,21 +15,21 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
-public class SingleFilePublisher extends AbstractServerToolsPublisher {
+public class SingleFilePublisher extends JBoss7JSTPublisher {
+	protected boolean forceZipModule(IModule[] moduleTree) {
+		return false;
+	}
+	
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if( module != null && module.length > 0 
-				&& module[module.length-1] != null  
-				&& module[module.length-1].getModuleType().getId().equals(SingleDeployableFactory.MODULE_TYPE)) {
-			IModule mod = module[module.length-1];
-			IJBTModule del = (IJBTModule)mod.loadAdapter(IJBTModule.class, new NullProgressMonitor());
-			//if( del != null && del.isBinary())
-			if( del != null ) {
-				if( del.isBinary() || !ds.zipsWTPDeployments())
-					return true;
+		if( verifyModuleType(module, SingleDeployableFactory.MODULE_TYPE)) {
+			IJBTModule del = (IJBTModule)module[module.length-1].loadAdapter(IJBTModule.class, new NullProgressMonitor());
+			if( del != null && (del.isBinary() || !ds.zipsWTPDeployments())) {
+				return true;
 			}
 		}
 		return false;

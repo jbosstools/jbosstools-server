@@ -112,6 +112,23 @@
             supportsRemoteHosts="true"/>
 
       <serverType
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerBehavior"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
+            description="%jboss.version.70.description"
+            hasConfiguration="false"
+            id="org.jboss.ide.eclipse.as.70"
+            initialState="stopped"
+            launchConfigId="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            launchModes="run,debug,profile"
+            name="%jboss.version.70.name"
+            runtime="true"
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.70"
+            startBeforePublish="false"
+            startTimeout="450000"
+            stopTimeout="450000"
+            supportsRemoteHosts="true"/>
+
+      <serverType
             behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.eap.version.43.description"
@@ -394,6 +411,52 @@
 
 
       <runtimeType
+             vendor="%providerName"
+             class="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7ServerRuntime"
+             description="%jboss.version.70.description"
+             name="%jboss.version.70.runtime.name"
+             id="org.jboss.ide.eclipse.as.runtime.70"
+             version="7.0">
+          <moduleType
+                types="jst.appclient"
+                versions="5.0, 6.0"/>
+          <moduleType
+                types="jst.web"
+                versions="2.2, 2.3, 2.4, 2.5, 3.0"/>
+          <moduleType
+                types="jst.ejb"
+                versions="1.0, 1.1, 2.0, 2.1, 3.0, 3.1"/>
+          <moduleType
+                types="jst.ear"
+                versions="1.2, 1.3, 1.4, 5.0, 6.0"/>
+          <moduleType
+	         types="jst.connector"
+	         versions="1.0, 1.5, 1.6"/>
+	      <moduleType
+	         types="jst.utility"
+	         versions="1.0"/>
+          <moduleType
+                types="jboss.package"
+                versions="1.0"/>
+          <moduleType
+               types="jboss.singlefile"
+               versions="1.0"/>
+          <moduleType
+                types="jst.jboss.esb"
+                versions="4.2,4.3,4.4,4.5,4.6,4.7,4.9">
+          </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+          <moduleType
+                types="bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+      </runtimeType>
+
+
+      <runtimeType
              vendor="%enterpriseProviderName"
              class="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime"
              description="%jboss.eap.version.43.description"
@@ -533,6 +596,15 @@
             sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
             sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
       <launchConfigurationType
+            category="JBoss"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerStartupLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
+            modes="run,debug,profile"
+            name="JBoss Application Server Startup Configuration"
+            public="true"
+            sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
+            sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
+      <launchConfigurationType
             delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.TwiddleLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"
             modes="run"
@@ -653,6 +725,10 @@
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.60"
             runtime-component="org.jboss.ide.eclipse.as.runtime.component"
             version="6.0"/>
+      <runtimeFacetMapping
+            runtimeTypeId="org.jboss.ide.eclipse.as.runtime.70"
+            runtime-component="org.jboss.ide.eclipse.as.runtime.component"
+            version="7.0"/>
        <runtimeFacetMapping
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
             runtime-component="org.jboss.ide.eclipse.as.runtime.stripped.component"
@@ -747,6 +823,9 @@
       <runtime-component-version
             type="org.jboss.ide.eclipse.as.runtime.component"
             version="6.0"/>
+      <runtime-component-version
+            type="org.jboss.ide.eclipse.as.runtime.component"
+            version="7.0"/>
 
 
       <supported>
@@ -829,6 +908,20 @@
        <facet id="jbt.bpel.facet.core" version="1.2,2.0"/>
      </supported>
 
+      <supported>
+        <runtime-component
+         	id="org.jboss.ide.eclipse.as.runtime.component"
+         	version="7.0"/>
+       <facet id="jst.web"  version="2.2,2.3,2.4,2.5,3.0"/>
+       <facet id="jst.java" version="5.0,6.0"/>
+       <facet id="jst.utility" version="1.0"/>
+       <facet id="jst.connector" version="1.0,1.5,1.6"/>
+       <facet id="jst.ejb" version="2.0,2.1,3.0,3.1"/>
+       <facet id="jst.ear" version="1.2,1.3,1.4,5.0,6.0"/>
+       <facet id="jst.appclient" version="1.2,1.3,1.4,5.0,6.0"/>
+       <facet id="jbt.bpel.facet.core" version="1.2,2.0"/>
+     </supported>
+
    </extension>
 
 
@@ -877,6 +970,16 @@
          <runtime-component
                id="org.jboss.ide.eclipse.as.runtime.component"
                version="6.0">
+         </runtime-component>
+         <facet
+               id="jst.java"
+               version="6.0">
+         </facet>
+      </default-facets>
+      <default-facets>
+         <runtime-component
+               id="org.jboss.ide.eclipse.as.runtime.component"
+               version="7.0">
          </runtime-component>
          <facet
                id="jst.java"
@@ -999,6 +1102,10 @@
       <publisher
             class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
             priority="7">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
+            priority="6">
       </publisher>
       <publisher
             class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
@@ -112,6 +113,12 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		super.publishFinish(monitor);
 	}
 
+	public boolean shouldSuspendScanner() {
+		if( getServer().getServerState() != IServer.STATE_STARTED)
+			return false;
+		return true;
+	}
+	
 	// Can start / stop / restart etc
 	public IStatus canStart(String launchMode) {
 		return canChangeState(launchMode);

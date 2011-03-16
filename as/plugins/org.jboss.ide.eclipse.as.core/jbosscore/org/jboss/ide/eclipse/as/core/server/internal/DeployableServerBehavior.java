@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -46,10 +47,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	
 	
 	protected IJBossServerPublishMethod method;
+	protected HashMap<String, Object> publishTaskModel;
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		if( method != null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Already publishing")); //$NON-NLS-1$
 		method = createPublishMethod();
+		publishTaskModel = new HashMap<String, Object>();
 		method.publishStart(this, monitor);
 	}
 
@@ -58,9 +61,21 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		int result = method.publishFinish(this, monitor);
 		setServerPublishState(result);
+		publishTaskModel = null;
 		method = null;
 	}
 
+	public void setPublishData(String key, Object val) {
+		if( publishTaskModel != null )
+			publishTaskModel.put(key, val);
+	}
+	
+	public Object getPublishData(String key) {
+		if( publishTaskModel != null )
+			return publishTaskModel.get(key);
+		return null;
+	}
+	
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$

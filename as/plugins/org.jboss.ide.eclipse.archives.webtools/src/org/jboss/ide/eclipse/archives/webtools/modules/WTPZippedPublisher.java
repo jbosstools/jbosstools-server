@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -15,6 +15,8 @@ package org.jboss.ide.eclipse.archives.webtools.modules;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -24,6 +26,8 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -48,10 +52,9 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 	}
 	
 	protected String getDeployRoot(IModule[] module, IDeployableServer ds) {
-		String deployRoot = PublishUtil.getDeployRootFolder(
+		return PublishUtil.getDeployRootFolder(
 				module, ds, ds.getDeployFolder(), 
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return deployRoot;
 	}
 	
 	public IStatus publishModule(
@@ -64,11 +67,36 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		if( module.length > 1 ) 
 			return null;
 	
+		if( JBoss7Server.supportsJBoss7Deployment(server))
+			return handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
+		
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String deployRoot = getDeployRoot(module, ds); 
 		LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
 		IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
 		monitor.done();
 		return s;
+	}
+	
+	public IStatus handleJBoss7Deployment(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module,
+			int publishType, IModuleResourceDelta[] delta,
+			IProgressMonitor monitor) throws CoreException {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		String deployRoot = getDeployRoot(module, ds);
+		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+			JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+		} else {
+			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
+			IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
+			if( util.hasBeenChanged()) {
+				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ds, module, new NullProgressMonitor());
+			}
+			monitor.done();
+			return s;
+		}
+		monitor.done();
+		return Status.OK_STATUS;
 	}
 }
