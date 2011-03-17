@@ -60,7 +60,7 @@
 
 			</listitem>
 			<listitem>
-				<para>Start the <code>Main</code> application, specifying the properties that expose Main for remote management:</para>
+				<para>Start the <code>Main</code> application, specifying the properties that expose <code>Main</code> for remote management:</para>
 
 				<programlisting role="XML"><![CDATA[         
 java -Dcom.sun.management.jmxremote.port=9999 \
@@ -85,7 +85,7 @@ com.example.Main
 
 			<listitem>
 				<para>
-					In the <guilabel>Create JMX Connection</guilabel> dialog, click the <guibutton>Next</guibutton> button and then click the <property>Advanced</property> tab.
+					In the <guilabel>Create JMX Connection</guilabel> dialog, click the <guibutton>Next</guibutton> button and then click the <guilabel>Advanced</guilabel> tab.
 				</para>
 			</listitem>
  
@@ -124,7 +124,7 @@ com.example.Main
 				<para> You will get the "Operation invoked successfully" message. </para>
 
 				<figure>
-					<title>Ivoking Method via JMX</title>
+					<title>Invoking Method via JMX</title>
 					<mediaobject>
 						<imageobject>
 							<imagedata fileref="images/invokemethod.png"/>
@@ -135,8 +135,15 @@ com.example.Main
 
 			<listitem>
 				<para>
-					The final step is to make sure the application worked as expected. Open the terminal where you launched the application in step 3. Now you see the "hello, world" message on the screen.
+					The final step is to make sure the application worked as expected. Open the terminal where you launched the application in step 3. You should see output similar to the following:
 				</para>
+				
+				<screen>[matthew@localhost jmx_examples]$ java -Dcom.sun.management.jmxremote.port=9999 \
+> -Dcom.sun.management.jmxremote.authenticate=false \
+> -Dcom.sun.management.jmxremote.ssl=false \
+> com.example.Main
+Waiting for incoming requests...
+hello, world</screen>
 			</listitem>
 		</orderedlist>
 

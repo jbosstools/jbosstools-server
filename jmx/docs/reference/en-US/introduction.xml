@@ -129,7 +129,7 @@
 			<para>Here, we are going to explain how to install the <productname>JMX plugin</productname> into Eclipse.</para>
 
 			<para>
-				<productname>JBoss JMX Tools</productname> is one module of the <productname>JBoss Tools</productname> project. <productname> JBoss JMX Tools</productname> has no dependency on any other part of <productname>JBoss Tools</productname>, and can be downloaded as a standalone Eclipse plugin. Even though the <productname>JMX Tools</productname> have no dependencies on other plugins, such as <productname>AS Tools</productname>, <productname>JBoss JMX Tools</productname> do depend on the JMX Tooling and even extend it.
+				<productname>JBoss JMX Tools</productname> is one module of the <productname>JBoss Tools</productname> project. <productname> JBoss JMX Tools</productname> has no dependency on any other part of <productname>JBoss Tools</productname>, and can be downloaded as a stand alone Eclipse plugin. Even though the <productname>JMX Tools</productname> have no dependencies on other plugins, such as <productname>AS Tools</productname>, <productname>JBoss JMX Tools</productname> do depend on the JMX Tooling and even extend it.
 			</para>
 
 			<para>
