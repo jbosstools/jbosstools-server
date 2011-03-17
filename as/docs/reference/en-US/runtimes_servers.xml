@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter id="runtimes_servers" xreflabel="runtimes_servers">
+<chapter id="runtimes_servers">
 	<?dbhtml filename="runtimes_servers.html"?>
 	<chapterinfo>
 		<keywordset>
@@ -332,7 +332,7 @@
 				You can select the appropriate runtime from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs just press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtimes you should go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
 			</para>
 			
-			<para>If the server you want to create does not have any installed runtime yet, the combo box and the links are absent.</para>
+			<para>If the server you want to create does not have any installed runtime yet, the combobox and the links are absent.</para>
 			
 			<figure>
 				<title>Installed Server Runtime Environments</title>

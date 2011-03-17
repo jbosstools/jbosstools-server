@@ -92,7 +92,7 @@
 		</itemizedlist>
 		
 		<para>
-			On this wizard page you can enable or disable any facet as well as change its version. What you should note here is that some facets or facets versions may conflict with each other. In case of incompatibility you will be notified in the combo box underneath.
+			On this wizard page you can enable or disable any facet as well as change its version. What you should note here is that some facets or facets versions may conflict with each other. In case of incompatibility you will be notified in the combobox underneath.
 		</para>
 		<figure>
 			<title>Facet Constraints</title>

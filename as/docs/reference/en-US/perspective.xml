@@ -61,7 +61,7 @@
 			</para>
 
 			<para>
-				The <guibutton>Publish to the server</guibutton> button will republish any modules where it has determined that the workspace is out of sync with the server. It will attempt to do an incremental publish if the module in question is capable of doing one.
+				The <guibutton>Publish to the server</guibutton> button will republish any modules where it has determined that the workspace is out of synchronization with the server. It will attempt to do an incremental publish if the module in question is capable of doing one.
 			</para>
 
 		</section>
@@ -123,7 +123,7 @@
 							</entry>
 
 							<entry align="center">
-								<para>The status which allows you to see if changes are in-sync</para>
+								<para>The status which allows you to see if changes are synchronized</para>
 							</entry>
 						</row>
 					</tbody>
@@ -890,7 +890,7 @@
 			</figure>
 
 			<para>
-				Also in the wizard for creating a new archive you can choose whether an archive to be compressed or exploded into a folder (without compression). You need just select proper chechbox in the <guilabel>Archive type</guilabel> section.
+				Also in the wizard for creating a new archive you can choose whether an archive to be compressed or exploded into a folder (without compression). You need just select proper checkbox in the <guilabel>Archive type</guilabel> section.
 			</para>
 			
 			<para>If a build or incremental update fails Project Archives will show an error dialog:</para>
