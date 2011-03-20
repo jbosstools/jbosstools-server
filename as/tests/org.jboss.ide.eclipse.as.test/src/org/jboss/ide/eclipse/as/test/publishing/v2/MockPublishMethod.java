@@ -19,18 +19,15 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public static final String PUBLISH_METHOD_ID = "mock";
 	public static final MockCopyCallbackHandler HANDLER = new MockCopyCallbackHandler();
 	
-	@Override
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
 			IServer server) {
 		return HANDLER;
 	}
 
-	@Override
 	public String getPublishDefaultRootFolder(IServer server) {
 		return "/";
 	}
 
-	@Override
 	public String getPublishMethodId() {
 		return PUBLISH_METHOD_ID;
 	}
@@ -52,7 +49,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			return (IPath[]) changed.toArray(new IPath[changed.size()]);
 		}
 
-		@Override
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
 				throws CoreException {
 			if( !removed.contains(path.makeRelative()))
@@ -60,7 +56,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			return new IStatus[]{};
 		}
 
-		@Override
 		public IStatus[] makeDirectoryIfRequired(IPath dir,
 				IProgressMonitor monitor) throws CoreException {
 			if( !changed.contains(dir.makeRelative()))
@@ -81,7 +76,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 			return new IStatus[]{};
 		}
 		
-		@Override
 		public IStatus[] touchResource(IPath path) {
 			if( !changed.contains(path.makeRelative()))
 				changed.add(path.makeRelative());
