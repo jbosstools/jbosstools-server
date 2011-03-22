@@ -16,9 +16,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
 /**
@@ -26,8 +26,8 @@ import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
  */
 public class RSEZippedFolderPublisher extends RSEZippedJSTPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( !RSEPublishMethod.RSE_ID.equals(method))
-			return false;
+		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))
+			return true;
 		
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		if( module != null && module.length > 0 

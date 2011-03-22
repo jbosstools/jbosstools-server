@@ -17,15 +17,19 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.services.clientserver.messages.SystemElementNotFoundException;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
+import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
@@ -34,7 +38,6 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 
 /**
  * This class is in charge of RSE zipped publishing for flexible projects.
@@ -42,11 +45,16 @@ import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
  * by uploading the file after building it in a temporary directory
  */
 public class RSEZippedJSTPublisher extends WTPZippedPublisher {
-
-	protected String getPublishMethod() {
-		return RSEPublishMethod.RSE_ID;
+	public boolean accepts(String method, IServer server, IModule[] module) {
+		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))
+			return super.accepts(method, server, module);
+		return false;
 	}
 	
+	protected boolean publishMethodSpecific() {
+		return false; // can publish all method types
+	}
+
 	/**
 	 * Here we put the deployment first in a temporary remote deploy folder
 	 * Then during the publishModule call, we'll also upload it to remote machine
@@ -86,10 +94,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
 		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot);
-		IModule lastMod = module[module.length-1];
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
-		IPath destFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteRootFolder());
-		//IPath tempDestFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteTemporaryFolder());
+		IPath destFolder = PublishUtil.getDeployPath(method, module, server2);
 		String name = sourcePath.lastSegment();
 		IStatus result = null;
 		
@@ -120,11 +125,14 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 	private IStatus remoteFullPublish(IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) {
 		// Now transfer the file to RSE
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
 		try {
 			removeRemoteDeploymentFolder(sourcePath, destFolder, name, new NullProgressMonitor());
-			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
-					AbstractServerToolsPublisher.getSubMon(monitor, 150));
+			IModuleFile mf = new ModuleFile(sourcePath.toFile(), name, new Path("/"));
+			method.getCallbackHandler(destFolder, server).copyFile(mf, new Path(name),
+					AbstractServerToolsPublisher.getSubMon(monitor, 150)
+			);
+//			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
+//					AbstractServerToolsPublisher.getSubMon(monitor, 150));
 			if( JBoss7Server.supportsJBoss7Deployment(server)) 
 				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch( SystemMessageException sme ) {
@@ -154,9 +162,8 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 	
 	private IStatus removeRemoteDeploymentFolder(IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) throws SystemMessageException, CoreException {
-		// Now transfer the file to RSE
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
-		method2.getFileService().delete(destFolder.toString(), name, monitor);
+		// Now delete the file from RSE
+		method.getCallbackHandler(destFolder, server).deleteResource(new Path(name), monitor);
 		return Status.OK_STATUS;
 	}
 }

@@ -33,7 +33,10 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class WTPZippedPublisher implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
+	
 	public boolean accepts(String method, IServer server, IModule[] module) {
+		if( module == null || (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
+			return false;
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		IModule lastMod = (module == null || module.length == 0 ) ? null : module[module.length -1];
 		if( getPublishMethod().equals(method) && lastMod == null)
@@ -41,6 +44,14 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		return getPublishMethod().equals(method) 
 			&& ModuleCoreNature.isFlexibleProject(lastMod.getProject())
 			&& ds != null && ds.zipsWTPDeployments();
+	}
+	
+	protected boolean publishMethodSpecific() {
+		return true;
+	}
+	
+	protected String getTargetedPublishMethodId() {
+		return getPublishMethod();
 	}
 	
 	protected String getPublishMethod() {

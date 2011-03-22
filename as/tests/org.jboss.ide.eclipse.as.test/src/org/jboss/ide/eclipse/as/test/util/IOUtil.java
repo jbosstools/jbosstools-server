@@ -87,15 +87,20 @@ public class IOUtil {
 	             int count;
 	             byte data[] = new byte[BUFFER];
 	             // write the files to the disk
-	             toLoc.append(entry.getName()).toFile().getParentFile().mkdirs();
-	             if( !toLoc.append(entry.getName()).toFile().exists()) {
-		             FileOutputStream fos = new FileOutputStream(toLoc.append(entry.getName()).toOSString());
-		             dest = new BufferedOutputStream(fos, BUFFER);
-		             while ((count = zis.read(data, 0, BUFFER)) != -1) {
-		                dest.write(data, 0, count);
+	             if( entry.isDirectory() ) {
+	            	 toLoc.append(entry.getName()).toFile().mkdirs();
+	             } else {
+		             toLoc.append(entry.getName()).toFile().getParentFile().mkdirs();
+		             if( !toLoc.append(entry.getName()).toFile().exists()) {
+		            	 String out = toLoc.append(entry.getName()).toOSString();
+			             FileOutputStream fos = new FileOutputStream(out);
+			             dest = new BufferedOutputStream(fos, BUFFER);
+			             while ((count = zis.read(data, 0, BUFFER)) != -1) {
+			                dest.write(data, 0, count);
+			             }
+			             dest.flush();
+			             dest.close();
 		             }
-		             dest.flush();
-		             dest.close();
 	             }
 	          }
 	          zis.close();

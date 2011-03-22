@@ -25,10 +25,8 @@ import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
-import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
-import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -181,15 +179,6 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		}
 		return null;
 	}
-	
-	public static IPath findModuleFolderWithDefault(IModule module, IDeployableServer server, IPath startingPath) {
-		IModule[] moduleTree = new IModule[]{module};
-		String folder = PublishUtil.getDeployRootFolder(
-				moduleTree, server, startingPath.toString(),
-				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return PublishUtil.getDeployPath(moduleTree, folder).removeLastSegments(1);
-	}
-
 	
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path, IServer server) {
 		return new RSERemotePublishHandler(path, this);
