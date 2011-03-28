@@ -243,7 +243,7 @@ public class ModelTruezipBridge {
 			} else {
 				parentFile = fsFile;
 			}
-			returnFiles.add(new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.DEFAULT));
+			returnFiles.add(new File(parentFile, new Path(filesetRelative).lastSegment(), ArchiveDetector.NULL));
 		}
 		return (File[]) returnFiles.toArray(new File[returnFiles.size()]);
 	}

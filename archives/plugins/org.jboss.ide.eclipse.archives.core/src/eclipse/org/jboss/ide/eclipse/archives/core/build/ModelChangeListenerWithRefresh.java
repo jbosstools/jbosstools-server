@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -46,12 +47,14 @@ public class ModelChangeListenerWithRefresh extends ModelChangeListener {
 	protected void executeAndLog(IArchiveNodeDelta delta) {
 		final IArchiveNodeDelta delta2 = delta;
 		
-		new Job(ArchivesCoreMessages.UpdatingModelJob) {
-			public IStatus run(IProgressMonitor monitor) {
+		Job j = new WorkspaceJob(ArchivesCoreMessages.UpdatingModelJob) {
+			public IStatus runInWorkspace(IProgressMonitor monitor) {
 				ModelChangeListenerWithRefresh.super.executeAndLog(delta2);
 				return Status.OK_STATUS;
 			}
-		}.schedule();
+		};
+		j.setRule(ResourcesPlugin.getWorkspace().getRoot());
+		j.schedule();
 	}
 
 	
