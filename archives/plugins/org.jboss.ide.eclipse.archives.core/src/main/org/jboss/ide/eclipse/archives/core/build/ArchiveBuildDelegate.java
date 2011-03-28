@@ -142,8 +142,14 @@ public class ArchiveBuildDelegate {
 
 		EventManager.cleanArchiveBuild(pkg);
 		EventManager.startedBuildingArchive(pkg);
-
-		ModelTruezipBridge.deleteArchive(pkg);
+		
+		IPath filePath = pkg.getArchiveFilePath();
+		if( filePath.toFile().isFile()) 
+			filePath.toFile().delete();
+		else
+			TrueZipUtil.javaIODeleteDir(filePath.toFile());
+		
+		//ModelTruezipBridge.deleteArchive(pkg);
 		IPath dest = PathUtils.getGlobalLocation(pkg);
 		if( dest != null && !dest.toFile().exists() ) {
 			if( !dest.toFile().mkdirs() ) {

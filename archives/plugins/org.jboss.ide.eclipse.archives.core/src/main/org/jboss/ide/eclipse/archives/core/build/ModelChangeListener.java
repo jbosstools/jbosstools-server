@@ -13,12 +13,18 @@ package org.jboss.ide.eclipse.archives.core.build;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.ArchivesCoreMessages;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.model.EventManager;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFileSet;
@@ -27,7 +33,6 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveModelListener;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveModelRootNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNode;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveNodeDelta;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.core.util.ModelUtil;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge;
 import org.jboss.ide.eclipse.archives.core.util.internal.ModelTruezipBridge.FileWrapperStatusPair;
@@ -50,9 +55,18 @@ public class ModelChangeListener implements IArchiveModelListener {
 	 * This is the entry point for model change events.
 	 * It immediately passes the delta to be handled.
 	 */
-	public void modelChanged(IArchiveNodeDelta delta) {
-		if( shouldRun(delta)) 
-			executeAndLog(delta);
+	public void modelChanged(final IArchiveNodeDelta delta) {
+		if( shouldRun(delta)) {
+			Job j = new WorkspaceJob("Responding to archives model change") { //$NON-NLS-1$
+				public IStatus runInWorkspace(IProgressMonitor monitor)
+						throws CoreException {
+					executeAndLog(delta);
+					return Status.OK_STATUS;
+				}
+			};
+			j.setRule(ResourcesPlugin.getWorkspace().getRoot());
+			j.schedule();
+		}
 	}
 
 	protected boolean shouldRun(IArchiveNodeDelta delta) {
