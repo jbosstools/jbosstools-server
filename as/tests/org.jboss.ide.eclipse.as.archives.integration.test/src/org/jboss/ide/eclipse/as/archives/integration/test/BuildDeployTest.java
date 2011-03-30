@@ -100,7 +100,7 @@ public class BuildDeployTest extends TestCase {
 		try {
 			Thread.sleep(3000);
 		} catch( InterruptedException ie) {}
-		JobUtils.waitForIdle();
+		waitForIdle();
 		
 		setContents(count);
 		callBuild(); // just to speed the test
@@ -277,7 +277,7 @@ public class BuildDeployTest extends TestCase {
 	
 	protected void buildArchive()  {
 		Job j = new BuildAction().run(rootArchive);
-		JobUtils.waitForIdle();
+		waitForIdle();
 		assertTrue(j.getResult().isOK());
 	}
 	
@@ -291,7 +291,7 @@ public class BuildDeployTest extends TestCase {
 		try {
 			Thread.sleep(2000);
 		} catch( InterruptedException ie) {}
-		JobUtils.waitForIdle(); 
+		waitForIdle();
 	}
 	
 	protected void assertContents(InputStream is, int val) throws IOException {
@@ -316,6 +316,10 @@ public class BuildDeployTest extends TestCase {
 	
 	protected void callBuild() throws CoreException {
 		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
-		JobUtils.waitForIdle(); 
+		waitForIdle();
+	}
+	
+	private void waitForIdle() {
+		JobUtils.waitForIdle(2500); 
 	}
 }
