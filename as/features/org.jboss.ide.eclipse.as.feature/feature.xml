@@ -24,6 +24,34 @@ source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
 
+   <includes
+         id="org.jboss.ide.eclipse.archives.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.archives.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.jmx.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.server.rse.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.serverAdapter.wtp"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.tools.jmx.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.archives.feature"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.debug.core"/>
@@ -82,74 +110,10 @@ Raleigh NC 27606 USA.
    </requires>
 
    <plugin
-         id="org.jboss.ide.eclipse.as.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.jboss.ide.eclipse.as.ui.mbeans"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.classpath.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.classpath.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.archives.webtools"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.wtp.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.wtp.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.rse.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.rse.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
 
 </feature>

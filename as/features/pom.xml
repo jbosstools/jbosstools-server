@@ -7,6 +7,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<name>as.features</name>
 	<packaging>pom</packaging>
 	<modules>
+                <module>org.jboss.ide.eclipse.as.serverAdapter.wtp.feature</module>
+                <module>org.jboss.ide.eclipse.as.archives.integration.feature</module>
+                <module>org.jboss.ide.eclipse.as.jmx.integration.feature</module>
+                <module>org.jboss.ide.eclipse.as.server.rse.integration.feature</module>                
 		<module>org.jboss.ide.eclipse.as.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
 	</modules>
