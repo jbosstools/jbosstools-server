@@ -620,7 +620,7 @@
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
             name="Stop Server"
-            public="false">
+            public="true">
       </launchConfigurationType>
       <launchConfigurationType
             category="JBoss"
@@ -629,20 +629,6 @@
             modes="run"
             name="No-op Server Launch Configuration"
             public="true">
-      </launchConfigurationType>
-      <launchConfigurationType
-            category="JBoss"
-            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
-            modes="run"
-            name="No-op Server Launch Configuration"
-            public="true">
-      </launchConfigurationType>
-      <launchConfigurationType
-            category="JBoss"
-            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
-            modes="run"
-            name="No-op Server Launch Configuration"
-            public="false">
       </launchConfigurationType>
    </extension>
 

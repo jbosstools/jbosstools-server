@@ -61,6 +61,12 @@
             description="%jbossLaunchconfigurationTabGroupDescription"
             id="org.jboss.ide.eclipse.as.core.jboss7LaunchTabGroup"
             type="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"/>
+      <launchConfigurationTabGroup
+            class="org.jboss.ide.eclipse.as.ui.launch.DeployOnlyLaunchConfigGroup"
+            description="A no-op launch configuration"
+            id="org.jboss.ide.eclipse.as.systemCopyServer"
+            type="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig">
+      </launchConfigurationTabGroup>
    </extension>
 
 
