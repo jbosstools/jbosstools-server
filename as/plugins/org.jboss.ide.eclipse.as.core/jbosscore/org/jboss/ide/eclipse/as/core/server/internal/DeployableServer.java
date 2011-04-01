@@ -165,4 +165,8 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 		return ajbsrt;
 	}
 
+	public boolean hasJMXProvider() {
+		return false;
+	}
+
 }

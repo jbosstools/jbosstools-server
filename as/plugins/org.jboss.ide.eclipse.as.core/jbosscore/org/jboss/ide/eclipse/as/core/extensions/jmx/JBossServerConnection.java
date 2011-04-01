@@ -23,6 +23,8 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerListener;
 import org.eclipse.wst.server.core.ServerEvent;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.tools.jmx.core.ExtensionManager;
 import org.jboss.tools.jmx.core.IConnectionProvider;
 import org.jboss.tools.jmx.core.IConnectionProviderListener;
@@ -122,7 +124,8 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 	
 	protected void checkState() {
-		if( server.getServerState() == IServer.STATE_STARTED ) {
+		IDeployableServer jbs = ServerConverter.getDeployableServer(server);
+		if( server.getServerState() == IServer.STATE_STARTED && jbs != null && jbs.hasJMXProvider()) {
 			try {
 				JMXSafeRunner.run(server, new IJMXRunnable() {
 					public void run(MBeanServerConnection connection)

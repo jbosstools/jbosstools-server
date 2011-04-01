@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import javax.management.MBeanServerConnection;
@@ -59,35 +58,34 @@ public class ServerListener extends UnitedServerListener {
 	public void serverChanged(ServerEvent event) {
 		IServer server = event.getServer();
 		JBossServer jbs = (JBossServer)server.loadAdapter(JBossServer.class, new NullProgressMonitor());
-		if( jbs != null ) {
-			String[] folders = getDeployLocationFolders(server);
-			if( folders.length > 0 ) 
-				doDeploymentAddition(event, folders);
+		if( jbs != null && jbs.hasJMXProvider()) {
+			int eventKind = event.getKind();
+			if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
+				// server change event
+				if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
+					if( event.getServer().getServerState() == IServer.STATE_STARTED ) {
+						String[] folders = getDeployLocationFolders(server);
+						if( folders.length > 0 ) 
+							doDeploymentAddition(event, folders);
+					}
+				}
+			}
 		}
 	}
 	
 	protected void doDeploymentAddition(final ServerEvent event, final String[] folders) {
-		int eventKind = event.getKind();
-		if ((eventKind & ServerEvent.SERVER_CHANGE) != 0) {
-			// server change event
-			if ((eventKind & ServerEvent.STATE_CHANGE) != 0) {
-				if( event.getServer().getServerState() == IServer.STATE_STARTED ) {
-					
-					IJMXRunnable r = new IJMXRunnable() {
-						public void run(MBeanServerConnection connection) throws Exception {
-							ensureDeployLocationAdded(event.getServer(), connection, folders);
-						}
-					};
-					try {
-						JBossServerConnectionProvider.run(event.getServer(), r);
-					} catch( JMXException jmxe ) {
-						IStatus s = jmxe.getStatus();
-						IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
-								Messages.AddingJMXDeploymentFailed, s.getException());
-						ServerLogger.getDefault().log(event.getServer(), newStatus);
-					}
-				}
+		IJMXRunnable r = new IJMXRunnable() {
+			public void run(MBeanServerConnection connection) throws Exception {
+				ensureDeployLocationAdded(event.getServer(), connection, folders);
 			}
+		};
+		try {
+			JBossServerConnectionProvider.run(event.getServer(), r);
+		} catch( JMXException jmxe ) {
+			IStatus s = jmxe.getStatus();
+			IStatus newStatus = new Status(s.getSeverity(), s.getPlugin(), IEventCodes.ADD_DEPLOYMENT_FOLDER_FAIL, 
+					Messages.AddingJMXDeploymentFailed, s.getException());
+			ServerLogger.getDefault().log(event.getServer(), newStatus);
 		}
 	}
 	

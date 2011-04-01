@@ -42,4 +42,6 @@ public interface IDeployableServer {
 	public String getConfigDirectory();
 	public ServerAttributeHelper getAttributeHelper();
 	public IServer getServer();
+	
+	public boolean hasJMXProvider();
 }
