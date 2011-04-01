@@ -4,7 +4,7 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.jmxRunner">
       <jmxRunner
-            class="org.jboss.ide.eclipse.as.jmx.integration.JMXRunner">
+            class="org.jboss.ide.eclipse.as.jmx.integration.JBossServerJMXRunner">
       </jmxRunner>
    </extension>
    <extension
@@ -28,7 +28,7 @@
    	<extension
       point="org.eclipse.ui.navigator.navigatorContent">
     <actionProvider
-          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$ActionProvider"
+          class="org.jboss.ide.eclipse.as.jmx.integration.JMXProvider$ActionProvider"
           id="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView">
        <enablement>
           <instanceof
@@ -53,9 +53,6 @@
           <or>
              <instanceof
                    value="org.jboss.tools.jmx.core.tree.Node">
-             </instanceof>
-             <instanceof
-                   value="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$Wrapper">
              </instanceof>
              <instanceof
                    value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$DelayProxy">
