@@ -170,6 +170,9 @@
             description="%deploy.server.description"
             hasConfiguration="false"
             id="org.jboss.ide.eclipse.as.systemCopyServer"
+            initialState="started"
+            launchConfigId="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            launchModes="run"
             name="%deploy.server.name"
             runtime="false"
             runtimeTypeId="org.jboss.ide.eclipse.as.runtime.stripped"
@@ -617,6 +620,28 @@
             id="org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"
             modes="run"
             name="Stop Server"
+            public="false">
+      </launchConfigurationType>
+      <launchConfigurationType
+            category="JBoss"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration"
+            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            modes="run"
+            name="No-op Server Launch Configuration"
+            public="true">
+      </launchConfigurationType>
+      <launchConfigurationType
+            category="JBoss"
+            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            modes="run"
+            name="No-op Server Launch Configuration"
+            public="true">
+      </launchConfigurationType>
+      <launchConfigurationType
+            category="JBoss"
+            id="org.jboss.ide.eclipse.as.core.deployOnlyLaunchConfig"
+            modes="run"
+            name="No-op Server Launch Configuration"
             public="false">
       </launchConfigurationType>
    </extension>
