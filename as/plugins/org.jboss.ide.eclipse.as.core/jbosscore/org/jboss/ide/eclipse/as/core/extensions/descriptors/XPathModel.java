@@ -38,8 +38,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
-import org.jboss.tools.jmx.core.IMemento;
-import org.jboss.tools.jmx.core.util.XMLMemento;
+import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
+import org.jboss.ide.eclipse.as.core.util.internal.XMLMemento;
 
 /**
  * The class representing the model for all xpath storage and searching

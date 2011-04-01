@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.wtp.core;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
@@ -39,7 +38,6 @@ public class ASWTPToolsPlugin extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(WTP31DependencyListener.INSTANCE);
 	}
 
 	/*
@@ -47,7 +45,6 @@ public class ASWTPToolsPlugin extends Plugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(WTP31DependencyListener.INSTANCE);
 		plugin = null;
 		super.stop(context);
 	}

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.extensions.jmx;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.Properties;
 
@@ -78,4 +78,5 @@ public class JMXSafeRunner {
 			Thread.currentThread().setContextClassLoader(currentLoader);
 		}
 	}
+
 }

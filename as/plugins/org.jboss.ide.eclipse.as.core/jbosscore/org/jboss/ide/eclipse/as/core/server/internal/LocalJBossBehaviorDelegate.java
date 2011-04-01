@@ -22,26 +22,21 @@ import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.tools.jmx.core.IJMXRunnable;
-import org.jboss.tools.jmx.core.JMXException;
 
 /**
  * 
@@ -174,16 +169,16 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 
 	public void publishStart(final IProgressMonitor monitor) throws CoreException {
-		if( shouldSuspendScanner()) {
-			JMXClassLoaderRepository.getDefault().addConcerned(getServer(), this);
-			IJMXRunnable r = new IJMXRunnable() {
+		if( shouldSuspendScanner() ) {
+			ExtensionManager.getDefault().getJMXRunner().beginTransaction(getServer(), this);
+			IServerJMXRunnable r = new IServerJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
 					suspendDeployment(connection, monitor);
 				}
 			};
 			try {
-				JBossServerConnectionProvider.run(getServer(), r);
-			} catch( JMXException jmxe ) {
+				ExtensionManager.getDefault().getJMXRunner().run(getServer(), r);
+			} catch( CoreException jmxe ) {
 				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.SUSPEND_DEPLOYMENT_SCANNER, Messages.JMXPauseScannerError, jmxe);
 				ServerLogger.getDefault().log(getServer(), status);
 			}
@@ -192,24 +187,25 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	public void publishFinish(final IProgressMonitor monitor) throws CoreException {
 		if( shouldSuspendScanner()) {
-			IJMXRunnable r = new IJMXRunnable() {
+			IServerJMXRunnable r = new IServerJMXRunnable() {
 				public void run(MBeanServerConnection connection) throws Exception {
 					resumeDeployment(connection, monitor);
 				}
 			};
 			try {
-				JBossServerConnectionProvider.run(getServer(), r);
-			} catch( JMXException jmxe ) {
+				ExtensionManager.getDefault().getJMXRunner().run(getServer(), r);
+			} catch( CoreException jmxe ) {
 				IStatus status = new Status(IStatus.WARNING, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.RESUME_DEPLOYMENT_SCANNER, Messages.JMXResumeScannerError, jmxe);
 				ServerLogger.getDefault().log(getServer(), status);
 			} finally {
-				JMXClassLoaderRepository.getDefault().removeConcerned(getServer(), this);
+				ExtensionManager.getDefault().getJMXRunner().endTransaction(getServer(), this);
 			}
 		}
 	}
 
 	protected boolean shouldSuspendScanner() {
-		return getActualBehavior().shouldSuspendScanner();
+		return getActualBehavior().shouldSuspendScanner() && 
+				ExtensionManager.getDefault().getJMXRunner() != null;
 	}
 	
 	protected void suspendDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {

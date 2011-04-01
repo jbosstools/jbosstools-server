@@ -13,7 +13,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.provisional.ManagedUIDecorator;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
-import org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -72,11 +71,11 @@ public class LogLabelProvider extends LabelProvider implements ITableLabelProvid
 				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 			int state = code & 0xF;
 			switch(state) {
-			case JMXPoller.STATE_STARTED: 
+			case IEventCodes.STATE_STARTED: 
 				return new ManagedUIDecorator().getStateImage(IServer.STATE_STARTED, ILaunchManager.RUN_MODE, 1);
-			case JMXPoller.STATE_STOPPED:
+			case IEventCodes.STATE_STOPPED:
 				return new ManagedUIDecorator().getStateImage(IServer.STATE_STOPPED, ILaunchManager.RUN_MODE, 1);
-			case JMXPoller.STATE_TRANSITION:
+			case IEventCodes.STATE_TRANSITION:
 				return new ManagedUIDecorator().getStateImage(IServer.STATE_STARTING, ILaunchManager.RUN_MODE, 1);
 			}
 		} else if( (code & IEventCodes.FULL_POLLER_MASK) == IEventCodes.BEHAVIOR_STATE_CODE) {

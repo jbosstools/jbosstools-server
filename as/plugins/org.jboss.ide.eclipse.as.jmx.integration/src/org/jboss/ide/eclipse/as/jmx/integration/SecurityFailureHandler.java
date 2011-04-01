@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.ui.launch;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.List;
 import java.util.Properties;
@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;

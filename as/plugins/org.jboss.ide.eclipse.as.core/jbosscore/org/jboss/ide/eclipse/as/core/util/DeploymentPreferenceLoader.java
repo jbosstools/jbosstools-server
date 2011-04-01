@@ -28,10 +28,9 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.tools.jmx.core.IMemento;
-import org.jboss.tools.jmx.core.util.XMLMemento;
+import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
+import org.jboss.ide.eclipse.as.core.util.internal.XMLMemento;
 
 public class DeploymentPreferenceLoader {
 	public static final String DEPLOYMENT_PREFERENCES_KEY = "org.jboss.ide.eclipse.as.core.util.deploymentPreferenceKey"; //$NON-NLS-1$

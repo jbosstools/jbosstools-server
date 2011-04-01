@@ -33,6 +33,12 @@ public interface IEventCodes {
 	public static final int JMXPOLLER_CODE = POLLING_CODE | (2 << 16); 
 	public static final int BEHAVIOR_STATE_CODE = POLLING_CODE | (3 << 16);
 	
+	
+	public static final int STATE_STARTED = 1;
+	public static final int STATE_STOPPED = 0;
+	public static final int STATE_TRANSITION = 2;
+
+	
 	// Polling.Behavior Codes
 	public static final int BEHAVIOR_PROCESS_TERMINATED = BEHAVIOR_STATE_CODE | 1;
 	public static final int BEHAVIOR_FORCE_STOP = BEHAVIOR_STATE_CODE | 2;

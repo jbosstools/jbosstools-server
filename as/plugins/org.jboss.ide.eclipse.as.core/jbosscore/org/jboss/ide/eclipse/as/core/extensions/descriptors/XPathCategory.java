@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.tools.jmx.core.IMemento;
+import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
 
 /**
  * A class representing an XPath Category, which 

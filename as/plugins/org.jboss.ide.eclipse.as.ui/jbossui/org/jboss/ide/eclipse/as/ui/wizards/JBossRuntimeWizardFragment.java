@@ -511,7 +511,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 				dest = new Path(homeDir).append(dest);
 			dest = dest.append(d.getNewConfig());
 			dest.toFile().mkdirs();
-			org.jboss.tools.jmx.core.util.FileUtil.copyDir(source.toFile(), dest.toFile());
+			FileUtil.copyDir(source.toFile(), dest.toFile());
 			configDirText.setText(d.getNewDest());
 			configurations.setSelection(new StructuredSelection(d.getNewConfig()));
 		}

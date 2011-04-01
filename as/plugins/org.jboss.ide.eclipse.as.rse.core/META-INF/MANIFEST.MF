@@ -5,25 +5,25 @@ Bundle-Vendor: %Bundle-Vendor.0
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.rse.core;singleton:=true
 Bundle-Version: 0.9.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.rse.core.RSECorePlugin
-Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.rse.core,
- org.eclipse.rse.subsystems.files.core,
- org.eclipse.rse.services,
- org.eclipse.rse.services.files.ftp,
- org.eclipse.rse.services.local,
- org.eclipse.rse.services.ssh,
- org.eclipse.rse.subsystems.shells.core,
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
+ org.eclipse.rse.core;bundle-version="3.1.200",
+ org.eclipse.rse.subsystems.files.core;bundle-version="3.2.100",
+ org.eclipse.rse.services;bundle-version="3.2.100",
+ org.eclipse.rse.services.files.ftp;bundle-version="3.0.300",
+ org.eclipse.rse.services.local;bundle-version="2.1.300",
+ org.eclipse.rse.services.ssh;bundle-version="3.1.0",
+ org.eclipse.rse.subsystems.shells.core;bundle-version="3.1.200",
  org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.wtp.core,
- org.eclipse.wst.server.core,
- org.eclipse.wst.common.project.facet.core,
- org.eclipse.core.resources,
- org.eclipse.wst.common.modulecore,
- org.eclipse.wst.common.emfworkbench.integration,
- org.eclipse.jem.util,
+ org.eclipse.wst.server.core;bundle-version="1.1.302",
+ org.eclipse.wst.common.project.facet.core;bundle-version="1.4.200",
+ org.eclipse.core.resources;bundle-version="3.7.100",
+ org.eclipse.wst.common.modulecore;bundle-version="1.2.100",
+ org.eclipse.wst.common.emfworkbench.integration;bundle-version="1.2.100",
+ org.eclipse.jem.util;bundle-version="2.1.2",
  org.jboss.ide.eclipse.archives.webtools,
- org.eclipse.debug.core,
- org.eclipse.jdt.launching
+ org.eclipse.debug.core;bundle-version="3.7.0",
+ org.eclipse.jdt.launching;bundle-version="3.6.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core

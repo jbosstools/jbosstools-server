@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
 
-package org.jboss.ide.eclipse.as.core.extensions.polling;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXClassLoaderRepository;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JMXSafeRunner;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -51,9 +49,9 @@ public class JMXPoller implements IServerStatePoller {
 	public static final String REQUIRED_USER = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_USER"; //$NON-NLS-1$
 	public static final String REQUIRED_PASS = "org.jboss.ide.eclipse.as.core.extensions.polling.jmx.REQUIRED_PASS"; //$NON-NLS-1$
 	
-	public static final int STATE_STARTED = 1;
-	public static final int STATE_STOPPED = 0;
-	public static final int STATE_TRANSITION = 2;
+	public static final int STATE_STARTED = IEventCodes.STATE_STARTED;
+	public static final int STATE_STOPPED = IEventCodes.STATE_STOPPED;
+	public static final int STATE_TRANSITION = IEventCodes.STATE_TRANSITION;
 
 	private int started;
 	private boolean canceled, done;

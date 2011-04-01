@@ -6,6 +6,7 @@
    <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
    <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
    <extension-point id="publishMethod" name="org.jboss.ide.eclipse.as.core.publishMethod" schema="schema/publishMethod.exsd"/>
+   <extension-point id="jmxRunner" name="org.jboss.ide.eclipse.as.core.jmxRunner" schema="schema/jmxRunner.exsd"/>
 
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
@@ -674,12 +675,6 @@
             supportsStartup="true"
             supportsShutdown="true"/>
       <serverPoller
-            class="org.jboss.ide.eclipse.as.core.extensions.polling.JMXPoller"
-            id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
-            name="JMX Poller"
-            supportsStartup="true"
-            supportsShutdown="true"/>
-      <serverPoller
             class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
             name="Process Terminated Poller"
@@ -1115,12 +1110,6 @@
             class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
             priority="0">
       </publisher>
-   </extension>
-   <extension
-         point="org.jboss.tools.jmx.core.MBeanServerConnectionProvider">
-      <connectionProvider
-            class="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider">
-      </connectionProvider>
    </extension>
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">

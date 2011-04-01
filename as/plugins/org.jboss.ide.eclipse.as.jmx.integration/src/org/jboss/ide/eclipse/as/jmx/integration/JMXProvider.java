@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.ui.views.server.extensions;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IContributionItem;
@@ -27,8 +27,6 @@ import org.eclipse.ui.views.IViewDescriptor;
 import org.eclipse.ui.views.IViewRegistry;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.ui.internal.view.servers.AbstractServerAction;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnection;
-import org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.tools.jmx.core.ExtensionManager;

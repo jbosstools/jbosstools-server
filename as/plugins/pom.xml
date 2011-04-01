@@ -17,7 +17,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.wtp.core</module>
 		<module>org.jboss.ide.eclipse.as.wtp.ui</module>
 		<module>org.jboss.ide.eclipse.as.rse.core</module>
-		<module>org.jboss.ide.eclipse.as.rse.ui</module>                
+		<module>org.jboss.ide.eclipse.as.rse.ui</module>
+		<module>org.jboss.ide.eclipse.as.jmx.integration</module>                
 	</modules>
 </project>
 	

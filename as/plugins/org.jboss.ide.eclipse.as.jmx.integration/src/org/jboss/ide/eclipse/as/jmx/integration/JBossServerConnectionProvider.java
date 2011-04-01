@@ -8,12 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.extensions.jmx;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.management.MBeanServerConnection;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -21,6 +23,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerLifecycleListener;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
+import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunner;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;

@@ -38,9 +38,10 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
  *
  */
 
-public class WTP31DependencyListener implements IResourceChangeListener,
-		IResourceDeltaVisitor {
+public class WTP31DependencyListener { //implements IResourceChangeListener, IResourceDeltaVisitor {
+	/*
 
+	 
 	public static WTP31DependencyListener INSTANCE = new WTP31DependencyListener();
 
 	private WTP31DependencyListener() {
@@ -112,7 +113,7 @@ public class WTP31DependencyListener implements IResourceChangeListener,
 			// } else if ((IResourceDelta.REMOVED & kind) != 0) {
 			// updateModuleDependencies();
 			// return false;
-			/* } else */
+			// } else 
 			if ((IResourceDelta.CHANGED & kind) != 0) {
 				// int flags = delta.getFlags();
 				// if ((IResourceDelta.OPEN & flags) != 0) {
@@ -155,7 +156,7 @@ public class WTP31DependencyListener implements IResourceChangeListener,
 			// IDependencyGraph.MODIFIED);
 			// }
 			// }
-			/* } else */
+			// } else 
 			if (endsWithIgnoreCase(name, IModuleExtensions.DOT_JAR)
 					|| endsWithIgnoreCase(name, IModuleExtensions.DOT_WAR)
 					|| endsWithIgnoreCase(name, IModuleExtensions.DOT_RAR)) {
@@ -221,4 +222,5 @@ public class WTP31DependencyListener implements IResourceChangeListener,
 	public static boolean isFolder(IResource resource, IVirtualFolder folder) {
 		return J2EEComponentClasspathUpdater.isFolder(resource, folder);
 	}
+	*/
 }

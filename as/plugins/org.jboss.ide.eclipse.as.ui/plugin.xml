@@ -399,45 +399,6 @@
           </instanceof>
        </enablement>
     </actionProvider>
-    <actionProvider
-          class="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$ActionProvider"
-          id="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView">
-       <enablement>
-          <instanceof
-                value="org.eclipse.wst.server.core.IServer">
-          </instanceof>
-       </enablement>
-    </actionProvider>
-    <navigatorContent
-          activeByDefault="false"
-          contentProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$ContentProvider"
-          icon="$nl$/icons/jmeth_obj.gif"
-          id="org.jboss.ide.eclipse.as.ui.extensions.jmx"
-          labelProvider="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$LabelProvider"
-          name="%NavigatorContent_JMX"
-          priority="low">
-       <triggerPoints>
-          <instanceof
-                value="org.eclipse.wst.server.core.IServer">
-          </instanceof>
-       </triggerPoints>
-       <possibleChildren>
-          <or>
-             <instanceof
-                   value="org.jboss.tools.jmx.core.tree.Node">
-             </instanceof>
-             <instanceof
-                   value="org.jboss.ide.eclipse.as.ui.views.server.extensions.JMXProvider$Wrapper">
-             </instanceof>
-             <instanceof
-                   value="org.jboss.tools.jmx.ui.internal.views.navigator.MBeanExplorerContentProvider$DelayProxy">
-             </instanceof>
-             <instanceof
-                   value="org.jboss.tools.jmx.core.MBeanFeatureInfoWrapper">
-             </instanceof>
-          </or>
-       </possibleChildren>
-    </navigatorContent>
 	</extension>
 
 
@@ -450,14 +411,6 @@
                 isRoot="false"
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.xml">
              </contentExtension>
-             <contentExtension
-                   isRoot="false"
-                   pattern="org.jboss.ide.eclipse.as.ui.extensions.jmx">
-             </contentExtension>
-             <contentExtension
-                   isRoot="false"
-                   pattern="org.jboss.tools.jmx.ui.internal.views.navigator.JMXLinkHelper">
-             </contentExtension>
 	      </includes>
 	   </viewerContentBinding>
     <viewerActionBinding
@@ -467,11 +420,6 @@
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.modules"/>
           <actionExtension
                 pattern="org.jboss.ide.eclipse.as.ui.extensions.serverLog"/>
-          <actionExtension
-                pattern="org.jboss.ide.eclipse.as.ui.extensions.showInJMXView"/>
-          <actionExtension
-                pattern="org.jboss.tools.jmx.ui.internal.views.navigator.actionProvider">
-          </actionExtension>
        </includes>
     </viewerActionBinding>
 	</extension>

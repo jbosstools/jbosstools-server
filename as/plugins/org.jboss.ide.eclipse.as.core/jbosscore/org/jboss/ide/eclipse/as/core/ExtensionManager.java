@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.management.MBeanServerConnection;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -258,5 +260,39 @@ public class ExtensionManager {
 	
 	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
 		return findPossiblePublishMethods(server.getServerType());
+	}
+	
+	// API extension
+	public static interface IServerJMXRunnable {
+		public void run(MBeanServerConnection connection) throws Exception;
+	}
+	
+	public static interface IServerJMXRunner {
+		public void run(IServer server, IServerJMXRunnable runnable) throws CoreException;
+		public void beginTransaction(IServer server, Object lock);
+		public void endTransaction(IServer server, Object lock);
+	}
+	
+	private IServerJMXRunner jmxRunner = null;
+	private Object JMX_RUNNER_NOT_FOUND = null;
+	public IServerJMXRunner getJMXRunner() {
+		if( jmxRunner != null )
+			return this.jmxRunner;
+		if( JMX_RUNNER_NOT_FOUND != null)
+			return null;
+		
+		// find runner
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers"); //$NON-NLS-1$
+		for( int i = 0; i < cf.length; i++ ) {
+			try {
+				Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
+				if( o != null && (o instanceof IServerJMXRunner))
+					return ((IServerJMXRunner)o);
+			} catch(Exception e) {
+			}
+		}
+		JMX_RUNNER_NOT_FOUND = new Object();
+		return null;
 	}
 }

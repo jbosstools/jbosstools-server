@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.core.extensions.jmx;
+package org.jboss.ide.eclipse.as.jmx.integration;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

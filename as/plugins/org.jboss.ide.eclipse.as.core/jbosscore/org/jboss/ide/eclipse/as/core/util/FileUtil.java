@@ -10,10 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -165,4 +170,111 @@ public class FileUtil {
 		}
 	}
 	
+	
+    public static void copyDir(File from, File to) {
+        copyDir(from, to, false);
+    }
+
+    public static void copyDir(File from, File to, boolean mkdirs) {
+        copyDir(from, to, mkdirs, true);
+    }
+
+    public static void copyDir(File from, File to, boolean mkdirs, boolean includeSubdirs) {
+        copyDir(from, to, includeSubdirs, mkdirs, false);
+    }
+
+    public static void copyDir(File from, boolean includeSubdirs, File to) {
+        copyDir(from, to, includeSubdirs, false, false);
+    }
+
+    public static void copyDir(File from, File to, boolean includeSubdirs, boolean mkdirs, boolean overwriteOnlyOlderFiles) {
+    	copyDir(from, to, includeSubdirs, mkdirs, overwriteOnlyOlderFiles, null);
+    }
+
+    public static void copyDir(File from, File to, boolean includeSubdirs, boolean mkdirs, boolean overwriteOnlyOlderFiles, FileFilter filter) {
+        if(filter != null && !filter.accept(from)) return;
+        if (mkdirs) to.mkdirs();
+        if(from == null || !from.isDirectory() || !to.isDirectory()) return;
+        File[] fs = from.listFiles();
+        if(fs == null) return;
+        for (int i = 0; i < fs.length; i++) {
+            String n = fs[i].getName();
+            File c = new File(to, n);
+            if (fs[i].isDirectory() && !includeSubdirs) continue;
+        	if(filter != null && !filter.accept(new File(from, n))) continue;
+
+            if(fs[i].isDirectory()) {
+                c.mkdirs();
+                copyDir(fs[i], c, includeSubdirs, mkdirs, overwriteOnlyOlderFiles, filter);
+            } else if (overwriteOnlyOlderFiles && fs[i].isFile() && c.isFile()) {
+                copyFile(fs[i], c, false, c.lastModified() < fs[i].lastModified());
+            } else {
+                copyFile(fs[i], c);
+            }
+        }
+    }
+    public static boolean copyFile(File source, File dest, boolean mkdirs) {
+        return copyFile(source, dest, mkdirs, true);
+    }
+
+    public static boolean copyFile(File source, File dest) {
+        return copyFile(source, dest, false, true);
+    }
+
+    public static boolean copyFile(File source, File dest, boolean mkdirs, boolean overwrite) {
+        if (mkdirs) dest.getParentFile().mkdirs();
+        if(!source.isFile()) return false;
+        if(dest.isFile() && !isSameFile(dest)) dest.delete();
+        if(dest.isFile() && !overwrite) return false;
+        if(!dest.exists())
+			try {
+				dest.createNewFile();
+			} catch (IOException e1) {
+				JBossServerCorePlugin.log(e1); 
+			}
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            is = new BufferedInputStream(new FileInputStream(source), 16 * 1024);
+            os = new BufferedOutputStream(new FileOutputStream(dest), 16 * 1024);
+            copyStream(is, os);
+            return true;
+        } catch (IOException e) {
+        	JBossServerCorePlugin.log(e);
+            return false;
+        } finally {
+            try {
+                if (is != null) is.close();
+            } catch (IOException e) {
+            	JBossServerCorePlugin.log(e);
+            }
+            try {
+                if (os != null) os.close();
+            } catch (IOException e) {
+            	JBossServerCorePlugin.log(e);
+            }
+        }
+    }
+
+    public static void copyStream(InputStream is, OutputStream os) throws IOException {
+        byte[] buffer = new byte[1<<14];
+        while (true) {
+            int r = is.read(buffer);
+            if (r > 0) {
+                os.write(buffer, 0, r);
+            } else if (r == -1) break;
+        }
+        os.flush();
+    }
+    public static boolean isSameFile(File f) {
+        if(!f.exists()) return false;
+        String fn = f.getName();
+        try {
+           String cn = f.getCanonicalFile().getName();
+           return fn.equals(cn);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
 }
