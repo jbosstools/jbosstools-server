@@ -40,8 +40,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jboss.ide.eclipse.as.classpath.ui,
  org.jboss.ide.eclipse.as.wtp.core,
  org.jboss.ide.eclipse.as.wtp.ui,
- org.eclipse.jst.jsf.core,
- org.eclipse.jpt.core
+ org.eclipse.jst.jsf.core
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
