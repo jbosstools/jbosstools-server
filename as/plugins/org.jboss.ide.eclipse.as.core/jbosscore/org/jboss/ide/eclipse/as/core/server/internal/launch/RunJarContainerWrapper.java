@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.core.ClasspathContainerInitializer;
 import org.eclipse.jdt.core.IClasspathContainer;
@@ -70,13 +71,20 @@ public class RunJarContainerWrapper {
 		public RunJarContainer(IPath path) {
 			this.path = path;
 		}
+		public RunJarContainer(String serverName) {
+			this(new Path(ID).append(serverName));
+		}
 		
 		public IClasspathEntry[] getClasspathEntries() {
 			String name = path.segment(1);
+			return getClasspathEntries(name);
+		}
+		
+		public static IClasspathEntry[] getClasspathEntries(String serverName) {
 			IServer[] servers = ServerCore.getServers();
 			IServer s = null;
 			for( int i = 0; i < servers.length; i++ ) {
-				if( servers[i].getName().equals(name))
+				if( servers[i].getName().equals(serverName))
 					s = servers[i];
 			}
 			if( s != null ) {
