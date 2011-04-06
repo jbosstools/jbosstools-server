@@ -28,6 +28,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.jdt.core.IClasspathAttribute;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.launching.RuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -46,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper.RunJarContainer;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -129,43 +134,11 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			}
 		} catch( MalformedURLException murle) {}
 
-		
 		vmArgs= ArgsUtil.setArg(vmArgs, null, 
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
 				runtime.getRuntime().getLocation().append(
 						IJBossRuntimeResourceConstants.LIB).append(
 								IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
-		
-		if( runtime.getRuntime().getLocation().append(
-				IJBossRuntimeResourceConstants.BIN).append(	
-						IJBossRuntimeResourceConstants.NATIVE).toFile().exists() ) {
-			String argVal = ArgsUtil.getValue(vmArgs, null, 
-					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH);
-			
-			String libPath = 
-				runtime.getRuntime().getLocation()
-					.append(IJBossRuntimeResourceConstants.BIN)
-					.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
-			if( argVal != null ) {
-				if( argVal.startsWith("\"")) //$NON-NLS-1$
-					argVal = argVal.substring(1);
-				if( argVal.endsWith("\"")) //$NON-NLS-1$
-					argVal = argVal.substring(0, argVal.length()-1);
-				if( argVal.startsWith(":")) //$NON-NLS-1$
-					argVal = argVal.substring(1);
-				
-				String[] asArr = argVal.split(File.pathSeparator); 
-				asArr[0] = libPath;
-				String implode = ""; //$NON-NLS-1$
-				for( int i = 0; i < asArr.length; i++ ) 
-					implode += asArr[i] + File.pathSeparator;
-				libPath = implode;
-			}
-			vmArgs = ArgsUtil.setArg(vmArgs, null, 
-					IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
-					libPath, true);
-		}
-		
 		/* Claspath */
 		List<String> cp = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
 		List<String> newCP = fixCP(cp, jbs);

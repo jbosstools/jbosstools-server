@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -26,7 +27,10 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchConfigType {
@@ -73,6 +77,20 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 			i.next().setupLaunchConfiguration(workingCopy, server);
 		}
 	}	
+
+	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
+		IServer server = ServerUtil.getServer(configuration);
+		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(server.getId());
+		IJBossServerRuntime runtime = (IJBossServerRuntime)
+			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
+		IPath nativeFolder = runtime.getRuntime().getLocation()
+				.append(IJBossRuntimeResourceConstants.BIN)
+				.append(IJBossRuntimeResourceConstants.NATIVE);
+		if( nativeFolder.toFile().exists() ) {
+			return new String[]{nativeFolder.toOSString()};
+		}
+		return new String[]{};
+	}
 	
 	protected StartLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
