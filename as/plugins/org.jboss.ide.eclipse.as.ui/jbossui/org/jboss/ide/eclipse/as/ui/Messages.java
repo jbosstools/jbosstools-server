@@ -169,6 +169,7 @@ public class Messages extends NLS {
 
 
 	/* Editor Strings */
+	public static String EditorDeployment;
 	public static String EditorUseWorkspaceMetadata;
 	public static String EditorUseServersDeployFolder;
 	public static String EditorUseCustomDeployFolder;

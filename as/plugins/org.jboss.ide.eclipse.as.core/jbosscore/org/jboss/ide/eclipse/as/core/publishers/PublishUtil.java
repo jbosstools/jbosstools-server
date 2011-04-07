@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -125,7 +125,7 @@ public class PublishUtil {
 				moduleTree, server, 
 				server.getDeployFolder(), 
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return getDeployPath(moduleTree, folder);
+		return getDeployPath(moduleTree, folder, server);
 	}
 
 	public static IPath getDeployRootFolder(IModule[] moduleTree, IDeployableServer server) {
@@ -144,6 +144,47 @@ public class PublishUtil {
 		return new Path(folder);
 	}
 	
+	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder, IDeployableServer server) {
+		IPath root = new Path( deployFolder );
+		String type, modName, name, uri, suffixedName;
+		for( int i = 0; i < moduleTree.length; i++ ) {	
+			boolean found = false;
+			if( i == 0 ) {
+				// If this is the root module, we can customize the output name
+				DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server.getServer());
+				DeploymentTypePrefs typePrefs = prefs.getOrCreatePreferences(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+				DeploymentModulePrefs modPrefs = typePrefs.getModulePrefs(moduleTree[0]);
+				if( modPrefs != null ) {
+					String outName = modPrefs.getProperty(IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME);
+					if( outName != null && !outName.equals("")) { //$NON-NLS-1$
+						found = true;
+						root = root.append(outName);
+					}
+				}
+			} 
+			
+			// If it's a child module, or the property is not set,
+			// we must respect the deployment model... 
+			if( !found ) {
+				type = moduleTree[i].getModuleType().getId();
+				modName = moduleTree[i].getName();
+				name = new Path(modName).lastSegment();
+				suffixedName = name + getSuffix(type);
+				uri = getParentRelativeURI(moduleTree, i, suffixedName);
+				root = root.append(uri);
+			}
+		}
+		return root;
+	}
+	
+	/**
+	 * This method is deprecated. Please use the following:
+	 * @see getDeployPath(IModule[] module, String folder, IDeployableServer server)
+	 * @param moduleTree
+	 * @param deployFolder
+	 * @return
+	 */
+	@Deprecated
 	public static IPath getDeployPath(IModule[] moduleTree, String deployFolder) {
 		IPath root = new Path( deployFolder );
 		String type, modName, name, uri, suffixedName;
@@ -197,10 +238,10 @@ public class PublishUtil {
 		String folder = PublishUtil.getDeployRootFolder(
 				moduleTree, server, defaultFolder,
 				IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC);
-		return PublishUtil.getDeployPath(moduleTree, folder);
+		return PublishUtil.getDeployPath(moduleTree, folder, server);
 	}
 
-	private static String getSuffix(String type) {
+	public static String getSuffix(String type) {
 		// TODO
 		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
 

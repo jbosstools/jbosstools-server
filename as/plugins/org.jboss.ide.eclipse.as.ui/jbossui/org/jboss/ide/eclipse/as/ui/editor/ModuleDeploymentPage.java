@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,20 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
@@ -44,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class ModuleDeploymentPage extends ServerEditorPart {
 	protected ServerResourceCommandManager commandManager;
@@ -115,7 +111,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 		FormToolkit toolkit = getFormToolkit(parent);
 		ScrolledForm allContent = toolkit.createScrolledForm(parent);
 		toolkit.decorateFormHeading(allContent.getForm());
-		allContent.setText("Deployment");
+		allContent.setText(Messages.EditorDeployment);
 		allContent.getBody().setLayout(new FormLayout());
 		return allContent;
 	}
@@ -148,27 +144,45 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	public void firePropertyChangeCommand(DeploymentModulePrefs p, String key, String val, String cmdName) {
-		commandManager.execute(new ChangePropertyCommand(p,key,val,cmdName));
+		firePropertyChangeCommand(p, new String[]{key},new String[]{val},cmdName);
 	}
+	
+	public void firePropertyChangeCommand(DeploymentModulePrefs p, String[] keys, String[] vals, String cmdName) {
+		commandManager.execute(new ChangePropertyCommand(p, keys,vals,cmdName));
+	}
+
 	
 	private class ChangePropertyCommand extends ServerCommand {
 		private DeploymentModulePrefs p;
-		private String key;
-		private String oldVal;
-		private String newVal;
+		private String[] keys;
+		private String[] oldVals;
+		private String[] newVals;
 		public ChangePropertyCommand(DeploymentModulePrefs p, String key, String val, String commandName) {
+			this(p, new String[]{key}, new String[]{val}, commandName);
+		}
+		
+		public ChangePropertyCommand(DeploymentModulePrefs p, String[] keys, 
+				String[] vals, String commandName) {
 			super(ModuleDeploymentPage.this.server, commandName);
 			this.p = p;
-			this.key = key;
-			this.newVal = val;
-			this.oldVal = p.getProperty(key);
+			this.keys = keys;
+			this.newVals = vals;
+			this.oldVals = new String[newVals.length];
+			for( int i = 0; i < newVals.length; i++ ) {
+				oldVals[i] = p.getProperty(keys[i]);
+			}
 		}
+		
 		public void execute() {
-			p.setProperty(key, newVal);
+			for( int i = 0; i < keys.length; i++ ) {
+				p.setProperty(keys[i], newVals[i]);
+			}
 			savePreferencesToWorkingCopy();
 		}
 		public void undo() {
-			p.setProperty(key, oldVal);
+			for( int i = 0; i < keys.length; i++) {
+				p.setProperty(keys[i], oldVals[i]);
+			}
 			savePreferencesToWorkingCopy();
 		}
 	}
@@ -195,7 +209,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public static String makeRelative(String path, IRuntime runtime) {
 		IJBossServerRuntime rt = getRuntime(runtime);
 		if (rt == null)
-			return path;
+			return path; 
 		return ServerUtil.makeRelative(rt, new Path(path)).toString();
 	}
 

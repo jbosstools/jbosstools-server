@@ -100,5 +100,5 @@ public interface IJBossToolingConstants {
 	public static final String LOCAL_DEPLOYMENT_NAME = "name";  //$NON-NLS-1$
 	public static final String LOCAL_DEPLOYMENT_LOC = "location";  //$NON-NLS-1$
 	public static final String LOCAL_DEPLOYMENT_TEMP_LOC = "tempLocation";  //$NON-NLS-1$
-
+	public static final String LOCAL_DEPLOYMENT_OUTPUT_NAME = "outputName"; //$NON-NLS-1$
 }
