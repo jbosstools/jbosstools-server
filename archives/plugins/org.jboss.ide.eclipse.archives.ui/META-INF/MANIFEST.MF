@@ -5,14 +5,14 @@ Bundle-SymbolicName: org.jboss.ide.eclipse.archives.ui;singleton:=true
 Bundle-Version: 3.2.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.archives.ui.PackagesUIPlugin
 Bundle-Localization: plugin
-Require-Bundle: org.eclipse.ui,
- org.eclipse.ui.ide,
- org.eclipse.core.runtime,
- org.eclipse.core.resources,
+Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
+ org.eclipse.ui.ide;bundle-version="3.7.0",
+ org.eclipse.core.runtime;bundle-version="3.7.0",
+ org.eclipse.core.resources;bundle-version="3.7.100",
  org.jboss.ide.eclipse.archives.core,
- org.eclipse.debug.ui,
- org.eclipse.core.variables,
- org.eclipse.ui.navigator
+ org.eclipse.debug.ui;bundle-version="3.7.0",
+ org.eclipse.core.variables;bundle-version="3.2.500",
+ org.eclipse.ui.navigator;bundle-version="3.5.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.jboss.ide.eclipse.archives.ui,
  org.jboss.ide.eclipse.archives.ui.actions,
