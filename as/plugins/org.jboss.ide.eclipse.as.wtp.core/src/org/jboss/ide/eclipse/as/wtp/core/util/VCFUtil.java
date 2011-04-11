@@ -108,6 +108,7 @@ public class VCFUtil {
 			if( facet.getId().equals(IModuleConstants.JST_CONNECTOR_MODULE)) return ".rar";
 			if( facet.getId().equals("jst.jboss.esb")) return ".esb";
 			if( facet.getId().equals("jbt.bpel.facet.core")) return ".bpel";
+			if( facet.getId().equals("bpel.facet.core")) return ".bpel";
 			// TODO add our extensions
 		}
 		return null;
