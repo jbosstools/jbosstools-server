@@ -20,6 +20,10 @@ public class Activator extends AbstractUIPlugin {
 	public Activator() {
 	}
 
+	public static BundleContext getContext() {
+		return plugin.getBundle().getBundleContext();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
