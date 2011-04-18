@@ -56,6 +56,7 @@ public class JBoss7JSTPublisher extends AbstractJSTPublisher {
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
+		IJBoss7ManagementService service = JBoss7ManagementUtil.findManagementService(server);
 		if( !JBoss7Server.supportsJBoss7Deployment(server)) 
 			return super.publishModule(method, server, module, publishType, delta, monitor);
 		

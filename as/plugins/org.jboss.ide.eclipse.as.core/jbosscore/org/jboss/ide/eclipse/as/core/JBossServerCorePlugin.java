@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -57,7 +56,6 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		
 		// Start the array of models that need to be started
 		UnitedServerListenerManager.getDefault();
 		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
@@ -80,6 +78,10 @@ public class JBossServerCorePlugin extends Plugin  {
 	 */
 	public static JBossServerCorePlugin getDefault() {
 		return plugin;
+	}
+	
+	public static BundleContext getContext() {
+		return plugin.getBundle().getBundleContext();
 	}
 
 	public static IPath getServerStateLocation(IServer server) {
