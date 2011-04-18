@@ -35,7 +35,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
 	
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( module == null || (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
+		if( (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
 			return false;
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		IModule lastMod = (module == null || module.length == 0 ) ? null : module[module.length -1];
