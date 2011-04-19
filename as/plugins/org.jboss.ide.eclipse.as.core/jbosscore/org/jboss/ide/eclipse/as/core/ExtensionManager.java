@@ -283,7 +283,7 @@ public class ExtensionManager {
 		
 		// find runner
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "pollers"); //$NON-NLS-1$
+		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "jmxRunner"); //$NON-NLS-1$
 		for( int i = 0; i < cf.length; i++ ) {
 			try {
 				Object o = cf[i].createExecutableExtension("class"); //$NON-NLS-1$
