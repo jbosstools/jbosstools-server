@@ -26,8 +26,8 @@ import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
  */
 public class RSEZippedFolderPublisher extends RSEZippedJSTPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))
-			return true;
+		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))
+			return false;
 		
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		if( module != null && module.length > 0 

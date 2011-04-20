@@ -78,7 +78,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		if( module.length > 1 ) 
 			return null;
 	
-		if( JBoss7Server.supportsJBoss7Deployment(server))
+		if( JBoss7Server.supportsJBoss7MarkerDeployment(server))
 			return handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
 		
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);

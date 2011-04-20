@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
@@ -41,24 +40,25 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public class JBoss7JSTPublisher extends AbstractJSTPublisher {
 	// Same as super class but just a *bit* different
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		return super.accepts(method, server, module) && server.loadAdapter(JBoss7Server.class, new NullProgressMonitor()) != null; 
+		return super.accepts(method, server, module) && 
+			JBoss7Server.supportsJBoss7MarkerDeployment(server);
 	}
 	
-    public static final String DO_DEPLOY = ".dodeploy"; //$NON-NLS-1$
-    public static final String DEPLOYING = ".deploying"; //$NON-NLS-1$
-    public static final String DEPLOYED = ".isdeployed"; //$NON-NLS-1$
-    public static final String FAILED_DEPLOY = ".faileddeploy"; //$NON-NLS-1$
-    public static final String UNDEPLOYING = ".undeploying"; //$NON-NLS-1$
-    public static final String UNDEPLOYED = ".undeployed"; //$NON-NLS-1$
-    
+	public static final String DEPLOYED = ".deployed"; //$NON-NLS-1$
+	public static final String FAILED_DEPLOY = ".failed";//$NON-NLS-1$
+	public static final String DO_DEPLOY = ".dodeploy";//$NON-NLS-1$
+	public static final String DEPLOYING = ".isdeploying";//$NON-NLS-1$
+	public static final String UNDEPLOYING = ".isundeploying";//$NON-NLS-1$
+	public static final String UNDEPLOYED = ".undeployed";//$NON-NLS-1$
+	public static final String SKIP_DEPLOY = ".skipdeploy";//$NON-NLS-1$
+	public static final String PENDING = ".pending";//$NON-NLS-1$
+
 	public IStatus publishModule(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
-		IJBoss7ManagementService service = JBoss7ManagementUtil.findManagementService(server);
-		if( !JBoss7Server.supportsJBoss7Deployment(server)) 
-			return super.publishModule(method, server, module, publishType, delta, monitor);
+		//IJBoss7ManagementService service = JBoss7ManagementUtil.findManagementService(server);
 		
 		// jboss-7 specific
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);

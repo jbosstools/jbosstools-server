@@ -133,7 +133,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			);
 //			method2.getFileService().upload(sourcePath.toFile(), destFolder.toString(), name, true, null, null, 
 //					AbstractServerToolsPublisher.getSubMon(monitor, 150));
-			if( JBoss7Server.supportsJBoss7Deployment(server)) 
+			if( JBoss7Server.supportsJBoss7MarkerDeployment(server)) 
 				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch( SystemMessageException sme ) {
 			return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, sme.getMessage(), sme);
@@ -147,7 +147,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		try {
-			if( JBoss7Server.supportsJBoss7Deployment(server))
+			if( JBoss7Server.supportsJBoss7MarkerDeployment(server))
 				return JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
 			return removeRemoteDeploymentFolder(sourcePath, destFolder, name, monitor);
 		} catch( SystemElementNotFoundException senfe ) {

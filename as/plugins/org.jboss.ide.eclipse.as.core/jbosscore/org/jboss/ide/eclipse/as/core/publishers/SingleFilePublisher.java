@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
-public class SingleFilePublisher extends JBoss7JSTPublisher {
+public class SingleFilePublisher extends AbstractJSTPublisher {
 	protected boolean forceZipModule(IModule[] moduleTree) {
 		return false;
 	}

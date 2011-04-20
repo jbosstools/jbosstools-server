@@ -34,7 +34,7 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 	}
 	
 	
-	public static boolean supportsJBoss7Deployment(IServer server) {
+	public static boolean supportsJBoss7MarkerDeployment(IServer server) {
 		if( server.loadAdapter(IJBoss7Deployment.class, new NullProgressMonitor()) != null )
 			return true;
 		return false;

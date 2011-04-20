@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
+import org.jboss.tools.test.util.JobUtils;
 
 public class SingleFileDeploymentTester extends JSTDeploymentTester {
 	public void testSingleFile() throws CoreException, IOException {
@@ -41,6 +42,7 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		assertEquals(IOUtil.countFiles(deployRoot.toFile()), 0);
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 1);
 		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
 		assertEquals(IOUtil.countFiles(deployRoot.toFile()), 1);
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 2);
 		assertContents(deployRoot.append("test.xml").toFile(), 
@@ -49,6 +51,7 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		assertContents(deployRoot.append("test.xml").toFile(), 
 		"<test>done</test>");
 		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
 		assertContents(deployRoot.append("test.xml").toFile(), 
 			"<test>done2</test>");
 		server = ServerRuntimeUtils.removeModule(server, mods[0]);
@@ -56,6 +59,7 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		"<test>done2</test>");
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 2);
 		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
 		assertFalse(deployRoot.append("test.xml").toFile().exists());
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 1);
 	}
