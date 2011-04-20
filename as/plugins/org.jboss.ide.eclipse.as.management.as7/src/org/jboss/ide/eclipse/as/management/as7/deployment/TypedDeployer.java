@@ -21,6 +21,11 @@
  */
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.NAME;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -32,12 +37,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.OperationBuilder;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.StreamUtils;
+import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 /**
@@ -110,31 +117,15 @@ public class TypedDeployer {
 		}
 	}
 
-	//
-	// public static boolean isDeployed(String name, String host, int port)
-	// throws CancellationException, IOException {
-	// ModelControllerClient client = ModelControllerClient.Factory.create(host,
-	// port);
-	// try {
-	// return Util.isDeployed(name, client);
-	// } finally {
-	// StreamUtils.safeClose(client);
-	// }
-	// }
-	//
-	// public static List<String> getDeployments(String host, int port) throws
-	// UnknownHostException {
-	// ModelControllerClient client = ModelControllerClient.Factory.create(host,
-	// port);
-	// return Util.getDeployments(client);
-	// }
-	//
-	// private static void throwOnFailure(ModelNode result) throws
-	// DeployerException {
-	// if (!Util.isSuccess(result)) {
-	// throw new DeployerException(Util.getFailureDescription(result));
-	// }
-	// }
+	public String getServerName() throws DeployerException {
+		ModelNode request = new ModelNode();
+		request.get(OP).set(READ_ATTRIBUTE_OPERATION);
+		request.get(ADDRESS).set(ADDRESS);
+		request.get(NAME).set(NAME);
+
+		ModelNode response = JBossManagementUtil.execute(OperationBuilder.Factory.create(request).build(), client);
+		return response.asString();
+	}
 
 	public void dispose() {
 		StreamUtils.safeClose(client);
