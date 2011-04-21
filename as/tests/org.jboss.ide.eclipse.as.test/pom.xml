@@ -17,7 +17,9 @@
 		<jbosstools.test.jboss.home.4.2>${requirement.build.root}/jboss-4.2.3.GA</jbosstools.test.jboss.home.4.2> 
 		<jbosstools.test.jboss.home.5.0>${requirement.build.root}/jboss-5.0.1.GA</jbosstools.test.jboss.home.5.0>
 		<jbosstools.test.jboss.home.5.1>${requirement.build.root}/jboss-5.1.0.GA</jbosstools.test.jboss.home.5.1>
-		<systemProperties>-Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1}</systemProperties>
+		<jbosstools.test.jboss.home.6.0>${requirement.build.root}/jboss-6.0.0.GA</jbosstools.test.jboss.home.6.0>
+		<jbosstools.test.jboss.home.7.0>${requirement.build.root}/jboss-7.0.0.GA</jbosstools.test.jboss.home.7.0>
+		<systemProperties>-Djbosstools.test.jboss.home.3.2=${jbosstools.test.jboss.home.3.2} -Djbosstools.test.jboss.home.4.0=${jbosstools.test.jboss.home.4.0} -Djbosstools.test.jboss.home.4.2=${jbosstools.test.jboss.home.4.2} -Djbosstools.test.jboss.home.5.0=${jbosstools.test.jboss.home.5.0} -Djbosstools.test.jboss.home.5.1=${jbosstools.test.jboss.home.5.1} -Djbosstools.test.jboss.home.6.0=${jbosstools.test.jboss.home.6.0} -Djbosstools.test.jboss.home.7.0=${jbosstools.test.jboss.home.7.0} </systemProperties>
 		<emma.filter>org.jboss.ide.eclipse.as.core*</emma.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.core</emma.instrument.bundles>
 	</properties>
