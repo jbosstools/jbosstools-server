@@ -34,6 +34,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
  * This class will test whether all of the pre-req
  * locations, such as a working JBoss 4.2, are set.
  * 
+ * It also tests whether or not the server and 
+ * runtime types exist (ie build error / config error)
+ * 
  * @author rob.stryker <rob.stryker@redhat.com>
  */
 public class PreReqTest extends TestCase {
@@ -49,7 +52,23 @@ public class PreReqTest extends TestCase {
 	public void testAS42Exists() {
 		_testExists("JBoss 4.2", ASTest.JBOSS_AS_42_HOME);
 	}
-	
+
+	public void testAS50Exists() {
+		_testExists("JBoss 5.0", ASTest.JBOSS_AS_50_HOME);
+	}
+
+	public void testAS51Exists() {
+		_testExists("JBoss 5.1", ASTest.JBOSS_AS_51_HOME);
+	}
+
+	public void testAS60Exists() {
+		_testExists("JBoss 6.0", ASTest.JBOSS_AS_60_HOME);
+	}
+
+	public void testAS70Exists() {
+		_testExists("JBoss 7.0", ASTest.JBOSS_AS_70_HOME);
+	}
+
 	public void testASHomeExists() {
 		_testExists("Default JBoss Installation", ASTest.JBOSS_AS_HOME);
 	}
@@ -87,6 +106,14 @@ public class PreReqTest extends TestCase {
 		_testRuntime(IJBossToolingConstants.AS_51);
 	}
 
+	public void testRuntime60Found() {
+		_testRuntime(IJBossToolingConstants.AS_60);
+	}
+
+	public void testRuntime70Found() {
+		_testRuntime(IJBossToolingConstants.AS_70);
+	}
+
 	public void testServer32Found() {
 		_testServer(IJBossToolingConstants.SERVER_AS_32);
 	}
@@ -105,6 +132,13 @@ public class PreReqTest extends TestCase {
 
 	public void testServer51Found() {
 		_testServer(IJBossToolingConstants.SERVER_AS_51);
+	}
+
+	public void testServer60Found() {
+		_testServer(IJBossToolingConstants.SERVER_AS_60);
+	}
+	public void testServer70Found() {
+		_testServer(IJBossToolingConstants.SERVER_AS_70);
 	}
 
 
