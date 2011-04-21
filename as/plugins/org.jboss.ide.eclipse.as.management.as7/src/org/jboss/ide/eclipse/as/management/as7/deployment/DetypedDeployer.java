@@ -78,7 +78,7 @@ public class DetypedDeployer {
 			ModelNode request = new ModelNode();
 			request.get(OP).set(REMOVE);
 			request.get(ADDRESS).add(DEPLOYMENT, name);
-			ModelNode result = client.execute(request);
+			client.execute(request);
 		} catch (Exception e) {
 			throw new DeployerException(e);
 		} finally {
@@ -143,7 +143,7 @@ public class DetypedDeployer {
 	public static boolean isDeployed(String name, String host, int port) throws CancellationException, IOException {
 		ModelControllerClient client = ModelControllerClient.Factory.create(host, port);
 		try {
-			return JBossManagementUtil.isDeployed(name, client);
+			return AS7ManagerUtil.isDeployed(name, client);
 		} finally {
 			StreamUtils.safeClose(client);
 		}
@@ -151,12 +151,12 @@ public class DetypedDeployer {
 
 	public static List<String> getDeployments(String host, int port) throws UnknownHostException {
 		ModelControllerClient client = ModelControllerClient.Factory.create(host, port);
-		return JBossManagementUtil.getDeployments(client);
+		return AS7ManagerUtil.getDeployments(client);
 	}
 
 	private static void throwOnFailure(ModelNode result) throws DeployerException {
-		if (!JBossManagementUtil.isSuccess(result)) {
-			throw new DeployerException(JBossManagementUtil.getFailureDescription(result));
+		if (!AS7ManagerUtil.isSuccess(result)) {
+			throw new DeployerException(AS7ManagerUtil.getFailureDescription(result));
 		}
 	}
 

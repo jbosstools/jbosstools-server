@@ -33,8 +33,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
 import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
-import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager;
-import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager.DeploymentState;
+import org.jboss.ide.eclipse.as.management.as7.deployment.DeploymentState;
+import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -46,11 +46,11 @@ import org.junit.Test;
  */
 public class JBossManagementIntegrationTest {
 
-	private JBossManager manager;
+	private AS7Manager manager;
 
 	@Before
 	public void setUp() throws UnknownHostException {
-		this.manager = new JBossManager(JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
+		this.manager = new AS7Manager(JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
 	}
 
 	@After
@@ -135,7 +135,7 @@ public class JBossManagementIntegrationTest {
 			JBossManagementTestUtils.waitUntilFinished(manager.deploy(deploymentName, warFile));
 			DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(DeploymentState.ENABLEDSTATE));
+			assertThat(state, equalTo(DeploymentState.STARTED));
 		} finally {
 			JBossManagementTestUtils.quietlyUndeploy(deploymentName, manager);
 		}
@@ -149,7 +149,7 @@ public class JBossManagementIntegrationTest {
 			JBossManagementTestUtils.waitUntilFinished(manager.add(deploymentName, warFile));
 			DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(DeploymentState.DISABLEDSTATE));
+			assertThat(state, equalTo(DeploymentState.STOPPED));
 		} finally {
 			JBossManagementTestUtils.quietlyRemove(deploymentName, manager);
 		}

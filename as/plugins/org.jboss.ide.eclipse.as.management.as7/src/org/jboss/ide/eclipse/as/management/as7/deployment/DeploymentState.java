@@ -21,26 +21,42 @@
  */
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentManager;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7ManagementInterface;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7ManagementService;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
+
+import org.jboss.dmr.ModelNode;
 
 /**
- * @author Rob Stryker
+ * An enum that reflects the state of a deployment.
+ * 
+ * @author André Dietisheim
  */
-public class JBossManagementService implements IJBoss7ManagementService {
-
-	private IJBoss7DeploymentManager deploymentManager = null;
-	private IJBoss7ManagementInterface manager = null;
+public enum DeploymentState {
+	STARTED {
+		protected boolean matches(boolean enabled) {
+			return enabled == true;
+		}
+	},
+	STOPPED {
+		protected boolean matches(boolean enabled) {
+			return enabled == false;
+		}
+	};
 	
-	public IJBoss7DeploymentManager getDeploymentManager() {
-		if( deploymentManager == null )
-			deploymentManager = new JBossDeploymentManager();
-		return deploymentManager;
+	public static DeploymentState getForResultNode(ModelNode node) {
+		Boolean enabled = AS7ManagerUtil.getBooleanProperty(ENABLED, node);
+		if (enabled == null) {
+			return null;
+		}
+		
+		DeploymentState matchingState = null;
+		for(DeploymentState state : values()) {
+			if (state.matches(enabled)) {
+				matchingState = state;
+			}
+		}
+		return matchingState;
 	}
 
-	public IJBoss7ManagementInterface getManagementInterface() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	protected abstract boolean matches(boolean enabled);
+
 }

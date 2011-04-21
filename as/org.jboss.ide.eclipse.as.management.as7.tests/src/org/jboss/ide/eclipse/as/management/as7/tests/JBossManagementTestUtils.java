@@ -34,8 +34,8 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
-import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager;
-import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager.DeploymentPlanResult;
+import org.jboss.ide.eclipse.as.management.as7.deployment.DeploymentOperationResult;
+import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.osgi.framework.Bundle;
 
 /**
@@ -67,11 +67,11 @@ public class JBossManagementTestUtils {
 		return getResponse(name, host, port);
 	}
 
-	public static void quietlyUndeploy(File file, JBossManager manager) {
+	public static void quietlyUndeploy(File file, AS7Manager manager) {
 		quietlyUndeploy(file.getName(), manager);
 	}
 
-	public static void quietlyUndeploy(String name, JBossManager manager) {
+	public static void quietlyUndeploy(String name, AS7Manager manager) {
 		try {
 			// DetypedDeployer.undeploy(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.undeploy(name));
@@ -80,7 +80,7 @@ public class JBossManagementTestUtils {
 		}
 	}
 
-	public static void quietlyRemove(String name, JBossManager manager) {
+	public static void quietlyRemove(String name, AS7Manager manager) {
 		try {
 			//DetypedDeployer.remove(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.remove(name));
@@ -89,7 +89,7 @@ public class JBossManagementTestUtils {
 		}
 	}
 
-	public static void waitUntilFinished(DeploymentPlanResult result) throws DeployerException {
+	public static void waitUntilFinished(DeploymentOperationResult result) throws DeployerException {
 		result.getStatus(); // wait for operation to finish
 	}
 

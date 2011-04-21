@@ -48,7 +48,7 @@ import org.jboss.ide.eclipse.as.management.as7.internal.OperationFormatException
  * @author Alexey Loubyansky
  * @author André Dietisheim
  */
-public class JBossManagementUtil {
+public class AS7ManagerUtil {
 
 	public static boolean isSuccess(ModelNode operationResult) {
 		if (operationResult != null) {
