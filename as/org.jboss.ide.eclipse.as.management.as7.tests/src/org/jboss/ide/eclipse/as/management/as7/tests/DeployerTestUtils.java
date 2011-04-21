@@ -23,6 +23,7 @@ package org.jboss.ide.eclipse.as.management.as7.tests;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -39,10 +40,10 @@ import org.osgi.framework.Bundle;
  * @author André Dietisheim
  */
 public class DeployerTestUtils {
-	
+
 	public static final String GWT_HELLOWORLD_WAR = "gwt-helloworld.war";
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
-	
+
 	public static final String HOST = "localhost";
 	public static final int MGMT_PORT = 9999;
 	public static final int WEB_PORT = 8080;
@@ -51,7 +52,8 @@ public class DeployerTestUtils {
 	private static final String BUNDLE_ID = "org.jboss.ide.eclipse.as.management.as7.tests";
 
 	private static final int WEBAPP_RESPONSE_TIMEOUT = 10 * 1024;
-	
+	private static final long WAIT_DEPLOYED_TIMEOUT = 10 * 1024;
+
 	public static File getWarFile(String name) throws URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(BUNDLE_ID);
 		URL entryUrl = bundle.getEntry(WAR_FOLDER + name);
@@ -59,12 +61,21 @@ public class DeployerTestUtils {
 	}
 
 	public static String getWebappResponse(String name, String host, int port) throws IOException {
-		return getServerResponse(new URL(
-				MessageFormat.format(
-						"http://{0}:{1}/{2}", host, String.valueOf(port), name)));
+		long until = System.currentTimeMillis() + WAIT_DEPLOYED_TIMEOUT;
+		while (System.currentTimeMillis() < until) {
+			try {
+				return getServerResponse(new URL(
+						MessageFormat.format(
+								"http://{0}:{1}/{2}", host, String.valueOf(port), name)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+
+		}
+		return null;
 	}
 
-		public static String getServerResponse(URL url) throws IOException {
+	public static String getServerResponse(URL url) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
