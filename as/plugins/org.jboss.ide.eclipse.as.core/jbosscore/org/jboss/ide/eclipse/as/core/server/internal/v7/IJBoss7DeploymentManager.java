@@ -75,5 +75,16 @@ public interface IJBoss7DeploymentManager {
 	public Object syncUndeploy(String host, int port,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
 	
+	/**
+	 * Returns the state for a given deployment name on a given host and port.
+	 * 
+	 * @param host the host to query
+	 * @param port the port to contact it on
+	 * @param deploymentName the name of the deployment that shall be queried
+	 * 
+	 * @return the state of the deployment
+	 * @throws Exception
+	 */
+	public Object getDeploymentState(String host, int port, String deploymentName) throws Exception;
 
 }
