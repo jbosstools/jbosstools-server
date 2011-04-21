@@ -21,6 +21,8 @@
  */
 package org.jboss.ide.eclipse.as.management.as7.tests;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -32,9 +34,11 @@ import java.util.concurrent.ExecutionException;
 
 import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
 import org.jboss.ide.eclipse.as.management.as7.deployment.TypedDeployer;
-import org.jboss.ide.eclipse.as.management.as7.deployment.TypedDeployer.DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.deployment.TypedDeployer.DeploymentPlanResult;
+import org.jboss.ide.eclipse.as.management.as7.deployment.TypedDeployer.DeploymentState;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -49,21 +53,22 @@ public class TypedDeployerIntegrationTest {
 	public void setUp() throws UnknownHostException {
 		this.deployer = new TypedDeployer(DeployerTestUtils.HOST, DeployerTestUtils.MGMT_PORT);
 	}
-	
+
 	@After
 	public void tearDown() {
 		deployer.dispose();
 	}
-	
+
+	@Ignore
 	@Test
 	public void canDeploy() throws Exception {
 		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
 		try {
 			waitUntilFinished(deployer.deploy(warFile));
-			
+
 			String response = DeployerTestUtils.getWebappResponse(
 					"minimalistic", DeployerTestUtils.HOST, DeployerTestUtils.WEB_PORT);
-			assertTrue(response != null 
+			assertTrue(response != null
 					&& response.indexOf("minimalistic") >= 0);
 
 		} finally {
@@ -71,15 +76,16 @@ public class TypedDeployerIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void deployedWarIsResponding() throws Exception {
 		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
 		try {
 			waitUntilFinished(deployer.deploy(warFile));
-			
+
 			String response = DeployerTestUtils.getWebappResponse(
 					"minimalistic", DeployerTestUtils.HOST, DeployerTestUtils.WEB_PORT);
-			assertTrue(response != null 
+			assertTrue(response != null
 					&& response.indexOf("minimalistic") >= 0);
 
 		} finally {
@@ -87,6 +93,7 @@ public class TypedDeployerIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test(expected = DeployerException.class)
 	public void cannotDeployWarTwice() throws Exception {
 		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
@@ -98,11 +105,13 @@ public class TypedDeployerIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test(expected = DeployerException.class)
 	public void cannotUndeployNondeployed() throws DeployerException, InterruptedException, ExecutionException {
 		waitUntilFinished(deployer.undeploy("inexistant"));
 	}
 
+	@Ignore
 	@Test
 	public void canReplaceWar() throws Exception {
 		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
@@ -113,26 +122,53 @@ public class TypedDeployerIntegrationTest {
 			waitUntilFinished(deployer.replace(name, warFile2));
 			String response = DeployerTestUtils.getWebappResponse(
 					"minimalistic", DeployerTestUtils.HOST, DeployerTestUtils.WEB_PORT);
-			assertTrue(response != null 
+			assertTrue(response != null
 					&& response.indexOf("GWT") >= 0);
 		} finally {
 			quietlyUndeploy(name);
 		}
 	}
-	
+
 	@Test
-	public void canQueryDeploymentState() throws URISyntaxException, IOException, DeployerException {
+	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, DeployerException {
 		String deploymentName = "testDeployment";
 		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
 		try {
 			waitUntilFinished(deployer.deploy(deploymentName, warFile));
-			String state = deployer.getDeploymentState(deploymentName);
+			DeploymentState state = deployer.getDeploymentState(deploymentName);
 			assertNotNull(state);
+			assertThat(state, equalTo(DeploymentState.ENABLEDSTATE));
 		} finally {
 			quietlyUndeploy(deploymentName);
 		}
 	}
-	
+
+	@Test
+	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, DeployerException {
+		String deploymentName = "testDeployment";
+		File warFile = DeployerTestUtils.getWarFile(DeployerTestUtils.MINIMALISTIC_WAR);
+		try {
+			waitUntilFinished(deployer.deploy(deploymentName, warFile));
+			DeploymentState state = deployer.getDeploymentState(deploymentName);
+			assertNotNull(state);
+			assertThat(state, equalTo(DeploymentState.ENABLEDSTATE));
+		} finally {
+			quietlyUndeploy(deploymentName);
+		}
+	}
+
+	@Test(expected=DeployerException.class)
+	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, DeployerException {
+		String deploymentName = "testDeployment";
+		try {
+			DeploymentState state = deployer.getDeploymentState(deploymentName);
+			assertNotNull(state);
+			assertThat(state, equalTo(DeploymentState.ENABLEDSTATE));
+		} finally {
+			quietlyUndeploy(deploymentName);
+		}
+	}
+
 	private void quietlyUndeploy(String name) {
 		try {
 			waitUntilFinished(deployer.undeploy(name));
@@ -141,12 +177,12 @@ public class TypedDeployerIntegrationTest {
 			// ignore
 		}
 	}
-	
+
 	private void quietlyUndeploy(File file) {
 		quietlyUndeploy(file.getName());
 	}
-	
-	private void waitUntilFinished(DeploymentResult result) throws DeployerException {
+
+	private void waitUntilFinished(DeploymentPlanResult result) throws DeployerException {
 		result.getStatus(); // wait for operation to finish
 	}
 }

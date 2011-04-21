@@ -37,6 +37,7 @@ import java.util.List;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.Operation;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 import org.jboss.ide.eclipse.as.management.as7.internal.DefaultOperationRequestBuilder;
 import org.jboss.ide.eclipse.as.management.as7.internal.OperationFormatException;
@@ -131,6 +132,22 @@ public class JBossManagementUtil {
 		return Collections.emptyList();
 	}
 
+	public static Boolean getBooleanProperty(String propertyName, ModelNode node) {
+		if (node == null) {
+			return null;
+		}
+		ModelNode valueNode = node.get(propertyName);
+		if (valueNode == null) {
+			return null;
+		}
+		String value = valueNode.toString();
+		if (value == null
+				|| valueNode.getType() != ModelType.BOOLEAN) {
+			return null;
+		}
+		return Boolean.valueOf(value);
+	}
+
 	public static ModelNode execute(Operation operation, ModelControllerClient client) throws DeployerException {
 		try {
 			ModelNode result = client.execute(operation);
@@ -142,7 +159,7 @@ public class JBossManagementUtil {
 				throw new DeployerException(result.get(FAILURE_DESCRIPTION).toString());
 			}
 			else {
-				throw new DeployerException("Operation outcome is "	+ result.get(OUTCOME).asString());
+				throw new DeployerException("Operation outcome is " + result.get(OUTCOME).asString());
 			}
 		} catch (IOException e) {
 			throw new DeployerException(e);

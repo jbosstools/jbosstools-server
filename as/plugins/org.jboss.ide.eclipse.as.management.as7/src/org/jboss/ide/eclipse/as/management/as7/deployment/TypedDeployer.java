@@ -22,9 +22,12 @@
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADDRESS;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.NAME;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.FAILURE_DESCRIPTION;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +40,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.jboss.as.controller.client.ModelControllerClient;
-import org.jboss.as.controller.client.OperationBuilder;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
@@ -61,33 +63,33 @@ public class TypedDeployer {
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
 
-	public DeploymentResult undeploySync(String name, IProgressMonitor monitor) throws DeployerException {
-		DeploymentResult result = undeploy(name);
+	public DeploymentPlanResult undeploySync(String name, IProgressMonitor monitor) throws DeployerException {
+		DeploymentPlanResult result = undeploy(name);
 		result.getStatus();
 		return result;
 	}
 
-	public DeploymentResult deploySync(String name, File file, IProgressMonitor monitor) throws DeployerException {
-		DeploymentResult result = deploy(name, file);
+	public DeploymentPlanResult deploySync(String name, File file, IProgressMonitor monitor) throws DeployerException {
+		DeploymentPlanResult result = deploy(name, file);
 		result.getStatus();
 		return result;
 	}
 
-	public DeploymentResult undeploy(String name) throws DeployerException {
+	public DeploymentPlanResult undeploy(String name) throws DeployerException {
 		try {
 			DeploymentPlanBuilder builder = manager.newDeploymentPlan();
 			builder = builder.undeploy(name).andRemoveUndeployed();
-			return new DeploymentResult(builder.getLastAction(), manager.execute(builder.build()));
+			return new DeploymentPlanResult(builder.getLastAction(), manager.execute(builder.build()));
 		} catch (Exception e) {
 			throw new DeployerException(e);
 		}
 	}
 
-	public DeploymentResult deploy(File file) throws DeployerException {
+	public DeploymentPlanResult deploy(File file) throws DeployerException {
 		return deploy(file.getName(), file);
 	}
 
-	public DeploymentResult deploy(String name, File file) throws DeployerException {
+	public DeploymentPlanResult deploy(String name, File file) throws DeployerException {
 		try {
 			return execute(manager.newDeploymentPlan().add(name, file).andDeploy());
 		} catch (IOException e) {
@@ -95,11 +97,11 @@ public class TypedDeployer {
 		}
 	}
 
-	public DeploymentResult replace(File file) throws DeployerException {
+	public DeploymentPlanResult replace(File file) throws DeployerException {
 		return replace(file.getName(), file);
 	}
 
-	public DeploymentResult replace(String name, File file) throws DeployerException {
+	public DeploymentPlanResult replace(String name, File file) throws DeployerException {
 		try {
 			return execute(manager.newDeploymentPlan().replace(name, file));
 		} catch (IOException e) {
@@ -107,36 +109,48 @@ public class TypedDeployer {
 		}
 	}
 
-	private DeploymentResult execute(DeploymentPlanBuilder builder) throws DeployerException {
-		try {
-			DeploymentAction action = builder.getLastAction();
-			Future<ServerDeploymentPlanResult> planResult = manager.execute(builder.build());
-			return new DeploymentResult(action, planResult);
-		} catch (Exception e) {
-			throw new DeployerException(e);
-		}
-	}
-
-	public String getServerName() throws DeployerException {
+	public DeploymentState getDeploymentState(String name) throws DeployerException {
 		ModelNode request = new ModelNode();
-		request.get(OP).set(READ_ATTRIBUTE_OPERATION);
-		request.get(ADDRESS).set(ADDRESS);
-		request.get(NAME).set(NAME);
+		request.get(OP).set(READ_RESOURCE_OPERATION);
+		request.get(ADDRESS).add(DEPLOYMENT, name);
 
-		ModelNode response = JBossManagementUtil.execute(OperationBuilder.Factory.create(request).build(), client);
-		return response.asString();
+		ModelNode result = execute(request);
+		return DeploymentState.getForResultNode(result);
 	}
 
 	public void dispose() {
 		StreamUtils.safeClose(client);
 	}
+	
+	private ModelNode execute(ModelNode node) throws DeployerException {
+		try {
+			ModelNode response = client.execute(node);
+			if (!JBossManagementUtil.isSuccess(response)) {
+				throw new DeployerException(
+						MessageFormat.format("Could not execute {0} for {1}. Failure was {2}.", node.get(OP), node.get(ADDRESS), response.get(FAILURE_DESCRIPTION)));
+			} 
+			return response.get(RESULT);
+		} catch (Exception e) {
+			throw new DeployerException(e);
+		}
+	}
 
-	public static class DeploymentResult {
+	private DeploymentPlanResult execute(DeploymentPlanBuilder builder) throws DeployerException {
+		try {
+			DeploymentAction action = builder.getLastAction();
+			Future<ServerDeploymentPlanResult> planResult = manager.execute(builder.build());
+			return new DeploymentPlanResult(action, planResult);
+		} catch (Exception e) {
+			throw new DeployerException(e);
+		}
+	}
+
+	public static class DeploymentPlanResult {
 
 		private Future<ServerDeploymentPlanResult> planResult;
 		private DeploymentAction action;
 
-		public DeploymentResult(DeploymentAction action, Future<ServerDeploymentPlanResult> planResult) {
+		public DeploymentPlanResult(DeploymentAction action, Future<ServerDeploymentPlanResult> planResult) {
 			Assert.isNotNull(action);
 			this.action = action;
 			Assert.isNotNull(planResult);
@@ -190,4 +204,34 @@ public class TypedDeployer {
 		}
 	}
 
+	public enum DeploymentState {
+		ENABLEDSTATE {
+			protected boolean matches(boolean enabled) {
+				return enabled == true;
+			}
+		},
+		STOPPEDSTATE {
+			protected boolean matches(boolean enabled) {
+				return enabled == false;
+			}
+		};
+		
+		public static DeploymentState getForResultNode(ModelNode resultNode) {
+			Boolean enabled = JBossManagementUtil.getBooleanProperty(ENABLED, resultNode);
+			if (enabled == null) {
+				return null;
+			}
+			
+			DeploymentState matchingState = null;
+			for(DeploymentState state : values()) {
+				if (state.matches(enabled)) {
+					matchingState = state;
+				}
+			}
+			return matchingState;
+		}
+
+		protected abstract boolean matches(boolean enabled);
+
+	}
 }
