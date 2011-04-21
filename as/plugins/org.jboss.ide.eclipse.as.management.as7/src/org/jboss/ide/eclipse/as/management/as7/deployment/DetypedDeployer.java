@@ -21,6 +21,15 @@
  */
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADD;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.INPUT_STREAM_INDEX;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.REMOVE;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.UNDEPLOY;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,16 +55,30 @@ public class DetypedDeployer {
 			client = ModelControllerClient.Factory.create(host, port);
 			// undeploy
 			ModelNode request = new ModelNode();
-			request.get("operation").set("undeploy");
-			request.get("address").add("deployment", name);
+			request.get(OP).set(UNDEPLOY);
+			request.get(ADDRESS).add(DEPLOYMENT, name);
 			ModelNode result = client.execute(request);
 			throwOnFailure(result);
 
+			remove(name, host, port);
+			
+		} catch (Exception e) {
+			throw new DeployerException(e);
+		} finally {
+			StreamUtils.safeClose(client);
+		}
+	}
+
+	public static void remove(String name, String host, int port) throws DeployerException {
+		ModelControllerClient client = null;
+		try {
+			client = ModelControllerClient.Factory.create(host, port);
+
 			// remove
-			request = new ModelNode();
-			request.get("operation").set("remove");
-			request.get("address").add("deployment", name);
-			result = client.execute(request);
+			ModelNode request = new ModelNode();
+			request.get(OP).set(REMOVE);
+			request.get(ADDRESS).add(DEPLOYMENT, name);
+			ModelNode result = client.execute(request);
 		} catch (Exception e) {
 			throw new DeployerException(e);
 		} finally {
@@ -73,14 +96,14 @@ public class DetypedDeployer {
 			client = ModelControllerClient.Factory.create(host, port);
 
 			ModelNode request = new ModelNode();
-			request.get("operation").set("add");
-			request.get("address").add("deployment", name);
-			request.get("enabled").set(true);
+			request.get(OP).set(ADD);
+			request.get(ADDRESS).add(DEPLOYMENT, name);
+			request.get(ENABLED).set(true);
 
 			OperationBuilder builder = OperationBuilder.Factory.create(request);
 			builder.addInputStream(new BufferedInputStream(new FileInputStream(file)));
 			Operation operation = builder.build();
-			request.get("input-stream-index").set(0);
+			request.get(INPUT_STREAM_INDEX).set(0);
 
 			ModelNode result = client.execute(operation);
 			System.out.println(result);

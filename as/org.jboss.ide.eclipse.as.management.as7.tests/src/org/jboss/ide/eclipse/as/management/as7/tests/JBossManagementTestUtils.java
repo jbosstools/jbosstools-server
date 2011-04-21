@@ -30,16 +30,18 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
+import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager;
+import org.jboss.ide.eclipse.as.management.as7.deployment.JBossManager.DeploymentPlanResult;
 import org.osgi.framework.Bundle;
 
 /**
  * @author André Dietisheim
  */
-public class DeployerTestUtils {
+public class JBossManagementTestUtils {
 
 	public static final String GWT_HELLOWORLD_WAR = "gwt-helloworld.war";
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
@@ -51,8 +53,8 @@ public class DeployerTestUtils {
 	private static final String WAR_FOLDER = "/wars/";
 	private static final String BUNDLE_ID = "org.jboss.ide.eclipse.as.management.as7.tests";
 
-	private static final int WEBAPP_RESPONSE_TIMEOUT = 10 * 1024;
-	private static final long WAIT_DEPLOYED_TIMEOUT = 10 * 1024;
+	private static final int RESPONSE_TIMEOUT = 10 * 1024;
+	private static final long WAIT_TIMEOUT = 10 * 1024;
 
 	public static File getWarFile(String name) throws URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(BUNDLE_ID);
@@ -60,31 +62,73 @@ public class DeployerTestUtils {
 		return new File(FileLocator.resolve(entryUrl).toURI());
 	}
 
-	public static String getWebappResponse(String name, String host, int port) throws IOException {
-		long until = System.currentTimeMillis() + WAIT_DEPLOYED_TIMEOUT;
-		while (System.currentTimeMillis() < until) {
-			try {
-				return getServerResponse(new URL(
-						MessageFormat.format(
-								"http://{0}:{1}/{2}", host, String.valueOf(port), name)));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-		return null;
+	public static String waitForRespose(String name, String host, int port) throws IOException {
+		waitForResponseCode(200, name, host, port);
+		return getResponse(name, host, port);
 	}
 
-	public static String getServerResponse(URL url) throws IOException {
+	public static void quietlyUndeploy(File file, JBossManager manager) {
+		quietlyUndeploy(file.getName(), manager);
+	}
+
+	public static void quietlyUndeploy(String name, JBossManager manager) {
+		try {
+			// DetypedDeployer.undeploy(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
+			waitUntilFinished(manager.undeploy(name));
+		} catch (Exception e) {
+			// ignore
+		}
+	}
+
+	public static void quietlyRemove(String name, JBossManager manager) {
+		try {
+			//DetypedDeployer.remove(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
+			waitUntilFinished(manager.remove(name));
+		} catch (Exception e) {
+			// ignore
+		}
+	}
+
+	public static void waitUntilFinished(DeploymentPlanResult result) throws DeployerException {
+		result.getStatus(); // wait for operation to finish
+	}
+
+	
+	public static String getResponse(String name, String host, int port) throws IOException {
+		URL url = new URL("http://" + host + ":" + port + "/" + name);
+		HttpURLConnection connection = connect(url);
+		return toString(new BufferedInputStream(connection.getInputStream()));
+	}
+
+	public static HttpURLConnection waitForResponseCode(int code, String name, String host, int port)
+			throws IOException {
+		URL url = new URL("http://" + host + ":" + port + "/" + name);
+		long until = System.currentTimeMillis() + WAIT_TIMEOUT;
+		while (System.currentTimeMillis() < until) {
+			HttpURLConnection connection = connect(url);
+			try {
+				if (connection.getResponseCode() == code) {
+					return connection;
+				}
+			} catch (FileNotFoundException e) {
+				if (code == 404) {
+					return connection;
+				}
+				throw e;
+			}
+		}
+		throw new RuntimeException("wait on url " + url + " for response code " + code + " timed out.");
+	}
+
+	private static HttpURLConnection connect(URL url) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
 		connection.setAllowUserInteraction(false);
-		connection.setConnectTimeout(WEBAPP_RESPONSE_TIMEOUT);
+		connection.setConnectTimeout(RESPONSE_TIMEOUT);
 		connection.setInstanceFollowRedirects(true);
 		connection.setDoOutput(false);
-		BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-		return toString(in);
+		return connection;
 	}
 
 	public static String toString(InputStream in) throws IOException {

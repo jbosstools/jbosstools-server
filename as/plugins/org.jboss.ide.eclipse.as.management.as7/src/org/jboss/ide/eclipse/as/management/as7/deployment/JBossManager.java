@@ -50,15 +50,14 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 /**
- * 
  * @author André Dietisheim
  */
-public class TypedDeployer {
+public class JBossManager {
 
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
 
-	public TypedDeployer(String host, int port) throws UnknownHostException {
+	public JBossManager(String host, int port) throws UnknownHostException {
 		this.client = ModelControllerClient.Factory.create(host, port);
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
@@ -85,8 +84,26 @@ public class TypedDeployer {
 		}
 	}
 
+	public DeploymentPlanResult remove(String name) throws DeployerException {
+		try {
+			DeploymentPlanBuilder builder = manager.newDeploymentPlan();
+			builder = builder.remove(name);
+			return new DeploymentPlanResult(builder.getLastAction(), manager.execute(builder.build()));
+		} catch (Exception e) {
+			throw new DeployerException(e);
+		}
+	}
+
 	public DeploymentPlanResult deploy(File file) throws DeployerException {
 		return deploy(file.getName(), file);
+	}
+
+	public DeploymentPlanResult add(String name, File file) throws DeployerException {
+		try {
+			return execute(manager.newDeploymentPlan().add(name, file));
+		} catch (IOException e) {
+			throw new DeployerException(e);
+		}
 	}
 
 	public DeploymentPlanResult deploy(String name, File file) throws DeployerException {
@@ -113,7 +130,6 @@ public class TypedDeployer {
 		ModelNode request = new ModelNode();
 		request.get(OP).set(READ_RESOURCE_OPERATION);
 		request.get(ADDRESS).add(DEPLOYMENT, name);
-
 		ModelNode result = execute(request);
 		return DeploymentState.getForResultNode(result);
 	}
@@ -210,7 +226,7 @@ public class TypedDeployer {
 				return enabled == true;
 			}
 		},
-		STOPPEDSTATE {
+		DISABLEDSTATE {
 			protected boolean matches(boolean enabled) {
 				return enabled == false;
 			}
