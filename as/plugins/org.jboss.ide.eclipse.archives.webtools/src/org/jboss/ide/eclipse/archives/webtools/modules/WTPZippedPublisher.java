@@ -41,8 +41,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		IModule lastMod = (module == null || module.length == 0 ) ? null : module[module.length -1];
 		if( getPublishMethod().equals(method) && lastMod == null)
 			return true;
-		return getPublishMethod().equals(method) 
-			&& ModuleCoreNature.isFlexibleProject(lastMod.getProject())
+		return ModuleCoreNature.isFlexibleProject(lastMod.getProject())
 			&& ds != null && ds.zipsWTPDeployments();
 	}
 	

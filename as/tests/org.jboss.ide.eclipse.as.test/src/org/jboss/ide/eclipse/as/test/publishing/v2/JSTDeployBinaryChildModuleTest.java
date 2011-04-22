@@ -50,14 +50,14 @@ public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester 
 	
 	public void testStandardBinaryChildDeploymentMockPublishMethod() throws CoreException, IOException {
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		MockPublishMethod.HANDLER.reset();
+		MockPublishMethod.reset();
 		testJBoss7BinaryChildDeployment(8);
 	}
 
 	public void testJBoss7BinaryChildDeployment() throws CoreException, IOException {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		MockPublishMethod.HANDLER.reset();
+		MockPublishMethod.reset();
 		testJBoss7BinaryChildDeployment(9);
 	}
 
@@ -66,8 +66,8 @@ public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester 
 		IModule[] module = new IModule[] { mod };
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(count,MockPublishMethod.HANDLER.getChanged().length);
-		MockPublishMethod.HANDLER.reset();
+		assertEquals(count,MockPublishMethod.getChanged().length);
+		MockPublishMethod.reset();
 	}
 
 }

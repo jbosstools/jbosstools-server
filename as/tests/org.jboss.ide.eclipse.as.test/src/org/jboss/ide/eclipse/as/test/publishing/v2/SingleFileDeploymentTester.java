@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.test.publishing.v2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -12,7 +13,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.tools.test.util.JobUtils;
 
 public class SingleFileDeploymentTester extends JSTDeploymentTester {
+
 	public void testSingleFile() throws CoreException, IOException {
 		final String filename = "test.xml";
 		IResource file = createFile(filename, "<test>done</test>");
@@ -64,18 +65,6 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		assertEquals(IOUtil.countAllResources(deployRoot.toFile()), 1);
 	}
 	
-	protected void verifyPublisher(IModule module, Class c) {
-		IModule[] mod = new IModule[] { module };
-		IJBossServerPublisher publisher = ExtensionManager
-			.getDefault().getPublisher(server, mod, "local");
-		assertTrue(publisher.getClass().equals(c));
-	}
-	
-	protected IFile createFile(String filename, String contents) throws CoreException, IOException  {
-		IFile resource = project.getFile(filename);
-		IOUtil.setContents(resource, contents);
-		return resource;
-	}
 	
 	public void testSingleFolder() throws CoreException, IOException {
 		IPath moduleDeployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
@@ -167,4 +156,112 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 			server = ServerRuntimeUtils.setZipped(server, false);
 		}
 	}
+
+	
+	public void testSingleFileAS7() throws CoreException, IOException {
+		server = ServerRuntimeUtils.createMockJBoss7Server();
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		MockPublishMethod.reset();
+
+		final String filename = "test.xml";
+		IResource file = createFile(filename, "<test>done</test>");
+		IModule[] mods = SingleDeployableFactory.getFactory().getModules();
+		assertEquals(mods.length, 0);
+		SingleDeployableFactory.makeDeployable(file);
+		mods = SingleDeployableFactory.getFactory().getModules();
+		assertEquals(mods.length, 1);
+		verifyPublisher(mods[0], SingleFilePublisher.class);
+		server = ServerRuntimeUtils.addModule(server, mods[0]);
+		ArrayList<IPath> changed2 = MockPublishMethod.changed;
+		ArrayList<IPath> removed2 = MockPublishMethod.removed;
+
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 0);
+		MockPublishMethod.reset();
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		assertEquals(changed2.size(), 2); // Creating blah.jar and blah.jar.dodeploy
+		assertEquals(removed2.size(), 1); // TODO find out why its "removing" the empty string
+		MockPublishMethod.reset();
+		
+		IOUtil.setContents(project.getFile(filename), "2");
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		assertEquals(changed2.size(), 2);
+		assertEquals(removed2.size(), 0);
+		MockPublishMethod.reset();
+
+		server = ServerRuntimeUtils.removeModule(server, mods[0]);
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 0);
+		MockPublishMethod.reset();
+		
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 1);
+		MockPublishMethod.reset();
+	}
+
+	public void testSingleFolderAS7() throws CoreException, IOException {
+		IPath moduleDeployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
+		final String folderName = "test";
+		moduleDeployRoot.toFile().mkdirs();
+		IModule[] mods = singleFolderCreateModules(folderName);
+		singleFolderPublishAndVerifyAS7(moduleDeployRoot, folderName, mods);
+	}
+
+	private void singleFolderPublishAndVerifyAS7(IPath moduleDeployRoot, String folderName, IModule[] mods) throws CoreException, IOException {
+		server = ServerRuntimeUtils.createMockJBoss7Server();
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		MockPublishMethod.reset();
+
+		ArrayList<IPath> changed2 = MockPublishMethod.changed;
+		ArrayList<IPath> removed2 = MockPublishMethod.removed;
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 0);
+
+		server = ServerRuntimeUtils.addModule(server, mods[0]);
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 0);
+		ServerRuntimeUtils.publish(server);
+		assertEquals(changed2.size(), 4);
+		assertEquals(removed2.size(), 1);
+		MockPublishMethod.reset();
+		
+		IFolder folder = project.getFolder(folderName);
+		IOUtil.setContents(folder.getFile("3.txt"), "3a");
+		ServerRuntimeUtils.publish(server);
+		assertEquals(changed2.size(), 2);
+		assertEquals(removed2.size(), 0);
+		MockPublishMethod.reset();
+		
+		server = ServerRuntimeUtils.removeModule(server, mods[0]);
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 0);
+		MockPublishMethod.reset();
+		
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		assertEquals(changed2.size(), 0);
+		assertEquals(removed2.size(), 1);
+		MockPublishMethod.reset();
+
+	}
+
+	
+	protected void verifyPublisher(IModule module, Class c) {
+		IModule[] mod = new IModule[] { module };
+		IJBossServerPublisher publisher = ExtensionManager
+			.getDefault().getPublisher(server, mod, "local");
+		assertTrue(publisher.getClass().equals(c));
+	}
+	
+	protected IFile createFile(String filename, String contents) throws CoreException, IOException  {
+		IFile resource = project.getFile(filename);
+		IOUtil.setContents(resource, contents);
+		return resource;
+	}
+	
+
 }

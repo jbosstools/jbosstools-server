@@ -102,7 +102,8 @@ public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 
 	public void testZippedDeploymentMock() throws CoreException, IOException {
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		MockPublishMethod.HANDLER.reset();
+		setZipFlag();
+		MockPublishMethod.reset();
 		IModule mod = findModule();
 		testZippedDeploymentMock(mod,1,1);
 	}
@@ -112,20 +113,25 @@ public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 		// a zipped file is done being transfered or not
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		MockPublishMethod.HANDLER.reset();
+		setZipFlag();
+		MockPublishMethod.reset();
 		IModule mod = findModule();
-		testZippedDeploymentMock(mod,1,1);
+		testZippedDeploymentMock(mod,2,1);
 	}
 	
 	private void testZippedDeploymentMock(IModule mod, int pubCount, int removeCount) throws IOException, CoreException {
+		MockPublishMethod.reset();
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		int changed = MockPublishMethod.HANDLER.getChanged().length;
-		MockPublishMethod.HANDLER.reset();
+		int changed = MockPublishMethod.getChanged().length;
+		int deleted = MockPublishMethod.getRemoved().length;
+		assertEquals(changed, pubCount);
+		MockPublishMethod.reset();
 		
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		changed = MockPublishMethod.HANDLER.getRemoved().length;
-		int x = 1;
+		deleted = MockPublishMethod.getRemoved().length;
+		assertEquals(deleted, removeCount);
+		MockPublishMethod.reset();
 	}
 }

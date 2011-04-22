@@ -57,7 +57,9 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		this.behaviour = behaviour;
 		loadRemoteDeploymentDetails();
 		ensureConnection(monitor);
-		if( getServer().getServerState() == IServer.STATE_STARTED ) {
+
+		JBossServerBehavior b = (JBossServerBehavior) behaviour.getServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
+		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			stopDeploymentScanner();
 		}
 		super.publishStart(behaviour, monitor);
@@ -65,7 +67,8 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	public int publishFinish(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
-		if( getServer().getServerState() == IServer.STATE_STARTED ) {
+		JBossServerBehavior b = (JBossServerBehavior) behaviour.getServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
+		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			startDeploymentScanner();
 		}
 		return super.publishFinish(behaviour, monitor);

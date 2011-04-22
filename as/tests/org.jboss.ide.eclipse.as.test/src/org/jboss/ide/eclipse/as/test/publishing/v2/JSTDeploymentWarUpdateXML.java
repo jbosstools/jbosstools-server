@@ -1,9 +1,6 @@
 package org.jboss.ide.eclipse.as.test.publishing.v2;
 
-import java.io.File;
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -15,16 +12,11 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.publishers.JstPublisher;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.ide.eclipse.as.test.util.IOUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
-import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 
 public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
@@ -74,19 +66,20 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	public void testWarUpdateMockPublishMethodJBoss7() throws CoreException, IOException {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		testMockPublishMethod(8,1,"newModule.war.isdeployed");
+		testMockPublishMethod(8,1,"newModule.war" + JBoss7JSTPublisher.DEPLOYED);
 	}
 	
 	private void testMockPublishMethod(int initial, int remove, String removedFile) throws CoreException, IOException {
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(initial, MockPublishMethod.HANDLER.getChanged().length);
-		MockPublishMethod.HANDLER.reset();
+		assertEquals(initial, MockPublishMethod.getChanged().length);
+		MockPublishMethod.reset();
 		
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(remove, MockPublishMethod.HANDLER.getRemoved().length);
-		assertEquals(removedFile, MockPublishMethod.HANDLER.getRemoved()[0].toString());
+		assertEquals(remove, MockPublishMethod.getRemoved().length);
+		assertEquals(removedFile, MockPublishMethod.getRemoved()[0].toString());
+		MockPublishMethod.reset();
 	}
 }

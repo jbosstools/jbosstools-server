@@ -34,7 +34,9 @@ import org.jboss.ide.eclipse.as.test.publishing.JBIDE2512bTest;
 import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
+import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockDeploymentBehaviour;
+import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 
@@ -55,6 +57,8 @@ public class ASTestSuite extends TestSuite {
         suite.addTestSuite(SingleFileDeploymentTester.class);
         suite.addTestSuite(JBossServerAPITest.class);
         suite.addTestSuite(MockDeploymentBehaviour.class);
+        suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
+        suite.addTestSuite(MockJSTPublisherTest.class);
         return suite; 
    }
 

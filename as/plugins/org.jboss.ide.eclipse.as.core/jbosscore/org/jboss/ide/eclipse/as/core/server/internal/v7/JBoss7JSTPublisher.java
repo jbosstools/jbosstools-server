@@ -63,13 +63,20 @@ public class JBoss7JSTPublisher extends AbstractJSTPublisher {
 		// jboss-7 specific
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+			if( JBoss7Server.supportsJBoss7MarkerDeployment(server) )
+				JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+			else 
+				super.publishModule(method, server, module, publishType, delta, monitor); 
 		} else {
 			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
-			if( publishType == IJBossServerPublisher.FULL_PUBLISH && module.length == 1) {
-				// Only mark a doDeploy file for the root module, but this must be delayed, 
-				// becuase we don't know how many children modules will get published here (SUCK)
-				JBoss7JSTPublisher.markDeployed(method, ds, module, monitor);
+			if( JBoss7Server.supportsJBoss7MarkerDeployment(server) ) {
+				if( module.length == 1 && 
+						publishType == IJBossServerPublisher.FULL_PUBLISH || 
+						publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+					// Only mark a doDeploy file for the root module, but this must be delayed, 
+					// becuase we don't know how many children modules will get published here (SUCK)
+					JBoss7JSTPublisher.markDeployed(method, ds, module, monitor);
+				}
 			}
 			return s;
 		}

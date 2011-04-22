@@ -221,6 +221,9 @@ public class ExtensionManager {
 			}
 			return publisher;
 		}
+		public String toString() {
+			return element.getAttribute("class"); //$NON-NLS-1$
+		}
 	}
 	
 	private ServerPublishMethodType[] publishMethodTypes;

@@ -109,7 +109,7 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 			if( !result.isOK() ) {
 				monitor.done();
 			} else {
-				result = remoteFullPublish(sourcePath, destFolder, name, 
+				result = remoteFullPublish(sourcePath, destFolder.removeLastSegments(1), name, 
 						AbstractServerToolsPublisher.getSubMon(monitor, 150));
 			}
 		}
@@ -163,7 +163,8 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 	private IStatus removeRemoteDeploymentFolder(IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) throws SystemMessageException, CoreException {
 		// Now delete the file from RSE
-		method.getCallbackHandler(destFolder, server).deleteResource(new Path(name), monitor);
+		// TODO *** FIX THIS IT IS NOT LOGGING ERRORS
+		IStatus[] tmp = method.getCallbackHandler(destFolder, server).deleteResource(new Path(name), monitor);
 		return Status.OK_STATUS;
 	}
 }

@@ -17,11 +17,12 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 public class MockPublishMethod extends AbstractPublishMethod {
 
 	public static final String PUBLISH_METHOD_ID = "mock";
-	public static final MockCopyCallbackHandler HANDLER = new MockCopyCallbackHandler();
-	
+	public static ArrayList<IPath> changed = new ArrayList<IPath>();
+	public static ArrayList<IPath> removed = new ArrayList<IPath>();
+
 	public IPublishCopyCallbackHandler getCallbackHandler(IPath path,
 			IServer server) {
-		return HANDLER;
+		return new MockCopyCallbackHandler(path);
 	}
 
 	public String getPublishDefaultRootFolder(IServer server) {
@@ -31,35 +32,38 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public String getPublishMethodId() {
 		return PUBLISH_METHOD_ID;
 	}
+	public static void reset() {
+		changed.clear();
+		removed.clear();
+	}
+	public static IPath[] getRemoved() {
+		return (IPath[]) removed.toArray(new IPath[removed.size()]);
+	}
 
-	public static class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
-		public ArrayList<IPath> changed = new ArrayList<IPath>();
-		public ArrayList<IPath> removed = new ArrayList<IPath>();
-		
-		public void reset() {
-			changed.clear();
-			removed.clear();
+	public static IPath[] getChanged() {
+		return (IPath[]) changed.toArray(new IPath[changed.size()]);
+	}
+
+
+	public class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
+		private IPath root;
+		public MockCopyCallbackHandler(IPath root) {
+			this.root = root;
 		}
 		
-		public IPath[] getRemoved() {
-			return (IPath[]) removed.toArray(new IPath[removed.size()]);
-		}
-
-		public IPath[] getChanged() {
-			return (IPath[]) changed.toArray(new IPath[changed.size()]);
-		}
-
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
 				throws CoreException {
-			if( !removed.contains(path.makeRelative()))
-				removed.add(path.makeRelative());
+			IPath path2 = root.append(path);
+			if( !removed.contains(path2.makeRelative()))
+				removed.add(path2.makeRelative());
 			return new IStatus[]{};
 		}
 
 		public IStatus[] makeDirectoryIfRequired(IPath dir,
 				IProgressMonitor monitor) throws CoreException {
-			if( !changed.contains(dir.makeRelative()))
-				changed.add(dir.makeRelative());
+			IPath path2 = root.append(dir);
+			if( !changed.contains(path2.makeRelative()))
+				changed.add(path2.makeRelative());
 			return new IStatus[]{};
 		}
 
@@ -71,14 +75,16 @@ public class MockPublishMethod extends AbstractPublishMethod {
 				IProgressMonitor monitor) throws CoreException {
 			File file = PublishUtil.getFile(mf);
 			shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
-			if( !changed.contains(path.makeRelative()))
-				changed.add(path.makeRelative());
+			IPath path2 = root.append(path);
+			if( !changed.contains(path2.makeRelative()))
+				changed.add(path2.makeRelative());
 			return new IStatus[]{};
 		}
 		
 		public IStatus[] touchResource(IPath path) {
-			if( !changed.contains(path.makeRelative()))
-				changed.add(path.makeRelative());
+			IPath path2 = root.append(path);
+			if( !changed.contains(path2.makeRelative()))
+				changed.add(path2.makeRelative());
 			return new IStatus[]{};
 		}
 	}

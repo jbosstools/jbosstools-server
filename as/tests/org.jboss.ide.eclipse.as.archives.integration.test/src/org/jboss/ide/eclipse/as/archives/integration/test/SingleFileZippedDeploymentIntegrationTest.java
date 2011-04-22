@@ -15,11 +15,13 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
+import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
+import org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
+import org.jboss.tools.test.util.JobUtils;
 
-public class SingleFileZippedDeploymentIntegrationTest extends SingleFileDeploymentTester {
+public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTester {
 	public void testSingleFolderZipped() throws CoreException, IOException {
 		server = ServerRuntimeUtils.setZipped(server, true);
 		try {
@@ -28,20 +30,69 @@ public class SingleFileZippedDeploymentIntegrationTest extends SingleFileDeploym
 			server = ServerRuntimeUtils.setZipped(server, false);
 		}
 	}
-	public void singleFolderZippedInternal2() throws CoreException, IOException {
-		// create proj and files
+	
+	public void testSingleFolderZippedForAS7() throws CoreException, IOException {
+		server = ServerRuntimeUtils.createMockJBoss7Server();
+		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		server = ServerRuntimeUtils.setZipped(server, true);
+
 		final String folderName = "test";
 		IFolder folder = project.getFolder(folderName);
+		createFolder(folder);
+		
+		SingleDeployableFactory.makeDeployable(folder);
+		IModule[] mods = SingleDeployableFactory.getFactory().getModules();
+		assertEquals(mods.length, 1);
+		server = ServerRuntimeUtils.addModule(server, mods[0]);
+		ServerRuntimeUtils.publish(server);
+		int ch = MockPublishMethod.getChanged().length;
+		int rm = MockPublishMethod.getRemoved().length;
+		assertEquals(2,ch);
+		assertEquals(1,rm);
+		MockPublishMethod.reset();
+		
+		// make workspace change, repeat
+		IOUtil.setContents(folder.getFile("3.txt"), "3a");
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		Object o1 = MockPublishMethod.getChanged();
+		Object o2 = MockPublishMethod.getRemoved();
+		
+		ch = MockPublishMethod.getChanged().length;
+		rm = MockPublishMethod.getRemoved().length;
+		assertEquals(2,ch);
+		assertEquals(1,rm);
+		MockPublishMethod.reset();
+		
+		server = ServerRuntimeUtils.removeModule(server, mods[0]);
+		ServerRuntimeUtils.publish(server);
+		JobUtils.waitForIdle();
+		ch = MockPublishMethod.getChanged().length;
+		rm = MockPublishMethod.getRemoved().length;
+		assertEquals(0,ch);
+		assertEquals(1,rm);
+		MockPublishMethod.reset();
+	}
+	
+
+	private void createFolder(IFolder folder) throws CoreException, IOException {
 		folder.create(true, true, new NullProgressMonitor());
 		IOUtil.setContents(folder.getFile("1.txt"), "1");
 		IOUtil.setContents(folder.getFile("2.txt"), "2");
 		IOUtil.setContents(folder.getFile("3.txt"), "3");
 		IModule[] mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 0);
+	}
+	
+	public void singleFolderZippedInternal2() throws CoreException, IOException {
+		// create proj and files
+		final String folderName = "test";
+		IFolder folder = project.getFolder(folderName);
+		createFolder(folder);
 		
 		// make deployable, do checks
 		SingleDeployableFactory.makeDeployable(folder);
-		mods = SingleDeployableFactory.getFactory().getModules();
+		IModule[] mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 1);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));

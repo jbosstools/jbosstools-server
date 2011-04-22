@@ -34,6 +34,7 @@ public abstract class AbstractJSTPublisher extends AbstractServerToolsPublisher 
 		if( module == null || (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
 			return false;
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		boolean b = ds.zipsWTPDeployments();
 		return ds != null 
 			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
 			&& !ds.zipsWTPDeployments();
