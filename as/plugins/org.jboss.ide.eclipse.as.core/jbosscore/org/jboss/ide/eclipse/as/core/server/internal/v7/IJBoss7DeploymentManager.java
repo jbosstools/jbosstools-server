@@ -25,7 +25,7 @@ public interface IJBoss7DeploymentManager {
 	 * @return Not sure what to return yet
 	 * @throws Exception 
 	 */
-	public Object deployAsync(String host, int port, 
+	public IJBoss7DeploymentResult deployAsync(String host, int port, 
 					String deploymentName, File file, IProgressMonitor monitor) throws Exception;
 
 	/**
@@ -40,7 +40,7 @@ public interface IJBoss7DeploymentManager {
 	 * @return Not sure what to return yet
 	 * @throws Exception 
 	 */
-	public Object deploySync(String host, int port, 
+	public IJBoss7DeploymentResult deploySync(String host, int port, 
 			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
 	
 	
@@ -56,7 +56,7 @@ public interface IJBoss7DeploymentManager {
 	 * @return Not sure what to return yet
 	 * @throws Exception 
 	 */
-	public Object undeployAsync(String host, int port,
+	public IJBoss7DeploymentResult undeployAsync(String host, int port,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
 	
 
@@ -72,7 +72,7 @@ public interface IJBoss7DeploymentManager {
 	 * @return Not sure what to return yet
 	 * @throws Exception 
 	 */
-	public Object syncUndeploy(String host, int port,
+	public IJBoss7DeploymentResult syncUndeploy(String host, int port,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
 	
 	/**
@@ -85,6 +85,6 @@ public interface IJBoss7DeploymentManager {
 	 * @return the state of the deployment
 	 * @throws Exception
 	 */
-	public Object getDeploymentState(String host, int port, String deploymentName) throws Exception;
+	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception;
 
 }

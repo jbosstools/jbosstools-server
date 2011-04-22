@@ -32,8 +32,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
-import org.jboss.ide.eclipse.as.management.as7.deployment.DeploymentState;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
 import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.junit.After;
 import org.junit.Before;
@@ -92,7 +92,7 @@ public class JBossManagementIntegrationTest {
 	}
 
 	@Ignore
-	@Test(expected = DeployerException.class)
+	@Test(expected = JBoss7ManangementException.class)
 	public void cannotDeployWarTwice() throws Exception {
 		File warFile = JBossManagementTestUtils.getWarFile(JBossManagementTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -104,8 +104,8 @@ public class JBossManagementIntegrationTest {
 	}
 
 	@Ignore
-	@Test(expected = DeployerException.class)
-	public void cannotUndeployNondeployed() throws DeployerException, InterruptedException, ExecutionException {
+	@Test(expected = JBoss7ManangementException.class)
+	public void cannotUndeployNondeployed() throws JBoss7ManangementException, InterruptedException, ExecutionException {
 		JBossManagementTestUtils.waitUntilFinished(manager.undeploy("inexistant"));
 	}
 
@@ -128,35 +128,35 @@ public class JBossManagementIntegrationTest {
 	}
 
 	@Test
-	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, DeployerException {
+	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, JBoss7ManangementException {
 		String deploymentName = "testDeployment";
 		File warFile = JBossManagementTestUtils.getWarFile(JBossManagementTestUtils.MINIMALISTIC_WAR);
 		try {
 			JBossManagementTestUtils.waitUntilFinished(manager.deploy(deploymentName, warFile));
-			DeploymentState state = manager.getDeploymentState(deploymentName);
+			JBoss7DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(DeploymentState.STARTED));
+			assertThat(state, equalTo(JBoss7DeploymentState.STARTED));
 		} finally {
 			JBossManagementTestUtils.quietlyUndeploy(deploymentName, manager);
 		}
 	}
 
 	@Test
-	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, DeployerException {
+	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, JBoss7ManangementException {
 		String deploymentName = "testDeployment";
 		File warFile = JBossManagementTestUtils.getWarFile(JBossManagementTestUtils.MINIMALISTIC_WAR);
 		try {
 			JBossManagementTestUtils.waitUntilFinished(manager.add(deploymentName, warFile));
-			DeploymentState state = manager.getDeploymentState(deploymentName);
+			JBoss7DeploymentState state = manager.getDeploymentState(deploymentName);
 			assertNotNull(state);
-			assertThat(state, equalTo(DeploymentState.STOPPED));
+			assertThat(state, equalTo(JBoss7DeploymentState.STOPPED));
 		} finally {
 			JBossManagementTestUtils.quietlyRemove(deploymentName, manager);
 		}
 	}
 
-	@Test(expected = DeployerException.class)
-	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, DeployerException {
+	@Test(expected = JBoss7ManangementException.class)
+	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, JBoss7ManangementException {
 		String deploymentName = "testDeployment";
 		try {
 			manager.getDeploymentState(deploymentName);

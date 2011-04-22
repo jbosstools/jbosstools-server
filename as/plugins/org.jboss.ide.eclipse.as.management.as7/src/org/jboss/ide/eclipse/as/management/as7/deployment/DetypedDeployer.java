@@ -43,13 +43,14 @@ import org.jboss.as.controller.client.Operation;
 import org.jboss.as.controller.client.OperationBuilder;
 import org.jboss.as.protocol.StreamUtils;
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
 
 /**
  * @author André Dietisheim
  */
 public class DetypedDeployer {
 
-	public static void undeploy(String name, String host, int port) throws DeployerException {
+	public static void undeploy(String name, String host, int port) throws JBoss7ManangementException {
 		ModelControllerClient client = null;
 		try {
 			client = ModelControllerClient.Factory.create(host, port);
@@ -63,13 +64,13 @@ public class DetypedDeployer {
 			remove(name, host, port);
 			
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		} finally {
 			StreamUtils.safeClose(client);
 		}
 	}
 
-	public static void remove(String name, String host, int port) throws DeployerException {
+	public static void remove(String name, String host, int port) throws JBoss7ManangementException {
 		ModelControllerClient client = null;
 		try {
 			client = ModelControllerClient.Factory.create(host, port);
@@ -80,17 +81,17 @@ public class DetypedDeployer {
 			request.get(ADDRESS).add(DEPLOYMENT, name);
 			client.execute(request);
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		} finally {
 			StreamUtils.safeClose(client);
 		}
 	}
 
-	public static void deploy(File file, String host, int port) throws DeployerException {
+	public static void deploy(File file, String host, int port) throws JBoss7ManangementException {
 		deploy(file.getName(), file, host, port);
 	}
 
-	public static void deploy(String name, File file, String host, int port) throws DeployerException {
+	public static void deploy(String name, File file, String host, int port) throws JBoss7ManangementException {
 		ModelControllerClient client = null;
 		try {
 			client = ModelControllerClient.Factory.create(host, port);
@@ -110,13 +111,13 @@ public class DetypedDeployer {
 
 			throwOnFailure(result);
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		} finally {
 			StreamUtils.safeClose(client);
 		}
 	}
 
-	public static void replace(String name, File file, String host, int port) throws DeployerException {
+	public static void replace(String name, File file, String host, int port) throws JBoss7ManangementException {
 		ModelControllerClient client = null;
 		try {
 			client = ModelControllerClient.Factory.create(host, port);
@@ -134,7 +135,7 @@ public class DetypedDeployer {
 
 			throwOnFailure(result);
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		} finally {
 			StreamUtils.safeClose(client);
 		}
@@ -154,9 +155,9 @@ public class DetypedDeployer {
 		return AS7ManagerUtil.getDeployments(client);
 	}
 
-	private static void throwOnFailure(ModelNode result) throws DeployerException {
+	private static void throwOnFailure(ModelNode result) throws JBoss7ManangementException {
 		if (!AS7ManagerUtil.isSuccess(result)) {
-			throw new DeployerException(AS7ManagerUtil.getFailureDescription(result));
+			throw new JBoss7ManangementException(AS7ManagerUtil.getFailureDescription(result));
 		}
 	}
 

@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 public class Deployable {
@@ -42,7 +43,7 @@ public class Deployable {
 		return name;
 	}
 
-	public IStatus getStatus() throws DeployerException {
+	public IStatus getStatus() throws JBoss7ManangementException {
 		if (resultFuture == null
 				|| action == null) {
 			return null;
@@ -52,7 +53,7 @@ public class Deployable {
 			ServerDeploymentActionResult actionResult = result.getDeploymentActionResult(action.getId());
 			return createStatus(action, actionResult);
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		}
 	}
 

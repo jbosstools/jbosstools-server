@@ -30,6 +30,8 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 /**
@@ -38,7 +40,7 @@ import org.jboss.ide.eclipse.as.management.as7.Activator;
  * @author André Dietisheim
  *
  */
-public class DeploymentOperationResult {
+public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 
 	private Future<ServerDeploymentPlanResult> planResult;
 	private DeploymentAction action;
@@ -50,12 +52,16 @@ public class DeploymentOperationResult {
 		this.planResult = planResult;
 	}
 
-	public IStatus getStatus() throws DeployerException {
+	/* (non-Javadoc)
+	 * @see org.jboss.ide.eclipse.as.management.as7.deployment.IDeploymentResult#getStatus()
+	 */
+	@Override
+	public IStatus getStatus() throws JBoss7ManangementException {
 		try {
 			ServerDeploymentActionResult actionResult = planResult.get().getDeploymentActionResult(action.getId());
 			return createStatus(action.getDeploymentUnitUniqueName(), action.getType().name(), actionResult);
 		} catch (Exception e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		}
 	}
 

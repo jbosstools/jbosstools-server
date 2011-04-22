@@ -39,6 +39,7 @@ import org.jboss.as.controller.client.Operation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
 import org.jboss.ide.eclipse.as.management.as7.internal.DefaultOperationRequestBuilder;
 import org.jboss.ide.eclipse.as.management.as7.internal.OperationFormatException;
 
@@ -148,7 +149,7 @@ public class AS7ManagerUtil {
 		return Boolean.valueOf(value);
 	}
 
-	public static ModelNode execute(Operation operation, ModelControllerClient client) throws DeployerException {
+	public static ModelNode execute(Operation operation, ModelControllerClient client) throws JBoss7ManangementException {
 		try {
 			ModelNode result = client.execute(operation);
 			if (result.hasDefined(OUTCOME)
@@ -156,13 +157,13 @@ public class AS7ManagerUtil {
 				return result.get(RESULT);
 			}
 			else if (result.hasDefined(FAILURE_DESCRIPTION)) {
-				throw new DeployerException(result.get(FAILURE_DESCRIPTION).toString());
+				throw new JBoss7ManangementException(result.get(FAILURE_DESCRIPTION).toString());
 			}
 			else {
-				throw new DeployerException("Operation outcome is " + result.get(OUTCOME).asString());
+				throw new JBoss7ManangementException("Operation outcome is " + result.get(OUTCOME).asString());
 			}
 		} catch (IOException e) {
-			throw new DeployerException(e);
+			throw new JBoss7ManangementException(e);
 		}
 	}
 }

@@ -33,8 +33,8 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.management.as7.deployment.DeployerException;
-import org.jboss.ide.eclipse.as.management.as7.deployment.DeploymentOperationResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.osgi.framework.Bundle;
 
@@ -89,7 +89,7 @@ public class JBossManagementTestUtils {
 		}
 	}
 
-	public static void waitUntilFinished(DeploymentOperationResult result) throws DeployerException {
+	public static void waitUntilFinished(IJBoss7DeploymentResult result) throws JBoss7ManangementException {
 		result.getStatus(); // wait for operation to finish
 	}
 

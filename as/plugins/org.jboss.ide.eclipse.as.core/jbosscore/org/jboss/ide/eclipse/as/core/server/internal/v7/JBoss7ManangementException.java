@@ -8,24 +8,24 @@
  * Contributors:
  *     Red Hat Incorporated - initial API and implementation
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 /**
  * @author André Dietisheim
  */
-public class DeployerException extends Exception {
+public class JBoss7ManangementException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public DeployerException(String message, Throwable cause) {
+	public JBoss7ManangementException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public DeployerException(Throwable cause) {
+	public JBoss7ManangementException(Throwable cause) {
 		super(cause);
 	}
 
-	public DeployerException(String message) {
+	public JBoss7ManangementException(String message) {
 		super(message);
 	}
 

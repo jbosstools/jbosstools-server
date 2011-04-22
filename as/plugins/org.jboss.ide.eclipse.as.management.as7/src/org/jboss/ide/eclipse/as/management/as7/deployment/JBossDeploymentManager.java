@@ -25,37 +25,39 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentManager;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 
 /**
  * @author Rob Stryker
  */
 public class JBossDeploymentManager implements IJBoss7DeploymentManager {
 
-	public DeploymentOperationResult deployAsync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.deploy(deploymentName, file);
 	}
 
-	public DeploymentOperationResult deploySync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.deploySync(deploymentName, file, monitor);
 	}
 
-	public DeploymentOperationResult undeployAsync(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.undeploy(deploymentName);
 	}
 
-	public DeploymentOperationResult syncUndeploy(String host, int port, String deploymentName,
+	public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName,
 			boolean removeFile, IProgressMonitor monitor) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.undeploySync(deploymentName, monitor);
 	}
 
-	public DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
+	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.getDeploymentState(deploymentName);
 

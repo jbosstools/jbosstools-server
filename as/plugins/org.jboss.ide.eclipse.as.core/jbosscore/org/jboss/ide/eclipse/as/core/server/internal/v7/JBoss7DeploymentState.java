@@ -19,44 +19,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
-
-import org.jboss.dmr.ModelNode;
 
 /**
  * An enum that reflects the state of a deployment.
  * 
  * @author André Dietisheim
  */
-public enum DeploymentState {
-	STARTED {
-		protected boolean matches(boolean enabled) {
-			return enabled == true;
-		}
-	},
-	STOPPED {
-		protected boolean matches(boolean enabled) {
-			return enabled == false;
-		}
-	};
-	
-	public static DeploymentState getForResultNode(ModelNode node) {
-		Boolean enabled = AS7ManagerUtil.getBooleanProperty(ENABLED, node);
-		if (enabled == null) {
-			return null;
-		}
-		
-		DeploymentState matchingState = null;
-		for(DeploymentState state : values()) {
-			if (state.matches(enabled)) {
-				matchingState = state;
-			}
-		}
-		return matchingState;
-	}
-
-	protected abstract boolean matches(boolean enabled);
-
+public enum JBoss7DeploymentState {
+	STARTED ,
+	STOPPED;
 }
