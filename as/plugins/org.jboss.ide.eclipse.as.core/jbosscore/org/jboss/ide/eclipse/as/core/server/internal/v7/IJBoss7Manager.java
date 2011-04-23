@@ -14,15 +14,12 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-/**
- * 
- * This class is interim API and may change drastically 
- * as development on the application server continues. 
- * I expect credentials to be required eventually,
- * and the API will need to adjust to handle them. 
- * 
- */
-public interface IJBoss7DeploymentManager {
+public interface IJBoss7Manager {
+
+	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
+
+	public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
+
 	/**
 	 * Asynchronously deploy a file to a server
 	 * 
@@ -53,7 +50,6 @@ public interface IJBoss7DeploymentManager {
 	public IJBoss7DeploymentResult deploySync(String host, int port, 
 			String deploymentName, File file, IProgressMonitor monitor) throws Exception;
 	
-	
 	/**
 	 * Asynchronously undeploy a file to a server
 	 * 
@@ -68,7 +64,6 @@ public interface IJBoss7DeploymentManager {
 	 */
 	public IJBoss7DeploymentResult undeployAsync(String host, int port,
 			String deploymentName, boolean removeFile, IProgressMonitor monitor) throws Exception;
-	
 
 	/**
 	 * Synchronously undeploy a file to a server
@@ -96,5 +91,5 @@ public interface IJBoss7DeploymentManager {
 	 * @throws Exception
 	 */
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception;
-
+	
 }

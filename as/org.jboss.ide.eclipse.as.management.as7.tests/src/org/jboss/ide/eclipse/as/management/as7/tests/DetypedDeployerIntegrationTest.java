@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.as7.deployment.DetypedDeployer;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ public class DetypedDeployerIntegrationTest {
 		}
 	}
 
-	@Test(expected = JBoss7ManangementException.class)
+	@Test(expected = JBoss7ManangerException.class)
 	public void cannotDeployWarTwice() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -68,8 +68,8 @@ public class DetypedDeployerIntegrationTest {
 		}
 	}
 
-	@Test(expected = JBoss7ManangementException.class)
-	public void cannotUndeployNondeployed() throws JBoss7ManangementException {
+	@Test(expected = JBoss7ManangerException.class)
+	public void cannotUndeployNondeployed() throws JBoss7ManangerException {
 		DetypedDeployer.undeploy("inexistant", AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
 	}
 

@@ -14,6 +14,6 @@ import org.eclipse.core.runtime.IStatus;
 
 public interface IJBoss7DeploymentResult {
 
-	public abstract IStatus getStatus() throws JBoss7ManangementException;
+	public abstract IStatus getStatus() throws JBoss7ManangerException;
 
 }

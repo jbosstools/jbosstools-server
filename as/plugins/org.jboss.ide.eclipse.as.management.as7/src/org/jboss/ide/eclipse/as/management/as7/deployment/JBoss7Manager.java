@@ -13,14 +13,14 @@ package org.jboss.ide.eclipse.as.management.as7.deployment;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentManager;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7Manager;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 
 /**
  * @author Rob Stryker
  */
-public class JBossDeploymentManager implements IJBoss7DeploymentManager {
+public class JBoss7Manager implements IJBoss7Manager {
 
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
@@ -49,6 +49,5 @@ public class JBossDeploymentManager implements IJBoss7DeploymentManager {
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.getDeploymentState(deploymentName);
-
 	}
 }

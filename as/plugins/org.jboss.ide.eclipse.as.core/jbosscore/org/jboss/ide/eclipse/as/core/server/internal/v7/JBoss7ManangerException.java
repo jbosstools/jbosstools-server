@@ -13,19 +13,19 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 /**
  * @author André Dietisheim
  */
-public class JBoss7ManangementException extends Exception {
+public class JBoss7ManangerException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public JBoss7ManangementException(String message, Throwable cause) {
+	public JBoss7ManangerException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public JBoss7ManangementException(Throwable cause) {
+	public JBoss7ManangerException(Throwable cause) {
 		super(cause);
 	}
 
-	public JBoss7ManangementException(String message) {
+	public JBoss7ManangerException(String message) {
 		super(message);
 	}
 

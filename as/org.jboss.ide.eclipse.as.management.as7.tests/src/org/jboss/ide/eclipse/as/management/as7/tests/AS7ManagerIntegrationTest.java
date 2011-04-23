@@ -22,7 +22,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.junit.After;
 import org.junit.Before;
@@ -81,7 +81,7 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Ignore
-	@Test(expected = JBoss7ManangementException.class)
+	@Test(expected = JBoss7ManangerException.class)
 	public void cannotDeployWarTwice() throws Exception {
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -93,8 +93,8 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Ignore
-	@Test(expected = JBoss7ManangementException.class)
-	public void cannotUndeployNondeployed() throws JBoss7ManangementException, InterruptedException, ExecutionException {
+	@Test(expected = JBoss7ManangerException.class)
+	public void cannotUndeployNondeployed() throws JBoss7ManangerException, InterruptedException, ExecutionException {
 		AS7ManagerTestUtils.waitUntilFinished(manager.undeploy("inexistant"));
 	}
 
@@ -117,7 +117,7 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Test
-	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, JBoss7ManangementException {
+	public void getEnabledStateIfDeploymentIsDeployed() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = "testDeployment";
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -131,7 +131,7 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Test
-	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, JBoss7ManangementException {
+	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = "testDeployment";
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -144,8 +144,8 @@ public class AS7ManagerIntegrationTest {
 		}
 	}
 
-	@Test(expected = JBoss7ManangementException.class)
-	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, JBoss7ManangementException {
+	@Test(expected = JBoss7ManangerException.class)
+	public void getErrorIfDeploymentIsNotDeployed() throws URISyntaxException, IOException, JBoss7ManangerException {
 		String deploymentName = "testDeployment";
 		try {
 			manager.getDeploymentState(deploymentName);

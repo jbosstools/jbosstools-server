@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangementException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
@@ -45,12 +45,12 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 	 * @see org.jboss.ide.eclipse.as.management.as7.deployment.IDeploymentResult#getStatus()
 	 */
 	@Override
-	public IStatus getStatus() throws JBoss7ManangementException {
+	public IStatus getStatus() throws JBoss7ManangerException {
 		try {
 			ServerDeploymentActionResult actionResult = planResult.get().getDeploymentActionResult(action.getId());
 			return createStatus(action.getDeploymentUnitUniqueName(), action.getType().name(), actionResult);
 		} catch (Exception e) {
-			throw new JBoss7ManangementException(e);
+			throw new JBoss7ManangerException(e);
 		}
 	}
 
