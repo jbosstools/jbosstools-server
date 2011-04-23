@@ -4,4 +4,5 @@
    <service>
       <provide interface="org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7ManagementService"/>
    </service>
+   <property name="as.version" type="String" value="7"/>
 </scr:component>

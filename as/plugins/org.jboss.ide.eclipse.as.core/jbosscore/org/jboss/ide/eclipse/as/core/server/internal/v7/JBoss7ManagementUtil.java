@@ -7,47 +7,50 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 public class JBoss7ManagementUtil {
-	public static final String SERVICE_VERSION_70 = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
+	public static final String SERVER_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 	
+	public static final String SERVICE_VERSION_70 = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
+
 	public static IJBoss7ManagementService findManagementService(IServer server) {
-		BundleContext context = JBossServerCorePlugin.getDefault().getContext();
-		
-//		String tmp = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
-//		String clazz = "org.jboss.ide.eclipse.as.management.as7.deployment.JBossManagementService"; //$NON-NLS-1$
-		String iface = "IJBoss7ManagementService"; //$NON-NLS-1$
-		String clazz3 = "org.jboss.ide.eclipse.as.core.server.internal.v7." + iface; //$NON-NLS-1$
+		BundleContext context = JBossServerCorePlugin.getContext();
+
+		//		String tmp = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
+		//		String clazz = "org.jboss.ide.eclipse.as.management.as7.deployment.JBossManagementService"; //$NON-NLS-1$
+		//		String iface = "IJBoss7ManagementService"; //$NON-NLS-1$
+		//		String clazz3 = "org.jboss.ide.eclipse.as.core.server.internal.v7." + iface; //$NON-NLS-1$
 		String requiredService = getRequiredServiceName(server);
-		if( requiredService == null )
+		if (requiredService == null)
 			return null;
-		
+
 		try {
-			ServiceReference[] refs = context.getServiceReferences(clazz3, null);
-			for( int i = 0; i < refs.length; i++ ) {
-				Object compName = refs[i].getProperty("component.name"); //$NON-NLS-1$
-				if( requiredService.equals(compName)) {
-					Bundle b = refs[i].getBundle();
-					Object service2 = context.getService(refs[i]);
-					if( service2 instanceof IJBoss7ManagementService ) {
-						return ((IJBoss7ManagementService)service2);
-					}
+			Collection<ServiceReference<IJBoss7ManagementService>> references = context.getServiceReferences(
+					IJBoss7ManagementService.class, null);
+			for (Iterator<ServiceReference<IJBoss7ManagementService>> iterator = references.iterator(); 
+					iterator.hasNext();) {
+				ServiceReference<IJBoss7ManagementService> reference = iterator.next();
+				Object compName = reference.getProperty("component.name"); //$NON-NLS-1$
+				if (requiredService.equals(compName)) {
+					return context.getService(reference);
 				}
 			}
-		} catch(InvalidSyntaxException ise ) {
+		} catch (InvalidSyntaxException ise) {
 		}
 		return null;
 	}
-	
+
 	private static String getRequiredServiceName(IServer s) {
 		// TODO if required, make sure to add new versions here
 		return SERVICE_VERSION_70;
