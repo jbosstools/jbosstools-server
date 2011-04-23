@@ -26,7 +26,6 @@ import java.io.File;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Plugin;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -73,7 +72,9 @@ public class ASTest extends Plugin {
 		return plugin;
 	}
 
-	
+	public static BundleContext getContext() {
+		return plugin.getBundle().getBundleContext();
+	}
 	
 	// set some constants for wide-use
 	public static final String TOMCAT_RUNTIME_55 = "org.eclipse.jst.server.tomcat.runtime.55";
