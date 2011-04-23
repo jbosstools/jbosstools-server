@@ -44,7 +44,7 @@ import org.junit.Test;
  * 
  * @author André Dietisheim
  */
-public class JBossManagementIntegrationTest {
+public class AS7ManagerIntegrationTest {
 
 	private AS7Manager manager;
 

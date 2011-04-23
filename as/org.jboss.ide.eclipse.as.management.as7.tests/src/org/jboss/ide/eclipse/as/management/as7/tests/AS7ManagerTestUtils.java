@@ -41,7 +41,7 @@ import org.osgi.framework.Bundle;
 /**
  * @author André Dietisheim
  */
-public class JBossManagementTestUtils {
+public class AS7ManagerTestUtils {
 
 	public static final String GWT_HELLOWORLD_WAR = "gwt-helloworld.war";
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
@@ -73,7 +73,7 @@ public class JBossManagementTestUtils {
 
 	public static void quietlyUndeploy(String name, AS7Manager manager) {
 		try {
-			// DetypedDeployer.undeploy(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
+			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.undeploy(name));
 		} catch (Exception e) {
 			// ignore
@@ -82,7 +82,7 @@ public class JBossManagementTestUtils {
 
 	public static void quietlyRemove(String name, AS7Manager manager) {
 		try {
-			//DetypedDeployer.remove(name, JBossManagementTestUtils.HOST, JBossManagementTestUtils.MGMT_PORT);
+			//DetypedDeployer.remove(name, AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.remove(name));
 		} catch (Exception e) {
 			// ignore
