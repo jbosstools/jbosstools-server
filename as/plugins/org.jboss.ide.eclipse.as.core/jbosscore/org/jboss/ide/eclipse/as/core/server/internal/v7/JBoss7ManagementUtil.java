@@ -20,7 +20,6 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 
 public class JBoss7ManagementUtil {
-	public static final String SERVER_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 	
 	public static final String SERVICE_VERSION_70 = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
 

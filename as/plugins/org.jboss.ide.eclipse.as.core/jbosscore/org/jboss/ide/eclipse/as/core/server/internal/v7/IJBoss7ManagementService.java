@@ -15,12 +15,17 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
  * in case several different plugins need to implement it
  */
 public interface IJBoss7ManagementService {
+
+	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
+
+	public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
+	
 	/**
 	 * Get a manager which can be responsible *only* for 
 	 * deployments, both synchronously and asynchronously. 
 	 * @return
 	 */
-	public IJBoss7DeploymentManager getDeploymentManager();
+	public IJBoss7DeploymentManager getDeploymentManager() throws JBoss7ManangementException;
 	
 	/**
 	 * Get an interface which can handle executing any and all remote
@@ -28,5 +33,5 @@ public interface IJBoss7ManagementService {
 	 * 
 	 * @return
 	 */
-	public IJBoss7ManagementInterface getManagementInterface();
+	public IJBoss7ManagementInterface getManagementInterface() throws JBoss7ManangementException;
 }
