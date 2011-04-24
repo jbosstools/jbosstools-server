@@ -61,31 +61,26 @@ public class JBossManagerTest {
 
 	private static class JBoss71Manager implements IJBoss7Manager {
 
-		@Override
 		public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public IJBoss7DeploymentResult deploySync(String host, int port, String deploymentName, File file,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public IJBoss7DeploymentResult undeployAsync(String host, int port, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public IJBoss7DeploymentResult syncUndeploy(String host, int port, String deploymentName, boolean removeFile,
 				IProgressMonitor monitor) throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName)
 				throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
