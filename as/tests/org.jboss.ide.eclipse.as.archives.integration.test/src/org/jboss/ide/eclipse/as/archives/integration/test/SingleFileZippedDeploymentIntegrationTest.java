@@ -2,6 +2,8 @@ package org.jboss.ide.eclipse.as.archives.integration.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
@@ -15,13 +17,13 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.test.ASTest;
-import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
+import org.jboss.ide.eclipse.as.test.publishing.v2.AbstractJSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockPublishMethod;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.tools.test.util.JobUtils;
 
-public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTester {
+public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploymentTester {
 	public void testSingleFolderZipped() throws CoreException, IOException {
 		server = ServerRuntimeUtils.setZipped(server, true);
 		try {
@@ -35,7 +37,10 @@ public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTest
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
 		server = ServerRuntimeUtils.setZipped(server, true);
-
+		MockPublishMethod.reset();
+		ArrayList<IPath> o1 = MockPublishMethod.changed;
+		ArrayList<IPath> o2 = MockPublishMethod.removed;
+		
 		final String folderName = "test";
 		IFolder folder = project.getFolder(folderName);
 		createFolder(folder);
@@ -45,6 +50,7 @@ public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTest
 		assertEquals(mods.length, 1);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		ServerRuntimeUtils.publish(server);
+		dump(o1,o2);
 		int ch = MockPublishMethod.getChanged().length;
 		int rm = MockPublishMethod.getRemoved().length;
 		assertEquals(2,ch);
@@ -55,8 +61,6 @@ public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTest
 		IOUtil.setContents(folder.getFile("3.txt"), "3a");
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
-		Object o1 = MockPublishMethod.getChanged();
-		Object o2 = MockPublishMethod.getRemoved();
 		
 		ch = MockPublishMethod.getChanged().length;
 		rm = MockPublishMethod.getRemoved().length;
@@ -74,6 +78,17 @@ public class SingleFileZippedDeploymentIntegrationTest extends JSTDeploymentTest
 		MockPublishMethod.reset();
 	}
 	
+	private void dump(ArrayList<IPath> changed, ArrayList<IPath> removed) {
+		System.out.println("dump");
+		Iterator i = changed.iterator();
+		while(i.hasNext()) {
+			System.out.println(" - changed " + i.next());
+		}
+		i = removed.iterator();
+		while(i.hasNext()) {
+			System.out.println(" - removed " + i.next());
+		}
+	}
 
 	private void createFolder(IFolder folder) throws CoreException, IOException {
 		folder.create(true, true, new NullProgressMonitor());

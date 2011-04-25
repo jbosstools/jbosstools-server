@@ -26,7 +26,7 @@ import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.tools.test.util.JobUtils;
 
-public class SingleFileDeploymentTester extends JSTDeploymentTester {
+public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 
 	public void testSingleFile() throws CoreException, IOException {
 		final String filename = "test.xml";
@@ -225,14 +225,14 @@ public class SingleFileDeploymentTester extends JSTDeploymentTester {
 		assertEquals(changed2.size(), 0);
 		assertEquals(removed2.size(), 0);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(changed2.size(), 4);
+		assertEquals(changed2.size(), 5); 
 		assertEquals(removed2.size(), 1);
 		MockPublishMethod.reset();
 		
 		IFolder folder = project.getFolder(folderName);
 		IOUtil.setContents(folder.getFile("3.txt"), "3a");
 		ServerRuntimeUtils.publish(server);
-		assertEquals(changed2.size(), 2);
+		assertEquals(changed2.size(), 3);
 		assertEquals(removed2.size(), 0);
 		MockPublishMethod.reset();
 		

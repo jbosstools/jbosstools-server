@@ -60,7 +60,7 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
 	public void testWarUpdateMockPublishMethod() throws CoreException, IOException {
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		testMockPublishMethod(7,1,"");
+		testMockPublishMethod(7,1,"newModule.war");
 	}
 	
 	public void testWarUpdateMockPublishMethodJBoss7() throws CoreException, IOException {
@@ -70,6 +70,7 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	}
 	
 	private void testMockPublishMethod(int initial, int remove, String removedFile) throws CoreException, IOException {
+		MockPublishMethod.reset();
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);

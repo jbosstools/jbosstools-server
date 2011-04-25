@@ -22,7 +22,6 @@
             class="org.jboss.ide.eclipse.as.rse.core.RSEJSTPublisher"
             priority="5">
       </publisher>
--->
       <publisher
             class="org.jboss.ide.eclipse.as.rse.core.archives.RSEZippedJSTPublisher"
             priority="3"
@@ -33,6 +32,7 @@
             priority="8"
             zipDelegate="true">
       </publisher>
+-->
    </extension>
    
 </plugin>

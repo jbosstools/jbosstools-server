@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.rse.services.clientserver.messages.SystemElementNotFoundException;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.files.IHostFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -54,7 +54,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		} catch( SystemMessageException sme ) {
 			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
 					"failed to copy to " + remotePath.toString(), sme);
-			return new IStatus[]{s};
+			throw new CoreException(s);
 		}
 		return new IStatus[]{};
 	}
@@ -64,10 +64,12 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		IPath remotePath = root.append(path);
 		try {
 			method.getFileService().delete(remotePath.removeLastSegments(1).toString(), remotePath.lastSegment(), monitor);
+		} catch(SystemElementNotFoundException senfe ) {
+			// ignore, file already does not exist remotely
 		} catch( SystemMessageException sme ) {
 			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
 					"failed to delete " + remotePath.toString(), sme);
-			return new IStatus[]{s};
+			throw new CoreException(s);
 		}
 		return new IStatus[]{};
 	}

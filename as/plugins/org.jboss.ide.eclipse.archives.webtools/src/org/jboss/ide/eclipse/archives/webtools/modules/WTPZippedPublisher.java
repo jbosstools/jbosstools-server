@@ -76,7 +76,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		// When a call for [ear, childWar] comes in, ignore it. 
 		if( module.length > 1 ) 
 			return null;
-	
+		
 		if( JBoss7Server.supportsJBoss7MarkerDeployment(server))
 			return handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
 		

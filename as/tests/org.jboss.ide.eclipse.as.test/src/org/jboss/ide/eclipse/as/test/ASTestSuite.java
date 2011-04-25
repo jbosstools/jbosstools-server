@@ -35,7 +35,7 @@ import org.jboss.ide.eclipse.as.test.publishing.JBIDE4184Test;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeployBinaryChildModuleTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.JSTDeploymentWarUpdateXML;
-import org.jboss.ide.eclipse.as.test.publishing.v2.MockDeploymentBehaviour;
+import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeployableMockDeploymentTester;
 import org.jboss.ide.eclipse.as.test.publishing.v2.MockJSTPublisherTest;
 import org.jboss.ide.eclipse.as.test.publishing.v2.SingleFileDeploymentTester;
 import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
@@ -44,21 +44,21 @@ public class ASTestSuite extends TestSuite {
     public static Test suite() { 
         TestSuite suite = new TestSuite("ASTools Test Suite");
         suite.addTestSuite(PreReqTest.class);
-        suite.addTestSuite(RuntimeServerModelTest.class);
-        suite.addTestSuite(JEEClasspathContainerTest.class);
-        suite.addTestSuite(ProjectRuntimeTest.class);
-        suite.addTestSuite(JBIDE1657Test.class);
-        suite.addTestSuite(JBIDE2512aTest.class);
-        suite.addTestSuite(JBIDE2512bTest.class);
-        suite.addTestSuite(JBIDE4184Test.class);
-        suite.addTestSuite(TestEar5WithJBossRuntime.class);
-        suite.addTestSuite(JSTDeploymentTester.class);
-        suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
-        suite.addTestSuite(SingleFileDeploymentTester.class);
-        suite.addTestSuite(JBossServerAPITest.class);
-        suite.addTestSuite(MockDeploymentBehaviour.class);
-        suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
-        suite.addTestSuite(MockJSTPublisherTest.class);
+//        suite.addTestSuite(RuntimeServerModelTest.class);
+//        suite.addTestSuite(JEEClasspathContainerTest.class);
+//        suite.addTestSuite(ProjectRuntimeTest.class);
+//        suite.addTestSuite(JSTDeploymentWarUpdateXML.class);
+//        suite.addTestSuite(SingleFileDeployableMockDeploymentTester.class);
+//        suite.addTestSuite(MockJSTPublisherTest.class);
+//        suite.addTestSuite(JBIDE1657Test.class);
+//        suite.addTestSuite(JBIDE2512aTest.class);
+//        suite.addTestSuite(JBIDE2512bTest.class);
+//        suite.addTestSuite(JBIDE4184Test.class);
+//        suite.addTestSuite(TestEar5WithJBossRuntime.class);
+//        suite.addTestSuite(JSTDeploymentTester.class);
+//        suite.addTestSuite(JSTDeployBinaryChildModuleTest.class);
+//        suite.addTestSuite(SingleFileDeploymentTester.class);
+//        suite.addTestSuite(JBossServerAPITest.class);
         return suite; 
    }
 

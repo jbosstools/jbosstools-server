@@ -100,6 +100,16 @@
             priority="2"
             zipDelegate="true">
       </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedJSTPublisher"
+            priority="3"
+            zipDelegate="true">
+      </publisher>
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedFolderPublisher"
+            priority="8"
+            zipDelegate="true">
+      </publisher>
    </extension>
 
 

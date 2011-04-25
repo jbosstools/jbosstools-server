@@ -11,8 +11,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -25,7 +25,16 @@ import org.jboss.ide.eclipse.as.test.ASTest;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
-public class MockDeploymentBehaviour extends JSTDeploymentTester {
+public class SingleFileDeployableMockDeploymentTester extends AbstractJSTDeploymentTester {
+	public void setUp() throws Exception {
+		super.setUp();
+		ServerPreferences.getInstance().setAutoPublishing(false);
+	}
+	public void tearDown() throws Exception {
+		ServerPreferences.getInstance().setAutoPublishing(true);
+		super.tearDown();
+	}
+	
 	public void testSingleFile() throws CoreException, IOException {
 		final String filename = "test.xml";
 		IResource file = createFile(filename, "<test>done</test>");
@@ -46,8 +55,7 @@ public class MockDeploymentBehaviour extends JSTDeploymentTester {
 		assertContents(deployRoot.append("test.xml").toFile(), 
 			"<test>done</test>");
 		IOUtil.setContents(project.getFile(filename), "<test>done2</test>");
-		assertContents(deployRoot.append("test.xml").toFile(), 
-		"<test>done</test>");
+		assertContents(deployRoot.append("test.xml").toFile(), "<test>done</test>");
 		ServerRuntimeUtils.publish(server);
 		assertContents(deployRoot.append("test.xml").toFile(), 
 			"<test>done2</test>");
