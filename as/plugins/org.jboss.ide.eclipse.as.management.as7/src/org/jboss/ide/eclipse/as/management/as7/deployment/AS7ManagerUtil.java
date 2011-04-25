@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -23,12 +23,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.Operation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
 import org.jboss.ide.eclipse.as.management.as7.internal.DefaultOperationRequestBuilder;
 import org.jboss.ide.eclipse.as.management.as7.internal.OperationFormatException;
 
@@ -105,10 +107,10 @@ public class AS7ManagerUtil {
 		final ModelNode request;
 		try {
 			builder.operationName(READ_CHILDREN_NAMES_OPERATION);
-			builder.addProperty(CHILD_TYPE, "deployment");
+			builder.addProperty(CHILD_TYPE, ModelDescriptionConstants.DEPLOYMENT);
 			request = builder.buildRequest();
 		} catch (OperationFormatException e) {
-			throw new IllegalStateException("Failed to build operation", e);
+			throw new IllegalStateException(AS7Messages.FailedToBuildOperation, e);
 		}
 
 		try {
@@ -142,14 +144,15 @@ public class AS7ManagerUtil {
 		try {
 			ModelNode result = client.execute(operation);
 			if (result.hasDefined(OUTCOME)
-					&& SUCCESS.equals(result.get("outcome").asString())) {
+					&& SUCCESS.equals(result.get(OUTCOME).asString())) {
 				return result.get(RESULT);
 			}
 			else if (result.hasDefined(FAILURE_DESCRIPTION)) {
 				throw new JBoss7ManangerException(result.get(FAILURE_DESCRIPTION).toString());
 			}
 			else {
-				throw new JBoss7ManangerException("Operation outcome is " + result.get(OUTCOME).asString());
+				throw new JBoss7ManangerException(NLS.bind(
+						AS7Messages.OperationOutcomeToString, result.get(OUTCOME).asString()));
 			}
 		} catch (IOException e) {
 			throw new JBoss7ManangerException(e);

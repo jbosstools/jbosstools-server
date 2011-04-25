@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -16,11 +16,13 @@ import java.util.concurrent.Future;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
 import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 /**
@@ -62,25 +64,27 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 		IStatus status = null;
 		switch (actionResult.getResult()) {
 		case NOT_EXECUTED:
-			status = createStatus(IStatus.ERROR, "The operation {0} was not executed on unit {1}",
-					actionName, deploymentName);
+			status = createStatus(IStatus.ERROR, NLS.bind(
+					AS7Messages.OperationOnUnitNotExecuted, 
+					actionName, deploymentName));
 			break;
 		case EXECUTED:
 			status = Status.OK_STATUS;
 			break;
 		case FAILED:
-			status = createStatus(IStatus.ERROR, "The operation {0} failed for unit {1}",
-					actionName, deploymentName);
+			status = createStatus(IStatus.ERROR, NLS.bind(AS7Messages.OperationOnUnitFailed, 
+					actionName, deploymentName));
 			break;
 		case ROLLED_BACK:
-			status = createStatus(IStatus.ERROR, "The operation {0} for unit {1} was rolled back",
-					actionName, deploymentName);
+			status = createStatus(IStatus.ERROR, 
+					NLS.bind(AS7Messages.OperationOnUnitRolledBack,
+							actionName, deploymentName));
 			break;
 		case CONFIGURATION_MODIFIED_REQUIRES_RESTART:
 			status = createStatus(
 					IStatus.WARNING,
-					"The operation {0} was not executed on unit {1}. The server configuration was changed though and the server needs to be restarted",
-					actionName, deploymentName);
+					NLS.bind(AS7Messages.OperationNotExecConfigRequiresRestart,
+							actionName, deploymentName));
 			break;
 		}
 		return status;

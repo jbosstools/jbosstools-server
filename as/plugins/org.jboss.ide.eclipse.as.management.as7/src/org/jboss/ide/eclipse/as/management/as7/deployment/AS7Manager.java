@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -21,10 +21,10 @@ import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptio
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.text.MessageFormat;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentPlanBuilder;
@@ -32,9 +32,10 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.StreamUtils;
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
 
 /**
  * @author André Dietisheim
@@ -124,7 +125,7 @@ public class AS7Manager {
 		Boolean enabled = AS7ManagerUtil.getBooleanProperty(ENABLED, result);
 		if (enabled == null) {
 			throw new JBoss7ManangerException(
-					MessageFormat.format("Could not evaluate state for deployment {0}", name));
+					NLS.bind(AS7Messages.ModuleStateEvaluationFailed, name));
 		} else if (enabled) {
 			return JBoss7DeploymentState.STARTED;
 		} else {
@@ -142,8 +143,11 @@ public class AS7Manager {
 			ModelNode response = client.execute(node);
 			if (!AS7ManagerUtil.isSuccess(response)) {
 				throw new JBoss7ManangerException(
-						MessageFormat.format("Could not execute {0} for {1}. Failure was {2}.", node.get(OP),
-								node.get(ADDRESS), response.get(FAILURE_DESCRIPTION)));
+						NLS.bind(AS7Messages.OperationOnAddressFailed, 
+								new Object[]{ node.get(OP), 
+									node.get(ADDRESS), 
+									response.get(FAILURE_DESCRIPTION)}
+						));
 			}
 			return response.get(RESULT);
 		} catch (Exception e) {
