@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -75,6 +76,12 @@ public class BuildDeployTest extends TestCase {
 		setupServer();
 		addArchives();
 		buildArchive();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// Ignored.
+		}
+		JobUtils.waitForIdle(10000);
 		assertBuiltArchiveContents(index);
 		changeArchivesDeployPrefs(false, server.getId());
 		deploy();
@@ -128,6 +135,7 @@ public class BuildDeployTest extends TestCase {
 		
 		// Builder is off, autodeploy is on, manually call build!
 		callBuild();
+		project.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		assertBinContents(count);
 		assertBuiltArchiveContents(count);
 		assertDeployContents(count);
