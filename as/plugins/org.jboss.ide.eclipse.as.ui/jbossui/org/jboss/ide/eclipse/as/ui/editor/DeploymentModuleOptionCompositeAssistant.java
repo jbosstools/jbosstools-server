@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -48,11 +48,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.forms.IFormColors;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
@@ -62,6 +59,7 @@ import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
@@ -117,30 +115,19 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	private ModuleDeploymentPage page;
 	private DeploymentPreferences preferences;
 	private TreeViewer viewer;
-	protected String COLUMN_NAME;
-	protected String COLUMN_LOC;
-	protected String COLUMN_TEMP_LOC;
-	protected String currentDeployType;
+	protected static final String COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
+	protected static final String COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
+	protected static final String COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
+	protected static final String OUTPUT_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_OUTPUT_NAME;
+	protected String currentDeployType = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	
 	private IServerWorkingCopy lastWC;
 	
 	public DeploymentModuleOptionCompositeAssistant() {
-		COLUMN_NAME = IJBossToolingConstants.LOCAL_DEPLOYMENT_NAME;
-		COLUMN_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_LOC;
-		COLUMN_TEMP_LOC = IJBossToolingConstants.LOCAL_DEPLOYMENT_TEMP_LOC;
-		currentDeployType = LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	}
 
 	public ModuleDeploymentPage getPage() {
 		return page;
-	}
-	
-	public String getCurrentDeployType() {
-		return currentDeployType;
-	}
-	
-	public void setCurrentDeployType(String type) {
-		this.currentDeployType = type;
 	}
 	
 	public void setDeploymentPage(ModuleDeploymentPage page) {
@@ -670,8 +657,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			DeploymentModulePrefs p = preferences.getOrCreatePreferences(currentDeployType)
 					.getOrCreateModulePrefs((IModule) element);
 			if (property == COLUMN_LOC) {
-				String ret = p.getProperty(COLUMN_LOC);
-				return ret == null ? "" : ret;
+				return getOutputFolderAndName(p, (IModule)element);
 			}
 			if (property == COLUMN_TEMP_LOC) {
 				String ret = p.getProperty(COLUMN_TEMP_LOC);
@@ -687,8 +673,12 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			DeploymentModulePrefs p = preferences.getOrCreatePreferences(currentDeployType)
 					.getOrCreateModulePrefs(module);
 			if (property == COLUMN_LOC) {
-				page.firePropertyChangeCommand(p, COLUMN_LOC,
-						(String) value, Messages.EditorEditDeployLocCommand);
+				String outputName = new Path(((String)value)).lastSegment();
+				String outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
+				page.firePropertyChangeCommand(p, 
+						new String[]{COLUMN_LOC, OUTPUT_NAME},
+						new String[]{outPath,outputName},
+						Messages.EditorEditDeployLocCommand);
 				viewer.refresh();
 			} else if (property == COLUMN_TEMP_LOC) {
 				page.firePropertyChangeCommand(p, COLUMN_TEMP_LOC,
@@ -742,11 +732,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					DeploymentModulePrefs modPref = preferences
 							.getOrCreatePreferences(currentDeployType)
 							.getOrCreateModulePrefs(m);
-					String result = modPref.getProperty(COLUMN_LOC);
-					if (result != null)
-						return result;
-					modPref.setProperty(COLUMN_LOC, "");
-					return "";
+					return getOutputFolderAndName(modPref, m);
 				}
 				if (columnIndex == 2) {
 					DeploymentModulePrefs modPref = preferences
@@ -799,4 +785,19 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 	}
 	
+	
+	public static String getDefaultOutputName(IModule module) {
+		return new Path(module.getName()).lastSegment() + PublishUtil.getSuffix(module.getModuleType().getId());
+	}
+	
+	protected static String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
+		String folder = modPref.getProperty(COLUMN_LOC);
+		String outputName = modPref.getProperty(OUTPUT_NAME);
+		outputName = outputName == null || outputName.equals("") 
+			? getDefaultOutputName(m) : outputName;
+			
+		if (folder != null)
+			return new Path(folder).append(outputName).toPortableString();
+		return outputName;
+	}
 }

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -76,15 +76,12 @@ public class RSEZippedJSTPublisher extends WTPZippedPublisher {
 		// set up needed vars
 		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
-		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot);
-		IModule lastMod = module[module.length-1];
-		RSEPublishMethod method2 = (RSEPublishMethod)method;
-		IPath destFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteRootFolder());
-		//IPath tempDestFolder = RSEPublishMethod.findModuleFolderWithDefault(lastMod, server2, method2.getRemoteTemporaryFolder());
+		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
+		IPath destFolder = PublishUtil.getDeployPath(method, module, server2);
 		String name = sourcePath.lastSegment();
-		IStatus result = null;
-		
-		
+		IStatus result = null;		
+		RSEPublishMethod method2 = (RSEPublishMethod)method;
+				
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 			result = removeRemoteDeployment(method2, sourcePath, destFolder, name, monitor);
