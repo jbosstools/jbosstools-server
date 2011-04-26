@@ -1102,9 +1102,11 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
       <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher"
-            priority="7">
+            class="org.jboss.ide.eclipse.as.core.publishers.UnifiedPublisher"
+            priority="15"
+            zipDelegate="false">
       </publisher>
+      <!--
       <publisher
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
             priority="6">
@@ -1117,6 +1119,7 @@
             class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
             priority="0">
       </publisher>
+      -->
    </extension>
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">

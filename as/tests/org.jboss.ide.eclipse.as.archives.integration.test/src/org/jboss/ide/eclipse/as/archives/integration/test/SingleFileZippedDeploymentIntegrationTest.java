@@ -50,7 +50,6 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		assertEquals(mods.length, 1);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		ServerRuntimeUtils.publish(server);
-		dump(o1,o2);
 		int ch = MockPublishMethod.getChanged().length;
 		int rm = MockPublishMethod.getRemoved().length;
 		assertEquals(2,ch);

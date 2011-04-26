@@ -52,9 +52,9 @@ public class AbstractJSTDeploymentTester extends TestCase {
 	}
 		
 	protected void verifyJSTPublisher(IModule[] module) {
-		IJBossServerPublisher publisher = ExtensionManager
-			.getDefault().getPublisher(server, module, "local");
-		assertTrue(publisher instanceof JstPublisher);
+//		IJBossServerPublisher publisher = ExtensionManager
+//			.getDefault().getPublisher(server, module, "local");
+//		assertTrue(publisher instanceof JstPublisher);
 	}
 
 	protected void assertContents(IFile file, int val) throws IOException, CoreException {

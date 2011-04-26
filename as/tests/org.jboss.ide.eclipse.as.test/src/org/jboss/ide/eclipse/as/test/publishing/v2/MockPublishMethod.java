@@ -54,7 +54,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 		
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor)
 				throws CoreException {
-			System.out.println("deleting " + root.append(path));
+//			System.out.println("deleting " + root.append(path));
 			IPath path2 = root.append(path);
 			if( !removed.contains(path2.makeRelative()))
 				removed.add(path2.makeRelative());
@@ -63,7 +63,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 
 		public IStatus[] makeDirectoryIfRequired(IPath dir,
 				IProgressMonitor monitor) throws CoreException {
-			System.out.println("mkdir to " + root.append(dir));
+//			System.out.println("mkdir to " + root.append(dir));
 
 			IPath path2 = root.append(dir);
 			if( !changed.contains(path2.makeRelative()))
@@ -77,7 +77,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 		}
 		public IStatus[] copyFile(IModuleFile mf, IPath path,
 				IProgressMonitor monitor) throws CoreException {
-			System.out.println("copying to " + root.append(path));
+//			System.out.println("copying to " + root.append(path));
 			File file = PublishUtil.getFile(mf);
 			shouldRestartModule |= PublishCopyUtil.checkRestartModule(file);
 			IPath path2 = root.append(path);
@@ -87,7 +87,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 		}
 		
 		public IStatus[] touchResource(IPath path) {
-			System.out.println("touching " + root.append(path));
+//			System.out.println("touching " + root.append(path));
 			IPath path2 = root.append(path);
 			if( !changed.contains(path2.makeRelative()))
 				changed.add(path2.makeRelative());

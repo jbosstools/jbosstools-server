@@ -86,6 +86,7 @@
    </extension>
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
+      <!--
       <publisher
             class="org.jboss.ide.eclipse.archives.webtools.modules.PackagesPublisher"
             priority="5">
@@ -101,13 +102,14 @@
             zipDelegate="true">
       </publisher>
       <publisher
-            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedJSTPublisher"
-            priority="3"
-            zipDelegate="true">
-      </publisher>
-      <publisher
             class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedFolderPublisher"
             priority="8"
+            zipDelegate="true">
+      </publisher>
+      -->
+      <publisher
+            class="org.jboss.ide.eclipse.archives.webtools.modules.AltMethodZippedJSTPublisher"
+            priority="3"
             zipDelegate="true">
       </publisher>
    </extension>

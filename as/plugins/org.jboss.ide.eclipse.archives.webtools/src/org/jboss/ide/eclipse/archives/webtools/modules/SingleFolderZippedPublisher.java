@@ -20,6 +20,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
+@Deprecated
 public class SingleFolderZippedPublisher extends WTPZippedPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);

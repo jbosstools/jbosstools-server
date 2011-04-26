@@ -151,12 +151,9 @@ public class ExtensionManager {
 			loadPublishers();
 		Iterator<PublisherWrapper> i = publishers.iterator();
 		PublisherWrapper wrapper;
-		System.out.println("finding publisher: "); //$NON-NLS-1$
 		while(i.hasNext()) {
 			wrapper = i.next();
 			IJBossServerPublisher publisher = wrapper.publisher;
-			System.out.println("   publisher " + publisher.getClass() + " accepted? " +  //$NON-NLS-1$ //$NON-NLS-2$
-					publisher.accepts(deployMethod, server, module));
 			if( publisher.accepts(deployMethod, server, module))
 				return wrapper.getNewInstance();
 		}

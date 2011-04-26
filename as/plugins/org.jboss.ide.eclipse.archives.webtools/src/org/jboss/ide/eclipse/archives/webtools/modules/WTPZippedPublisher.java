@@ -13,21 +13,24 @@
 package org.jboss.ide.eclipse.archives.webtools.modules;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -35,28 +38,10 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 	private int moduleState = IServer.PUBLISH_STATE_NONE;
 	
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
-			return false;
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		IModule lastMod = (module == null || module.length == 0 ) ? null : module[module.length -1];
-		if( getPublishMethod().equals(method) && lastMod == null)
-			return true;
-		return ModuleCoreNature.isFlexibleProject(lastMod.getProject())
-			&& ds != null && ds.zipsWTPDeployments();
+		return ds != null && (module == null || ds.zipsWTPDeployments());
 	}
 	
-	protected boolean publishMethodSpecific() {
-		return true;
-	}
-	
-	protected String getTargetedPublishMethodId() {
-		return getPublishMethod();
-	}
-	
-	protected String getPublishMethod() {
-		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
-	}
-
 	public int getPublishState() {
 		return moduleState;
 	}
@@ -100,7 +85,16 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		} else {
 			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
 			IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
+			IPath outPath = util.getOutputFilePath();
 			if( util.hasBeenChanged()) {
+				// Copy out file
+				IPath depPath = PublishUtil.getDeployPath(method, module, ds);
+				IPath folder = depPath.removeLastSegments(1);
+				IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
+				IModuleFile mf = new ModuleFile(outPath.toFile(), "", new Path("/")); //$NON-NLS-1$ //$NON-NLS-2$
+				callback.copyFile(mf, new Path(depPath.lastSegment()), monitor);
+
+				// Add marker
 				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ds, module, new NullProgressMonitor());
 			}
 			monitor.done();

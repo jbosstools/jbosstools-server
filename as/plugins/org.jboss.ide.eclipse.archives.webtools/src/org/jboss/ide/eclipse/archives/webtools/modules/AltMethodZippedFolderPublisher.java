@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 /**
  * This class is in charge of RSE zipped publishing for deployable folders
  */
+@Deprecated
 public class AltMethodZippedFolderPublisher extends AltMethodZippedJSTPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))

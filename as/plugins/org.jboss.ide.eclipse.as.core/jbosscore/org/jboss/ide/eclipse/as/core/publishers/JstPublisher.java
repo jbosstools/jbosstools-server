@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
-
+@Deprecated
 public class JstPublisher extends AbstractJSTPublisher {
 	protected String getTargetedPublishMethodId() {
 		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;

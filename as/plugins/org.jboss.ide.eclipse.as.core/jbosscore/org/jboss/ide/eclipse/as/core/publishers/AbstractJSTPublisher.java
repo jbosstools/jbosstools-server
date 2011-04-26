@@ -10,58 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
-import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+@Deprecated
 public abstract class AbstractJSTPublisher extends AbstractServerToolsPublisher {
 	public AbstractJSTPublisher() {}
-	
-	public boolean verifyModuleType(IModule[] module, String type) {
-		if( module != null && module.length > 0 
-				&& module[module.length-1] != null  
-				&& module[module.length-1].getModuleType().getId().equals(type)) 
-			return true;
-		return false;
-	}
-	
-	/**
-	 * This abstract publisher is only suitable for non force-zipped deployments
-	 */
-	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( module == null || (publishMethodSpecific() && !method.equals(getTargetedPublishMethodId())))
-			return false;
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		boolean b = ds.zipsWTPDeployments();
-		return ds != null 
-			&& ModuleCoreNature.isFlexibleProject(module[0].getProject())
-			&& !ds.zipsWTPDeployments();
-	}
-	
-	/**
-	 * Return true if this publisher requires a specific 
-	 * publish method / publish method id. 
-	 * Clients are expected to override
-	 */
-	protected boolean publishMethodSpecific() {
-		return false;
-	}
-	
-	/**
-	 * Get the publish method this publisher is associated with
-	 * @return
-	 */
-	protected String getTargetedPublishMethodId() {
-		return null;
-	}
-	
-	/**
-	 * JST projects require certain children (utility, etc) to be zipped up
-	 */
-	@Override
-	protected boolean forceZipModule(IModule[] moduleTree) {
-		return PublishUtil.deployPackaged(moduleTree);
-	}
 }

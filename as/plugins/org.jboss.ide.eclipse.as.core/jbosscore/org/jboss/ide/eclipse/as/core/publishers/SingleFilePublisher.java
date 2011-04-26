@@ -10,15 +10,13 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.publishers;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
 
+@Deprecated
 public class SingleFilePublisher extends JBoss7JSTPublisher {
 	protected boolean forceZipModule(IModule[] moduleTree) {
 		return false;
@@ -26,12 +24,12 @@ public class SingleFilePublisher extends JBoss7JSTPublisher {
 	
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if( verifyModuleType(module, SingleDeployableFactory.MODULE_TYPE)) {
-			IJBTModule del = (IJBTModule)module[module.length-1].loadAdapter(IJBTModule.class, new NullProgressMonitor());
-			if( del != null && (del.isBinary() || !ds.zipsWTPDeployments())) {
-				return true;
-			}
-		}
+//		if( verifyModuleType(module, SingleDeployableFactory.MODULE_TYPE)) {
+//			IJBTModule del = (IJBTModule)module[module.length-1].loadAdapter(IJBTModule.class, new NullProgressMonitor());
+//			if( del != null && (del.isBinary() || !ds.zipsWTPDeployments())) {
+//				return true;
+//			}
+//		}
 		return false;
 	}
 }

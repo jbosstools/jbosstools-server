@@ -22,6 +22,7 @@ import org.eclipse.ui.navigator.ICommonViewerWorkbenchSite;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
@@ -152,6 +153,7 @@ public class ModuleActionProvider extends CommonActionProvider {
 		// Assumption: Anything selected is already on the server, or it wouldnt be in the view.
 		if( selection != null && selection.length > 0 ) {
 			Server s = ((Server)selection[0].server);
+			IServer tmp = ServerCore.findServer(s.getId());
 			for( int i = 0; i < selection.length; i++ ) {
 				IModule[] mod = selection[i].module;
 				s.setModulePublishState(mod, type);

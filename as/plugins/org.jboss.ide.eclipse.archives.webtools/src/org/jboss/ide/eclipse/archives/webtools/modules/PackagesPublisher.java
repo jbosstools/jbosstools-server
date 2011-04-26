@@ -15,11 +15,12 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 
+@Deprecated
 public class PackagesPublisher extends JBoss7JSTPublisher {
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method) && 
-				verifyModuleType(module, PackageModuleFactory.MODULE_TYPE))
-			return true;
+//		if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method) && 
+//				verifyModuleType(module, PackageModuleFactory.MODULE_TYPE))
+//			return true;
 		return false;
 	}
 }

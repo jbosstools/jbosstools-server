@@ -43,7 +43,7 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-/**
+/**O
  * Class suitable for parsing any properly formed servertools-api module
  */
 public abstract class AbstractServerToolsPublisher implements IJBossServerPublisher {
@@ -53,7 +53,18 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	protected IJBossServerPublishMethod publishMethod;
 	
 	public AbstractServerToolsPublisher() {}
-	public abstract boolean accepts(String method, IServer server, IModule[] module);
+	
+	/**
+	 * This abstract publisher is only suitable for non force-zipped deployments
+	 */
+	public boolean accepts(String method, IServer server, IModule[] module) {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		if( ds == null ) 
+			return false;
+		if( ServerModelUtilities.isBinaryModule(module[module.length-1]))
+			return true;
+		return !ds.zipsWTPDeployments();
+	}
 
 	public int getPublishState() {
 		return publishState;
@@ -149,7 +160,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	 * @return
 	 */
 	protected boolean forceZipModule(IModule[] moduleTree) {
-		return false;
+		return PublishUtil.deployPackaged(moduleTree);
 	}
 	
 	protected IStatus canceledStatus() {

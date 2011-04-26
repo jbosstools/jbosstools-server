@@ -42,16 +42,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  * by uploading the file after building it in a temporary directory
  */
 public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
-	public boolean accepts(String method, IServer server, IModule[] module) {
-		if( !LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(method))
-			return super.accepts(method, server, module);
-		return false;
-	}
-	
-	protected boolean publishMethodSpecific() {
-		return false; // can publish all method types
-	}
-
 	/**
 	 * Here we put the deployment first in a temporary remote deploy folder
 	 * Then during the publishModule call, we'll also upload it to remote machine

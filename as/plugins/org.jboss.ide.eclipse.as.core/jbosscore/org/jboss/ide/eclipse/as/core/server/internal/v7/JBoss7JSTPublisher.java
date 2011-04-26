@@ -28,7 +28,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.publishers.AbstractJSTPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -37,11 +37,11 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
-public class JBoss7JSTPublisher extends AbstractJSTPublisher {
+public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	// Same as super class but just a *bit* different
 	public boolean accepts(String method, IServer server, IModule[] module) {
-		return super.accepts(method, server, module) && 
-			JBoss7Server.supportsJBoss7MarkerDeployment(server);
+		return super.accepts(method, server, module);
+		// && JBoss7Server.supportsJBoss7MarkerDeployment(server);
 	}
 	
 	public static final String DEPLOYED = ".deployed"; //$NON-NLS-1$
@@ -53,34 +53,38 @@ public class JBoss7JSTPublisher extends AbstractJSTPublisher {
 	public static final String SKIP_DEPLOY = ".skipdeploy";//$NON-NLS-1$
 	public static final String PENDING = ".pending";//$NON-NLS-1$
 
+	public IStatus publishModuleToAS7(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module,
+			int publishType, IModuleResourceDelta[] delta,
+			IProgressMonitor monitor) throws CoreException {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+			JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+		} else {
+			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
+			if( module.length == 1 && 
+					publishType == IJBossServerPublisher.FULL_PUBLISH || 
+					publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+				// Only mark a doDeploy file for the root module, but this must be delayed, 
+				// becuase we don't know how many children modules will get published here (SUCK)
+				JBoss7JSTPublisher.markDeployed(method, ds, module, monitor);
+			}
+			return s;
+		}
+		return Status.OK_STATUS;
+	}
+	
 	public IStatus publishModule(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
-		//IJBoss7Manager service = JBoss7ManagerUtil.findManagementService(server);
-		
-		// jboss-7 specific
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			if( JBoss7Server.supportsJBoss7MarkerDeployment(server) )
-				JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
-			else 
-				super.publishModule(method, server, module, publishType, delta, monitor); 
-		} else {
-			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
-			if( JBoss7Server.supportsJBoss7MarkerDeployment(server) ) {
-				if( module.length == 1 && 
-						publishType == IJBossServerPublisher.FULL_PUBLISH || 
-						publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
-					// Only mark a doDeploy file for the root module, but this must be delayed, 
-					// becuase we don't know how many children modules will get published here (SUCK)
-					JBoss7JSTPublisher.markDeployed(method, ds, module, monitor);
-				}
-			}
-			return s;
-		}
-		return Status.OK_STATUS;
+		boolean useAS7Behavior = JBoss7Server.supportsJBoss7MarkerDeployment(server);
+		if( useAS7Behavior )
+			return publishModuleToAS7(method, server, module, publishType, delta, monitor);
+		else
+			return super.publishModule(method, server, module, publishType, delta, monitor);
 	}
     
 	
