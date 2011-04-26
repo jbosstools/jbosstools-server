@@ -793,7 +793,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	
 	
 	public static String getDefaultOutputName(IModule module) {
-		return module.getName() + PublishUtil.getSuffix(module.getModuleType().getId());
+		return new Path(module.getName()).lastSegment() + PublishUtil.getSuffix(module.getModuleType().getId());
 	}
 	
 	protected static String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
