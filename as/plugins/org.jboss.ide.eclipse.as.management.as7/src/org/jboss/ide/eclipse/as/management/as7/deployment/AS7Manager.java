@@ -139,7 +139,7 @@ public class AS7Manager {
 	 * 
 	 * @throws JBoss7ManangerException
 	 */
-	public void shutdown() throws JBoss7ManangerException {		
+	public void stop() throws JBoss7ManangerException {		
 		ModelNode request = new ModelNode();
 		request.get(OP).set(SHUTDOWN);
 		quietlyExecute(request);

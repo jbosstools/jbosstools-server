@@ -162,7 +162,7 @@ public class AS7ManagerIntegrationTest {
 	@Test
 	public void canShutdown() throws JBoss7ManangerException, UnknownHostException, IOException {
 		assertTrue(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
-		manager.shutdown();
+		manager.stop();
 		assertFalse(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
 	}
 }

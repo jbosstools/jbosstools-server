@@ -50,4 +50,8 @@ public class JBoss7Manager implements IJBoss7Manager {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.getDeploymentState(deploymentName);
 	}
+	
+	public void stop(String host, int port) throws Exception {
+		new AS7Manager(host, port).stop();
+	}
 }

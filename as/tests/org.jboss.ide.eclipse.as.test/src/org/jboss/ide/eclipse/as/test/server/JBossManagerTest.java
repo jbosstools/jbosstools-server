@@ -85,5 +85,8 @@ public class JBossManagerTest {
 				throws JBoss7ManangerException {
 			throw new UnsupportedOperationException();
 		}
+		
+		public void stop(String host, int port) throws JBoss7ManangerException {
+		}
 	}
 }
