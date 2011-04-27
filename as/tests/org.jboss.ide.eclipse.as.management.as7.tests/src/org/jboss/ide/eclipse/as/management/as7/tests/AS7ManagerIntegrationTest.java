@@ -7,11 +7,12 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.management.as7.tests;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -38,7 +39,10 @@ public class AS7ManagerIntegrationTest {
 	private AS7Manager manager;
 
 	@Before
-	public void setUp() throws UnknownHostException {
+	public void setUp() throws IOException {
+		assertTrue("There is no server at " + AS7ManagerTestUtils.HOST +
+				" that listens on port " + AS7ManagerTestUtils.MGMT_PORT,
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
 		this.manager = new AS7Manager(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
 	}
 
@@ -131,7 +135,8 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Test
-	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException, JBoss7ManangerException {
+	public void getDisabledStateIfDeploymentIsOnlyAdded() throws URISyntaxException, IOException,
+			JBoss7ManangerException {
 		String deploymentName = "testDeployment";
 		File warFile = AS7ManagerTestUtils.getWarFile(AS7ManagerTestUtils.MINIMALISTIC_WAR);
 		try {
@@ -152,5 +157,12 @@ public class AS7ManagerIntegrationTest {
 		} finally {
 			AS7ManagerTestUtils.quietlyUndeploy(deploymentName, manager);
 		}
+	}
+
+	@Test
+	public void canShutdown() throws JBoss7ManangerException, UnknownHostException, IOException {
+		assertTrue(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
+		manager.shutdown();
+		assertFalse(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
 	}
 }

@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.CHILD_TYPE;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.FAILURE_DESCRIPTION;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OUTCOME;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
@@ -107,7 +108,7 @@ public class AS7ManagerUtil {
 		final ModelNode request;
 		try {
 			builder.operationName(READ_CHILDREN_NAMES_OPERATION);
-			builder.addProperty(CHILD_TYPE, ModelDescriptionConstants.DEPLOYMENT);
+			builder.addProperty(CHILD_TYPE, DEPLOYMENT);
 			request = builder.buildRequest();
 		} catch (OperationFormatException e) {
 			throw new IllegalStateException(AS7Messages.FailedToBuildOperation, e);

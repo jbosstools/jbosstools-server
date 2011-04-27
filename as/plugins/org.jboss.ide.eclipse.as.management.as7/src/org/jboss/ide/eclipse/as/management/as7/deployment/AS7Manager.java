@@ -17,6 +17,7 @@ import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptio
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SHUTDOWN;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,9 +132,19 @@ public class AS7Manager {
 		} else {
 			return JBoss7DeploymentState.STOPPED;
 		}
-
 	}
 
+	/**
+	 * Shuts the server down.
+	 * 
+	 * @throws JBoss7ManangerException
+	 */
+	public void shutdown() throws JBoss7ManangerException {		
+		ModelNode request = new ModelNode();
+		request.get(OP).set(SHUTDOWN);
+		quietlyExecute(request);
+	}
+	
 	public void dispose() {
 		StreamUtils.safeClose(client);
 	}
@@ -155,6 +166,16 @@ public class AS7Manager {
 		}
 	}
 
+	public void quietlyExecute(ModelNode node) throws JBoss7ManangerException {
+		try {
+			client.execute(node);
+		} catch(IOException e) {
+			// ignore
+		} catch (Exception e) {
+			throw new JBoss7ManangerException(e);
+		}
+	}
+	
 	private IJBoss7DeploymentResult execute(DeploymentPlanBuilder builder) throws JBoss7ManangerException {
 		try {
 			DeploymentAction action = builder.getLastAction();

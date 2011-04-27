@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.management.as7.tests;
 
 import java.io.BufferedInputStream;
@@ -16,14 +16,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
+import java.net.Socket;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.osgi.framework.Bundle;
 
@@ -62,7 +65,8 @@ public class AS7ManagerTestUtils {
 
 	public static void quietlyUndeploy(String name, AS7Manager manager) {
 		try {
-			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
+			// DetypedDeployer.undeploy(name, AS7ManagerTestUtils.HOST,
+			// AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.undeploy(name));
 		} catch (Exception e) {
 			// ignore
@@ -71,7 +75,8 @@ public class AS7ManagerTestUtils {
 
 	public static void quietlyRemove(String name, AS7Manager manager) {
 		try {
-			//DetypedDeployer.remove(name, AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
+			// DetypedDeployer.remove(name, AS7ManagerTestUtils.HOST,
+			// AS7ManagerTestUtils.MGMT_PORT);
 			waitUntilFinished(manager.remove(name));
 		} catch (Exception e) {
 			// ignore
@@ -82,7 +87,6 @@ public class AS7ManagerTestUtils {
 		result.getStatus(); // wait for operation to finish
 	}
 
-	
 	public static String getResponse(String name, String host, int port) throws IOException {
 		URL url = new URL("http://" + host + ":" + port + "/" + name);
 		HttpURLConnection connection = connect(url);
@@ -126,5 +130,19 @@ public class AS7ManagerTestUtils {
 			writer.write(data);
 		}
 		return writer.toString();
+	}
+
+	public static boolean isListening(String host, int port) throws UnknownHostException, IOException {
+		Socket socket = null;
+		try {
+			socket = new Socket(host, port);
+			return socket.isConnected();
+		} catch (ConnectException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				socket.close();
+			}
+		}
 	}
 }
