@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.UnknownHostException;
 
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7Manager;
+import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,10 +43,10 @@ public class JBossManagementServiceIntegrationTest {
 	public void serviceIsReachable() throws BundleException {
 		ensureDSIsRunning();
 		BundleContext context = Activator.getContext();
-		ServiceReference<IJBoss7Manager> reference = 
-				context.getServiceReference(IJBoss7Manager.class);
+		ServiceReference<IJBoss7ManagerService> reference = 
+				context.getServiceReference(IJBoss7ManagerService.class);
 		assertNotNull(reference);
-		IJBoss7Manager service = context.getService(reference);
+		IJBoss7ManagerService service = context.getService(reference);
 		assertNotNull(service);
 	}
 
@@ -56,7 +56,7 @@ public class JBossManagementServiceIntegrationTest {
 		Bundle bundle = getDSBundle();
 		assertNotNull(
 				DS_BUNDLEID + " not installed. You have to install the declarative services daemon so that "
-						+ IJBoss7Manager.class + " service is registered"
+						+ IJBoss7ManagerService.class + " service is registered"
 				, bundle);
 		if (bundle.getState() != Bundle.ACTIVE) {
 			bundle.start();

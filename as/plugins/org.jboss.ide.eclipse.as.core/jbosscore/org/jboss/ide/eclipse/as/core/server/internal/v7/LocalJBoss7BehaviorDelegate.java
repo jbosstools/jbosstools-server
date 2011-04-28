@@ -16,6 +16,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	public IStatus canChangeState(String launchMode) {
-		return Status.CANCEL_STATUS;
+//		return Status.CANCEL_STATUS;
+		return Status.OK_STATUS;
 	}
 }

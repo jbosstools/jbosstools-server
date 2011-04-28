@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="jboss-as-controller-client-7.0.0.Beta3.jar" sourcepath="/jboss-as-controller-client"/>
+	<classpathentry exported="true" kind="lib" path="jboss-as-controller-client-7.0.0.Beta3.jar" sourcepath="/jboss-as-controller-client/src"/>
 	<classpathentry exported="true" kind="lib" path="jboss-as-protocol-7.0.0.Beta3.jar"/>
 	<classpathentry exported="true" kind="lib" path="jboss-dmr-1.0.0.Beta5.jar" sourcepath="/home/adietish/jboss-workspaces/jboss-tools/jbosstools-src/jboss-dmr-1.0.0.Beta5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="jboss-logging-3.0.0.Beta3.jar"/>

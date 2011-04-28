@@ -13,14 +13,14 @@ package org.jboss.ide.eclipse.as.management.as7.deployment;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7Manager;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 
 /**
  * @author Rob Stryker
  */
-public class JBoss7Manager implements IJBoss7Manager {
+public class JBoss7ManagerService implements IJBoss7ManagerService {
 
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName,
 			File file, IProgressMonitor monitor) throws Exception {
@@ -51,7 +51,15 @@ public class JBoss7Manager implements IJBoss7Manager {
 		return manager.getDeploymentState(deploymentName);
 	}
 	
+	public void stop(String host) throws Exception {
+		new AS7Manager(host).stopServer();
+	}
+	
 	public void stop(String host, int port) throws Exception {
-		new AS7Manager(host, port).stop();
+		new AS7Manager(host, port).stopServer();
+	}
+
+	@Override
+	public void dispose() {
 	}
 }

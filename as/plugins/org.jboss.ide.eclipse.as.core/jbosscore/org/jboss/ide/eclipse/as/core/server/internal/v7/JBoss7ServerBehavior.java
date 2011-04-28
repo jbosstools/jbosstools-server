@@ -24,12 +24,15 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
+
+	private IJBoss7ManagerService service;
+
 	private static HashMap<String, Class> delegateClassMap;
 	static {
 		delegateClassMap = new HashMap<String, Class>();
@@ -44,7 +47,14 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	
 	public void stop(boolean force) {
-		setServerStopped();
+		try {
+			IJBoss7ManagerService service = getService();
+			// TODO: for now only local, implement for remote afterwards
+			service.stop("localhost"); //$NON-NLS-1$
+			setServerStopped();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean shouldSuspendScanner() {
@@ -82,5 +92,20 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			super.publishFinish(new SubProgressMonitor(monitor, 1));
 		} else 
 			super.publishFinish(monitor);
+	}
+
+	private IJBoss7ManagerService getService() throws Exception {
+		if (service == null) {
+			service = JBoss7ManagerUtil.findManagementService(getServer());
+		}
+		return service;
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (service != null) {
+			service.dispose();
+		}
 	}
 }

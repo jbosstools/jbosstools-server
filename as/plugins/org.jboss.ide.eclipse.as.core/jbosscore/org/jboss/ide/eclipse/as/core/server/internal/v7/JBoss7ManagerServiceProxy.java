@@ -4,18 +4,19 @@ import java.io.File;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class JBoss7ManagerProxy extends ServiceTracker<IJBoss7Manager, IJBoss7Manager>
-		implements IJBoss7Manager {
+public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerService, IJBoss7ManagerService>
+		implements IJBoss7ManagerService {
 
-	public JBoss7ManagerProxy(BundleContext context, String asVersion) throws InvalidSyntaxException {
+	public JBoss7ManagerServiceProxy(BundleContext context, String asVersion) throws InvalidSyntaxException {
 		super(
 				context,
 				context.createFilter(MessageFormat
-						.format("(&(objectClass={0})(as.version={1}))", IJBoss7Manager.class.getCanonicalName(), asVersion)), null); //$NON-NLS-1$
+						.format("(&(objectClass={0})(as.version={1}))", IJBoss7ManagerService.class.getCanonicalName(), asVersion)), null); //$NON-NLS-1$
 	}
 
 	public IJBoss7DeploymentResult deployAsync(String host, int port, String deploymentName, File file,
@@ -46,12 +47,20 @@ public class JBoss7ManagerProxy extends ServiceTracker<IJBoss7Manager, IJBoss7Ma
 		checkedGetService().stop(host, port);
 	}
 
-	private IJBoss7Manager checkedGetService() throws JBoss7ManangerException {
-		IJBoss7Manager service = getService();
+	public void stop(String host) throws Exception {
+		checkedGetService().stop(host);
+	}
+
+	private IJBoss7ManagerService checkedGetService() throws JBoss7ManangerException {
+		IJBoss7ManagerService service = getService();
 		if (service == null) {
 			throw new JBoss7ManangerException("Could not acquire JBoss Management service"); //$NON-NLS-1$
 		}
 		return service;
+	}
+
+	public void dispose() {
+		close();
 	}
 
 }

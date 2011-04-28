@@ -39,7 +39,6 @@ public class AS7ManagerTestUtils {
 	public static final String MINIMALISTIC_WAR = "minimalistic.war";
 
 	public static final String HOST = "localhost";
-	public static final int MGMT_PORT = 9999;
 	public static final int WEB_PORT = 8080;
 
 	private static final String WAR_FOLDER = "/wars/";

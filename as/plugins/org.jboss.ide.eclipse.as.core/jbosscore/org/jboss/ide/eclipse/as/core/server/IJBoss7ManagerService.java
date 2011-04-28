@@ -8,13 +8,16 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server.internal.v7;
+package org.jboss.ide.eclipse.as.core.server;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 
-public interface IJBoss7Manager {
+public interface IJBoss7ManagerService {
 
 	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 
@@ -122,4 +125,8 @@ public interface IJBoss7Manager {
 	 * @throws Exception 
 	 */
 	public void stop(String host, int port) throws Exception;
+
+	public void stop(String host) throws Exception;
+
+	public void dispose();
 }

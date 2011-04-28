@@ -41,9 +41,9 @@ public class AS7ManagerIntegrationTest {
 	@Before
 	public void setUp() throws IOException {
 		assertTrue("There is no server at " + AS7ManagerTestUtils.HOST +
-				" that listens on port " + AS7ManagerTestUtils.MGMT_PORT,
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
-		this.manager = new AS7Manager(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT);
+				" that listens on port " + AS7Manager.MGMT_PORT,
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
+		this.manager = new AS7Manager(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT);
 	}
 
 	@After
@@ -160,9 +160,11 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Test
-	public void canShutdown() throws JBoss7ManangerException, UnknownHostException, IOException {
-		assertTrue(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
-		manager.stop();
-		assertFalse(AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7ManagerTestUtils.MGMT_PORT));
+	public void canStopServer() throws JBoss7ManangerException, UnknownHostException, IOException {
+		assertTrue(
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
+		manager.stopServer();
+		assertFalse(
+				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
 	}
 }

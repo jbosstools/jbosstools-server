@@ -43,10 +43,16 @@ import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
  */
 public class AS7Manager {
 
+	public static final int MGMT_PORT = 9999;
+
 	private ModelControllerClient client;
 	private ServerDeploymentManager manager;
 
-	public AS7Manager(String host, int port) throws UnknownHostException {
+	public AS7Manager(String host) throws UnknownHostException {
+		this(host, MGMT_PORT);
+	}
+
+		public AS7Manager(String host, int port) throws UnknownHostException {
 		this.client = ModelControllerClient.Factory.create(host, port);
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
@@ -139,7 +145,7 @@ public class AS7Manager {
 	 * 
 	 * @throws JBoss7ManangerException
 	 */
-	public void stop() throws JBoss7ManangerException {		
+	public void stopServer() throws JBoss7ManangerException {
 		ModelNode request = new ModelNode();
 		request.get(OP).set(SHUTDOWN);
 		quietlyExecute(request);
