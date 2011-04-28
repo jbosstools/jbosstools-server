@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.management.as7.deployment;
 
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADDRESS;
@@ -19,9 +19,11 @@ import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptio
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SHUTDOWN;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,7 +54,7 @@ public class AS7Manager {
 		this(host, MGMT_PORT);
 	}
 
-		public AS7Manager(String host, int port) throws UnknownHostException {
+	public AS7Manager(String host, int port) throws UnknownHostException {
 		this.client = ModelControllerClient.Factory.create(host, port);
 		this.manager = ServerDeploymentManager.Factory.create(client);
 	}
@@ -150,7 +152,7 @@ public class AS7Manager {
 		request.get(OP).set(SHUTDOWN);
 		quietlyExecute(request);
 	}
-	
+
 	public void dispose() {
 		StreamUtils.safeClose(client);
 	}
@@ -160,11 +162,11 @@ public class AS7Manager {
 			ModelNode response = client.execute(node);
 			if (!AS7ManagerUtil.isSuccess(response)) {
 				throw new JBoss7ManangerException(
-						NLS.bind(AS7Messages.OperationOnAddressFailed, 
-								new Object[]{ node.get(OP), 
-									node.get(ADDRESS), 
-									response.get(FAILURE_DESCRIPTION)}
-						));
+						NLS.bind(AS7Messages.OperationOnAddressFailed,
+								new Object[] { node.get(OP),
+										node.get(ADDRESS),
+										response.get(FAILURE_DESCRIPTION) }
+								));
 			}
 			return response.get(RESULT);
 		} catch (Exception e) {
@@ -175,13 +177,22 @@ public class AS7Manager {
 	public void quietlyExecute(ModelNode node) throws JBoss7ManangerException {
 		try {
 			client.execute(node);
-		} catch(IOException e) {
-			// ignore
 		} catch (Exception e) {
+			if (isConnectionCloseException(e)) {
+				// TODO: workaround for AS7-689
+				// ignore
+			}
 			throw new JBoss7ManangerException(e);
 		}
 	}
-	
+
+	private boolean isConnectionCloseException(Exception e) {
+		return e instanceof IOException 
+				&& e.getCause() instanceof ExecutionException
+				&& e.getCause().getCause() instanceof EOFException
+				&& e.getCause().getCause().getMessage().indexOf("Connection closed") > -1;
+	}
+
 	private IJBoss7DeploymentResult execute(DeploymentPlanBuilder builder) throws JBoss7ManangerException {
 		try {
 			DeploymentAction action = builder.getLastAction();
