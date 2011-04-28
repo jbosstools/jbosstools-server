@@ -135,6 +135,8 @@ public class ClientAllRuntimeClasspathProvider
 		if(AS_60.equals(rtID)) list = get60(loc,configPath);
 		if(EAP_50.equals(rtID)) list = get50(loc,configPath);
 		
+		if( AS_70.equals(rtID)) list = get70(loc);
+		
 		if( list == null ) {
 			runtimeClasspath = new IClasspathEntry[0];
 		} else {
@@ -207,21 +209,33 @@ public class ClientAllRuntimeClasspathProvider
 		return list;
 	}
 	
+	protected Set<Entry> get70(IPath location) {
+		Set<Entry> list = new HashSet<Entry>();
+		addPaths(location.append(AS7_MODULES), list, true);
+		return list;
+	}
+	
 	protected IClasspathEntry getEntry(Entry entry) {
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(entry.getPath()).getClasspathEntry();
 	}
 
 	protected void addPaths(IPath folder, Set<Entry> list) {
+		addPaths(folder, list, false);
+	}
+	
+	protected void addPaths(IPath folder, Set<Entry> list, boolean recurse) {
 		if( folder.toFile().exists()) {
 			File f = folder.toFile();
 			if(f.isDirectory()) {
-				String[] files = f.list();
-				for( int i = 0; i < files.length; i++ ) {
-					if( files[i].endsWith(EXT_JAR) && ClientAllFilter.accepts(folder.append(files[i]))) {
-						addSinglePath(folder.append(files[i]), list);
+				File[] asFiles = f.listFiles();
+				for( int i = 0; i < asFiles.length; i++ ) {
+					if( asFiles[i].getName().endsWith(EXT_JAR) && ClientAllFilter.accepts(folder.append(asFiles[i].getName()))) {
+						addSinglePath(folder.append(asFiles[i].getName()), list);
+					} else if( recurse && asFiles[i].isDirectory()) {
+						addPaths(folder.append(asFiles[i].getName()), list, true);
 					}
 				}
-			} else { // folder is a file, not a folder
+			} else { // item is a file, not a folder
 				addSinglePath(folder, list);
 			}
 		}

@@ -115,13 +115,9 @@ public class ClasspathCorePlugin extends Plugin {
 			return null;
 
 		IJBossServerRuntime jbsrt = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		if( jbsrt == null ) {
-			return null;
-		}
-		
 		IPath loc = runtime.getLocation();
-		IPath configPath = jbsrt.getConfigurationFullPath();
 		String rtID  = runtime.getRuntimeType().getId();
+		IPath configPath = jbsrt == null ? null : jbsrt.getConfigurationFullPath();
 		return new RuntimeKey(loc, configPath, rtID);
 	}
 }
