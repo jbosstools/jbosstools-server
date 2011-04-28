@@ -56,7 +56,7 @@ public class ServerUtil {
 	
 	@Deprecated
 	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( rt.getRuntime() != null )
+		if( rt == null || rt.getRuntime() != null )
 			return makeGlobal(rt.getRuntime(), p);
 		return p;
 	}
