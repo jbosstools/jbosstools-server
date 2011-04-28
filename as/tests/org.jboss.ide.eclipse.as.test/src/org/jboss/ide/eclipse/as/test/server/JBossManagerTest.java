@@ -92,7 +92,6 @@ public class JBossManagerTest {
 		public void stop(String host) throws JBoss7ManangerException {
 		}
 
-		@Override
 		public void dispose() {
 		}
 	}
