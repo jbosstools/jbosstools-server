@@ -26,6 +26,9 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String FOLDER_LOG = "log"; //$NON-NLS-1$
 	public static final String ENDORSED = "endorsed"; //$NON-NLS-1$
 	public static final String NATIVE = "native"; //$NON-NLS-1$
+	public static final String AS7_STANDALONE = "standalone";//$NON-NLS-1$
+	public static final String AS7_DEPLOYMENTS = "deployments";//$NON-NLS-1$
+	
 	public static final String[] JBOSS_TEMPORARY_FOLDERS = new String[] { WORK, DATA, FOLDER_TMP, FOLDER_LOG};
 
 	public static final String TWIDDLE_JAR = "twiddle.jar"; //$NON-NLS-1$

@@ -10,30 +10,12 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 
-public class LocalJBoss7ServerRuntime extends AbstractLocalJBossServerRuntime {
-	@Override
-	public void setDefaults(IProgressMonitor monitor) {
-		super.setDefaults(monitor);
-	}
-	@Override
-	public IStatus validate() {
-		return Status.OK_STATUS;
-	}
-
-	@Override
-	public String getDefaultRunArgs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getDefaultRunVMArgs() {
-		// TODO Auto-generated method stub
-		return null;
+public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
+	public IStatus canChangeState(String launchMode) {
+		return Status.CANCEL_STATUS;
 	}
 }

@@ -37,20 +37,34 @@ public class ServerUtil {
 			.append(serverID.replace(' ', '_'));
 	}
 
+	@Deprecated
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
+		if( rt.getRuntime() != null )
+			return makeRelative(rt.getRuntime(), p);
+		return p;
+	}
+	
+	public static IPath makeRelative(IRuntime rt, IPath p) {
 		if( p.isAbsolute() && rt != null) {
-			if(rt.getRuntime().getLocation().isPrefixOf(p)) {
-				int size = rt.getRuntime().getLocation().toOSString().length();
+			if(rt.getLocation().isPrefixOf(p)) {
+				int size = rt.getLocation().toOSString().length();
 				return new Path(p.toOSString().substring(size)).makeRelative();
 			}
 		}
 		return p;
 	}
 	
+	@Deprecated
 	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
+		if( rt.getRuntime() != null )
+			return makeGlobal(rt.getRuntime(), p);
+		return p;
+	}
+	
+	public static IPath makeGlobal(IRuntime rt, IPath p) {
 		if( !p.isAbsolute() ) {
-			if( rt != null && rt.getRuntime() != null && rt.getRuntime().getLocation() != null ) {
-				return rt.getRuntime().getLocation().append(p).makeAbsolute();
+			if( rt != null && rt.getLocation() != null ) {
+				return rt.getLocation().append(p).makeAbsolute();
 			}
 			return p.makeAbsolute();
 		}

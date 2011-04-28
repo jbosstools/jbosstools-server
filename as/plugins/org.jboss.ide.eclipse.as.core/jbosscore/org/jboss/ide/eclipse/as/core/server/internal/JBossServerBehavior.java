@@ -40,7 +40,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		public IStatus canChangeState(String launchMode);
 	}
 	
-	public static HashMap<String, Class> delegateClassMap;
+	private static HashMap<String, Class> delegateClassMap;
 	static {
 		delegateClassMap = new HashMap<String, Class>();
 		delegateClassMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, LocalJBossBehaviorDelegate.class);
@@ -61,9 +61,9 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			return delegate;
 		
-		Class c = delegateClassMap.get(id);
+		Class c = getDelegateMap().get(id);
 		if( c == null )
-			c = delegateClassMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+			c = getDelegateMap().get(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		
 		try {
 			JBossBehaviourDelegate o = (JBossBehaviourDelegate)c.newInstance();
@@ -74,6 +74,10 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		} catch( IllegalAccessException iae) {
 		}
 		return delegate;
+	}
+	
+	protected HashMap<String, Class> getDelegateMap() {
+		return delegateClassMap;
 	}
 	
 	public void stop(boolean force) {

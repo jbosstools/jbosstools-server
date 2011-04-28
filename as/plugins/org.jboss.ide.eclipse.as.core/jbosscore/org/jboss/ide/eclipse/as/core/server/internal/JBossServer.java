@@ -82,7 +82,7 @@ public class JBossServer extends DeployableServer
 	
 	/**
 	 * No changes will be made to this API and new server
-	 * types are expected to subclass the getDeployFolder() api's
+	 * types are expected to override the getDeployFolder() api's
 	 * 
 	 * @param jbs
 	 * @param type
@@ -96,7 +96,7 @@ public class JBossServer extends DeployableServer
 			String val = jbs.getAttribute(DEPLOY_DIRECTORY, (String)null);
 			if( val != null ) {
 				IPath val2 = new Path(val);
-				return ServerUtil.makeGlobal(jbsrt, val2).toString();
+				return ServerUtil.makeGlobal(jbsrt.getRuntime(), val2).toString();
 			}
 			// if no value is set, default to metadata
 			type = DEPLOY_METADATA;
@@ -109,7 +109,7 @@ public class JBossServer extends DeployableServer
 			String config = jbsrt.getJBossConfiguration();
 			IPath p = new Path(loc).append(config)
 				.append(IJBossServerConstants.DEPLOY);
-			return ServerUtil.makeGlobal(jbsrt, p).toString();
+			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
 		}
 		return null;
 	}
@@ -118,11 +118,13 @@ public class JBossServer extends DeployableServer
 		return getTempDeployFolder(this, getDeployLocationType());
 	}
 	
+	@Deprecated
 	public static String getTempDeployFolder(JBossServer jbs, String type) {
 		IServer server = jbs.getServer();
 		IJBossServerRuntime jbsrt = getRuntime(server);
 		if( type.equals(DEPLOY_CUSTOM))
-			return ServerUtil.makeGlobal(jbsrt, new Path(server.getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
+			return ServerUtil.makeGlobal(jbsrt.getRuntime(), 
+					new Path(server.getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(server).
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
@@ -132,7 +134,7 @@ public class JBossServer extends DeployableServer
 			IPath p = new Path(loc)
 				.append(config).append(IJBossServerConstants.TMP)
 				.append(IJBossServerConstants.JBOSSTOOLS_TMP);
-			return ServerUtil.makeGlobal(jbsrt, p).toString();
+			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
 		}
 		return null;
 	}

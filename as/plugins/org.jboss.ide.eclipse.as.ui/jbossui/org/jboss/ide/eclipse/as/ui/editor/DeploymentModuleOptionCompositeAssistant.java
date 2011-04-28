@@ -372,9 +372,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		JBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
 		String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
-				jbs == null ? "" : jbs.getDeployFolder(jbs, getDeployType()));
+				jbs == null ? "" : jbs.getDeployFolder());
 		String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
-				jbs == null ? "" : jbs.getTempDeployFolder(jbs, getDeployType()));
+				jbs == null ? "" : jbs.getTempDeployFolder());
 		deployText.removeModifyListener(deployListener);
 		deployText.setText(newDir);
 		deployText.addModifyListener(deployListener);

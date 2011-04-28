@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -22,11 +23,26 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
+	private static HashMap<String, Class> delegateClassMap;
+	static {
+		delegateClassMap = new HashMap<String, Class>();
+		delegateClassMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, LocalJBoss7BehaviorDelegate.class);
+	}
+	public static void addDelegateMapping(String s, Class c) {
+		delegateClassMap.put(s, c);
+	}
+	protected HashMap<String, Class> getDelegateMap() {
+		return delegateClassMap;
+	}
+
+	
 	public void stop(boolean force) {
 		setServerStopped();
 	}

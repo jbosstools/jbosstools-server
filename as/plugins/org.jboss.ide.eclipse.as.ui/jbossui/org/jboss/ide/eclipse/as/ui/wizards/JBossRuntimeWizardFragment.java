@@ -95,49 +95,52 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
  */
 public class JBossRuntimeWizardFragment extends WizardFragment {
 
-	private IWizardHandle handle;
-	private boolean beenEntered = false;
+	protected IWizardHandle handle;
+	protected boolean beenEntered = false;
 	
 	
-	private Label nameLabel, homeDirLabel, 
+	protected Label nameLabel, homeDirLabel, 
 			installedJRELabel, explanationLabel;
-	private Text nameText, homeDirText;
-	private Combo jreCombo;
-	private int jreComboIndex;
-	private Button homeDirButton, jreButton;
-	private Composite nameComposite, homeDirComposite, jreComposite;
-	private String name, homeDir;
+	protected Text nameText, homeDirText;
+	protected Combo jreCombo;
+	protected int jreComboIndex;
+	protected Button homeDirButton, jreButton;
+	protected Composite nameComposite, homeDirComposite, jreComposite;
+	protected String name, homeDir;
 
 	// Configuration stuff
-	private Composite configComposite;
-	private Group configGroup;
-	private Label configDirLabel;
-	private Text configDirText;
-	private JBossConfigurationTableViewer configurations;
-	private Button configCopy, configBrowse, configDelete;
-	private String configDirTextVal;
+	protected Composite configComposite;
+	protected Group configGroup;
+	protected Label configDirLabel;
+	protected Text configDirText;
+	protected JBossConfigurationTableViewer configurations;
+	protected Button configCopy, configBrowse, configDelete;
+	protected String configDirTextVal;
 
 	// jre fields
 	protected List<IVMInstall> installedJREs;
 	protected String[] jreNames;
 	protected int defaultVMIndex;
-	private IVMInstall selectedVM;
-	private String originalName;
+	protected IVMInstall selectedVM;
+	protected String originalName;
 
 	public Composite createComposite(Composite parent, IWizardHandle handle) {
 		this.handle = handle;
-
 		Composite main = new Composite(parent, SWT.NONE);
 		main.setLayout(new FormLayout());
 
-		updateJREs();
-		createExplanation(main);
-		createNameComposite(main);
-		createHomeComposite(main);
-		createJREComposite(main);
-		createConfigurationComposite(main);
+		updateModels();
+		createWidgets(main);
 		fillWidgets();
-
+		updateWizardHandle(parent);
+		return main;
+	}
+	
+	protected void updateModels() {
+		updateJREs();
+	}
+	
+	protected void updateWizardHandle(Composite parent) {
 		// make modifications to parent
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
@@ -151,7 +154,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		handle.setImageDescriptor(getImageDescriptor());
 		handle.setDescription(description);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, "org.jboss.ide.eclipse.as.doc.user.new_server_runtime"); //$NON-NLS-1$
-		return main;
+	}
+	
+	protected void createWidgets(Composite main) {
+		createExplanation(main);
+		createNameComposite(main);
+		createHomeComposite(main);
+		createJREComposite(main);
+		createConfigurationComposite(main);
 	}
 
 	protected boolean isEAP() {
@@ -164,61 +174,72 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return JBossServerUISharedImages.getImageDescriptor(imageKey);
 	}
 
-	private void fillWidgets() {
-		boolean canEdit = true;
-
-		IJBossServerRuntime rt = getRuntime();
-		if (rt != null) {
-			originalName = rt.getRuntime().getName();
-			nameText.setText(originalName);
-			name = originalName;
+	protected void fillNameWidgets(IRuntime rt) {
+		originalName = rt.getName();
+		nameText.setText(originalName);
+		name = originalName;
+	}
+	
+	protected void fillHomeDir(IRuntime rt) {
+		if( rt.getLocation() == null ) {
+			// new runtime creation
+			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+			String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntimeType().getId());
 			
-			if( rt.getRuntime().getLocation() == null ) {
-				// new runtime creation
-				Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-				String value = prefs.getString(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + rt.getRuntime().getRuntimeType().getId());
-				
-				String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
-				? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
-				String version = rt.getRuntime().getRuntimeType().getVersion();
-				locationDefault += version + ".x"; //$NON-NLS-1$
-				
-				homeDir = (value != null && value.length() != 0) ? value : locationDefault;
-			} else {
-				// old runtime, load from it
-				homeDir = rt.getRuntime().getLocation().toOSString();
-			}
-			homeDirText.setText(homeDir);
-			
-			((IRuntimeWorkingCopy)rt.getRuntime()).setLocation(new Path(homeDir));
-			String dirText = rt.getConfigLocation();
-			configDirText.setText(dirText == null ? IConstants.SERVER : dirText);
-			configurations.setConfiguration(rt.getJBossConfiguration() == null 
-					? IConstants.DEFAULT_CONFIGURATION : rt.getJBossConfiguration());
-
-			if (rt.isUsingDefaultJRE()) {
-				jreCombo.select(0);
-			} else {
-				IVMInstall install = rt.getVM();
-				if( install != null ) {
-					String vmName = install.getName();
-					String[] jres = jreCombo.getItems();
-					for (int i = 0; i < jres.length; i++) {
-						if (vmName.equals(jres[i]))
-							jreCombo.select(i);
-					}
+			String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
+			? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
+			String version = rt.getRuntimeType().getVersion();
+			locationDefault += version + ".x"; //$NON-NLS-1$
+			homeDir = (value != null && value.length() != 0) ? value : locationDefault;
+		} else {
+			// old runtime, load from it
+			homeDir = rt.getLocation().toOSString();
+		}
+		homeDirText.setText(homeDir);
+		
+		((IRuntimeWorkingCopy)rt).setLocation(new Path(homeDir));
+		homeDirText.setEditable(true);
+		homeDirButton.setEnabled(true);
+	}
+	
+	protected void fillConfigWidgets(IJBossServerRuntime jbsrt) {
+		String dirText = jbsrt.getConfigLocation();
+		configDirText.setText(dirText == null ? IConstants.SERVER : dirText);
+		configurations.setConfiguration(jbsrt.getJBossConfiguration() == null 
+				? IConstants.DEFAULT_CONFIGURATION : jbsrt.getJBossConfiguration());
+		configurations.getTable().setVisible(true);
+	}
+	
+	protected void fillJREWidgets(IJBossServerRuntime jbsrt) {
+		if (jbsrt.isUsingDefaultJRE()) {
+			jreCombo.select(0);
+		} else {
+			IVMInstall install = jbsrt.getVM();
+			if( install != null ) {
+				String vmName = install.getName();
+				String[] jres = jreCombo.getItems();
+				for (int i = 0; i < jres.length; i++) {
+					if (vmName.equals(jres[i]))
+						jreCombo.select(i);
 				}
 			}
-			jreComboIndex = jreCombo.getSelectionIndex();
-			homeDirText.setEditable(canEdit);
-			homeDirButton.setEnabled(canEdit);
-			configurations.getTable().setVisible(canEdit);
-			if( jreCombo.getSelectionIndex() < 0 && jreCombo.getItemCount() > 0)
-				jreCombo.select(0);
+		}
+		jreComboIndex = jreCombo.getSelectionIndex();
+		if( jreCombo.getSelectionIndex() < 0 && jreCombo.getItemCount() > 0)
+			jreCombo.select(0);
+	}
+	
+	protected void fillWidgets() {
+		IJBossServerRuntime rt = getRuntime();
+		if (rt != null) {
+			fillNameWidgets(rt.getRuntime());
+			fillHomeDir(rt.getRuntime());
+			fillConfigWidgets(rt);
+			fillJREWidgets(rt);
 		}
 	}
 
-	private IJBossServerRuntime getRuntime() {
+	protected IJBossServerRuntime getRuntime() {
 		IRuntime r = (IRuntime) getTaskModel()
 				.getObject(TaskModel.TASK_RUNTIME);
 		IJBossServerRuntime ajbsrt = null;
@@ -230,7 +251,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return ajbsrt;
 	}
 
-	private void createExplanation(Composite main) {
+	protected void createExplanation(Composite main) {
 		explanationLabel = new Label(main, SWT.WRAP);
 		FormData data = new FormData();
 		data.top = new FormAttachment(0, 5);
@@ -240,7 +261,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		explanationLabel.setText(Messages.rwf_Explanation);
 	}
 
-	private void createNameComposite(Composite main) {
+	protected void createNameComposite(Composite main) {
 		// Create our name composite
 		nameComposite = new Composite(main, SWT.NONE);
 
@@ -276,7 +297,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		nameText.setLayoutData(nameTextData);
 	}
 
-	private void createHomeComposite(Composite main) {
+	protected void createHomeComposite(Composite main) {
 		// Create our composite
 		homeDirComposite = new Composite(main, SWT.NONE);
 
@@ -332,7 +353,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		homeDirButton.setLayoutData(buttonData);
 	}
 
-	private void createJREComposite(Composite main) {
+	protected void createJREComposite(Composite main) {
 		// Create our composite
 		jreComposite = new Composite(main, SWT.NONE);
 
@@ -401,7 +422,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	}
 
-	private void createConfigurationComposite(Composite main) {
+	protected void createConfigurationComposite(Composite main) {
 		UIUtil u = new UIUtil(); // top bottom left right
 		configComposite = new Composite(main, SWT.NONE);
 		configComposite.setLayoutData(u.createFormData(
@@ -539,7 +560,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	// Launchable only from UI thread
-	private void updatePage() {
+	protected void updatePage() {
 		String folder;
 		if (!isHomeValid()) {
 			configurations.getControl().setEnabled(false);
@@ -566,7 +587,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		updateErrorMessage();
 	}
 
-	private void updateErrorMessage() {
+	protected void updateErrorMessage() {
 		String error = getErrorString();
 		if (error == null) {
 			String warn = getWarningString();
@@ -601,9 +622,6 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
 
-		if (homeDir == null || homeDir.equals("")) //$NON-NLS-1$
-			return Messages.rwf_homeDirBlank;
-
 		if (jreComboIndex < 0)
 			return Messages.rwf_NoVMSelected;
 		
@@ -613,20 +631,25 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return null;
 	}
 	
-	private String getWarningString() {
+	protected String getWarningString() {
 		if( getHomeVersionWarning() != null )
 			return getHomeVersionWarning();
 		return null;
 	}
 
 	protected boolean isHomeValid() {
-		if( homeDir == null  || !(new File(homeDir).exists())) return false;
+		if( homeDir == null  || homeDir.equals("") || !(new File(homeDir).exists())) return false;
 		return new Path(homeDir).append("bin").append("run.jar").toFile().exists(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	protected String getVersionString(File loc) {
+		String version = new ServerBeanLoader().getFullServerVersion(loc);
+		return version;
 	}
 	
 	protected String getHomeVersionWarning() {
 		File loc = new File(homeDir, JBossServerType.AS.getSystemJarPath());
-		String version = new ServerBeanLoader().getFullServerVersion(loc);
+		String version = getVersionString(loc);
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
 		String v = rt.getRuntimeType().getVersion();
@@ -641,7 +664,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 
-	private void browseHomeDirClicked() {
+	protected void browseHomeDirClicked() {
 		File file = new File(homeDir);
 		if (!file.exists()) {
 			file = null;
@@ -756,7 +779,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return true;
 	}
 
-	private IRuntime getRuntime(String runtimeName) {
+	protected IRuntime getRuntime(String runtimeName) {
 		if (runtimeName.equals(originalName))
 			return null; // name is same as original. No clash.
 

@@ -34,13 +34,22 @@
             typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.60"
         	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment"/>
       <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.runtime.70"/>
+      <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="%AllJBossServerTypes"/>
+            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50,org.jboss.ide.eclipse.as.60"/>
+   <!--
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
+            typeIds="org.jboss.ide.eclipse.as.70"/>  -->
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
-             typeIds="org.jboss.ide.eclipse.as.systemCopyServer,org.jboss.ide.eclipse.as.70"/>
+             typeIds="org.jboss.ide.eclipse.as.systemCopyServer"/>
    </extension>
 
    <extension point="org.eclipse.ui.startup">
@@ -175,7 +184,7 @@
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="%AllJBossServerTypes"/>
+            typeIds="%JBossServer6AndBelow"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerModeSection"
             id="org.jboss.ide.eclipse.as.ui.editor.serverModeSection"
