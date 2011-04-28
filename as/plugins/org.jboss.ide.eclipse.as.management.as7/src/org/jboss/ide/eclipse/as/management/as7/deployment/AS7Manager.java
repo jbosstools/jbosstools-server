@@ -178,11 +178,9 @@ public class AS7Manager {
 		try {
 			client.execute(node);
 		} catch (Exception e) {
-			if (isConnectionCloseException(e)) {
-				// TODO: workaround for AS7-689
-				// ignore
+			if (!isConnectionCloseException(e)) {
+				throw new JBoss7ManangerException(e);
 			}
-			throw new JBoss7ManangerException(e);
 		}
 	}
 
