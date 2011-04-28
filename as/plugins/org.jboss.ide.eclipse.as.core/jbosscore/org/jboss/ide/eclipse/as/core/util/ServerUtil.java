@@ -39,7 +39,7 @@ public class ServerUtil {
 
 	@Deprecated
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
-		if( rt.getRuntime() != null )
+		if( rt != null && rt.getRuntime() != null )
 			return makeRelative(rt.getRuntime(), p);
 		return p;
 	}
@@ -56,7 +56,7 @@ public class ServerUtil {
 	
 	@Deprecated
 	public static IPath makeGlobal(IJBossServerRuntime rt, IPath p) {
-		if( rt == null || rt.getRuntime() != null )
+		if( rt != null && rt.getRuntime() != null )
 			return makeGlobal(rt.getRuntime(), p);
 		return p;
 	}
