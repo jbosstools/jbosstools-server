@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
@@ -67,7 +66,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	protected boolean isHomeValid() {
-		if( homeDir == null  || homeDir.equals("") || !(new File(homeDir).exists())) 
+		if( homeDir == null  || homeDir.length() == 0 || !(new File(homeDir).exists())) 
 			return false;
 		return true;
 	}
@@ -75,7 +74,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 	@Override
 	protected String getVersionString(File loc) {
 		// TODO clean this up for later
-		return "7.0";
+		return "7.0"; //$NON-NLS-1$
 	}
 	
 	@Override
