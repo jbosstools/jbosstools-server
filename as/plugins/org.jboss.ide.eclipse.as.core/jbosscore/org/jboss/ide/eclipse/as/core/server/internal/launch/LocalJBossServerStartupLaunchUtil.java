@@ -231,7 +231,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	protected static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
 		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
-			return JBossRuntimeClasspathUtil.getRunJarRuntimeCPEntry(server);
+			return JBossRuntimeClasspathUtil.getModulesClasspathEntry(server);
 		} else {
 			IPath containerPath = new Path(RunJarContainerWrapper.ID).append(server.getName());
 			return JavaRuntime.newRuntimeContainerClasspathEntry(containerPath, IRuntimeClasspathEntry.USER_CLASSES);

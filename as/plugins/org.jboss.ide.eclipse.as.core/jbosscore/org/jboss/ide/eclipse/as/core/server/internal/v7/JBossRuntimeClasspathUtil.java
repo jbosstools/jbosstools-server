@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
@@ -19,16 +29,17 @@ public class JBossRuntimeClasspathUtil {
 
 	public static List<String> getClasspath(IServer server, IVMInstall vmInstall) throws CoreException {
 		List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		classpath.add(getRunJarRuntimeCPEntry(server));
+		classpath.add(getModulesClasspathEntry(server));
 		AbstractJBossLaunchConfigType.addJREEntry(classpath, vmInstall);
 		List<String> runtimeClassPaths = AbstractJBossLaunchConfigType.convertClasspath(classpath);
 		return runtimeClassPaths;
 	}
 
-	public static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
-		IPath location = server.getRuntime().getLocation();
+	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
+		IPath runtimeLocation = server.getRuntime().getLocation();
+		IPath modulesLocation = runtimeLocation.append(JBOSS_MODULES_JAR);
 		IClasspathEntry entry =
-				JavaRuntime.newArchiveRuntimeClasspathEntry(location.append(JBOSS_MODULES_JAR)).getClasspathEntry();
+				JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation).getClasspathEntry();
 		return new RuntimeClasspathEntry(entry);
 	}
 
