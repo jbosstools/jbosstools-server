@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import org.eclipse.core.runtime.CoreException;
@@ -19,38 +19,48 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
 
-public class JBoss7ServerStartupLaunchConfiguration extends
-		JBossServerStartupLaunchConfiguration implements
+/**
+ * @author Rob Stryker
+ */
+public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLaunchConfiguration implements
 		ILaunchConfigurationDelegate {
-	public void actualLaunch(ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		//super.actualLaunch(configuration, mode, launch, monitor);
+
+	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
+		return new String[] {};
 	}
-	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
-		//super.preLaunch(configuration, mode, launch, monitor);
+
+	public void actualLaunch(ILaunchConfiguration configuration,
+			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		super.actualLaunch(configuration, mode, launch, monitor);
+	}
+
+	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
+			throws CoreException {
+		// return super.preLaunchCheck(configuration, mode, monitor);
 		return true;
 	}
-	public void preLaunch(ILaunchConfiguration configuration, 
+
+	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		//super.preLaunch(configuration, mode, launch, monitor);
+		// super.preLaunch(configuration, mode, launch, monitor);
 		try {
 			JBossServerBehavior jbsBehavior = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
-		} catch( CoreException ce ) {
+		} catch (CoreException ce) {
 			// report it
 		}
 	}
+
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		//super.postLaunch(configuration, mode, launch, monitor);
+		// super.postLaunch(configuration, mode, launch, monitor);
 		try {
 			JBossServerBehavior jbsBehavior = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.setServerStarted();
-		} catch( CoreException ce ) {
+		} catch (CoreException ce) {
 			// report it
 		}
 	}
-	
 }

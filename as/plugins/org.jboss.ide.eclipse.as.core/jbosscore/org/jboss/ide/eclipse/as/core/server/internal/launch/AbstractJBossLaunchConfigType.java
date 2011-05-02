@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
@@ -42,24 +42,30 @@ import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
+/**
+ * @author Rob Stryker
+ */
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
 	public static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 
 	// we have no need to do anything in pre-launch check
-	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
+	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
+			throws CoreException {
 		return true;
 	}
 
-	public void preLaunch(ILaunchConfiguration configuration, 
+	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
-	public void postLaunch(ILaunchConfiguration configuration, 
+
+	public void postLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me
 	}
@@ -70,39 +76,40 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		actualLaunch(configuration, mode, launch, monitor);
 		postLaunch(configuration, mode, launch, monitor);
 	}
-	
-	protected void actualLaunch(ILaunchConfiguration configuration, 
+
+	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// And off we go!
 		IVMInstall vm = verifyVMInstall(configuration);
 		IVMRunner runner = vm.getVMRunner(mode);
-		
-		if(runner == null && ILaunchManager.PROFILE_MODE.equals(mode)){
+
+		if (runner == null && ILaunchManager.PROFILE_MODE.equals(mode)) {
 			runner = vm.getVMRunner(ILaunchManager.RUN_MODE);
 		}
-		if(runner == null){
-			throw new CoreException(new Status(IStatus.ERROR,JBossServerCorePlugin.PLUGIN_ID,0,Messages.runModeNotSupported,null));
+		if (runner == null) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 0,
+					Messages.runModeNotSupported, null));
 		}
-		
+
 		File workingDir = verifyWorkingDirectory(configuration);
 		String workingDirName = null;
 		if (workingDir != null)
 			workingDirName = workingDir.getAbsolutePath();
-		
+
 		// Program & VM args
 		String pgmArgs = getProgramArguments(configuration);
 		String vmArgs = getVMArguments(configuration);
 		ExecutionArguments execArgs = new ExecutionArguments(vmArgs, pgmArgs);
-		
+
 		// VM-specific attributes
-		Map vmAttributesMap = getVMSpecificAttributesMap(configuration);
-		
+		Map<?, ?> vmAttributesMap = getVMSpecificAttributesMap(configuration);
+
 		// Classpath
 		String[] classpath = getClasspath(configuration);
-		
+
 		// Environment
 		String[] environment = getEnvironment(configuration);
-		
+
 		// Create VM config
 		String mainType = getMainTypeName(configuration);
 		VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainType, classpath);
@@ -116,9 +123,9 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		String[] bootpath = getBootpath(configuration);
 		if (bootpath != null && bootpath.length > 0)
 			runConfig.setBootClassPath(bootpath);
-		
+
 		setDefaultSourceLocator(launch, configuration);
-		
+
 		if (ILaunchManager.PROFILE_MODE.equals(mode)) {
 			try {
 				ServerProfilerDelegate.configureProfiling(launch, vm, runConfig, monitor);
@@ -126,7 +133,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 				IServer server = ServerUtil.getServer(configuration);
 				JBossServerBehavior jbsb = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
 				jbsb.stop(true);
-				//genericServer.stopImpl();
+				// genericServer.stopImpl();
 				throw ce;
 			}
 		}
@@ -134,49 +141,49 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		runner.run(runConfig, launch, monitor);
 	}
 
-	
 	public static JBossServer findJBossServer(String serverId) throws CoreException {
-		if( serverId == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+		if (serverId == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerNotFound, serverId)));
 
 		IServer s = ServerCore.findServer(serverId);
-		if( s == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+		if (s == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerNotFound, serverId)));
 
 		JBossServer jbs = ServerConverter.getJBossServer(s);
-		if( jbs == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-			NLS.bind(Messages.ServerNotFound, serverId)));
-		
+		if (jbs == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerNotFound, serverId)));
+
 		return jbs;
 	}
-	
+
 	public static IJBossServerRuntime findJBossServerRuntime(IServer server) throws CoreException {
 		IRuntime rt = server.getRuntime();
 		IJBossServerRuntime jbrt = null;
-		if( rt != null ) 
-			jbrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
-		if( jbrt == null ) 
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-			NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));
+		if (rt != null)
+			jbrt = (IJBossServerRuntime) rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+		if (jbrt == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));
 		return jbrt;
 	}
-	
+
 	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
 		addCPEntry(list, new Path(getServerHome(jbs)).append(relative));
 	}
+
 	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, IPath path) {
 		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(path));
 	}
-	
+
 	public static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
-					new Path(JavaRuntime.JRE_CONTAINER)
-						.append(vmInstall.getVMInstallType().getId()).append(vmInstall.getName()),
+						new Path(JavaRuntime.JRE_CONTAINER)
+								.append(vmInstall.getVMInstallType().getId()).append(vmInstall.getName()),
 						IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
 			} catch (CoreException e) {
 				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
@@ -185,16 +192,15 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 			}
 		}
 	}
-	
+
 	public static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		File f = vmInstall.getInstallLocation();
 		File c1 = new File(f, IConstants.LIB);
 		File c2 = new File(c1, IConstants.TOOLS_JAR);
-		if( c2.exists()) 
+		if (c2.exists())
 			addCPEntry(cp, new Path(c2.getAbsolutePath()));
 	}
 
-	
 	public static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
@@ -230,16 +236,16 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		}
 	}
 
-	
 	public static String getServerHome(JBossServer jbs) {
 		return jbs.getServer().getRuntime().getLocation().toOSString();
 	}
-	
-	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		String serverId = configuration.getAttribute(SERVER_ID, (String)null);
-		JBossServer jbs = findJBossServer(serverId);
-		IJBossServerRuntime jbrt = findJBossServerRuntime(jbs.getServer());
-		return jbrt.getVM();
-	}
 
+	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
+		String serverId = configuration.getAttribute(SERVER_ID, (String) null);
+		JBossServer jbs = findJBossServer(serverId);
+		AbstractLocalJBossServerRuntime rt = (AbstractLocalJBossServerRuntime)
+				jbs.getServer().getRuntime()
+						.loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
+		return rt.getVM();
+	}
 }

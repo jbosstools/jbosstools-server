@@ -46,6 +46,7 @@ public interface IJBossRuntimeConstants {
 	public static final String TWIDDLE_MAIN_TYPE = "org.jboss.console.twiddle.Twiddle"; //$NON-NLS-1$
 	public static final String SHUTDOWN_MAIN_TYPE = "org.jboss.Shutdown"; //$NON-NLS-1$
 	public static final String START_MAIN_TYPE = "org.jboss.Main"; //$NON-NLS-1$
+	public static final String START7_MAIN_TYPE = "org.jboss.modules.Main"; //$NON-NLS-1$
 	public static final String CLASS_SIMPLE_PRINCIPAL = "org.jboss.security.SimplePrincipal"; //$NON-NLS-1$
 	public static final String CLASS_SECURITY_ASSOCIATION = "org.jboss.security.SecurityAssociation"; //$NON-NLS-1$
 	public static final String METHOD_SET_CREDENTIAL = "setCredential"; //$NON-NLS-1$

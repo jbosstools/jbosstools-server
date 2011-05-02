@@ -117,6 +117,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	protected transient IDebugEventSetListener processListener;
+	
 	public synchronized void setProcess(final IProcess newProcess) {
 		if (process != null) { 
 			return;
