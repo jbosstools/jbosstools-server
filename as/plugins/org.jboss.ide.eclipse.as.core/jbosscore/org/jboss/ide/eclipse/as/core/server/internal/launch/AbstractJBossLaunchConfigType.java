@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -178,7 +179,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(path));
 	}
 
-	public static void addJREEntry(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
+	public static void addJREEntry(List<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
 		if (vmInstall != null) {
 			try {
 				cp.add(JavaRuntime.newRuntimeContainerClasspathEntry(
@@ -201,7 +202,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 			addCPEntry(cp, new Path(c2.getAbsolutePath()));
 	}
 
-	public static ArrayList<String> convertClasspath(ArrayList<IRuntimeClasspathEntry> cp) {
+	public static ArrayList<String> convertClasspath(List<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {

@@ -18,33 +18,24 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.internal.launching.RuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
 
-	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$
+	public static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$
 
 	private IJBoss7ManagerService service;
 
@@ -77,45 +68,21 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		return false;
 	}
 
-	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor)
+	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
-		IRuntime rt = getServer().getRuntime();
-		LocalJBoss7ServerRuntime runtime = (LocalJBoss7ServerRuntime)
-				rt.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-
-		IPath p = rt.getLocation();
-		IVMInstall vmInstall = runtime.getVM();
-		if (vmInstall != null)
-			workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, JavaRuntime
-					.newJREContainerPath(vmInstall).toPortableString());
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, DEFAULT_CP_PROVIDER_ID);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, getClasspath());
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, runtime.getDefaultRunArgs());
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, runtime.getDefaultRunVMArgs());
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME,
-				IJBossRuntimeConstants.START7_MAIN_TYPE);
-		workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-				p.append(IJBossRuntimeResourceConstants.BIN).toString());
-		workingCopy.setAttribute(AbstractJBossLaunchConfigType.SERVER_ID, getServer().getId());
+		IServer server = getServer();
+		IRuntime runtime = server.getRuntime();
+		IJBossServerRuntime serverRuntime =
+				(IJBossServerRuntime) runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
+		new JBossRuntimeLaunchConfigBuilder(launchConfig, serverRuntime)
+				.setVmContainer()
+				.setClassPath(server)
+				.setDefaultArguments()
+				.setMainType(IJBossRuntimeConstants.START7_MAIN_TYPE)
+				.setWorkingDirectory(runtime)
+				.setServerId(server);
 	}
 
-	protected ArrayList<String> getClasspath() throws CoreException {
-		AbstractLocalJBossServerRuntime jbrt = (AbstractLocalJBossServerRuntime) getServer().getRuntime().loadAdapter(
-				AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
-		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		classpath.add(getRunJarRuntimeCPEntry(getServer()));
-		AbstractJBossLaunchConfigType.addJREEntry(classpath, jbrt.getVM());
-		ArrayList<String> runtimeClassPaths = AbstractJBossLaunchConfigType.convertClasspath(classpath);
-		return runtimeClassPaths;
-	}
-
-	public static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
-		IPath loc = server.getRuntime().getLocation();
-		IClasspathEntry e = JavaRuntime.newArchiveRuntimeClasspathEntry(
-				loc.append("jboss-modules.jar")).getClasspathEntry(); //$NON-NLS-1$
-		return new RuntimeClasspathEntry(e);
-	}
 
 	@Override
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor)
