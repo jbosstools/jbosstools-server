@@ -275,7 +275,11 @@
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension"
-            serverIds="%AllJBossServerTypes">
+            serverIds="%JBossServer6AndBelow">
+      </section>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7WebPortEditorExtension"
+            serverIds="%ServerTypesJBoss7">
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss6JMXRMIPortEditorExtension"

@@ -130,6 +130,17 @@ public class PortSection extends ServerEditorSection {
 		}
 	}
 	
+	public static class JBoss7WebPortEditorExtension extends PortEditorExtension {
+		public JBoss7WebPortEditorExtension() {
+			super(Messages.EditorWebPort, 
+					null,
+					IJBossServerConstants.WEB_PORT_DETECT,
+					IJBossServerConstants.WEB_PORT,
+					null, 
+					Messages.EditorChangeWebCommandName);
+		}
+	}
+
 	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorExtension {
 		public JBoss6JMXRMIPortEditorExtension() {
 			super(Messages.EditorJMXRMIPort, 
@@ -213,6 +224,7 @@ public class PortSection extends ServerEditorSection {
 		protected void initialize() {
 			boolean shouldDetect = helper.getAttribute(detectXPathKey, true);
 			detect.setSelection(shouldDetect);
+			detect.setEnabled(defaultXPath != null);
 			link.setEnabled(shouldDetect);
 			text.setEnabled(!shouldDetect);
 			text.setEditable(!shouldDetect);
