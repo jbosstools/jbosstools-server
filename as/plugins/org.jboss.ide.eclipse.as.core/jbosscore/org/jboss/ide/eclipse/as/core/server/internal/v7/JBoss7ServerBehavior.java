@@ -74,7 +74,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		IRuntime runtime = server.getRuntime();
 		IJBossServerRuntime serverRuntime =
 				(IJBossServerRuntime) runtime.loadAdapter(LocalJBoss7ServerRuntime.class, null);
-		new JBossRuntimeLaunchConfigBuilder(launchConfig, serverRuntime)
+		new JBoss7RuntimeLaunchConfigBuilder(launchConfig, serverRuntime)
 				.setVmContainer()
 				.setClassPath(server)
 				.setDefaultArguments()
