@@ -52,7 +52,7 @@ public class JBossRuntimeLaunchConfigBuilder {
 	}
 
 	public JBossRuntimeLaunchConfigBuilder setClassPath(IServer server) throws CoreException {
-		return setClassPath(JBossRuntimeClasspathUtil.getClasspath(server, jbossRuntime.getVM()));
+		return setClassPath(JBoss7RuntimeClasspathUtil.getClasspath(server, jbossRuntime.getVM()));
 	}
 
 	public JBossRuntimeLaunchConfigBuilder setClassPath(List<String> entries) throws CoreException {

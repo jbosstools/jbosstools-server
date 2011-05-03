@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.util;
 
 public interface IJBossRuntimeResourceConstants {
+	
 	/* Files and folders that are in various JBoss installations */
 	public static final String SERVER = "server"; //$NON-NLS-1$
 	public static final String BIN = "bin"; //$NON-NLS-1$
@@ -38,7 +39,7 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String SHUTDOWN_SH = "shutdown.sh"; //$NON-NLS-1$
 	public static final String START_JAR = "run.jar"; //$NON-NLS-1$
 	public static final String TOOLS_JAR = "tools.jar"; //$NON-NLS-1$
-	
+	public static final String JBOSS_MODULES_JAR = "jboss-modules.jar"; //$NON-NLS-1$
 	
 	public static final String JSF_LIB = "jsf-libs"; //$NON-NLS-1$
 	public static final String JBOSSWEB_TOMCAT55_SAR = "jbossweb-tomcat55.sar"; //$NON-NLS-1$

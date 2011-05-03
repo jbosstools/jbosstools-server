@@ -46,7 +46,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBossRuntimeClasspathUtil;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7RuntimeClasspathUtil;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -226,12 +226,11 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 		ArrayList<String> runtimeClassPaths = AbstractJBossLaunchConfigType.convertClasspath(classpath);
 		return runtimeClassPaths;
-
 	}
 
 	protected static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
 		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
-			return JBossRuntimeClasspathUtil.getModulesClasspathEntry(server);
+			return JBoss7RuntimeClasspathUtil.getModulesClasspathEntry(server);
 		} else {
 			IPath containerPath = new Path(RunJarContainerWrapper.ID).append(server.getName());
 			return JavaRuntime.newRuntimeContainerClasspathEntry(containerPath, IRuntimeClasspathEntry.USER_CLASSES);

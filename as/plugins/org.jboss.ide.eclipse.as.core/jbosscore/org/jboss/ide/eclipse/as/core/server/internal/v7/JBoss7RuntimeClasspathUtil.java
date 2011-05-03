@@ -15,17 +15,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.internal.launching.RuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
-public class JBossRuntimeClasspathUtil {
-
-	private static final String JBOSS_MODULES_JAR = "jboss-modules.jar"; //$NON-NLS-1$
+public class JBoss7RuntimeClasspathUtil {
 
 	public static List<String> getClasspath(IServer server, IVMInstall vmInstall) throws CoreException {
 		List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
@@ -37,10 +34,7 @@ public class JBossRuntimeClasspathUtil {
 
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
 		IPath runtimeLocation = server.getRuntime().getLocation();
-		IPath modulesLocation = runtimeLocation.append(JBOSS_MODULES_JAR);
-		IClasspathEntry entry =
-				JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation).getClasspathEntry();
-		return new RuntimeClasspathEntry(entry);
+		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS_MODULES_JAR);
+		return JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation);
 	}
-
 }
