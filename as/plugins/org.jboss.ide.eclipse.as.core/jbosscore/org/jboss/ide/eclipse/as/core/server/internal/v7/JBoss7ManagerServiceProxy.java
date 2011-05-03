@@ -43,6 +43,10 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		return checkedGetService().getDeploymentState(host, port, deploymentName);
 	}
 
+	public JBoss7ServerState getServerState(String host, int port) throws Exception {
+		return checkedGetService().getServerState(host, port);
+	}
+	
 	public void stop(String host, int port) throws Exception {
 		checkedGetService().stop(host, port);
 	}

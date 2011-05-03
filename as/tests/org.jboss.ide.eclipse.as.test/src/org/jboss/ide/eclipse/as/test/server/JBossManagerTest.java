@@ -12,6 +12,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServiceProxy;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
@@ -86,6 +87,10 @@ public class JBossManagerTest {
 			throw new UnsupportedOperationException();
 		}
 		
+		public JBoss7ServerState getServerState(String host, int port) throws Exception {
+			throw new UnsupportedOperationException();
+		}
+
 		public void stop(String host, int port) throws JBoss7ManangerException {
 		}
 

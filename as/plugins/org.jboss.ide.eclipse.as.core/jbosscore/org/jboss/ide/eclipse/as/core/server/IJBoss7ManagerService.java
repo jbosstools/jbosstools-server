@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 
 public interface IJBoss7ManagerService {
 
@@ -118,6 +119,17 @@ public interface IJBoss7ManagerService {
 	 */
 	public JBoss7DeploymentState getDeploymentState(String host, int port, String deploymentName) throws Exception;
 
+	/**
+	 * Returns the state of the server 
+	 * 
+	 * @param host the server to query
+	 * @param port the port to communicate on
+	 * @return the state of the server
+	 * 
+	 * @throws Exception
+	 */
+	public JBoss7ServerState getServerState(String host, int port) throws Exception;
+	
 	/**
 	 * Stops the given server
 	 * 

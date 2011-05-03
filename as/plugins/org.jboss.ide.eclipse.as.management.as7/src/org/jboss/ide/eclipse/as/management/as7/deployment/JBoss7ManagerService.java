@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 
 /**
  * @author Rob Stryker
@@ -51,6 +52,11 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		return manager.getDeploymentState(deploymentName);
 	}
 	
+	public JBoss7ServerState getServerState(String host, int port) throws Exception {
+		AS7Manager manager = new AS7Manager(host, port);
+		return manager.getServerState();
+	}
+
 	public void stop(String host) throws Exception {
 		new AS7Manager(host).stopServer();
 	}
