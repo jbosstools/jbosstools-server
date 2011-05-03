@@ -151,6 +151,7 @@ public class ModelDescriptionConstants {
     public static final String SERVER_GROUP = "server-group";
     public static final String SERVER_GROUPS = "server-groups";
     public static final String SERVER_OPERATIONS = "server-operations";
+    public static final String SERVER_STATE = "server-state";
     public static final String SHUTDOWN = "shutdown";
     public static final String SOCKET_BINDING = "socket-binding";
     public static final String SOCKET_BINDING_GROUP = "socket-binding-group";

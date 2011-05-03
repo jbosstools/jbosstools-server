@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.management.as7.tests;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
 import org.junit.After;
 import org.junit.Before;
@@ -160,11 +162,16 @@ public class AS7ManagerIntegrationTest {
 	}
 
 	@Test
+	public void canGetServerState() throws JBoss7ManangerException {
+		assertEquals(JBoss7ServerState.RUNNING, manager.getServerState());
+	}
+
+	@Test
 	public void canStopServer() throws JBoss7ManangerException, UnknownHostException, IOException {
-		assertTrue(
-				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
 		manager.stopServer();
 		assertFalse(
 				AS7ManagerTestUtils.isListening(AS7ManagerTestUtils.HOST, AS7Manager.MGMT_PORT));
 	}
+
+
 }

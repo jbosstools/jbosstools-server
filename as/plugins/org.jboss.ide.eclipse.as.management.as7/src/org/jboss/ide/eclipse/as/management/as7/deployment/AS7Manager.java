@@ -14,9 +14,12 @@ import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptio
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.FAILURE_DESCRIPTION;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.NAME;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SHUTDOWN;
 
 import java.io.EOFException;
@@ -38,6 +41,7 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
 
 /**
@@ -153,6 +157,22 @@ public class AS7Manager {
 		quietlyExecute(request);
 	}
 
+	public JBoss7ServerState getServerState() throws JBoss7ManangerException {
+		ModelNode request = new ModelNode();
+		request.get(OP).set(READ_ATTRIBUTE_OPERATION);
+		request.get(NAME).set(SERVER_STATE);
+		ModelNode response = execute(request);
+		return toJBoss7ServerState(response);
+	}
+
+	private JBoss7ServerState toJBoss7ServerState(ModelNode response) throws JBoss7ManangerException {
+		try {
+			return JBoss7ServerState.valueOf(response.asString());
+		} catch (IllegalArgumentException e) {
+			throw new JBoss7ManangerException(e);
+		}
+	}
+
 	public void dispose() {
 		StreamUtils.safeClose(client);
 	}
@@ -185,7 +205,7 @@ public class AS7Manager {
 	}
 
 	private boolean isConnectionCloseException(Exception e) {
-		return e instanceof IOException 
+		return e instanceof IOException
 				&& e.getCause() instanceof ExecutionException
 				&& e.getCause().getCause() instanceof EOFException
 				&& e.getCause().getCause().getMessage().indexOf("Connection closed") > -1;
