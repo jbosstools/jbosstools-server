@@ -27,23 +27,15 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServer.IOperationListener;
-import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -108,7 +100,7 @@ public class ServerRuntimeUtils extends TestCase {
 	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
 		IServer s = ServerCreationUtils.createServer(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70, 
 				"/", "default");
-		ServerWorkingCopy swc = (ServerWorkingCopy) s.createWorkingCopy();
+		IServerWorkingCopy swc = s.createWorkingCopy();
 		swc.setServerConfiguration(null);
 		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
 		swc.setAttribute(DeployableServer.TEMP_DEPLOY_DIRECTORY, tempDeployLocation);
