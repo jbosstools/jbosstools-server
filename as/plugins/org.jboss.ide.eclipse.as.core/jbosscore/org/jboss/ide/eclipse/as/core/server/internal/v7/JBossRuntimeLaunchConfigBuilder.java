@@ -36,9 +36,14 @@ public class JBossRuntimeLaunchConfigBuilder {
 	public JBossRuntimeLaunchConfigBuilder setVmContainer() {
 		IVMInstall vmInstall = jbossRuntime.getVM();
 		if (vmInstall != null) {
-			launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
-					JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
+			setVmContainer(JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
 		}
+		return this;
+	}
+
+	public JBossRuntimeLaunchConfigBuilder setVmContainer(String vmPath) {
+		launchConfig.setAttribute(
+				IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, vmPath);
 		return this;
 	}
 
@@ -69,8 +74,7 @@ public class JBossRuntimeLaunchConfigBuilder {
 	}
 
 	public JBossRuntimeLaunchConfigBuilder setWorkingDirectory(IRuntime runtime) {
-		setWorkingDirectory(
-				runtime.getLocation().append(IJBossRuntimeResourceConstants.BIN).toString());
+		setWorkingDirectory(runtime.getLocation().append(IJBossRuntimeResourceConstants.BIN).toString());
 		return this;
 	}
 
