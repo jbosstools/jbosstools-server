@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
@@ -70,9 +69,14 @@ public class JBossRuntimeLaunchConfigBuilder {
 	}
 
 	public JBossRuntimeLaunchConfigBuilder setWorkingDirectory(IRuntime runtime) {
-		IPath location = runtime.getLocation();
-		launchConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
-				location.append(IJBossRuntimeResourceConstants.BIN).toString());
+		setWorkingDirectory(
+				runtime.getLocation().append(IJBossRuntimeResourceConstants.BIN).toString());
+		return this;
+	}
+
+	public JBossRuntimeLaunchConfigBuilder setWorkingDirectory(String directory) {
+		launchConfig.setAttribute(
+				IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, directory);
 		return this;
 	}
 
