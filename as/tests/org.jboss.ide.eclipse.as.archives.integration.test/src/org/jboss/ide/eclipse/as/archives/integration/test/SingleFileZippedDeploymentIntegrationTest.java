@@ -122,8 +122,6 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		assertTrue(!publishLog.exists());
 		IJBossServerPublisher publisher = ExtensionManager.getDefault().getPublisher(server, mods, "local");
 		assertNotNull(publisher);
-		assertTrue(publisher.getClass().getName() + " not equal to WTPZippedPublisher", 
-				publisher.getClass().equals(WTPZippedPublisher.class));
 		ServerRuntimeUtils.publish(server);
 		assertTrue(publishLog.exists());
 		System.out.println(IOUtil.getContents(publishLog));
