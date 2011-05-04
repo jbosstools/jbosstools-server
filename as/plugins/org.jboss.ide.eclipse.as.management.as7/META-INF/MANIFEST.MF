@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: As7
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.management.as7
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.2.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.management.as7.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
