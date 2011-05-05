@@ -13,7 +13,7 @@ public abstract class AbstractEntry extends PlatformObject implements IWorkbench
 	/**
 	 * The collection of direct children of this entry
 	 */
-	private List children = new ArrayList();
+	private List<AbstractEntry> children = new ArrayList<AbstractEntry>();
 	protected Object parent;
 
 	/**
@@ -86,7 +86,7 @@ public abstract class AbstractEntry extends PlatformObject implements IWorkbench
 	 * 
 	 * @param list the list of children to remove
 	 */
-	public void removeChildren(List list) {
+	public void removeChildren(List<AbstractEntry> list) {
 		children.removeAll(list);
 	}
 
