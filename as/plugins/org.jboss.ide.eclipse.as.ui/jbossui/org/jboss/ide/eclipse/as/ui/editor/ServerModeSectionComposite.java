@@ -73,7 +73,7 @@ public class ServerModeSectionComposite extends Composite {
 				behType = ExtensionManager.getDefault().getPublishMethod(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 			} else {
 				// socket is not localhost, hard code this for now
-				behType = ExtensionManager.getDefault().getPublishMethod("rse");
+				behType = ExtensionManager.getDefault().getPublishMethod("rse"); //$NON-NLS-1$
 			}
 			current = behType.getName();
 			callback.execute(new ChangeServerPropertyCommand(
