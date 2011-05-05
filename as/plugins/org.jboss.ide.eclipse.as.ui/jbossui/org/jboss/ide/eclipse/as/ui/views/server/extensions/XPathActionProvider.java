@@ -130,7 +130,6 @@ public class XPathActionProvider extends CommonActionProvider {
 				}
 				
 				if (category != null) {
-					String categoryName = category.getName();
 					XPathDialog d = new XPathDialog(Display.getCurrent()
 							.getActiveShell(), getServer(), null);
 					if (d.open() == Window.OK) {
