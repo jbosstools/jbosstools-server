@@ -37,18 +37,18 @@ public class SharedImages {
 
 	private static SharedImages instance;
 	
-	private Hashtable images, descriptors;
+	private Hashtable<String, Object> images, descriptors;
 	
 	private SharedImages () {
 		instance = this;
-		images = new Hashtable();
-		descriptors = new Hashtable();
+		images = new Hashtable<String, Object>();
+		descriptors = new Hashtable<String, Object>();
 		
 		
 		Bundle pluginBundle = Activator.getDefault().getBundle();
 		descriptors.put(IMG_MBEAN, createImageDescriptor(pluginBundle, "icons/mbean16")); //$NON-NLS-1$
 		
-		Iterator iter = descriptors.keySet().iterator();
+		Iterator<String> iter = descriptors.keySet().iterator();
 
 		while (iter.hasNext()) {
 			String key = (String) iter.next();
@@ -90,7 +90,7 @@ public class SharedImages {
 	}
 	
 	protected void finalize() throws Throwable {
-		Iterator iter = images.keySet().iterator();
+		Iterator<String> iter = images.keySet().iterator();
 		while (iter.hasNext())
 		{
 			Image image = (Image) images.get(iter.next());
