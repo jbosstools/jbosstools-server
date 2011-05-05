@@ -42,7 +42,6 @@ public class ServerLogActionProvider extends CommonActionProvider {
 		if( site instanceof ICommonViewerWorkbenchSite ) {
 			StructuredViewer v = aSite.getStructuredViewer();
 			if( v instanceof CommonViewer ) {
-				CommonViewer cv = (CommonViewer)v;
 				ICommonViewerWorkbenchSite wsSite = (ICommonViewerWorkbenchSite)site;
 				showInServerLogAction = new ShowInServerLogAction(wsSite.getSelectionProvider());
 			}
