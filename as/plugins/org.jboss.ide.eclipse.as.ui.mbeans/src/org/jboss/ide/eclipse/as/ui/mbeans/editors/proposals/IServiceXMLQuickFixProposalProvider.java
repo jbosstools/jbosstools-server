@@ -23,7 +23,6 @@ package org.jboss.ide.eclipse.as.ui.mbeans.editors.proposals;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 
 /**
  *
