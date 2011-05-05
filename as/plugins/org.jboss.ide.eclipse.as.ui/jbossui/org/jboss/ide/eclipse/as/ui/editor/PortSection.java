@@ -87,9 +87,9 @@ public class PortSection extends ServerEditorSection {
 	}
 
 	protected boolean serverTypeMatches(String serverType, String approvedTypes) {
-		if( approvedTypes == null || approvedTypes.equals(""))
+		if( approvedTypes == null || approvedTypes.equals("")) //$NON-NLS-1$
 			return true;
-		String[] split = approvedTypes.split(",");
+		String[] split = approvedTypes.split(","); //$NON-NLS-1$
 		for( int i = 0; i < split.length; i++ )
 			if( split[i].equals(serverType))
 				return true;
