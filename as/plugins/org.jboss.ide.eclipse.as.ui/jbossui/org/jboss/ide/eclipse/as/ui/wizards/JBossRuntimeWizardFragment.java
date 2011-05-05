@@ -639,7 +639,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected boolean isHomeValid() {
-		if( homeDir == null  || homeDir.equals("") || !(new File(homeDir).exists())) return false;
+		if( homeDir == null  || homeDir.length() == 1 || !(new File(homeDir).exists())) return false; //$NON-NLS-1$
 		return new Path(homeDir).append("bin").append("run.jar").toFile().exists(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
