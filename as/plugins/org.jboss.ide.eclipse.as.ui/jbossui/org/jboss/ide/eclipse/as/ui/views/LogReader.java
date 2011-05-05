@@ -24,7 +24,7 @@ public class LogReader {
 	private static final int TEXT_STATE = 60;
 	private static final int UNKNOWN_STATE = 70;
 
-	public static LogSession parseLogFile(File file, List entries, IMemento memento) {
+	public static LogSession parseLogFile(File file, List<AbstractEntry> entries, IMemento memento) {
 		if (file == null || !file.exists())
 			return null;
 
@@ -32,7 +32,7 @@ public class LogReader {
 //				&& memento.getInteger(LogView.P_LOG_LIMIT).intValue() == 0)
 //			return null;
 
-		ArrayList parents = new ArrayList();
+		List<AbstractEntry> parents = new ArrayList<AbstractEntry>();
 		LogEntry current = null;
 		LogSession session = null;
 		int writerState = UNKNOWN_STATE;
@@ -188,7 +188,7 @@ public class LogReader {
 	 * @param entries
 	 * @param memento
 	 */
-	private static void addEntry(LogEntry entry, List entries, IMemento memento) {
+	private static void addEntry(LogEntry entry, List<AbstractEntry> entries, IMemento memento) {
 
 		if (isLogged(entry, memento)) {
 			entries.add(entry);
@@ -226,7 +226,7 @@ public class LogReader {
 //		return false;
 	}
 
-	private static void setNewParent(ArrayList parents, LogEntry entry, int depth) {
+	private static void setNewParent(List<AbstractEntry> parents, LogEntry entry, int depth) {
 		if (depth + 1 > parents.size())
 			parents.add(entry);
 		else
