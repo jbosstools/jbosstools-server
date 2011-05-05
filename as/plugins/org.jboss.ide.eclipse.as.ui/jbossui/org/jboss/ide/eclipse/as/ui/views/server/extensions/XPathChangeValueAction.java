@@ -28,9 +28,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.actions.SelectionProviderAction;
 import org.eclipse.ui.actions.TextActionHandler;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
-import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult.XPathResultNode;
+import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.ui.Messages;
 /**
  * Action to rename a server.
