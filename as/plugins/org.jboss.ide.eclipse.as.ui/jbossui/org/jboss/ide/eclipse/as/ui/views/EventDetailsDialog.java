@@ -3,7 +3,6 @@ package org.jboss.ide.eclipse.as.ui.views;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.StringTokenizer;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -48,9 +47,6 @@ public class EventDetailsDialog extends TrayDialog {
 	private Clipboard clipboard;
 	private Button copyButton;
 
-	// patterns for filtering stack traces
-	private String[] stackFilterPatterns = null;
-
 	/**
 	 * 
 	 * @param parentShell shell in which dialog is displayed
@@ -65,10 +61,6 @@ public class EventDetailsDialog extends TrayDialog {
 		this.entry = selection;
 		setShellStyle(SWT.MODELESS | SWT.MIN | SWT.MAX | SWT.RESIZE | SWT.CLOSE | SWT.BORDER | SWT.TITLE);
 		clipboard = new Clipboard(parentShell.getDisplay());
-	}
-
-	private boolean isChild(AbstractEntry entry) {
-		return entry.getParent(entry) != null;
 	}
 
 	public void create() {
