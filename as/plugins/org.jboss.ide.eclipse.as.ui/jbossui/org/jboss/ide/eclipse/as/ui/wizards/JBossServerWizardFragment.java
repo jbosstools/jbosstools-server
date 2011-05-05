@@ -44,11 +44,8 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
@@ -80,8 +77,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
 		String version = r.getRuntimeType().getVersion();
-		if( isEAP() && version.startsWith("5."))
-			version = "5.x";
+		if( isEAP() && version.startsWith("5.")) //$NON-NLS-1$
+			version = "5.x"; //$NON-NLS-1$
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
 				version);
@@ -173,7 +170,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		g.setLayoutData(groupData);
 		
 		g.setLayout(new FillLayout());
-		Composite child = new ServerModeSectionComposite(g, SWT.NONE, new NewServerWizardBehaviourCallback());
+		new ServerModeSectionComposite(g, SWT.NONE, new NewServerWizardBehaviourCallback());
 	}
 	
 	private class NewServerWizardBehaviourCallback implements IServerModeUICallback {
