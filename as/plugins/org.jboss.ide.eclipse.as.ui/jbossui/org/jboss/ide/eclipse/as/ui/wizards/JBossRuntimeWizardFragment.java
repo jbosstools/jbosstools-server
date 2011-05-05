@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -905,8 +906,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			} else {
 				setCleanMessage();
 			}
-			if( getOKButton() != null ) 
-				getOKButton().setEnabled(valid);
+			if( getButton(Dialog.OK) != null ) 
+				getButton(Dialog.OK).setEnabled(valid);
 		}
 		
 		protected void setCleanMessage() {
