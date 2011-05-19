@@ -87,22 +87,10 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		if( pollThread != null ) {
 			pollThread.cancel();
 		}
-		IServerStatePoller poller = PollThreadUtils.getPoller(JBoss7ManagerServicePoller.POLLER_ID, expectedState, getServer());
+		//IServerStatePoller poller = PollThreadUtils.getPoller(JBoss7ManagerServicePoller.POLLER_ID, expectedState, getServer());
+		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 		this.pollThread = new PollThread(expectedState, poller, this);
 		pollThread.start();
-	}
-
-	@Override
-	public void serverStarting() {
-		//super.serverStarting(); 
-		setServerStarting();
-		pollServer(IServerStatePoller.SERVER_UP);
-	}
-
-	@Override
-	public void serverStopping() {
-		super.serverStopping();
-		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 
 	private void initDebugListener(IProcess process) {
@@ -113,6 +101,8 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		if( serverProcessListener != null ) {
 			DebugPlugin.getDefault().removeDebugEventListener(serverProcessListener);
 			serverProcess = null;
+			if( pollThread != null )
+				pollThread.cancel();
 		}
 	}
 

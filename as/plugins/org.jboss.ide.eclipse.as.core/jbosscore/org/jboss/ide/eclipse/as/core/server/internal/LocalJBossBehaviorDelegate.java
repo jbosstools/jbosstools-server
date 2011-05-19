@@ -136,6 +136,8 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					for (int i = 0; i < size; i++) {
 						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
 							DebugPlugin.getDefault().removeDebugEventListener(this);
+							if( pollThread != null )
+								pollThread.cancel();
 							forceStop();
 							addProcessTerminatedEvent();
 						}

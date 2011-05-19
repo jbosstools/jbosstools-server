@@ -61,12 +61,13 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
-		JBossBehaviourDelegate del = server.getDelegate();
-		if( del instanceof IProcessProvider ) {
-			IProcess p = ((IProcessProvider)del).getProcess();
-			return p == null || p.isTerminated();
-		} 
-		return true;
+//		JBossBehaviourDelegate del = server.getDelegate();
+//		if( del instanceof IProcessProvider ) {
+//			IProcess p = ((IProcessProvider)del).getProcess();
+//			boolean b = p == null || p.isTerminated();
+//			System.out.println(p + " " + b); //$NON-NLS-1$
+//		} 
+		return false;
 	}
 
 	public void failureHandled(Properties properties) {
