@@ -166,7 +166,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			pollThread.cancel();
 		}
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, poller, getActualBehavior());
+		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
 		pollThread.start();
 	}
 	

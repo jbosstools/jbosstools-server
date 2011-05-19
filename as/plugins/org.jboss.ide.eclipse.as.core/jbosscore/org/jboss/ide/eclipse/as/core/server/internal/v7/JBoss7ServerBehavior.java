@@ -88,7 +88,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			pollThread.cancel();
 		}
 		IServerStatePoller poller = PollThreadUtils.getPoller(JBoss7ManagerServicePoller.POLLER_ID, expectedState, getServer());
-		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, poller, this);
+		this.pollThread = new PollThread(expectedState, poller, this);
 		pollThread.start();
 	}
 

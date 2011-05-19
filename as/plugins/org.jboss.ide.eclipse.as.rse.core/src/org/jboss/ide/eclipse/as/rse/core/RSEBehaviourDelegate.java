@@ -12,7 +12,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
-import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
@@ -47,7 +46,7 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 			pollThread.cancel();
 		}
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, poller, getActualBehavior());
+		this.pollThread = new PollThread( expectedState, poller, getActualBehavior());
 		pollThread.start();
 	}
 
