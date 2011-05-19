@@ -12,10 +12,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
-import org.jboss.ide.eclipse.as.core.publishers.SingleFilePublisher;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
@@ -36,7 +33,6 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		SingleDeployableFactory.makeDeployable(file);
 		mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 1);
-		verifyPublisher(mods[0], SingleFilePublisher.class);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
 		deployRoot.toFile().mkdirs();
@@ -118,7 +114,6 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		SingleDeployableFactory.makeDeployable(folder);
 		mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 1);
-		verifyPublisher(mods[0], SingleFilePublisher.class);
 		return mods;
 	}
 
@@ -170,7 +165,6 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		SingleDeployableFactory.makeDeployable(file);
 		mods = SingleDeployableFactory.getFactory().getModules();
 		assertEquals(mods.length, 1);
-		verifyPublisher(mods[0], SingleFilePublisher.class);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		ArrayList<IPath> changed2 = MockPublishMethod.changed;
 		ArrayList<IPath> removed2 = MockPublishMethod.removed;
@@ -249,13 +243,6 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 
 	}
 
-	
-	protected void verifyPublisher(IModule module, Class c) {
-//		IModule[] mod = new IModule[] { module };
-//		IJBossServerPublisher publisher = ExtensionManager
-//			.getDefault().getPublisher(server, mod, "local");
-//		assertTrue(publisher.getClass().equals(c));
-	}
 	
 	protected IFile createFile(String filename, String contents) throws CoreException, IOException  {
 		IFile resource = project.getFile(filename);
