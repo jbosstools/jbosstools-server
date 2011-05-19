@@ -349,7 +349,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 							}
 						}
 					} catch (Exception e) {
-						Trace.trace(Trace.STRING_FINEST, Messages.ServerContentProvider_ErrorInServersViewAnimation, e);
+						//Trace.trace(Trace.FINEST, Messages.ServerContentProvider_ErrorInServersViewAnimation, e);
 					}
 					display.timerExec(SLEEP, animator[0]);
 				}

@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.internal.Server;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 
@@ -43,10 +42,10 @@ public class ServerAttributeHelper {
 		return null;
 	}
 	
-	private ServerWorkingCopy wch;
+	private IServerWorkingCopy wch;
 	private IServer server;
 	public ServerAttributeHelper(IServer server, IServerWorkingCopy copy) {
-		this.wch = (ServerWorkingCopy)copy;
+		this.wch = copy;
 		this.server = server;
 	}
 

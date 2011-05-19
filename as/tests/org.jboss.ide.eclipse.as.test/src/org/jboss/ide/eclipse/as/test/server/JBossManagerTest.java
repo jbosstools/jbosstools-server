@@ -91,6 +91,10 @@ public class JBossManagerTest {
 			throw new UnsupportedOperationException();
 		}
 
+		public JBoss7ServerState getServerState(String host) throws Exception {
+			throw new UnsupportedOperationException();
+		}
+
 		public void stop(String host, int port) throws JBoss7ManangerException {
 		}
 

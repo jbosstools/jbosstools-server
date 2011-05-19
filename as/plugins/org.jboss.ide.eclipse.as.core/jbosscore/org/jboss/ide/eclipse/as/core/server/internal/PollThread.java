@@ -21,12 +21,10 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * 
@@ -56,33 +54,13 @@ public class PollThread extends Thread {
 	private JBossServerBehavior behavior;
 	private String pollerId;
 
-	public PollThread(String name, boolean expectedState,
-			JBossServerBehavior behavior) {
+	public PollThread(String name, boolean expectedState, IServerStatePoller poller, JBossServerBehavior behavior) {
 		super(name);
 		this.expectedState = expectedState;
 		this.abort = false;
 		this.abortMessage = null;
 		this.behavior = behavior;
-		this.poller = discoverPoller(behavior, expectedState);
-	}
-
-	protected IServerStatePoller discoverPoller(JBossServerBehavior behavior,
-			boolean expectedState) {
-		JBossServer s = ServerConverter.getJBossServer(behavior.getServer());
-		ServerAttributeHelper helper = s.getAttributeHelper();
-		String key = expectedState == IServerStatePoller.SERVER_UP ? IJBossServerConstants.STARTUP_POLLER_KEY
-				: IJBossServerConstants.SHUTDOWN_POLLER_KEY;
-		String defaultPoller = expectedState == IServerStatePoller.SERVER_UP ? IJBossServerConstants.DEFAULT_STARTUP_POLLER
-				: IJBossServerConstants.DEFAULT_SHUTDOWN_POLLER;
-		pollerId = helper.getAttribute(key, defaultPoller);
-		ServerStatePollerType type = ExtensionManager.getDefault()
-				.getPollerType(pollerId);
-		if (type != null) {
-			IServerStatePoller tempPoller = type.createPoller();
-			tempPoller.setPollerType(type);
-			return tempPoller;
-		}
-		return null;
+		this.poller = poller;
 	}
 
 	public void cancel() {

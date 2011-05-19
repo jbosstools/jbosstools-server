@@ -26,8 +26,8 @@ public interface IJBoss7ManagerService {
 
 	/**
 	 * Asynchronously deploy a file to a server
-	 * 
 	 * @param host
+	 * 
 	 *            The host
 	 * @param port
 	 *            The port
@@ -130,6 +130,8 @@ public interface IJBoss7ManagerService {
 	 */
 	public JBoss7ServerState getServerState(String host, int port) throws Exception;
 	
+	public JBoss7ServerState getServerState(String host) throws Exception;
+	
 	/**
 	 * Stops the given server
 	 * 
@@ -139,6 +141,6 @@ public interface IJBoss7ManagerService {
 	public void stop(String host, int port) throws Exception;
 
 	public void stop(String host) throws Exception;
-
+	
 	public void dispose();
 }

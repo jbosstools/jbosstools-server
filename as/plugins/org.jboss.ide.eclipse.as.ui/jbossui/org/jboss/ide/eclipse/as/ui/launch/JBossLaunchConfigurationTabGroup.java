@@ -91,8 +91,12 @@ public class JBossLaunchConfigurationTabGroup extends
 		}
 	}
 	
+	public ArrayList<IJBossLaunchTabProvider> getProviderList() {
+		return providers;
+	}
+	
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		Iterator<IJBossLaunchTabProvider> i = providers.iterator();
+		Iterator<IJBossLaunchTabProvider> i = getProviderList().iterator();
 		ArrayList<ILaunchConfigurationTab> tabs = new ArrayList<ILaunchConfigurationTab>();
 		while(i.hasNext()) {
 			ILaunchConfigurationTab[] tabs2 = i.next().createTabs();

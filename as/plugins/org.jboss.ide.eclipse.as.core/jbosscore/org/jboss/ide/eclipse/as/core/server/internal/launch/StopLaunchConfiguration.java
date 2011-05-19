@@ -100,23 +100,27 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 
 	public static String getDefaultArgs(JBossServer jbs) {
-		IJBossRuntimeConstants c = new IJBossRuntimeConstants() {};
-		IJBossToolingConstants tc = new IJBossToolingConstants() {};
 		
 		String runtimeTypeId = jbs.getRuntime().getRuntime().getRuntimeType().getId();
 		String serverUrl;
-		if (runtimeTypeId.equals(tc.AS_60)){
+		if (runtimeTypeId.equals(IJBossToolingConstants.AS_60)){
 			IJBoss6Server server6 = (IJBoss6Server)jbs.getServer().loadAdapter(IJBoss6Server.class, new NullProgressMonitor());
 			serverUrl = "service:jmx:rmi:///jndi/rmi://" + jbs.getHost() + ":" + server6.getJMXRMIPort() + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		} else {
 			serverUrl = jbs.getHost() + ":" + jbs.getJNDIPort(); //$NON-NLS-1$
 		}
-		String args = c.SHUTDOWN_STOP_ARG + c.SPACE;
-		args += c.SHUTDOWN_SERVER_ARG + c.SPACE + serverUrl + c.SPACE;
+		String args = IJBossRuntimeConstants.SHUTDOWN_STOP_ARG 
+				+ IJBossRuntimeConstants.SPACE;
+		args += IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG 
+				+ IJBossRuntimeConstants.SPACE 
+				+ serverUrl 
+				+ IJBossRuntimeConstants.SPACE;
 		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
-			args += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
+			args += IJBossRuntimeConstants.SHUTDOWN_USER_ARG 
+			+ IJBossRuntimeConstants.SPACE + jbs.getUsername() + IJBossRuntimeConstants.SPACE;
 		if( jbs.getPassword() != null && !jbs.getPassword().equals(""))  //$NON-NLS-1$
-			args += c.SHUTDOWN_PASS_ARG + c.SPACE + jbs.getPassword() + c.SPACE;
+			args += IJBossRuntimeConstants.SHUTDOWN_PASS_ARG 
+			+ IJBossRuntimeConstants.SPACE + jbs.getPassword() + IJBossRuntimeConstants.SPACE;
 		return args;
 	}
 

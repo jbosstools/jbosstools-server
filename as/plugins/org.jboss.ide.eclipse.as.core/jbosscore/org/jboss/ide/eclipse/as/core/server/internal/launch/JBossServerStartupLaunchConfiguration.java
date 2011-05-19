@@ -17,14 +17,19 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -80,7 +85,11 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 
 	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
-		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(server.getId());
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		if (jbs == null) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerNotFound, server.getId())));
+		}
 		IJBossServerRuntime runtime = (IJBossServerRuntime)
 			jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
 		IPath nativeFolder = runtime.getRuntime().getLocation()

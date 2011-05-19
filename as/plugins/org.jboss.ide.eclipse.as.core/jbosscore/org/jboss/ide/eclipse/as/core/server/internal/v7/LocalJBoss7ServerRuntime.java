@@ -31,9 +31,9 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 	@Override
 	public String getDefaultRunArgs() {
 		IPath loc = getRuntime().getLocation();
-		return "-mp " //$NON-NLS-1$
+		return "-mp \"" //$NON-NLS-1$
 				+ loc.append("modules").toString() //$NON-NLS-1$ 
-				+ " -logmodule org.jboss.logmanager -jaxpmodule javax.xml.jaxp-provider org.jboss.as.standalone"; //$NON-NLS-1$
+				+ "\" -logmodule org.jboss.logmanager -jaxpmodule javax.xml.jaxp-provider org.jboss.as.standalone"; //$NON-NLS-1$
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 		return "-server -Xms64m -Xmx512m -XX:MaxPermSize=256m " //$NON-NLS-1$
 				+ "-Dorg.jboss.resolver.warning=true -Dsun.rmi.dgc.client.gcInterval=3600000 " //$NON-NLS-1$
 				+ "-Dsun.rmi.dgc.server.gcInterval=3600000 " //$NON-NLS-1$
-				+ "-Dorg.jboss.boot.log.file=" + bootLog.toString() //$NON-NLS-1$
-				+ " -Dlogging.configuration=file:" + logConfig.toString() //$NON-NLS-1$
-				+ " -Djboss.home.dir=" + loc.toString(); //$NON-NLS-1$"
+				+ "\"-Dorg.jboss.boot.log.file=" + bootLog.toString() //$NON-NLS-1$
+				+ "\" \"-Dlogging.configuration=file:" + logConfig.toString() //$NON-NLS-1$
+				+ "\" \"-Djboss.home.dir=" + loc.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$"
 	}
 }

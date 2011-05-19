@@ -47,6 +47,10 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 		return checkedGetService().getServerState(host, port);
 	}
 	
+	public JBoss7ServerState getServerState(String host) throws Exception {
+		return checkedGetService().getServerState(host);
+	}
+
 	public void stop(String host, int port) throws Exception {
 		checkedGetService().stop(host, port);
 	}

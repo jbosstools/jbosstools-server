@@ -22,6 +22,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.shells.IHostOutput;
@@ -29,6 +30,8 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
@@ -43,6 +46,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
@@ -58,7 +62,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			JBossServerStartupLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
-		JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
+		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		beh.setServerStarting();
 		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
 		try {
@@ -128,8 +132,8 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// ping if up 
-		final JBossServerBehavior beh = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
-		boolean started = new WebPortPoller().onePing(beh.getServer());
+		final JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		boolean started = WebPortPoller.onePing(beh.getServer());
 		if( started ) {
 			beh.setServerStarting();
 			beh.setServerStarted();
@@ -205,7 +209,11 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	
 	public static IServer findServer(ILaunchConfiguration config) throws CoreException {
 		String serverId = config.getAttribute("server-id", (String)null);
-		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(serverId);
+		JBossServer jbs = ServerConverter.findJBossServer(serverId);
+		if (jbs == null) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerNotFound, serverId)));
+		}
 		return jbs.getServer();
 	}
 	

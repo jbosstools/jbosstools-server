@@ -57,6 +57,10 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		return manager.getServerState();
 	}
 
+	public JBoss7ServerState getServerState(String host) throws Exception {
+		return new AS7Manager(host).getServerState();
+	}
+
 	public void stop(String host) throws Exception {
 		new AS7Manager(host).stopServer();
 	}

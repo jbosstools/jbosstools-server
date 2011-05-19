@@ -10,22 +10,36 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
+
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.RMIAdaptor;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN_ADAPTER_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN_PASS_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN_USER_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
+
 import java.io.File;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
@@ -40,7 +54,11 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server, String args) throws CoreException {
-		JBossServer jbs = findJBossServer(server.getId());
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		if (jbs == null) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerNotFound, server.getName())));
+		}
 		IJBossServerRuntime jbrt = findJBossServerRuntime(server);
 		String serverHome = getServerHome(jbs);
 		
@@ -71,16 +89,28 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 	
 	public static String getDefaultArgs(IServer server) throws CoreException {
-		IJBossRuntimeConstants c = new IJBossRuntimeConstants() { };
-		JBossServer jbs = findJBossServer(server.getId());
-		String twiddleArgs = c.SHUTDOWN_SERVER_ARG + c.SPACE + jbs.getHost() + ":"  //$NON-NLS-1$
-				+ jbs.getJNDIPort() +  c.SPACE + c.SHUTDOWN_ADAPTER_ARG 
-				+ c.SPACE + c.RMIAdaptor + c.SPACE;
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		if (jbs == null) {
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerNotFound, server.getName())));
+		}
+		String twiddleArgs = SHUTDOWN_SERVER_ARG 
+				+ SPACE 
+				+ jbs.getHost()  + ":"  + jbs.getJNDIPort()  //$NON-NLS-1$
+				+ SPACE 
+				+ SHUTDOWN_ADAPTER_ARG 
+				+ SPACE 
+				+ RMIAdaptor 
+				+ SPACE;
 		if( jbs.getUsername() != null ) 
-			twiddleArgs += c.SHUTDOWN_USER_ARG + c.SPACE + jbs.getUsername() + c.SPACE;
+			twiddleArgs += SHUTDOWN_USER_ARG 
+			+ SPACE + jbs.getUsername() 
+			+ SPACE;
 		if( jbs.getPassword() != null ) 
-			twiddleArgs += c.SHUTDOWN_PASS_ARG + c.SPACE + jbs.getPassword() + c.SPACE;
+			twiddleArgs += SHUTDOWN_PASS_ARG 
+			+ SPACE 
+			+ jbs.getPassword() 
+			+ SPACE;
 		return twiddleArgs;
 	}
-
 }

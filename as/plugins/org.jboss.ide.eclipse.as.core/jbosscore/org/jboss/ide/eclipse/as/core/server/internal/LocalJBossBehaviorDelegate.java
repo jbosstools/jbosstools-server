@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 /**
  * 
@@ -161,10 +162,11 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	protected void pollServer(final boolean expectedState) {
-		if( this.pollThread != null ) {
+		if( pollThread != null ) {
 			pollThread.cancel();
 		}
-		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, getActualBehavior());
+		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
+		this.pollThread = new PollThread(Messages.ServerPollerThreadName, expectedState, poller, getActualBehavior());
 		pollThread.start();
 	}
 	

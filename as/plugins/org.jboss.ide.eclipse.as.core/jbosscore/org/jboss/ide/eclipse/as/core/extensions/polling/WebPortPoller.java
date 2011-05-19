@@ -41,7 +41,7 @@ public class WebPortPoller implements IServerStatePoller {
 		t.start();
 	}
 	
-	public void pollerRun() {
+	private void pollerRun() {
 		done = false;
 		String url = getURL(getServer());
 		while(!canceled && !done) {
@@ -53,7 +53,7 @@ public class WebPortPoller implements IServerStatePoller {
 		}
 	}
 	
-	public static String getURL(IServer server) {
+	private static String getURL(IServer server) {
 		String url = "http://"+server.getHost(); //$NON-NLS-1$
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		int port = jbs.getJBossWebPort();

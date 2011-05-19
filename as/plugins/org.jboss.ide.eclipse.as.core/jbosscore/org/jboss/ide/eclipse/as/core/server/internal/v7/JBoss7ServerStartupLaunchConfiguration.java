@@ -15,9 +15,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 
 /**
  * @author Rob Stryker
@@ -29,22 +30,15 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 		return new String[] {};
 	}
 
-	public void actualLaunch(ILaunchConfiguration configuration,
-			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		super.actualLaunch(configuration, mode, launch, monitor);
-	}
-
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		// return super.preLaunchCheck(configuration, mode, monitor);
 		return true;
 	}
 
-	public void preLaunch(ILaunchConfiguration configuration,
-			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		// super.preLaunch(configuration, mode, launch, monitor);
+	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
+			throws CoreException {
 		try {
-			JBossServerBehavior jbsBehavior = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
+			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
 		} catch (CoreException ce) {
@@ -52,13 +46,16 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 		}
 	}
 
-	public void postLaunch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		// super.postLaunch(configuration, mode, launch, monitor);
+	public void postLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
+			throws CoreException {
 		try {
-			JBossServerBehavior jbsBehavior = LocalJBossServerStartupLaunchUtil.getServerBehavior(configuration);
-			jbsBehavior.setRunMode(mode);
-			jbsBehavior.setServerStarted();
+			JBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
+			IProcess[] processes = launch.getProcesses();
+			if (processes != null && processes.length >= 1) {
+				behavior.setProcess(processes[0]);
+			}
+			behavior.setRunMode(mode);
+			behavior.setServerStarted();
 		} catch (CoreException ce) {
 			// report it
 		}

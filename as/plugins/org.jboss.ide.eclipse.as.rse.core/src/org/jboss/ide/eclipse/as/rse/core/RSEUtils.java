@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 
@@ -74,11 +75,19 @@ public class RSEUtils {
 			type = JBossServer.DEPLOY_SERVER;
 		} 
 		if( type.equals(JBossServer.DEPLOY_SERVER)) {
-			String loc = IConstants.SERVER;
-			String config = getRSEConfigName(server);
-			IPath p = new Path(loc).append(config)
-				.append(IJBossServerConstants.DEPLOY);
-			return makeGlobal(server, p).toString();
+			// TODO !!!!  Need API (nmaybe in JBossServer?) so servers can override this behavior
+			// Cannot move this code to JBossServer because this requires an RSE-specific key!! Damn!
+			
+			if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+				IPath p = new Path("standalone/deployments/");
+				return makeGlobal(server, p).toString();
+			} else {
+				String loc = IConstants.SERVER;
+				String config = getRSEConfigName(server);
+				IPath p = new Path(loc).append(config)
+					.append(IJBossServerConstants.DEPLOY);
+				return makeGlobal(server, p).toString();
+			}
 		}
 		return null;
 	}

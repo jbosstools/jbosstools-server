@@ -127,7 +127,7 @@ public class ServerActionProvider extends CommonActionProvider {
 					IServer server = (IServer) data;
 					ServerUIPlugin.editServer(server);
 				} catch (Exception e) {
-					Trace.trace(Trace.STRING_SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
+					//Trace.trace(Trace.SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
 				}
 			}
 		});

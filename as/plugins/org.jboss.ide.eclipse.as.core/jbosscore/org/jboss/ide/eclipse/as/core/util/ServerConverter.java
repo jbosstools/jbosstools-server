@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -28,6 +29,17 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
  * @author rob.stryker@jboss.com
  */
 public class ServerConverter {
+
+	public static JBossServer findJBossServer(String serverId) throws CoreException {
+		if (serverId == null)
+			return null;
+
+		IServer s = ServerCore.findServer(serverId);
+		if (s == null)
+			return null;
+		return ServerConverter.getJBossServer(s);
+	}
+
 	public static JBossServer getJBossServer(IServer server) {
 		JBossServer jbServer = (JBossServer)server.getAdapter(JBossServer.class);
 		if (jbServer == null) {

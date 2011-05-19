@@ -17,8 +17,6 @@ import org.osgi.framework.BundleContext;
 
 public class JBoss7ManagerUtil {
 	
-	public static final String SERVICE_VERSION_70 = "org.jboss.ide.eclipse.as.management.as7.service"; //$NON-NLS-1$
-
 	public static IJBoss7ManagerService getService(IServer server) throws Exception {
 		BundleContext context = JBossServerCorePlugin.getContext();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));

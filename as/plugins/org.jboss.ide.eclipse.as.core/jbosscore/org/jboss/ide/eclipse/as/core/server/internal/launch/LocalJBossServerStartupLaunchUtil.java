@@ -36,7 +36,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -46,12 +45,14 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7RuntimeClasspathUtil;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.JBoss7RuntimeClasspathUtil;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
@@ -67,11 +68,11 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		}
 
 		// Upgrade old launch configs
-		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(server.getId());
-		if (jbs == null)
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		if (jbs == null) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
-
+		}
 		String cpProvider = workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER,
 				(String) null);
 		if (!DEFAULT_CP_PROVIDER_ID.equals(cpProvider)) {
@@ -177,10 +178,11 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	}
 
 	protected static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
-		JBossServer jbs = AbstractJBossLaunchConfigType.findJBossServer(server.getId());
-		if (jbs == null)
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		if (jbs == null) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
+		}
 
 		String serverHome = AbstractJBossLaunchConfigType.getServerHome(jbs);
 		if (serverHome == null)
@@ -247,12 +249,6 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		return null;
 	}
 
-	public static JBossServerBehavior getServerBehavior(ILaunchConfiguration configuration) throws CoreException {
-		IServer server = ServerUtil.getServer(configuration);
-		JBossServerBehavior jbossServerBehavior = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
-		return jbossServerBehavior;
-	}
-
 	/* For "restore defaults" functionality */
 	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$
 
@@ -305,7 +301,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
 		return true;
@@ -314,7 +310,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
-			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
 		} catch (CoreException ce) {
@@ -326,7 +322,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
 			IProcess[] processes = launch.getProcesses();
-			JBossServerBehavior jbsBehavior = getServerBehavior(configuration);
+			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			((LocalJBossBehaviorDelegate) (jbsBehavior.getDelegate())).setProcess(processes[0]);
 		} catch (CoreException ce) {
 			// report

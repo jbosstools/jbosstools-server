@@ -10,6 +10,26 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.DEFAULT_MEM_ARGS;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.DEFAULT_MEM_ARGS_AS50;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.ENDORSED_DIRS;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.EQ;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.JAVA_LIB_PATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.JAVA_PREFER_IP4_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.PROGRAM_NAME_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.QUOTE;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SERVER_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SUN_CLIENT_GC_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SUN_SERVER_GC_ARG;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SYSPROP;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.BIN;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.ENDORSED;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LIB;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.NATIVE;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.SERVER;
+
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -23,15 +43,14 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
-		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossServerConstants.DEFAULT_CONFIGURATION);
+		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 	}
 
 	protected String getNextRuntimeName() {
@@ -68,47 +87,46 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	}
 
 	public String getDefaultRunArgs() {
-		return IConstants.STARTUP_ARG_CONFIG_LONG + "=" + getJBossConfiguration() + IConstants.SPACE;  //$NON-NLS-1$
+		return STARTUP_ARG_CONFIG_LONG + "=" + getJBossConfiguration() + SPACE;  //$NON-NLS-1$
 	}
 
 	public String getDefaultRunVMArgs() {
-		IConstants c = new IConstants(){};
 		String name = getRuntime().getName();
-		String ret = c.QUOTE + c.SYSPROP + c.PROGRAM_NAME_ARG + c.EQ +  
-			"JBossTools: " + name + c.QUOTE + c.SPACE; //$NON-NLS-1$
+		String ret = QUOTE + SYSPROP + PROGRAM_NAME_ARG + EQ +  
+			"JBossTools: " + name + QUOTE + SPACE; //$NON-NLS-1$
 		if( Platform.getOS().equals(Platform.OS_MACOSX))
-			ret += c.SERVER_ARG + c.SPACE;
+			ret += SERVER_ARG + SPACE;
 		IRuntimeType type = getRuntime().getRuntimeType();
 		if (type != null && 
 				(IJBossToolingConstants.AS_50.equals(type.getId()) ||
 				 IJBossToolingConstants.AS_51.equals(type.getId()) ||
 				 IJBossToolingConstants.AS_60.equals(type.getId()) ||
 				 IJBossToolingConstants.EAP_50.equals(type.getId())) ) {
-			ret += c.DEFAULT_MEM_ARGS_AS50;
+			ret += DEFAULT_MEM_ARGS_AS50;
 		} else {
-			ret += c.DEFAULT_MEM_ARGS;
+			ret += DEFAULT_MEM_ARGS;
 		}
 		if( Platform.getOS().equals(Platform.OS_LINUX))
-			ret += c.SYSPROP + c.JAVA_PREFER_IP4_ARG + c.EQ + true + c.SPACE; 
-		ret += c.SYSPROP + c.SUN_CLIENT_GC_ARG + c.EQ + 3600000 + c.SPACE;
-		ret += c.SYSPROP + c.SUN_SERVER_GC_ARG + c.EQ + 3600000 + c.SPACE;
-		ret += c.QUOTE + c.SYSPROP + c.ENDORSED_DIRS + c.EQ + 
-			(getRuntime().getLocation().append(c.LIB).append(c.ENDORSED)) + c.QUOTE + c.SPACE;
-		if( getRuntime().getLocation().append(c.BIN).append(c.NATIVE).toFile().exists() ) 
-			ret += c.SYSPROP + c.JAVA_LIB_PATH + c.EQ + c.QUOTE + 
-				getRuntime().getLocation().append(c.BIN).append(c.NATIVE) + c.QUOTE + c.SPACE;
+			ret += SYSPROP + JAVA_PREFER_IP4_ARG + EQ + true + SPACE; 
+		ret += SYSPROP + SUN_CLIENT_GC_ARG + EQ + 3600000 + SPACE;
+		ret += SYSPROP + SUN_SERVER_GC_ARG + EQ + 3600000 + SPACE;
+		ret += QUOTE + SYSPROP + ENDORSED_DIRS + EQ + 
+			(getRuntime().getLocation().append(LIB).append(ENDORSED)) + QUOTE + SPACE;
+		if( getRuntime().getLocation().append(BIN).append(NATIVE).toFile().exists() ) 
+			ret += SYSPROP + JAVA_LIB_PATH + EQ + QUOTE + 
+				getRuntime().getLocation().append(BIN).append(NATIVE) + QUOTE + SPACE;
 		
 		return ret;
 	}
 	
 	public HashMap<String, String> getDefaultRunEnvVars(){
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
-		envVars.put("Path", IConstants.NATIVE); //$NON-NLS-1$
+		envVars.put("Path", NATIVE); //$NON-NLS-1$
 		return envVars;
 	}
 
 	public String getConfigLocation() {
-		return getAttribute(PROPERTY_CONFIG_LOCATION, IConstants.SERVER);
+		return getAttribute(PROPERTY_CONFIG_LOCATION, SERVER);
 	}
 
 	public void setConfigLocation(String configLocation) {
