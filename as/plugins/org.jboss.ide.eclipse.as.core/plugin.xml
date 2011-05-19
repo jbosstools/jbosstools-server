@@ -699,6 +699,13 @@
             supportsShutdown="true"
             supportsStartup="true">
       </serverPoller>
+      <serverPoller
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
+            id="org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"
+            name="JBoss 7 Manager Service Poller"
+            supportsShutdown="true"
+            supportsStartup="true">
+       </serverPoller>
    </extension>
 
 
@@ -1102,24 +1109,10 @@
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
       <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.UnifiedPublisher"
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
             priority="15"
             zipDelegate="false">
       </publisher>
-      <!--
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
-            priority="6">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.JstPublisher"
-            priority="5">
-      </publisher>
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.publishers.NullPublisher"
-            priority="0">
-      </publisher>
-      -->
    </extension>
    <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">

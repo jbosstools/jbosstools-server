@@ -43,7 +43,7 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-/**O
+/**
  * Class suitable for parsing any properly formed servertools-api module
  */
 public abstract class AbstractServerToolsPublisher implements IJBossServerPublisher {
@@ -203,7 +203,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute();
 			
 			try {
-				File temp = deployRoot.toFile().createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
+				File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
 				String parentFolder = deployPath.removeLastSegments(1).toString();

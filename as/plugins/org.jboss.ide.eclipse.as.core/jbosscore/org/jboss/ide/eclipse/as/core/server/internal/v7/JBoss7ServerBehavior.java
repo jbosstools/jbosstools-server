@@ -94,7 +94,8 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	@Override
 	public void serverStarting() {
-		super.serverStarting();
+		//super.serverStarting(); 
+		setServerStarting();
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 
@@ -109,8 +110,10 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	}
 
 	private void disposeServerProcessListener() {
-		DebugPlugin.getDefault().removeDebugEventListener(serverProcessListener);
-		serverProcess = null;
+		if( serverProcessListener != null ) {
+			DebugPlugin.getDefault().removeDebugEventListener(serverProcessListener);
+			serverProcess = null;
+		}
 	}
 
 	@Override
@@ -163,7 +166,8 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		
 		try {
 			if (force) {
-				serverProcess.terminate();
+				if( serverProcess != null )
+					serverProcess.terminate();
 			} else {
 				serverStopping();
 				// TODO: for now only local, implement for remote afterwards
