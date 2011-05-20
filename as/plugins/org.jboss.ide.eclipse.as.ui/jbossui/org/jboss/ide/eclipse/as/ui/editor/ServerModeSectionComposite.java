@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.ui.FormUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
@@ -45,14 +46,15 @@ public class ServerModeSectionComposite extends Composite {
 		super(parent, style);
 		this.callback = callback;
 		loadDeployTypeData();
-		FormToolkit toolkit2 = new FormToolkit(parent.getDisplay());
+		FormToolkit toolkit = new FormToolkit(getDisplay());
+//		FormUtils.adaptFormCompositeRecursively(this, toolkit);	
 		setLayout(new FormLayout());
 		deployTypeCombo = new Combo(this, SWT.READ_ONLY);
 		FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, 50, -5);
 		deployTypeCombo.setLayoutData(fd);
 		
 
-	    preferencePageBook = toolkit2.createPageBook(this, SWT.FLAT|SWT.TOP);
+	    preferencePageBook = toolkit.createPageBook(this, SWT.FLAT|SWT.TOP);
 	    preferencePageBook.setLayoutData(UIUtil.createFormData2(
 	    		deployTypeCombo, 5, 0, 150, 0, 5, 100, -5));
 
