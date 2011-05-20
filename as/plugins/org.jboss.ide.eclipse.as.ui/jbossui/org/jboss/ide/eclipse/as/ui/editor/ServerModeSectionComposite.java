@@ -47,7 +47,7 @@ public class ServerModeSectionComposite extends Composite {
 		this.callback = callback;
 		loadDeployTypeData();
 		FormToolkit toolkit = new FormToolkit(getDisplay());
-//		FormUtils.adaptFormCompositeRecursively(this, toolkit);	
+		FormUtils.adaptFormCompositeRecursively(this, toolkit);	
 		setLayout(new FormLayout());
 		deployTypeCombo = new Combo(this, SWT.READ_ONLY);
 		FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, 50, -5);
