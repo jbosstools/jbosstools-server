@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -54,6 +55,17 @@ public class JBossServerType implements IJBossToolingConstants {
 			BIN_PATH+File.separatorChar + TWIDDLE_JAR_NAME,
 			new String[]{V6_0,V5_1, V5_0, V4_2, V4_0, V3_2}, new ASServerTypeCondition());
 	
+	public static final JBossServerType AS7 = new JBossServerType(
+			"AS", //$NON-NLS-1$
+			"Application Server", //$NON-NLS-1$
+			"modules" + File.separatorChar +  //$NON-NLS-1$
+			"org" + File.separatorChar + //$NON-NLS-1$
+			"jboss" + File.separatorChar + //$NON-NLS-1$
+			"as" + File.separatorChar + //$NON-NLS-1$
+			"server" + File.separatorChar + //$NON-NLS-1$
+			"main", //$NON-NLS-1$
+			new String[]{V7_0,}, new AS7ServerTypeCondition());
+	
 	public static final JBossServerType EAP_STD = new JBossServerType(
 			"EAP_STD",//$NON-NLS-1$
 			"Enterprise Application Platform",//$NON-NLS-1$
@@ -94,7 +106,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V6_0, V5_1, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V6_0, V5_1, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
 
 	public String toString() {
 		return id;
@@ -191,6 +203,19 @@ public class JBossServerType implements IJBossToolingConstants {
 				return !isEAP(asSystemJar);
 			}
 			return false;
+		}
+	}
+	
+	public static class AS7ServerTypeCondition implements Condition {
+		
+		public boolean isServerRoot(File location) {
+			String standaloneScriptPath = new StringBuilder(location.getAbsolutePath())
+			.append(File.separator)
+			.append("bin") //$NON-NLS-1$
+			.append(File.separator)
+			.append("standalone.sh") //$NON-NLS-1$
+			.toString();
+			return new File(standaloneScriptPath).exists();
 		}
 	}
 	

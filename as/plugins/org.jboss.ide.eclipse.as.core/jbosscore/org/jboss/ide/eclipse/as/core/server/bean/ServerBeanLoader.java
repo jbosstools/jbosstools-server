@@ -12,6 +12,7 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -35,6 +36,8 @@ public class ServerBeanLoader {
 	public JBossServerType getServerType(File location) {
 		if(JBossServerType.AS.isServerRoot(location)) {
 			return JBossServerType.AS;
+		} else if(JBossServerType.AS7.isServerRoot(location)) {
+			return JBossServerType.AS7; 
 		} else if(JBossServerType.EAP_STD.isServerRoot(location)) {
 				return JBossServerType.EAP_STD;
 		} else if(JBossServerType.EAP.isServerRoot(location) && JBossServerType.SOAP.isServerRoot(location)) {
@@ -56,6 +59,18 @@ public class ServerBeanLoader {
 	}
 	
 	public String getFullServerVersion(File systemJarFile) {
+		if (systemJarFile.isDirectory()) {
+			File[] files = systemJarFile.listFiles(new FilenameFilter() {
+				
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".jar"); //$NON-NLS-1$
+				}
+			});
+			if (files != null && files.length == 1) {
+				systemJarFile = files[0];
+			}
+		}
+		
 		String version = null;
 		ZipFile jar = null;
 		if(systemJarFile.canRead()) {

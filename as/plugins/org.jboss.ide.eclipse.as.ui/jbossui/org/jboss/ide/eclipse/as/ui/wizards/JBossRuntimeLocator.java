@@ -98,10 +98,22 @@ public class JBossRuntimeLocator extends RuntimeLocatorDelegate {
 		JBossServerType type = loader.getServerType(path.toFile());
 		if( type == JBossServerType.AS)
 			return createASRuntime(path, loader);
+		if( type == JBossServerType.AS7)
+			return createAS7Runtime(path, loader);
 		if( type == JBossServerType.EAP)
 			return createEAPRuntime(path, loader);
 		if( type == JBossServerType.SOAP)
 			return createSOAPRuntime(path, loader);
+		return null;
+	}
+	
+	private static IRuntimeWorkingCopy createAS7Runtime(IPath path, ServerBeanLoader loader) {
+		String runtimeTypeId = IJBossToolingConstants.AS_70;
+		try {
+			IRuntimeWorkingCopy wc = createRuntimeWorkingCopy(runtimeTypeId, path.toOSString(), IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
+			return launchRuntimeWizard(wc);
+		} catch( CoreException ce) {
+		}
 		return null;
 	}
 	
