@@ -28,7 +28,10 @@ public class ServerBeanLoader {
 
 	public ServerBean loadFromLocation(File location) {
 		JBossServerType type = getServerType(location);
-		String version = getServerVersion(getFullServerVersion(new File(location,type.getSystemJarPath())));
+		String version = null;
+		if (!JBossServerType.UNKNOWN.equals(type)) {
+			version = getServerVersion(getFullServerVersion(new File(location,type.getSystemJarPath())));
+		} 
 		ServerBean server = new ServerBean(location.getPath(),getName(location),type,version);
 		return server;
 	}
