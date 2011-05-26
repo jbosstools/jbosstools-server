@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -30,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathCategory;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathFileResult;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.XPathDialogs.XPathDialog;
 
@@ -180,9 +183,11 @@ public class ChangePortDialog extends TitleAreaDialog {
 						});
 					} });
 			} catch( InvocationTargetException ite) {
-				ite.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ChangePortDialog_could_not_determine_port, ite);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			} catch(InterruptedException ie ) {
-				ie.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, Messages.ChangePortDialog_could_not_change_port_interrupted, ie);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 		} else {
 			selectionChanged2();

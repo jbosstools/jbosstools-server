@@ -21,13 +21,16 @@
  */
 package org.jboss.ide.eclipse.as.ui.mbeans.editors;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -172,7 +175,8 @@ public class ServiceXMLCorrectionAssistantProvider extends CorrectionAssistantPr
 									String attName = t.getNodeValue();
 									attributeNames.remove(attName);
 									} catch( Exception e ) {
-										e.printStackTrace();
+										IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(Messages.ServiceXMLCorrectionAssistantProvider_could_not_access_mbean, mbeanChildren.item(j).getTextContent()), e);
+										Activator.getDefault().getLog().log(status);
 									}
 								}
 							}

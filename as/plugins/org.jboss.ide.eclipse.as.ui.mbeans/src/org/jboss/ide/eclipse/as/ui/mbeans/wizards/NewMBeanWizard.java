@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -85,6 +86,7 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.wst.sse.core.internal.encoding.CommonEncodingPreferenceNames;
 import org.eclipse.wst.xml.core.internal.XMLCorePlugin;
 import org.eclipse.wst.xml.ui.internal.wizards.NewModelWizard;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 
 /**
@@ -220,7 +222,8 @@ public class NewMBeanWizard extends NewModelWizard implements INewWizard {
 					xmlMonitor.worked(1);
 					xmlMonitor.done();
 				} catch( Throwable jme) {
-					jme.printStackTrace();
+					IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, Messages.NewMBeanWizard_could_not_create_files, jme);
+					Activator.getDefault().getLog().log(status);
 				}
 				
 				monitor.done();

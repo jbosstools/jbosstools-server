@@ -318,8 +318,8 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 				server.publish(IServer.PUBLISH_INCREMENTAL, monitor);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
-//			WebModelPlugin.getPluginLog().logError(e);
+			IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID,MessageFormat.format(ServerActionMessages.ChangeTimeStampActionDelegate_cannot_unregister, server.getName(), project.getName()), e);
+			JBossServerUIPlugin.getDefault().getLog().log(status);
 		}
 		return true;
 	}
@@ -338,7 +338,8 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 			try {
 				ResourcesPlugin.getWorkspace().run(new WR(), monitor);
 			} catch (CoreException e) {
-				e.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(ServerActionMessages.ChangeTimeStampActionDelegate_could_not_register_project, project.getName()), e);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 			return Status.OK_STATUS;
 		}

@@ -21,10 +21,13 @@
  */
 package org.jboss.ide.eclipse.as.ui.mbeans.wizards.pages;
 
+import java.text.MessageFormat;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
@@ -69,6 +72,7 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.UndoEdit;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 
 public class NewSessionBeanWizardPage extends NewTypeWizardPage
@@ -337,11 +341,11 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
          beanUnit.getBuffer().save(monitor, true);
 
       } catch (MalformedTreeException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(Messages.NewSessionBeanWizardPage_could_not_create_type, beanUnit.getElementName()), e);
+			Activator.getDefault().getLog().log(status);
 	} catch (BadLocationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(Messages.NewSessionBeanWizardPage_could_not_create_type, beanUnit.getElementName()), e); //$NON-NLS-1$
+		Activator.getDefault().getLog().log(status);
 	}
    }
 

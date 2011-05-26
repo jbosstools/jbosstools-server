@@ -9,6 +9,7 @@ public class Messages extends NLS {
 	public static String ClientAllRuntimeClasspathProvider_wrong_runtime_type;
 	public static String DirectoryLibraryContainerInitializer_libraries_found_in_dir;
 	public static String DirectoryLibraryContainerInitializer_libraries_found_no_dir;
+	public static String EJB3ClasspathContainer_could_not_determine_home;
 	public static String EJB3ClasspathContainer_ejb3_description;
 	public static String EJB3ClasspathContainer_ejb30_description;
 	public static String J2EE13ClasspathContainerInitializer_description;

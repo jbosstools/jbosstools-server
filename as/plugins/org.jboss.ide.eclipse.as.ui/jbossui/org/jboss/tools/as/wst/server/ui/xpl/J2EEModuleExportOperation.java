@@ -52,6 +52,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.MultiRule;
@@ -73,6 +74,7 @@ import org.eclipse.wst.server.core.model.IModuleFile;
 import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public abstract class J2EEModuleExportOperation extends AbstractDataModelOperation {
@@ -330,7 +332,8 @@ public abstract class J2EEModuleExportOperation extends AbstractDataModelOperati
 			addChildren(saver, module, moduleDelegate.getChildModules());
 			saver.finish();
 		} catch( Exception e ) {
-			e.printStackTrace();
+			IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.J2EEModuleExportOperation_could_not_export_module, module.getName(), getDestinationPath().toString()), e);
+			JBossServerUIPlugin.getDefault().getLog().log(status);
 			throw new SaveFailureException();
 		}
 	}

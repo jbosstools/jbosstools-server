@@ -34,6 +34,7 @@ public class Messages extends NLS {
 	/* XML service editor */
 	public static String ServiceXMLAddAttributeTags;
 
+	public static String ServiceXMLCorrectionAssistantProvider_could_not_access_mbean;
 	public static String ServiceXMLEditorConfiguration_OccurrenceNameWithAttributes;
 
 	public static String ServiceXMLEditorConfiguration_UnableToDisplayInEditor;
@@ -48,8 +49,10 @@ public class Messages extends NLS {
 	public static String MBeanClassDescription;
 	public static String MBeanServiceXML;
 
+	public static String NewSessionBeanWizardPage_could_not_create_type;
+	public static String NewSessionBeanWizardPage_could_not_update_remoteinterface_value;
+	public static String NewMBeanWizard_could_not_create_files;
 	public static String NewSessionBeanWizard_WindowTitle;
-
 	public static String NewSessionBeanWizardTitle;
 	public static String NewSessionBeanWizardBeanTypeLabel;
 	public static String NewSessionBeanWizardStatefulButtonLabel;
@@ -69,6 +72,7 @@ public class Messages extends NLS {
 
 	public static String NewMessageDrivenBeanWizardPage_Name;
 	
+	public static String ServiceXMLEditorUtil_could_not_get_methods;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
