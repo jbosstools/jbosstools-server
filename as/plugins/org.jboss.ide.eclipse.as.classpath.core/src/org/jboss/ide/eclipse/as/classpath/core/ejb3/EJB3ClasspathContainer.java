@@ -16,9 +16,11 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
@@ -26,6 +28,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
@@ -72,7 +75,10 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
             	try {
             	homePath = jbossServer.getServer().getRuntime().getLocation();
             	configPath = new Path(jbossServer.getConfigDirectory());
-            	} catch( Exception e ) { e.printStackTrace(); }
+            	} catch( Exception e ) { 
+    				IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID,Messages.EJB3ClasspathContainer_could_not_determine_home, e);
+    				ClasspathCorePlugin.getDefault().getLog().log(status);
+            	}
             	break;
             }
          }
@@ -207,7 +213,7 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
    }   
 
 	protected static IClasspathEntry getEntry(IPath path) throws FileNotFoundException {
-		System.out.println("ls " + path.toOSString().substring(45));
+		System.out.println("ls " + path.toOSString().substring(45)); //$NON-NLS-1$
 		if( !path.toFile().exists())
 			throw new FileNotFoundException();
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();

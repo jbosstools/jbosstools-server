@@ -24,6 +24,8 @@ import javax.management.MBeanServerConnection;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -189,7 +191,11 @@ public class ExtensionManager {
 				} catch( NumberFormatException nfe) {}
 				publishers.add(new PublisherWrapper(p, zipDelegate, (IJBossServerPublisher)clazz, cf[i]));
 			} catch( CoreException e ) {
-				e.printStackTrace();
+				IStatus status = new MultiStatus(
+						JBossServerCorePlugin.PLUGIN_ID, IStatus.ERROR,
+						new IStatus[] { e.getStatus() },
+						Messages.ExtensionManager_could_not_load_publishers, e);
+				JBossServerCorePlugin.getDefault().getLog().log(status);
 			} catch( ClassCastException cce ) {
 			}
 		}

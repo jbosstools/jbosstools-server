@@ -39,10 +39,12 @@ public class Messages extends NLS {
 	public static String wf_JRELabel;
 	public static String wf_ConfigLabel;
 	
+	public static String J2EEModuleExportOperation_could_not_export_module;
 	public static String J2EEModuleExportOperation_DestinationFileIsDirectoryError;
 	public static String J2EEModuleExportOperation_ErrorExportingArchive;
 	public static String JBAS_version;
 	public static String JBEAP_version;
+	public static String JBoss7ServerWizardFragment_could_not_create_ui;
 	public static String JBossRuntimeWizardFragment_AllFieldsRequired;
 	public static String JBossRuntimeWizardFragment_CopyAConfigShellText;
 	public static String JBossRuntimeWizardFragment_DeleteConfigConfirmation;
@@ -113,6 +115,8 @@ public class Messages extends NLS {
 	public static String ActionDelegateFileResourcesOnly;
 	public static String ActionDelegateSelectServer;
 
+	public static String ChangePortDialog_could_not_change_port_interrupted;
+	public static String ChangePortDialog_could_not_determine_port;
 	public static String ChangePortDialog_LoadingTaskName;
 	/* Console */
 	public static String ConsoleResourceNotFound;

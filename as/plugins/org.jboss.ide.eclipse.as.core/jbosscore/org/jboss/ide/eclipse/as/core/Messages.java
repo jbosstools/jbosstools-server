@@ -28,6 +28,8 @@ public class Messages extends NLS {
 	public static String saveXMLDocumentFailed;
 	public static String loadJMXClassesFailed;
 	public static String securityException;
+	public static String JBoss7ServerBehavior_could_not_stop;
+
 	public static String JMXPoller;
 	public static String XPathLoadFailure;
 	
@@ -83,6 +85,7 @@ public class Messages extends NLS {
 	public static String JMXScannerCanceled;
 	public static String ConnectingToServerViaJMX;
 	public static String CannotSaveServersStartArgs;
+	public static String ExtensionManager_could_not_load_publishers;
 	public static String PublishRenameFailure;
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

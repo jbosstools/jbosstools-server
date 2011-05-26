@@ -21,12 +21,17 @@
  */
 package org.jboss.ide.eclipse.as.ui.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
+import org.jboss.ide.eclipse.as.ui.mbeans.Messages;
 import org.jboss.ide.eclipse.as.ui.util.PackageTypeSearcher.ResultFilter;
 
 /**
@@ -68,7 +73,8 @@ public class ServiceXMLEditorUtil {
 				methods.addAll(Arrays.asList(getAllMethods(parentType)));
 			}
 		} catch( JavaModelException jme ) {
-			jme.printStackTrace();
+			IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, MessageFormat.format(Messages.ServiceXMLEditorUtil_could_not_get_methods, type.getElementName()), jme);
+			Activator.getDefault().getLog().log(status);
 		}
 		return (IMethod[]) methods.toArray(new IMethod[methods.size()]);
 	}

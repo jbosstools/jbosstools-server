@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -172,7 +173,8 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, getServer().getName()), e);
+			JBossServerCorePlugin.getDefault().getLog().log(status);
 		}
 		setServerStopped();
 	}

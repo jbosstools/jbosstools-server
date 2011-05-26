@@ -29,7 +29,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -42,7 +41,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.dialogs.CheckedTreeSelectionDialog;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -54,8 +52,9 @@ import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.ServerType;
-import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
+import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDelegate {
 
@@ -318,8 +317,8 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 				server.publish(IServer.PUBLISH_INCREMENTAL, monitor);
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
-//			WebModelPlugin.getPluginLog().logError(e);
+			IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID,MessageFormat.format(ServerActionMessages.ChangeTimeStampActionDelegate_cannot_unregister, server.getName(), project.getName()), e);
+			JBossServerUIPlugin.getDefault().getLog().log(status);
 		}
 		return true;
 	}
@@ -329,7 +328,7 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 		IProject project;
 		IServer[] servers;
 		public RegisterServerJob(IProject p, IServer[] servers) {
-			super("Touch");
+			super("Touch"); //$NON-NLS-1$
 			this.project = p;
 			this.servers = servers;
 		}
@@ -338,7 +337,8 @@ public class ChangeTimeStampActionDelegate implements IWorkbenchWindowActionDele
 			try {
 				ResourcesPlugin.getWorkspace().run(new WR(), monitor);
 			} catch (CoreException e) {
-				e.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(ServerActionMessages.ChangeTimeStampActionDelegate_could_not_register_project, project.getName()), e);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 			return Status.OK_STATUS;
 		}

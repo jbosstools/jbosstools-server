@@ -1,14 +1,18 @@
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
+import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
@@ -37,7 +41,8 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 				fillNameWidgets(rt);
 				fillHomeDir(rt);
 			} catch (Exception e) {
-				e.printStackTrace();
+				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerWizardFragment_could_not_create_ui, rt.getName()), e);
+				JBossServerUIPlugin.getDefault().getLog().log(status);
 			}
 		}
 	}
