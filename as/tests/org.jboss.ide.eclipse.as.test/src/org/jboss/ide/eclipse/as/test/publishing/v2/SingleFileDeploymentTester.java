@@ -89,8 +89,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 	public void testSingleFolderCustomDeployFolderAbsolute() throws CoreException, IOException {
 		IPath serverDeployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
 		final String folderName = "test";
-		IPath state = ASTest.getDefault().getStateLocation();
-		IPath moduleDeployRoot = state.append("testDeployments").append("absoluteFolder.place");
+		IPath moduleDeployRoot = ServerRuntimeUtils.getBaseDir().append("absoluteFolder.place");
 		moduleDeployRoot.toFile().mkdirs();
 		IModule[] mods = singleFolderCreateModules(folderName);
 		DeploymentPreferences prefs = DeploymentPreferenceLoader.loadPreferencesFromServer(server);

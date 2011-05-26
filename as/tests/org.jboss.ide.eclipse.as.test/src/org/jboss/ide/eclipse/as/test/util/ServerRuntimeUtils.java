@@ -45,6 +45,7 @@ import org.jboss.ide.eclipse.as.test.publishing.AbstractDeploymentTest;
 import org.osgi.framework.Bundle;
 
 public class ServerRuntimeUtils extends TestCase {
+	
 	public static final IVMInstall VM_INSTALL = JavaRuntime.getDefaultVMInstall();
 	public static final String DEFAULT_CONFIG = "default";
 	public static final String twiddle_suffix = ".mf.twiddle.jar";
@@ -84,17 +85,26 @@ public class ServerRuntimeUtils extends TestCase {
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_EAP_50, IJBossToolingConstants.EAP_50);
 	}
 	public static IServer createMockDeployOnlyServer() throws CoreException {
-		IPath state = ASTest.getDefault().getStateLocation();
-		IPath deploy = state.append("testDeployments").append("deploy");
-		IPath tmpDeploy = state.append("testDeployments").append("tmpDeploy");
-		return ServerRuntimeUtils.createMockDeployOnlyServer(deploy.toOSString(), 
-				tmpDeploy.toOSString());
+		return ServerRuntimeUtils.createMockDeployOnlyServer(getDeployFolder(), getTmpDeployFolder());
 	}
 	public static IServer createMockJBoss7Server() throws CoreException {
-		IPath state = ASTest.getDefault().getStateLocation();
-		IPath deploy = state.append("testDeployments").append("deploy");
-		IPath tmpDeploy = state.append("testDeployments").append("tmpDeploy");
-		return createMockJBoss7Server(deploy.toOSString(), tmpDeploy.toOSString());
+		return createMockJBoss7Server(getDeployFolder(), getTmpDeployFolder());
+	}
+	
+	private static String getDeployFolder() {
+		return getBaseDir().append(getRandomString()).append("deploy").toOSString();
+	}
+	
+	private static String getTmpDeployFolder() {
+		return getBaseDir().append(getRandomString()).append("tmpDeploy").toOSString();
+	}
+
+	public static IPath getBaseDir() {
+		return ASTest.getDefault().getStateLocation().append("testDeployments");
+	}
+	
+	private static String getRandomString() {
+		return String.valueOf(System.currentTimeMillis());
 	}
 	
 	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
