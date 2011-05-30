@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.core.publishers;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Date;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -49,7 +48,6 @@ public class JSTPublisherXMLToucher {
 			this.paths = path == null ? new IPath[0] : path;
 		}
 		public void touchDescriptors(IPath moduleRoot, IPublishCopyCallbackHandler handler) {
-			File tmp;
 			for( int i = 0; i < paths.length; i++ ) {
 				handler.touchResource(paths[i]);
 			}
@@ -66,12 +64,11 @@ public class JSTPublisherXMLToucher {
 	JSTPublisherXMLToucher() {
 		// I know this is ugly but I don't care. it works. 
 		map = new HashMap<String, IDescriptorToucher>();
-		IJBossRuntimeResourceConstants i = new IJBossRuntimeResourceConstants(){};
-		map.put(IWTPConstants.FACET_WEB, new PathDescriptorToucher(i.DESCRIPTOR_WEB));
-		map.put(IWTPConstants.FACET_EJB, new PathDescriptorToucher(i.DESCRIPTOR_EJB));
-		map.put(IWTPConstants.FACET_EAR, new PathDescriptorToucher(i.DESCRIPTOR_EAR));
-		map.put(IWTPConstants.FACET_APP_CLIENT, new PathDescriptorToucher(i.DESCRIPTOR_CLIENT));
-		map.put(IWTPConstants.FACET_CONNECTOR, new PathDescriptorToucher(i.DESCRIPTOR_CONNECTOR));
+		map.put(IWTPConstants.FACET_WEB, new PathDescriptorToucher(IJBossRuntimeResourceConstants.DESCRIPTOR_WEB));
+		map.put(IWTPConstants.FACET_EJB, new PathDescriptorToucher(IJBossRuntimeResourceConstants.DESCRIPTOR_EJB));
+		map.put(IWTPConstants.FACET_EAR, new PathDescriptorToucher(IJBossRuntimeResourceConstants.DESCRIPTOR_EAR));
+		map.put(IWTPConstants.FACET_APP_CLIENT, new PathDescriptorToucher(IJBossRuntimeResourceConstants.DESCRIPTOR_CLIENT));
+		map.put(IWTPConstants.FACET_CONNECTOR, new PathDescriptorToucher(IJBossRuntimeResourceConstants.DESCRIPTOR_CONNECTOR));
 	}
 	
 	public void addDescriptorToucher(String typeId, IDescriptorToucher toucher) {
