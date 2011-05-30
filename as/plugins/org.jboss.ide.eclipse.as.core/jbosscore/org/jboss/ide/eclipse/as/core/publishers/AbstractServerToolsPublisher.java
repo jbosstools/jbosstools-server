@@ -35,11 +35,11 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -200,7 +200,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		else {
 			// A child that must be zipped, forceZip is true
 			IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
-				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute();
+				append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute();
 			
 			try {
 				File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
@@ -248,7 +248,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			else {
 				// forceZip a child module
 				IPath localDeployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
-					append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute(); 
+					append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute(); 
 				try {
 					File temp = File.createTempFile(module.getName(), ".tmp", localDeployRoot.toFile()); //$NON-NLS-1$
 					IPath tempFile = new Path(temp.getAbsolutePath());
