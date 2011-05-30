@@ -26,14 +26,13 @@ import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -48,7 +47,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 	 */
 	protected String getDeployRoot(IModule[] module, IDeployableServer ds) {
 		IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(ds.getServer()).
-			append(IJBossServerConstants.TEMP_REMOTE_DEPLOY).makeAbsolute();
+			append(IJBossToolingConstants.TEMP_REMOTE_DEPLOY).makeAbsolute();
 		deployRoot.toFile().mkdirs();
 		return deployRoot.toString();
 	}
