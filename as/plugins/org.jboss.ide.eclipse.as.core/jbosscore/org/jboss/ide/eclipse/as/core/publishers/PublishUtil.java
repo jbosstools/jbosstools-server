@@ -36,7 +36,6 @@ import org.eclipse.wst.server.core.util.ProjectModule;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.xpl.ModulePackager;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
@@ -246,21 +245,21 @@ public class PublishUtil {
 		// VirtualReferenceUtilities.INSTANCE. has utility methods to help!!
 
 		String suffix = null;
-		if( IJBossServerConstants.FACET_EAR.equals(type)) 
-			suffix = IJBossServerConstants.EXT_EAR;
-		else if( IJBossServerConstants.FACET_WEB.equals(type)) 
-			suffix = IJBossServerConstants.EXT_WAR;
-		else if( IJBossServerConstants.FACET_CONNECTOR.equals(type)) 
-			suffix = IJBossServerConstants.EXT_RAR;
-		else if( IJBossServerConstants.FACET_ESB.equals(type))
-			suffix = IJBossServerConstants.EXT_ESB;
+		if( IWTPConstants.FACET_EAR.equals(type)) 
+			suffix = IWTPConstants.EXT_EAR;
+		else if( IWTPConstants.FACET_WEB.equals(type)) 
+			suffix = IWTPConstants.EXT_WAR;
+		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
+			suffix = IWTPConstants.EXT_RAR;
+		else if( IWTPConstants.FACET_ESB.equals(type))
+			suffix = IWTPConstants.EXT_ESB;
 		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 
 			// no suffix required, name already has it
 			suffix = ""; //$NON-NLS-1$
 		else if( "jboss.singlefile".equals(type)) //$NON-NLS-1$
 			suffix = ""; //$NON-NLS-1$
 		else
-			suffix = IJBossServerConstants.EXT_JAR;
+			suffix = IWTPConstants.EXT_JAR;
 		return suffix;
 	}
 	
@@ -302,8 +301,12 @@ public class PublishUtil {
 	}
 	
 	public static boolean deployPackaged(IModule[] moduleTree) {
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_UTILITY)) return true;
-		if( moduleTree[moduleTree.length-1].getModuleType().getId().equals(IWTPConstants.FACET_APP_CLIENT)) return true;
+		String moduleTypeId = moduleTree[moduleTree.length-1].getModuleType().getId(); 
+		if( moduleTypeId.equals(IWTPConstants.FACET_UTILITY)) {
+			return true;
+		} else if( moduleTypeId.equals(IWTPConstants.FACET_APP_CLIENT)) { 
+			return true;
+		}
 		return false;
 	}
 	public static java.io.File getFile(IModuleFile mf) {
