@@ -25,7 +25,6 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
-import org.eclipse.wst.server.core.internal.ServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.test.ASTest;
@@ -163,7 +162,7 @@ public abstract class AbstractDeploymentTest extends TestCase {
 		IRuntimeWorkingCopy wc = rt.createRuntime("testRuntime", null);
 		runtime = wc.save(true, null);
 		IServerType st = ServerCore.findServerType("org.jboss.ide.eclipse.as.systemCopyServer");
-		ServerWorkingCopy swc = (ServerWorkingCopy) st.createServer("testServer", null, null);
+		IServerWorkingCopy swc = st.createServer("testServer", null, null);
 		swc.setServerConfiguration(null);
 		swc.setName("testServer");
 		swc.setRuntime(runtime);
