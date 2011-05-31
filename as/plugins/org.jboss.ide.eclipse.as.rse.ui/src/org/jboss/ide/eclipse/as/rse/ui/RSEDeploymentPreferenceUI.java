@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -50,11 +50,23 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
+import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
+	static {
+		DeploymentModuleOptionCompositeAssistant.browseBehaviorMap.put("rse", new DeploymentModuleOptionCompositeAssistant.IBrowseBehavior() {
+			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
+				String current = page.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+				IHost h = findHost(current, null);
+				return browseClicked4(new Shell(), h);
+			}
+		});
+	}
+	
 	public RSEDeploymentPreferenceUI() {
 		// Do nothing
 	}
@@ -116,16 +128,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		}
 
 		protected String browseClicked3(Shell shell) {
-			SystemRemoteFileDialog d = new SystemRemoteFileDialog(
-					shell, RSEUIMessages.BROWSE_REMOTE_SYSTEM, combo.getHost());
-			if( d.open() == Dialog.OK) {
-				Object o = d.getOutputObject();
-				if( o instanceof IRemoteFile ) {
-					String path = ((IRemoteFile)o).getAbsolutePath();
-					return path;
-				}
-			}
-			return null;
+			return browseClicked4(getShell(), combo.getHost());
 		}
 		
 		protected IJBossServerRuntime getRuntime() {
@@ -260,11 +263,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 			
 			public IHost findHost(String name) {
-				for( int i = 0; i < hosts.length; i++ ) {
-					if( hosts[i].getAliasName().equals(name))
-						return hosts[i];
-				}
-				return null;
+				return RSEDeploymentPreferenceUI.findHost(name, hosts);
 			}
 
 			public Combo getCombo() {
@@ -346,5 +345,29 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				RSECorePlugin.getTheSystemRegistry().removeSystemModelChangeListener(this);			
 			}
 		}
+	}
+	
+	
+	public static IHost findHost(String name, IHost[] hosts) {
+		if( hosts == null )
+			hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory("files");
+		for( int i = 0; i < hosts.length; i++ ) {
+			if( hosts[i].getAliasName().equals(name))
+				return hosts[i];
+		}
+		return null;
+	}
+
+	public static String browseClicked4(Shell s, IHost host) {
+		SystemRemoteFileDialog d = new SystemRemoteFileDialog(
+				s, RSEUIMessages.BROWSE_REMOTE_SYSTEM, host);
+		if( d.open() == Dialog.OK) {
+			Object o = d.getOutputObject();
+			if( o instanceof IRemoteFile ) {
+				String path = ((IRemoteFile)o).getAbsolutePath();
+				return path;
+			}
+		}
+		return null;
 	}
 }

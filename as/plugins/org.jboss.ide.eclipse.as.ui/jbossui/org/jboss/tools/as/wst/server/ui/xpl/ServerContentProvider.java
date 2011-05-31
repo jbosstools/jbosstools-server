@@ -35,10 +35,8 @@ import org.eclipse.wst.server.core.ServerEvent;
 import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.internal.UpdateServerJob;
 import org.eclipse.wst.server.core.util.PublishAdapter;
-import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
 import org.eclipse.wst.server.ui.internal.viewers.BaseContentProvider;
-import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
  * @deprecated
@@ -349,7 +347,7 @@ public class ServerContentProvider extends BaseContentProvider implements ITreeC
 							}
 						}
 					} catch (Exception e) {
-						Trace.trace(Trace.STRING_FINEST, Messages.ServerContentProvider_ErrorInServersViewAnimation, e);
+						//Trace.trace(Trace.STRING_FINEST, Messages.ServerContentProvider_ErrorInServersViewAnimation, e);
 					}
 					display.timerExec(SLEEP, animator[0]);
 				}

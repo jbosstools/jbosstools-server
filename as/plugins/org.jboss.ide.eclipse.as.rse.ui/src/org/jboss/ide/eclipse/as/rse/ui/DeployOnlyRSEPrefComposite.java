@@ -31,7 +31,6 @@ public class DeployOnlyRSEPrefComposite extends
 	public DeployOnlyRSEPrefComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style, callback);
 	}
-
 	protected void createRSEWidgets(Composite child) {
 		handleDeployOnlyServer(child);
 	}
@@ -64,6 +63,10 @@ public class DeployOnlyRSEPrefComposite extends
 			}
 
 			public void widgetSelected(SelectionEvent e) {
+				String browseVal = browseClicked3(deployText.getShell());
+				if (browseVal != null) {
+					deployText.setText(browseVal);
+				}
 			}
 		});
 
@@ -90,6 +93,10 @@ public class DeployOnlyRSEPrefComposite extends
 			}
 
 			public void widgetSelected(SelectionEvent e) {
+				String browseVal = browseClicked3(tempDeployText.getShell());
+				if (browseVal != null) {
+					tempDeployText.setText(browseVal);
+				}
 			}
 		});
 	}

@@ -46,7 +46,6 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
 import org.eclipse.wst.server.ui.internal.view.servers.CopyAction;
 import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
@@ -57,7 +56,6 @@ import org.eclipse.wst.server.ui.internal.view.servers.OpenAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PasteAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PropertiesAction;
 import org.eclipse.wst.server.ui.internal.view.servers.PublishAction;
-import org.eclipse.wst.server.ui.internal.view.servers.PublishCleanAction;
 import org.eclipse.wst.server.ui.internal.view.servers.RemoveModuleAction;
 import org.eclipse.wst.server.ui.internal.view.servers.RenameAction;
 import org.eclipse.wst.server.ui.internal.view.servers.RestartModuleAction;
@@ -67,7 +65,6 @@ import org.eclipse.wst.server.ui.internal.view.servers.StartAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StartModuleAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopAction;
 import org.eclipse.wst.server.ui.internal.view.servers.StopModuleAction;
-import org.jboss.ide.eclipse.as.ui.actions.ExploreAction;
 /**
  * @deprecated
  */
@@ -127,7 +124,7 @@ public class ServerActionProvider extends CommonActionProvider {
 					IServer server = (IServer) data;
 					ServerUIPlugin.editServer(server);
 				} catch (Exception e) {
-					Trace.trace(Trace.STRING_SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
+					//Trace.trace(Trace.STRING_SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
 				}
 			}
 		});
