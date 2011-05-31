@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.xpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +30,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Messages;
 import org.eclipse.wst.server.core.internal.ProgressUtil;
@@ -44,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.internal.FileUtils;
 /**
  * Utility class with an assortment of useful file methods.
  * <p>
@@ -113,8 +112,6 @@ public final class PublishCopyUtil {
 	
 	public static class LocalCopyCallback implements IPublishCopyCallbackHandler {
 
-		private static final int BUFFER = 65536;
-		private static byte[] buf = new byte[BUFFER];
 		private static final File tempDir = ServerPlugin.getInstance().getStateLocation().toFile();
 		private static final String TEMPFILE_PREFIX = "tmp"; //$NON-NLS-1$
 
@@ -162,16 +159,8 @@ public final class PublishCopyUtil {
 		 * @return a status
 		 */
 		private IStatus copyFile(InputStream in, String to) {
-			OutputStream out = null;
-			
 			try {
-				out = new FileOutputStream(to);
-				
-				int avail = in.read(buf);
-				while (avail > 0) {
-					out.write(buf, 0, avail);
-					avail = in.read(buf);
-				}
+				FileUtils.writeTo(in, to);
 				return Status.OK_STATUS;
 			} catch (Exception e) {
 				//Trace.trace(Trace.SEVERE, "Error copying file", e);
@@ -180,12 +169,6 @@ public final class PublishCopyUtil {
 				try {
 					if (in != null)
 						in.close();
-				} catch (Exception ex) {
-					// ignore
-				}
-				try {
-					if (out != null)
-						out.close();
 				} catch (Exception ex) {
 					// ignore
 				}
@@ -201,28 +184,11 @@ public final class PublishCopyUtil {
 		 * @throws CoreException if anything goes wrong
 		 */
 		private IStatus copyFile(InputStream in, IPath to, long ts, IModuleFile mf) throws CoreException {
-			OutputStream out = null;
-			
 			File tempFile = null;
 			try {
 				File file = to.toFile();
-				
-				// Change from original PublishUtil, will require 
-				tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + to.getFileExtension(), getTempFolder()); //$NON-NLS-1$
-				
-				out = new FileOutputStream(tempFile);
-				
-				int avail = in.read(buf);
-				while (avail > 0) {
-					out.write(buf, 0, avail);
-					avail = in.read(buf);
-				}
-				
-				out.close();
-				out = null;
-				
+				tempFile = writeToTempFile(in, to);
 				moveTempFile(tempFile, file);
-				
 				if (ts != IResource.NULL_STAMP && ts != 0)
 					file.setLastModified(ts);
 			} catch (CoreException e) {
@@ -239,14 +205,15 @@ public final class PublishCopyUtil {
 				} catch (Exception ex) {
 					// ignore
 				}
-				try {
-					if (out != null)
-						out.close();
-				} catch (Exception ex) {
-					// ignore
-				}
 			}
 			return null;
+		}
+		
+		private File writeToTempFile(InputStream in, IPath filePath) throws IOException {			
+			// Change from original PublishUtil, will require 
+			File tempFile = File.createTempFile(TEMPFILE_PREFIX, "." + filePath.getFileExtension(), getTempFolder()); //$NON-NLS-1$
+			FileUtils.writeTo(in, tempFile);				
+			return tempFile;
 		}
 		
 		/**
