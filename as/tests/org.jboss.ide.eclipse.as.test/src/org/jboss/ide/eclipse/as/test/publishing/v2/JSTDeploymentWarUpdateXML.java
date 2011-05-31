@@ -12,7 +12,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
@@ -66,7 +66,7 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	public void testWarUpdateMockPublishMethodJBoss7() throws CoreException, IOException {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		testMockPublishMethod(8,1,"newModule.war" + JBoss7JSTPublisher.DEPLOYED);
+		testMockPublishMethod(8,1,"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
 	}
 	
 	private void testMockPublishMethod(int initial, int remove, String removedFile) throws CoreException, IOException {

@@ -119,7 +119,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			method.getCallbackHandler(destFolder, server).copyFile(mf, new Path(name),
 					AbstractServerToolsPublisher.getSubMon(monitor, 150)
 			);
-			if( JBoss7Server.supportsJBoss7MarkerDeployment(server)) 
+			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) 
 				DeploymentMarkerUtils.addDeployMarker(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();
@@ -130,7 +130,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 	private IStatus removeDeployFailedMarker(IProgressMonitor monitor) {
 		try {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		if (JBoss7Server.supportsJBoss7MarkerDeployment(server)) {
+		if (DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
 			return DeploymentMarkerUtils.removeDeployFailedMarkerIfExists(method, ds, module, monitor);
 		}
 		} catch(CoreException ce) {
@@ -143,7 +143,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		try {
-			if( JBoss7Server.supportsJBoss7MarkerDeployment(server))
+			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server))
 				return DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
 			return removeRemoteDeploymentFolder(sourcePath, destFolder, name, monitor);
 		} catch(CoreException ce) {
