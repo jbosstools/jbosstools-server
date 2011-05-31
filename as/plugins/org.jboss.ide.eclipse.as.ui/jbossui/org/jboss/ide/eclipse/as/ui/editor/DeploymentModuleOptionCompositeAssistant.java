@@ -61,13 +61,13 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentModulePrefs;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader.DeploymentPreferences;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -353,7 +353,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
 	static {
-		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { //$NON-NLS-1$
+		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { 
 			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
 				DirectoryDialog d = new DirectoryDialog(new Shell());
 				d.setFilterPath(page.makeGlobal(original));
@@ -366,7 +366,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		IBrowseBehavior beh = browseBehaviorMap.get(mode);
 		if( beh == null )
-			beh = browseBehaviorMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD); //$NON-NLS-1$
+			beh = browseBehaviorMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
 		return beh.openBrowseDialog(page, original);
 	}
 		
@@ -389,9 +389,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		
 		JBossServer jbs = ServerConverter.getJBossServer(page.getServer().getOriginal());
 		String newDir = getHelper().getAttribute(IDeployableServer.DEPLOY_DIRECTORY, 
-				jbs == null ? "" : jbs.getDeployFolder());
+				jbs == null ? "" : jbs.getDeployFolder()); //$NON-NLS-1$
 		String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
-				jbs == null ? "" : jbs.getTempDeployFolder());
+				jbs == null ? "" : jbs.getTempDeployFolder()); //$NON-NLS-1$
 		deployText.removeModifyListener(deployListener);
 		deployText.setText(newDir);
 		deployText.addModifyListener(deployListener);
@@ -531,9 +531,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			// Discover the new folders
 			if( newSelection == metadataRadio  ) {
 				newDir = JBossServerCorePlugin.getServerStateLocation(id)
-					.append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+					.append(IJBossRuntimeResourceConstants.DEPLOY).makeAbsolute().toString();
 				newTemp = JBossServerCorePlugin.getServerStateLocation(id)
-					.append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+					.append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute().toString();
 				new File(newDir).mkdirs();
 				new File(newTemp).mkdirs();
 			} else if( newSelection == serverRadio ) {
@@ -547,10 +547,10 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					config = cb.getServerConfigName(page.getServer());
 					newDir = new Path(loc)
 						.append(config)
-						.append(IJBossServerConstants.DEPLOY).toString();
+						.append(IJBossRuntimeResourceConstants.DEPLOY).toString();
 					newTemp = new Path(loc).append(config)
-						.append(IJBossServerConstants.TMP)
-						.append(IJBossServerConstants.JBOSSTOOLS_TMP).toString();
+						.append(IJBossToolingConstants.TMP)
+						.append(IJBossToolingConstants.JBOSSTOOLS_TMP).toString();
 					if( mode.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
 						new File(newTemp).mkdirs();
 				}
@@ -632,7 +632,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		viewer.setLabelProvider(new ModulePageLabelProvider());
 		viewer.setColumnProperties(new String[] { COLUMN_NAME,
 				COLUMN_LOC, COLUMN_TEMP_LOC });
-		viewer.setInput(""); // irrelevent
+		viewer.setInput("");  //$NON-NLS-1$
 		CellEditor[] editors = new CellEditor[] {
 				new TextCellEditor(viewer.getTree()),
 				new TextCellEditor(viewer.getTree()),
@@ -641,7 +641,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		viewer.setCellEditors(editors);
 		
 		Link link = new Link(root, SWT.DEFAULT);
-		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>");
+		link.setText("<a>" + Messages.EditorRefreshViewer + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
 		link.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent e) {
 				refreshViewer();
@@ -666,7 +666,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 
 	private void refreshViewer() {
 		page.refreshPossibleModules();
-		viewer.setInput(""); // irrelevent		
+		viewer.setInput("");  //$NON-NLS-1$
 	}
 	
 	private class LocalDeploymentCellModifier implements ICellModifier {
@@ -684,10 +684,10 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 			if (property == COLUMN_TEMP_LOC) {
 				String ret = p.getProperty(COLUMN_TEMP_LOC);
-				return ret == null ? "" : ret;
+				return ret == null ? "" : ret; //$NON-NLS-1$
 			}
 
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 		public void modify(Object element, String property, Object value) {
@@ -764,8 +764,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					String result = modPref.getProperty(COLUMN_TEMP_LOC);
 					if (result != null)
 						return result;
-					modPref.setProperty(COLUMN_TEMP_LOC, "");
-					return "";
+					modPref.setProperty(COLUMN_TEMP_LOC, ""); //$NON-NLS-1$
+					return ""; //$NON-NLS-1$
 				}
 			}
 			return element.toString();
@@ -798,8 +798,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		if( getShowRadios() && evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
 			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 			metadataRadio.setEnabled(callbackMappings.get(mode).metadataEnabled());
-			String originalDeployLocation = page.getServer().getOriginal().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
-			String wcDeployLocation = page.getServer().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
+//			String originalDeployLocation = page.getServer().getOriginal().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
+//			String wcDeployLocation = page.getServer().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 			if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {
 				page.execute(new RadioClickedCommand(serverRadio, currentSelection));
 			}
@@ -816,7 +816,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	protected static String getOutputFolderAndName(DeploymentModulePrefs modPref, IModule m) {
 		String folder = modPref.getProperty(COLUMN_LOC);
 		String outputName = modPref.getProperty(OUTPUT_NAME);
-		outputName = outputName == null || outputName.equals("") 
+		outputName = outputName == null || outputName.length() == 0
 			? getDefaultOutputName(m) : outputName;
 			
 		if (folder != null)
