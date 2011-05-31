@@ -47,7 +47,7 @@ public class DeploymentMarkerUtils {
 	public static final String SKIP_DEPLOY = ".skipdeploy";//$NON-NLS-1$
 	public static final String PENDING = ".pending";//$NON-NLS-1$
 
-	public static IStatus addDoDeployMarker(IJBossServerPublishMethod method,IDeployableServer server,
+	public static IStatus addDeployMarker(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath depPath = PublishUtil.getDeployPath(method, moduleTree, server);
 		return addDeployMarker(method, server.getServer(), depPath, monitor);

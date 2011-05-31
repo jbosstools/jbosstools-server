@@ -120,7 +120,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 					AbstractServerToolsPublisher.getSubMon(monitor, 150)
 			);
 			if( JBoss7Server.supportsJBoss7MarkerDeployment(server)) 
-				DeploymentMarkerUtils.addDoDeployMarker(method, ServerConverter.getDeployableServer(server), module, monitor);
+				DeploymentMarkerUtils.addDeployMarker(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();
 		}
