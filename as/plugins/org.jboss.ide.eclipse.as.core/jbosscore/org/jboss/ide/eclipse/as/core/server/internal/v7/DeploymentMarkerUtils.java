@@ -31,6 +31,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * 
@@ -79,9 +80,7 @@ public class DeploymentMarkerUtils {
 		return p.toFile();
 	}
 	
-	public static IStatus removeDeployFailedMarker(
-			IServer server, IPath depPath,
-			IJBossServerPublishMethod method,
+	public static IStatus removeDeployFailedMarker(IServer server, IPath depPath, IJBossServerPublishMethod method,
 			IProgressMonitor monitor) throws CoreException {
 		return removeFile(FAILED_DEPLOY, server, depPath, method, monitor);
 	}
@@ -95,11 +94,24 @@ public class DeploymentMarkerUtils {
 		return Status.OK_STATUS;
 	}
 	
+	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IServer server, IModule[] module, IProgressMonitor monitor) 
+			throws CoreException {
+		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
+		IPath deployPath = PublishUtil.getDeployPath(method, module, deployableServer);
+		return removeDeployedMarkerIfExists(server, deployPath, method, monitor);
+	}
+
 	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) 
 			throws CoreException {
-		return removeDeployedMarkerIfExists(
-				jbServer.getServer(), PublishUtil.getDeployPath(method, module, jbServer), method, monitor);
+		IPath deployPath = PublishUtil.getDeployPath(method, module, jbServer);
+		return removeDeployedMarkerIfExists(jbServer.getServer(), deployPath, method, monitor);
 	}
+
+	public static IStatus removeDeployFailedMarkerIfExists(IJBossServerPublishMethod method, IServer server, IModule[] module,
+			IProgressMonitor monitor) throws CoreException {
+		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
+		return removeDeployedMarkerIfExists(method, deployableServer, module, monitor);
+	}			
 
 	public static IStatus removeDeployFailedMarkerIfExists(IJBossServerPublishMethod method, IDeployableServer jbServer, IModule[] module,
 			IProgressMonitor monitor) throws CoreException {
