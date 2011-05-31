@@ -130,7 +130,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			Iterator<IPath> i = l.iterator();
 			IPath p;
 			while (i.hasNext()) {
-				JBoss7JSTPublisher.addDoDeployMarkerFile(method, getServer(), i.next(), new SubProgressMonitor(monitor,
+				DeploymentMarkerUtils.addDeployMarker(method, getServer(), i.next(), new SubProgressMonitor(monitor,
 						1));
 			}
 			super.publishFinish(new SubProgressMonitor(monitor, 1));

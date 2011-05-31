@@ -38,29 +38,24 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
+
 	// Same as super class but just a *bit* different
 	public boolean accepts(String method, IServer server, IModule[] module) {
 		return super.accepts(method, server, module);
 		// && JBoss7Server.supportsJBoss7MarkerDeployment(server);
 	}
 	
-	public static final String DEPLOYED = ".deployed"; //$NON-NLS-1$
-	public static final String FAILED_DEPLOY = ".failed";//$NON-NLS-1$
-	public static final String DO_DEPLOY = ".dodeploy";//$NON-NLS-1$
-	public static final String DEPLOYING = ".isdeploying";//$NON-NLS-1$
-	public static final String UNDEPLOYING = ".isundeploying";//$NON-NLS-1$
-	public static final String UNDEPLOYED = ".undeployed";//$NON-NLS-1$
-	public static final String SKIP_DEPLOY = ".skipdeploy";//$NON-NLS-1$
-	public static final String PENDING = ".pending";//$NON-NLS-1$
-
 	public IStatus publishModuleToAS7(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+
+		DeploymentMarkerUtils.removeDeployFailedMarker(server, PublishUtil.getDeployPath(method, module, ds), method, monitor);
+		
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+			DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
 		} else {
 			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
 			if( module.length == 1 && 
@@ -120,54 +115,4 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 //		if( !list.contains(p))
 //			list.add(p);
 //	}
-	
-	public static IStatus addDoDeployMarkerFile(IJBossServerPublishMethod method,IDeployableServer server,
-			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
-		IPath depPath = PublishUtil.getDeployPath(method, moduleTree, server);
-		return addDoDeployMarkerFile(method, server.getServer(), depPath, monitor);
-	}
-
-	public static IStatus addDoDeployMarkerFile(IJBossServerPublishMethod method,IServer server,
-			IPath depPath, IProgressMonitor monitor ) throws CoreException {
-		IPath folder = depPath.removeLastSegments(1);
-		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
-		callback.copyFile(createBlankModuleFile(), new Path(depPath.lastSegment() + DO_DEPLOY), monitor);
-		return Status.OK_STATUS;
-	}
-
-	
-	public static IStatus removeDeployedMarkerFile(
-			IJBossServerPublishMethod method,
-			IDeployableServer jbServer, IModule[] module,
-			IProgressMonitor monitor) throws CoreException {
-		IPath depPath = PublishUtil.getDeployPath(method, module, jbServer);
-		return removeDeployedMarkerFile(jbServer.getServer(), depPath, method, monitor);
-	}
-	public static IStatus removeDeployedMarkerFile(
-			IServer server, IPath depPath,
-			IJBossServerPublishMethod method,
-			IProgressMonitor monitor) throws CoreException {
-		IPath folder = depPath.removeLastSegments(1);
-		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
-		IPath deployed = new Path(depPath.lastSegment()+DEPLOYED);
-		callback.deleteResource(deployed, monitor);
-		return Status.OK_STATUS;
-	}
-
-	
-	public static IModuleFile createBlankModuleFile() {
-		return new ModuleFile(getBlankFile(), "", new Path("/")); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-	protected static File getBlankFile() {
-		IPath p = JBossServerCorePlugin.getDefault().getStateLocation().append("BLANK_FILE"); //$NON-NLS-1$
-		if( !p.toFile().exists()) {
-			try {
-				OutputStream out = new FileOutputStream(p.toFile());
-				if (out != null) {
-					out.close();
-				}
-			} catch(IOException ioe) {}
-		}
-		return p.toFile();
-	}
 }

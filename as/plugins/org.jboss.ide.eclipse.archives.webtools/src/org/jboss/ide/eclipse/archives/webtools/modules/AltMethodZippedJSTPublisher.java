@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -84,6 +85,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		String name = sourcePath.lastSegment();
 		IStatus result = null;
 		
+		removeDeployFailedMarker(monitor);
 		
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
@@ -118,19 +120,31 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 					AbstractServerToolsPublisher.getSubMon(monitor, 150)
 			);
 			if( JBoss7Server.supportsJBoss7MarkerDeployment(server)) 
-				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ServerConverter.getDeployableServer(server), module, monitor);
+				DeploymentMarkerUtils.addDoDeployMarker(method, ServerConverter.getDeployableServer(server), module, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();
 		}
 		return Status.OK_STATUS;
 	}
 
+	private IStatus removeDeployFailedMarker(IProgressMonitor monitor) {
+		try {
+		IDeployableServer ds = ServerConverter.getDeployableServer(server);
+		if (JBoss7Server.supportsJBoss7MarkerDeployment(server)) {
+			return DeploymentMarkerUtils.removeDeployFailedMarkerIfExists(method, ds, module, monitor);
+		}
+		} catch(CoreException ce) {
+			return ce.getStatus();
+		}
+		return Status.OK_STATUS;
+	}
+	
 	private IStatus removeRemoteDeployment( IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		try {
 			if( JBoss7Server.supportsJBoss7MarkerDeployment(server))
-				return JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+				return DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
 			return removeRemoteDeploymentFolder(sourcePath, destFolder, name, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();

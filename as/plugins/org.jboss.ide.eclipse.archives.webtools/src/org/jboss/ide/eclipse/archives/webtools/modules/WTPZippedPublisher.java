@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -81,7 +82,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		String deployRoot = getDeployRoot(module, ds);
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			JBoss7JSTPublisher.removeDeployedMarkerFile(method, ds, module, monitor);
+			DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
 		} else {
 			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
 			IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
@@ -95,7 +96,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 				callback.copyFile(mf, new Path(depPath.lastSegment()), monitor);
 
 				// Add marker
-				JBoss7JSTPublisher.addDoDeployMarkerFile(method, ds, module, new NullProgressMonitor());
+				DeploymentMarkerUtils.addDoDeployMarker(method, ds, module, new NullProgressMonitor());
 			}
 			monitor.done();
 			return s;
