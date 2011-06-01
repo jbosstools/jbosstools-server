@@ -184,23 +184,6 @@ public class DeploymentMarkerUtils {
 	}
 
 	/**
-	 * Removes the marker that indicates that the given deployment (in form of a module tree) 
-	 * could not be deployed (.failed). Does nothing if the marker does not exist.
-	 * 
-	 * @param method the method to use to manipulate the files on the server
-	 * @param jbServer the server to manipulate
-	 * @param moduleTree the deployment (in form of a module tree)
-	 * @param monitor the monitor to use when giving progress feedback
-	 * @return the result of the removal operation
-	 * @throws CoreException
-	 */
-	public static IStatus removeDeployFailedMarkerIfExists(IJBossServerPublishMethod method,
-			IDeployableServer jbServer, IModule[] module, IProgressMonitor monitor) throws CoreException {
-		IPath depPath = PublishUtil.getDeployPath(method, module, jbServer);
-		return removeDeployedMarkerIfExists(jbServer.getServer(), depPath, method, monitor);
-	}
-
-	/**
 	 * Returns <code>true</code> if the given server supports the marker deployment method introduced in JBoss AS7.
 	 * 
 	 * @param the server to query
