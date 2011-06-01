@@ -8,9 +8,9 @@
 		<version>0.0.2-SNAPSHOT</version>
 		<relativePath>../build/parent/pom.xml</relativePath>
 	</parent>
-	<groupId>org.jboss.tools.jmx</groupId>
-	<artifactId>org.jboss.tools.jmx.all</artifactId>
-	<name>org.jboss.tools.jmx.all</name>
+	<groupId>org.jboss.tools</groupId>
+	<artifactId>jmx</artifactId>
+	<name>jmx.all</name>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
