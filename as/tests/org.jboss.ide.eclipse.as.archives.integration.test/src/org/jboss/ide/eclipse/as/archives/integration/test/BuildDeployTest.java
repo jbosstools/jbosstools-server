@@ -325,5 +325,7 @@ public class BuildDeployTest extends TestCase {
 	protected void callBuild() throws CoreException {
 		ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new NullProgressMonitor());
 		JobUtils.waitForIdle(); 
+		ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
+		waitForIdle();
 	}
 }
