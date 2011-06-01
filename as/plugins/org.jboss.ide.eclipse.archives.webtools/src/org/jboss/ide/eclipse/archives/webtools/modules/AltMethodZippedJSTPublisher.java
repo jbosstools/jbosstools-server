@@ -112,7 +112,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			IPath destFolder, String name, IProgressMonitor monitor) {
 		// Now transfer the file to RSE
 		try {
-			removeRemoteDeploymentFolder(sourcePath, destFolder, name, new NullProgressMonitor());
+			deleteRemoteResource(destFolder, name, new NullProgressMonitor());
 			IModuleFile mf = new ModuleFile(sourcePath.toFile(), name, new Path("/")); //$NON-NLS-1$
 			method.getCallbackHandler(destFolder, server).copyFile(mf, new Path(name),
 					AbstractServerToolsPublisher.getSubMon(monitor, 150)
@@ -141,14 +141,22 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		try {
 			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server))
 				return DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, server, module, monitor);
-			return removeRemoteDeploymentFolder(sourcePath, destFolder, name, monitor);
+			return deleteRemoteResource(destFolder, name, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();
 		}
 	}
 	
-	private IStatus removeRemoteDeploymentFolder(IPath sourcePath, 
-			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
+	/**
+	 * Removes the resource with the given name from the given parent folder. Either files or folders are removed.   
+	 * @param sourcePath
+	 * @param destFolder
+	 * @param name
+	 * @param monitor
+	 * @return
+	 * @throws CoreException
+	 */
+	private IStatus deleteRemoteResource(IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		// Now delete the file from RSE
 		// TODO *** FIX THIS IT IS NOT LOGGING ERRORS
 		IStatus[] tmp = method.getCallbackHandler(destFolder, server).deleteResource(new Path(name), monitor);
