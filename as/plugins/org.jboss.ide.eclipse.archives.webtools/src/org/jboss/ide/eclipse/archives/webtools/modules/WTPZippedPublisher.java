@@ -97,7 +97,7 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 				callback.copyFile(mf, new Path(depPath.lastSegment()), monitor);
 
 				// Add marker
-				DeploymentMarkerUtils.addDeployMarker(method, ds, module, new NullProgressMonitor());
+				DeploymentMarkerUtils.addDoDeployMarker(method, ds, module, new NullProgressMonitor());
 			}
 			monitor.done();
 			return s;

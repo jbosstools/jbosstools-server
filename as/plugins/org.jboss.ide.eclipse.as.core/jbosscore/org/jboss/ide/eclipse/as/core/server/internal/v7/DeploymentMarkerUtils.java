@@ -61,10 +61,10 @@ public class DeploymentMarkerUtils {
 	 * @return the result of the marker addition operation
 	 * @throws CoreException
 	 */
-	public static IStatus addDeployMarker(IJBossServerPublishMethod method, IDeployableServer server,
+	public static IStatus addDoDeployMarker(IJBossServerPublishMethod method, IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor) throws CoreException {
 		IPath depPath = PublishUtil.getDeployPath(method, moduleTree, server);
-		return addDeployMarker(method, server.getServer(), depPath, monitor);
+		return addDoDeployMarker(method, server.getServer(), depPath, monitor);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class DeploymentMarkerUtils {
 	 * @return the result of the marker addition operation
 	 * @throws CoreException
 	 */
-	public static IStatus addDeployMarker(IJBossServerPublishMethod method, IServer server,
+	public static IStatus addDoDeployMarker(IJBossServerPublishMethod method, IServer server,
 			IPath depPath, IProgressMonitor monitor) throws CoreException {
 		IPath folder = depPath.removeLastSegments(1);
 		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
