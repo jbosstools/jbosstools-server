@@ -217,21 +217,28 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 			TrueZipUtil.createArchive(path);
 			de.schlichtherle.io.File root = TrueZipUtil.getFile(path, TrueZipUtil.getJarArchiveDetector());
 			IModuleResource[] resources = getResources(module);
-			results.addAll(Arrays.asList(copy(root, resources)));
+			IStatus[] copyResults = copy(root, resources);
+			results.addAll(Arrays.asList(copyResults));
 			
 			IModule[] children = server.getChildModules(module, new NullProgressMonitor());
-			for( int i = 0; i < children.length; i++ ) {
-				if( ServerModelUtilities.isBinaryModule(children[i]))
-					results.addAll(Arrays.asList(fullBinaryPublish(server, deployRoot, module, children[i])));
-				else
-					results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
-			}
+			publishChildren(server, deployRoot, module, results, children);
 			TrueZipUtil.umount();
 			hasBeenChanged = true;
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
 		} catch( CoreException ce) {
 			results.add(generateCoreExceptionStatus(ce));
 			return (IStatus[]) results.toArray(new IStatus[results.size()]);
+		}
+	}
+
+
+	private void publishChildren(IServer server, String deployRoot, IModule[] module, ArrayList<IStatus> results,
+			IModule[] children) {
+		for( int i = 0; i < children.length; i++ ) {
+			if( ServerModelUtilities.isBinaryModule(children[i]))
+				results.addAll(Arrays.asList(fullBinaryPublish(server, deployRoot, module, children[i])));
+			else
+				results.addAll(Arrays.asList(fullPublish(server, deployRoot, combine(module, children[i]))));
 		}
 	}
 	
