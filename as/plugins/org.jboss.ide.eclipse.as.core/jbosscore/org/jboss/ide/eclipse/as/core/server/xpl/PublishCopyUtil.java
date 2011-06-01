@@ -307,13 +307,17 @@ public final class PublishCopyUtil {
 		
 		public IStatus[] deleteResource(IPath resource, IProgressMonitor monitor) {
 			resource = deployRootFolder.append(resource);
-			if( resource.toFile().isDirectory())
-				return deleteDirectory(resource.toFile(), monitor);
-			if( !resource.toFile().delete()) {
-				IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
-				return new IStatus[]{s};
+			File file = resource.toFile();
+			IStatus[] results = new IStatus[]{};
+			if( file.isDirectory()) {
+				results = deleteDirectory(resource.toFile(), monitor);
+			} else {
+				if( !file.delete()) {
+					IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
+					results = new IStatus[]{s};
+				}
 			}
-			return new IStatus[] {};
+			return results;
 		}
 
 		/**
