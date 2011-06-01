@@ -232,12 +232,7 @@ public final class PublishCopyUtil {
 					try {
 						InputStream in = new FileInputStream(tempFile);
 						IStatus status = copyFile(in, file.getPath());
-						if (!status.isOK()) {
-							MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, file.toString()), null);
-							status2.add(status);
-							throw new CoreException(status2);
-						}
-						return;
+						throwOnErrorStatus(file, status);
 					} catch (FileNotFoundException e) {
 						// shouldn't occur
 					} finally {
@@ -253,6 +248,14 @@ public final class PublishCopyUtil {
 				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
 						NLS.bind(org.jboss.ide.eclipse.as.core.Messages.PublishRenameFailure, 
 								tempFile.toString(), file.getAbsolutePath()), null));
+		}
+
+		private void throwOnErrorStatus(File file, IStatus status) throws CoreException {
+			if (!status.isOK()) {
+				MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, file.toString()), null);
+				status2.add(status);
+				throw new CoreException(status2);
+			}
 		}
 		
 		/**
