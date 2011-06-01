@@ -58,18 +58,21 @@ public class WTPZippedPublisher implements IJBossServerPublisher {
 			IProgressMonitor monitor) throws CoreException {
 		// Build all parts together at once. 
 		// When a call for [ear, childWar] comes in, ignore it. 
+		IStatus status = Status.OK_STATUS;
+		
 		if( module.length > 1 ) 
 			return null;
 		
-		if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server))
-			return handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
-		
-		IDeployableServer ds = ServerConverter.getDeployableServer(server);
-		String deployRoot = getDeployRoot(module, ds); 
-		LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
-		IStatus s = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
-		monitor.done();
-		return s;
+		if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
+			status = handleJBoss7Deployment(method, server, module, publishType, delta, monitor);
+		} else {		
+			IDeployableServer ds = ServerConverter.getDeployableServer(server);
+			String deployRoot = getDeployRoot(module, ds); 
+			LocalZippedPublisherUtil util = new LocalZippedPublisherUtil();
+			status = util.publishModule(server, deployRoot, module, publishType, delta, monitor);
+			monitor.done();
+		}
+		return status;
 	}
 	
 	public IStatus handleJBoss7Deployment(

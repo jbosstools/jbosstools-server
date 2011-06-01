@@ -61,51 +61,51 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			IServer server, IModule[] module,
 			int publishType, IModuleResourceDelta[] delta,
 			IProgressMonitor monitor) throws CoreException {
-		this.module = module;
-		this.server = server;
-		this.method = method;
-		
-		String taskName = "Publishing " + module[0].getName();  //$NON-NLS-1$
-		monitor.beginTask(taskName, 200);
-		monitor.setTaskName(taskName);
-		if( module.length > 1 ) {
-			monitor.done();
-			return null;
-		}
-		
-		monitor.setTaskName("Publishing to remote server " + server.getName()); //$NON-NLS-1$
-		
-		// set up needed vars
-		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
-		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
-		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
-		IPath destFolder = PublishUtil.getDeployPath(method, module, server2);
-		String name = sourcePath.lastSegment();
-		IStatus result = null;
-		
-		removeDeployFailedMarker(monitor);
-		
-		// Am I a removal? If yes, remove me, and return
-		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			result = removeRemoteDeployment(sourcePath, destFolder, name, monitor);
-		} else if( publishType != IJBossServerPublisher.NO_PUBLISH ){
-			// Locally zip it up into the remote tmp folder
-			result = super.publishModule(method, server, module, publishType, delta, 
-					AbstractServerToolsPublisher.getSubMon(monitor, 50));
-			if( !result.isOK() ) {
-				monitor.done();
-			} else {
-				result = remoteFullPublish(sourcePath, destFolder.removeLastSegments(1), name, 
-						AbstractServerToolsPublisher.getSubMon(monitor, 150));
+		try {
+			this.module = module;
+			this.server = server;
+			this.method = method;
+			
+			String taskName = "Publishing " + module[0].getName();  //$NON-NLS-1$
+			monitor.beginTask(taskName, 200);
+			monitor.setTaskName(taskName);
+			if( module.length > 1 ) {
+				return null;
 			}
-		}
-
-		monitor.done();
-		if( result != null ) {
+			
+			monitor.setTaskName("Publishing to remote server " + server.getName()); //$NON-NLS-1$
+			
+			// set up needed vars
+			IDeployableServer server2 = ServerConverter.getDeployableServer(server);
+			String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
+			IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
+			IPath destFolder = PublishUtil.getDeployPath(method, module, server2);
+			String name = sourcePath.lastSegment();
+			IStatus result = null;
+			
+			removeDeployFailedMarker(monitor);
+			
+			// Am I a removal? If yes, remove me, and return
+			if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+				result = removeRemoteDeployment(sourcePath, destFolder, name, monitor);
+			} else if( publishType != IJBossServerPublisher.NO_PUBLISH ){
+				// Locally zip it up into the remote tmp folder
+				result = super.publishModule(method, server, module, publishType, delta, 
+						AbstractServerToolsPublisher.getSubMon(monitor, 50));
+				if( result.isOK() ) {
+					result = remoteFullPublish(sourcePath, destFolder.removeLastSegments(1), name, 
+							AbstractServerToolsPublisher.getSubMon(monitor, 150));
+				}
+			}
+	
+			if( result == null ) {
+				result = Status.OK_STATUS;
+			}
+	
 			return result;
+		} finally {
+			monitor.done();
 		}
-
-		return Status.OK_STATUS;
 	}
 	
 	private IStatus remoteFullPublish(IPath sourcePath, 
