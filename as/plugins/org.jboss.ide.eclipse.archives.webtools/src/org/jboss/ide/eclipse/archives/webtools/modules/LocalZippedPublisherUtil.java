@@ -63,16 +63,16 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		this.deployRoot = deployRoot;
 		this.module = module;
 		this.server = server;
-		IStatus[] returnStatus;
+		IStatus[] operationStatus;
 		
 		
 		// Am I a removal? If yes, remove me, and return
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH)
-			returnStatus = removeModule(server, deployRoot, module);
+			operationStatus = removeModule(server, deployRoot, module);
 		
 		// Am I a full publish? If yes, full publish me, and return
 		else if( publishType == IJBossServerPublisher.FULL_PUBLISH)
-			returnStatus = fullPublish(server, deployRoot, module); 
+			operationStatus = fullPublish(server, deployRoot, module); 
 		
 		else {
 			// Am I changed? If yes, handle my changes
@@ -93,24 +93,30 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 					results.addAll(Arrays.asList(removeModule(server, deployRoot, removedArray)));
 				}
 			}
-			returnStatus = (IStatus[]) results.toArray(new IStatus[results.size()]);
+			operationStatus = (IStatus[]) results.toArray(new IStatus[results.size()]);
 		}
 		TrueZipUtil.umount();
 		
-		IStatus finalStatus = null;
-		if( returnStatus.length > 0 ) {
+		IStatus finalStatus = createModuleStatus(module, operationStatus);
+
+		monitor.done();
+		return finalStatus;
+	}
+
+
+	private IStatus createModuleStatus(IModule[] module, IStatus[] operationStatus) {
+		IStatus finalStatus;
+		if( operationStatus.length > 0 ) {
 			MultiStatus ms = new MultiStatus(JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_INC_FAIL, 
 					"Publish Failed for module " + module[0].getName(), null); //$NON-NLS-1$
-			for( int i = 0; i < returnStatus.length; i++ )
-				ms.add(returnStatus[i]);
+			for( int i = 0; i < operationStatus.length; i++ )
+				ms.add(operationStatus[i]);
 			finalStatus = ms;
 		}  else {
 			finalStatus = new Status(IStatus.OK, JBossServerCorePlugin.PLUGIN_ID, 
 					IEventCodes.JST_PUB_FULL_SUCCESS, 
 					NLS.bind(Messages.ModulePublished, module[0].getName()), null);
 		}
-
-		monitor.done();
 		return finalStatus;
 	}
 	
