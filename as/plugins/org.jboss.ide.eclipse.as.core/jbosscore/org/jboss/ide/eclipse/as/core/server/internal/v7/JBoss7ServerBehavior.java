@@ -110,6 +110,17 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	@Override
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor)
 			throws CoreException {
+/* fix for JBIDE-
+*		if (method == null)
+*			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
+*		try {
+*			int result = method.publishModule(this, kind, deltaKind, module, monitor);
+*			setModulePublishState(module, result);
+*		} catch(CoreException e) {
+*			setModulePublishState(module, IServer.PUBLISH_STATE_FULL);
+*			throw e;
+*		}
+*/
 		if (method == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		int result = method.publishModule(this, kind, deltaKind, module, monitor);
