@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IModule;
@@ -79,21 +78,22 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 			String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
 			IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
-			IPath destFolder = PublishUtil.getDeployPath(method, module, server2);
+			IPath destination = PublishUtil.getDeployPath(method, module, server2);
 			String name = sourcePath.lastSegment();
 			IStatus result = null;
 			
-			removeDeployFailedMarker(monitor);
-			
-			// Am I a removal? If yes, remove me, and return
-			if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-				result = removeRemoteDeployment(sourcePath, destFolder, name, monitor);
-			} else if( publishType != IJBossServerPublisher.NO_PUBLISH ){
+
+			/* 
+			 * always completely remove prior deployment (prior deployfailed marker, deployed folder etc.)
+			 * this is needed since we might have switched from exploded to war
+			 */
+			result = removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
+			if( publishType != IJBossServerPublisher.REMOVE_PUBLISH){
 				// Locally zip it up into the remote tmp folder
 				result = super.publishModule(method, server, module, publishType, delta, 
 						AbstractServerToolsPublisher.getSubMon(monitor, 50));
 				if( result.isOK() ) {
-					result = remoteFullPublish(sourcePath, destFolder.removeLastSegments(1), name, 
+					result = remoteFullPublish(sourcePath, destination.removeLastSegments(1), name, 
 							AbstractServerToolsPublisher.getSubMon(monitor, 150));
 				}
 			}
@@ -112,7 +112,6 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			IPath destFolder, String name, IProgressMonitor monitor) {
 		// Now transfer the file to RSE
 		try {
-			deleteRemoteResource(destFolder, name, new NullProgressMonitor());
 			IModuleFile mf = new ModuleFile(sourcePath.toFile(), name, new Path("/")); //$NON-NLS-1$
 			method.getCallbackHandler(destFolder, server).copyFile(mf, new Path(name),
 					AbstractServerToolsPublisher.getSubMon(monitor, 150)
@@ -124,23 +123,14 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		}
 		return Status.OK_STATUS;
 	}
-
-	private IStatus removeDeployFailedMarker(IProgressMonitor monitor) {
-		try {
-		if (DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
-			return DeploymentMarkerUtils.removeDeployFailedMarkerIfExists(method, server, module, monitor);
-		}
-		} catch(CoreException ce) {
-			return ce.getStatus();
-		}
-		return Status.OK_STATUS;
-	}
 	
 	private IStatus removeRemoteDeployment( IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		try {
-			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server))
-				return DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, server, module, monitor);
+			if( DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server)) {
+				DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, server, module, monitor);
+				DeploymentMarkerUtils.removeDeployFailedMarkerIfExists(method, server, module, monitor);
+			}
 			return deleteRemoteResource(destFolder, name, monitor);
 		} catch(CoreException ce) {
 			return ce.getStatus();
