@@ -102,13 +102,17 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 
 	public int getPublishType(int kind, int deltaKind, int modulePublishState) {
-		if( ServerBehaviourDelegate.ADDED == deltaKind ) 
+		if( deltaKind == ServerBehaviourDelegate.ADDED ) 
 			return IJBossServerPublisher.FULL_PUBLISH;
-		if (ServerBehaviourDelegate.REMOVED == deltaKind) {
+		else if (deltaKind == ServerBehaviourDelegate.REMOVED) {
 			return IJBossServerPublisher.REMOVE_PUBLISH;
-		} else if (kind == IServer.PUBLISH_FULL || modulePublishState == IServer.PUBLISH_STATE_FULL ||  kind == IServer.PUBLISH_CLEAN ) {
+		} else if (kind == IServer.PUBLISH_FULL 
+				|| modulePublishState == IServer.PUBLISH_STATE_FULL 
+				|| kind == IServer.PUBLISH_CLEAN ) {
 			return IJBossServerPublisher.FULL_PUBLISH;
-		} else if (kind == IServer.PUBLISH_INCREMENTAL || modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL || kind == IServer.PUBLISH_AUTO) {
+		} else if (kind == IServer.PUBLISH_INCREMENTAL 
+				|| modulePublishState == IServer.PUBLISH_STATE_INCREMENTAL 
+				|| kind == IServer.PUBLISH_AUTO) {
 			if( ServerBehaviourDelegate.CHANGED == deltaKind ) 
 				return IJBossServerPublisher.INCREMENTAL_PUBLISH;
 		} 
