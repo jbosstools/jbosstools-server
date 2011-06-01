@@ -64,11 +64,10 @@ public abstract class AbstractPublishMethod implements IJBossServerPublishMethod
 		if( module.length == 0 ) return IServer.PUBLISH_STATE_NONE;
 		int modulePublishState = behaviour.getServer().getModulePublishState(module);
 		int publishType = behaviour.getPublishType(kind, deltaKind, modulePublishState);
-		IJBossServerPublisher publisher;
 		
 		// Let the publisher decide what to do
 		if( module.length > 0 ) {
-			publisher = ExtensionManager.getDefault().getPublisher(behaviour.getServer(), module, getPublishMethodId());
+			IJBossServerPublisher publisher = ExtensionManager.getDefault().getPublisher(behaviour.getServer(), module, getPublishMethodId());
 			IModuleResourceDelta[] deltas = new IModuleResourceDelta[]{};
 			if( deltaKind != ServerBehaviourDelegate.REMOVED)
 				deltas = behaviour.getPublishedResourceDelta(module);
