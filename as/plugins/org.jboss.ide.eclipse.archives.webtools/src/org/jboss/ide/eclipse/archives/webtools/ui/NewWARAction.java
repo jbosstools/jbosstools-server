@@ -79,9 +79,9 @@ public class NewWARAction implements IActionDelegate {
 			super(wiz, Messages.WarPreview, Messages.WarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_WAR_WIZARD));
 		}
-		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(WarArchiveType.WAR_PACKAGE_TYPE);
-    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
+		
+		protected String getArchiveTypeId() {
+			return WarArchiveType.WAR_PACKAGE_TYPE;
 		}
 
 		protected String getDescriptionMessage() {

@@ -25,6 +25,7 @@ import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
+import org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType;
 import org.jboss.ide.eclipse.archives.webtools.archivetypes.EjbArchiveType;
 
 public class NewEJBJARAction implements IActionDelegate {
@@ -79,11 +80,9 @@ public class NewEJBJARAction implements IActionDelegate {
 			super(wiz, Messages.EjbJarPreview, Messages.EjbJarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_NEW_JAR_WIZARD));
 		}
-		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(EjbArchiveType.ID);
-    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
+		protected String getArchiveTypeId() {
+			return EjbArchiveType.ID;
 		}
-
 		protected String getDescriptionMessage() {
 			return 	Messages.EjbJarDescription;
 		}

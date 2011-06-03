@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.archives.ui.ArchivesSharedImages;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.archives.webtools.archivetypes.EarArchiveType;
+import org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType;
 
 public class NewEARAction implements IActionDelegate {
 
@@ -85,11 +86,9 @@ public class NewEARAction implements IActionDelegate {
 			super(wiz, Messages.EarPreview, Messages.EarPreview,
 					ArchivesSharedImages.getImageDescriptor(ArchivesSharedImages.IMG_EAR));
 		}
-		protected void addToPackage() {
-	    	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(EarArchiveType.ID);
-    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
+		protected String getArchiveTypeId() {
+			return EarArchiveType.ID;
 		}
-
 		protected String getDescriptionMessage() {
 			return 	Messages.EarDescription;
 		}
