@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -41,13 +42,16 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.internal.ServerPlugin;
+import org.jboss.ide.eclipse.archives.core.ArchivesCore;
 import org.jboss.ide.eclipse.archives.core.model.IArchive;
 import org.jboss.ide.eclipse.archives.core.model.IArchiveFolder;
+import org.jboss.ide.eclipse.archives.core.model.IArchiveType;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesContentProviderDelegate;
 import org.jboss.ide.eclipse.archives.ui.providers.ArchivesLabelProvider;
 import org.jboss.ide.eclipse.archives.ui.wizards.AbstractArchiveWizard;
 import org.jboss.ide.eclipse.archives.ui.wizards.WizardPageWithNotification;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
+import org.jboss.ide.eclipse.archives.webtools.archivetypes.WarArchiveType;
 
 public abstract class PreviewPage extends WizardPageWithNotification {
 
@@ -97,13 +101,10 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 	protected void fillGroups() {
 	}
 	public boolean isPageComplete() {
-		return hasCreated;
+		return true;
 	}
     public void pageEntered(int button) {
-    	if( !hasCreated ) {
-    		addToPackage();
-    		hasCreated = true;
-    	}
+   		addToPackage();
     	fillWidgets(wizard.getArchive());
 
     	// if it's already a module type project, hide the meta inf stuff
@@ -117,7 +118,17 @@ public abstract class PreviewPage extends WizardPageWithNotification {
 		getWizard().getContainer().updateButtons();
     }
 
-    protected abstract void addToPackage();
+	protected void addToPackage() {
+    	if( !hasCreated ) {
+    		hasCreated = true;
+    		String archiveTypeId = getArchiveTypeId();
+        	IArchiveType type = ArchivesCore.getInstance().getExtensionManager().getArchiveType(archiveTypeId);
+    		type.fillDefaultConfiguration(wizard.getProject().getName(), wizard.getArchive(), new NullProgressMonitor());
+    	}
+	}
+	
+	protected abstract String getArchiveTypeId();
+	
     protected void fillWidgets(IArchive pkg) {
     	previewViewer.setInput(pkg);
     	previewViewer.expandAll();
@@ -135,7 +146,9 @@ public abstract class PreviewPage extends WizardPageWithNotification {
     	return result;
     }
 
-    public void pageExited(int button) {}
+    public void pageExited(int button) {
+    	addToPackage();
+    }
 
 
 
