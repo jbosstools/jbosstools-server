@@ -112,7 +112,16 @@ public class ArchivesActionProvider extends CommonActionProvider {
 				buildAction.setText(ArchivesUIMessages.ProjectPackagesView_buildProjectAction_label);
 			} else if( element instanceof IArchiveNode ){
 				IArchiveNode node = (IArchiveNode)element;
-
+				if( manager.find(INITIAL_SEPARATOR_ID) == null){
+					Separator s = new Separator(INITIAL_SEPARATOR_ID);
+					s.setVisible(false);
+					manager.add(s);
+				}
+				if( manager.find(END_ADD_CHILD_SEPARATOR_ID) == null){
+					Separator s = new Separator(END_ADD_CHILD_SEPARATOR_ID);
+					s.setVisible(false);
+					manager.add(s);
+				}
 				if (node instanceof INamedContainerArchiveNode ) {
 					manager.insertAfter(INITIAL_SEPARATOR_ID, newFilesetAction);
 					manager.insertAfter(INITIAL_SEPARATOR_ID, newFolderAction);
