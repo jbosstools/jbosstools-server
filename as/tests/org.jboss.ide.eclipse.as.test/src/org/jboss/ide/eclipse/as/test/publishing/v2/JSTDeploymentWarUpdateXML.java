@@ -60,16 +60,24 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
 	public void testWarUpdateMockPublishMethod() throws CoreException, IOException {
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		testMockPublishMethod(7,1,"newModule.war");
+		testMockPublishMethod(7,"newModule.war");
 	}
 	
 	public void testWarUpdateMockPublishMethodJBoss7() throws CoreException, IOException {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		testMockPublishMethod(8,1,"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
+		/*
+		 * removing module newModule.war will remove 2 markers:
+		 * <ul>
+		 * 	<li>newModule.war.deployed</li>
+		 *  <li>newModule.war.failed</li>
+		 * </ul>
+		 */
+		testMockPublishMethod(8,"newModule.war" + DeploymentMarkerUtils.FAILED_DEPLOY,"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
 	}
 	
-	private void testMockPublishMethod(int initial, int remove, String removedFile) throws CoreException, IOException {
+	private void testMockPublishMethod(int initial, String... filesToRemove) throws CoreException, IOException {
+		// add
 		MockPublishMethod.reset();
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server,mod);
@@ -77,10 +85,14 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		assertEquals(initial, MockPublishMethod.getChanged().length);
 		MockPublishMethod.reset();
 		
+		// remove
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(remove, MockPublishMethod.getRemoved().length);
-		assertEquals(removedFile, MockPublishMethod.getRemoved()[0].toString());
+		assertEquals(filesToRemove.length, MockPublishMethod.getRemoved().length);
+		IPath[] removedFiles = MockPublishMethod.getRemoved();
+		for(int i = 0; i < removedFiles.length; i++) {
+			assertEquals(filesToRemove[i], removedFiles[i].toString());
+		}
 		MockPublishMethod.reset();
 	}
 }
