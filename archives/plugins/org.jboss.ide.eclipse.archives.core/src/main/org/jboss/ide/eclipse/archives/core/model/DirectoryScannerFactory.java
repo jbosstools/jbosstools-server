@@ -38,8 +38,12 @@ public class DirectoryScannerFactory {
 	};
 
 	public static DirectoryScannerExtension createDirectoryScanner(IArchiveStandardFileSet fs, boolean scan) {
+		String excludes = fs.getExcludesPattern();
+		if( fs.getRootArchive().isDestinationInWorkspace() ) {
+			excludes += "," + fs.getRootArchive().getRawDestinationPath(); //$NON-NLS-1$
+		}
 		return createDirectoryScanner(fs.getRawSourcePath(), fs.getRootArchiveRelativePath(),
-				fs.getIncludesPattern(), fs.getExcludesPattern(), fs.getProjectName(),
+				fs.getIncludesPattern(), excludes, fs.getProjectName(),
 				fs.isInWorkspace(), fs.getDescriptorVersion(), scan);
 	}
 
