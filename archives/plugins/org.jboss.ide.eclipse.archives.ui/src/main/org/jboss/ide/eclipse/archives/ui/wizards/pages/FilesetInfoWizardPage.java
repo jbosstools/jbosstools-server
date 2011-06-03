@@ -304,8 +304,12 @@ public class FilesetInfoWizardPage extends WizardPage {
 			DirectoryScannerExtension ds = null;
 			Runnable r;
 			try {
+				String effectiveExcludes = excludes;
+				if( parentNode.getRootArchive().isDestinationInWorkspace()) {
+					effectiveExcludes += "," + parentNode.getRootArchive().getRawDestinationPath(); //$NON-NLS-1$
+				}
 				ds = DirectoryScannerFactory.createDirectoryScanner(
-						replaceVariables(), null, includes, excludes, parentNode.getProjectName(),
+						replaceVariables(), null, includes, effectiveExcludes, parentNode.getProjectName(),
 						srcDestComposite.isWorkspaceRelative(), parentNode.getModelRootNode().getDescriptorVersion(), false);
 				Iterator<File> it = ds.iterator();
 				ArrayList<String> paths2 = new ArrayList<String>();
