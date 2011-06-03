@@ -38,7 +38,6 @@ public class DirectoryScannerFactory {
 	};
 
 	public static DirectoryScannerExtension createDirectoryScanner(IArchiveStandardFileSet fs, boolean scan) {
-	public static DirectoryScannerExtension createDirectoryScanner(IArchiveStandardFileSet fs, boolean scan) {
 		String excludes = fs.getExcludesPattern();
 		if( fs.getRootArchive().isDestinationInWorkspace() ) {
 			excludes += "," + fs.getRootArchive().getRawDestinationPath(); //$NON-NLS-1$
