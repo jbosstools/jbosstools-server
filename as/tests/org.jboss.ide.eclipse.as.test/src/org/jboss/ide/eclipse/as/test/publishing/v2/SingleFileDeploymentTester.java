@@ -174,25 +174,26 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		assertEquals(changed2.size(), 2); // Creating blah.jar and blah.jar.dodeploy
-		assertEquals(removed2.size(), 1); // TODO find out why its "removing" the empty string
+		assertEquals(removed2.size(), 2); // removed test.xml - we could be switching from exploded to war - and test.xml.failed
 		MockPublishMethod.reset();
 		
 		IOUtil.setContents(project.getFile(filename), "2");
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
-		assertEquals(changed2.size(), 2);
-		assertEquals(removed2.size(), 0);
+		assertEquals(changed2.size(), 2); // Creating blah.jar and blah.jar.dodeploy
+		// Removed blah.jar.failed
+		assertEquals(removed2.size(), 1); 
 		MockPublishMethod.reset();
 
 		server = ServerRuntimeUtils.removeModule(server, mods[0]);
-		assertEquals(changed2.size(), 0);
+		assertEquals(changed2.size(), 0); 
 		assertEquals(removed2.size(), 0);
 		MockPublishMethod.reset();
 		
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		assertEquals(changed2.size(), 0);
-		assertEquals(removed2.size(), 1);
+		assertEquals(removed2.size(), 2); // [test.xml.failed, test.xml.deployed]
 		MockPublishMethod.reset();
 	}
 
@@ -218,15 +219,16 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		assertEquals(changed2.size(), 0);
 		assertEquals(removed2.size(), 0);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(changed2.size(), 5); 
-		assertEquals(removed2.size(), 1);
+		assertEquals(changed2.size(), 5); // [test, test/1.txt, test/2.txt, test/3.txt, test.dodeploy]
+		// [test.failed, test] -> always removing prior deployment (could be switching from war to exloded) & .failed marker
+		assertEquals(removed2.size(), 2); 
 		MockPublishMethod.reset();
 		
 		IFolder folder = project.getFolder(folderName);
 		IOUtil.setContents(folder.getFile("3.txt"), "3a");
 		ServerRuntimeUtils.publish(server);
 		assertEquals(changed2.size(), 3);
-		assertEquals(removed2.size(), 0);
+		assertEquals(removed2.size(), 1); // [test.failed]
 		MockPublishMethod.reset();
 		
 		server = ServerRuntimeUtils.removeModule(server, mods[0]);
@@ -237,7 +239,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		assertEquals(changed2.size(), 0);
-		assertEquals(removed2.size(), 1);
+		assertEquals(removed2.size(), 2); // [test.failed, test.deployed]
 		MockPublishMethod.reset();
 
 	}
