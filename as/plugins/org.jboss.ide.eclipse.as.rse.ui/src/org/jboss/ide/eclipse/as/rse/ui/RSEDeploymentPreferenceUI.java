@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2010 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
@@ -65,11 +66,23 @@ import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
+import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
+	static {
+		DeploymentModuleOptionCompositeAssistant.browseBehaviorMap.put("rse", new DeploymentModuleOptionCompositeAssistant.IBrowseBehavior() {
+			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
+				String current = page.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
+				IHost h = findHost(current, null);
+				return browseClicked4(new Shell(), h);
+			}
+		});
+	}
+		
 	public RSEDeploymentPreferenceUI() {
 		// Do nothing
 	}
@@ -213,6 +226,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				}
 
 				public void widgetSelected(SelectionEvent e) {
+					String browseVal = browseClicked3();
+					if (browseVal != null) {
+						deployText.setText(browseVal);
+					}
 				}
 			});
 
@@ -239,6 +256,10 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				}
 
 				public void widgetSelected(SelectionEvent e) {
+					String browseVal = browseClicked3();
+					if (browseVal != null) {
+						tempDeployText.setText(browseVal);
+					}
 				}
 			});
 		}
@@ -402,16 +423,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 		}
 
 		protected String browseClicked3() {
-			SystemRemoteFileDialog d = new SystemRemoteFileDialog(
-					rseBrowse.getShell(), "Browse remote system", combo.getHost());
-			if( d.open() == Dialog.OK) {
-				Object o = d.getOutputObject();
-				if( o instanceof IRemoteFile ) {
-					String path = ((IRemoteFile)o).getAbsolutePath();
-					return path;
-				}
-			}
-			return null;
+			return browseClicked4(getShell(), combo.getHost());
 		}
 		
 		protected IJBossServerRuntime getRuntime() {
@@ -509,11 +521,7 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 			}
 			
 			public IHost findHost(String name) {
-				for( int i = 0; i < hosts.length; i++ ) {
-					if( hosts[i].getAliasName().equals(name))
-						return hosts[i];
-				}
-				return null;
+				return RSEDeploymentPreferenceUI.findHost(name, hosts);
 			}
 
 			public Combo getCombo() {
@@ -649,5 +657,29 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 						IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
 			}
 		}
+	}
+	
+	
+	public static IHost findHost(String name, IHost[] hosts) {
+		if( hosts == null )
+			hosts = RSECorePlugin.getTheSystemRegistry().getHostsBySubSystemConfigurationCategory("files");
+		for( int i = 0; i < hosts.length; i++ ) {
+			if( hosts[i].getAliasName().equals(name))
+				return hosts[i];
+		}
+		return null;
+	}
+
+	protected static String browseClicked4(Shell s, IHost host) {
+		SystemRemoteFileDialog d = new SystemRemoteFileDialog(
+				s,  "Browse remote system", host);
+		if( d.open() == Dialog.OK) {
+			Object o = d.getOutputObject();
+			if( o instanceof IRemoteFile ) {
+				String path = ((IRemoteFile)o).getAbsolutePath();
+				return path;
+			}
+		}
+		return null;
 	}
 }

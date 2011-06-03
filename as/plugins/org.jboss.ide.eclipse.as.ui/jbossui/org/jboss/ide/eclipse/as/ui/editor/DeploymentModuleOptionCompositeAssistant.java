@@ -230,9 +230,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(page.makeGlobal(deployText.getText()));
-				String x = d.open();
+				String x = openBrowseDialog(deployText.getText());
 				if (x != null) {
 					deployText.setText(page.makeRelative(x));
 				}
@@ -260,9 +258,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog d = new DirectoryDialog(new Shell());
-				d.setFilterPath(page.makeGlobal(tempDeployText.getText()));
-				String x = d.open();
+				String x = openBrowseDialog(tempDeployText.getText());
 				if (x != null)
 					tempDeployText.setText(page.makeRelative(x));
 			}
@@ -341,7 +337,28 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		updateWidgets();
 		return section;
 	}
+	public static interface IBrowseBehavior {
+		public String openBrowseDialog(ModuleDeploymentPage page, String original);
+	}
+	public static HashMap<String, IBrowseBehavior> browseBehaviorMap = new HashMap<String, IBrowseBehavior>();
+	static {
+		browseBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IBrowseBehavior() { //$NON-NLS-1$
+			public String openBrowseDialog(ModuleDeploymentPage page, String original) {
+				DirectoryDialog d = new DirectoryDialog(new Shell());
+				d.setFilterPath(page.makeGlobal(original));
+				return d.open();
+			} 
+		});
+	}
 	
+	protected String openBrowseDialog(String original) {
+		String mode = getServer().getAttributeHelper().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		IBrowseBehavior beh = browseBehaviorMap.get(mode);
+		if( beh == null )
+			beh = browseBehaviorMap.get(LocalPublishMethod.LOCAL_PUBLISH_METHOD); //$NON-NLS-1$
+		return beh.openBrowseDialog(page, original);
+	}
+
 	protected boolean getShowRadios() {
 		IRuntime rt = getServer().getServer().getRuntime();
 		boolean showRadios = true;
