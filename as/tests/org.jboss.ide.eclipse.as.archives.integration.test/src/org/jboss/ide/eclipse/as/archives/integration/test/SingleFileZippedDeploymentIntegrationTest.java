@@ -47,10 +47,10 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		assertEquals(mods.length, 1);
 		server = ServerRuntimeUtils.addModule(server, mods[0]);
 		ServerRuntimeUtils.publish(server);
-		int ch = MockPublishMethod.getChanged().length;
-		int rm = MockPublishMethod.getRemoved().length;
-		assertEquals(2,ch);
-		assertEquals(1,rm);
+		int changed = MockPublishMethod.getChanged().length;
+		int removed = MockPublishMethod.getRemoved().length;
+		assertEquals(2,changed);
+		assertEquals(1,removed);
 		MockPublishMethod.reset();
 		
 		// make workspace change, repeat
@@ -58,19 +58,19 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		
-		ch = MockPublishMethod.getChanged().length;
-		rm = MockPublishMethod.getRemoved().length;
-		assertEquals(2,ch);
-		assertEquals(1,rm);
+		changed = MockPublishMethod.getChanged().length;
+		removed = MockPublishMethod.getRemoved().length;
+		assertEquals(2,changed);
+		assertEquals(1,removed);
 		MockPublishMethod.reset();
 		
 		server = ServerRuntimeUtils.removeModule(server, mods[0]);
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
-		ch = MockPublishMethod.getChanged().length;
-		rm = MockPublishMethod.getRemoved().length;
-		assertEquals(0,ch);
-		assertEquals(1,rm);
+		changed = MockPublishMethod.getChanged().length;
+		removed = MockPublishMethod.getRemoved().length;
+		assertEquals(0,changed);
+		assertEquals(1,removed);
 		MockPublishMethod.reset();
 	}
 	
