@@ -20,7 +20,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
 public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester {
-	protected IProject createProject() throws Exception {
+	protected IProject createEARProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, null, null, JavaEEFacetConstants.WEB_24, false);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);

@@ -30,7 +30,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 	
 	public void setUp() throws Exception {
-		project = createProject();
+		project = createEARProject();
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		setZipFlag();
 	}
@@ -42,7 +42,7 @@ public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 		server = wc.save(true, new NullProgressMonitor());
 	}
 	
-	protected IProject createProject() throws Exception {
+	protected IProject createEARProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getEARDataModel(MODULE_NAME, CONTENT_DIR, null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
