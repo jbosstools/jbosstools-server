@@ -2,8 +2,8 @@ package org.jboss.ide.eclipse.as.archives.integration.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IModule;
-import org.jboss.ide.eclipse.archives.webtools.modules.WTPZippedPublisher;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory;
@@ -38,8 +37,6 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
 		server = ServerRuntimeUtils.setZipped(server, true);
 		MockPublishMethod.reset();
-		ArrayList<IPath> o1 = MockPublishMethod.changed;
-		ArrayList<IPath> o2 = MockPublishMethod.removed;
 		
 		final String folderName = "test";
 		IFolder folder = project.getFolder(folderName);
@@ -77,9 +74,10 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		MockPublishMethod.reset();
 	}
 	
-	private void dump(ArrayList<IPath> changed, ArrayList<IPath> removed) {
+	@SuppressWarnings("unused")
+	private void dump(List<IPath> changed, List<IPath> removed) {
 		System.out.println("dump");
-		Iterator i = changed.iterator();
+		Iterator<IPath> i = changed.iterator();
 		while(i.hasNext()) {
 			System.out.println(" - changed " + i.next());
 		}
