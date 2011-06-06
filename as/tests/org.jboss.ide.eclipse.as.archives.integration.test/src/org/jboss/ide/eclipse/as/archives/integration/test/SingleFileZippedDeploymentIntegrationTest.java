@@ -50,7 +50,8 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		int changed = MockPublishMethod.getChanged().length;
 		int removed = MockPublishMethod.getRemoved().length;
 		assertEquals(2,changed);
-		assertEquals(1,removed);
+		// always removing the prior deployment since we could be switching from exploded to war
+		assertEquals(2,removed); 
 		MockPublishMethod.reset();
 		
 		// make workspace change, repeat
@@ -61,7 +62,8 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		changed = MockPublishMethod.getChanged().length;
 		removed = MockPublishMethod.getRemoved().length;
 		assertEquals(2,changed);
-		assertEquals(1,removed);
+		// always removing the prior deployment since we could be switching from exploded to war
+		assertEquals(2,removed);
 		MockPublishMethod.reset();
 		
 		server = ServerRuntimeUtils.removeModule(server, mods[0]);
@@ -70,7 +72,8 @@ public class SingleFileZippedDeploymentIntegrationTest extends AbstractJSTDeploy
 		changed = MockPublishMethod.getChanged().length;
 		removed = MockPublishMethod.getRemoved().length;
 		assertEquals(0,changed);
-		assertEquals(1,removed);
+		// removing deployment + .deployed marker
+		assertEquals(2,removed);
 		MockPublishMethod.reset();
 	}
 	
