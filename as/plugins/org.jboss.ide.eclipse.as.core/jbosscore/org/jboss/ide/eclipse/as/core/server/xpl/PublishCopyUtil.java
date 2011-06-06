@@ -332,7 +332,7 @@ public final class PublishCopyUtil {
 			if (!dir.exists() || !dir.isDirectory())
 				return new IStatus[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null) };
 			
-			List status = new ArrayList(2);
+			List<IStatus> status = new ArrayList<IStatus>(2);
 			
 			try {
 				File[] files = dir.listFiles();
@@ -368,9 +368,7 @@ public final class PublishCopyUtil {
 				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, e.getLocalizedMessage(), null));
 			}
 			
-			IStatus[] stat = new IStatus[status.size()];
-			status.toArray(stat);
-			return stat;
+			return status.toArray(new IStatus[status.size()]);
 		}
 
 		/**
@@ -446,16 +444,14 @@ public final class PublishCopyUtil {
 		
 		monitor = ProgressUtil.getMonitorFor(monitor);
 		
-		List status = new ArrayList(2);
+		List<IStatus> status = new ArrayList<IStatus>(2);
 		int size2 = delta.length;
 		for (int i = 0; i < size2; i++) {
 			IStatus[] stat = publishDelta(delta[i], new Path("/"), monitor); //$NON-NLS-1$
 			addArrayToList(status, stat);
 		}
 		
-		IStatus[] stat = new IStatus[status.size()];
-		status.toArray(stat);
-		return stat;
+		return status.toArray(new IStatus[status.size()]);
 	}
 
 	/**
@@ -468,7 +464,7 @@ public final class PublishCopyUtil {
 	 * @return a possibly-empty array of error and warning status
 	 */
 	public IStatus[] publishDelta(IModuleResourceDelta delta, IPath path, IProgressMonitor monitor) throws CoreException {
-		List status = new ArrayList(2);
+		List<IStatus> status = new ArrayList<IStatus>(2);
 		if( monitor.isCanceled())
 			return canceledStatus();
 
@@ -486,9 +482,7 @@ public final class PublishCopyUtil {
 				handler.makeDirectoryIfRequired(path2.removeLastSegments(1), monitor);
 				handler.copyFile(file, path2, monitor);
 			}
-			IStatus[] stat = new IStatus[status.size()];
-			status.toArray(stat);
-			return stat;
+			return status.toArray(new IStatus[status.size()]);
 		}
 		
 		if (kind2 == IModuleResourceDelta.ADDED) {
@@ -548,7 +542,7 @@ public final class PublishCopyUtil {
 	protected IStatus[] publishFull(IModuleResource[] resources, IPath relative, IProgressMonitor monitor) throws CoreException {
 		if (resources == null)
 			return EMPTY_STATUS;
-		List status = new ArrayList(2);
+		List<IStatus> status = new ArrayList<IStatus>(2);
 		int size = resources.length;
 		for (int i = 0; i < size; i++) {
 			if( monitor.isCanceled())
@@ -556,15 +550,13 @@ public final class PublishCopyUtil {
 			IStatus[] stat = copy(resources[i], relative, monitor); 
 			addArrayToList(status, stat);
 		}
-		IStatus[] stat = new IStatus[status.size()];
-		status.toArray(stat);
-		return stat;
+		return status.toArray(new IStatus[status.size()]);
 	}
 
 	private IStatus[] copy(IModuleResource resource, IPath path, IProgressMonitor monitor) throws CoreException {
 		String name = resource.getName();
 		//Trace.trace(Trace.PUBLISHING, "Copying: " + name + " to " + path.toString());
-		List status = new ArrayList(2);
+		List<IStatus> status = new ArrayList<IStatus>(2);
 		if (resource instanceof IModuleFolder) {
 			IModuleFolder folder = (IModuleFolder) resource;
 			IModuleResource[] children = folder.members();
@@ -585,12 +577,10 @@ public final class PublishCopyUtil {
 			addArrayToList(status, handler.copyFile(mf, path, 
 					AbstractServerToolsPublisher.getSubMon(monitor, 100)));
 		}
-		IStatus[] stat = new IStatus[status.size()];
-		status.toArray(stat);
-		return stat;
+		return status.toArray(new IStatus[status.size()]);
 	}
 
-	public static void addArrayToList(List list, IStatus[] a) {
+	public static void addArrayToList(List<IStatus> list, IStatus[] a) {
 		if (list == null || a == null || a.length == 0)
 			return;
 		
