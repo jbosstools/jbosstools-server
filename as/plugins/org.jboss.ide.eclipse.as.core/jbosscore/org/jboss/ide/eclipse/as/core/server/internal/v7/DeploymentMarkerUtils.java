@@ -198,8 +198,11 @@ public class DeploymentMarkerUtils {
 			IProgressMonitor monitor) throws CoreException {
 		IPath folder = depPath.removeLastSegments(1);
 		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
-		IPath file = new Path(depPath.lastSegment() + suffix);
-		callback.deleteResource(file, monitor);
+		String deploymentName = depPath.lastSegment();
+		if (deploymentName != null) {
+			IPath file = new Path(deploymentName + suffix);
+			callback.deleteResource(file, monitor);
+		}
 		return Status.OK_STATUS;
 	}
 
