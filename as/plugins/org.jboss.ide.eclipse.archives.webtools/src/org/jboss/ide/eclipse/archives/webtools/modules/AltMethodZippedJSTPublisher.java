@@ -12,6 +12,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.archives.webtools.modules;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -82,13 +84,18 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			String name = sourcePath.lastSegment();
 			IStatus result = null;
 			
-
-			/* 
-			 * always completely remove prior deployment (prior deployfailed marker, deployed folder etc.)
-			 * this is needed since we might have switched from exploded to war
-			 */
-			result = removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
-			if( publishType != IJBossServerPublisher.REMOVE_PUBLISH){
+			DeploymentMarkerUtils.removeDeployFailedMarker(method, server, destination, monitor);
+			
+			if(publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
+				result = removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
+			} else if (publishType != IJBossServerPublisher.NO_PUBLISH) {
+				/* 
+				 * remove prior exploded deployment (prior deployfailed marker, deployed folder etc.)
+				 * and redeploy
+				 */
+				if (isDeployedExploded(destination)) {
+					removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
+				}
 				// Locally zip it up into the remote tmp folder
 				result = super.publishModule(method, server, module, publishType, delta, 
 						AbstractServerToolsPublisher.getSubMon(monitor, 50));
@@ -96,7 +103,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 					result = remoteFullPublish(sourcePath, destination.removeLastSegments(1), name, 
 							AbstractServerToolsPublisher.getSubMon(monitor, 150));
 				}
-			}
+			} 
 	
 			if( result == null ) {
 				result = Status.OK_STATUS;
@@ -106,6 +113,13 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		} finally {
 			monitor.done();
 		}
+	}
+
+	private boolean isDeployedExploded(IPath destination) {
+		File file = destination.toFile();
+		return file != null 
+				&& file.exists() 
+				&& file.isDirectory();
 	}
 	
 	private IStatus remoteFullPublish(IPath sourcePath, 
@@ -123,7 +137,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 		}
 		return Status.OK_STATUS;
 	}
-	
+
 	private IStatus removeRemoteDeployment( IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) throws CoreException {
 		try {
@@ -136,7 +150,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			return ce.getStatus();
 		}
 	}
-	
+
 	/**
 	 * Removes the resource with the given name from the given parent folder. Either files or folders are removed.   
 	 * @param sourcePath
