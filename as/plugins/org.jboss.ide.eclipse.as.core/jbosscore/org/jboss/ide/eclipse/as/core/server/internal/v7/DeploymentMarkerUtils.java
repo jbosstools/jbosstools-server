@@ -180,7 +180,8 @@ public class DeploymentMarkerUtils {
 	public static IStatus removeDeployFailedMarkerIfExists(IJBossServerPublishMethod method, IServer server,
 			IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
-		return removeDeployedMarkerIfExists(method, deployableServer, module, monitor);
+		IPath deployPath = PublishUtil.getDeployPath(method, module, deployableServer);
+		return removeFile(FAILED_DEPLOY, server, deployPath, method, monitor);
 	}
 
 	/**
