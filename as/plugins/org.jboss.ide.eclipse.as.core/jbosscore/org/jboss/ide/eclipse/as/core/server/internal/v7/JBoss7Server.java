@@ -50,11 +50,8 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 	
 	// Just force it to be in metadata location, for now
 	public String getTempDeployFolder() {
-		IPath p = JBossServerCorePlugin.getServerStateLocation(getServer()).
-				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute();
-		if( !p.toFile().exists()) {
-			p.toFile().mkdirs();
-		}
-		return p.toString();
+		IRuntime rt = getServer().getRuntime();
+		IPath p = rt.getLocation().append(AS7_STANDALONE).append(FOLDER_TMP);
+		return ServerUtil.makeGlobal(rt, p).toString();
 	}
 }
