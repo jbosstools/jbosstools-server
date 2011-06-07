@@ -46,7 +46,6 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.ui.internal.Messages;
 import org.eclipse.wst.server.ui.internal.ServerUIPlugin;
-import org.eclipse.wst.server.ui.internal.Trace;
 import org.eclipse.wst.server.ui.internal.actions.NewServerWizardAction;
 import org.eclipse.wst.server.ui.internal.view.servers.CopyAction;
 import org.eclipse.wst.server.ui.internal.view.servers.DeleteAction;
@@ -125,7 +124,7 @@ public class ServerActionProvider extends CommonActionProvider {
 					IServer server = (IServer) data;
 					ServerUIPlugin.editServer(server);
 				} catch (Exception e) {
-					Trace.trace(Trace.SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
+					//Trace.trace(Trace.SEVERE, org.jboss.ide.eclipse.as.ui.Messages.ServerActionProvider_CouldNotOpenServerError, e);
 				}
 			}
 		});
