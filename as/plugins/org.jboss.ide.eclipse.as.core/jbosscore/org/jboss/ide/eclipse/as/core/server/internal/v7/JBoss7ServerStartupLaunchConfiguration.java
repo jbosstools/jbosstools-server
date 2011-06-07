@@ -16,6 +16,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.debug.core.model.IProcess;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -32,6 +33,13 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
+		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
+		if( started ) {
+			jbsBehavior.setServerStarting();
+			jbsBehavior.setServerStarted();
+			return false;
+		}
 		return true;
 	}
 

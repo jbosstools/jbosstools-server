@@ -38,6 +38,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -304,6 +305,13 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
+		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
+		if( started ) {
+			jbsBehavior.setServerStarting();
+			jbsBehavior.setServerStarted();
+			return false;
+		}
+
 		return true;
 	}
 
