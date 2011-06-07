@@ -43,7 +43,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 			IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 
-		DeploymentMarkerUtils.removeDeployFailedMarker(server, PublishUtil.getDeployPath(method, module, ds), method, monitor);
+		DeploymentMarkerUtils.removeDeployFailedMarker(method, server, PublishUtil.getDeployPath(method, module, ds), monitor);
 		
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 			DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);

@@ -105,7 +105,7 @@ public class DeploymentMarkerUtils {
 		return p.toFile();
 	}
 
-	public static IStatus removeDeployFailedMarker(IServer server, IPath depPath, IJBossServerPublishMethod method,
+	public static IStatus removeDeployFailedMarker(IJBossServerPublishMethod method, IServer server, IPath depPath, 
 			IProgressMonitor monitor) throws CoreException {
 		return removeFile(FAILED_DEPLOY, server, depPath, method, monitor);
 	}
@@ -125,7 +125,7 @@ public class DeploymentMarkerUtils {
 			IModule[] module, IProgressMonitor monitor)	throws CoreException {
 		IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
 		IPath deployPath = PublishUtil.getDeployPath(method, module, deployableServer);
-		return removeDeployedMarkerIfExists(server, deployPath, method, monitor);
+		return removeDeployedMarkerIfExists(method, server, deployPath, monitor);
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class DeploymentMarkerUtils {
 			IModule[] moduleTree, IProgressMonitor monitor)
 			throws CoreException {
 		IPath deployPath = PublishUtil.getDeployPath(method, moduleTree, jbServer);
-		return removeDeployedMarkerIfExists(jbServer.getServer(), deployPath, method, monitor);
+		return removeDeployedMarkerIfExists(method, jbServer.getServer(), deployPath, monitor);
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class DeploymentMarkerUtils {
 	 * @return the result of the removal operation
 	 * @throws CoreException
 	 */
-	public static IStatus removeDeployedMarkerIfExists(IServer server, IPath depPath, IJBossServerPublishMethod method,
+	public static IStatus removeDeployedMarkerIfExists(IJBossServerPublishMethod method, IServer server, IPath depPath, 
 			IProgressMonitor monitor) throws CoreException {
 		try {
 			return removeFile(DEPLOYED, server, depPath, method, monitor);
