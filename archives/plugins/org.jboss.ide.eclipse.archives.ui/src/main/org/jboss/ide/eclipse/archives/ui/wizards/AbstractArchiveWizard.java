@@ -78,9 +78,11 @@ public abstract class AbstractArchiveWizard extends WizardWithNotification imple
 	}
 
 	public boolean performFinish() {
-		IWizardPage currentPage = getContainer().getCurrentPage();
-		if (currentPage instanceof WizardPageWithNotification) {
-			((WizardPageWithNotification)currentPage).pageExited(WizardWithNotification.FINISH);
+		IWizardPage[] allPages = getPages();
+		for( int i = 0; i < allPages.length; i++ ) {
+			if (allPages[i] instanceof WizardPageWithNotification) {
+				((WizardPageWithNotification)allPages[i]).pageExited(WizardWithNotification.FINISH);
+			}
 		}
 
 		final boolean create = (this.existingPackage == null);
