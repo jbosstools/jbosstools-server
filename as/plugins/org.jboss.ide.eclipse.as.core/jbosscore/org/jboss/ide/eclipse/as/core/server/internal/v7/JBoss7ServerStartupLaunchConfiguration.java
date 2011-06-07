@@ -63,7 +63,6 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 				behavior.setProcess(processes[0]);
 			}
 			behavior.setRunMode(mode);
-			behavior.setServerStarted();
 		} catch (CoreException ce) {
 			// report it
 		}
