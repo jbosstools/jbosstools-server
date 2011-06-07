@@ -129,7 +129,6 @@ public class DeployOnlyRSEPrefComposite extends
 		public void execute() {
 			callback.getServer().setAttribute(
 					IDeployableServer.DEPLOY_DIRECTORY, newDir);
-			updateDeployOnlyWidgets();
 		}
 
 		public void undo() {
@@ -162,6 +161,7 @@ public class DeployOnlyRSEPrefComposite extends
 		public void undo() {
 			callback.getServer().setAttribute(
 					IDeployableServer.TEMP_DEPLOY_DIRECTORY, oldDir);
+			updateDeployOnlyWidgets();
 		}
 	}
 }
