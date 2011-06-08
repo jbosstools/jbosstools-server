@@ -12,8 +12,8 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -43,6 +43,8 @@ import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
+
+	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 
 	private IProcess serverProcess;
 	private IJBoss7ManagerService service;
@@ -120,17 +122,17 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		if (method == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		// Handle the dodeploy
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(getServer());
-		Object o = beh.getPublishData(JBoss7JSTPublisher.MARK_DO_DEPLOY);
-		if (!(o instanceof List<?>)) {
-			super.publishFinish(monitor);
-		}
-
-		List<IPath> paths = (List<IPath>) o;
-		monitor.beginTask("Completing Publishes", paths.size() + 1); //$NON-NLS-1$
-		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
-
+		createDoDeployMarkers(monitor);
 		super.publishFinish(new SubProgressMonitor(monitor, 1));
+	}
+
+	private void createDoDeployMarkers(IProgressMonitor monitor) throws CoreException {
+		if (!hasMarkedDoDeploy()) {
+			return;
+		}
+		List<IPath> paths = getMarkedDoDeploy();
+		monitor.beginTask("Completing Publishes", paths.size() + 1); //$NON-NLS-1$
+		createDoDeployMarker(paths, monitor);
 	}
 
 	protected IJBoss7ManagerService getService() throws Exception {
@@ -208,4 +210,35 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			}
 		}
 	}
+	
+	public void markDoDeploy(IPath path) {
+		Object o = getPublishData(MARK_DO_DEPLOY);
+		if(!(o instanceof List<?>)) {
+			o = new ArrayList<IPath>();
+			setPublishData(MARK_DO_DEPLOY, o);
+		}
+		List<IPath> list = (List<IPath>)o;
+		if( !list.contains(path)) {
+			list.add(path);
+		}
+		
+	}
+
+	public boolean hasMarkedDoDeploy() {
+		return getMarkedDoDeploy().size() > 0;
+	}
+	
+	private List<IPath> getMarkedDoDeploy() {
+		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(getServer());
+		Object o = beh.getPublishData(MARK_DO_DEPLOY);
+		if (!(o instanceof List<?>)) {
+			return Collections.emptyList();
+		}
+		return (List<IPath>) o;
+	}
+
+	private void createDoDeployMarker(List<IPath> paths, IProgressMonitor monitor) throws CoreException {
+		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
+	}
+	
 }

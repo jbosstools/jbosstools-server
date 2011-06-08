@@ -10,9 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,7 +23,6 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
@@ -55,7 +51,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 					publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
 				// Only mark a doDeploy file for the root module, but this must be delayed, 
 				// becuase we don't know how many children modules will get published here (SUCK)
-				JBoss7JSTPublisher.markDeployed(method, ds, module, monitor);
+				markDeployed(method, ds, module, monitor);
 			}
 			return s;
 		}
@@ -75,21 +71,13 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	}
     
 	
-	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 //	public static final String MARK_UNDEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 
-	public static void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
+	private void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server.getServer());
-		Object o = beh.getPublishData(MARK_DO_DEPLOY);
-		if(!(o instanceof List<?>)) {
-			o = new ArrayList<IPath>();
-			beh.setPublishData(MARK_DO_DEPLOY, o);
-		}
-		List<IPath> list = (List<IPath>)o;
-		if( !list.contains(p))
-			list.add(p);
+		JBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
+		beh.markDoDeploy(p);
 	}
 	
 //	public static void markUndeployed(
