@@ -41,8 +41,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 		} else {
 			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
 			if( module.length == 1 && 
-					publishType == IJBossServerPublisher.FULL_PUBLISH || 
-					publishType == IJBossServerPublisher.INCREMENTAL_PUBLISH) {
+					publishType == IJBossServerPublisher.FULL_PUBLISH) {
 				// Only mark a doDeploy file for the root module, but this must be delayed, 
 				// becuase we don't know how many children modules will get published here (SUCK)
 				markDeployed(method, ds, module, monitor);
