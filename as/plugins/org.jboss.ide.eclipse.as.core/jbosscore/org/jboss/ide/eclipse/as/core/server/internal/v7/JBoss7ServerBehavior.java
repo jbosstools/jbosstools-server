@@ -122,12 +122,11 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		// Handle the dodeploy
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(getServer());
 		Object o = beh.getPublishData(JBoss7JSTPublisher.MARK_DO_DEPLOY);
-		if (o != null && (o instanceof ArrayList<?>)) {
+		if (o != null && (o instanceof List<?>)) {
 			List<IPath> l = (List<IPath>) o;
 			int size = l.size();
 			monitor.beginTask("Completing Publishes", size + 1); //$NON-NLS-1$
 			Iterator<IPath> i = l.iterator();
-			IPath p;
 			while (i.hasNext()) {
 				DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), i.next(), new SubProgressMonitor(monitor,
 						1));
