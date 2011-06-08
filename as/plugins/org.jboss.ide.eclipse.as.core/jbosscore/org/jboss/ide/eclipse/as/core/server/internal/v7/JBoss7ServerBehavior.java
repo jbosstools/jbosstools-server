@@ -122,18 +122,15 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		// Handle the dodeploy
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(getServer());
 		Object o = beh.getPublishData(JBoss7JSTPublisher.MARK_DO_DEPLOY);
-		if (o != null && (o instanceof List<?>)) {
-			List<IPath> l = (List<IPath>) o;
-			int size = l.size();
-			monitor.beginTask("Completing Publishes", size + 1); //$NON-NLS-1$
-			Iterator<IPath> i = l.iterator();
-			while (i.hasNext()) {
-				DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), i.next(), new SubProgressMonitor(monitor,
-						1));
-			}
-			super.publishFinish(new SubProgressMonitor(monitor, 1));
-		} else
+		if (!(o instanceof List<?>)) {
 			super.publishFinish(monitor);
+		}
+
+		List<IPath> paths = (List<IPath>) o;
+		monitor.beginTask("Completing Publishes", paths.size() + 1); //$NON-NLS-1$
+		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
+
+		super.publishFinish(new SubProgressMonitor(monitor, 1));
 	}
 
 	protected IJBoss7ManagerService getService() throws Exception {

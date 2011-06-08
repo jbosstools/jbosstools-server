@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -22,6 +24,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
@@ -83,6 +86,14 @@ public class DeploymentMarkerUtils {
 		IPath folder = depPath.removeLastSegments(1);
 		IPublishCopyCallbackHandler callback = method.getCallbackHandler(folder, server);
 		callback.copyFile(createBlankModule(), new Path(depPath.lastSegment() + DO_DEPLOY), monitor);
+		return Status.OK_STATUS;
+	}
+
+	public static IStatus addDoDeployMarker(IJBossServerPublishMethod method, IServer server,
+			List<IPath> deployPaths, IProgressMonitor monitor) throws CoreException {
+		for(Iterator<IPath> pathsIterator = deployPaths.iterator(); pathsIterator.hasNext(); ) {
+			addDoDeployMarker(method, server, pathsIterator.next(), new SubProgressMonitor(monitor, 1));
+		}
 		return Status.OK_STATUS;
 	}
 
