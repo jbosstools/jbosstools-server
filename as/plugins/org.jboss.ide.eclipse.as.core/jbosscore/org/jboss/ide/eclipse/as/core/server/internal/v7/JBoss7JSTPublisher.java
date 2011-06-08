@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -82,11 +83,11 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server.getServer());
 		Object o = beh.getPublishData(MARK_DO_DEPLOY);
-		if( o == null || !(o instanceof ArrayList<?>)) {
+		if(!(o instanceof List<?>)) {
 			o = new ArrayList<IPath>();
 			beh.setPublishData(MARK_DO_DEPLOY, o);
 		}
-		ArrayList<IPath> list = (ArrayList<IPath>)o;
+		List<IPath> list = (List<IPath>)o;
 		if( !list.contains(p))
 			list.add(p);
 	}
