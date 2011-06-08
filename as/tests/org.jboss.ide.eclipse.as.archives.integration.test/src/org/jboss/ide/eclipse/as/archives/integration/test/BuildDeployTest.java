@@ -328,4 +328,8 @@ public class BuildDeployTest extends TestCase {
 		ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 		waitForIdle();
 	}
+	private void waitForIdle() {
+		JobUtils.waitForIdle(2500); 
+	}
+
 }
