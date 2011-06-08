@@ -47,7 +47,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		assertChanged(
 				isAs7,
 				new String[] { "newModule.ear", "newModule.ear/test.txt" }, 
-				new String[] { "newModule.ear", "newModule.ear/test.txt", "newModule.ear.dodeploy" });
+				new String[] { "newModule.ear", "newModule.ear/test.txt" });
 		assertRemoved(
 				isAs7,
 				new String[] {}, new String[] { "newModule.ear.failed" });
@@ -57,7 +57,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		assertChanged(
 				isAs7,
 				new String[] { "newModule.ear", "newModule.ear/test.txt" }, 
-				new String[] { "newModule.ear", "newModule.ear/test.txt", "newModule.ear.dodeploy" });
+				new String[] { "newModule.ear", "newModule.ear/test.txt" });
 		assertRemoved(
 				isAs7,
 				new String[] {}, 
@@ -72,7 +72,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		assertChanged(
 				isAs7,
 				new String[] {}, 
-				new String[] { "newModule.ear.dodeploy" });
+				new String[] {});
 		MockPublishMethod.reset();
 
 		server = ServerRuntimeUtils.removeModule(server, mod);
