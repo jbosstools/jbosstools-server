@@ -229,8 +229,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	}
 	
 	private List<IPath> getMarkedDoDeploy() {
-		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(getServer());
-		Object o = beh.getPublishData(MARK_DO_DEPLOY);
+		Object o = getPublishData(MARK_DO_DEPLOY);
 		if (!(o instanceof List<?>)) {
 			return Collections.emptyList();
 		}
