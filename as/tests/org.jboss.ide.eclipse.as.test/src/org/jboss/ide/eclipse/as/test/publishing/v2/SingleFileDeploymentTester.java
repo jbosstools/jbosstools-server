@@ -180,7 +180,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		IOUtil.setContents(project.getFile(filename), "2");
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
-		assertEquals(changed2.size(), 2); // Creating blah.jar and blah.jar.dodeploy
+		assertEquals(changed2.size(), 1); 
 		// Removed blah.jar.failed
 		assertEquals(removed2.size(), 1); 
 		MockPublishMethod.reset();
@@ -227,7 +227,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		IFolder folder = project.getFolder(folderName);
 		IOUtil.setContents(folder.getFile("3.txt"), "3a");
 		ServerRuntimeUtils.publish(server);
-		assertEquals(changed2.size(), 3);
+		assertEquals(changed2.size(), 2);
 		assertEquals(removed2.size(), 1); // [test.failed]
 		MockPublishMethod.reset();
 		
