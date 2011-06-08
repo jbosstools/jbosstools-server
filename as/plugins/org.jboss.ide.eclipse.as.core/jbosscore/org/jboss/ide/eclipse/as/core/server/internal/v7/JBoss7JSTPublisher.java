@@ -27,12 +27,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 
-	// Same as super class but just a *bit* different
-	public boolean accepts(String method, IServer server, IModule[] module) {
-		return super.accepts(method, server, module);
-		// && JBoss7Server.supportsJBoss7MarkerDeployment(server);
-	}
-	
 	public IStatus publishModuleToAS7(
 			IJBossServerPublishMethod method,
 			IServer server, IModule[] module,
