@@ -25,7 +25,7 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
 		setAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_SERVER);
-		setAttribute(IJBossToolingConstants.WEB_PORT_DETECT, false);
+		setAttribute(IJBossToolingConstants.WEB_PORT_DETECT, true);
 		setAttribute(IJBossToolingConstants.WEB_PORT, IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT);
 		setAttribute(IJBossToolingConstants.STARTUP_POLLER_KEY, JBoss7ManagerServicePoller.POLLER_ID);
 	}

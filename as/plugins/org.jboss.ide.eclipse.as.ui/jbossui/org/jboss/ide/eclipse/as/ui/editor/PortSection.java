@@ -129,17 +129,6 @@ public class PortSection extends ServerEditorSection {
 					Messages.EditorChangeWebCommandName);
 		}
 	}
-	
-	public static class JBoss7WebPortEditorExtension extends PortEditorExtension {
-		public JBoss7WebPortEditorExtension() {
-			super(Messages.EditorWebPort, 
-					null,
-					IJBossServerConstants.WEB_PORT_DETECT,
-					IJBossServerConstants.WEB_PORT,
-					null, 
-					Messages.EditorChangeWebCommandName);
-		}
-	}
 
 	public static class JBoss6JMXRMIPortEditorExtension extends PortEditorExtension {
 		public JBoss6JMXRMIPortEditorExtension() {
