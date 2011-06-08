@@ -46,7 +46,7 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
  */
 public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate implements IProcessProvider {
 	
-	private PollThread pollThread = null;
+	protected PollThread pollThread = null;
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
 	public LocalJBossBehaviorDelegate() {
@@ -164,10 +164,14 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	protected void pollServer(final boolean expectedState) {
+		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
+		pollServer(expectedState, poller);
+	}
+	
+	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
 		if( pollThread != null ) {
 			pollThread.cancel();
 		}
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
 		pollThread.start();
 	}

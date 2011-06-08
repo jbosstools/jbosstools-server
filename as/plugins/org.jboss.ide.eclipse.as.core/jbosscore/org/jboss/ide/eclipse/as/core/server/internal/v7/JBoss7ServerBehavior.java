@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -82,16 +83,6 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	public void setProcess(IProcess process) {
 		this.serverProcess = process;
 		initDebugListener(process);
-	}
-
-	protected void pollServer(final boolean expectedState) {
-		if( pollThread != null ) {
-			pollThread.cancel();
-		}
-		//IServerStatePoller poller = PollThreadUtils.getPoller(JBoss7ManagerServicePoller.POLLER_ID, expectedState, getServer());
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = new PollThread(expectedState, poller, this);
-		pollThread.start();
 	}
 
 	private void initDebugListener(IProcess process) {
