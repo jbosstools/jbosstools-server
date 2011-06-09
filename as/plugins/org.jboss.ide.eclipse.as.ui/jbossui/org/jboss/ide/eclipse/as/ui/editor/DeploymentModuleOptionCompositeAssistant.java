@@ -393,6 +393,8 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 				jbs == null ? "" : jbs.getDeployFolder()); //$NON-NLS-1$
 		String newTemp = getHelper().getAttribute(IDeployableServer.TEMP_DEPLOY_DIRECTORY, 
 				jbs == null ? "" : jbs.getTempDeployFolder()); //$NON-NLS-1$
+		newDir = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newDir)).toString();
+		newTemp = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newTemp)).toString();
 		deployText.removeModifyListener(deployListener);
 		deployText.setText(newDir);
 		deployText.addModifyListener(deployListener);
@@ -546,12 +548,22 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					IDeploymentPageCallback cb = callbackMappings.get(mode);
 					loc = cb.getServerLocation(page.getServer());
 					config = cb.getServerConfigName(page.getServer());
-					newDir = new Path(loc)
-						.append(config)
-						.append(IJBossRuntimeResourceConstants.DEPLOY).toString();
-					newTemp = new Path(loc).append(config)
-						.append(IJBossToolingConstants.TMP)
-						.append(IJBossToolingConstants.JBOSSTOOLS_TMP).toString();
+					if( ServerUtil.isJBoss7(page.getServer().getServerType())) {
+						// fast hack, UGH! 
+						newDir = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+									.append(IJBossRuntimeResourceConstants.AS7_DEPLOYMENTS)
+									.makeRelative().toString();
+						newTemp = new Path(IJBossRuntimeResourceConstants.AS7_STANDALONE)
+							.append(IJBossRuntimeResourceConstants.FOLDER_TMP)
+							.makeRelative().toString();
+					} else {
+						newDir = new Path(loc)
+							.append(config)
+							.append(IJBossRuntimeResourceConstants.DEPLOY).toString();
+						newTemp = new Path(loc).append(config)
+							.append(IJBossToolingConstants.TMP)
+							.append(IJBossToolingConstants.JBOSSTOOLS_TMP).toString();
+					}
 					if( mode.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD))
 						new File(newTemp).mkdirs();
 				}
@@ -580,14 +592,14 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	}
 
 	private String getDeployDir() {
-		if( page.getServer().getRuntime() == null || ServerUtil.isJBoss7(page.getServer().getOriginal()))
+		if( page.getServer().getRuntime() == null )
 			return "";//$NON-NLS-1$
 		return ModuleDeploymentPage.makeRelative(getServer().getDeployFolder(), 
 					page.getServer().getRuntime());
 	}
 
 	private String getTempDeployDir() {
-		if( page.getServer().getRuntime() == null || ServerUtil.isJBoss7(page.getServer().getOriginal()))
+		if( page.getServer().getRuntime() == null)
 			return "";//$NON-NLS-1$
 		return 
 			ModuleDeploymentPage.makeRelative(getServer().getTempDeployFolder(), 
