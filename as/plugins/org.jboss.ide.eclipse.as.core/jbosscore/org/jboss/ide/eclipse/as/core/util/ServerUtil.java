@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -95,7 +96,11 @@ public class ServerUtil {
 //	}
 	
 	public static boolean isJBoss7(IServer server) {
-		return server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70);
+		return isJBoss7(server.getServerType());
+	}
+	
+	public static boolean isJBoss7(IServerType type) {
+		return type.getId().equals(IJBossToolingConstants.SERVER_AS_70);
 	}
 	
 	public static void createStandardFolders(IServer server) {

@@ -53,6 +53,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
@@ -75,14 +76,16 @@ import org.jboss.ide.eclipse.as.ui.Messages;
 
 public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeListener {
 	public static interface IDeploymentPageCallback {
-		public boolean metadataEnabled();
+		public boolean metadataEnabled(IServerWorkingCopy copy);
 		public String getServerLocation(IServerWorkingCopy wc);
 		public String getServerConfigName(IServerWorkingCopy wc);
 		public void propertyChange(PropertyChangeEvent evt, DeploymentModuleOptionCompositeAssistant composite);
 	}
 	
 	public static class LocalDeploymentPageCallback implements IDeploymentPageCallback {
-		public boolean metadataEnabled() {
+		public boolean metadataEnabled(IServerWorkingCopy copy) {
+			if( ServerUtil.isJBoss7(copy.getServerType()))
+				return false;
 			return true;
 		}
 
@@ -344,8 +347,6 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 		boolean showRadios = true;
 		if( rt == null || rt.loadAdapter(IJBossServerRuntime.class, null) == null)
 			showRadios = false;
-		if( ServerUtil.isJBoss7(getServer().getServer()))
-			showRadios = false;
 		return showRadios;
 	}
 	public static interface IBrowseBehavior {
@@ -382,7 +383,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					: serverRadio.getSelection() ? serverRadio : customRadio;
 			
 			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			boolean metaEnabled = callbackMappings.get(mode).metadataEnabled();
+			boolean metaEnabled = callbackMappings.get(mode).metadataEnabled(page.getServer());
 			metadataRadio.setEnabled(metaEnabled);
 		}
 		
@@ -797,7 +798,7 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 	public void propertyChange(PropertyChangeEvent evt) {
 		if( getShowRadios() && evt.getPropertyName().equals( IDeployableServer.SERVER_MODE)) { 
 			String mode = page.getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			metadataRadio.setEnabled(callbackMappings.get(mode).metadataEnabled());
+			metadataRadio.setEnabled(callbackMappings.get(mode).metadataEnabled(page.getServer()));
 //			String originalDeployLocation = page.getServer().getOriginal().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 //			String wcDeployLocation = page.getServer().getAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE, IDeployableServer.DEPLOY_CUSTOM);
 			if(!metadataRadio.isEnabled() && metadataRadio.getSelection()) {

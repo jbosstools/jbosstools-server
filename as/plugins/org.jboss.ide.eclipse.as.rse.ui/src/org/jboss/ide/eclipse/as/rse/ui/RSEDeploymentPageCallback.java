@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssista
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant.IDeploymentPageCallback;
 
 public class RSEDeploymentPageCallback implements IDeploymentPageCallback {
-	public boolean metadataEnabled() {
+	public boolean metadataEnabled(IServerWorkingCopy copy) {
 		return false;
 	}
 	public String getServerLocation(IServerWorkingCopy wc) {
