@@ -58,14 +58,20 @@ public interface IEventCodes {
 	
 	// Publishing.JST
 	public static final int JST_PUB_FULL_SUCCESS = JST_PUBLISHER_CODE | 1;
-	public static final int JST_PUB_FULL_FAIL = JST_PUBLISHER_CODE | 2;
+	public static final int JST_PUB_FULL_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 2;
 	public static final int JST_PUB_INC_SUCCESS = JST_PUBLISHER_CODE | 3;
-	public static final int JST_PUB_INC_FAIL = JST_PUBLISHER_CODE | 4;
+	public static final int JST_PUB_INC_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 4;
 	public static final int JST_PUB_REMOVE_SUCCESS = JST_PUBLISHER_CODE | 5;
-	public static final int JST_PUB_REMOVE_FAIL = JST_PUBLISHER_CODE | 6;
-	public static final int JST_PUB_COPY_BINARY_FAIL = JST_PUBLISHER_CODE | 7;
-	public static final int JST_PUB_FILE_DELETE_FAIL = JST_PUBLISHER_CODE | 8;
-	public static final int JST_PUB_ASSEMBLE_FAIL = JST_PUBLISHER_CODE | 9;
+	public static final int JST_PUB_REMOVE_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 6;
+	public static final int JST_PUB_COPY_BINARY_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 7;
+	public static final int JST_PUB_FILE_DELETE_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 8;
+	public static final int JST_PUB_ASSEMBLE_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 9;
+	
+	//newer status codes
+	public static final int JST_PUB_SUCCESS = JST_PUBLISHER_CODE | 10;
+	public static final int JST_PUB_FAIL = JST_PUBLISHER_CODE | ISTATUS_CODE_ERROR | 11;
+	
+	
 	
 	// Publishing.single
 	public static final int SINGLE_FILE_SUCCESS_MASK = 0x1;

@@ -39,6 +39,7 @@ import org.eclipse.wst.server.core.model.IModuleFolder;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -139,7 +140,7 @@ public final class PublishCopyUtil {
 				try {
 					in = new FileInputStream(file);
 				} catch (IOException e) {
-					return new IStatus[] {new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
+					return new IStatus[] {new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, 
 							NLS.bind(Messages.errorReading, file.getAbsolutePath()), e)};
 				}
 				IStatus ret = copyFile(in, deployRootFolder.append(relativePath), file.lastModified(), mf);
@@ -164,7 +165,7 @@ public final class PublishCopyUtil {
 				return Status.OK_STATUS;
 			} catch (Exception e) {
 				//Trace.trace(Trace.SEVERE, "Error copying file", e);
-				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, new String[] {to, e.getLocalizedMessage()}), e);
+				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorCopyingFile, new String[] {to, e.getLocalizedMessage()}), e);
 			} finally {
 				try {
 					if (in != null)
@@ -195,7 +196,7 @@ public final class PublishCopyUtil {
 				throw e;
 			} catch (Exception e) {
 				IPath path = mf.getModuleRelativePath().append(mf.getName());
-				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null);
+				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorCopyingFile, path.toOSString(), e.getLocalizedMessage()), null);
 			} finally {
 				if (tempFile != null && tempFile.exists())
 					tempFile.deleteOnExit();
@@ -245,14 +246,14 @@ public final class PublishCopyUtil {
 				}
 			}
 			if (!safeRename(tempFile, file, 10))
-				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, 
+				throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_ASSEMBLE_FAIL, 
 						NLS.bind(org.jboss.ide.eclipse.as.core.Messages.PublishRenameFailure, 
 								tempFile.toString(), file.getAbsolutePath()), null));
 		}
 
 		private void throwOnErrorStatus(File file, IStatus status) throws CoreException {
 			if (!status.isOK()) {
-				MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, file.toString()), null);
+				MultiStatus status2 = new MultiStatus(ServerPlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, file.toString()), null);
 				status2.add(status);
 				throw new CoreException(status2);
 			}
@@ -313,7 +314,7 @@ public final class PublishCopyUtil {
 				results = deleteDirectory(resource.toFile(), monitor);
 			} else {
 				if( !file.delete()) {
-					IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
+					IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, resource.toFile().getAbsolutePath()), null);
 					results = new IStatus[]{s};
 				}
 			}
@@ -330,7 +331,7 @@ public final class PublishCopyUtil {
 		 */
 		private IStatus[] deleteDirectory(File dir, IProgressMonitor monitor) {
 			if (!dir.exists() || !dir.isDirectory())
-				return new IStatus[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null) };
+				return new IStatus[] { new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorNotADirectory, dir.getAbsolutePath()), null) };
 			
 			List<IStatus> status = new ArrayList<IStatus>(2);
 			
@@ -346,7 +347,7 @@ public final class PublishCopyUtil {
 					File current = files[i];
 					if (current.isFile()) {
 						if (!current.delete()) {
-							status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath()), null));
+							status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, files[i].getAbsolutePath()), null));
 							deleteCurrent = false;
 						}
 						monitor.worked(10);
@@ -361,11 +362,11 @@ public final class PublishCopyUtil {
 					}
 				}
 				if (deleteCurrent && !dir.delete())
-					status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null));
+					status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, dir.getAbsolutePath()), null));
 				monitor.done();
 			} catch (Exception e) {
 				//Trace.trace(Trace.SEVERE, "Error deleting directory " + dir.getAbsolutePath(), e);
-				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, e.getLocalizedMessage(), null));
+				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, e.getLocalizedMessage(), null));
 			}
 			
 			return status.toArray(new IStatus[status.size()]);
@@ -506,7 +507,7 @@ public final class PublishCopyUtil {
 			IPath path2 = path.append(resource.getModuleRelativePath()).append(resource.getName());
 			IStatus[] stat = handler.deleteResource(path2, monitor);
 			if( stat.length > 0 && !stat[0].isOK()) {
-				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, NLS.bind(Messages.errorDeleting, path2), null));
+				status.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorDeleting, path2), null));
 			}
 		}
 		
