@@ -196,10 +196,7 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	public static String makeGlobal(String path, IRuntime runtime) {
-		IJBossServerRuntime rt = getRuntime(runtime);
-		if( rt != null )
-			return ServerUtil.makeGlobal(rt, new Path(path)).toString();
-		return path;
+		return ServerUtil.makeGlobal(runtime, new Path(path)).toString();
 	}
 	
 	public String makeRelative(String path) {
@@ -207,17 +204,9 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	}
 	
 	public static String makeRelative(String path, IRuntime runtime) {
-		IJBossServerRuntime rt = getRuntime(runtime);
-		if (rt == null)
-			return path; 
-		return ServerUtil.makeRelative(rt, new Path(path)).toString();
+		return ServerUtil.makeRelative(runtime, new Path(path)).toString();
 	}
 
-	private IJBossServerRuntime getRuntime() {
-		IRuntime r = server.getRuntime();
-		return getRuntime(r);
-	}
-	
 	public static IJBossServerRuntime getRuntime(IRuntime r) {
 		IJBossServerRuntime ajbsrt = null;
 		if (r != null) {
@@ -231,14 +220,8 @@ public class ModuleDeploymentPage extends ServerEditorPart {
 	public void setFocus() {
 	}
 
-	
 	// Currently inactive!!! See bug 286699
 	public void doSave(IProgressMonitor monitor) {
 		tab.updateListeners();
-//		try {
-//			DeploymentPreferenceLoader.savePreferences(server.getOriginal(), preferences);
-//		} catch( IOException ioe ) {
-//			// TODO eh?
-//		}
 	}
 }
