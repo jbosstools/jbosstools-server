@@ -61,7 +61,7 @@ public class RSEUtils {
 	
 	/* Copied from JBossServer.getDeployFolder(etc) */
 	public static String getDeployRootFolder(IServer server, String type) {
-		if( type.equals(JBossServer.DEPLOY_CUSTOM)) {
+		if( JBossServer.DEPLOY_CUSTOM.equals(type)) {
 			String val = server.getAttribute(JBossServer.DEPLOY_DIRECTORY, (String)null);
 			if( val != null ) {
 				IPath val2 = new Path(val);
@@ -71,10 +71,10 @@ public class RSEUtils {
 			type = JBossServer.DEPLOY_SERVER;
 		}
 		// This should *NOT* happen, so if it does, we will default to server location
-		if( type.equals(JBossServer.DEPLOY_METADATA)) {
+		else if( JBossServer.DEPLOY_METADATA.equals(type)) {
 			type = JBossServer.DEPLOY_SERVER;
 		} 
-		if( type.equals(JBossServer.DEPLOY_SERVER)) {
+		else if(JBossServer.DEPLOY_SERVER.equals(type)) {
 			// TODO !!!!  Need API (nmaybe in JBossServer?) so servers can override this behavior
 			// Cannot move this code to JBossServer because this requires an RSE-specific key!! Damn!
 			
