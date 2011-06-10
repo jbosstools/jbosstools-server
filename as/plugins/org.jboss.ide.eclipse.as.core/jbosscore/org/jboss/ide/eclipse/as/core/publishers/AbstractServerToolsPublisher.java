@@ -180,7 +180,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		if( monitor.isCanceled())
 			return canceledStatus();
 
-		ArrayList<IStatus> list = new ArrayList<IStatus>();
+		List<IStatus> list = new ArrayList<IStatus>();
 
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
 		boolean forceZip = forceZipModule(moduleTree);
