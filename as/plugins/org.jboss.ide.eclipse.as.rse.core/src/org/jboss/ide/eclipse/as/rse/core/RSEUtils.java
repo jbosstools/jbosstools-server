@@ -21,12 +21,11 @@ import org.eclipse.rse.core.model.IHost;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -85,7 +84,7 @@ public class RSEUtils {
 				String loc = IConstants.SERVER;
 				String config = getRSEConfigName(server);
 				IPath p = new Path(loc).append(config)
-					.append(IJBossServerConstants.DEPLOY);
+					.append(IJBossRuntimeResourceConstants.DEPLOY);
 				return makeGlobal(server, p).toString();
 			}
 		}

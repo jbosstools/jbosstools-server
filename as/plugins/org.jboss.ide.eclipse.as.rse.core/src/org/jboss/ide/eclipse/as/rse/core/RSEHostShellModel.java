@@ -27,10 +27,7 @@ import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
 
 public class RSEHostShellModel {
@@ -139,11 +136,6 @@ public class RSEHostShellModel {
 			} catch(InterruptedException ie) {
 			}
 		}
-	}
-
-	private static DeployableServerBehavior getBehaviour(String serverId) {
-		IServer s = ServerCore.findServer(serverId);
-		return s == null ? null : ServerConverter.getDeployableServerBehavior(s);
 	}
 
 	public static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {

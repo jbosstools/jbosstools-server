@@ -37,11 +37,9 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossServerStartupLaunchUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -199,8 +197,10 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		
-		IJBossRuntimeResourceConstants c = new IJBossRuntimeResourceConstants(){};
-		String stop = new Path(rseHome).append(c.BIN).append(c.SHUTDOWN_SH).toString() + IJBossRuntimeConstants.SPACE;
+		String stop = new Path(rseHome)
+			.append(IJBossRuntimeResourceConstants.BIN)
+			.append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString() 
+		+ IJBossRuntimeConstants.SPACE;
 		
 		// Pull args from single utility method
 		stop += StopLaunchConfiguration.getDefaultArgs(jbs);
