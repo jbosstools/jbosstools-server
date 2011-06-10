@@ -211,7 +211,7 @@ public class ClientAllRuntimeClasspathProvider
 	
 	protected Set<Entry> get70(IPath location) {
 		Set<Entry> list = new HashSet<Entry>();
-		addPaths(location.append(AS7_MODULES), list, true);
+		addPaths(location.append(AS7_MODULES).append(JAVAX), list, true);
 		return list;
 	}
 	
