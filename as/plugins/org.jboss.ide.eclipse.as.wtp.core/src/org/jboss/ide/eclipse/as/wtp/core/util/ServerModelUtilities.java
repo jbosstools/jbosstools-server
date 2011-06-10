@@ -75,4 +75,16 @@ public class ServerModelUtilities {
 			return jbtMod.isBinary();
 		return false;
 	}
+	
+	public static boolean isAnyDeleted(IModule[] module) {
+		boolean deleted = false;
+		for( int i = 0; i < module.length; i++ ) {
+			if( module[i].isExternal() ) {
+				deleted = true;
+				break;
+			}
+		}
+		return deleted;
+	}
+
 }

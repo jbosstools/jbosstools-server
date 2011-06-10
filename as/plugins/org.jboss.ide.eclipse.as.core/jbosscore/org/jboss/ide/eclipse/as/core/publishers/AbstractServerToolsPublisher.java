@@ -98,18 +98,12 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		this.delta = delta;
 		this.publishMethod = method;
 		
-		boolean deleted = false;
-		for( int i = 0; i < module.length; i++ ) {
-			if( module[i].isExternal() )
-				deleted = true;
-		}
-
 		// Monitor at this point has been begun with 1000 monitor
 		IProgressMonitor subMon = getSubMon(monitor, 1000);
 		if (publishType == REMOVE_PUBLISH ) {
 			status = unpublish(this.server, module, subMon);
 		} else {
-			if( deleted ) {
+			if( ServerModelUtilities.isAnyDeleted(module) ) {
 				publishState = IServer.PUBLISH_STATE_UNKNOWN;
 			} else {
 				if (publishType == FULL_PUBLISH ) {
