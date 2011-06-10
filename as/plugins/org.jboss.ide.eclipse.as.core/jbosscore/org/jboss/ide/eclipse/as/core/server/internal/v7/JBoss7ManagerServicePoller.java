@@ -55,7 +55,6 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 			JBoss7ServerState serverState = null;
 			do {
 				serverState = service.getServerState(getServer().getHost());
-				System.err.println("state = " + serverState); //$NON-NLS-1$
 			} while (serverState == JBoss7ServerState.STARTING);
 			return serverState == JBoss7ServerState.RUNNING;
 		} catch (Exception e) {
@@ -68,7 +67,6 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 			JBoss7ServerState serverState = null;
 			do {
 				serverState = service.getServerState(getServer().getHost());
-				System.err.println("state = " + serverState); //$NON-NLS-1$
 			} while (serverState == JBoss7ServerState.RUNNING);
 			return false;
 		} catch (JBoss7ManangerConnectException e) {
