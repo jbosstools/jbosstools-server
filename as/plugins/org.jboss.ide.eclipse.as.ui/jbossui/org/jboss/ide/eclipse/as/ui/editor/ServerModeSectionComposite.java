@@ -83,7 +83,7 @@ public class ServerModeSectionComposite extends Composite {
 
 	    preferencePageBook = toolkit.createPageBook(this, SWT.FLAT|SWT.TOP);
 	    preferencePageBook.setLayoutData(UIUtil.createFormData2(
-	    		deployTypeCombo, 5, 0, 150, 0, 5, 100, -5));
+	    		deployTypeCombo, 5, 0, 200, 0, 5, 100, -5));
 
 	    // fill widgets
 	    String[] nameList = new String[deployAdditions.size()];

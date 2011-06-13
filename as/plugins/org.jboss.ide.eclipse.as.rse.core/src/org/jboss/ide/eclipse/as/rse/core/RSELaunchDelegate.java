@@ -44,6 +44,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
@@ -61,6 +62,14 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		String ignore = beh.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
+		if( ignoreB.booleanValue()) {
+			beh.setServerStarting();
+			beh.setServerStarted();
+			return;
+		}
+
 		beh.setServerStarting();
 		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
 		try {
@@ -107,6 +116,13 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
+		String ignore = behaviour.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
+		if( ignoreB.booleanValue()) {
+			behaviour.setServerStopping();
+			behaviour.setServerStopped();
+			return;
+		}
 		ILaunchConfiguration config = null;
 		String command2 = "";
 		try {
