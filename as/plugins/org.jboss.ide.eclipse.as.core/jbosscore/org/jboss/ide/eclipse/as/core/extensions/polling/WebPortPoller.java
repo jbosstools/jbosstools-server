@@ -22,13 +22,14 @@ public class WebPortPoller implements IServerStatePoller {
 	private ServerStatePollerType type;
 	private boolean canceled, done;
 	private boolean state;
-
+	private boolean expectedState;
 
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {
 		this.server = server;
-		canceled = done = false;
-		state = SERVER_DOWN;
+		this.canceled = done = false;
+		this.expectedState = expectedState;
+		this.state = !expectedState;
 		launchThread();
 	}
 
@@ -46,9 +47,9 @@ public class WebPortPoller implements IServerStatePoller {
 		String url = getURL(getServer());
 		while(!canceled && !done) {
 			boolean up = onePing(url);
-			if( up ) {
+			if( up == expectedState ) {
 				done = true;
-				state = SERVER_UP;
+				state = expectedState;
 			}
 		}
 	}

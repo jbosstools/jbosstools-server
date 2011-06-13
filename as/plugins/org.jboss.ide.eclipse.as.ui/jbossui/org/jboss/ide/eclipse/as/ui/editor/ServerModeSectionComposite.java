@@ -15,11 +15,15 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledPageBook;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -33,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.FormUtils;
+import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 
@@ -41,6 +46,7 @@ public class ServerModeSectionComposite extends Composite {
 	private Combo deployTypeCombo;
 	private ScrolledPageBook preferencePageBook;
 	private IServerModeUICallback callback;
+	private Button executeShellScripts; // may be null;
 
 	public ServerModeSectionComposite(Composite parent, int style, IServerModeUICallback callback) {
 		super(parent, style);
@@ -49,8 +55,29 @@ public class ServerModeSectionComposite extends Composite {
 		FormToolkit toolkit = new FormToolkit(getDisplay());
 		FormUtils.adaptFormCompositeRecursively(this, toolkit);	
 		setLayout(new FormLayout());
+		
+		Control top = null;
+		if( showExecuteShellCheckbox()) {
+			executeShellScripts = new Button(this, SWT.CHECK);
+			executeShellScripts.setText(Messages.EditorDoNotLaunch);
+			FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0);
+			executeShellScripts.setLayoutData(fd);
+			top = executeShellScripts;
+			String tmp = callback.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+			Boolean b = tmp == null ? new Boolean(false) : new Boolean(tmp);
+			executeShellScripts.setSelection(b.booleanValue());
+			
+			executeShellScripts.addSelectionListener(new SelectionListener(){
+				public void widgetSelected(SelectionEvent e) {
+					executeShellToggled();
+				}
+				public void widgetDefaultSelected(SelectionEvent e) {
+				}}
+			);
+		}
+		
 		deployTypeCombo = new Combo(this, SWT.READ_ONLY);
-		FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, 50, -5);
+		FormData fd = UIUtil.createFormData2(top, 5, null, 0, 0, 5, 50, -5);
 		deployTypeCombo.setLayoutData(fd);
 		
 
@@ -80,7 +107,7 @@ public class ServerModeSectionComposite extends Composite {
 			current = behType.getName();
 			callback.execute(new ChangeServerPropertyCommand(
 					callback.getServer(), IDeployableServer.SERVER_MODE, 
-					behType.getId(), "Change server mode"));
+					behType.getId(), Messages.EditorChangeServerMode));
 		}
 		if( current != null ) {
 			int index = deployTypeCombo.indexOf(current);
@@ -93,7 +120,17 @@ public class ServerModeSectionComposite extends Composite {
 			}});
 	    deployTypeChanged(false);
 	}
+	
+	protected boolean showExecuteShellCheckbox() {
+		return true;
+	}
 
+	protected void executeShellToggled() {
+		callback.execute(new ChangeServerPropertyCommand(
+				callback.getServer(), IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, 
+				new Boolean(executeShellScripts.getSelection()).toString(), Messages.EditorDoNotLaunchCommand));
+	}
+	
 	private class DeployUIAdditions {
 		private IJBossServerPublishMethodType publishType;
 		private IDeploymentTypeUI ui;

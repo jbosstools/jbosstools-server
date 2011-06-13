@@ -18,7 +18,9 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 
 /**
@@ -34,6 +36,13 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		String tmp = jbsBehavior.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+		Boolean b = tmp == null ? new Boolean(false) : new Boolean(tmp);
+		if( b.booleanValue()) {
+			jbsBehavior.setServerStarting();
+			jbsBehavior.setServerStarted();
+			return false;
+		}
 		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
 		if( started ) {
 			jbsBehavior.setServerStarting();
@@ -61,6 +70,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 			IProcess[] processes = launch.getProcesses();
 			if (processes != null && processes.length >= 1) {
 				behavior.setProcess(processes[0]);
+				((LocalJBossBehaviorDelegate) (behavior.getDelegate())).setProcess(processes[0]);
 			}
 			behavior.setRunMode(mode);
 		} catch (CoreException ce) {

@@ -182,6 +182,9 @@ public class Messages extends NLS {
 	public static String EditorSetTempDeployLabel;
 	public static String EditorEditDeployLocCommand;
 	public static String EditorModule;
+	public static String EditorDoNotLaunch;
+	public static String EditorDoNotLaunchCommand;
+	public static String EditorChangeServerMode;
 	public static String EditorZipDeployments;
 	public static String EditorSetRadioClicked;
 	public static String EditorDeployDNE;
