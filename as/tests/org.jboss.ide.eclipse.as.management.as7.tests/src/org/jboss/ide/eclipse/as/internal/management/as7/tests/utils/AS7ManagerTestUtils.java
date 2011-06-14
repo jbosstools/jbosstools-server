@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.internal.management.as7.tests;
+package org.jboss.ide.eclipse.as.internal.management.as7.tests.utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -46,6 +46,10 @@ public class AS7ManagerTestUtils {
 
 	private static final int RESPONSE_TIMEOUT = 10 * 1024;
 	private static final long WAIT_TIMEOUT = 10 * 1024;
+
+	private AS7ManagerTestUtils() {
+		// inhibit instantiation
+	}
 
 	public static File getWarFile(String name) throws URISyntaxException, IOException {
 		Bundle bundle = Platform.getBundle(BUNDLE_ID);

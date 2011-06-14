@@ -19,7 +19,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	AS7ManagerIntegrationTest.class
-	, JBossManagementServiceIntegrationTest.class
+	, JBossManagementServiceTest.class
 })
 public class AS7IntegrationTestSuite {
 

@@ -27,7 +27,7 @@ import org.osgi.framework.ServiceReference;
  * 
  * @author André Dietisheim
  */
-public class JBossManagementServiceIntegrationTest {
+public class JBossManagementServiceTest {
 
 	private static final String DS_BUNDLEID = "org.eclipse.equinox.ds";
 

@@ -17,8 +17,11 @@
 				<groupId>org.sonatype.tycho</groupId>
 				<artifactId>maven-osgi-test-plugin</artifactId>
 				<configuration>
+					<includes>
+					 		<include>**/*Test*.class</include>
+				 	</includes>
 					<excludes>
-					 		<exclude>**/IntegrationTestSuite*.class</exclude>
+					 		<exclude>**/*IntegrationTest*.class</exclude>
 				 	</excludes>
 				 </configuration>
 			</plugin>
