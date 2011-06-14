@@ -27,9 +27,7 @@ public class ServerListener extends UnitedServerListener {
 	}
 	
 	public void serverAdded(IServer server) {
-		// TODO clean up this interface call
-		if( !ServerUtil.isJBoss7(server))
-			ServerUtil.createStandardFolders(server);
+		ServerUtil.createStandardFolders(server);
 	}
 
 	public void serverRemoved(IServer server) {

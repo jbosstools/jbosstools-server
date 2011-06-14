@@ -107,6 +107,7 @@ public class ServerUtil {
 		// create metadata area
 		File location = JBossServerCorePlugin.getServerStateLocation(server).toFile();
 		location.mkdirs();
+		JBossServerCorePlugin.getServerStateLocation(server).append(IJBossToolingConstants.TEMP_DEPLOY).toFile().mkdirs();
 		
 		// create temp deploy folder
 		JBossServer ds = ( JBossServer)server.loadAdapter(JBossServer.class, null);
