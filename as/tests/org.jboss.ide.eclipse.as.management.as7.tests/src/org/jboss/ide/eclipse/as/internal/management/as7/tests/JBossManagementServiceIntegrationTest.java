@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.management.as7.tests;
+package org.jboss.ide.eclipse.as.internal.management.as7.tests;
 
 import static org.junit.Assert.assertNotNull;
 
