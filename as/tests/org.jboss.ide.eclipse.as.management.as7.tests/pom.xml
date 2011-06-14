@@ -18,7 +18,7 @@
 				<artifactId>maven-osgi-test-plugin</artifactId>
 				<configuration>
 					<includes>
-					 		<include>**/*Test*.class</include>
+					 		<include>**/*Test.class</include>
 				 	</includes>
 					<excludes>
 					 		<exclude>**/*IntegrationTest*.class</exclude>
