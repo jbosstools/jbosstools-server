@@ -15,6 +15,7 @@ import java.io.File;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
+import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -26,6 +27,10 @@ public class ServerListener extends UnitedServerListener {
 		return instance;
 	}
 	
+	public boolean canHandleServer(IServer server) {
+		return true;
+	}
+
 	public void serverAdded(IServer server) {
 		ServerUtil.createStandardFolders(server);
 	}

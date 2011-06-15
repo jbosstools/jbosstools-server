@@ -3,6 +3,7 @@ package org.jboss.ide.eclipse.as.test.publishing.v2;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
@@ -11,20 +12,30 @@ import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
 public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
-	public void testNormalLogic() throws CoreException, IOException {
+	public void setUp() throws Exception {
+	}
+
+	protected IProject createProject() throws Exception {
+		return createEARProject();
+	}
+	
+	public void testNormalLogic() throws CoreException, IOException, Exception {
+		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		project = createProject();
 		MockPublishMethod.reset();
 		theTest(false);
 	}
 
-	public void testForced7Logic() throws CoreException, IOException {
+	public void testForced7Logic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
+		project = createProject();
 		MockPublishMethod.reset();
 		theTest(true);
 	}
 
-	private void theTest(boolean isAs7) throws CoreException, IOException {
+	protected void theTest(boolean isAs7) throws CoreException, IOException {
 
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server, mod);
@@ -85,15 +96,15 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 				new String[] { "newModule.ear.deployed", "newModule.ear.failed" });
 	}
 	
-	private void assertRemoved(boolean isAs7, String[] nonAs7, String[] as7) {
+	protected void assertRemoved(boolean isAs7, String[] nonAs7, String[] as7) {
 		assertExpectedArtifacts(isAs7, nonAs7, as7, MockPublishMethod.getRemoved());
 	}
 
-	private void assertChanged(boolean isAs7, String[] nonAs7, String[] as7) {
+	protected void assertChanged(boolean isAs7, String[] nonAs7, String[] as7) {
 		assertExpectedArtifacts(isAs7, nonAs7, as7, MockPublishMethod.getChanged());
 	}
 
-	private void assertExpectedArtifacts(boolean isAs7, String[] nonAs7, String[] as7, IPath[] artifacts) {
+	protected void assertExpectedArtifacts(boolean isAs7, String[] nonAs7, String[] as7, IPath[] artifacts) {
 		if (isAs7) {
 			assertEquals(as7.length, artifacts.length);
 		} else {
@@ -117,7 +128,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		}
 	}
 
-	private boolean contains(String expectedPath, IPath[] paths) {
+	protected boolean contains(String expectedPath, IPath[] paths) {
 		for (IPath path : paths) {
 			if (expectedPath.equals(path.toString())) {
 				return true;

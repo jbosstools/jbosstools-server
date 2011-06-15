@@ -31,4 +31,9 @@ public class UnitedServerListener {
 	public void publishStarted(IServer server){}
 	public void publishFinished(IServer server, IStatus status){}
 	public void cleanUp(IServer server) {}
+	public boolean canHandleServer(IServer server) {
+		if (!UnitedServerListenerManager.isJBossServer(server))
+			return false;
+		return true;
+	}
 }

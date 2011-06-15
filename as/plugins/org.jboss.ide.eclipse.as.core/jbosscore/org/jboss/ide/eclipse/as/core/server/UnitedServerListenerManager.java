@@ -48,18 +48,16 @@ public class UnitedServerListenerManager implements
 		ServerCore.addServerLifecycleListener(this);
 		IServer[] allServers = ServerCore.getServers();
 		for( int i = 0; i < allServers.length; i++ ) {
-			if (isJBossServer(allServers[i])) {
-				allServers[i].addServerListener(this);
-				allServers[i].addPublishListener(this);
-			}
+			allServers[i].addServerListener(this);
+			allServers[i].addPublishListener(this);
 		}
 	}
+	
 	public synchronized UnitedServerListener[] getListeners() {
 		return (UnitedServerListener[]) list.toArray(new UnitedServerListener[list.size()]);
 	}
 	
-	
-	private boolean isJBossServer(IServer server) {
+	public static boolean isJBossServer(IServer server) {
 		if (server == null) {
 			return false;
 		}
@@ -97,65 +95,53 @@ public class UnitedServerListenerManager implements
 	}
 
 	public void serverAdded(IServer server) {
-		if (!isJBossServer(server)) {
-			return;
-		}
 		server.addServerListener(this);
 		server.addPublishListener(this);
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].serverAdded(server);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].serverAdded(server);
 		}
 	}
 	public void serverChanged(IServer server) {
-		if (!isJBossServer(server)) {
-			return;
-		}
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].serverChanged(server);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].serverChanged(server);
 		}
 	}
 	public void serverRemoved(IServer server) {
-		if (!isJBossServer(server)) {
-			return;
-		}
 		server.removeServerListener(this);
 		server.removePublishListener(this);
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].serverRemoved(server);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].serverRemoved(server);
 		}
 	}
 	
 	public void serverChanged(ServerEvent event) {
 		IServer server = event.getServer();
-		if (!isJBossServer(server)) {
-			return;
-		}
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].serverChanged(event);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].serverChanged(event);
 		}
 	}
 
 	public void publishStarted(IServer server) {
-		if (!isJBossServer(server)) {
-			return;
-		}
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].publishStarted(server);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].publishStarted(server);
 		}
 	}
 
 	public void publishFinished(IServer server, IStatus status) {
-		if (!isJBossServer(server)) {
-			return;
-		}
 		UnitedServerListener[] listeners = getListeners();
 		for( int i = 0; i < listeners.length; i++) {
-			listeners[i].publishFinished(server, status);
+			if( listeners[i].canHandleServer(server))
+				listeners[i].publishFinished(server, status);
 		}
 	}
 }
