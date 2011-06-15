@@ -3,7 +3,6 @@ package org.jboss.ide.eclipse.as.test.publishing.v2;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -62,8 +61,6 @@ public class MockJSTPublisherTestDynUtil extends MockJSTPublisherTest {
 	}
 	
 	protected void addOneReference(IVirtualComponent parent, IVirtualReference ref) throws CoreException {
-		String path, archiveName;
-
 		IDataModelProvider provider = new AddReferenceDataModelProvider();
 		IDataModel dm = DataModelFactory.createDataModel(provider);
 		dm.setProperty(IAddReferenceDataModelProperties.SOURCE_COMPONENT, parent);
