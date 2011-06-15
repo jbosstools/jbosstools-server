@@ -41,7 +41,6 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	}
 
 	public static IPath[] getChanged() {
-		ArrayList<IPath> tmp = changed;
 		return (IPath[]) changed.toArray(new IPath[changed.size()]);
 	}
 
