@@ -15,7 +15,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.archives.integration.test</module>		
 		<module>org.jboss.ide.eclipse.as.test</module>
 		<module>org.jboss.ide.eclipse.as.ui.test</module>
-		<module>org.jboss.ide.eclipse.as.management.as7.tests</module>
+		<!-- removed per max, temporarily <module>org.jboss.ide.eclipse.as.management.as7.tests</module> -->
 	</modules>
 </project>
 	
