@@ -3,7 +3,6 @@ package org.jboss.ide.eclipse.as.test.publishing.v2;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
@@ -18,7 +17,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	public void testNormalLogic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		project = createEARProject();
+		project = createProject();
 		MockPublishMethod.reset();
 		theTest(false);
 	}
@@ -26,7 +25,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	public void testForced7Logic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		project = createEARProject();
+		project = createProject();
 		MockPublishMethod.reset();
 		theTest(true);
 	}

@@ -20,7 +20,8 @@ import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
 public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
-	protected IProject createEARProject() throws Exception {
+	@Override
+	protected IProject createProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, CONTENT_DIR, null, JavaEEFacetConstants.WEB_25, true);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);

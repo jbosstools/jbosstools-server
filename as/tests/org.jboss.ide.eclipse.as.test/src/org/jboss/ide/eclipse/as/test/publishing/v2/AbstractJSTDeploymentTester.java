@@ -30,7 +30,7 @@ public class AbstractJSTDeploymentTester extends TestCase {
 	final String TEXT_FILE = "test.txt";
 	final IPath CONTENT_TEXT_FILE = new Path(CONTENT_DIR).append(TEXT_FILE);
 	public void setUp() throws Exception {
-		project = createEARProject();
+		project = createProject();
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 	}
 	
@@ -40,7 +40,7 @@ public class AbstractJSTDeploymentTester extends TestCase {
 		ProjectUtility.deleteAllProjects();
 		ASTest.clearStateLocation();
 	}
-	protected IProject createEARProject() throws Exception {
+	protected IProject createProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getEARDataModel(MODULE_NAME, CONTENT_DIR, null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
 		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
