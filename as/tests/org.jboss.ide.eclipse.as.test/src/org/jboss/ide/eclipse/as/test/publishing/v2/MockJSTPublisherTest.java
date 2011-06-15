@@ -15,14 +15,10 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	public void setUp() throws Exception {
 	}
 
-	protected IProject createProject() throws Exception {
-		return createEARProject();
-	}
-	
 	public void testNormalLogic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		project = createProject();
+		project = createEARProject();
 		MockPublishMethod.reset();
 		theTest(false);
 	}
@@ -30,7 +26,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	public void testForced7Logic() throws CoreException, IOException, Exception {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
-		project = createProject();
+		project = createEARProject();
 		MockPublishMethod.reset();
 		theTest(true);
 	}
