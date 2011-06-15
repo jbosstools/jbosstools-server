@@ -22,7 +22,6 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 
@@ -112,8 +111,8 @@ public class ServerUtil {
 		// create temp deploy folder
 		JBossServer ds = ( JBossServer)server.loadAdapter(JBossServer.class, null);
 		if( ds != null && !isJBoss7(server)) {
-			File d1 = new File(location, IJBossServerConstants.DEPLOY);
-			File d2 = new File(location, IJBossServerConstants.TEMP_DEPLOY);
+			File d1 = new File(location, IJBossRuntimeResourceConstants.DEPLOY);
+			File d2 = new File(location, IJBossToolingConstants.TEMP_DEPLOY);
 			d1.mkdirs();
 			d2.mkdirs();
 			if( !new File(ds.getDeployFolder()).equals(d1)) 
@@ -124,9 +123,9 @@ public class ServerUtil {
 			IJBossServerRuntime jbsrt = (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
 			if( jbsrt != null ) {
 				String config = jbsrt.getJBossConfiguration();
-				IPath newTemp = new Path(IJBossServerConstants.SERVER).append(config)
-					.append(IJBossServerConstants.TMP)
-					.append(IJBossServerConstants.JBOSSTOOLS_TMP).makeRelative();
+				IPath newTemp = new Path(IJBossRuntimeResourceConstants.SERVER).append(config)
+					.append(IJBossToolingConstants.TMP)
+					.append(IJBossToolingConstants.JBOSSTOOLS_TMP).makeRelative();
 				IPath newTempAsGlobal = ServerUtil.makeGlobal(jbsrt, newTemp);
 				newTempAsGlobal.toFile().mkdirs();
 			}
