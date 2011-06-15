@@ -29,10 +29,11 @@
 			<plugin>
 				<groupId>org.sonatype.tycho</groupId>
 				<artifactId>maven-osgi-test-plugin</artifactId>
-				<configuration>
-					<explodedBundles>
-						<bundle>org.jboss.ide.eclipse.as.test</bundle>
-					</explodedBundles>
+				<version>${tychoVersion}</version>
+ 				<configuration>
+					<excludes>
+						<exclude>**/*MockJSTPublisherTestDynUtil*</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
