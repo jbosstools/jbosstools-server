@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
 public class MockJSTPublisherTestDynUtil extends MockJSTPublisherTest {
+	final String MODULE_NAME = "newModule5";
 	protected IProject createProject() throws Exception {
 		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, CONTENT_DIR, null, JavaEEFacetConstants.WEB_25, false);
 		OperationTestCase.runAndVerify(dm);
@@ -81,26 +82,22 @@ public class MockJSTPublisherTestDynUtil extends MockJSTPublisherTest {
 	
 	protected void theTest(boolean isAs7) throws CoreException, IOException {
 
-		/*
-		 * temporarily disabled. Test run fine in eclipse but fail in tycho.
-		 * 
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);
 		String[] nonAS7 = new String[]{
-				"newModule.war", "newModule.war/META-INF", "newModule.war/META-INF/MANIFEST.MF", 
-				"newModule.war/WEB-INF/classes", "newModule.war/WEB-INF/lib", "newModule.war/WEB-INF/web.xml", 
-				"newModule.war/WEB-INF/lib/util.jar"
+				"newModule5.war", "newModule5.war/META-INF", "newModule5.war/META-INF/MANIFEST.MF", 
+				"newModule5.war/WEB-INF/classes", "newModule5.war/WEB-INF/lib", "newModule5.war/WEB-INF/web.xml", 
+				"newModule5.war/WEB-INF/lib/util.jar"
 		};
 
 		String[] as7 = new String[]{
-				"newModule.war", "newModule.war/META-INF", "newModule.war/META-INF/MANIFEST.MF", 
-				"newModule.war/WEB-INF/classes", "newModule.war/WEB-INF/lib", "newModule.war/WEB-INF/web.xml", 
-				"newModule.war/WEB-INF/lib/util.jar", "newModule.war.dodeploy"
+				"newModule5.war", "newModule5.war/META-INF", "newModule5.war/META-INF/MANIFEST.MF", 
+				"newModule5.war/WEB-INF/classes", "newModule5.war/WEB-INF/lib", "newModule5.war/WEB-INF/web.xml", 
+				"newModule5.war/WEB-INF/lib/util.jar", "newModule5.war.dodeploy"
 		};
 
 		assertChanged( isAs7, nonAS7, as7 ); 
 		MockPublishMethod.reset();
-		*/
 	}
 }
