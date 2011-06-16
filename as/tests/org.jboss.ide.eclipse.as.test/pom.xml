@@ -23,19 +23,4 @@
 		<emma.filter>org.jboss.ide.eclipse.as.core*</emma.filter>
 		<emma.instrument.bundles>org.jboss.ide.eclipse.as.core</emma.instrument.bundles>
 	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.sonatype.tycho</groupId>
-				<artifactId>maven-osgi-test-plugin</artifactId>
-				<version>${tychoVersion}</version>
- 				<configuration>
-					<excludes>
-						<exclude>**/*MockJSTPublisherTestDynUtil*</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
