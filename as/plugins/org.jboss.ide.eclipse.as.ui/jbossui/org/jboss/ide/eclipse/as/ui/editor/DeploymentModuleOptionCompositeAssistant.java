@@ -445,10 +445,12 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			newDir = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newDir)).toString();
 			newTemp = ServerUtil.makeRelative(page.getServer().getRuntime(), new Path(newTemp)).toString();
 			deployText.removeModifyListener(deployListener);
-			deployText.setText(newDir);
+			if( !deployText.getText().equals(newDir))
+				deployText.setText(newDir);
 			deployText.addModifyListener(deployListener);
 			tempDeployText.removeModifyListener(tempDeployListener);
-			tempDeployText.setText(newTemp);
+			if( !tempDeployText.getText().equals(newTemp))
+				tempDeployText.setText(newTemp);
 			tempDeployText.addModifyListener(tempDeployListener);
 			
 			deployText.setEnabled(getDeployType().equals(IDeployableServer.DEPLOY_CUSTOM));
