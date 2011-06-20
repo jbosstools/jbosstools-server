@@ -149,7 +149,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 	
 	@Deprecated
-	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) {
+	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) throws CoreException {
 		String serverHome = org.jboss.ide.eclipse.as.core.util.ServerUtil.getServerHome(jbs);
 		LaunchConfigUtils.addCPEntry(serverHome, relative, list);
 	}
@@ -181,7 +181,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 
 	@Deprecated
-	public static String getServerHome(JBossServer jbs) {
+	public static String getServerHome(JBossServer jbs) throws CoreException {
 		return ServerUtil.getServerHome(jbs);
 	}
 	

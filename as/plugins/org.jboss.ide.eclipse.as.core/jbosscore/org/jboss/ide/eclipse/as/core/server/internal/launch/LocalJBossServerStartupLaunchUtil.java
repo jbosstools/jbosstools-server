@@ -103,15 +103,8 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	protected void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs)
 			throws CoreException {
 		String serverHome = ServerUtil.getServerHome(jbs);
-		if (serverHome == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.CannotLocateServerHome, jbs.getServer().getName())));
-		ensureJBossRuntimeIsSet(jbs);
-
-		/* Args and vm args */
-		IJBossServerRuntime runtime = (IJBossServerRuntime)
-				jbs.getServer().getRuntime().loadAdapter(IJBossServerRuntime.class, null);
-
+		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
+		
 		updateVMPath(runtime, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
 				serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
@@ -154,17 +147,6 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 				runtime.getRuntime().getLocation().append(
 						IJBossRuntimeResourceConstants.LIB).append(
 						IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
-	}
-
-	private void ensureJBossRuntimeIsSet(JBossServer jbs) throws CoreException {
-		IRuntime rt = jbs.getServer().getRuntime();
-		IJBossServerRuntime jbrt = null;
-		if (rt != null)
-			jbrt = (IJBossServerRuntime) rt.getAdapter(IJBossServerRuntime.class);
-
-		if (jbrt == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));
 	}
 
 	private String updateRuntimeArgument(String args, IJBossServerRuntime runtime) {
