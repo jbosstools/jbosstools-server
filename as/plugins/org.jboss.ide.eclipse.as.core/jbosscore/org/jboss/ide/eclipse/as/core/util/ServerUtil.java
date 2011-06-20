@@ -12,9 +12,12 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -160,11 +163,15 @@ public class ServerUtil {
 		return NLS.bind(Messages.serverCountName, base, i);
 	}
 	
-	public static String getServerHome(JBossServer jbs) {
-		return jbs.getServer().getRuntime().getLocation().toOSString();
+	public static String getServerHome(JBossServer jbs) throws CoreException {
+		String serverHome = jbs.getServer().getRuntime().getLocation().toOSString();
+		if (serverHome == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.CannotLocateServerHome, jbs.getServer().getName())));
+		return serverHome;
 	}
-
-	public static IPath getServerHomePath(JBossServer jbs) {
+	
+	public static IPath getServerHomePath(JBossServer jbs) throws CoreException {
 		return new Path(getServerHome(jbs));
 	}
 	
