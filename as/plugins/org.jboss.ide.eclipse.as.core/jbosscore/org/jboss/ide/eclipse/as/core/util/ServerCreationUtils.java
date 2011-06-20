@@ -53,18 +53,6 @@ public class ServerCreationUtils {
 		IServer server = swc.save(true, null);
 		return server;
 	}
-
-	public static IServer createServer(String runtimeID, String serverID,
-			String location, String configuration) throws CoreException {
-		IRuntime currentRuntime = createRuntime(runtimeID, location,configuration);
-		return createServer2(currentRuntime, serverID);
-	}
-	public static IServer createServer(String runtimeID, String serverID,
-			String location, String configuration, IVMInstall install) throws CoreException {
-		IRuntime currentRuntime = createRuntime(runtimeID, location,
-				configuration, install);
-		return createServer2(currentRuntime, serverID);
-	}
 	
 	public static IServer createServer2(String name, IRuntime currentRuntime) throws CoreException {
 		return createServer2(currentRuntime, runtimeServerTypeMap.get(currentRuntime.getRuntimeType().getId()), name);
@@ -84,35 +72,6 @@ public class ServerCreationUtils {
 		return serverWC.save(true, new NullProgressMonitor());
 	}
 	
-	public static IRuntime createRuntime(String runtimeId, String homeDir,
-			String config) throws CoreException {
-		return createRuntime(runtimeId, homeDir, config, getDefaultVMInstall());
-	}
-	
-	public static IVMInstall getDefaultVMInstall() {
-		return JavaRuntime.getDefaultVMInstall();
-	}
-	
-	public static IRuntime createRuntime(String runtimeId, String homeDir,
-			String config, IVMInstall install) throws CoreException {
-		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);
-		IRuntimeType runtimeType = runtimeTypes[0];
-		IRuntimeWorkingCopy runtimeWC = runtimeType.createRuntime(null,
-				new NullProgressMonitor());
-		runtimeWC.setName(runtimeId);
-		runtimeWC.setLocation(new Path(homeDir));
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_ID, install.getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_VM_TYPE_ID, install
-						.getVMInstallType().getId());
-		((RuntimeWorkingCopy) runtimeWC).setAttribute(
-				IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
-
-		IRuntime savedRuntime = runtimeWC.save(true, new NullProgressMonitor());
-		return savedRuntime;
-	}
-
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config, IExecutionEnvironment environment) throws CoreException {
 		IRuntimeType[] runtimeTypes = ServerUtil.getRuntimeTypes(null, null,runtimeId);

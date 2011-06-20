@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerBehavior;
 /**
  *
  * @author rob.stryker@jboss.com
+ * @author adietish@redhat.com
  */
 public class ServerConverter {
 
@@ -38,7 +39,7 @@ public class ServerConverter {
 		IServer s = ServerCore.findServer(serverId);
 		if (s == null)
 			return null;
-		return ServerConverter.getJBossServer(s);
+		return getJBossServer(s);
 	}
 
 	public static JBossServer getJBossServer(IServer server) {

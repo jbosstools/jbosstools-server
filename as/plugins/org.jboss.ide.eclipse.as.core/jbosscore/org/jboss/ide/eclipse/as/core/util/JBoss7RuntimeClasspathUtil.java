@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchC
 
 public class JBoss7RuntimeClasspathUtil {
 
+	@Deprecated
 	public static List<String> getClasspath(IServer server, IVMInstall vmInstall) throws CoreException {
 		List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		classpath.add(getModulesClasspathEntry(server));
@@ -30,7 +31,8 @@ public class JBoss7RuntimeClasspathUtil {
 		List<String> runtimeClassPaths = AbstractJBossLaunchConfigType.convertClasspath(classpath);
 		return runtimeClassPaths;
 	}
-
+	
+	@Deprecated
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
 		IPath runtimeLocation = server.getRuntime().getLocation();
 		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS_MODULES_JAR);

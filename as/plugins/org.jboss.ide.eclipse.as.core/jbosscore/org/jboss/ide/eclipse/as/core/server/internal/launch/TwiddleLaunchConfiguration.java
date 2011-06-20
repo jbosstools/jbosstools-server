@@ -19,7 +19,9 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -31,15 +33,20 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
@@ -49,18 +56,14 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	protected static final String TWIDDLE_JAR_LOC =
 		IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.TWIDDLE_JAR;
 
-	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
-		return createLaunchConfiguration(server, getDefaultArgs(server));
-	}
-
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server, String args) throws CoreException {
 		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
 		if (jbs == null) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerNotFound, server.getName())));
 		}
-		IJBossServerRuntime jbrt = findJBossServerRuntime(server);
-		String serverHome = getServerHome(jbs);
+		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(server);
+		String serverHome = ServerUtil.getServerHome(jbs);
 		
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(TWIDDLE_LAUNCH_TYPE);
@@ -74,13 +77,13 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(TwiddleLaunchConfiguration.SERVER_ID, server.getId());
 
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		addCPEntry(classpath, jbs, TWIDDLE_JAR_LOC);
+		LaunchConfigUtils.addCPEntry(TWIDDLE_JAR_LOC, serverHome, classpath);
 		// Twiddle requires more classes and I'm too lazy to actually figure OUT which ones it needs.
-		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.LIB);
-		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.LIB + File.separator + IJBossRuntimeResourceConstants.ENDORSED);
-		addDirectory (serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
-		addJREEntry(classpath, jbrt.getVM());
-		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
+		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.LIB);
+		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.LIB + File.separator + IJBossRuntimeResourceConstants.ENDORSED);
+		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
+		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
+		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
 		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
 		wc.setAttribute(cpKey, runtimeClassPaths);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);

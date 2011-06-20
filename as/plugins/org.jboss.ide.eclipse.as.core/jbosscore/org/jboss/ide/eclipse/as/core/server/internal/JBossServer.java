@@ -41,9 +41,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 public class JBossServer extends DeployableServer 
 		implements IJBossServerConstants, IDeployableServer, IURLProvider {
 
-	public JBossServer() {
-	}
-
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
 		setAttribute("auto-publish-time", 1); //$NON-NLS-1$

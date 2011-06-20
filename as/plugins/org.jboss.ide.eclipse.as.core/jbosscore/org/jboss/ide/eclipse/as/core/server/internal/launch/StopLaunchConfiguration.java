@@ -12,12 +12,13 @@ package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -37,6 +38,10 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 
 public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
@@ -74,9 +79,9 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
-		JBossServer jbs = findJBossServer(server.getId());
-		IJBossServerRuntime jbrt = findJBossServerRuntime(server);
-		String serverHome = getServerHome(jbs);
+		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
+		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(server);
+		IPath serverHome = ServerUtil.getServerHomePath(jbs);
 		
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(STOP_LAUNCH_TYPE);
@@ -87,11 +92,11 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		wc.setAttribute(SERVER_ID, server.getId());
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, STOP_MAIN_TYPE);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome.append(IJBossRuntimeResourceConstants.BIN).toOSString());
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		addCPEntry(classpath, jbs, STOP_JAR_LOC);
-		addJREEntry(classpath, jbrt.getVM());
-		ArrayList<String> runtimeClassPaths = convertClasspath(classpath);
+		LaunchConfigUtils.addCPEntry(serverHome, STOP_JAR_LOC, classpath);
+		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
+		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
 		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
 		wc.setAttribute(cpKey, runtimeClassPaths);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);

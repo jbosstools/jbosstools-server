@@ -160,6 +160,12 @@ public class ServerUtil {
 		return NLS.bind(Messages.serverCountName, base, i);
 	}
 	
-	
+	public static String getServerHome(JBossServer jbs) {
+		return jbs.getServer().getRuntime().getLocation().toOSString();
+	}
 
+	public static IPath getServerHomePath(JBossServer jbs) {
+		return new Path(getServerHome(jbs));
+	}
+	
 }

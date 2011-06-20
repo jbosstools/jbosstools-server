@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -51,9 +50,11 @@ import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.JBoss7RuntimeClasspathUtil;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
@@ -91,9 +92,9 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	 * Merges proper required params into args and vm args
 	 */
 
-	protected static void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs)
+	protected void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs)
 			throws CoreException {
-		String serverHome = AbstractJBossLaunchConfigType.getServerHome(jbs);
+		String serverHome = ServerUtil.getServerHome(jbs);
 		if (serverHome == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotLocateServerHome, jbs.getServer().getName())));
@@ -158,34 +159,34 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	}
 
-	protected static List<String> fixCP(List<String> list, JBossServer jbs) {
+	protected List<String> fixCP(List<String> list, JBossServer jbs) {
 		try {
 			boolean found = false;
 			String[] asString = (String[]) list.toArray(new String[list.size()]);
 			for (int i = 0; i < asString.length; i++) {
 				if (asString[i].contains(RunJarContainerWrapper.ID)) {
 					found = true;
-					asString[i] = getRunJarRuntimeCPEntry(jbs.getServer()).getMemento();
+					asString[i] = LaunchConfigUtils.getRunJarRuntimeCPEntry(jbs.getServer()).getMemento();
 				}
 			}
 			ArrayList<String> result = new ArrayList<String>();
 			result.addAll(Arrays.asList(asString));
 			if (!found)
-				result.add(getRunJarRuntimeCPEntry(jbs.getServer()).getMemento());
+				result.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(jbs.getServer()).getMemento());
 			return result;
 		} catch (CoreException ce) {
 			return list;
 		}
 	}
 
-	protected static void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
+	protected void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, IServer server) throws CoreException {
 		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
 		if (jbs == null) {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
 		}
 
-		String serverHome = AbstractJBossLaunchConfigType.getServerHome(jbs);
+		String serverHome = ServerUtil.getServerHome(jbs);
 		if (serverHome == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotLocateServerHome, server.getName())));
@@ -216,32 +217,23 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 		wc.setAttribute(DEFAULTS_SET, true);
 	}
-
-	protected static ArrayList<String> getClasspath(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime jbrt = AbstractJBossLaunchConfigType.findJBossServerRuntime(jbs.getServer());
+	
+	private List<String> getClasspath(JBossServer jbs) throws CoreException {
+		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		classpath.add(getRunJarRuntimeCPEntry(jbs.getServer()));
-		AbstractJBossLaunchConfigType.addJREEntry(classpath, jbrt.getVM());
+		classpath.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(jbs.getServer()));
+		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
 
 		String version = jbs.getServer().getRuntime().getRuntimeType().getVersion();
 		if (version.equals(IJBossToolingConstants.AS_40))
-			AbstractJBossLaunchConfigType.addToolsJar(classpath, jbrt.getVM());
+			LaunchConfigUtils.addToolsJar(jbrt.getVM(), classpath);
 
-		ArrayList<String> runtimeClassPaths = AbstractJBossLaunchConfigType.convertClasspath(classpath);
+		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
 		return runtimeClassPaths;
 	}
 
-	protected static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
-		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
-			return JBoss7RuntimeClasspathUtil.getModulesClasspathEntry(server);
-		} else {
-			IPath containerPath = new Path(RunJarContainerWrapper.ID).append(server.getName());
-			return JavaRuntime.newRuntimeContainerClasspathEntry(containerPath, IRuntimeClasspathEntry.USER_CLASSES);
-		}
-	}
-
-	protected static String getDefaultArgs(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime rt = AbstractJBossLaunchConfigType.findJBossServerRuntime(jbs.getServer());
+	protected String getDefaultArgs(JBossServer jbs) throws CoreException {
+		IJBossServerRuntime rt = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
 			return rt.getDefaultRunArgs() +
 					IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT +
@@ -273,8 +265,8 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 				JBossServer jbs = (JBossServer) s.loadAdapter(JBossServer.class, new NullProgressMonitor());
 				IVMInstall install = ibjsrt.getVM();
 				ArrayList<IRuntimeClasspathEntry> list = new ArrayList<IRuntimeClasspathEntry>();
-				AbstractJBossLaunchConfigType.addJREEntry(list, install);
-				list.add(getRunJarRuntimeCPEntry(s));
+				LaunchConfigUtils.addJREEntry(install, list);
+				list.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(s));
 				return (IRuntimeClasspathEntry[]) list
 						.toArray(new IRuntimeClasspathEntry[list.size()]);
 			} catch (CoreException ce) {

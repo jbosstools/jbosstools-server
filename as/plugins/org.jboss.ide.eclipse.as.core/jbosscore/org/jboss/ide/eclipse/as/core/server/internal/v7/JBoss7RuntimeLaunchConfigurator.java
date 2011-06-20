@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntime;
@@ -23,7 +25,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchConfigType;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.JBoss7RuntimeClasspathUtil;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
 public class JBoss7RuntimeLaunchConfigurator {
 
@@ -70,7 +72,15 @@ public class JBoss7RuntimeLaunchConfigurator {
 
 	private JBoss7RuntimeLaunchConfigurator setClassPath(IServer server, IJBossServerRuntime jbossRuntime)
 			throws CoreException {
-		return setClassPath(JBoss7RuntimeClasspathUtil.getClasspath(server, jbossRuntime.getVM()));
+		return setClassPath(getClasspath(server, jbossRuntime.getVM()));
+	}
+
+	private List<String> getClasspath(IServer server, IVMInstall vmInstall) throws CoreException {
+		List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
+		classpath.add(LaunchConfigUtils.getModulesClasspathEntry(server));
+		LaunchConfigUtils.addJREEntry(vmInstall, classpath);
+		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
+		return runtimeClassPaths;
 	}
 
 	private JBoss7RuntimeLaunchConfigurator setClassPath(List<String> entries) throws CoreException {
