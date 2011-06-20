@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -131,13 +130,14 @@ public class ServerConverter {
 		servers.toArray(ret);
 		return ret;
 	}
-	public static IJBossServerRuntime getJBossRuntime(IServer server) {
-		return getJBossRuntime((IServerAttributes)server);
+	
+	@Deprecated
+	public static IJBossServerRuntime getJBossRuntime(IServer server) throws CoreException {
+		return RuntimeUtils.getJBossServerRuntime(server);
 	}
-
+	
+	@Deprecated
 	public static IJBossServerRuntime getJBossRuntime(IServerAttributes server) {
-		if( server == null ) return null;
-		IRuntime rt = server.getRuntime();
-		return (IJBossServerRuntime)rt.loadAdapter(IJBossServerRuntime.class, null);
+		return RuntimeUtils.checkedGetJBossServerRuntime(server);
 	}
 }

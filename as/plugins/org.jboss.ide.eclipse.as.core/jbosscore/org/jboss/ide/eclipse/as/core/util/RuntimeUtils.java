@@ -11,7 +11,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
-import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -20,11 +20,16 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public class RuntimeUtils {
 
-	public static IJBossServerRuntime getJBossServerRuntime(IServer server) throws CoreException {
+	public static IJBossServerRuntime checkedGetJBossServerRuntime(IServerAttributes server) {
 		IRuntime rt = server.getRuntime();
 		IJBossServerRuntime jbrt = null;
 		if (rt != null)
 			jbrt = (IJBossServerRuntime) rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+		return jbrt;
+	}
+
+	public static IJBossServerRuntime getJBossServerRuntime(IServerAttributes server) throws CoreException {
+		IJBossServerRuntime jbrt = checkedGetJBossServerRuntime(server);
 		if (jbrt == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));

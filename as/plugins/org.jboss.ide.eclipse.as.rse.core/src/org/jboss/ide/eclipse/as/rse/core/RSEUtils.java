@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 
 /* 
@@ -50,7 +50,7 @@ public class RSEUtils {
 	}
 	
 	public static String getRSEConfigName(IServerAttributes server) {
-		IJBossServerRuntime runtime = ServerConverter.getJBossRuntime(server);
+		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(server);
 		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, runtime.getJBossConfiguration());
 	}
 	
