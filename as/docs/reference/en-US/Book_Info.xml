@@ -5,9 +5,9 @@
 	<title>JBoss Server Manager Reference Guide</title>
 	<subtitle>Provides information relating to the JBoss Server Manager.</subtitle>
 	<productname>JBoss Developer Studio</productname>
-	<productnumber>4.0</productnumber>
-	<edition>4.0.0</edition>
-	<pubsnumber>9</pubsnumber>
+	<productnumber>4.1</productnumber>
+	<edition>4.1.0</edition>
+	<pubsnumber>1</pubsnumber>
 	<abstract>
 		<para>The JBoss Server Manager Reference Guide explains how to use the JBoss Server Manager to configure, start, stop the server, to know deployment and archiving processes.</para>
 	</abstract>
