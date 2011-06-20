@@ -38,6 +38,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerCreationUtils;
 import org.jboss.ide.eclipse.as.test.ASTest;
@@ -108,8 +109,8 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 	
 	public static IServer createMockJBoss7Server(String deployLocation, String tempDeployLocation) throws CoreException {
-		IServer s = ServerCreationUtils.createServer(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70, 
-				"/", "default");
+		IRuntime runtime = RuntimeUtils.createRuntime(IJBossToolingConstants.AS_70, "/", "default");
+		IServer s = ServerCreationUtils.createServer2(IJBossToolingConstants.SERVER_AS_70, runtime);
 		IServerWorkingCopy swc = s.createWorkingCopy();
 		swc.setServerConfiguration(null);
 		swc.setAttribute(DeployableServer.DEPLOY_DIRECTORY, deployLocation);
@@ -163,31 +164,30 @@ public class ServerRuntimeUtils extends TestCase {
 	
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration) throws CoreException {
-		IRuntime currentRuntime = ServerCreationUtils.createRuntime(runtimeID, location,configuration);
-		return ServerCreationUtils.createServer2(currentRuntime, serverID);
+		IRuntime runtime = RuntimeUtils.createRuntime(runtimeID, location, configuration);
+		return ServerCreationUtils.createServer2(runtime, serverID);
 	}
 	public static IServer createServer(String runtimeID, String serverID,
 			String location, String configuration, IVMInstall install) throws CoreException {
-		IRuntime currentRuntime = ServerCreationUtils.createRuntime(runtimeID, location,
-				configuration, install);
-		return ServerCreationUtils.createServer2(currentRuntime, serverID);
+		IRuntime runtime = RuntimeUtils.createRuntime(runtimeID, location, configuration);
+		return ServerCreationUtils.createServer2(runtime, serverID);
 	}
 
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config) throws CoreException {
-		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config, VM_INSTALL);
+		return RuntimeUtils.createRuntime(runtimeId, homeDir, config, VM_INSTALL);
 	}
 	
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config, IVMInstall install) throws CoreException {
 		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
-		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config, install);
+		return RuntimeUtils.createRuntime(runtimeId, homeDir, config, install);
 	}
 
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
 			String config, IExecutionEnvironment environment) throws CoreException {
 		assertTrue("path \"" + homeDir + "\" does not exist", new Path(homeDir).toFile().exists());
-		return ServerCreationUtils.createRuntime(runtimeId, homeDir, config);
+		return RuntimeUtils.createRuntime(runtimeId, homeDir, config);
 	}
 
 	public static void deleteAllServers() throws CoreException {
