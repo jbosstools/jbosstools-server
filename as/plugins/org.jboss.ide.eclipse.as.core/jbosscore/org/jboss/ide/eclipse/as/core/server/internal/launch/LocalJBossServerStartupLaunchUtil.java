@@ -97,7 +97,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	 */
 	protected void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs)
 			throws CoreException {
-		String serverHome = ServerUtil.getServerHome(jbs);
+		String serverHome = ServerUtil.checkedGetServerHome(jbs);
 		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 
 		updateVMPath(runtime, wc);
@@ -195,7 +195,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	}
 
 	protected void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, JBossServer jbs) throws CoreException {
-		String serverHome = ServerUtil.getServerHome(jbs);
+		String serverHome = ServerUtil.checkedGetServerHome(jbs);
 		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 		updateVMPath(jbrt, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
