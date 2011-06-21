@@ -69,12 +69,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
-		if (jbs == null) {
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
-		}
-
+		JBossServer jbs = ServerConverter.checkedGetJBossServer(server);
 		if (!workingCopy.getAttributes().containsKey(DEFAULTS_SET)) {
 			forceDefaultsSet(workingCopy, jbs);
 		}
@@ -104,9 +99,9 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			throws CoreException {
 		String serverHome = ServerUtil.getServerHome(jbs);
 		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
-		
+
 		updateVMPath(runtime, wc);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, 
+		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 				serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
 		updateArguments(wc, jbs, runtime);
 		updateVMArgs(wc, runtime);
@@ -210,7 +205,6 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));
 
-		
 		updateVMPath(jbrt, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jbrt.getDefaultRunVMArgs());
@@ -234,7 +228,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 		return jbrt;
 	}
-	
+
 	private List<String> getClasspath(JBossServer jbs) throws CoreException {
 		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
@@ -289,7 +283,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			} catch (CoreException ce) {
 				// ignore
 			}
-			
+
 			try {
 				return super.computeUnresolvedClasspath(config);
 			} catch (CoreException ce) {
@@ -314,15 +308,16 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
-		String ignore = jbsBehavior.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+		String ignore = jbsBehavior.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS,
+				(String) null);
 		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
-		if( ignoreB.booleanValue()) {
+		if (ignoreB.booleanValue()) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;
 		}
 		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
-		if( started ) {
+		if (started) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;
