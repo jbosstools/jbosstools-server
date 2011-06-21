@@ -50,7 +50,7 @@ public class RSEUtils {
 	}
 	
 	public static String getRSEConfigName(IServerAttributes server) {
-		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(server);
+		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(server);
 		return server.getAttribute(RSEUtils.RSE_SERVER_CONFIG, runtime.getJBossConfiguration());
 	}
 	

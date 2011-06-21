@@ -98,7 +98,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	protected void updateMandatedFields(ILaunchConfigurationWorkingCopy wc, JBossServer jbs)
 			throws CoreException {
 		String serverHome = ServerUtil.getServerHome(jbs);
-		IJBossServerRuntime runtime = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
+		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 
 		updateVMPath(runtime, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
@@ -196,11 +196,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	protected void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, JBossServer jbs) throws CoreException {
 		String serverHome = ServerUtil.getServerHome(jbs);
-		if (serverHome == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.CannotLocateServerHome, jbs.getServer().getName())));
-
-		IJBossServerRuntime jbrt = getJBossServerRuntime(jbs);
+		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 		if (jbrt == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));
@@ -219,18 +215,8 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		wc.setAttribute(DEFAULTS_SET, true);
 	}
 
-	private IJBossServerRuntime getJBossServerRuntime(JBossServer jbs) throws CoreException {
-		IRuntime rt = jbs.getServer().getRuntime();
-		IJBossServerRuntime jbrt = null;
-		if (rt != null) {
-			jbrt = (IJBossServerRuntime) rt.getAdapter(IJBossServerRuntime.class);
-		}
-
-		return jbrt;
-	}
-
 	private List<String> getClasspath(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
+		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		classpath.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(jbs.getServer()));
 		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
@@ -244,7 +230,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	}
 
 	protected String getDefaultArgs(JBossServer jbs) throws CoreException {
-		IJBossServerRuntime rt = RuntimeUtils.getJBossServerRuntime(jbs.getServer());
+		IJBossServerRuntime rt = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
 		if (rt != null) {
 			return rt.getDefaultRunArgs() +
 					IJBossRuntimeConstants.SPACE + IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT +

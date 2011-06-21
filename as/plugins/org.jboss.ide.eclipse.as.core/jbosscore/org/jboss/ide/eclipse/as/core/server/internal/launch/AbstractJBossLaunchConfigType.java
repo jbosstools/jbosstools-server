@@ -145,7 +145,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	@Deprecated
 	public static IJBossServerRuntime findJBossServerRuntime(IServer server) throws CoreException {
-		return RuntimeUtils.getJBossServerRuntime(server);
+		return RuntimeUtils.checkedGetJBossServerRuntime(server);
 	}
 	
 	@Deprecated

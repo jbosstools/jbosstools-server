@@ -153,11 +153,11 @@ public class ServerConverter {
 
 	@Deprecated
 	public static IJBossServerRuntime getJBossRuntime(IServer server) throws CoreException {
-		return RuntimeUtils.getJBossServerRuntime(server);
+		return RuntimeUtils.checkedGetJBossServerRuntime(server);
 	}
 
 	@Deprecated
 	public static IJBossServerRuntime getJBossRuntime(IServerAttributes server) {
-		return RuntimeUtils.checkedGetJBossServerRuntime(server);
+		return RuntimeUtils.getJBossServerRuntime(server);
 	}
 }

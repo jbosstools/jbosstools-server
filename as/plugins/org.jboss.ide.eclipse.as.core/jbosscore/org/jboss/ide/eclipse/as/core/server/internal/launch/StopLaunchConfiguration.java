@@ -80,7 +80,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
 		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
-		IJBossServerRuntime jbrt = RuntimeUtils.getJBossServerRuntime(server);
+		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
 		IPath serverHome = ServerUtil.getServerHomePath(jbs);
 		
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();

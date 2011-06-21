@@ -20,7 +20,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public class RuntimeUtils {
 
-	public static IJBossServerRuntime checkedGetJBossServerRuntime(IServerAttributes server) {
+	public static IJBossServerRuntime getJBossServerRuntime(IServerAttributes server) {
 		IRuntime rt = server.getRuntime();
 		IJBossServerRuntime jbrt = null;
 		if (rt != null)
@@ -28,8 +28,8 @@ public class RuntimeUtils {
 		return jbrt;
 	}
 
-	public static IJBossServerRuntime getJBossServerRuntime(IServerAttributes server) throws CoreException {
-		IJBossServerRuntime jbrt = checkedGetJBossServerRuntime(server);
+	public static IJBossServerRuntime checkedGetJBossServerRuntime(IServerAttributes server) throws CoreException {
+		IJBossServerRuntime jbrt = getJBossServerRuntime(server);
 		if (jbrt == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));

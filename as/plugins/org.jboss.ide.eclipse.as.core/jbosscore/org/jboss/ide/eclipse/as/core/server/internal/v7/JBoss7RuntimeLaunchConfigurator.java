@@ -40,7 +40,7 @@ public class JBoss7RuntimeLaunchConfigurator {
 	public void apply(IServer server) throws CoreException {
 		if (!areDefaultsSet()) {
 			IRuntime runtime = server.getRuntime();
-			IJBossServerRuntime jbossRuntime = RuntimeUtils.getJBossServerRuntime(server);
+			IJBossServerRuntime jbossRuntime = RuntimeUtils.checkedGetJBossServerRuntime(server);
 			setVmContainer(jbossRuntime)
 					.setClassPath(server, jbossRuntime)
 					.setDefaultArguments(jbossRuntime)
