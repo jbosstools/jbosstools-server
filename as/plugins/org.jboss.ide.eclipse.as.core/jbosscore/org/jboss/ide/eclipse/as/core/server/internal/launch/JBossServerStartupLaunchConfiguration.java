@@ -80,6 +80,10 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		}
 	}	
 
+	/**
+	* looks like nobody uses this method. deprecating it.
+	*/
+	@Deprecated
 	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
