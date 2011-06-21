@@ -197,10 +197,6 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 	protected void forceDefaultsSet(ILaunchConfigurationWorkingCopy wc, JBossServer jbs) throws CoreException {
 		String serverHome = ServerUtil.getServerHome(jbs);
 		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
-		if (jbrt == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.ServerRuntimeNotFound, jbs.getServer().getName())));
-
 		updateVMPath(jbrt, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, jbrt.getDefaultRunVMArgs());
