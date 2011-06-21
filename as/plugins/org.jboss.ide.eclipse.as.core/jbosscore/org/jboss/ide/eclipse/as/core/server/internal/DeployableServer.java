@@ -26,6 +26,7 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -154,9 +155,13 @@ public class DeployableServer extends ServerDelegate implements IDeployableServe
 	}
 	
 	public IJBossServerRuntime getRuntime() {
-		return getRuntime(getServer());
+		return RuntimeUtils.getJBossServerRuntime(getServer());
 	}
 	
+	/**
+	 * @Deprecated
+	 * @see RuntimeUtils.getJBossServerRuntime(getServer())
+	 */
 	public static IJBossServerRuntime getRuntime(IServer server) {
 		IJBossServerRuntime  ajbsrt = null;
 		if( server.getRuntime() != null ) {
