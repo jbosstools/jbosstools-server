@@ -177,9 +177,7 @@ public class NewSessionBeanWizardPage extends NewTypeWizardPage
       setControl(composite);
 
       IJavaElement element = getInitialJavaElement(selection);
-      if (element.getElementType() == IJavaElement.PACKAGE_FRAGMENT)
-//            || element.getElementType() == IJavaElement.PACKAGE_FRAGMENT_ROOT)
-      {
+      if (element != null && element.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
          beanPackageName.setText(element.getElementName());
          remoteInterfacePackageText.setText(element.getElementName());
       }
