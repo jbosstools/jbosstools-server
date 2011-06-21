@@ -36,12 +36,9 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
 
@@ -76,8 +73,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			throws CoreException {
 		IServer server = getServer();
 		IRuntime runtime = server.getRuntime();
-		IJBossServerRuntime serverRuntime = (IJBossServerRuntime) runtime.loadAdapter(IJBossServerRuntime.class, null);
-		new JBoss7RuntimeLaunchConfigurator(launchConfig).apply(server, runtime, serverRuntime);
+		new JBoss7RuntimeLaunchConfigurator(launchConfig).apply(server);
 	}
 
 	public void setProcess(IProcess process) {

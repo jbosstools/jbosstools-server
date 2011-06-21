@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossLaunchC
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 public class JBoss7RuntimeLaunchConfigurator {
 
@@ -36,8 +37,10 @@ public class JBoss7RuntimeLaunchConfigurator {
 		this.launchConfig = launchConfig;
 	}
 
-	public void apply(IServer server, IRuntime runtime, IJBossServerRuntime jbossRuntime) throws CoreException {
+	public void apply(IServer server) throws CoreException {
 		if (!areDefaultsSet()) {
+			IRuntime runtime = server.getRuntime();
+			IJBossServerRuntime jbossRuntime = RuntimeUtils.getJBossServerRuntime(server);
 			setVmContainer(jbossRuntime)
 					.setClassPath(server, jbossRuntime)
 					.setDefaultArguments(jbossRuntime)
