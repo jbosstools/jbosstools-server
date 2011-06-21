@@ -163,7 +163,7 @@ public class ServerUtil {
 		return NLS.bind(Messages.serverCountName, base, i);
 	}
 	
-	public static String getServerHome(JBossServer jbs) throws CoreException {
+	public static String checkedGetServerHome(JBossServer jbs) throws CoreException {
 		String serverHome = jbs.getServer().getRuntime().getLocation().toOSString();
 		if (serverHome == null)
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
@@ -172,7 +172,7 @@ public class ServerUtil {
 	}
 	
 	public static IPath getServerHomePath(JBossServer jbs) throws CoreException {
-		return new Path(getServerHome(jbs));
+		return new Path(checkedGetServerHome(jbs));
 	}
 	
 }

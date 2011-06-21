@@ -63,7 +63,7 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 					NLS.bind(Messages.ServerNotFound, server.getName())));
 		}
 		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
-		String serverHome = ServerUtil.getServerHome(jbs);
+		String serverHome = ServerUtil.checkedGetServerHome(jbs);
 		
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(TWIDDLE_LAUNCH_TYPE);
