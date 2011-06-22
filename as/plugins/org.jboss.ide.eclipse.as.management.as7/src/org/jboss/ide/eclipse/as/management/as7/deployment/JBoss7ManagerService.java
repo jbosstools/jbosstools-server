@@ -52,17 +52,19 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		return manager.getDeploymentState(deploymentName);
 	}
 	
+	@Deprecated
+	public JBoss7ServerState getServerState(String host) throws Exception {
+		return getServerState(host, AS7Manager.MGMT_PORT);
+	}
+
 	public JBoss7ServerState getServerState(String host, int port) throws Exception {
 		AS7Manager manager = new AS7Manager(host, port);
 		return manager.getServerState();
 	}
 
-	public JBoss7ServerState getServerState(String host) throws Exception {
-		return new AS7Manager(host).getServerState();
-	}
-
+	@Deprecated
 	public void stop(String host) throws Exception {
-		new AS7Manager(host).stopServer();
+		stop(host, AS7Manager.MGMT_PORT);
 	}
 	
 	public void stop(String host, int port) throws Exception {

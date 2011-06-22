@@ -281,6 +281,10 @@
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss6JMXRMIPortEditorExtension"
             serverIds="org.jboss.ide.eclipse.as.60">
       </section>
+      <section
+            class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
+            serverIds="org.jboss.ide.eclipse.as.70">
+      </section>
    </extension>
 
 

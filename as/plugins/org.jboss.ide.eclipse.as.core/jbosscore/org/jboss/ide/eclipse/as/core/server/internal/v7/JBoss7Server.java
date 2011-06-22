@@ -33,6 +33,11 @@ public class JBoss7Server extends JBossServer implements IJBoss7Deployment {
 		return false;
 	}
 	
+	public int getManagementPort() {
+		return findPort(AS7_MANAGEMENT_PORT, AS7_MANAGEMENT_PORT_DETECT, AS7_MANAGEMENT_PORT_DETECT_XPATH, 
+				AS7_MANAGEMENT_PORT_DEFAULT_XPATH, AS7_MANAGEMENT_PORT_DEFAULT_PORT);
+	}
+	
 	@Override
 	public String getDeployLocationType() {
 		return getAttribute(DEPLOY_DIRECTORY_TYPE, DEPLOY_SERVER);

@@ -87,15 +87,23 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_USERNAME = "org.jboss.ide.eclipse.as.core.server.userName"; //$NON-NLS-1$
 	public static final String SERVER_PASSWORD = "org.jboss.ide.eclipse.as.core.server.password"; //$NON-NLS-1$
 	public static final String JNDI_PORT = "org.jboss.ide.eclipse.as.core.server.jndiPort"; //$NON-NLS-1$
-	public static final String WEB_PORT = "org.jboss.ide.eclipse.as.core.server.webPort"; //$NON-NLS-1$
 	public static final String JNDI_PORT_DETECT = "org.jboss.ide.eclipse.as.core.server.jndiPortAutoDetect"; //$NON-NLS-1$
-	public static final String WEB_PORT_DETECT= "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect"; //$NON-NLS-1$
 	public static final String JNDI_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.jndiPortAutoDetect.XPath"; //$NON-NLS-1$
-	public static final String WEB_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect.XPath"; //$NON-NLS-1$
 	public static final String JNDI_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JNDI"; //$NON-NLS-1$
+	public static final int    JNDI_DEFAULT_PORT = 1099;
+	
+	public static final String WEB_PORT = "org.jboss.ide.eclipse.as.core.server.webPort"; //$NON-NLS-1$
+	public static final String WEB_PORT_DETECT= "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect"; //$NON-NLS-1$
+	public static final String WEB_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.webPortAutoDetect.XPath"; //$NON-NLS-1$
 	public static final String WEB_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Web"; //$NON-NLS-1$
-	public static final int JNDI_DEFAULT_PORT = 1099;
-	public static final int JBOSS_WEB_DEFAULT_PORT = 8080;
+	public static final int    JBOSS_WEB_DEFAULT_PORT = 8080;
+	
+	public static final String AS7_MANAGEMENT_PORT = "org.jboss.ide.eclipse.as.core.server.as7.managementPort"; //$NON-NLS-1$
+	public static final String AS7_MANAGEMENT_PORT_DETECT= "org.jboss.ide.eclipse.as.core.server.as7.managementPortAutoDetect"; //$NON-NLS-1$
+	public static final String AS7_MANAGEMENT_PORT_DETECT_XPATH = "org.jboss.ide.eclipse.as.core.server.as7.managementPortAutoDetect.XPath"; //$NON-NLS-1$
+	public static final String AS7_MANAGEMENT_PORT_DEFAULT_XPATH = Messages.Ports + IPath.SEPARATOR + "JBoss Management"; //$NON-NLS-1$
+	public static final int    AS7_MANAGEMENT_PORT_DEFAULT_PORT = 9999;
+	
 	public static final String IGNORE_LAUNCH_COMMANDS = "org.jboss.ide.eclipse.as.core.server.IGNORE_LAUNCH_COMMANDS"; //$NON-NLS-1$
 	
 	public static final String LOCAL_DEPLOYMENT_NAME = "name";  //$NON-NLS-1$

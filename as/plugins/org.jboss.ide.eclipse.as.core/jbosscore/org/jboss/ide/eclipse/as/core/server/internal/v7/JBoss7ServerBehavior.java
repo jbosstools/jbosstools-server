@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
@@ -65,6 +66,10 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		return delegateClassMap;
 	}
 
+	private JBoss7Server getJBoss7Server() {
+		return (JBoss7Server)getServer().loadAdapter(JBoss7Server.class, new NullProgressMonitor());
+	}
+	
 	public boolean shouldSuspendScanner() {
 		return false;
 	}
@@ -139,9 +144,9 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		return service;
 	}
 
-	private boolean isServerRunning(String host) throws Exception {
+	private boolean isServerRunning(String host, int port) throws Exception {
 		try {
-			return getService().getServerState(host) == JBoss7ServerState.RUNNING;
+			return getService().getServerState(host, port) == JBoss7ServerState.RUNNING;
 		} catch (JBoss7ManangerConnectException e) {
 			return false;
 		}
@@ -161,9 +166,9 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			} else {
 				serverStopping();
 				// TODO: for now only local, implement for remote afterwards
-				if (isServerRunning(getServer().getHost())) {
+				if (isServerRunning(getServer().getHost(), getJBoss7Server().getManagementPort())) {
 					// The service and Poller will make sure the server is down
-					getService().stop(getServer().getHost()); 
+					getService().stop(getServer().getHost(), getJBoss7Server().getManagementPort()); 
 					return;
 				} else {
 					if( serverProcess != null && !serverProcess.isTerminated()) {

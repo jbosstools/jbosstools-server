@@ -50,6 +50,7 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 import org.jboss.ide.eclipse.as.ui.dialogs.ChangePortDialog;
@@ -138,6 +139,17 @@ public class PortSection extends ServerEditorSection {
 					IJBoss6Server.JMX_RMI_PORT,
 					IJBoss6Server.JMX_RMI_PORT_DEFAULT_XPATH,
 					Messages.EditorChangeJMXRMICommandName);
+		}
+	}
+
+	public static class JBoss7ManagementPortEditorExtension extends PortEditorExtension {
+		public JBoss7ManagementPortEditorExtension() {
+			super(Messages.EditorAS7ManagementPort, 
+					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT_XPATH,
+					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DETECT,
+					IJBossToolingConstants.AS7_MANAGEMENT_PORT,
+					IJBossToolingConstants.AS7_MANAGEMENT_PORT_DEFAULT_XPATH,
+					Messages.EditorChangeAS7ManagementCommandName);
 		}
 	}
 

@@ -130,6 +130,7 @@ public interface IJBoss7ManagerService {
 	 */
 	public JBoss7ServerState getServerState(String host, int port) throws Exception;
 	
+	@Deprecated
 	public JBoss7ServerState getServerState(String host) throws Exception;
 	
 	/**
@@ -140,6 +141,7 @@ public interface IJBoss7ManagerService {
 	 */
 	public void stop(String host, int port) throws Exception;
 
+	@Deprecated
 	public void stop(String host) throws Exception;
 	
 	public void dispose();

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -48,6 +49,13 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 		return server;
 	}
 
+	private int getManagementPort() {
+		JBoss7Server server = (JBoss7Server)getServer().loadAdapter(JBoss7Server.class, new NullProgressMonitor());
+		if( server != null )
+			return server.getManagementPort();
+		return 9999;
+	}
+	
 	public boolean isComplete() throws PollingException, RequiresInfoException {
 		IJBoss7ManagerService service = null;
 		try {
@@ -68,7 +76,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 		try {
 			JBoss7ServerState serverState = null;
 			do {
-				serverState = service.getServerState(getServer().getHost());
+				serverState = service.getServerState(getServer().getHost(), getManagementPort());
 			} while (serverState == JBoss7ServerState.STARTING);
 			return serverState == JBoss7ServerState.RUNNING;
 		} catch (Exception e) {
@@ -80,7 +88,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 		try {
 			JBoss7ServerState serverState = null;
 			do {
-				serverState = service.getServerState(getServer().getHost());
+				serverState = service.getServerState(getServer().getHost(), getManagementPort());
 			} while (serverState == JBoss7ServerState.RUNNING);
 			return false;
 		} catch (JBoss7ManangerConnectException e) {
@@ -100,7 +108,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 		IJBoss7ManagerService service = null;
 		try {
 			service = JBoss7ManagerUtil.getService(getServer());
-			JBoss7ServerState serverState = service.getServerState(getServer().getHost());
+			JBoss7ServerState serverState = service.getServerState(getServer().getHost(), getManagementPort());
 			return serverState == JBoss7ServerState.RUNNING
 					|| serverState == JBoss7ServerState.RESTART_REQUIRED;
 		} catch (Exception e) {
