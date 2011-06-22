@@ -10,9 +10,30 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.text.MessageFormat;
+
 /**
  * @author André Dietisheim
  */
 public enum JBoss7ServerState {
-	STARTING, RUNNING, RESTART_REQUIRED; 
+	STARTING, RUNNING, RESTART_REQUIRED;
+
+	public static JBoss7ServerState valueOfIgnoreCase(String stateString) {
+		JBoss7ServerState matchingState = null;
+		if (stateString != null && stateString.length() > 0) {
+			for (JBoss7ServerState availableState : values()) {
+				if (stateString.equalsIgnoreCase(availableState.name())) {
+					matchingState = availableState;
+					break;
+				}
+			}
+		}
+		if (matchingState == null) {
+			throw new IllegalArgumentException(MessageFormat.format(
+					CoreServerAS7Messages.JBoss7ServerState_noEnumForString,
+					stateString));
+		}
+
+		return matchingState;
+	}
 }
