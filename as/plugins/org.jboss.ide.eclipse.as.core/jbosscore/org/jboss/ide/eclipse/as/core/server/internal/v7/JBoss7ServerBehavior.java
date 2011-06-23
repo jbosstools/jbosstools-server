@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -38,7 +37,6 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -80,8 +78,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			throws CoreException {
 		IServer server = getServer();
 		IRuntime runtime = server.getRuntime();
-		IJBossServerRuntime serverRuntime = (IJBossServerRuntime) runtime.loadAdapter(IJBossServerRuntime.class, null);
-		new JBoss7RuntimeLaunchConfigurator(launchConfig).apply(server, runtime, serverRuntime);
+		new JBoss7RuntimeLaunchConfigurator(launchConfig).apply(server);
 	}
 
 	public void setProcess(IProcess process) {
@@ -164,35 +161,26 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 		}
 		try {
 			if (force) {
-				terminateProcess();
+				if( serverProcess != null )
+					serverProcess.terminate();
 			} else {
 				serverStopping();
 				// TODO: for now only local, implement for remote afterwards
-// disabled because of JBIDE-9173
-				try {
-					if (isServerRunning(getServer().getHost(), getJBoss7Server().getManagementPort())) {
-						// The service and Poller will make sure the server is down
-						getService().stop(getServer().getHost(), getJBoss7Server().getManagementPort()); 
-						return;
-					} else {
-						terminateProcess();
+				if (isServerRunning(getServer().getHost(), getJBoss7Server().getManagementPort())) {
+					// The service and Poller will make sure the server is down
+					getService().stop(getServer().getHost(), getJBoss7Server().getManagementPort()); 
+					return;
+				} else {
+					if( serverProcess != null && !serverProcess.isTerminated()) {
+						serverProcess.terminate();
 					}
-				} catch(Exception e) {
-					terminateProcess();
 				}
-//				terminateProcess();
 			}
 		} catch (Exception e) {
 			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, getServer().getName()), e);
 			JBossServerCorePlugin.getDefault().getLog().log(status);
 		}
 		setServerStopped();
-	}
-
-	private void terminateProcess() throws DebugException {
-		if( serverProcess != null && !serverProcess.isTerminated()) {
-			serverProcess.terminate();
-		}
 	}
 
 	@Override
