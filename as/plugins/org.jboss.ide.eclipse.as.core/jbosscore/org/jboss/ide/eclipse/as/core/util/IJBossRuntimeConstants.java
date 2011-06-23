@@ -16,6 +16,8 @@ public interface IJBossRuntimeConstants {
 	public static final String SYSPROP = "-D";//$NON-NLS-1$
 	public static final String EQ = "="; //$NON-NLS-1$
 	public static final String QUOTE = "\""; //$NON-NLS-1$
+	public static final String FILE_COLON = "file:"; //$NON-NLS-1$
+	
 	public static final String JBOSS_SERVER_HOME_DIR = "jboss.server.home.dir"; //$NON-NLS-1$
 	public static final String JBOSS_SERVER_HOME_URL = "jboss.server.base.url"; //$NON-NLS-1$
 	public static final String JBOSS_SERVER_BASE_DIR = "jboss.server.base.dir"; //$NON-NLS-1$
@@ -23,7 +25,7 @@ public interface IJBossRuntimeConstants {
 	public static final String JBOSS_HOME_DIR = "jboss.home.dir"; //$NON-NLS-1$
 	public static final String ENDORSED_DIRS = "java.endorsed.dirs"; //$NON-NLS-1$
 	public static final String JAVA_LIB_PATH = "java.library.path"; //$NON-NLS-1$
-	
+	public static final String LOGGING_CONFIG_PROP = "logging.configuration"; //$NON-NLS-1$
 	public static final String SHUTDOWN_SERVER_ARG = "-s";//$NON-NLS-1$
 	public static final String SHUTDOWN_USER_ARG = "-u";//$NON-NLS-1$
 	public static final String SHUTDOWN_PASS_ARG = "-p";//$NON-NLS-1$

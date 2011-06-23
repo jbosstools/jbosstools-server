@@ -29,7 +29,11 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LIB;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.NATIVE;
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.SERVER;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.LOGGING_PROPERTIES;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.FILE_COLON;
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.LOGGING_CONFIG_PROP;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -44,6 +48,8 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -91,6 +97,9 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	}
 
 	public String getDefaultRunVMArgs() {
+		File sysJar = new File(getRuntime().getLocation().toFile(), JBossServerType.AS.getSystemJarPath());
+		String version = new ServerBeanLoader().getFullServerVersion(sysJar);
+
 		String name = getRuntime().getName();
 		String ret = QUOTE + SYSPROP + PROGRAM_NAME_ARG + EQ +  
 			"JBossTools: " + name + QUOTE + SPACE; //$NON-NLS-1$
@@ -116,6 +125,10 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 			ret += SYSPROP + JAVA_LIB_PATH + EQ + QUOTE + 
 				getRuntime().getLocation().append(BIN).append(NATIVE) + QUOTE + SPACE;
 		
+		if( version.startsWith(IJBossToolingConstants.V6_1)) {
+			ret += SYSPROP + LOGGING_CONFIG_PROP + EQ + QUOTE + FILE_COLON + 
+					getRuntime().getLocation().append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
+		}
 		return ret;
 	}
 	

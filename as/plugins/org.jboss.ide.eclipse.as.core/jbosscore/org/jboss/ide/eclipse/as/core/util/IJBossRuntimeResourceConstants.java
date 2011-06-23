@@ -41,7 +41,7 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String START_JAR = "run.jar"; //$NON-NLS-1$
 	public static final String TOOLS_JAR = "tools.jar"; //$NON-NLS-1$
 	public static final String JBOSS_MODULES_JAR = "jboss-modules.jar"; //$NON-NLS-1$
-	
+	public static final String LOGGING_PROPERTIES = "logging.properties"; //$NON-NLS-1$
 	public static final String JSF_LIB = "jsf-libs"; //$NON-NLS-1$
 	public static final String JBOSSWEB_TOMCAT55_SAR = "jbossweb-tomcat55.sar"; //$NON-NLS-1$
 	public static final String JBOSSWEB_SAR = "jbossweb.sar"; //$NON-NLS-1$
