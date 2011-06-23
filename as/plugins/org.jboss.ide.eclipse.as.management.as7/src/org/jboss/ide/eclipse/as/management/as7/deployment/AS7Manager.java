@@ -167,7 +167,7 @@ public class AS7Manager {
 
 	private JBoss7ServerState toJBoss7ServerState(ModelNode response) throws JBoss7ManangerException {
 		try {
-			return JBoss7ServerState.valueOf(response.asString());
+			return JBoss7ServerState.valueOfIgnoreCase(response.asString());
 		} catch (IllegalArgumentException e) {
 			throw new JBoss7ManangerException(e);
 		}
@@ -197,6 +197,16 @@ public class AS7Manager {
 	public void quietlyExecute(ModelNode node) throws JBoss7ManangerException {
 		try {
 			client.execute(node);
+		} catch (Exception e) {
+			if (!isConnectionCloseException(e)) {
+				throw new JBoss7ManangerException(e);
+			}
+		}
+	}
+
+	public void quietlyExecuteAsync(ModelNode node) throws JBoss7ManangerException {
+		try {
+			client.executeAsync(node, null);
 		} catch (Exception e) {
 			if (!isConnectionCloseException(e)) {
 				throw new JBoss7ManangerException(e);
