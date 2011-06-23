@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.io.File;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
@@ -32,6 +33,8 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
@@ -134,6 +137,9 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 	}
 
 	public String getDefaultRunVMArgs() {
+		File sysJar = new File(getRuntime().getLocation().toFile(), JBossServerType.AS.getSystemJarPath());
+		String version = new ServerBeanLoader().getFullServerVersion(sysJar);
+		
 		IConstants c = new IConstants(){};
 		String name = getRuntime().getName();
 		String ret = c.QUOTE + c.SYSPROP + c.PROGRAM_NAME_ARG + c.EQ +  
@@ -160,6 +166,10 @@ public class LocalJBossServerRuntime extends RuntimeDelegate implements IJBossSe
 			ret += c.SYSPROP + c.JAVA_LIB_PATH + c.EQ + c.QUOTE + 
 				getRuntime().getLocation().append(c.BIN).append(c.NATIVE) + c.QUOTE + c.SPACE;
 		
+		if( version.startsWith(IJBossToolingConstants.V6_1)) {
+			ret += c.SYSPROP + c.LOGGING_CONFIG_PROP + c.EQ + c.QUOTE + c.FILE_COLON + 
+			getRuntime().getLocation().append(c.BIN).append(c.LOGGING_PROPERTIES) + c.QUOTE + c.SPACE;
+		}
 		return ret;
 	}
 	
