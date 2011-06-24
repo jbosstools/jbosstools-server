@@ -145,9 +145,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		// make modifications to parent
 		IRuntime r = (IRuntime) getTaskModel()
 			.getObject(TaskModel.TASK_RUNTIME);
+		// TODO:  Unify with code in LocalJBossServerRuntime and in getHomeVersionWarning
 		String version = r.getRuntimeType().getVersion();
 		if( isEAP() && version.startsWith("5."))
 			version = "5.x";
+		if( !isEAP() && version.startsWith("6."))
+			version = "6.x";
+		
 		handle.setTitle( Messages.rwf_JBossRuntime);
 		String description = NLS.bind(
 				isEAP() ? Messages.JBEAP_version : Messages.JBAS_version,
@@ -660,8 +664,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		 *   EAP 5.0 was started as named 5.0, but is now 5.x.
 		 *   So a jar with 5.1 should work here also.  
 		 */
+		// This really needs to be extracted into an API
+		// To determine what server types work for what actual underlying version
+		// Unify with the core code in LocalJBossServerRuntime which changes 6.0 to 6.x
 		if( isEAP() && v.startsWith("5."))
 			v = "5.";
+		if( !isEAP() && v.startsWith("6."))
+			v = "6.";
 		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 

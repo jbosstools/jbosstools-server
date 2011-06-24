@@ -60,14 +60,19 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	}
 
 	protected String getNextRuntimeName() {
+		String rtVersion = getRuntime().getRuntimeType().getVersion(); 
+		String prefix = Messages.jboss;
 		if( isEAP(getRuntime())) {
-			String version = "5.x"; //$NON-NLS-1$
-			String base = Messages.jboss + " EAP " + version + " " + Messages.runtime; //$NON-NLS-1$ //$NON-NLS-2$
-			return getNextRuntimeName(base);
+			prefix = Messages.jboss + " EAP "; //$NON-NLS-1$
+			if( rtVersion.equals(IJBossToolingConstants.V5_0)) {
+				rtVersion = "5.x"; //$NON-NLS-1$
+			}
+		} else if( rtVersion.equals(IJBossToolingConstants.V6_0)) {
+			rtVersion = "6.x"; //$NON-NLS-1$
 		}
-		return super.getNextRuntimeName();
+		String base = prefix + SPACE + rtVersion + SPACE + Messages.runtime;
+		return getNextRuntimeName(base);
 	}
-	
 	
 	public static boolean isEAP(IRuntime rt) {
 		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
