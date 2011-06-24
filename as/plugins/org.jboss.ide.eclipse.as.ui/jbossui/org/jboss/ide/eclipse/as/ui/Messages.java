@@ -40,7 +40,6 @@ public class Messages extends NLS {
 	public static String wf_ConfigLabel;
 	
 	public static String J2EEModuleExportOperation_could_not_export_module;
-	public static String J2EEModuleExportOperation_DestinationFileIsDirectoryError;
 	public static String J2EEModuleExportOperation_ErrorExportingArchive;
 	public static String JBAS_version;
 	public static String JBEAP_version;
