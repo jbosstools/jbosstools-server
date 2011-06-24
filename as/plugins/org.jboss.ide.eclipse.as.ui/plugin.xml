@@ -115,6 +115,7 @@
      markerType="org.eclipse.wst.common.project.facet.core.validation.marker"/>
    </extension>
 
+<!-- Delete this for 3.3.1, and delete the class and plugin.properties name
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -122,7 +123,9 @@
             icon="$nl$/icons/jboss.gif"
             id="org.jboss.ide.eclipse.as.ui.ASPerspective"
             name="%perspective.name"/>
-   </extension>
+   </extension> 
+   
+   -->
       <extension
             point="org.eclipse.wst.server.ui.initialSelectionProvider">
          <selectionProvider

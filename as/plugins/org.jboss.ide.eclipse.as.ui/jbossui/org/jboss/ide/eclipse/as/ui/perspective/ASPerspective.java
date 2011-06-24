@@ -35,6 +35,7 @@ import org.eclipse.ui.progress.IProgressConstants;
  * @author Rob Stryker <rob.stryker@redhat.com>
  *
  */
+@Deprecated 
 public class ASPerspective implements IPerspectiveFactory {
 
 	public static final String ID = "org.jboss.ide.eclipse.as.ui.ASPerspective";
