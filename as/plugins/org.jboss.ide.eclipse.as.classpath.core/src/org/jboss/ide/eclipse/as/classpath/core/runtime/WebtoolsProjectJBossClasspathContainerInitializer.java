@@ -48,16 +48,19 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
  */
 public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		ClasspathContainerInitializer implements ClasspathConstants {
+	public static IProjectFacet getSafeFacet(String id) {
+		return ProjectFacetsManager.isProjectFacetDefined(id) ? ProjectFacetsManager.getProjectFacet(id) : null;
+	}
 	
-	public static final IProjectFacet WEB_FACET = ProjectFacetsManager.getProjectFacet(FACET_WEB);
-	public static final IProjectFacet EJB_FACET = ProjectFacetsManager.getProjectFacet(FACET_EJB);
-	public static final IProjectFacet EAR_FACET = ProjectFacetsManager.getProjectFacet(FACET_EAR);
-	public static final IProjectFacet UTILITY_FACET = ProjectFacetsManager.getProjectFacet(FACET_UTILITY);
-	public static final IProjectFacet CONNECTOR_FACET = ProjectFacetsManager.getProjectFacet(FACET_CONNECTOR);
-	public static final IProjectFacet APP_CLIENT_FACET = ProjectFacetsManager.getProjectFacet(FACET_APP_CLIENT);
-
-	public static final IProjectFacet JSF_FACET = ProjectFacetsManager.getProjectFacet(FACET_JSF);
-	public static final IProjectFacet JPA_FACET = ProjectFacetsManager.getProjectFacet(FACET_JPA);
+//	@Deprecated public static final IProjectFacet WEB_FACET = getSafeFacet(FACET_WEB);
+//	@Deprecated public static final IProjectFacet EJB_FACET = getSafeFacet(FACET_EJB);
+//	@Deprecated public static final IProjectFacet EAR_FACET = getSafeFacet(FACET_EAR);
+//	@Deprecated public static final IProjectFacet UTILITY_FACET = getSafeFacet(FACET_UTILITY);
+//	@Deprecated public static final IProjectFacet CONNECTOR_FACET = getSafeFacet(FACET_CONNECTOR);
+//	@Deprecated public static final IProjectFacet APP_CLIENT_FACET = getSafeFacet(FACET_APP_CLIENT);
+//
+//	@Deprecated public static final IProjectFacet JSF_FACET = getSafeFacet(FACET_JSF);
+//	@Deprecated public static final IProjectFacet JPA_FACET = getSafeFacet(FACET_JPA);
 
 
 	public WebtoolsProjectJBossClasspathContainerInitializer() {
@@ -155,7 +158,7 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 		}
 		
 		protected boolean isEjb30(String facetId, String facetVersion) {
-			if( facetId.equals(EJB_FACET.getId()) && facetVersion.equals(V3_0)) 
+			if( facetId.equals(FACET_EJB) && facetVersion.equals(V3_0)) 
 				return true;
 			return false;
 		}
@@ -187,13 +190,13 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append(SERVER).append(configName);
 			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-			if (facetId.equals(WEB_FACET.getId())) {
+			if (facetId.equals(FACET_WEB)) {
 				IPath jsfDir = configPath.append(DEPLOY).append(JBOSS_WEB_DEPLOYER).append(JSF_LIB);
 				list.add(getEntry(configPath.append(LIB).append(JSP_API_JAR)));
 				list.add(getEntry(homePath.append(CLIENT).append(SERVLET_API_JAR)));
 				list.add(getEntry(jsfDir.append(JSF_API_JAR)));
 				list.add(getEntry(jsfDir.append(JSF_IMPL_JAR)));
-			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
+			} else if( facetId.equals(FACET_EJB) && !isEjb30(facetId, facetVersion)) {
 					list.add(getEntry(homePath.append(CLIENT).append(JBOSS_J2EE_JAR)));
 			} else if( isEjb30(facetId, facetVersion)) {
 				// path roots
@@ -216,9 +219,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				// persistence jar
 				list.add(getEntry(client.append(EJB3_PERSISTENCE_JAR)));
 				
-			} else if( facetId.equals(EAR_FACET.getId())) {
+			} else if( facetId.equals(FACET_EAR)) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSS_J2EE_JAR)));
-			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
+			} else if( facetId.equals(FACET_APP_CLIENT)) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSSALL_CLIENT_JAR)));
 			}
 			return list.toArray(new IClasspathEntry[list.size()]);
@@ -228,12 +231,12 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append(SERVER).append(configName);
 			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-			if (facetId.equals(WEB_FACET.getId())) {
+			if (facetId.equals(FACET_WEB)) {
 				IPath jsfDir = configPath.append(DEPLOY).append(JBOSSWEB_TOMCAT55_SAR).append(JSF_LIB);
 				list.add(getEntry(configPath.append(LIB).append(JAVAX_SERVLET_JSP_JAR)));
 				list.add(getEntry(homePath.append(CLIENT).append(JAVAX_SERVLET_JAR)));
 				list.addAll(Arrays.asList(getEntries(jsfDir)));
-			} else if( facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion)) {
+			} else if( facetId.equals(FACET_EJB) && !isEjb30(facetId, facetVersion)) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSS_J2EE_JAR)));
 			} else if( isEjb30(facetId, facetVersion)) {
 				// path roots
@@ -253,9 +256,9 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 				// hibernate
 				list.add(getEntry(homePath.append(CLIENT).append(HIBERNATE_CLIENT_JAR)));
 				
-			} else if( facetId.equals(EAR_FACET.getId())) {
+			} else if( facetId.equals(FACET_EAR)) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSS_J2EE_JAR)));
-			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
+			} else if( facetId.equals(FACET_APP_CLIENT)) {
 				list.add(JavaRuntime.newArchiveRuntimeClasspathEntry(homePath.append(CLIENT).append(JBOSSALL_CLIENT_JAR)).getClasspathEntry());
 			}
 			return list.toArray(new IClasspathEntry[list.size()]);
@@ -266,14 +269,14 @@ public class WebtoolsProjectJBossClasspathContainerInitializer extends
 			IPath homePath = new Path(serverHome);
 			IPath configPath = homePath.append(SERVER).append(configName);
 			ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
-			if (facetId.equals(WEB_FACET.getId())) {
+			if (facetId.equals(FACET_WEB)) {
 				IPath p = configPath.append(DEPLOY).append(JBOSSWEB_TOMCAT_50_SAR);
 				list.add(getEntry(p.append(JSP_API_JAR)));
 				list.add(getEntry(p.append(SERVLET_API_JAR)));
-			} else if( (facetId.equals(EJB_FACET.getId()) && !isEjb30(facetId, facetVersion))
-					|| facetId.equals(EAR_FACET.getId()) ) {
+			} else if( (facetId.equals(FACET_EJB) && !isEjb30(facetId, facetVersion))
+					|| facetId.equals(FACET_EAR) ) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSS_J2EE_JAR)));
-			} else if( facetId.equals(APP_CLIENT_FACET.getId())) {
+			} else if( facetId.equals(FACET_APP_CLIENT)) {
 				list.add(getEntry(homePath.append(CLIENT).append(JBOSSALL_CLIENT_JAR)));
 			}
 			return list.toArray(new IClasspathEntry[list.size()]);

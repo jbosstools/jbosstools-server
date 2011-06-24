@@ -34,7 +34,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
@@ -82,19 +81,18 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 	// Bad name, I know, but checks if this is 
 	// an ear, war, ejb, or other top level facet
 	protected boolean isPrimaryFacet(IProjectFacet facet) {
-
-		return facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.WEB_FACET)
-			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.EJB_FACET)
-			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.EAR_FACET)
-			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.CONNECTOR_FACET)
-			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.APP_CLIENT_FACET);
+		return facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_WEB)
+			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_EJB)
+			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_EAR)
+			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_CONNECTOR)
+			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_APP_CLIENT);
 	}
 
 	// Also a bad name, but facets the server automatically knows
 	// how to provide classpath entries for
 	protected boolean isSecondaryFacet(IProjectFacet facet) {
-		return facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.JSF_FACET)
-			|| facet.equals(WebtoolsProjectJBossClasspathContainerInitializer.JPA_FACET); 
+		return facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_JSF)
+			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_JPA); 
 	}
 
 	public static final class Factory implements IAdapterFactory {
