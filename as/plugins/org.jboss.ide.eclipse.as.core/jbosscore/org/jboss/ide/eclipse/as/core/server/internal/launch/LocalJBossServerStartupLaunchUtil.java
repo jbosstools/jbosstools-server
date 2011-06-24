@@ -166,7 +166,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 				IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG);
 
-		if (!host.equals(host))
+		if (!host.equals(argsHost))
 			args = ArgsUtil.setArg(args,
 					IJBossRuntimeConstants.STARTUP_ARG_HOST_SHORT,
 					IJBossRuntimeConstants.STARTUP_ARG_HOST_LONG, host);
