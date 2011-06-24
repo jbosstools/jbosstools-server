@@ -103,7 +103,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		updateVMPath(runtime, wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 				serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
-		updateArguments(wc, jbs, runtime);
+		updateProgramArguments(wc, jbs, runtime);
 		updateVMArgs(wc, runtime);
 		updateClassPath(wc, jbs);
 		wc.setAttribute(AbstractJBossLaunchConfigType.SERVER_ID, jbs.getServer().getId());
@@ -127,11 +127,12 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs.trim());
 	}
 
-	private void updateArguments(ILaunchConfigurationWorkingCopy wc, JBossServer jbs, IJBossServerRuntime runtime)
+	private void updateProgramArguments(ILaunchConfigurationWorkingCopy wc, JBossServer jbs, IJBossServerRuntime runtime)
 			throws CoreException {
 		String args = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String host = jbs.getServer().getHost();
 		args = updateHostArgument(host, args);
+		args = updateConfigArgument(args, runtime);
 		args = updateServerHomeArgument(args, runtime);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
 	}
@@ -144,11 +145,15 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 						IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
 	}
 
-	private String updateServerHomeArgument(String args, IJBossServerRuntime runtime) {
+	private String updateConfigArgument(String args, IJBossServerRuntime runtime) {
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args,
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT,
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_LONG, config);
+		return args;
+	}
+	
+	private String updateServerHomeArgument(String args, IJBossServerRuntime runtime) {
 
 		try {
 			if (!runtime.getConfigLocation().equals(IConstants.SERVER)) {
