@@ -132,7 +132,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		String args = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String host = jbs.getServer().getHost();
 		args = updateHostArgument(host, args);
-		args = updateRuntimeArgument(args, runtime);
+		args = updateServerHomeArgument(args, runtime);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
 	}
 
@@ -144,7 +144,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 						IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
 	}
 
-	private String updateRuntimeArgument(String args, IJBossServerRuntime runtime) {
+	private String updateServerHomeArgument(String args, IJBossServerRuntime runtime) {
 		String config = runtime.getJBossConfiguration();
 		args = ArgsUtil.setArg(args,
 				IJBossRuntimeConstants.STARTUP_ARG_CONFIG_SHORT,
