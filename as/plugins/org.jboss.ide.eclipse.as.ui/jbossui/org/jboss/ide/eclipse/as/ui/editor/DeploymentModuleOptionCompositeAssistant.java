@@ -782,8 +782,14 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 			DeploymentModulePrefs p = preferences.getOrCreatePreferences(MAIN)
 					.getOrCreateModulePrefs(module);
 			if (property == COLUMN_LOC) {
-				String outputName = new Path(((String)value)).lastSegment();
-				String outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
+				String outputName, outPath;
+				if( ((String)value).equals("")) {
+					outputName = null;
+					outPath = null;
+				} else {
+					outputName = new Path(((String)value)).lastSegment();
+					outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
+				}
 				page.firePropertyChangeCommand(p, 
 						new String[]{COLUMN_LOC, OUTPUT_NAME},
 						new String[]{outPath,outputName},
