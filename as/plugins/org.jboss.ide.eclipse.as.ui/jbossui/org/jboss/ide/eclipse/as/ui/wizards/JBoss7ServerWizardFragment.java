@@ -8,10 +8,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
+import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -62,7 +64,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 			return Messages.rwf_NameInUse;
 
 		if (!isHomeValid())
-			return Messages.rwf_homeMissingFiles;
+			return NLS.bind(Messages.rwf_homeMissingFiles, getSystemJarPath());
 
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
@@ -86,11 +88,9 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 				.toString();
 		return new File(standaloneScriptPath).exists();
 	}
-
 	@Override
-	protected String getVersionString(File loc) {
-		// TODO clean this up for later
-		return "7.0"; //$NON-NLS-1$
+	protected String getSystemJarPath() {
+		return JBossServerType.AS7.getSystemJarPath();
 	}
 
 	@Override

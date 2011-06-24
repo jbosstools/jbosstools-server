@@ -615,14 +615,13 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		}
 
 		if( getValidJREs().size() == 0 ) {
-			String error = "No valid JREs found for execution environment \"" 
-				+ getRuntime().getExecutionEnvironment().getId() + "\"";
+			String error = NLS.bind(Messages.rwf_noValidJRE, getRuntime().getExecutionEnvironment().getId());
 			return error;
 		}
 			
 		
 		if (!isHomeValid())
-			return Messages.rwf_homeMissingFiles;
+			return NLS.bind(Messages.rwf_homeMissingFiles, getSystemJarPath());
 
 		if (name == null || name.equals("")) //$NON-NLS-1$
 			return Messages.rwf_nameTextBlank;
@@ -652,8 +651,12 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		return version;
 	}
 	
+	protected String getSystemJarPath() {
+		return JBossServerType.AS.getSystemJarPath();
+	}
+	
 	protected String getHomeVersionWarning() {
-		File loc = new File(homeDir, JBossServerType.AS.getSystemJarPath());
+		File loc = new File(homeDir, getSystemJarPath() );
 		String version = getVersionString(loc);
 		IRuntime rt = (IRuntime) getTaskModel().getObject(
 				TaskModel.TASK_RUNTIME);
@@ -675,8 +678,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 	}
 
 	protected void browseHomeDirClicked() {
-		File file = new File(homeDir);
-		if (!file.exists()) {
+		File file = homeDir == null ? null : new File(homeDir);
+		if (file != null && !file.exists()) {
 			file = null;
 		}
 
