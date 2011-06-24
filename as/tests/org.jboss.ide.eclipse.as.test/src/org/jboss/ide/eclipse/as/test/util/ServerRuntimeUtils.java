@@ -67,23 +67,25 @@ public class ServerRuntimeUtils extends TestCase {
 	public static final String twiddle_5_0_1 = "5.0.1" + twiddle_suffix;
 	public static final String twiddle_5_1_0 = "5.1.0" + twiddle_suffix;
 	public static final String twiddle_6_0_0 = "6.0.0" + twiddle_suffix;
+	public static final String as_server_7_0_jar = "7.0.0.mf.jboss-as-server.jar";
 	public static final String twiddle_eap_4_3 = "eap4.3" + twiddle_suffix;
 	public static final String twiddle_eap_5_0 = "eap5.0" + twiddle_suffix;
 	public static final String run_jar = "run.jar";
 	public static final String service_xml = "service.xml";
 	public static final IPath mockedServers = ASTest.getDefault().getStateLocation().append("mockedServers");
-	public static HashMap<String, String> twiddleMap = new HashMap<String, String>();
+	public static HashMap<String, String> asSystemJar = new HashMap<String, String>();
 	public static HashMap<String, String> serverRuntimeMap = new HashMap<String, String>();
 	
 	static {
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_32, twiddle_3_2_8);
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_40, twiddle_4_0_5);
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_42, twiddle_4_2_3);
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_50, twiddle_5_0_0);
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_51, twiddle_5_1_0);
-		twiddleMap.put(IJBossToolingConstants.SERVER_AS_60, twiddle_6_0_0);
-		twiddleMap.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
-		twiddleMap.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_32, twiddle_3_2_8);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_40, twiddle_4_0_5);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_42, twiddle_4_2_3);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_50, twiddle_5_0_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_51, twiddle_5_1_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_60, twiddle_6_0_0);
+		asSystemJar.put(IJBossToolingConstants.SERVER_AS_70, as_server_7_0_jar);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_43, twiddle_eap_4_3);
+		asSystemJar.put(IJBossToolingConstants.SERVER_EAP_50, twiddle_eap_5_0);
 
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_32, IJBossToolingConstants.AS_32);
 		serverRuntimeMap.put(IJBossToolingConstants.SERVER_AS_40, IJBossToolingConstants.AS_40);
@@ -145,7 +147,10 @@ public class ServerRuntimeUtils extends TestCase {
 
 	public static IServer createMockServerWithRuntime(String serverType, String name, String config) {
 		try {
-			IPath serverDir = createMockServerDirectory(name, twiddleMap.get(serverType), config);
+			if( serverType.equals(IJBossToolingConstants.SERVER_AS_70)) 
+				return createMockJBoss7Server();
+			
+			IPath serverDir = createAS6AndBelowMockServerDirectory(name, asSystemJar.get(serverType), config);
 			return createServer(serverRuntimeMap.get(serverType), serverType, serverDir.toOSString(), config);
 		} catch( CoreException ce ) {
 		}
@@ -174,7 +179,7 @@ public class ServerRuntimeUtils extends TestCase {
 	}
 
 	public static IServer create70Server() throws CoreException {
-		return createServer(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70, ASTest.JBOSS_AS_70_HOME, DEFAULT_CONFIG);
+		return createServer(IJBossToolingConstants.AS_70, IJBossToolingConstants.SERVER_AS_70, ASTest.JBOSS_AS_70_HOME, /* irrelevant */ DEFAULT_CONFIG);
 	}
 
 	public static IServer createServer(String runtimeID, String serverID,
@@ -226,7 +231,7 @@ public class ServerRuntimeUtils extends TestCase {
 	
 
 	
-	public static IPath createMockServerDirectory(String name, String twiddleJar, String configurationName )  {
+	public static IPath createAS6AndBelowMockServerDirectory(String name, String twiddleJar, String configurationName )  {
 		IPath loc = mockedServers.append(name);
 		try {
 			loc.toFile().mkdirs();
