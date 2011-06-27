@@ -88,8 +88,8 @@ public class MockTests extends TestCase {
 		LocalJBossServerRuntime rt = (LocalJBossServerRuntime)server.getRuntime().loadAdapter(LocalJBossServerRuntime.class, new NullProgressMonitor());
 		String defaultArgs = rt.getDefaultRunArgs().replace("\"", "");
 		String defaultVMArgs = rt.getDefaultRunVMArgs().replace("\"", "");
-		assertTrue(command.replace("\"", "").contains(defaultArgs));
-		assertTrue(command.replace("\"", "").contains(defaultVMArgs));
+		assertTrue(command.replace("\"", "").contains(defaultArgs.trim()));
+		assertTrue(command.replace("\"", "").contains(defaultVMArgs.trim()));
 		return fixed;
 	}
 
