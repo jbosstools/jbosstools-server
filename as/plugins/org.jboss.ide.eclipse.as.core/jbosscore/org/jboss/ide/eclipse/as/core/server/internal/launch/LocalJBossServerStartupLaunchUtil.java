@@ -123,7 +123,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	private void updateVMArgs(ILaunchConfigurationWorkingCopy wc, IJBossServerRuntime runtime) throws CoreException {
 		String vmArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
-		updateEndorsedDir(vmArgs, runtime);
+		vmArgs = updateEndorsedDir(vmArgs, runtime);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArgs.trim());
 	}
 
@@ -137,8 +137,8 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args.trim());
 	}
 
-	private void updateEndorsedDir(String vmArgs, IJBossServerRuntime runtime) {
-		vmArgs = ArgsUtil.setArg(vmArgs, null,
+	private String updateEndorsedDir(String vmArgs, IJBossServerRuntime runtime) {
+		return ArgsUtil.setArg(vmArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
 				runtime.getRuntime().getLocation().append(
 						IJBossRuntimeResourceConstants.LIB).append(
