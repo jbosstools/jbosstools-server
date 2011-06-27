@@ -17,6 +17,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
 
 /**
@@ -93,6 +94,10 @@ public class LaunchConfigUtils {
 			IPath containerPath = new Path(RunJarContainerWrapper.ID).append(server.getName());
 			return JavaRuntime.newRuntimeContainerClasspathEntry(containerPath, IRuntimeClasspathEntry.USER_CLASSES);
 		}
+	}
+
+	public static IRuntimeClasspathEntry getModulesClasspathEntry(JBossServer server) throws CoreException {
+		return getModulesClasspathEntry(server.getServer());
 	}
 
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
