@@ -42,10 +42,12 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 		IPath bootLog = loc.append("standalone").append("log").append("boot.log"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		IPath logConfig = loc.append("standalone").append("configuration").append("logging.properties"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		return "-server -Xms64m -Xmx512m -XX:MaxPermSize=256m " //$NON-NLS-1$
-				+ "-Dorg.jboss.resolver.warning=true -Dsun.rmi.dgc.client.gcInterval=3600000 " //$NON-NLS-1$
+				+ "-Djava.net.preferIPv4Stack=true " //$NON-NLS-1$
+				+ "-Dorg.jboss.resolver.warning=true "  //$NON-NLS-1$
+				+ "-Dsun.rmi.dgc.client.gcInterval=3600000 " //$NON-NLS-1$
 				+ "-Dsun.rmi.dgc.server.gcInterval=3600000 " //$NON-NLS-1$
-				+ "\"-Dorg.jboss.boot.log.file=" + bootLog.toString() //$NON-NLS-1$
-				+ "\" \"-Dlogging.configuration=file:" + logConfig.toString() //$NON-NLS-1$
-				+ "\" \"-Djboss.home.dir=" + loc.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$"
+				+ "\"-Dorg.jboss.boot.log.file=" + bootLog.toString() + "\" " //$NON-NLS-1$ //$NON-NLS-2$
+				+ "\"-Dlogging.configuration=file:" + logConfig.toString() + "\" " //$NON-NLS-1$ //$NON-NLS-2$ 
+				+ "\"-Djboss.home.dir=" + loc.toString() + "\""; //$NON-NLS-1$ //$NON-NLS-2$"
 	}
 }
