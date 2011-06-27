@@ -11,7 +11,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -22,7 +24,10 @@ import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
+import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
+import org.eclipse.rse.services.shells.IHostShellChangeEvent;
+import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
@@ -39,11 +44,22 @@ public class RSEHostShellModel {
 		return instance;
 	}
 	
-	
 	private HashMap<String, ServerShellModel> map = 
 		new HashMap<String, ServerShellModel>();
 	RSEHostShellModel() {
 		
+	}
+	
+	public interface IJBASHostShellListener {
+		public void writeToShell(String serverId, String[] lines);
+	}
+	
+	private ArrayList<IJBASHostShellListener> listeners = new ArrayList<IJBASHostShellListener>();
+	public void addHostShellListener(IJBASHostShellListener listener) {
+		listeners.add(listener);
+	}
+	public void removeHostShellListener(IJBASHostShellListener listener) {
+		listeners.remove(listener);
 	}
 	
 	public ServerShellModel getModel(IServer server) {
@@ -57,6 +73,7 @@ public class RSEHostShellModel {
 		private String serverId;
 		private IHostShell startupShell;
 		private IHostShell singleUseShell;
+		private IHostShellOutputListener listener;
 		public ServerShellModel(String id) {
 			this.serverId = id;
 		}
@@ -79,7 +96,24 @@ public class RSEHostShellModel {
 			try {
 				IHostShell hs = service.runCommand(initialWorkingDirectory, 
 									command, environment, monitor);
+				hs.getStandardOutputReader().addOutputListener(new IHostShellOutputListener( ) {
+					public void shellOutputChanged(IHostShellChangeEvent event) {
+						System.out.println(event.getLines().length);
+						System.out.println(event.getLines());
+					}
+				});
+				listener = new IHostShellOutputListener() {
+					public void shellOutputChanged(IHostShellChangeEvent event) {
+						IHostOutput[] lines = event.getLines();
+						String[] lines2 = new String[lines.length];
+						for(int i = 0; i < lines.length; i++ ) {
+							lines2[i] = lines[i].getString();
+						}
+						writeToConsole(lines2);
+					}
+				};
 				startupShell = hs;
+				startupShell.addOutputListener(listener);
 				return hs;
 			} catch(RuntimeException re) {
 				throw new CoreException(new Status(IStatus.ERROR, org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID, 
@@ -87,6 +121,12 @@ public class RSEHostShellModel {
 			}
 		}
 			
+		protected void writeToConsole(String[] lines) {
+			Iterator<IJBASHostShellListener> i = RSEHostShellModel.getInstance().listeners.iterator();
+			while(i.hasNext())
+				i.next().writeToShell(serverId, lines);
+		}
+		
 		public void executeRemoteCommand( 
 				String initialWorkingDirectory, String command, 
 				String[] environment, IProgressMonitor monitor) 
