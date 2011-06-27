@@ -96,12 +96,6 @@ public class RSEHostShellModel {
 			try {
 				IHostShell hs = service.runCommand(initialWorkingDirectory, 
 									command, environment, monitor);
-				hs.getStandardOutputReader().addOutputListener(new IHostShellOutputListener( ) {
-					public void shellOutputChanged(IHostShellChangeEvent event) {
-						System.out.println(event.getLines().length);
-						System.out.println(event.getLines());
-					}
-				});
 				listener = new IHostShellOutputListener() {
 					public void shellOutputChanged(IHostShellChangeEvent event) {
 						IHostOutput[] lines = event.getLines();
