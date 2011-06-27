@@ -29,8 +29,6 @@ import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IModule;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
@@ -76,9 +74,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
-		IServer server = getServer();
-		IRuntime runtime = server.getRuntime();
-		new JBoss7RuntimeLaunchConfigurator(launchConfig).apply(server);
+		new JBoss7StartupConfigurator(getServer()).configure(launchConfig);
 	}
 
 	public void setProcess(IProcess process) {

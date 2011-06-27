@@ -66,6 +66,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		// override me
 	}
 
+	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		preLaunch(configuration, mode, launch, monitor);

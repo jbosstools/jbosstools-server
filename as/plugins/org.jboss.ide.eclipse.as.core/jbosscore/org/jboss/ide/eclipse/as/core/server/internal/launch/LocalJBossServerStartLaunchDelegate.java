@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -33,8 +32,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
@@ -43,53 +40,11 @@ import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
  * @author Rob Stryker
  * @author André Dietisheim
  */
-public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, IStartLaunchSetupParticipant {
-
-	public static final String DEFAULTS_SET = "jboss.defaults.been.set"; //$NON-NLS-1$
-	static final String START_JAR_LOC = IJBossRuntimeResourceConstants.BIN + Path.SEPARATOR
-			+ IJBossRuntimeResourceConstants.START_JAR;
-	static final String START_MAIN_TYPE = IJBossRuntimeConstants.START_MAIN_TYPE;
+public class LocalJBossServerStartLaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
 		new JBossStartupConfigurator(server).configure(workingCopy);
-	}
-
-	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {
-		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration)
-				throws CoreException {
-			boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH,
-					true);
-			if (useDefault) {
-				return defaultEntries(configuration);
-			}
-			return super.computeUnresolvedClasspath(configuration);
-		}
-
-		protected IRuntimeClasspathEntry[] defaultEntries(ILaunchConfiguration config) {
-			try {
-				String server = config.getAttribute(AbstractJBossLaunchConfigType.SERVER_ID, (String) null);
-				IServer s = ServerCore.findServer(server);
-				AbstractLocalJBossServerRuntime ibjsrt = (AbstractLocalJBossServerRuntime)
-						s.getRuntime().loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
-				JBossServer jbs = (JBossServer) s.loadAdapter(JBossServer.class, new NullProgressMonitor());
-				IVMInstall install = ibjsrt.getVM();
-				ArrayList<IRuntimeClasspathEntry> list = new ArrayList<IRuntimeClasspathEntry>();
-				LaunchConfigUtils.addJREEntry(install, list);
-				list.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(s));
-				return (IRuntimeClasspathEntry[]) list
-						.toArray(new IRuntimeClasspathEntry[list.size()]);
-			} catch (CoreException ce) {
-				// ignore
-			}
-
-			try {
-				return super.computeUnresolvedClasspath(config);
-			} catch (CoreException ce) {
-				// ignore
-			}
-			return new IRuntimeClasspathEntry[] {};
-		}
 	}
 
 	/*
@@ -144,6 +99,43 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 			((LocalJBossBehaviorDelegate) (jbsBehavior.getDelegate())).setProcess(processes[0]);
 		} catch (CoreException ce) {
 			// report
+		}
+	}
+	
+	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {
+		public IRuntimeClasspathEntry[] computeUnresolvedClasspath(ILaunchConfiguration configuration)
+				throws CoreException {
+			boolean useDefault = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH,
+					true);
+			if (useDefault) {
+				return defaultEntries(configuration);
+			}
+			return super.computeUnresolvedClasspath(configuration);
+		}
+
+		protected IRuntimeClasspathEntry[] defaultEntries(ILaunchConfiguration config) {
+			try {
+				String server = config.getAttribute(AbstractJBossLaunchConfigType.SERVER_ID, (String) null);
+				IServer s = ServerCore.findServer(server);
+				AbstractLocalJBossServerRuntime ibjsrt = (AbstractLocalJBossServerRuntime)
+						s.getRuntime().loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
+				JBossServer jbs = (JBossServer) s.loadAdapter(JBossServer.class, new NullProgressMonitor());
+				IVMInstall install = ibjsrt.getVM();
+				ArrayList<IRuntimeClasspathEntry> list = new ArrayList<IRuntimeClasspathEntry>();
+				LaunchConfigUtils.addJREEntry(install, list);
+				list.add(LaunchConfigUtils.getRunJarRuntimeCPEntry(s));
+				return (IRuntimeClasspathEntry[]) list
+						.toArray(new IRuntimeClasspathEntry[list.size()]);
+			} catch (CoreException ce) {
+				// ignore
+			}
+
+			try {
+				return super.computeUnresolvedClasspath(config);
+			} catch (CoreException ce) {
+				// ignore
+			}
+			return new IRuntimeClasspathEntry[] {};
 		}
 	}
 
