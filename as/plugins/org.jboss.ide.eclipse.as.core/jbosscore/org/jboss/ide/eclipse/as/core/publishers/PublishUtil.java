@@ -247,7 +247,7 @@ public class PublishUtil {
 		String suffix = null;
 		if( IWTPConstants.FACET_EAR.equals(type)) 
 			suffix = IWTPConstants.EXT_EAR;
-		else if( IWTPConstants.FACET_WEB.equals(type)) 
+		else if( IWTPConstants.FACET_WEB.equals(type) || IWTPConstants.FACET_STATIC_WEB.equals(type)) 
 			suffix = IWTPConstants.EXT_WAR;
 		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
 			suffix = IWTPConstants.EXT_RAR;
