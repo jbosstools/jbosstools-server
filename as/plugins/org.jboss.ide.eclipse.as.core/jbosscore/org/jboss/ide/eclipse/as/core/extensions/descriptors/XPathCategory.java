@@ -127,4 +127,10 @@ public class XPathCategory {
 	public void save() {
 		XPathModel.getDefault().save(server); 
 	}
+
+	// FIXME With right implementation
+	public void clearCache() {
+		// TODO Auto-generated method stub
+		
+	}
 }
