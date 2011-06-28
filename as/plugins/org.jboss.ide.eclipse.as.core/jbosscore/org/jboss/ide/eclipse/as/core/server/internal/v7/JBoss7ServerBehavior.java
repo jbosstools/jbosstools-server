@@ -49,8 +49,6 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	private IDebugEventSetListener serverProcessListener;
 	private PollThread pollThread;
 
-	public static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; //$NON-NLS-1$
-
 	private static HashMap<String, Class> delegateClassMap;
 	static {
 		delegateClassMap = new HashMap<String, Class>();
