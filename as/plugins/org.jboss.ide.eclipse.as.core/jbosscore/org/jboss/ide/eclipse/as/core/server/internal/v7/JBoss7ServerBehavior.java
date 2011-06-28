@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.DebugEvent;
@@ -38,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
 
@@ -62,10 +62,6 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	protected HashMap<String, Class> getDelegateMap() {
 		return delegateClassMap;
-	}
-
-	private JBoss7Server getJBoss7Server() {
-		return (JBoss7Server)getServer().loadAdapter(JBoss7Server.class, new NullProgressMonitor());
 	}
 	
 	public boolean shouldSuspendScanner() {
@@ -161,10 +157,13 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 					serverProcess.terminate();
 			} else {
 				serverStopping();
+				String host = getServer().getHost();
+				JBoss7Server server = ServerConverter.checkedLoadAdapter(getServer(), JBoss7Server.class);
+				int mgmtPort = server.getManagementPort();
 				// TODO: for now only local, implement for remote afterwards
-				if (isServerRunning(getServer().getHost(), getJBoss7Server().getManagementPort())) {
+				if (isServerRunning(host, mgmtPort)) {
 					// The service and Poller will make sure the server is down
-					getService().stop(getServer().getHost(), getJBoss7Server().getManagementPort()); 
+					getService().stop(host, mgmtPort); 
 					return;
 				} else {
 					if( serverProcess != null && !serverProcess.isTerminated()) {

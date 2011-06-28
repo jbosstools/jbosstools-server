@@ -46,6 +46,21 @@ public class ServerConverter {
 		return getJBossServer(s);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <SERVER> SERVER checkedLoadAdapter(IServer server, Class<SERVER> serverClass) throws CoreException {
+		if (server == null) {
+			return null;
+		}
+		SERVER adaptedServer = (SERVER) server.loadAdapter(serverClass, new NullProgressMonitor());
+		if (adaptedServer == null) {
+			throw new CoreException(
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							NLS.bind(Messages.CannotSetUpImproperServer, server.getName())));
+
+		}
+		return adaptedServer;
+	}
+	
 	public static JBossServer getJBossServer(IServer server) {
 		if (server == null) {
 			return null;
