@@ -52,11 +52,6 @@ import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
 
-	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.STARTUP_COMMAND";
-	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.SHUTDOWN_COMMAND";
-	public static final String DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_STARTUP_COMMAND";
-	public static final String DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_SHUTDOWN_COMMAND";
-	
 	
 	public void actualLaunch(
 			JBossServerStartupLaunchConfiguration launchConfig,
@@ -70,7 +65,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		}
 
 		beh.setServerStarting();
-		String command = configuration.getAttribute(RSE_STARTUP_COMMAND, (String)null);
+		String command = RSELaunchConfigUtils.getStartupCommand(configuration);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(beh.getServer());
 			IHostShell shell = model.createStartupShell("/", command, new String[]{}, new NullProgressMonitor());
@@ -128,7 +123,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
 			String defaultCmd = getDefaultStopCommand(behaviour.getServer(), true);
 			command2 = config == null ? defaultCmd :
-				config.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCmd);
+				RSELaunchConfigUtils.getShutdownCommand(config, defaultCmd);
 			behaviour.setServerStopping();
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
 			model.executeRemoteCommand("/", command2, new String[]{}, new NullProgressMonitor(), 10000, true);
@@ -166,18 +161,16 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {
-		boolean detectStartupCommand, detectShutdownCommand;
-		detectStartupCommand = workingCopy.getAttribute(DETECT_STARTUP_COMMAND, true);
-		detectShutdownCommand = workingCopy.getAttribute(DETECT_SHUTDOWN_COMMAND, true);
-		
-		String currentStartupCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, (String)null);
+		boolean detectStartupCommand = RSELaunchConfigUtils.isDetectStartupCommand(workingCopy, true);
+		String currentStartupCmd = RSELaunchConfigUtils.getStartupCommand(workingCopy);
 		if( detectStartupCommand || currentStartupCmd == null || "".equals(currentStartupCmd)) {
-			workingCopy.setAttribute(RSELaunchDelegate.RSE_STARTUP_COMMAND, getDefaultLaunchCommand(workingCopy));
+			RSELaunchConfigUtils.setStartupCommand(getDefaultLaunchCommand(workingCopy), workingCopy);
 		}
 
-		String currentStopCmd = workingCopy.getAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, (String)null);
+		boolean detectShutdownCommand = RSELaunchConfigUtils.isDetectShutdownCommand(workingCopy, true);
+		String currentStopCmd = RSELaunchConfigUtils.getShutdownCommand(workingCopy);
 		if( detectShutdownCommand || currentStopCmd == null || "".equals(currentStopCmd)) {
-			workingCopy.setAttribute(RSELaunchDelegate.RSE_SHUTDOWN_COMMAND, getDefaultStopCommand(server));
+			RSELaunchConfigUtils.setShutdownCommand(getDefaultStopCommand(server), workingCopy);
 		}
 		/*
 		 *   /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M -Xmx1530M 
