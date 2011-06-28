@@ -101,9 +101,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
-		String ignore = behaviour.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
-		if( ignoreB.booleanValue()) {
+		if( LaunchCommandPreferences.ignoreLaunchCommand(behaviour.getServer())) {
 			behaviour.setServerStopping();
 			behaviour.setServerStopped();
 			return;
