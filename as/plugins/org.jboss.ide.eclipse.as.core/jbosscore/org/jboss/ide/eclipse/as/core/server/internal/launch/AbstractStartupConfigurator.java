@@ -21,16 +21,14 @@ import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeL
 import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setProgramArguments;
 import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setServerId;
 import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setUseDefaultClassPath;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setWorkingDirectory;
 import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setVmArguments;
-
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.setWorkingDirectory;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -52,13 +50,6 @@ public abstract class AbstractStartupConfigurator implements ILaunchConfigConfig
 		this.jbossRuntime = jbossServer.getRuntime();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jboss.ide.eclipse.as.core.server.internal.launch.
-	 * ILaunchConfigConfigurator
-	 * #configure(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
-	 */
 	@Override
 	public void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
 		if (!areDefaultsSet(launchConfig)) {
