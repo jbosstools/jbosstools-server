@@ -19,7 +19,6 @@ import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SHUTDOWN
 import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants.SPACE;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,14 +32,12 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.util.IConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
@@ -57,13 +54,9 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.TWIDDLE_JAR;
 
 	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server, String args) throws CoreException {
-		JBossServer jbs = ServerConverter.findJBossServer(server.getId());
-		if (jbs == null) {
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					NLS.bind(Messages.ServerNotFound, server.getName())));
-		}
-		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
+		JBossServer jbs = ServerConverter.checkedGetJBossServer(server);
 		String serverHome = ServerUtil.checkedGetServerHome(jbs);
+		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
 		
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(TWIDDLE_LAUNCH_TYPE);
