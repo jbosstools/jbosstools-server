@@ -73,7 +73,6 @@ public abstract class AbstractStartupConfigurator implements ILaunchConfigConfig
 		setClasspath(getClasspath(jbossServer, jbossRuntime, JBossRuntimeLaunchConfigUtils.getClasspath(launchConfig)), launchConfig);
 		setUseDefaultClassPath(false, launchConfig);
 		setServerId(getServerId(jbossServer), launchConfig);
-		setDefaultsSet(launchConfig);
 	}
 
 	protected abstract String getEndorsedDir(IJBossServerRuntime runtime);
