@@ -46,14 +46,12 @@ public class NewTargetedWebProjectTest extends TestCase {
 	private IServer server;
 	private IProject p;
 	
-	// Test Commented Until Passing
-	
-//	public void testTargetedWebProjectErrorsJboss6() throws Exception {
-//		server = ServerRuntimeUtils.create60Server();
-//		p = createProject("org.jboss.ide.eclipse.as.runtime.60");
-//		int markerSev = p.findMaxProblemSeverity(null, true, IResource.DEPTH_INFINITE);
-//		assertTrue(markerSev !=  IMarker.SEVERITY_ERROR);
-//	}
+	public void testTargetedWebProjectErrorsJboss6() throws Exception {
+		server = ServerRuntimeUtils.create60Server();
+		p = createProject("org.jboss.ide.eclipse.as.runtime.60");
+		int markerSev = p.findMaxProblemSeverity(null, true, IResource.DEPTH_INFINITE);
+		assertTrue(markerSev !=  IMarker.SEVERITY_ERROR);
+	}
 	
 	public void testTargetedWebProjectErrorsJboss7() throws Exception {
 		server = ServerRuntimeUtils.create70Server();
