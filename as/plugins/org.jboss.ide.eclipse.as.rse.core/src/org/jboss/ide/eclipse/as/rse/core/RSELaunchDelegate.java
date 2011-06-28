@@ -23,7 +23,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.services.shells.IHostOutput;
 import org.eclipse.rse.services.shells.IHostShell;
@@ -44,7 +43,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfigurat
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -150,7 +148,17 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {
-		new RSELaunchConfigurator(server).configure(workingCopy);
+		boolean detectStartupCommand = RSELaunchConfigUtils.isDetectStartupCommand(workingCopy, true);
+		String currentStartupCmd = RSELaunchConfigUtils.getStartupCommand(workingCopy);
+		if( detectStartupCommand || currentStartupCmd == null || "".equals(currentStartupCmd)) {
+			RSELaunchConfigUtils.setStartupCommand(getDefaultLaunchCommand(workingCopy), workingCopy);
+		}
+
+		boolean detectShutdownCommand = RSELaunchConfigUtils.isDetectShutdownCommand(workingCopy, true);
+		String currentStopCmd = RSELaunchConfigUtils.getShutdownCommand(workingCopy);
+		if( detectShutdownCommand || currentStopCmd == null || "".equals(currentStopCmd)) {
+			RSELaunchConfigUtils.setShutdownCommand(getDefaultStopCommand(server), workingCopy);
+		}
 		/*
 		 *   /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M -Xmx1530M 
 		 *   -XX:PermSize=425M -XX:MaxPermSize=425M -Dorg.jboss.resolver.warning=true 
