@@ -44,6 +44,16 @@ public class RSEUtils {
 		return server.getAttribute(RSEUtils.RSE_SERVER_HOST, RSE_SERVER_DEFAULT_HOST);
 	}
 
+	public static String getRSEHomeDir(IServer server, boolean errorOnFail) throws CoreException {
+		String rseHome = null;
+		if (errorOnFail) {
+			rseHome = RSEUtils.checkedGetRSEHomeDir(server);
+		} else {
+			rseHome = RSEUtils.getRSEHomeDir(server);
+		}
+		return rseHome == null ? "" : rseHome;
+	}
+
 	public static String getRSEHomeDir(IServerAttributes server) {
 		return server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, server.getRuntime().getLocation().toString());
 	}
