@@ -15,6 +15,7 @@ public interface IWTPConstants {
 	@Deprecated // DO NOT USE THIS
 	public static final String FACET_JST_JAVA = "jst.java"; //$NON-NLS-1$
 	public static final String FACET_WEB = "jst.web";//$NON-NLS-1$
+	public static final String FACET_STATIC_WEB = "wst.web";//$NON-NLS-1$
 	public static final String FACET_EJB = "jst.ejb";//$NON-NLS-1$
 	public static final String FACET_EAR = "jst.ear";//$NON-NLS-1$
 	public static final String FACET_UTILITY  = "jst.utility";//$NON-NLS-1$

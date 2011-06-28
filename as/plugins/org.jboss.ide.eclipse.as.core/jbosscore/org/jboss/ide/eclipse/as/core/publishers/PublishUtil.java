@@ -248,7 +248,7 @@ public class PublishUtil {
 		String suffix = null;
 		if( IJBossServerConstants.FACET_EAR.equals(type)) 
 			suffix = IJBossServerConstants.EXT_EAR;
-		else if( IJBossServerConstants.FACET_WEB.equals(type)) 
+		else if( IJBossServerConstants.FACET_WEB.equals(type) || IJBossServerConstants.FACET_STATIC_WEB.equals(type)) 
 			suffix = IJBossServerConstants.EXT_WAR;
 		else if( IJBossServerConstants.FACET_CONNECTOR.equals(type)) 
 			suffix = IJBossServerConstants.EXT_RAR;
