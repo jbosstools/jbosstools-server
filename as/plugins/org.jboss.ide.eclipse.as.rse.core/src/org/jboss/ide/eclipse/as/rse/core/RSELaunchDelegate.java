@@ -174,14 +174,8 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	}
 	
 	public static String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
-		String rseHome = server.getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, (String)null);
-		if( errorOnFail && rseHome == null ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
-							"Remote Server Home not set.");
-			throw new CoreException(s);
-		}
-		rseHome = rseHome == null ? "" : rseHome;
-		
+		String rseHome = null;
+		rseHome = getServerHome(server, errorOnFail);
 		JBossServer jbs = ServerConverter.getJBossServer(server);
 		
 		String stop = new Path(rseHome)
@@ -192,6 +186,16 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		// Pull args from single utility method
 		stop += StopLaunchConfiguration.getDefaultArgs(jbs);
 		return stop;
+	}
+
+	private static String getServerHome(IServer server, boolean errorOnFail) throws CoreException {
+		String rseHome = null;
+		if (errorOnFail) {
+			rseHome = RSEUtils.checkedGetRSEHomeDir(server);
+		} else {
+			rseHome = RSEUtils.getRSEHomeDir(server);
+		}
+		return rseHome == null ? "" : rseHome;
 	}
 	
 	public static IServer findServer(ILaunchConfiguration config) throws CoreException {
