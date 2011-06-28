@@ -100,15 +100,6 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		//shell.addOutputListener(listener);
 	}
 	
-	public static void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
-		try {
-			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
-			model.executeRemoteCommand("/", command, new String[]{}, new NullProgressMonitor(), delay, true);
-		} catch( CoreException ce ) {
-			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
-		}
-	}
-	
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
 		String ignore = behaviour.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
 		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
@@ -161,17 +152,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {
-		boolean detectStartupCommand = RSELaunchConfigUtils.isDetectStartupCommand(workingCopy, true);
-		String currentStartupCmd = RSELaunchConfigUtils.getStartupCommand(workingCopy);
-		if( detectStartupCommand || currentStartupCmd == null || "".equals(currentStartupCmd)) {
-			RSELaunchConfigUtils.setStartupCommand(getDefaultLaunchCommand(workingCopy), workingCopy);
-		}
-
-		boolean detectShutdownCommand = RSELaunchConfigUtils.isDetectShutdownCommand(workingCopy, true);
-		String currentStopCmd = RSELaunchConfigUtils.getShutdownCommand(workingCopy);
-		if( detectShutdownCommand || currentStopCmd == null || "".equals(currentStopCmd)) {
-			RSELaunchConfigUtils.setShutdownCommand(getDefaultStopCommand(server), workingCopy);
-		}
+		new RSELaunchConfigurator(server).configure(workingCopy);
 		/*
 		 *   /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M -Xmx1530M 
 		 *   -XX:PermSize=425M -XX:MaxPermSize=425M -Dorg.jboss.resolver.warning=true 

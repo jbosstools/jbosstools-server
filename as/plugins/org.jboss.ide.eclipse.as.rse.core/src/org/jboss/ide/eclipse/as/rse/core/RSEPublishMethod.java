@@ -26,6 +26,7 @@ import org.eclipse.rse.core.subsystems.ISubSystem;
 import org.eclipse.rse.services.files.IFileService;
 import org.eclipse.rse.subsystems.files.core.servicesubsystem.IFileServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
@@ -36,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSEPublishMethod extends AbstractPublishMethod {
 
@@ -77,13 +79,13 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	protected void startDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
-			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
+			launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
 		if( cmd != null )
-			RSELaunchDelegate.launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
+			launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected String getDeploymentScannerCommand(IProgressMonitor monitor, boolean start) {
@@ -190,5 +192,15 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	public String getPublishDefaultRootFolder(IServer server) {
 		return getRemoteRootFolder().toString();
 	}
+	
+	private void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
+		try {
+			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
+			model.executeRemoteCommand("/", command, new String[]{}, new NullProgressMonitor(), delay, true);
+		} catch( CoreException ce ) {
+			ServerLogger.getDefault().log(behaviour.getServer(), ce.getStatus());
+		}
+	}
+
 
 }
