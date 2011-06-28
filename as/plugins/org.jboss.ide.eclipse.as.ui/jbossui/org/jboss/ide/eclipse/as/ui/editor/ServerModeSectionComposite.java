@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.FormUtils;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -63,10 +64,7 @@ public class ServerModeSectionComposite extends Composite {
 			FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0);
 			executeShellScripts.setLayoutData(fd);
 			top = executeShellScripts;
-			String tmp = callback.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-			Boolean b = tmp == null ? new Boolean(false) : new Boolean(tmp);
-			executeShellScripts.setSelection(b.booleanValue());
-			
+			executeShellScripts.setSelection(LaunchCommandPreferences.ignoreLaunchCommand(callback.getServer()));
 			executeShellScripts.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
 					executeShellToggled();

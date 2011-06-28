@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7ServerBehavior extends JBossServerBehavior {
@@ -145,9 +146,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	}
 
 	public void stop(boolean force) {
-		String tmp = getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-		Boolean b = tmp == null ? new Boolean(false) : new Boolean(tmp);
-		if( b.booleanValue()) {
+		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
 			super.setServerStopped();
 			return;
 		}

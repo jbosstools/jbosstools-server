@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 
 /**
  * @author Rob Stryker
@@ -36,9 +37,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		String tmp = jbsBehavior.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-		Boolean b = tmp == null ? new Boolean(false) : new Boolean(tmp);
-		if( b.booleanValue()) {
+		if( LaunchCommandPreferences.ignoreLaunchCommand(jbsBehavior.getServer())) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;

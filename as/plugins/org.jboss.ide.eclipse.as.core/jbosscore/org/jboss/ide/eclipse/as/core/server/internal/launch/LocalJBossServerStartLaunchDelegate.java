@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLa
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
 /**
@@ -62,10 +63,7 @@ public class LocalJBossServerStartLaunchDelegate implements StartLaunchDelegate,
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
-		String ignore = jbsBehavior.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS,
-				(String) null);
-		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
-		if (ignoreB.booleanValue()) {
+		if (LaunchCommandPreferences.ignoreLaunchCommand(jbsBehavior.getServer())) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;

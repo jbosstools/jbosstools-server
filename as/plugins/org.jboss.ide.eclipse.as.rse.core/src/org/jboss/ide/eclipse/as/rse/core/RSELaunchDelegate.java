@@ -46,6 +46,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
@@ -62,9 +63,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		String ignore = beh.getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
-		Boolean ignoreB = ignore == null ? new Boolean(false) : new Boolean(ignore);
-		if( ignoreB.booleanValue()) {
+		if(LaunchCommandPreferences.ignoreLaunchCommand(beh.getServer())) {
 			beh.setServerStarting();
 			beh.setServerStarted();
 			return;
