@@ -27,6 +27,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeSet;
 
+import org.eclipse.core.internal.variables.StringSubstitutionEngine;
+import org.eclipse.core.internal.variables.StringVariableManager;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -386,6 +389,16 @@ public class XPathDialogs {
 			if( !new Path(directory).isAbsolute()) {
 				directory = server.getRuntime().getLocation().append(directory).toString();
 			}
+			directory = directory.replace("${jboss_config_dir}",  //$NON-NLS-1$
+					"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+			directory = directory.replace("${jboss_config}",  //$NON-NLS-1$
+				"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+			try {
+				StringSubstitutionEngine engine = new StringSubstitutionEngine();
+				directory = engine.performStringSubstitution(directory, true,
+						true, StringVariableManager.getDefault());
+			} catch( CoreException ce ) {}
+
 			final String directory2 = directory;
 			IRunnableWithProgress op = new IRunnableWithProgress() {
 				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {

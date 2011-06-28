@@ -36,6 +36,7 @@ import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
+import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
 import org.osgi.framework.BundleContext;
 
@@ -85,12 +86,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		savePluginPreferences();
 		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
 		ServerCore.addServerLifecycleListener(selectionProvider);
+		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
+		ServerCore.removeRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ServerCore.removeServerLifecycleListener(selectionProvider);
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
 		JBossServerUISharedImages.instance().cleanup();
