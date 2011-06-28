@@ -47,6 +47,9 @@ public class ServerConverter {
 	}
 
 	public static JBossServer getJBossServer(IServer server) {
+		if (server == null) {
+			return null;
+		}
 		JBossServer jbServer = (JBossServer) server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
 			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
@@ -65,6 +68,9 @@ public class ServerConverter {
 	}
 
 	public static JBossServer getJBossServer(IServerWorkingCopy server) {
+		if (server == null) {
+			return null;
+		}
 		JBossServer jbServer = (JBossServer) server.getAdapter(JBossServer.class);
 		if (jbServer == null) {
 			jbServer = (JBossServer) server.loadAdapter(JBossServer.class, new NullProgressMonitor());
@@ -73,6 +79,9 @@ public class ServerConverter {
 	}
 
 	public static IDeployableServer getDeployableServer(IServer server) {
+		if (server == null) {
+			return null;
+		}
 		IDeployableServer dep = (IDeployableServer) server.getAdapter(IDeployableServer.class);
 		if (dep == null) {
 			dep = (IDeployableServer) server.loadAdapter(IDeployableServer.class, new NullProgressMonitor());
