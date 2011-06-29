@@ -155,7 +155,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 			} else {
 				serverStopping();
 				String host = getServer().getHost();
-				JBoss7Server server = ServerConverter.checkedLoadAdapter(getServer(), JBoss7Server.class);
+				JBoss7Server server = ServerConverter.checkedGetServer(getServer(), JBoss7Server.class);
 				int mgmtPort = server.getManagementPort();
 				// TODO: for now only local, implement for remote afterwards
 				if (isServerRunning(host, mgmtPort)) {
