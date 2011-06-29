@@ -40,6 +40,10 @@ public class ServerUtil {
 			.append(serverID.replace(' ', '_'));
 	}
 
+	public static String getServerBinDirectory(JBossServer server) throws CoreException {
+		return getServerHomePath(server).append(IJBossRuntimeResourceConstants.BIN).toOSString();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <BEHAVIOR> BEHAVIOR checkedGetServerBehavior(IServer server, Class<BEHAVIOR> behaviorClass) throws CoreException {
 		BEHAVIOR serverBehavior = (BEHAVIOR) server.loadAdapter(behaviorClass, new NullProgressMonitor());
