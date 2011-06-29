@@ -73,11 +73,6 @@ public class StopLaunchConfiguration {
 		}
 	}
 	
-	public void preLaunch(ILaunchConfiguration configuration, 
-			String mode, ILaunch launch, IProgressMonitor monitor) {
-	}
-
-	
 	private static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
 		JBossServer jbs = ServerConverter.checkedGetJBossServer(server);
 		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
