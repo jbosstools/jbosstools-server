@@ -30,7 +30,6 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
@@ -49,7 +48,6 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 
 	public static final String TWIDDLE_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"; //$NON-NLS-1$
 
-	protected static final String TWIDDLE_MAIN_TYPE = IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE;
 	protected static final String TWIDDLE_JAR_LOC =
 		IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.TWIDDLE_JAR;
 
@@ -64,10 +62,10 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		String launchName = TwiddleLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, TWIDDLE_MAIN_TYPE);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN);
-		wc.setAttribute(TwiddleLaunchConfiguration.SERVER_ID, server.getId());
+		JBossRuntimeLaunchConfigUtils.setProgramArguments(args, wc);
+		JBossRuntimeLaunchConfigUtils.setMainType(IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE, wc);
+		JBossRuntimeLaunchConfigUtils.setWorkingDirectory(serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN, wc);
+		JBossRuntimeLaunchConfigUtils.setServerId(server.getId(), wc);
 
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		LaunchConfigUtils.addCPEntry(TWIDDLE_JAR_LOC, serverHome, classpath);
@@ -77,9 +75,8 @@ public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
 		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
 		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
-		String cpKey = IJavaLaunchConfigurationConstants.ATTR_CLASSPATH;
-		wc.setAttribute(cpKey, runtimeClassPaths);
-		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, false);
+		JBossRuntimeLaunchConfigUtils.setClasspath(runtimeClassPaths, wc);
+		JBossRuntimeLaunchConfigUtils.setUseDefaultClassPath(false, wc);
 
 		return wc;
 	}
