@@ -40,6 +40,17 @@ public class ServerUtil {
 			.append(serverID.replace(' ', '_'));
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <BEHAVIOR> BEHAVIOR checkedGetJBossServerBehavior(IServer server, Class<BEHAVIOR> behaviorClass) throws CoreException {
+		BEHAVIOR serverBehavior = (BEHAVIOR) server.loadAdapter(behaviorClass, new NullProgressMonitor());
+		if (serverBehavior == null) {
+			throw new CoreException(					
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							NLS.bind(Messages.CouldNotFindServerBehavior, server.getName())));
+		}
+		return serverBehavior;
+	}
+	
 	@Deprecated
 	public static IPath makeRelative(IJBossServerRuntime rt, IPath p) {
 		if( rt != null && rt.getRuntime() != null )

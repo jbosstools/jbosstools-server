@@ -75,6 +75,7 @@ public class Messages extends NLS {
 	public static String TerminateTwiddleFailed;
 	public static String CannotSetUpImproperServer;
 	public static String CannotLocateServerHome;
+	public static String CouldNotFindServerBehavior;
 	public static String ServerRuntimeNotFound;
 	public static String ServerRuntimeConfigNotFound;
 	public static String ServerNotFound;
