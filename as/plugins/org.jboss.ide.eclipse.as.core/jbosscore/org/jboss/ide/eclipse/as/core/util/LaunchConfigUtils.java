@@ -11,6 +11,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.JavaRuntime;
@@ -19,6 +23,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 
 /**
  * @author André Dietisheim
@@ -122,5 +127,21 @@ public class LaunchConfigUtils {
 			classpath.add(JavaRuntime.newArchiveRuntimeClasspathEntry(new Path(
 					libPath + File.separator + libs[i].getName())));
 		}
+	}
+	
+	/**
+	 * Creates a {@link ILaunchConfigurationWorkingCopy} for the given name and type.
+	 * 
+	 * @param name the name for the new launch configuration
+	 * @param type the type of the new launch configuration
+	 * @return the new launch configuration working copy
+	 * @throws CoreException
+	 */
+	public ILaunchConfigurationWorkingCopy createLaunchConfigurationWorkingCopy(String name, String type) throws CoreException {
+		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(type);
+		
+		String launchName = launchManager.generateLaunchConfigurationName(name); 
+		return launchConfigType.newInstance(null, launchName);
 	}
 }
