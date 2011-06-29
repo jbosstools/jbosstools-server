@@ -44,7 +44,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 
-public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
+public class StopLaunchConfiguration {
 	
 	public static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
 	public static final String STOP_MAIN_TYPE = IJBossRuntimeConstants.SHUTDOWN_MAIN_TYPE;
