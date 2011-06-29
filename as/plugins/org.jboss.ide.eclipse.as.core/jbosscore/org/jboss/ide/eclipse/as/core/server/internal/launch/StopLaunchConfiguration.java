@@ -89,7 +89,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		String launchName = StopLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		wc.setAttribute(SERVER_ID, server.getId());
+		JBossRuntimeLaunchConfigUtils.setServerId(server.getId(), wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, STOP_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome.append(IJBossRuntimeResourceConstants.BIN).toOSString());
