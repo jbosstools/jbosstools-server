@@ -40,8 +40,8 @@ public class ServerUtil {
 			.append(serverID.replace(' ', '_'));
 	}
 
-	public static String getServerBinDirectory(JBossServer server) throws CoreException {
-		return getServerHomePath(server).append(IJBossRuntimeResourceConstants.BIN).toOSString();
+	public static IPath getServerBinDirectory(JBossServer server) throws CoreException {
+		return getServerHomePath(server).append(IJBossRuntimeResourceConstants.BIN);
 	}
 	
 	@SuppressWarnings("unchecked")
