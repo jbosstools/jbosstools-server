@@ -44,7 +44,7 @@ import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
-public class TwiddleLaunchConfiguration extends AbstractJBossLaunchConfigType {
+public class TwiddleLaunchConfiguration {
 
 	public static final String TWIDDLE_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.twiddleConfiguration"; //$NON-NLS-1$
 
