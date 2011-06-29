@@ -39,6 +39,7 @@ import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -73,8 +74,8 @@ public class ServerPasswordSection extends ServerEditorSection {
 		
 		Label username = toolkit.createLabel(composite, Messages.swf_Username);
 		username.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
-		String n = helper.getAttribute(JBossServer.SERVER_USERNAME, ""); //$NON-NLS-1$
-		String p = helper.getAttribute(JBossServer.SERVER_PASSWORD, ""); //$NON-NLS-1$
+		String n = helper.getAttribute(IJBossToolingConstants.SERVER_USERNAME, ""); //$NON-NLS-1$
+		String p = helper.getAttribute(IJBossToolingConstants.SERVER_PASSWORD, ""); //$NON-NLS-1$
 		nameText = toolkit.createText(composite, n); 
 		Label password = toolkit.createLabel(composite, Messages.swf_Password);
 		password.setForeground(toolkit.getColors().getColor(IFormColors.TITLE));
@@ -107,14 +108,14 @@ public class ServerPasswordSection extends ServerEditorSection {
 	public class SetUserCommand extends SetVarCommand {
 		public SetUserCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangeUsernameCommandName, nameText, nameText.getText(), 
-					JBossServer.SERVER_USERNAME, nameModifyListener);
+					IJBossToolingConstants.SERVER_USERNAME, nameModifyListener);
 		}
 	}
 
 	public class SetPassCommand extends SetVarCommand {
 		public SetPassCommand(IServerWorkingCopy server) {
 			super(server, Messages.EditorChangePasswordCommandName, passText, passText.getText(), 
-					JBossServer.SERVER_PASSWORD, passModifyListener);
+					IJBossToolingConstants.SERVER_PASSWORD, passModifyListener);
 		}
 	}
 
