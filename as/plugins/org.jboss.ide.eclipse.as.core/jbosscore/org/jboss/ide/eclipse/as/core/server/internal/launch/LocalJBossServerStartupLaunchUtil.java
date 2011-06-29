@@ -69,7 +69,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 		protected IRuntimeClasspathEntry[] defaultEntries(ILaunchConfiguration config) {
 			try {
-				String server = config.getAttribute(AbstractJBossLaunchConfigType.SERVER_ID, (String) null);
+				String server = JBossRuntimeLaunchConfigUtils.getServerId(config);
 				IServer s = ServerCore.findServer(server);
 				AbstractLocalJBossServerRuntime ibjsrt = (AbstractLocalJBossServerRuntime)
 						s.getRuntime().loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
