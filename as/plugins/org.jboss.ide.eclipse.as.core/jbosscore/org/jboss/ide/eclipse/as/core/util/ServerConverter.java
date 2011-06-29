@@ -47,7 +47,7 @@ public class ServerConverter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <SERVER> SERVER checkedGetServer(IServer server, Class<SERVER> serverClass) throws CoreException {
+	public static <SERVER> SERVER checkedGetJBossServer(IServer server, Class<SERVER> serverClass) throws CoreException {
 		if (server == null) {
 			return null;
 		}
