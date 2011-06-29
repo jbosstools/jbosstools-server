@@ -137,7 +137,7 @@ public class LaunchConfigUtils {
 	 * @return the new launch configuration working copy
 	 * @throws CoreException
 	 */
-	public ILaunchConfigurationWorkingCopy createLaunchConfigurationWorkingCopy(String name, String type) throws CoreException {
+	public static ILaunchConfigurationWorkingCopy createLaunchConfigurationWorkingCopy(String name, String type) throws CoreException {
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(type);
 		
