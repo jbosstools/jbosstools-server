@@ -185,6 +185,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		return ServerUtil.checkedGetServerHome(jbs);
 	}
 	
+	@Deprecated
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
 		String serverId = configuration.getAttribute(SERVER_ID, (String) null);
 		JBossServer jbs = findJBossServer(serverId);
