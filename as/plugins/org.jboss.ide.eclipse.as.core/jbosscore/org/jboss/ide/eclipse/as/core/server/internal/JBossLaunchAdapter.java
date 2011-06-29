@@ -37,17 +37,23 @@ import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 import org.eclipse.wst.server.core.util.HttpLaunchable;
 import org.eclipse.wst.server.core.util.WebResource;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
+/**
+ * 
+ * @author Rob Stryker
+ *
+ */
 public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 
 	private static final String SIMPLE_PORTAL_PATH = "simple-portal"; //$NON-NLS-1$
 	private static final String JBOSS_PORTLET = "jboss.portlet"; //$NON-NLS-1$
 	private static final String PORTAL_PATH = "portal"; //$NON-NLS-1$
 	
-	private static final String JAVA_NAMING_PROVIDER_URL_PROPKEY = IJBossServerConstants.NAMING_FACTORY_PROVIDER_URL;
-	private static final String JAVA_NAMING_FACTORY_INITIAL_PROPKEY = IJBossServerConstants.NAMING_FACTORY_KEY;
+	private static final String JAVA_NAMING_PROVIDER_URL_PROPKEY = IJBossRuntimeConstants.NAMING_FACTORY_PROVIDER_URL;
+	private static final String JAVA_NAMING_FACTORY_INITIAL_PROPKEY = IJBossRuntimeConstants.NAMING_FACTORY_KEY;
 	
 	private static final String SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR = "deploy/jboss-portal.sar"; //$NON-NLS-1$
 	
@@ -85,15 +91,15 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
         JndiLaunchable launchable = null;
         JBossServer server = (JBossServer)delegate;
         IPath p = new Path(server.getConfigDirectory())
-        	.append(IJBossServerConstants.JNDI_PROPERTIES);
+        	.append(IJBossRuntimeResourceConstants.JNDI_PROPERTIES);
         Properties props = new Properties();
         try  {
 	        props.load(new FileInputStream(p.toFile()));
         } catch( IOException ioe ) {
             props.put(JAVA_NAMING_FACTORY_INITIAL_PROPKEY, 
-            		IJBossServerConstants.NAMING_FACTORY_VALUE);
+            		IJBossRuntimeConstants.NAMING_FACTORY_VALUE);
             props.put(JAVA_NAMING_PROVIDER_URL_PROPKEY,
-            		IJBossServerConstants.NAMING_FACTORY_INTERFACES);
+            		IJBossRuntimeConstants.NAMING_FACTORY_INTERFACES);
         }
 	
         if(moduleObject instanceof EJBBean) {
@@ -168,7 +174,7 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 							}
 							URL url = new URL(urlString);
 							IPath jbossLocation = runtime.getLocation();
-							IPath configPath = jbossLocation.append(IJBossServerConstants.SERVER).append(jbossRuntime.getJBossConfiguration());
+							IPath configPath = jbossLocation.append(IJBossRuntimeResourceConstants.SERVER).append(jbossRuntime.getJBossConfiguration());
 							File configFile = configPath.toFile();
 							// JBoss Portal server
 							if (exists(configFile, SERVER_DEFAULT_DEPLOY_JBOSS_PORTAL_SAR)) {
