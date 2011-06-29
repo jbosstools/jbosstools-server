@@ -87,7 +87,7 @@ public class XPathModel extends UnitedServerListener {
 	}
 	
 	private IStatus handleAddJBoss7XPaths(IServer server2) {
-		ArrayList<XPathCategory> defaults = loadDefaults(server2, server2.getRuntime().getLocation().toOSString());
+		ArrayList<XPathCategory> defaults = loadDefaults(server2, ""); //$NON-NLS-1$
 		serverToCategories.put(server2.getId(), defaults);
 		save(server2);
 		return Status.OK_STATUS;
@@ -97,9 +97,9 @@ public class XPathModel extends UnitedServerListener {
 		LocalJBossServerRuntime ajbsr = (LocalJBossServerRuntime)
 		server2.getRuntime().loadAdapter(LocalJBossServerRuntime.class, null);
 		if(ajbsr != null ) {
-			IPath configFolder = ajbsr.getConfigurationFullPath();
+			String configFolder = "server/${jboss_config}"; //ajbsr.getConfigurationFullPath(); //$NON-NLS-1$
 			if( configFolder != null ) {
-				ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder.toOSString());
+				ArrayList<XPathCategory> defaults = loadDefaults(server2, configFolder);
 				serverToCategories.put(server2.getId(), defaults);
 				save(server2);
 			} 
@@ -291,7 +291,7 @@ public class XPathModel extends UnitedServerListener {
 					xpath = pr.getProperty(name);
 					attributeName = pr.getProperty(name+ATTRIBUTE_SUFFIX);
 					file = pr.getProperty(name + FILE_SUFFIX);
-					query = new XPathQuery(name.replace('_', ' '), configFolder, file, xpath, attributeName);
+					query = new XPathQuery(server, name.replace('_', ' '), configFolder, file, xpath, attributeName);
 					ports.addQuery(query);
 				}
 			}

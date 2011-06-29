@@ -17,8 +17,12 @@ import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Node;
+import org.eclipse.core.internal.variables.StringSubstitutionEngine;
+import org.eclipse.core.internal.variables.StringVariableManager;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IServer;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
@@ -55,14 +59,21 @@ public class XPathQuery implements Serializable {
 	protected transient XPathFileResult[] results;
 	protected transient XPathCategory category;
 	protected transient XMLDocumentRepository repository = null;
+	protected IServer server; // May be null
 	
-	public XPathQuery(IMemento memento) {
+	public XPathQuery(IMemento memento, IServer server) {
+		this.server = server;
 		this.name = memento.getString("name"); //$NON-NLS-1$
 		this.baseDir = memento.getString("dir"); //$NON-NLS-1$
 		this.filePattern = memento.getString("filePattern"); //$NON-NLS-1$
 		this.xpathPattern = memento.getString("xpathPattern"); //$NON-NLS-1$
 		this.attribute = memento.getString("attribute"); //$NON-NLS-1$
 		setEffectiveBaseDir();
+	}
+	
+	@Deprecated
+	public XPathQuery(IMemento memento) {
+		this(memento, null);
 	}
 	
 	public XPathQuery(String name, List list) {
@@ -74,7 +85,9 @@ public class XPathQuery implements Serializable {
 		setEffectiveBaseDir();
 	}
 	
-	public XPathQuery(String name, String baseDir, String filePattern, String xpathPattern, String attribute) {
+	public XPathQuery(IServer server, String name, String baseDir, 
+			String filePattern, String xpathPattern, String attribute) {
+		this.server = server;
 		this.name = name;
 		this.baseDir = baseDir;
 		this.filePattern = filePattern;
@@ -84,6 +97,11 @@ public class XPathQuery implements Serializable {
 		setEffectiveBaseDir();
 	}
 	
+	@Deprecated
+	public XPathQuery(String name, String baseDir, String filePattern, String xpathPattern, String attribute) {
+		this(null, name, baseDir, filePattern, xpathPattern, attribute);
+	}
+	
 	private void setEffectiveBaseDir() {
 		IPath dir = baseDir == null ? null : new Path(baseDir);
 		if( dir == null && category != null) {
@@ -91,7 +109,22 @@ public class XPathQuery implements Serializable {
 		}
 		if( dir != null && !dir.isAbsolute() && category != null)
 			dir = getCategory().getServer().getRuntime().getLocation().append(dir);
-		effectiveBaseDir = dir == null ? null : dir.toString();
+		
+		String dir2 = null;
+		String serverName = server == null ? "" : server.getName(); //$NON-NLS-1$
+		if( dir != null ) {
+			dir2 = dir.toString().replace("${jboss_config_dir}",  //$NON-NLS-1$
+				"${jboss_config_dir:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+			dir2 = dir2.replace("${jboss_config}",  //$NON-NLS-1$
+				"${jboss_config:" + serverName + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			try {
+				StringSubstitutionEngine engine = new StringSubstitutionEngine();
+				dir2 = engine.performStringSubstitution(dir2, true,
+						true, StringVariableManager.getDefault());
+			} catch( CoreException ce ) {}
+		}
+		effectiveBaseDir = dir2 == null ? null : dir2.toString();
 	}
 	
 	protected AntFileFilter getFilter() {
@@ -124,6 +157,11 @@ public class XPathQuery implements Serializable {
 		if( results == null ) 
 			loadResults();
 		return results;
+	}
+	
+	public void clearCache() {
+		results = null;
+		setEffectiveBaseDir();
 	}
 	
 	public boolean resultsLoaded() {

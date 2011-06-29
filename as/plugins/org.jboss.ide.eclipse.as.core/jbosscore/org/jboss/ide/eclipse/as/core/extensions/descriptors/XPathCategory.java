@@ -75,7 +75,7 @@ public class XPathCategory {
 		children = new HashMap<String, XPathQuery>();
 		for( int i = 0; i < queryMementos.length; i++ ) {
 			String name = queryMementos[i].getString("name");//$NON-NLS-1$
-			XPathQuery child = new XPathQuery(queryMementos[i]);
+			XPathQuery child = new XPathQuery(queryMementos[i], server);
 			children.put(name, child);
 			child.setCategory(this);
 		}
@@ -121,16 +121,19 @@ public class XPathCategory {
 		return children == null ? false : true;
 	}
 	
+	public void clearCache() {
+		if( isLoaded()) {
+			XPathQuery[] allQueries = getQueries();
+			for( int i = 0; i < allQueries.length; i++ ) {
+				allQueries[i].clearCache();
+			}
+		}
+	}
+
 	/*
 	 * Save these queries to its server object
 	 */
 	public void save() {
 		XPathModel.getDefault().save(server); 
-	}
-
-	// FIXME With right implementation
-	public void clearCache() {
-		// TODO Auto-generated method stub
-		
 	}
 }
