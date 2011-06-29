@@ -78,7 +78,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 
 	
-	public static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
+	private static ILaunchConfigurationWorkingCopy createLaunchConfiguration(IServer server) throws CoreException {
 		JBossServer jbs = ServerConverter.checkedGetJBossServer(server);
 		IJBossServerRuntime jbrt = RuntimeUtils.checkedGetJBossServerRuntime(server);
 		IPath serverHome = ServerUtil.getServerHomePath(jbs);
