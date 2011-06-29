@@ -10,6 +10,24 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import static org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants.DEPLOY;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JBOSSTOOLS_TMP;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JBOSS_WEB_DEFAULT_PORT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_DEFAULT_PORT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DEFAULT_XPATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DETECT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.JNDI_PORT_DETECT_XPATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_AS_50;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_PASSWORD;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.SERVER_USERNAME;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.TEMP_DEPLOY;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.TMP;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DEFAULT_XPATH;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT;
+import static org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants.WEB_PORT_DETECT_XPATH;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
@@ -27,10 +45,8 @@ import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathModel;
 import org.jboss.ide.eclipse.as.core.extensions.descriptors.XPathQuery;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -39,7 +55,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
  *
  */
 public class JBossServer extends DeployableServer 
-		implements IJBossServerConstants, IDeployableServer, IURLProvider {
+		implements IDeployableServer, IURLProvider {
 
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
@@ -51,7 +67,7 @@ public class JBossServer extends DeployableServer
 	}
 	
 	private boolean isAS50() {
-		return getServer().getServerType().getRuntimeType().getId().equals(IJBossToolingConstants.SERVER_AS_50);
+		return getServer().getServerType().getRuntimeType().getId().equals(SERVER_AS_50);
 	}
 	
 	public String getHost() {
@@ -100,12 +116,12 @@ public class JBossServer extends DeployableServer
 		}
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(server).
-				append(IJBossServerConstants.DEPLOY).makeAbsolute().toString();
+				append(DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
 			String loc = jbsrt.getConfigLocation();
 			String config = jbsrt.getJBossConfiguration();
 			IPath p = new Path(loc).append(config)
-				.append(IJBossServerConstants.DEPLOY);
+				.append(DEPLOY);
 			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
 		}
 		return null;
@@ -124,13 +140,13 @@ public class JBossServer extends DeployableServer
 					new Path(server.getAttribute(TEMP_DEPLOY_DIRECTORY, ""))).toString(); //$NON-NLS-1$
 		if( type.equals(DEPLOY_METADATA)) {
 			return JBossServerCorePlugin.getServerStateLocation(server).
-				append(IJBossServerConstants.TEMP_DEPLOY).makeAbsolute().toString();
+				append(TEMP_DEPLOY).makeAbsolute().toString();
 		} else if( type.equals(DEPLOY_SERVER)) {
 			String loc = jbsrt.getConfigLocation();
 			String config = jbsrt.getJBossConfiguration();
 			IPath p = new Path(loc)
-				.append(config).append(IJBossServerConstants.TMP)
-				.append(IJBossServerConstants.JBOSSTOOLS_TMP);
+				.append(config).append(TMP)
+				.append(JBOSSTOOLS_TMP);
 			return ServerUtil.makeGlobal(jbsrt.getRuntime(), p).toString();
 		}
 		return null;
