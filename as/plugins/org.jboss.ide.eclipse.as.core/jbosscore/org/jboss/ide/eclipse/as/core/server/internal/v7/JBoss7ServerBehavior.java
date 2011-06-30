@@ -104,16 +104,12 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 *			throw e;
 *		}
 */
-		if (method == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
-		int result = method.publishModule(this, kind, deltaKind, module, monitor);
+		int result = getOrCreatePublishMethod().publishModule(this, kind, deltaKind, module, monitor);
 		setModulePublishState(module, result);
 	}
 
 	@Override
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
-		if (method == null)
-			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		// Handle the dodeploy
 		createDoDeployMarkers(monitor);
 		super.publishFinish(new SubProgressMonitor(monitor, 1));
@@ -236,7 +232,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	}
 
 	private void createDoDeployMarker(List<IPath> paths, IProgressMonitor monitor) throws CoreException {
-		DeploymentMarkerUtils.addDoDeployMarker(method, getServer(), paths, monitor);
+		DeploymentMarkerUtils.addDoDeployMarker(getOrCreatePublishMethod(), getServer(), paths, monitor);
 	}
 	
 }

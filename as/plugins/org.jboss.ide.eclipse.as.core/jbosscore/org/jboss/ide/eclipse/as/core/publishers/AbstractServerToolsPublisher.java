@@ -220,7 +220,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		return status;
 	}
 		
-	private Path getRootPath(IPath deployPath) {
+	// TODO consider moving to utility class?
+	public static Path getRootPath(IPath deployPath) {
 		String root = (deployPath.getDevice() == null ? "" : deployPath.getDevice()) + "/";  //$NON-NLS-1$//$NON-NLS-2$
 		return new Path(root);
 	}

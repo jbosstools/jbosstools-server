@@ -13,14 +13,25 @@ package org.jboss.ide.eclipse.as.core.server.internal;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
+import org.jboss.ide.eclipse.as.core.publishers.JSTPublisherXMLToucher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
 /**
  * 
@@ -138,5 +149,29 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	protected IStatus canChangeState(String launchMode) {
 		return getDelegate().canChangeState(launchMode);
+	}
+	
+	public boolean canRestartModule(IModule[] module){
+		if( module.length == 1 ) 
+			return true;
+		return false;
+	}
+	
+	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
+		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
+		if( ds == null ) 
+			return;
+
+		IJBossServerPublishMethod method = getOrCreatePublishMethod();
+		IPath depPath = PublishUtil.getDeployPath(method, module, ds);
+		if( ServerModelUtilities.isBinaryModule(module[module.length-1]) || ds.zipsWTPDeployments()) {
+			// touch the file
+			getOrCreatePublishMethod().getCallbackHandler(depPath.removeLastSegments(1), getServer()).touchResource(new Path(depPath.lastSegment()));
+		} else {
+			// touch the descriptor
+			IPath deployPath = PublishUtil.getDeployPath(method, module, ds);
+			IPublishCopyCallbackHandler callback = method.getCallbackHandler(AbstractServerToolsPublisher.getRootPath(deployPath).append(deployPath), getServer());
+			JSTPublisherXMLToucher.getInstance().touch(deployPath, module[0], callback);
+		}
 	}
 }

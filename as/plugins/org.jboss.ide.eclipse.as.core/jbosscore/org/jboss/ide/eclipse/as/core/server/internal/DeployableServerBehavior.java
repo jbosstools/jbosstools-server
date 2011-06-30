@@ -46,16 +46,22 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	}
 	
 	
-	protected IJBossServerPublishMethod method;
+	private IJBossServerPublishMethod method;
 	protected HashMap<String, Object> publishTaskModel;
 	protected void publishStart(IProgressMonitor monitor) throws CoreException {
 		if( method != null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Already publishing")); //$NON-NLS-1$
-		method = createPublishMethod();
+		method = getOrCreatePublishMethod();
 		publishTaskModel = new HashMap<String, Object>();
 		method.publishStart(this, monitor);
 	}
 
+	protected IJBossServerPublishMethod getOrCreatePublishMethod() throws CoreException {
+		if( method == null )
+			method = createPublishMethod();
+		return method;
+	}
+	
 	protected void publishFinish(IProgressMonitor monitor) throws CoreException {
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
@@ -81,6 +87,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
 		int result = method.publishModule(this, kind, deltaKind, module, monitor);
 		setModulePublishState(module, result);
+		setModuleState(module, IServer.STATE_STARTED );
 	}
 	
 	/**
