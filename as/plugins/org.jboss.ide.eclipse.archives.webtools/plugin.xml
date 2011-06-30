@@ -66,6 +66,11 @@
             label="%nodeContribution.label.editPublishSettings">
       </nodeContribution>
    </extension>
+   <!--
+      *  With these actions removed, if they never return, a large
+         portion of this plugin and it's classes can be deprecated 
+         and eventually removed *
+      
    <extension
          point="org.jboss.ide.eclipse.archives.ui.newArchiveActions">
       <newPackageAction
@@ -84,6 +89,7 @@
             id="org.jboss.ide.eclipse.packages.ui.newEARAction"
             label="%newPackageAction.label.ear"/>
    </extension>
+   -->
    <extension
          point="org.jboss.ide.eclipse.as.core.publishers">
       <publisher
