@@ -204,21 +204,10 @@ public class AS7Manager {
 		}
 	}
 
-	public void quietlyExecuteAsync(ModelNode node) throws JBoss7ManangerException {
-		try {
-			client.executeAsync(node, null);
-		} catch (Exception e) {
-			if (!isConnectionCloseException(e)) {
-				throw new JBoss7ManangerException(e);
-			}
-		}
-	}
-
 	private boolean isConnectionCloseException(Exception e) {
 		return e instanceof IOException
-				&& e.getCause() instanceof ExecutionException
-				&& e.getCause().getCause() instanceof EOFException
-				&& e.getCause().getCause().getMessage().indexOf("Connection closed") > -1;
+				&& e.getMessage() != null
+				&& e.getMessage().indexOf("Channel closed") > -1;
 	}
 
 	private IJBoss7DeploymentResult execute(DeploymentPlanBuilder builder) throws JBoss7ManangerException {
