@@ -16,13 +16,11 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -44,7 +42,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 
-public class StopLaunchConfiguration {
+public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	
 	public static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
 	public static final String STOP_MAIN_TYPE = IJBossRuntimeConstants.SHUTDOWN_MAIN_TYPE;
