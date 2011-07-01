@@ -123,14 +123,14 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			
 			try {
 				String startCommand = RSELaunchConfigUtils.getStartupCommand(configuration);
-				startText.setText(startCommand);
+				startText.setText(startCommand == null ? "" : startCommand);
 				boolean detectStartCommand = RSELaunchConfigUtils.isDetectStartupCommand(configuration, true);
 				autoStartArgs.setSelection(detectStartCommand);
 				startText.setEditable(!detectStartCommand);
 				startText.setEnabled(!detectStartCommand);
 				
 				String stopCommand = RSELaunchConfigUtils.getShutdownCommand(configuration);
-				stopText.setText(stopCommand);
+				stopText.setText(stopCommand == null ? "" : stopCommand);
 				boolean detectStopCommand = RSELaunchConfigUtils.isDetectShutdownCommand(configuration, true);
 				autoStopArgs.setSelection(detectStopCommand);
 				stopText.setEditable(!detectStopCommand);
