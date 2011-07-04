@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.test.launch;
 
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isServerHomeSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isServerHomeSet;
 
 import java.util.List;
 
@@ -21,8 +21,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractStartupConfigurator;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.ILaunchConfigConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
 /**
@@ -46,7 +46,7 @@ public class LaunchConfigTests extends TestCase {
 		ILaunchConfigConfigurator mockConfigurator = new MockConfigurator(mockServer) {
 			
 			@Override
-			protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+			protected void doConfigure(ILaunchConfigurationWorkingCopy launchConfig, JBossServer jbossServer, IJBossServerRuntime jbossRuntime) throws CoreException {
 				/**
 				 * should only be called once
 				 */

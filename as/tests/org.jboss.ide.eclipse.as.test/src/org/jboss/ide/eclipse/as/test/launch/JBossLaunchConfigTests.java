@@ -10,20 +10,20 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.test.launch;
 
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.areEnvironmentVariablesSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.areProgramArgumentsSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.areVMArgumentsSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isClasspathProviderSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isClasspathSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isConfigSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isDefaultClasspathSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isEndorsedDirSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isHostSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isJreContainerSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isMainTypeSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isServerHomeSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isServerIdSet;
-import static org.jboss.ide.eclipse.as.core.server.internal.launch.JBossRuntimeLaunchConfigUtils.isWorkingDirectorySet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.areEnvironmentVariablesSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.areProgramArgumentsSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.areVMArgumentsSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isClasspathProviderSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isClasspathSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isConfigSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isUseDefaultClasspathSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isEndorsedDirSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isHostSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isJreContainerSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isMainTypeSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isServerHomeSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isServerIdSet;
+import static org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties.isWorkingDirectorySet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -53,7 +53,7 @@ public class JBossLaunchConfigTests extends LaunchConfigTests {
 		assertTrue(areEnvironmentVariablesSet(launchConfig));
 		assertTrue(isClasspathSet(launchConfig));
 		assertTrue(isClasspathProviderSet(launchConfig));
-		assertTrue(isDefaultClasspathSet(launchConfig));
+		assertTrue(isUseDefaultClasspathSet(launchConfig));
 		assertTrue(isJreContainerSet(launchConfig));
 		assertTrue(isConfigSet(launchConfig));
 		assertTrue(isServerHomeSet(launchConfig));

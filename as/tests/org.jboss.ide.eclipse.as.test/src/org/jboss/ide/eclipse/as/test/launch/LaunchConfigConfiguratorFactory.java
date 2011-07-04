@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartupConfigurator;
 
 /**
  * @author André Dietisheim
@@ -23,7 +23,7 @@ public class LaunchConfigConfiguratorFactory {
 
 	public static ILaunchConfigurationWorkingCopy createCustomConfigLocationLaunchConfig(IServer mockServer) throws CoreException {
 		MockLaunchConfigWorkingCopy launchConfig = new MockLaunchConfigWorkingCopy();
-		JBossStartupConfigurator configurator = new JBossStartupConfigurator(mockServer) {
+		LocalJBossStartupConfigurator configurator = new LocalJBossStartupConfigurator(mockServer) {
 			@Override
 			protected boolean isCustomConfigLocation(IJBossServerRuntime runtime) {
 				return false;
@@ -35,7 +35,7 @@ public class LaunchConfigConfiguratorFactory {
 
 	public static  MockLaunchConfigWorkingCopy createNonCustomConfigLocationLaunchConfig(IServer server) throws CoreException {
 		MockLaunchConfigWorkingCopy launchConfig = new MockLaunchConfigWorkingCopy();
-		new JBossStartupConfigurator(server).configure(launchConfig);
+		new LocalJBossStartupConfigurator(server).configure(launchConfig);
 		return launchConfig;
 	}
 }
