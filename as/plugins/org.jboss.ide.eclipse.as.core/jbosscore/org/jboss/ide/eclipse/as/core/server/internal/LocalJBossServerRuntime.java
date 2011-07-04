@@ -54,11 +54,14 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
+
+	@Override
 	public void setDefaults(IProgressMonitor monitor) {
 		super.setDefaults(monitor);
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 	}
 
+	@Override
 	protected String getNextRuntimeName() {
 		String rtVersion = getRuntime().getRuntimeType().getVersion(); 
 		String prefix = Messages.jboss;
@@ -78,6 +81,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
 	}
 	
+	@Override
 	public IStatus validate() {
 		IStatus s = super.validate();
 		if( !s.isOK()) return s;
@@ -89,18 +93,22 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		return Status.OK_STATUS;
 	}
 		
+	@Override
 	public String getJBossConfiguration() {
 		return getAttribute(PROPERTY_CONFIGURATION_NAME, (String)""); //$NON-NLS-1$
 	}
 	
+	@Override
 	public void setJBossConfiguration(String config) {
 		setAttribute(IJBossServerRuntime.PROPERTY_CONFIGURATION_NAME, config);
 	}
 
+	@Override
 	public String getDefaultRunArgs() {
 		return STARTUP_ARG_CONFIG_LONG + "=" + getJBossConfiguration() + SPACE;  //$NON-NLS-1$
 	}
 
+	@Override
 	public String getDefaultRunVMArgs() {
 		File sysJar = new File(getRuntime().getLocation().toFile(), JBossServerType.AS.getSystemJarPath());
 		String version = new ServerBeanLoader().getFullServerVersion(sysJar);
@@ -137,24 +145,29 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		return ret;
 	}
 	
+	@Override
 	public HashMap<String, String> getDefaultRunEnvVars(){
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
 		envVars.put("Path", NATIVE); //$NON-NLS-1$
 		return envVars;
 	}
 
+	@Override
 	public String getConfigLocation() {
 		return getAttribute(PROPERTY_CONFIG_LOCATION, SERVER);
 	}
 
+	@Override
 	public void setConfigLocation(String configLocation) {
 		setAttribute(PROPERTY_CONFIG_LOCATION, configLocation);
 	}
 
+	@Override
 	public IPath getConfigurationFullPath() {
 		return getConfigLocationFullPath().append(getJBossConfiguration());
 	}
 
+	@Override
 	public IPath getConfigLocationFullPath() {
 		String cl = getConfigLocation();
 		if( new Path(cl).isAbsolute())
