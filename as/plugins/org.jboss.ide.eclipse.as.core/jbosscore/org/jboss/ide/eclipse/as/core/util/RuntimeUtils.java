@@ -21,7 +21,10 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 public class RuntimeUtils {
 
 	public static IJBossServerRuntime getJBossServerRuntime(IServerAttributes server) {
-		IRuntime rt = server.getRuntime();
+		IRuntime rt = null;
+		if (server != null) {
+			rt = server.getRuntime();
+		}
 		IJBossServerRuntime jbrt = null;
 		if (rt != null)
 			jbrt = (IJBossServerRuntime) rt.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
