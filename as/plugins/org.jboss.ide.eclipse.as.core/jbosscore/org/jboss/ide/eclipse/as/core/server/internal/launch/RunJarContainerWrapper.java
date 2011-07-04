@@ -25,6 +25,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 
 public class RunJarContainerWrapper {
 	public static final String ID = "org.jboss.ide.eclipse.as.core.server.launch.runJarContainer"; //$NON-NLS-1$
@@ -90,7 +91,7 @@ public class RunJarContainerWrapper {
 			if( s != null ) {
 				IRuntime rt = s.getRuntime();
 				IPath home = rt.getLocation();
-				IPath runJar = home.append(LocalJBossServerStartupLaunchUtil.START_JAR_LOC);
+				IPath runJar = home.append(IJBossRuntimeResourceConstants.START_JAR_LOC );
 				
 				return new IClasspathEntry[] {
 						JavaRuntime.newArchiveRuntimeClasspathEntry(
