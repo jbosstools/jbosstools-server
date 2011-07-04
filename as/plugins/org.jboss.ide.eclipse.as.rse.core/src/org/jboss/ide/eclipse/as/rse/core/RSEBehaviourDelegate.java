@@ -37,8 +37,7 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	@Override
 	public void stop(boolean force) {
 		if( force ) {
-			serverStopped();
-			return;
+			forceStop();
 		}
 
 		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
@@ -54,7 +53,14 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 			serverStopped();
 		}
 	}
+	
+	@Override
+	protected void forceStop() {
+		serverStopped();
+		return;		
+	}
 
+	@Override
 	protected IStatus gracefullStop() {
 		try {
 			ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());

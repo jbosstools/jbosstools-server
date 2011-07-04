@@ -37,6 +37,11 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 	}
 
 	public abstract void stop(boolean force);
+	
+	protected abstract void forceStop();
+
+	protected abstract IStatus gracefullStop();
+	
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
 	}
 

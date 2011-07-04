@@ -22,6 +22,9 @@ import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IDebugEventSetListener;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
@@ -35,8 +38,9 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 /**
@@ -46,6 +50,8 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
  */
 public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate implements IProcessProvider {
 	
+	private static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
+
 	protected PollThread pollThread = null;
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
@@ -71,19 +77,54 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		}
 		
 		serverStopping();
-		new Thread() {public void run() {
-			boolean success = StopLaunchConfiguration.stop(getServer());
-			if( !success ) {
-				if( process != null && !process.isTerminated() ) { 
-					getActualBehavior().setServerStarted();
-					pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
-					nextStopRequiresForce = true;
-				}
-			}
-		}}.start();
+		gracefullStop();
 	}
 	
-	public synchronized void forceStop() {
+	@Override
+	protected IStatus gracefullStop() {
+		new Thread() {
+			
+			@Override
+			public void run() {
+				try {
+					ILaunchConfigurationWorkingCopy wc = 
+							LaunchConfigUtils.createLaunchConfigurationWorkingCopy("Stop JBoss Server", STOP_LAUNCH_TYPE);  //$NON-NLS-1$
+					new LocalStopLaunchConfigurator(getServer()).configure(wc);
+					ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
+					IProcess stopProcess = waitForStopProcess(launch);
+					if (stopProcess.getExitValue() == 0) {
+						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
+						if( process != null && !process.isTerminated() ) { 
+							getActualBehavior().setServerStarted();
+							pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
+							nextStopRequiresForce = true;
+						}
+					}
+				} catch( CoreException ce ) {
+					JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
+				}
+				
+			}
+
+			private IProcess waitForStopProcess(ILaunch launch) {
+				IProcess stopProcess = launch.getProcesses()[0];
+				while( !stopProcess.isTerminated()) {
+					try {
+						Thread.yield();
+						Thread.sleep(100);
+					} catch(InterruptedException ie) {
+					}
+				}
+				return stopProcess;
+			}
+		}.start();
+		// TODO: find out if this is ok. My current guess is that we should 
+		// not thread here and return the real outcome
+		return Status.OK_STATUS;
+	}
+	
+	@Override
+	protected synchronized void forceStop() {
 		// just terminate the process.
 		if( process != null && !process.isTerminated()) {
 			try {
