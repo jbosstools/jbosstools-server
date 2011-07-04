@@ -16,15 +16,18 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.wst.server.core.IServer;
@@ -33,6 +36,8 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -42,6 +47,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 
+@Deprecated
 public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	
 	public static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
@@ -49,6 +55,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	public static final String STOP_JAR_LOC = IJBossRuntimeResourceConstants.BIN + File.separator + IJBossRuntimeResourceConstants.SHUTDOWN_JAR;
 	
 	/* Returns whether termination was normal */
+	@Deprecated
 	public static boolean stop(IServer server) {
 		try {
 			ILaunchConfigurationWorkingCopy wc = createLaunchConfiguration(server);
@@ -82,7 +89,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		String launchName = StopLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		JBossRuntimeLaunchConfigUtils.setServerId(server.getId(), wc);
+		JBossLaunchConfigProperties.setServerId(server.getId(), wc);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, getDefaultArgs(jbs));
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, STOP_MAIN_TYPE);
 		wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, serverHome.append(IJBossRuntimeResourceConstants.BIN).toOSString());
@@ -97,8 +104,11 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 		return wc;
 	}
 
+	/**
+	 * moved to {@link JBossServerBehavior#getDefaultStopArguments()}
+	 */
+	@Deprecated
 	public static String getDefaultArgs(JBossServer jbs) {
-		
 		String runtimeTypeId = jbs.getRuntime().getRuntime().getRuntimeType().getId();
 		String serverUrl;
 		if (runtimeTypeId.equals(IJBossToolingConstants.AS_60)){
@@ -121,5 +131,4 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 			+ IJBossRuntimeConstants.SPACE + jbs.getPassword() + IJBossRuntimeConstants.SPACE;
 		return args;
 	}
-
 }
