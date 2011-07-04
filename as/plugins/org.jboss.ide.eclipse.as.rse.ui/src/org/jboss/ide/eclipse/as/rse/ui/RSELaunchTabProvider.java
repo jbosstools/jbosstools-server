@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
-import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigUtils;
+import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup.IJBossLaunchTabProvider;
@@ -122,16 +122,16 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			this.initialConfig = configuration;
 			
 			try {
-				String startCommand = RSELaunchConfigUtils.getStartupCommand(configuration);
+				String startCommand = RSELaunchConfigProperties.getStartupCommand(configuration);
 				startText.setText(startCommand == null ? "" : startCommand);
-				boolean detectStartCommand = RSELaunchConfigUtils.isDetectStartupCommand(configuration, true);
+				boolean detectStartCommand = RSELaunchConfigProperties.isDetectStartupCommand(configuration, true);
 				autoStartArgs.setSelection(detectStartCommand);
 				startText.setEditable(!detectStartCommand);
 				startText.setEnabled(!detectStartCommand);
 				
-				String stopCommand = RSELaunchConfigUtils.getShutdownCommand(configuration);
+				String stopCommand = RSELaunchConfigProperties.getShutdownCommand(configuration);
 				stopText.setText(stopCommand == null ? "" : stopCommand);
-				boolean detectStopCommand = RSELaunchConfigUtils.isDetectShutdownCommand(configuration, true);
+				boolean detectStopCommand = RSELaunchConfigProperties.isDetectShutdownCommand(configuration, true);
 				autoStopArgs.setSelection(detectStopCommand);
 				stopText.setEditable(!detectStopCommand);
 				stopText.setEnabled(!detectStopCommand);
@@ -141,10 +141,10 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 			}
 		}
 		public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-			RSELaunchConfigUtils.setStartupCommand(startText.getText(), configuration);
-			RSELaunchConfigUtils.setShutdownCommand(stopText.getText(), configuration);
-			RSELaunchConfigUtils.setDetectStartupCommand(autoStartArgs.getSelection(), configuration);
-			RSELaunchConfigUtils.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
+			RSELaunchConfigProperties.setStartupCommand(startText.getText(), configuration);
+			RSELaunchConfigProperties.setShutdownCommand(stopText.getText(), configuration);
+			RSELaunchConfigProperties.setDetectStartupCommand(autoStartArgs.getSelection(), configuration);
+			RSELaunchConfigProperties.setDetectShutdownCommand(autoStopArgs.getSelection(), configuration);
 		}
 		public String getName() {
 			return RSEUIMessages.RSE_REMOTE_LAUNCH;
