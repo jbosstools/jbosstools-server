@@ -27,6 +27,8 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
 
 public class ServerUtil {
 	public static IPath getServerStateLocation(IServer server) {
@@ -45,14 +47,24 @@ public class ServerUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <BEHAVIOR> BEHAVIOR checkedGetServerBehavior(IServer server, Class<BEHAVIOR> behaviorClass) throws CoreException {
-		BEHAVIOR serverBehavior = (BEHAVIOR) server.loadAdapter(behaviorClass, new NullProgressMonitor());
+	public static <ADAPTER> ADAPTER checkedGetServerAdapter(IServer server, Class<ADAPTER> behaviorClass) throws CoreException {
+		ADAPTER serverBehavior = (ADAPTER) server.loadAdapter(behaviorClass, new NullProgressMonitor());
 		if (serverBehavior == null) {
 			throw new CoreException(					
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 							NLS.bind(Messages.CouldNotFindServerBehavior, server.getName())));
 		}
 		return serverBehavior;
+	}
+	
+	public static JBossBehaviourDelegate checkedGetBehaviorDelegate(IServer server) throws CoreException {
+		JBossBehaviourDelegate delegate = checkedGetServerAdapter(server, JBossServerBehavior.class).getDelegate();
+		if (delegate == null) {
+			throw new CoreException(					
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							NLS.bind(Messages.CouldNotFindServerBehavior, server.getName())));
+		}
+		return delegate;
 	}
 	
 	@Deprecated
