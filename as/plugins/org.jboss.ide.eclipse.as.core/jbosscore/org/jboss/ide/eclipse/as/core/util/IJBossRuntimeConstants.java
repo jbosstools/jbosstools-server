@@ -36,6 +36,7 @@ public interface IJBossRuntimeConstants {
 	public static final String STARTUP_ARG_HOST_LONG = "--host"; //$NON-NLS-1$
 	public static final String STARTUP_ARG_CONFIG_SHORT = "-c"; //$NON-NLS-1$
 	public static final String STARTUP_ARG_CONFIG_LONG = "--configuration"; //$NON-NLS-1$
+	public static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 	public static final String SERVER_ARG = "-server"; //$NON-NLS-1$
 	public static final String DEFAULT_MEM_ARGS = "-Xms256m -Xmx512m -XX:MaxPermSize=256m "; //$NON-NLS-1$
 	public static final String DEFAULT_MEM_ARGS_AS50 = "-Xms256m -Xmx768m -XX:MaxPermSize=256m "; //$NON-NLS-1$
