@@ -58,9 +58,9 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 	
 	static {
 		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-		setupParticipants.add(new LocalJBossServerStartupLaunchUtil());
+		setupParticipants.add(new LocalJBossStartLaunchDelegate());
 		launchDelegates = new HashMap<String, StartLaunchDelegate>();
-		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossServerStartupLaunchUtil());
+		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
 	}
 	
 	public static void addLaunchDelegateMapping(String mode, StartLaunchDelegate del) {
@@ -114,6 +114,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		getDelegate(configuration).actualLaunch(this, configuration, mode, launch, monitor);
 	}
 	
+	@Deprecated
 	public void superActualLaunch(ILaunchConfiguration configuration, 
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		super.actualLaunch(configuration, mode, launch, monitor);
