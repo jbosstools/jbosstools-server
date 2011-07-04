@@ -37,6 +37,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
@@ -62,10 +63,10 @@ public class TwiddleLaunchConfiguration {
 		String launchName = TwiddleLaunchConfiguration.class.getName();
 		launchName = launchManager.generateUniqueLaunchConfigurationNameFrom(launchName); 
 		ILaunchConfigurationWorkingCopy wc = launchConfigType.newInstance(null, launchName);
-		JBossRuntimeLaunchConfigUtils.setProgramArguments(args, wc);
-		JBossRuntimeLaunchConfigUtils.setMainType(IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE, wc);
-		JBossRuntimeLaunchConfigUtils.setWorkingDirectory(serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN, wc);
-		JBossRuntimeLaunchConfigUtils.setServerId(server.getId(), wc);
+		JBossLaunchConfigProperties.setProgramArguments(args, wc);
+		JBossLaunchConfigProperties.setMainType(IJBossRuntimeConstants.TWIDDLE_MAIN_TYPE, wc);
+		JBossLaunchConfigProperties.setWorkingDirectory(serverHome + Path.SEPARATOR + IJBossRuntimeResourceConstants.BIN, wc);
+		JBossLaunchConfigProperties.setServerId(server.getId(), wc);
 
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
 		LaunchConfigUtils.addCPEntry(TWIDDLE_JAR_LOC, serverHome, classpath);
@@ -75,8 +76,8 @@ public class TwiddleLaunchConfiguration {
 		LaunchConfigUtils.addDirectory(serverHome, classpath, IJBossRuntimeResourceConstants.CLIENT);
 		LaunchConfigUtils.addJREEntry(jbrt.getVM(), classpath);
 		List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
-		JBossRuntimeLaunchConfigUtils.setClasspath(runtimeClassPaths, wc);
-		JBossRuntimeLaunchConfigUtils.setUseDefaultClassPath(false, wc);
+		JBossLaunchConfigProperties.setClasspath(runtimeClassPaths, wc);
+		JBossLaunchConfigProperties.setUseDefaultClassPath(false, wc);
 
 		return wc;
 	}
