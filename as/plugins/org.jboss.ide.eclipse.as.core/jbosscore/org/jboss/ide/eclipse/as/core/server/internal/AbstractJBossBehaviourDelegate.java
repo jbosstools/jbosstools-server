@@ -14,10 +14,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDelegate {
 
@@ -51,6 +53,33 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
+	}
+
+	@Override
+	public String getDefaultStopArguments() throws CoreException {
+		
+		String runtimeTypeId = getServer().getRuntime().getRuntimeType().getId();
+		JBossServer jbs = ServerConverter.checkedGetJBossServer(getServer(), JBossServer.class);
+		String serverUrl;
+		if (runtimeTypeId.equals(IJBossToolingConstants.AS_60)){
+			IJBoss6Server server6 = ServerConverter.checkedGetJBossServer(getServer(), IJBoss6Server.class);
+			serverUrl = "service:jmx:rmi:///jndi/rmi://" + jbs.getHost() + ":" + server6.getJMXRMIPort() + "/jmxrmi"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		} else {
+			serverUrl = jbs.getHost() + ":" + jbs.getJNDIPort(); //$NON-NLS-1$
+		}
+		String args = IJBossRuntimeConstants.SHUTDOWN_STOP_ARG 
+				+ IJBossRuntimeConstants.SPACE;
+		args += IJBossRuntimeConstants.SHUTDOWN_SERVER_ARG 
+				+ IJBossRuntimeConstants.SPACE 
+				+ serverUrl 
+				+ IJBossRuntimeConstants.SPACE;
+		if( jbs.getUsername() != null && !jbs.getUsername().equals(""))  //$NON-NLS-1$
+			args += IJBossRuntimeConstants.SHUTDOWN_USER_ARG 
+			+ IJBossRuntimeConstants.SPACE + jbs.getUsername() + IJBossRuntimeConstants.SPACE;
+		if( jbs.getPassword() != null && !jbs.getPassword().equals(""))  //$NON-NLS-1$
+			args += IJBossRuntimeConstants.SHUTDOWN_PASS_ARG 
+			+ IJBossRuntimeConstants.SPACE + jbs.getPassword() + IJBossRuntimeConstants.SPACE;
+		return args;
 	}
 
 }

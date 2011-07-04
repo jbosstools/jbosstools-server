@@ -52,7 +52,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		public void serverStarting();
 		public void serverStopping();
 		public IStatus canChangeState(String launchMode);
-		public String getDefaultStopArguments() throws CoreException;
+		public String getDefaultStopArguments() throws CoreException; 
 	}
 	
 	private static HashMap<String, Class> delegateClassMap;
