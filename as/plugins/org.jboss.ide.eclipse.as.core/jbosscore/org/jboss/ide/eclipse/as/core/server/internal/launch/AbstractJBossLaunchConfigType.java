@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -35,9 +34,9 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -47,7 +46,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
  * @author Rob Stryker
  */
 public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
-	public static final String SERVER_ID = "server-id"; //$NON-NLS-1$
 
 	// we have no need to do anything in pre-launch check
 	@Override
@@ -73,7 +71,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		actualLaunch(configuration, mode, launch, monitor);
 		postLaunch(configuration, mode, launch, monitor);
 	}
-
+	
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// And off we go!
@@ -137,7 +135,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		// Launch the configuration
 		runner.run(runConfig, launch, monitor);
 	}
-	
+
 	@Deprecated
 	public static JBossServer findJBossServer(String serverId) throws CoreException {
 		return ServerConverter.findJBossServer(serverId);
@@ -187,12 +185,10 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	
 	@Deprecated
 	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		String serverId = configuration.getAttribute(SERVER_ID, (String) null);
-		JBossServer jbs = findJBossServer(serverId);
-		AbstractLocalJBossServerRuntime rt = (AbstractLocalJBossServerRuntime)
-				jbs.getServer().getRuntime()
-						.loadAdapter(AbstractLocalJBossServerRuntime.class, new NullProgressMonitor());
-		return rt.getVM();
+		String serverId = JBossLaunchConfigProperties.getServerId(configuration);
+		JBossServer jbs = ServerConverter.findJBossServer(serverId);
+		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
+		return runtime.getVM();
 	}
 
 }
