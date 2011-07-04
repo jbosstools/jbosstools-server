@@ -40,6 +40,9 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  */
 public class JBossServerBehavior extends DeployableServerBehavior {
 	
+	/**
+	 * TODO: move to its own file (so that we can hide implementations and export interfaces) & rename to IJBossBehaviourDelegate 
+	 */
 	public static interface JBossBehaviourDelegate {
 		public String getBehaviourTypeId();
 		public void setActualBehaviour(JBossServerBehavior actualBehaviour);
@@ -49,6 +52,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		public void serverStarting();
 		public void serverStopping();
 		public IStatus canChangeState(String launchMode);
+		public String getDefaultStopArguments() throws CoreException;
 	}
 	
 	private static HashMap<String, Class> delegateClassMap;
