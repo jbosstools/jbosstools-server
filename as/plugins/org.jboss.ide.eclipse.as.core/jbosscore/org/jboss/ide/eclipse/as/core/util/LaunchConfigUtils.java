@@ -23,7 +23,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.StopLaunchConfiguration;
 
 /**
  * @author André Dietisheim
@@ -93,12 +92,12 @@ public class LaunchConfigUtils {
 
 	public static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
 		// TODO: improve/avoid server version check
-		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
-			return getModulesClasspathEntry(server);
-		} else {
+//		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
+//			return getModulesClasspathEntry(server);
+//		} else {
 			IPath containerPath = new Path(RunJarContainerWrapper.ID).append(server.getName());
 			return JavaRuntime.newRuntimeContainerClasspathEntry(containerPath, IRuntimeClasspathEntry.USER_CLASSES);
-		}
+//		}
 	}
 
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(JBossServer server) throws CoreException {
