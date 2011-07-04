@@ -33,6 +33,7 @@ Export-Package: org.jboss.ide.eclipse.as.core,
  org.jboss.ide.eclipse.as.core.server.bean,
  org.jboss.ide.eclipse.as.core.server.internal,
  org.jboss.ide.eclipse.as.core.server.internal.launch,
+ org.jboss.ide.eclipse.as.core.server.internal.launch.configuration,
  org.jboss.ide.eclipse.as.core.server.internal.v7,
  org.jboss.ide.eclipse.as.core.server.xpl,
  org.jboss.ide.eclipse.as.core.util
