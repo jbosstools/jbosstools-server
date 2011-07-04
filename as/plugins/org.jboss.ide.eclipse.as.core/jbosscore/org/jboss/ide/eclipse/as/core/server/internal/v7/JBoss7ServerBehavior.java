@@ -36,7 +36,6 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -69,7 +68,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
-		new JBoss7StartupConfigurator(getServer()).configure(launchConfig);
+		new LocalJBoss7StartupConfigurator(getServer()).configure(launchConfig);
 	}
 
 	public void setProcess(IProcess process) {
