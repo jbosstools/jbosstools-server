@@ -10,6 +10,10 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
+import java.io.File;
+
+import org.eclipse.core.runtime.Path;
+
 public interface IJBossRuntimeResourceConstants {
 	
 	/* Files and folders that are in various JBoss installations */
@@ -37,8 +41,10 @@ public interface IJBossRuntimeResourceConstants {
 	public static final String TWIDDLE_JAR = "twiddle.jar"; //$NON-NLS-1$
 	public static final String TWIDDLE_SH = "twiddle.sh"; //$NON-NLS-1$
 	public static final String SHUTDOWN_JAR = "shutdown.jar"; //$NON-NLS-1$
+	public static final String SHUTDOWN_JAR_LOC = BIN + File.separator + SHUTDOWN_JAR;
 	public static final String SHUTDOWN_SH = "shutdown.sh"; //$NON-NLS-1$
 	public static final String START_JAR = "run.jar"; //$NON-NLS-1$
+	public static final String START_JAR_LOC = BIN + Path.SEPARATOR	+ START_JAR;
 	public static final String TOOLS_JAR = "tools.jar"; //$NON-NLS-1$
 	public static final String JBOSS_MODULES_JAR = "jboss-modules.jar"; //$NON-NLS-1$
 	public static final String LOGGING_PROPERTIES = "logging.properties"; //$NON-NLS-1$
