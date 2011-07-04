@@ -46,6 +46,16 @@ public class ServerConverter {
 		return getJBossServer(s);
 	}
 
+	public static JBossServer checkedFindJBossServer(String serverId) throws CoreException {
+		JBossServer server = findJBossServer(serverId);
+		if (server == null) {
+			throw new CoreException(
+					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+							NLS.bind(Messages.CouldNotFindServer, serverId)));			
+		}
+		return server;
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <SERVER> SERVER checkedGetJBossServer(IServer server, Class<SERVER> serverClass) throws CoreException {
 		if (server == null) {
