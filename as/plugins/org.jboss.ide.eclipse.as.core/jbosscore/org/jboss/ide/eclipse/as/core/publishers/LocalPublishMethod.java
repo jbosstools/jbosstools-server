@@ -20,8 +20,12 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 
 public class LocalPublishMethod extends AbstractPublishMethod {
+	/**
+	 * TODO: refactor to "LOCAL" since we have local publishing and local 
+	 * launching/stopping which both have to be mapped in equal ways
+	 */
 	public static final String LOCAL_PUBLISH_METHOD = "local";  //$NON-NLS-1$
-
+	
 	public String getPublishMethodId() {
 		return LOCAL_PUBLISH_METHOD;
 	}
