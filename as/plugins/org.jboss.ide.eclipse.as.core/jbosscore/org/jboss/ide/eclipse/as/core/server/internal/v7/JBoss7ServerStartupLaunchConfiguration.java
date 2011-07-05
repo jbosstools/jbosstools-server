@@ -41,6 +41,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 			jbsBehavior.setServerStarted();
 			return false;
 		}
+		// TODO: use the configured poller
 		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
 		if( started ) {
 			jbsBehavior.setServerStarting();
