@@ -58,13 +58,12 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		beh.setServerStarting();
 		if (LaunchCommandPreferences.ignoreLaunchCommand(beh.getServer())) {
-			beh.setServerStarting();
 			beh.setServerStarted();
 			return;
 		}
 
-		beh.setServerStarting();
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(beh.getServer());
