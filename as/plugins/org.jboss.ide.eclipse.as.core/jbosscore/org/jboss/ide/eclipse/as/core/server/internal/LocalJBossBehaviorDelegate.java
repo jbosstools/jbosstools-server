@@ -74,7 +74,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		// if we're starting up or shutting down and they've tried again, 
 		// then force it to stop. 
 		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING ) {
-			pollThread.cancel();
+			cancelPolling(null);
 			forceStop();
 			return;
 		}
