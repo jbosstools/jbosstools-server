@@ -54,7 +54,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 			JBossServerStartupLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
-		launch(configuration, mode, launch, monitor);
+		actualLaunch(configuration, mode, launch, monitor);
 	}
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
