@@ -53,8 +53,8 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchCo
 		public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException;
 	}
 	
-	public static HashMap<String, StartLaunchDelegate> launchDelegates;
-	public static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
+	private static HashMap<String, StartLaunchDelegate> launchDelegates;
+	private static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
 	
 	static {
 		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
