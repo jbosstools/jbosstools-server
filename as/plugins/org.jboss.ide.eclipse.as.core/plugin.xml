@@ -631,7 +631,7 @@
             sourcePathComputerId="org.eclipse.jst.server.generic.core.sourcePathComputer"/>
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7StartupLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerStartupLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.JBoss7StartupConfiguration"
             modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"
