@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.text.MessageFormat;
+
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
@@ -26,7 +28,6 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
@@ -36,7 +37,6 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -354,6 +354,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			// ignore
 		}
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-				"This server does not have a valid runtime environment"); //$NON-NLS-1$
+				MessageFormat.format(Messages.ServerHasNoRuntime, getServer().getName())); 
 	}
 }

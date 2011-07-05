@@ -80,6 +80,7 @@ public class Messages extends NLS {
 	public static String CouldNotFindServer;
 	public static String ServerRuntimeNotFound;
 	public static String ServerRuntimeConfigNotFound;
+	public static String ServerHasNoRuntime;
 	public static String ServerNotFound;
 	public static String CannotLoadServerPoller;
 	public static String AddingJMXDeploymentFailed;
