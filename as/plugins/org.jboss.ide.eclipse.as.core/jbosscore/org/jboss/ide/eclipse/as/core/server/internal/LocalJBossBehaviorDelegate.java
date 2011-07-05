@@ -356,16 +356,4 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				"This server does not have a valid runtime environment"); //$NON-NLS-1$
 	}
-
-	@Deprecated
-	private IJBossServerRuntime getRuntime() {
-		IRuntime r = getServer().getRuntime();
-		IJBossServerRuntime ajbsrt = null;
-		if (r != null) {
-			ajbsrt = (IJBossServerRuntime) r
-					.loadAdapter(IJBossServerRuntime.class,
-							new NullProgressMonitor());
-		}
-		return ajbsrt;
-	}	
 }
