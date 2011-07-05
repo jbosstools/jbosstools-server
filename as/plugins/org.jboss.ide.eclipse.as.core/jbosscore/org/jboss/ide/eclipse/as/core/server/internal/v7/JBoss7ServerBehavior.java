@@ -68,6 +68,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
+		// TODO: implement setup for RSE launch delegate too
 		new LocalJBoss7StartupConfigurator(getServer()).configure(launchConfig);
 	}
 
