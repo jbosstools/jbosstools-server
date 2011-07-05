@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -121,7 +120,17 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		String command2 = "";
 		try {
 			config = behaviour.getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-			String defaultCmd = getDefaultStopCommand(behaviour.getServer(), true);
+			/*	
+			 * 		ATTENTION: this was commented since #getDefaultStopCommand is not static any more
+			 * 		String defaultCmd = getDefaultStopCommand(behaviour.getServer(), true);
+			 */
+
+			/*
+			 * This was added to make it compile
+			 */
+			String defaultCmd = ""; 
+			
+			
 			command2 = config == null ? defaultCmd :
 					RSELaunchConfigProperties.getShutdownCommand(config, defaultCmd);
 			behaviour.setServerStopping();
@@ -182,8 +191,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		 */
 	}
 
-	@Deprecated
-	public static String getDefaultStopCommand(IServer server) {
+	private  String getDefaultStopCommand(IServer server) {
 		try {
 			return getDefaultStopCommand(server, false);
 		} catch (CoreException ce) {/* ignore, INTENTIONAL */
@@ -191,8 +199,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		return null;
 	}
 
-	@Deprecated
-	public static String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
+	private String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
 		String rseHome = null;
 		rseHome = RSEUtils.getRSEHomeDir(server, errorOnFail);
 		JBossServer jbs = ServerConverter.getJBossServer(server);
@@ -220,7 +227,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 		return jbs.getServer();
 	}
 
-	public static String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
+	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
 		String serverId = JBossLaunchConfigProperties.getServerId(config);
 		JBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
 		String rseHome = jbossServer.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");

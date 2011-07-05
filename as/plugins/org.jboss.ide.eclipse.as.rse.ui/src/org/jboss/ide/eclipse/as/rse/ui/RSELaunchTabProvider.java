@@ -27,11 +27,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchConfigProperties;
 import org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate;
+import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.launch.JBossLaunchConfigurationTabGroup.IJBossLaunchTabProvider;
 
+/**
+ * @author Rob Stryker
+ * @author André Dietisheim
+ *
+ */
 public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 
 	public ILaunchConfigurationTab[] createTabs() {
@@ -97,7 +105,8 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 					if( autoStartArgs.getSelection()) {
 						String command = null;
 						try {
-							command = RSELaunchDelegate.getDefaultLaunchCommand(initialConfig);
+//							command = RSELaunchDelegate.getDefaultLaunchCommand(initialConfig);
+							command = RSELaunchConfigProperties.getDefaultStartupCommand(initialConfig, "");
 							startText.setText(command);
 						} catch(CoreException ce) {
 							// TODO

@@ -29,11 +29,15 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 
 	@Override
 	public void configure(ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
+		RSELaunchConfigProperties.setDefaultStartupCommand(defaultLaunchCommand, launchConfig);
+
 		boolean detectStartupCommand = RSELaunchConfigProperties.isDetectStartupCommand(launchConfig, true);
 		String currentStartupCmd = RSELaunchConfigProperties.getStartupCommand(launchConfig);
 		if( detectStartupCommand || !isSet(currentStartupCmd)) {
 			RSELaunchConfigProperties.setStartupCommand(defaultLaunchCommand, launchConfig);
 		}
+
+		RSELaunchConfigProperties.setDefaultShutdownCommand(defaultStopCommand, launchConfig);
 
 		boolean detectShutdownCommand = RSELaunchConfigProperties.isDetectShutdownCommand(launchConfig, true);
 		String currentStopCmd = RSELaunchConfigProperties.getShutdownCommand(launchConfig);

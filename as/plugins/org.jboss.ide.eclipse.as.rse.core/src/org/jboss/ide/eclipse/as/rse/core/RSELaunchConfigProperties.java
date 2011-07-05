@@ -19,7 +19,9 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
  */
 public class RSELaunchConfigProperties {
 
+	public static final String RSE_DEFAULT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DEFAULT_STARTUP_COMMAND";
 	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.STARTUP_COMMAND";
+	public static final String RSE_DEFAULT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DEFAULT_SHUTDOWN_COMMAND";
 	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.SHUTDOWN_COMMAND";
 	public static final String DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_STARTUP_COMMAND";
 	public static final String DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_SHUTDOWN_COMMAND";
@@ -50,6 +52,15 @@ public class RSELaunchConfigProperties {
 		launchConfig.setAttribute(DETECT_SHUTDOWN_COMMAND, detectShutdown);
 	}
 
+	public static void setDefaultStartupCommand(String startupCommand, ILaunchConfigurationWorkingCopy launchConfig) {
+		launchConfig.setAttribute(RSE_DEFAULT_STARTUP_COMMAND, startupCommand);
+	}
+
+	public static String getDefaultStartupCommand(ILaunchConfiguration launchConfig, String defaultCommand)
+			throws CoreException {
+		return launchConfig.getAttribute(RSE_DEFAULT_STARTUP_COMMAND, defaultCommand);
+	}
+
 	public static void setStartupCommand(String startupCommand, ILaunchConfigurationWorkingCopy launchConfig) {
 		launchConfig.setAttribute(RSE_STARTUP_COMMAND, startupCommand);
 	}
@@ -75,4 +86,14 @@ public class RSELaunchConfigProperties {
 			throws CoreException {
 		return launchConfig.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCommand);
 	}
+
+	public static void setDefaultShutdownCommand(String shutdownCommand, ILaunchConfigurationWorkingCopy launchConfig) {
+		launchConfig.setAttribute(RSE_DEFAULT_SHUTDOWN_COMMAND, shutdownCommand);
+	}
+
+	public static String getDefaultShutdownCommand(ILaunchConfiguration launchConfig, String defaultCommand)
+			throws CoreException {
+		return launchConfig.getAttribute(RSE_DEFAULT_SHUTDOWN_COMMAND, defaultCommand);
+	}
+
 }
