@@ -66,7 +66,7 @@ public class LocalStopLaunchConfigurator extends AbstractLaunchConfigurator {
 	protected List<String> getClasspath(JBossServer server, IJBossServerRuntime runtime, List<String> currentClasspath)
 			throws CoreException {
 		ArrayList<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
-		LaunchConfigUtils.addCPEntry(ServerUtil.getServerHomePath(server).toOSString(),  IJBossRuntimeResourceConstants.SHUTDOWN_JAR_LOC, classpath);
+		LaunchConfigUtils.addCPEntry(ServerUtil.getServerHomePath(server),  IJBossRuntimeResourceConstants.SHUTDOWN_JAR_LOC, classpath);
 		LaunchConfigUtils.addJREEntry(runtime.getVM(), classpath);
 		return LaunchConfigUtils.toStrings(classpath);
 	}
