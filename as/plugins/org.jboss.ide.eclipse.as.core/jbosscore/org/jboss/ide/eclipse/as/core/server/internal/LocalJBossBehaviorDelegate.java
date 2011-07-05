@@ -63,7 +63,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
-		if( force || process == null || process.isTerminated() || state == IServer.STATE_STOPPED || nextStopRequiresForce) {
+		if( force 
+				|| !isProcessRunning() 
+				|| state == IServer.STATE_STOPPED 
+				|| nextStopRequiresForce) {
 			forceStop();
 			return;
 		}
@@ -94,7 +97,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					IProcess stopProcess = waitForStopProcess(launch);
 					if (stopProcess.getExitValue() == 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
-						if( process != null && !process.isTerminated() ) { 
+						if( isProcessRunning() ) { 
 							getActualBehavior().setServerStarted();
 							pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
 							nextStopRequiresForce = true;
@@ -126,7 +129,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	@Override
 	protected synchronized void forceStop() {
 		// just terminate the process.
-		if( process != null && !process.isTerminated()) {
+		if( isProcessRunning()) {
 			try {
 				process.terminate();
 				addForceStopEvent();
@@ -189,6 +192,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		DebugPlugin.getDefault().addDebugEventListener(processListener);
 	}
 	
+	private boolean isProcessRunning() {
+		return process != null 
+				&& process.isTerminated();
+	}
 	
 	public void serverStarting() {
 		nextStopRequiresForce = false;
