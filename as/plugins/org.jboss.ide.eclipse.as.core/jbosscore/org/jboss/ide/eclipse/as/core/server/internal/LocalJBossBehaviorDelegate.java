@@ -94,12 +94,13 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 							LaunchConfigUtils.createLaunchConfigurationWorkingCopy("Stop JBoss Server", STOP_LAUNCH_TYPE);  //$NON-NLS-1$
 					new LocalStopLaunchConfigurator(getServer()).configure(wc);
 					ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
-					IProcess stopProcess = waitForStopProcess(launch);
+					IProcess stopProcess = launch.getProcesses()[0];
+					waitFor(stopProcess);
 					if (stopProcess.getExitValue() == 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
 						if( isProcessRunning() ) { 
 							getActualBehavior().setServerStarted();
-							pollThread.cancel(Messages.STOP_FAILED_MESSAGE);
+							cancelPolling(Messages.STOP_FAILED_MESSAGE);
 							nextStopRequiresForce = true;
 						}
 					}
@@ -109,16 +110,14 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				
 			}
 
-			private IProcess waitForStopProcess(ILaunch launch) {
-				IProcess stopProcess = launch.getProcesses()[0];
-				while( !stopProcess.isTerminated()) {
+			private void waitFor(IProcess process) {
+				while( !process.isTerminated()) {
 					try {
 						Thread.yield();
 						Thread.sleep(100);
 					} catch(InterruptedException ie) {
 					}
 				}
-				return stopProcess;
 			}
 		}.start();
 		// TODO: find out if this is ok. My current guess is that we should 
@@ -180,8 +179,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					for (int i = 0; i < size; i++) {
 						if (process != null && process.equals(events[i].getSource()) && events[i].getKind() == DebugEvent.TERMINATE) {
 							DebugPlugin.getDefault().removeDebugEventListener(this);
-							if( pollThread != null )
-								pollThread.cancel();
+							cancelPolling(null);
 							forceStop();
 							addProcessTerminatedEvent();
 						}
@@ -194,7 +192,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	private boolean isProcessRunning() {
 		return process != null 
-				&& process.isTerminated();
+				&& !process.isTerminated();
 	}
 	
 	public void serverStarting() {
@@ -217,14 +215,22 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
-		if( pollThread != null ) {
-			pollThread.cancel();
-		}
+		cancelPolling(null);
 		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
 		pollThread.start();
 	}
 	
 
+	protected void cancelPolling(String message) {
+		if (pollThread != null) {
+			if (message != null) {
+				pollThread.cancel(message);
+			} else {
+				pollThread.cancel();
+			}
+		}
+	}
+	
 	public void publishStart(final IProgressMonitor monitor) throws CoreException {
 		if( shouldSuspendScanner() ) {
 			ExtensionManager.getDefault().getJMXRunner().beginTransaction(getServer(), this);
