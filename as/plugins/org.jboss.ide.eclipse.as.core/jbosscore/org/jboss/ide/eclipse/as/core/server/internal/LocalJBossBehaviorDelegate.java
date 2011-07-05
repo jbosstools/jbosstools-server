@@ -42,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalS
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 /**
  * 
@@ -344,13 +345,19 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 
 	public IStatus canChangeState(String launchMode) {
-		if( getServer() != null && getServer().getRuntime() != null && 
-				getRuntime().getVM() != null )
+		try {
+		if( getServer() != null 
+				&& getServer().getRuntime() != null 
+				&& RuntimeUtils.checkedGetJBossServerRuntime(getServer()).getVM() != null )
 			return Status.OK_STATUS;
+		} catch(Exception e) {
+			// ignore
+		}
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				"This server does not have a valid runtime environment"); //$NON-NLS-1$
 	}
 
+	@Deprecated
 	private IJBossServerRuntime getRuntime() {
 		IRuntime r = getServer().getRuntime();
 		IJBossServerRuntime ajbsrt = null;
