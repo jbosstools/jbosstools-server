@@ -74,7 +74,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		// if we're starting up or shutting down and they've tried again, 
 		// then force it to stop. 
 		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING ) {
-			cancelPolling(null);
+			stopPolling();
 			forceStop();
 			return;
 		}
@@ -211,24 +211,21 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	protected void pollServer(final boolean expectedState) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		pollServer(expectedState, poller);
+		PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
 	}
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
-		cancelPolling(null);
-		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
-		pollThread.start();
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
 	}
 	
 
+	protected void stopPolling() {
+		cancelPolling(null);
+	}
+
 	protected void cancelPolling(String message) {
-		if (pollThread != null) {
-			if (message != null) {
-				pollThread.cancel(message);
-			} else {
-				pollThread.cancel();
-			}
-		}
+		PollThreadUtils.cancelPolling(message, this.pollThread);
+		this.pollThread = null;
 	}
 	
 	public void publishStart(final IProgressMonitor monitor) throws CoreException {
