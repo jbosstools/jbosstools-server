@@ -105,7 +105,7 @@ public class StopLaunchConfiguration extends AbstractJBossLaunchConfigType {
 	}
 
 	/**
-	 * moved to {@link LocalJBossBehaviorDelegate#getDefaultStopArguments()}
+	 * moved to {@link AbstractJBossBehaviourDelegate#getDefaultStopArguments()}
 	 */
 	@Deprecated
 	public static String getDefaultArgs(JBossServer jbs) {
