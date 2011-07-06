@@ -32,6 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLa
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
@@ -154,8 +155,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		return canChangeState(launchMode);
 	}
 	protected IStatus canChangeState(String launchMode) {
-		String ignoreLaunch = getServer().getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(false));
-		if( new Boolean(ignoreLaunch).booleanValue()) {
+		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
 			return Status.CANCEL_STATUS;
 		}
 		return getDelegate().canChangeState(launchMode);
