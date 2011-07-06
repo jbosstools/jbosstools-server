@@ -24,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDelegate {
 
 	private DelegatingServerBehavior actualBehavior;
+	
 	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
 		this.actualBehavior = actualBehaviour;
 	}
@@ -36,8 +37,6 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 		return actualBehavior.getServer();
 	}
 
-	public abstract void stop(boolean force);
-	
 	protected abstract void forceStop();
 
 	protected abstract IStatus gracefullStop();
