@@ -30,6 +30,8 @@ import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	private PollThread pollThread = null;
+
+	@Override
 	public String getBehaviourTypeId() {
 		return RSEPublishMethod.RSE_ID;
 	}
