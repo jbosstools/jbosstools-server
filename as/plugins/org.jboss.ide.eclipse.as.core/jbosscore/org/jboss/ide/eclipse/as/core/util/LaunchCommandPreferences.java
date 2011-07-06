@@ -13,10 +13,17 @@ package org.jboss.ide.eclipse.as.core.util;
 
 import org.eclipse.wst.server.core.IServerAttributes;
 
+/**
+ * @author André Dietisheim
+ */
 public class LaunchCommandPreferences {
 
 	public static boolean ignoreLaunchCommand(IServerAttributes server) {
-		String ignoreCommand = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String) null);
+		return ignoreLaunchCommand(server, false);
+	}
+	
+	public static boolean ignoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
+		String ignoreCommand = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(defaultValue));
 		return Boolean.valueOf(ignoreCommand);
 	}
 	
