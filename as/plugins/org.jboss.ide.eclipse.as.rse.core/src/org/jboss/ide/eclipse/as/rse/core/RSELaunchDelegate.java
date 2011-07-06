@@ -35,8 +35,8 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
@@ -56,7 +56,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			JBossServerStartupLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
-		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		beh.setServerStarting();
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer())) {
 			beh.setServerStarted();
@@ -110,7 +110,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	 * @param behaviour
 	 */
 	@Deprecated
-	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
+	public static void launchStopServerCommand(DelegatingServerBehavior behaviour) {
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(behaviour.getServer())) {
 			behaviour.setServerStopping();
 			behaviour.setServerStopped();
@@ -148,7 +148,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// ping if up
-		final JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		final DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		boolean started = WebPortPoller.onePing(beh.getServer());
 		if (started) {
 			beh.setServerStarting();

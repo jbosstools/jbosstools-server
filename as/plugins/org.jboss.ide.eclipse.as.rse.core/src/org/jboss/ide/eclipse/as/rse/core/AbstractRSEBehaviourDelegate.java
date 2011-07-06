@@ -28,7 +28,7 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
+public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	private PollThread pollThread = null;
 	public String getBehaviourTypeId() {
 		return RSEPublishMethod.RSE_ID;
@@ -55,34 +55,10 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	}
 	
 	@Override
-	protected void forceStop() {
-		serverStopped();
-		return;		
-	}
+	protected abstract void forceStop();
 
 	@Override
-	protected IStatus gracefullStop() {
-		try {
-			ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-			//DelegatingServerBehavior serverBehavior = ServerUtil.checkedGetServerAdapter(getServer(), DelegatingServerBehavior.class);
-			//String defaultCmd = serverBehavior.getDefaultArguments();
-			String defaultCmd = ServerUtil.checkedGetBehaviorDelegate(getServer()).getDefaultStopArguments();
-			String shutdownCommand = config == null ? defaultCmd :
-				RSELaunchConfigProperties.getShutdownCommand(config, defaultCmd);
-			ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
-			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
-			if( model.getStartupShell() != null && model.getStartupShell().isActive()) {
-				model.getStartupShell().writeToShell("exit");
-			}
-			return Status.OK_STATUS;
-		} catch(CoreException ce) {
-			ServerLogger.getDefault().log(getServer(), ce.getStatus());
-			return new Status(
-					IStatus.ERROR, RSECorePlugin.PLUGIN_ID,
-					MessageFormat.format("Could not stop server {0}", getServer().getName()), 
-					ce);
-		}
-	}
+	protected abstract IStatus gracefullStop();
 	
 	public void setServerStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
@@ -103,6 +79,5 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 
 	protected void pollServer(final boolean expectedState) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
-	}
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());	}
 }

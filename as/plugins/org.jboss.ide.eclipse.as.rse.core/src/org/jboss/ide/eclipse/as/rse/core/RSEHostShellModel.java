@@ -32,7 +32,7 @@ import org.eclipse.rse.services.shells.IShellService;
 import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShellServiceSubSystem;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
 
 public class RSEHostShellModel {
@@ -172,7 +172,7 @@ public class RSEHostShellModel {
 		}
 	}
 
-	public static IShellService findShellService(JBossServerBehavior behaviour) throws CoreException {
+	public static IShellService findShellService(DelegatingServerBehavior behaviour) throws CoreException {
 		return findShellService(behaviour.getServer());
 	}
 

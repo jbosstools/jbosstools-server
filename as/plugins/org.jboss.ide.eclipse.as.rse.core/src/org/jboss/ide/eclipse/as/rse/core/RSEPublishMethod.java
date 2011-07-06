@@ -32,7 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -60,7 +60,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		loadRemoteDeploymentDetails();
 		ensureConnection(monitor);
 
-		JBossServerBehavior b = (JBossServerBehavior) behaviour.getServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
+		DelegatingServerBehavior b = (DelegatingServerBehavior) behaviour.getServer().loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			stopDeploymentScanner();
 		}
@@ -69,7 +69,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	
 	public int publishFinish(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
-		JBossServerBehavior b = (JBossServerBehavior) behaviour.getServer().loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
+		DelegatingServerBehavior b = (DelegatingServerBehavior) behaviour.getServer().loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
 		if( b != null && getServer().getServerState() == IServer.STATE_STARTED ) {
 			startDeploymentScanner();
 		}
@@ -79,13 +79,13 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 	protected void startDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), true);
 		if( cmd != null )
-			launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
+			launchCommandNoResult((DelegatingServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected void stopDeploymentScanner() {
 		String cmd = getDeploymentScannerCommand(new NullProgressMonitor(), false);
 		if( cmd != null )
-			launchCommandNoResult((JBossServerBehavior)behaviour, 3000, cmd);
+			launchCommandNoResult((DelegatingServerBehavior)behaviour, 3000, cmd);
 	}
 
 	protected String getDeploymentScannerCommand(IProgressMonitor monitor, boolean start) {
@@ -193,7 +193,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return getRemoteRootFolder().toString();
 	}
 	
-	private void launchCommandNoResult(JBossServerBehavior behaviour, int delay, String command) {
+	private void launchCommandNoResult(DelegatingServerBehavior behaviour, int delay, String command) {
 		try {
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(behaviour.getServer());
 			model.executeRemoteCommand("/", command, new String[]{}, new NullProgressMonitor(), delay, true);

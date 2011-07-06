@@ -16,19 +16,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDelegate {
 
-	private JBossServerBehavior actualBehavior;
-	public void setActualBehaviour(JBossServerBehavior actualBehaviour) {
+	private DelegatingServerBehavior actualBehavior;
+	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
 		this.actualBehavior = actualBehaviour;
 	}
 	
-	public JBossServerBehavior getActualBehavior() {
+	public DelegatingServerBehavior getActualBehavior() {
 		return actualBehavior;
 	}
 

@@ -26,7 +26,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
@@ -59,7 +59,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
@@ -80,7 +80,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
-			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
 		} catch (CoreException ce) {
@@ -92,7 +92,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {
 			IProcess[] processes = launch.getProcesses();
-			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			((LocalJBossBehaviorDelegate) (jbsBehavior.getDelegate())).setProcess(processes[0]);
 		} catch (CoreException ce) {
 			// report

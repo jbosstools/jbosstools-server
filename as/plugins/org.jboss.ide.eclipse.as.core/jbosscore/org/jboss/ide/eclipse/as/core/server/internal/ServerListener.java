@@ -39,7 +39,7 @@ public class ServerListener extends UnitedServerListener {
 	}
 	
 	protected void initUnmanagedServerState(IServer server) {
-		JBossServerBehavior beh = ServerConverter.getJBossServerBehavior(server);
+		DelegatingServerBehavior beh = ServerConverter.getJBossServerBehavior(server);
 		if( beh != null ) {
 			String ignoreLaunch = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(false));
 			if( new Boolean(ignoreLaunch).booleanValue()) {

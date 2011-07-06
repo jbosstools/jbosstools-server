@@ -42,14 +42,14 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 
-public class JBoss7ServerBehavior extends JBossServerBehavior {
+public class JBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 

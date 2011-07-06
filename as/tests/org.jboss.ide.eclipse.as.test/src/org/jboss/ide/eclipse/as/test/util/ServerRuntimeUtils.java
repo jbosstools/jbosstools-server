@@ -44,7 +44,7 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -421,8 +421,8 @@ public class ServerRuntimeUtils extends TestCase {
 
 		
 	protected static IStreamMonitor getStreamMonitor(IServer server) {
-		JBossServerBehavior behavior = 
-			(JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, null);
+		DelegatingServerBehavior behavior = 
+			(DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
 		if( behavior != null ) {
 			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {
 				return ((IProcessProvider)behavior.getDelegate()).getProcess().getStreamsProxy().getOutputStreamMonitor();

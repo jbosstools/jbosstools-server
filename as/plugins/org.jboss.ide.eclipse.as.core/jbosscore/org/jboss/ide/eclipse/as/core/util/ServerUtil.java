@@ -27,8 +27,8 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 
 public class ServerUtil {
 	public static IPath getServerStateLocation(IServer server) {
@@ -58,7 +58,7 @@ public class ServerUtil {
 	}
 	
 	public static JBossBehaviourDelegate checkedGetBehaviorDelegate(IServer server) throws CoreException {
-		JBossBehaviourDelegate delegate = checkedGetServerAdapter(server, JBossServerBehavior.class).getDelegate();
+		JBossBehaviourDelegate delegate = checkedGetServerAdapter(server, DelegatingServerBehavior.class).getDelegate();
 		if (delegate == null) {
 			throw new CoreException(					
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,

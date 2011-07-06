@@ -21,7 +21,7 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller.IProcessProvider;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -99,7 +99,7 @@ public class MockTests extends TestCase {
 		} catch( CoreException ce) {}
 		
 		int loops = 0;
-		JBossServerBehavior behavior = (JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, null);
+		DelegatingServerBehavior behavior = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, null);
 		
 		while(loops < 50) {
 			if( ((IProcessProvider)behavior.getDelegate()).getProcess() != null ) {

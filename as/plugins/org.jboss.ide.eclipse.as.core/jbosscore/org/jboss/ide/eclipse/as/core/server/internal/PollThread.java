@@ -51,10 +51,10 @@ public class PollThread extends Thread {
 	private boolean expectedState, abort, stateStartedOrStopped;
 	private IServerStatePoller poller;
 	private String abortMessage;
-	private JBossServerBehavior behavior;
+	private DelegatingServerBehavior behavior;
 	private String pollerId;
 
-	public PollThread(boolean expectedState, IServerStatePoller poller, JBossServerBehavior behavior) {
+	public PollThread(boolean expectedState, IServerStatePoller poller, DelegatingServerBehavior behavior) {
 		super(getThreadName(behavior));
 		this.expectedState = expectedState;
 		this.abort = false;
@@ -63,7 +63,7 @@ public class PollThread extends Thread {
 		this.poller = poller;
 	}
 
-	private static String getThreadName(JBossServerBehavior behavior) {
+	private static String getThreadName(DelegatingServerBehavior behavior) {
 		return NLS.bind(Messages.ServerPollerThreadName, behavior.getServer().getName());
 	}
 	

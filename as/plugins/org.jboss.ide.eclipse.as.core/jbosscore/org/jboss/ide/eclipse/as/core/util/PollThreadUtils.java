@@ -14,7 +14,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -66,13 +66,13 @@ public class PollThreadUtils {
 		}
 	}
 
-	protected void pollServer(final boolean expectedState, PollThread pollThread, JBossServerBehavior behaviour, IServer server) {
+	protected void pollServer(final boolean expectedState, PollThread pollThread, DelegatingServerBehavior behaviour, IServer server) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, server);
 		pollServer(expectedState, poller, pollThread, behaviour);
 	}
 
 	
-	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread pollThread, JBossServerBehavior behaviour) {
+	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread pollThread, DelegatingServerBehavior behaviour) {
 		stopPolling(pollThread);
 		PollThread newPollThread = new PollThread(expectedState, poller, behaviour);
 		newPollThread.start();

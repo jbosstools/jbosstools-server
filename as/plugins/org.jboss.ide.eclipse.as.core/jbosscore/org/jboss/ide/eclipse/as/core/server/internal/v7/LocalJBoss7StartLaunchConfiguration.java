@@ -16,7 +16,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
@@ -36,7 +36,7 @@ public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDe
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
@@ -55,7 +55,7 @@ public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDe
 	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
 		try {
-			JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
 			jbsBehavior.serverStarting();
 		} catch (CoreException ce) {

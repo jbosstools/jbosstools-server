@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerBehavior;
 
 /**
@@ -128,11 +128,11 @@ public class ServerConverter {
 		return (JBoss7ServerBehavior) server.loadAdapter(
 				JBoss7ServerBehavior.class, new NullProgressMonitor());
 	}
-	public static JBossServerBehavior getJBossServerBehavior(IServer server) {
+	public static DelegatingServerBehavior getJBossServerBehavior(IServer server) {
 		if (server == null)
 			return null;
-		return (JBossServerBehavior) server.loadAdapter(
-				JBossServerBehavior.class, new NullProgressMonitor());
+		return (DelegatingServerBehavior) server.loadAdapter(
+				DelegatingServerBehavior.class, new NullProgressMonitor());
 	}
 
 	/**

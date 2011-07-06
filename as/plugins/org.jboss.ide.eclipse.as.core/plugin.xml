@@ -11,7 +11,7 @@
    <extension
          point="org.eclipse.wst.server.core.serverTypes">
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.32.description"
             hasConfiguration="false"
@@ -28,7 +28,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.40.description"
             hasConfiguration="false"
@@ -45,7 +45,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.42.description"
             hasConfiguration="false"
@@ -62,7 +62,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.50.description"
             hasConfiguration="false"
@@ -79,7 +79,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.version.51.description"
             hasConfiguration="false"
@@ -96,7 +96,7 @@
             supportsRemoteHosts="true"/>
             
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBoss6Server"
             description="%jboss.version.60.description"
             hasConfiguration="false"
@@ -130,7 +130,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.eap.version.43.description"
             hasConfiguration="false"
@@ -147,7 +147,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.JBossServer"
             description="%jboss.eap.version.50.description"
             hasConfiguration="false"

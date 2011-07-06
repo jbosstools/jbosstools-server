@@ -35,7 +35,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
@@ -126,7 +126,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 				ServerProfilerDelegate.configureProfiling(launch, vm, runConfig, monitor);
 			} catch (CoreException ce) {
 				IServer server = org.eclipse.wst.server.core.ServerUtil.getServer(configuration);
-				JBossServerBehavior jbsb = (JBossServerBehavior) server.getAdapter(JBossServerBehavior.class);
+				DelegatingServerBehavior jbsb = (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
 				jbsb.stop(true);
 				// genericServer.stopImpl();
 				throw ce;

@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServerBehavior.JBossBehaviourDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -40,10 +40,10 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	
 	
 	private ServerStatePollerType type;
-	private JBossServerBehavior server;
+	private DelegatingServerBehavior server;
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {
-		this.server = (JBossServerBehavior)server.loadAdapter(JBossServerBehavior.class, new NullProgressMonitor());
+		this.server = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
 	}
 
 	public IServer getServer() {
