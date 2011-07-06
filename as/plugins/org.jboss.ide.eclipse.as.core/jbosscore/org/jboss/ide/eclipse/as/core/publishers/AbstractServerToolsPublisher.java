@@ -205,6 +205,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
 				handler.copyFile(mf, deployPath, getSubMon(monitor, 500));
+				tempFile.toFile().delete();
 			} catch( IOException ioe) {
 				list.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 			}
