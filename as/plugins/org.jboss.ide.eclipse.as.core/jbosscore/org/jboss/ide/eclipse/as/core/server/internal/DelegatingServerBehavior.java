@@ -115,11 +115,13 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		setMode(mode);
 	}
 	
+	@Override
 	public void setServerStarting() {
 		setServerStarting();
 		getDelegate().setServerStarting();
 	}
 	
+	@Override
 	public void setServerStopping() {
 		setServerStopping();
 		getDelegate().setServerStopping();
@@ -142,18 +144,25 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 	
 	// Can start / stop / restart etc
+	@Override
 	public IStatus canStart(String launchMode) {
 		return canChangeState(launchMode);
 	}
+
+	@Override
 	public IStatus canRestart(String launchMode) {
 		return canChangeState(launchMode);
 	}
+
+	@Override
 	public IStatus canStop() {
 		return canChangeState(null);
 	}
+
 	public IStatus canStop(String launchMode) {
 		return canChangeState(launchMode);
 	}
+
 	protected IStatus canChangeState(String launchMode) {
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			return Status.CANCEL_STATUS;
