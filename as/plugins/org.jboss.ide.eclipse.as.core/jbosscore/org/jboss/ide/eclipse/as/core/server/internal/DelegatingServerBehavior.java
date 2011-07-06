@@ -115,12 +115,12 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		setMode(mode);
 	}
 	
-	public void serverStarting() {
+	public void setServerStarting() {
 		setServerStarting();
 		getDelegate().setServerStarting();
 	}
 	
-	public void serverStopping() {
+	public void setServerStopping() {
 		setServerStopping();
 		getDelegate().setServerStopping();
 	}
@@ -135,7 +135,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		super.publishFinish(monitor);
 	}
 
-	public boolean shouldSuspendScanner() {
+	protected boolean shouldSuspendScanner() {
 		if( getServer().getServerState() != IServer.STATE_STARTED)
 			return false;
 		return true;

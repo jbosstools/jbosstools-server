@@ -82,7 +82,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 		try {
 			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
-			jbsBehavior.serverStarting();
+			jbsBehavior.setServerStarting();
 		} catch (CoreException ce) {
 			// report it
 		}

@@ -158,7 +158,7 @@ public class JBoss7ServerBehavior extends DelegatingServerBehavior {
 				if( serverProcess != null )
 					serverProcess.terminate();
 			} else {
-				serverStopping();
+				setServerStopping();
 				String host = getServer().getHost();
 				JBoss7Server server = ServerConverter.checkedGetJBossServer(getServer(), JBoss7Server.class);
 				int mgmtPort = server.getManagementPort();

@@ -57,7 +57,7 @@ public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDe
 		try {
 			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
-			jbsBehavior.serverStarting();
+			jbsBehavior.setServerStarting();
 		} catch (CoreException ce) {
 			// report it
 		}

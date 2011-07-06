@@ -128,7 +128,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		try {
 			DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 			jbsBehavior.setRunMode(mode);
-			jbsBehavior.serverStarting();
+			jbsBehavior.setServerStarting();
 		} catch (CoreException ce) {
 			// report it
 		}
