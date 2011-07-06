@@ -155,7 +155,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		return canChangeState(launchMode);
 	}
 	protected IStatus canChangeState(String launchMode) {
-		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			return Status.CANCEL_STATUS;
 		}
 		return getDelegate().canChangeState(launchMode);

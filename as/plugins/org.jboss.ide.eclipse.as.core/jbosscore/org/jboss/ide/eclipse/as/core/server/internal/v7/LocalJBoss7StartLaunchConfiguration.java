@@ -37,7 +37,7 @@ public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDe
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if( LaunchCommandPreferences.ignoreLaunchCommand(jbsBehavior.getServer())) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;

@@ -64,7 +64,7 @@ public class ServerModeSectionComposite extends Composite {
 			FormData fd = UIUtil.createFormData2(0, 5, null, 0, 0, 5, null, 0);
 			executeShellScripts.setLayoutData(fd);
 			top = executeShellScripts;
-			executeShellScripts.setSelection(LaunchCommandPreferences.ignoreLaunchCommand(callback.getServer()));
+			executeShellScripts.setSelection(LaunchCommandPreferences.isIgnoreLaunchCommand(callback.getServer()));
 			executeShellScripts.addSelectionListener(new SelectionListener(){
 				public void widgetSelected(SelectionEvent e) {
 					executeShellToggled();

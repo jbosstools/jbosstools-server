@@ -58,7 +58,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 			IProgressMonitor monitor) throws CoreException {
 		JBossServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		beh.setServerStarting();
-		if (LaunchCommandPreferences.ignoreLaunchCommand(beh.getServer())) {
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer())) {
 			beh.setServerStarted();
 			return;
 		}
@@ -111,7 +111,7 @@ public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetup
 	 */
 	@Deprecated
 	public static void launchStopServerCommand(JBossServerBehavior behaviour) {
-		if (LaunchCommandPreferences.ignoreLaunchCommand(behaviour.getServer())) {
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(behaviour.getServer())) {
 			behaviour.setServerStopping();
 			behaviour.setServerStopped();
 			return;

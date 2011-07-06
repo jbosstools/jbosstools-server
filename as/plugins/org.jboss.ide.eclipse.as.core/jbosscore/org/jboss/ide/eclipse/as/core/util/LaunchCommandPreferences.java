@@ -18,11 +18,11 @@ import org.eclipse.wst.server.core.IServerAttributes;
  */
 public class LaunchCommandPreferences {
 
-	public static boolean ignoreLaunchCommand(IServerAttributes server) {
-		return ignoreLaunchCommand(server, false);
+	public static boolean isIgnoreLaunchCommand(IServerAttributes server) {
+		return isIgnoreLaunchCommand(server, false);
 	}
 	
-	public static boolean ignoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
+	public static boolean isIgnoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
 		String ignoreCommand = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(defaultValue));
 		return Boolean.valueOf(ignoreCommand);
 	}

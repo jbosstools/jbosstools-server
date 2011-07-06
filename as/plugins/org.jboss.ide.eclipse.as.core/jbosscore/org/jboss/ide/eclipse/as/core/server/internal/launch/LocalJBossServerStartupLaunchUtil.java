@@ -108,7 +108,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 		JBossServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		if (!jbsBehavior.canStart(mode).isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
-		if (LaunchCommandPreferences.ignoreLaunchCommand(jbsBehavior.getServer())) {
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;

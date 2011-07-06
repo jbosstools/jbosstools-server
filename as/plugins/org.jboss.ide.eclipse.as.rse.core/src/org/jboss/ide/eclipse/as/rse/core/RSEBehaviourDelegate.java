@@ -40,7 +40,7 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 			forceStop();
 		}
 
-		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			serverStopping();
 			serverStopped();
 			return;

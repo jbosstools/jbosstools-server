@@ -149,7 +149,7 @@ public class JBoss7ServerBehavior extends JBossServerBehavior {
 	}
 
 	public void stop(boolean force) {
-		if( LaunchCommandPreferences.ignoreLaunchCommand(getServer())) {
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			super.setServerStopped();
 			return;
 		}
