@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  * @author Rob Stryker
  *
  */
+@Deprecated
 public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	/**
