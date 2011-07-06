@@ -25,6 +25,7 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 
 	private DelegatingServerBehavior actualBehavior;
 	
+	@Override
 	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
 		this.actualBehavior = actualBehaviour;
 	}
@@ -41,9 +42,11 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 
 	protected abstract IStatus gracefullStop();
 	
+	@Override
 	public void publishStart(IProgressMonitor monitor) throws CoreException {
 	}
 
+	@Override
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
 	}
 
@@ -52,6 +55,7 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 		setServerStarting();
 	}
 	
+	@Override
 	public void setServerStarting() {
 		actualBehavior.setServerStarting();
 	}
@@ -61,10 +65,12 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 		setServerStopping();
 	}
 
+	@Override
 	public void setServerStopping() {
 		actualBehavior.setServerStopping();
 	}
 
+	@Override
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
 	}
