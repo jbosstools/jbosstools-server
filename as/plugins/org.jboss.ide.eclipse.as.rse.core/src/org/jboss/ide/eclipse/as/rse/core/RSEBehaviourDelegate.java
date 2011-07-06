@@ -102,11 +102,6 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	}
 
 	protected void pollServer(final boolean expectedState) {
-		if( this.pollThread != null ) {
-			pollThread.cancel();
-		}
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = new PollThread( expectedState, poller, getActualBehavior());
-		pollThread.start();
+		PollThreadUtils.pollServer(expectedState, PollThreadUtils.getPoller(expectedState, getServer()), pollThread, getActualBehavior());
 	}
 }
