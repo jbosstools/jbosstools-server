@@ -14,9 +14,12 @@ import java.io.File;
 
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListener;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class ServerListener extends UnitedServerListener {
@@ -31,8 +34,28 @@ public class ServerListener extends UnitedServerListener {
 		return true;
 	}
 
+	public void init(IServer server) {
+		initUnmanagedServerState(server);
+	}
+	
+	protected void initUnmanagedServerState(IServer server) {
+		JBossServerBehavior beh = ServerConverter.getJBossServerBehavior(server);
+		if( beh != null ) {
+			String ignoreLaunch = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(false));
+			if( new Boolean(ignoreLaunch).booleanValue()) {
+				// Assume started already
+				beh.setServerStarted();
+			}
+		}
+	}
+	public void serverChanged(IServer server) {
+		// double check if the user toggled the 'assume started' flag to true
+		initUnmanagedServerState(server);
+	}
+
 	public void serverAdded(IServer server) {
 		ServerUtil.createStandardFolders(server);
+		initUnmanagedServerState(server);
 	}
 
 	public void serverRemoved(IServer server) {
