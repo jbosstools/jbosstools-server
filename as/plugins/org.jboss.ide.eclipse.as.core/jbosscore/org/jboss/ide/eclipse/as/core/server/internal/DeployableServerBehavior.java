@@ -71,12 +71,12 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 		method = null;
 	}
 
-	public void setPublishData(String key, Object val) {
+	protected void setPublishData(String key, Object val) {
 		if( publishTaskModel != null )
 			publishTaskModel.put(key, val);
 	}
 	
-	public Object getPublishData(String key) {
+	protected Object getPublishData(String key) {
 		if( publishTaskModel != null )
 			return publishTaskModel.get(key);
 		return null;
