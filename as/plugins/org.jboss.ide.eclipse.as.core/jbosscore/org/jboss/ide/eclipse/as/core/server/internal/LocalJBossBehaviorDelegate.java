@@ -80,7 +80,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			return;
 		}
 		
-		serverStopping();
+		setServerStopping();
 		gracefullStop();
 	}
 	
@@ -196,12 +196,12 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				&& !process.isTerminated();
 	}
 	
-	public void serverStarting() {
+	public void setServerStarting() {
 		nextStopRequiresForce = false;
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	public void serverStopping() {
+	public void setServerStopping() {
 		getActualBehavior().setServerStopping();
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}

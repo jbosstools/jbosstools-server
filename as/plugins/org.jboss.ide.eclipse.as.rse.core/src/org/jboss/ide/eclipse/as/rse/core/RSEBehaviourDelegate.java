@@ -41,12 +41,12 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 		}
 
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			serverStopping();
+			setServerStopping();
 			serverStopped();
 			return;
 		}
 
-		serverStopping();
+		setServerStopping();
 		if (!gracefullStop().isOK()) {
 			serverStarted();
 		} else {
@@ -84,7 +84,7 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 		}
 	}
 	
-	public void serverStarting() {
+	public void setServerStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
@@ -92,7 +92,7 @@ public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 		getActualBehavior().setServerStarted();
 	}
 
-	public void serverStopping() {
+	public void setServerStopping() {
 		getActualBehavior().setServerStopping();
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}

@@ -48,11 +48,21 @@ public abstract class AbstractJBossBehaviourDelegate implements JBossBehaviourDe
 	public void publishFinish(IProgressMonitor monitor) throws CoreException {
 	}
 
+	@Deprecated
 	public void serverStarting() {
+		setServerStarting();
+	}
+	
+	public void setServerStarting() {
 		actualBehavior.setServerStarting();
 	}
 	
+	@Deprecated
 	public void serverStopping() {
+		setServerStopping();
+	}
+
+	public void setServerStopping() {
 		actualBehavior.setServerStopping();
 	}
 

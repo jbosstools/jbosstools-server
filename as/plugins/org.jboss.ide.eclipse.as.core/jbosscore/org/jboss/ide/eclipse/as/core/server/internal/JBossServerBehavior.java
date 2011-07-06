@@ -52,8 +52,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 		public void stop(boolean force);
 		public void publishStart(final IProgressMonitor monitor) throws CoreException;
 		public void publishFinish(final IProgressMonitor monitor) throws CoreException;
-		public void serverStarting();
-		public void serverStopping();
+		public void setServerStarting();
+		public void setServerStopping();
 		public IStatus canChangeState(String launchMode);
 		public String getDefaultStopArguments() throws CoreException; 
 	}
@@ -117,12 +117,12 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	
 	public void serverStarting() {
 		setServerStarting();
-		getDelegate().serverStarting();
+		getDelegate().setServerStarting();
 	}
 	
 	public void serverStopping() {
 		setServerStopping();
-		getDelegate().serverStopping();
+		getDelegate().setServerStopping();
 	}
 	
 	protected void publishStart(final IProgressMonitor monitor) throws CoreException {
