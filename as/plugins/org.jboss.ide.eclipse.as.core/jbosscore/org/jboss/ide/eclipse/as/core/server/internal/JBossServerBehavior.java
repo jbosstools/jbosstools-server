@@ -179,9 +179,8 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 			getOrCreatePublishMethod().getCallbackHandler(depPath.removeLastSegments(1), getServer()).touchResource(new Path(depPath.lastSegment()));
 		} else {
 			// touch the descriptor
-			IPath deployPath = PublishUtil.getDeployPath(method, module, ds);
-			IPublishCopyCallbackHandler callback = method.getCallbackHandler(AbstractServerToolsPublisher.getRootPath(deployPath).append(deployPath), getServer());
-			JSTPublisherXMLToucher.getInstance().touch(deployPath, module[0], callback);
+			IPublishCopyCallbackHandler callback = method.getCallbackHandler(AbstractServerToolsPublisher.getRootPath(depPath).append(depPath), getServer());
+			JSTPublisherXMLToucher.getInstance().touch(depPath, module[0], callback);
 		}
 	}
 }
