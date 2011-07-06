@@ -30,7 +30,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
 		// since there's no process watch for shutdowns
 		if( !expectedState && process == null ) 
-			poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID, false, getServer());
+			poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID);
 		
 		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
 		pollThread.start();
