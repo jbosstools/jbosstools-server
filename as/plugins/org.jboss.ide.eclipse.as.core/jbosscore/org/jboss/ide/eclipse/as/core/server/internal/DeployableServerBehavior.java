@@ -32,6 +32,9 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DeployableLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 
+/**
+ * @author Rob Stryker
+ */
 public class DeployableServerBehavior extends ServerBehaviourDelegate {
 
 	public DeployableServerBehavior() {

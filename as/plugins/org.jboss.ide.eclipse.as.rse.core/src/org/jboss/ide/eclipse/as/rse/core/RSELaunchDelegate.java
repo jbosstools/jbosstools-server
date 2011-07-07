@@ -33,13 +33,13 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -50,10 +50,10 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public class RSELaunchDelegate implements StartLaunchDelegate, IStartLaunchSetupParticipant {
+public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public void actualLaunch(
-			JBossServerStartupLaunchConfiguration launchConfig,
+			DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);

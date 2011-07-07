@@ -18,8 +18,8 @@ import org.eclipse.debug.core.model.IProcess;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -28,7 +28,7 @@ import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
  * @author Rob Stryker
  */
 public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDelegate 
-	implements StartLaunchDelegate, IStartLaunchSetupParticipant {
+	implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
 		return new String[] {};

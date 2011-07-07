@@ -21,25 +21,27 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 
 /**
  * @author Rob Stryker
  */
-public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLaunchConfiguration {
+public class JBoss7ServerStartupLaunchConfiguration extends DelegatingStartLaunchConfiguration {
 
-	private static HashMap<String, StartLaunchDelegate> launchDelegates;
+	private static HashMap<String, IStartLaunchDelegate> launchDelegates;
 	private static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
 
 	static {
 		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
 		setupParticipants.add(new LocalJBossStartLaunchDelegate());
-		launchDelegates = new HashMap<String, StartLaunchDelegate>();
+		launchDelegates = new HashMap<String, IStartLaunchDelegate>();
 		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchConfiguration());
 	}
 	
-	public static void addLaunchDelegateMapping(String mode, StartLaunchDelegate del) {
+	public static void addLaunchDelegateMapping(String mode, IStartLaunchDelegate del) {
 		launchDelegates.put(mode, del);
 	}
 
@@ -56,7 +58,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends JBossServerStartupLa
 		}
 	}	
 
-	protected StartLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
+	protected IStartLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 // TODO: choose delegate upon setting (server editor)
 //		IServer server = ServerUtil.getServer(configuration);
 //		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);

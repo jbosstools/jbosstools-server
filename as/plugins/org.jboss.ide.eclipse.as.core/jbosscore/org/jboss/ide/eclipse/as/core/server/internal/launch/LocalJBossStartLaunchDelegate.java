@@ -28,8 +28,7 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartupConfigurator;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
@@ -40,7 +39,7 @@ import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
  * @author Rob Stryker
  * @author André Dietisheim
  */
-public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType implements StartLaunchDelegate, IStartLaunchSetupParticipant {
+public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
@@ -51,7 +50,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType
 	 * Actual instance methods
 	 */
 	public void actualLaunch(
-			JBossServerStartupLaunchConfiguration launchConfig,
+			DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
 		actualLaunch(configuration, mode, launch, monitor);

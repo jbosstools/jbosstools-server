@@ -28,7 +28,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
@@ -109,7 +109,7 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	 * to participate? 
 	 */
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		JBossServerStartupLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer());
+		DelegatingStartLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer());
 	}
 
 	public void setRunMode(String mode) {
@@ -117,12 +117,12 @@ public class JBossServerBehavior extends DeployableServerBehavior {
 	}
 	
 	public void serverStarting() {
-		setServerStarting();
+		super.setServerStarting();
 		getDelegate().setServerStarting();
 	}
 	
 	public void serverStopping() {
-		setServerStopping();
+		super.setServerStopping();
 		getDelegate().setServerStopping();
 	}
 	
