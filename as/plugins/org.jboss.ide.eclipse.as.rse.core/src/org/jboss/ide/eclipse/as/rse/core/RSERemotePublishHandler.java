@@ -27,6 +27,7 @@ import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil;
 import org.eclipse.wst.server.core.model.IModuleFile;
+import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
@@ -52,7 +53,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			method.getFileService().upload(file, remotePath.removeLastSegments(1).toString(), 
 					remotePath.lastSegment(), true, null, null, monitor);
 		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 					"failed to copy to " + remotePath.toString(), sme);
 			throw new CoreException(s);
 		}
@@ -67,7 +68,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		} catch(SystemElementNotFoundException senfe ) {
 			// ignore, file already does not exist remotely
 		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 					"failed to delete " + remotePath.toString(), sme);
 			throw new CoreException(s);
 		}
@@ -88,7 +89,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 						toMake.lastSegment(), ProgressMonitorUtil.submon(monitor, 30));
 			}
 		} catch( SystemMessageException sme ) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 					"failed to create folder " + toMake.toString(), sme);
 			return new IStatus[]{s};
 		}
@@ -106,7 +107,7 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 			}
 			method.getFileServiceSubSystem().setLastModified(rf, new Date().getTime(), null);
 		} catch(SystemMessageException sme) {
-			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, 
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
 					"failed to touch remote resource " + file.toString(), sme);
 			return new IStatus[]{s};
 		}

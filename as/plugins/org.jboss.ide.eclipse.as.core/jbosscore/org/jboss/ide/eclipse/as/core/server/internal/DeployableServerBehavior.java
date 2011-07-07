@@ -85,9 +85,15 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 	protected void publishModule(int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException {
 		if( method == null )
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, "Not publishing")); //$NON-NLS-1$
-		int result = method.publishModule(this, kind, deltaKind, module, monitor);
-		setModulePublishState(module, result);
-		setModuleState(module, IServer.STATE_STARTED );
+		try { 
+			int result = method.publishModule(this, kind, deltaKind, module, monitor);
+			setModulePublishState(module, result);
+			setModuleState(module, IServer.STATE_STARTED );
+		} catch(CoreException ce) {
+			setModulePublishState(module, IServer.PUBLISH_STATE_UNKNOWN);
+			setModuleState(module, IServer.STATE_UNKNOWN );
+			throw ce;
+		}
 	}
 	
 	/**
