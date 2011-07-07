@@ -28,7 +28,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	@Override
 	protected void forceStop() {
-		serverStopped();
+		getActualBehavior().setServerStopped();
 		return;		
 	}
 
@@ -60,16 +60,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	public void serverStarted() {
-		getActualBehavior().setServerStarted();
-	}
-
 	public void setServerStopping() {
-		getActualBehavior().setServerStopping();
 		pollServer(IServerStatePoller.SERVER_DOWN);
-	}
-	
-	public void serverStopped() {
-		getActualBehavior().setServerStopped();
 	}
 }

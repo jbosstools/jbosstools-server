@@ -80,7 +80,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			return;
 		}
 		
-		setServerStopping();
+		getActualBehavior().setServerStopping();
 		gracefullStop();
 	}
 	
@@ -196,13 +196,20 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				&& !process.isTerminated();
 	}
 	
+	/**
+	 * ATTENTION: don't call this directly, use {@link #getActualBehavior().getServerStarting()} instead. 
+	 * if we would call the delegating server behavior here to set it's state, we would cause an infinite loop.
+	 */
 	public void setServerStarting() {
 		nextStopRequiresForce = false;
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
+	/**
+	 * ATTENTION: don't call this directly, use {@link #getActualBehavior().getServerStopping()} instead.
+	 * if we would call the delegating server behavior here to set it's state, we would cause an infinite loop.
+	 */
 	public void setServerStopping() {
-		getActualBehavior().setServerStopping();
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
