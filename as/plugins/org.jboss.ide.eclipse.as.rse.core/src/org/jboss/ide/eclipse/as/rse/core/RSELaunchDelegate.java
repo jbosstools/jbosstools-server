@@ -43,6 +43,9 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
+/**
+ * @deprecated replaced by {@link RSEJBossStartLaunchDelegate} 
+ */
 @Deprecated
 public class RSELaunchDelegate extends AbstractRSELaunchDelegate {
 	public void actualLaunch(
