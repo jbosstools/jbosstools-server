@@ -56,11 +56,11 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		}
 	}
 	
-	public void setServerStarting() {
+	public void serverIsStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	public void setServerStopping() {
+	public void serverIsStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 }

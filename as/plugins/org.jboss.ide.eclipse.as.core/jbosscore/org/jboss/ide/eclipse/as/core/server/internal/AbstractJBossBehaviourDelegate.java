@@ -49,14 +49,10 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 
 	protected abstract IStatus gracefullStop();
 	
-	@Deprecated
-	public void serverStarting() {
-		setServerStarting();
+	public void serverIsStarting() {
 	}
 	
-	@Deprecated
-	public void serverStopping() {
-		setServerStopping();
+	public void serverIsStopping() {
 	}
 
 	@Override
