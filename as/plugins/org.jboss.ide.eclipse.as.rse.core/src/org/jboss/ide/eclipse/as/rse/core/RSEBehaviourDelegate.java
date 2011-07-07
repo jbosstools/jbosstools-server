@@ -28,8 +28,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	@Override
 	protected void forceStop() {
-		getActualBehavior().setServerStopped();
-		return;		
+		setServerStopped();
 	}
 
 	@Override

@@ -30,15 +30,15 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 		}
 
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			getActualBehavior().setServerStopped();
+			setServerStopped();
 			return;
 		}
 
-		getActualBehavior().setServerStopping();
+		setServerStopping();
 		if (!gracefullStop().isOK()) {
-			getActualBehavior().setServerStarted();
+			setServerStarted();
 		} else {
-			getActualBehavior().setServerStopped();
+			setServerStopped();
 		}
 	}
 		

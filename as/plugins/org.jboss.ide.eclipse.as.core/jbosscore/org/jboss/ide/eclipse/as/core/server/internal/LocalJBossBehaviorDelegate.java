@@ -79,7 +79,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			return;
 		}
 		
-		getActualBehavior().setServerStopping();
+		setServerStopping();
 		gracefullStop();
 	}
 	
@@ -99,7 +99,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					if (stopProcess.getExitValue() == 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
 						if( isProcessRunning() ) { 
-							getActualBehavior().setServerStarted();
+							setServerStarted();
 							cancelPolling(Messages.STOP_FAILED_MESSAGE);
 							nextStopRequiresForce = true;
 						}
@@ -137,7 +137,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			}
 		}
 		process = null;
-		getActualBehavior().setServerStopped();
+		setServerStopped();
 	}
 	
 	protected void addForceStopFailedEvent(DebugException e) {
@@ -251,12 +251,12 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 			}
 		}
 	}
-
-	protected boolean shouldSuspendScanner() {
-		return getActualBehavior().shouldSuspendScanner() && 
-				ExtensionManager.getDefault().getJMXRunner() != null;
-	}
 	
+	protected boolean shouldSuspendScanner() {
+		return getServer().getServerState() != IServer.STATE_STARTED
+				&&  ExtensionManager.getDefault().getJMXRunner() != null;
+	}
+
 	protected void suspendDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
 		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
 		launchDeployCommand(connection, name, IJBossRuntimeConstants.STOP, monitor);

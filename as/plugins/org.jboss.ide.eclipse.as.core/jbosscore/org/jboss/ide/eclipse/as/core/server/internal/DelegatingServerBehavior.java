@@ -122,6 +122,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		super.publishFinish(monitor);
 	}
 
+	@Deprecated
 	protected boolean shouldSuspendScanner() {
 		if( getServer().getServerState() != IServer.STATE_STARTED)
 			return false;

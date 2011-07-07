@@ -32,10 +32,6 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 		this.actualBehavior = actualBehaviour;
 	}
 	
-	public DelegatingServerBehavior getActualBehavior() {
-		return actualBehavior;
-	}
-
 	public IServer getServer() {
 		return actualBehavior.getServer();
 	}
@@ -92,11 +88,27 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 
 	protected void pollServer(final boolean expectedState) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller , pollThread, actualBehavior);
 	}
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, actualBehavior);
+	}
+
+	protected void setServerStopping() {
+		actualBehavior.setServerStopping();
+	}
+
+	protected void setServerStopped() {
+		actualBehavior.setServerStopped();
+	}
+
+	protected void setServerStarted() {
+		actualBehavior.setServerStarted();
+	}
+
+	protected void setServerStarting() {
+		actualBehavior.setServerStarting();
 	}
 
 }

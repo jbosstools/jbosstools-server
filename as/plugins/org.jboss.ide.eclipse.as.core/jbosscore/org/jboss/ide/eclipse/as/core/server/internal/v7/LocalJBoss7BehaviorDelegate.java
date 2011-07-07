@@ -15,13 +15,15 @@ import org.eclipse.core.runtime.Status;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
+
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
 	}
+
+	@Override
 	protected void pollServer(final boolean expectedState) {
 		if( pollThread != null )
 			pollThread.cancel();
@@ -29,10 +31,12 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
 		// since there's no process watch for shutdowns
-		if( !expectedState && process == null ) 
+		if( !expectedState 
+				&& process == null ) {
 			poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID);
-		
-		this.pollThread = new PollThread(expectedState, poller, getActualBehavior());
-		pollThread.start();
+			pollServer(expectedState, poller);
+		} else {
+			super.pollServer(expectedState);
+		}
 	}
 }
