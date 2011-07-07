@@ -19,12 +19,12 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
  */
 public class RSELaunchConfigProperties {
 
-	public static final String RSE_DEFAULT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DEFAULT_STARTUP_COMMAND";
-	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.STARTUP_COMMAND";
-	public static final String RSE_DEFAULT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DEFAULT_SHUTDOWN_COMMAND";
-	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.SHUTDOWN_COMMAND";
-	public static final String DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_STARTUP_COMMAND";
-	public static final String DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSELaunchDelegate.DETECT_SHUTDOWN_COMMAND";
+	public static final String RSE_DEFAULT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DEFAULT_STARTUP_COMMAND";
+	public static final String RSE_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.STARTUP_COMMAND";
+	public static final String RSE_DEFAULT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DEFAULT_SHUTDOWN_COMMAND";
+	public static final String RSE_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.SHUTDOWN_COMMAND";
+	public static final String DETECT_STARTUP_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DETECT_STARTUP_COMMAND";
+	public static final String DETECT_SHUTDOWN_COMMAND = "org.jboss.ide.eclipse.as.rse.core.RSEJBossStartLaunchDelegate.DETECT_SHUTDOWN_COMMAND";
 
 	public static boolean isDetectStartupCommand(ILaunchConfiguration launchConfig) throws CoreException {
 		return isDetectStartupCommand(launchConfig, true);

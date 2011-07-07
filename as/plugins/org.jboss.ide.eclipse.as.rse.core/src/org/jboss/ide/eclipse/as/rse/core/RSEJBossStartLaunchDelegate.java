@@ -43,8 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-@Deprecated
-public class RSELaunchDelegate extends AbstractRSELaunchDelegate {
+public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 	public void actualLaunch(
 			DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,

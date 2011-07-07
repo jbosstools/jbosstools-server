@@ -33,8 +33,8 @@ public class RSECorePlugin implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		RSECorePlugin.context = bundleContext;
 		DelegatingServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEBehaviourDelegate.class);
-		DelegatingStartLaunchConfiguration.addLaunchDelegateMapping(RSEPublishMethod.RSE_ID, new RSELaunchDelegate());
-		DelegatingStartLaunchConfiguration.addSetupLaunchParticipant(new RSELaunchDelegate());
+		DelegatingStartLaunchConfiguration.addLaunchDelegateMapping(RSEPublishMethod.RSE_ID, new RSEJBossStartLaunchDelegate());
+		DelegatingStartLaunchConfiguration.addSetupLaunchParticipant(new RSEJBossStartLaunchDelegate());
 	}
 
 	/*

@@ -101,7 +101,7 @@ public class RSELaunchTabProvider implements IJBossLaunchTabProvider {
 					if( autoStartArgs.getSelection()) {
 						String command = null;
 						try {
-//							command = RSELaunchDelegate.getDefaultLaunchCommand(initialConfig);
+//							command = RSEJBossStartLaunchDelegate.getDefaultLaunchCommand(initialConfig);
 							command = RSELaunchConfigProperties.getDefaultStartupCommand(initialConfig, "");
 							startText.setText(command);
 						} catch(CoreException ce) {
