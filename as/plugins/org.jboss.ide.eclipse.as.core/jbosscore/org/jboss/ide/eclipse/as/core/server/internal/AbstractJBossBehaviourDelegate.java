@@ -54,19 +54,9 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 		setServerStarting();
 	}
 	
-	@Override
-	public void setServerStarting() {
-		actualBehavior.setServerStarting();
-	}
-	
 	@Deprecated
 	public void serverStopping() {
 		setServerStopping();
-	}
-
-	@Override
-	public void setServerStopping() {
-		actualBehavior.setServerStopping();
 	}
 
 	@Override
