@@ -43,21 +43,6 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  */
 public class DelegatingServerBehavior extends DeployableServerBehavior {
 	
-	/**
-	 * TODO: move to its own file (so that we can hide implementations and export interfaces) & rename to IJBossBehaviourDelegate 
-	 */
-	public static interface JBossBehaviourDelegate {
-		public String getBehaviourTypeId();
-		public void setActualBehaviour(DelegatingServerBehavior actualBehaviour);
-		public void stop(boolean force);
-		public void publishStart(final IProgressMonitor monitor) throws CoreException;
-		public void publishFinish(final IProgressMonitor monitor) throws CoreException;
-		public void setServerStarting();
-		public void setServerStopping();
-		public IStatus canChangeState(String launchMode);
-		public String getDefaultStopArguments() throws CoreException; 
-	}
-	
 	private static HashMap<String, Class> delegateClassMap;
 	static {
 		delegateClassMap = new HashMap<String, Class>();
@@ -71,9 +56,9 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		super();
 	}
 
-	private JBossBehaviourDelegate delegate;
+	private IJBossBehaviourDelegate delegate;
 	private String lastModeId;
-	public JBossBehaviourDelegate getDelegate() {
+	public IJBossBehaviourDelegate getDelegate() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
 		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
@@ -84,7 +69,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 			c = getDelegateMap().get(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 		
 		try {
-			JBossBehaviourDelegate o = (JBossBehaviourDelegate)c.newInstance();
+			IJBossBehaviourDelegate o = (IJBossBehaviourDelegate)c.newInstance();
 			o.setActualBehaviour(this);
 			lastModeId = id;
 			delegate = o;

@@ -18,7 +18,6 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -61,7 +60,7 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
-//		JBossBehaviourDelegate del = server.getDelegate();
+//		IJBossBehaviourDelegate del = server.getDelegate();
 //		if( del instanceof IProcessProvider ) {
 //			IProcess p = ((IProcessProvider)del).getProcess();
 //			boolean b = p == null || p.isTerminated();

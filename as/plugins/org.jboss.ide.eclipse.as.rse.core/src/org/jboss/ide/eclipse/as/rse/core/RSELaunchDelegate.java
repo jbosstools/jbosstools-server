@@ -34,8 +34,8 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior.JBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
@@ -211,7 +211,7 @@ public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetu
 
 		// Pull args from single utility method
 		// stop += StopLaunchConfiguration.getDefaultArgs(jbs);
-		JBossBehaviourDelegate delegate = ServerUtil.checkedGetBehaviorDelegate(server);
+		IJBossBehaviourDelegate delegate = ServerUtil.checkedGetBehaviorDelegate(server);
 		stop += delegate.getDefaultStopArguments();
 		return stop;
 	}
