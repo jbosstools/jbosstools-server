@@ -36,7 +36,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 @Deprecated
-public class JBossServerStartupLaunchConfiguration extends AbstractJBossLaunchConfigType {
+public class JBossServerStartupLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
 	public static interface StartLaunchDelegate {
 		public void actualLaunch(JBossServerStartupLaunchConfiguration launchConfig,
 				ILaunchConfiguration configuration, 

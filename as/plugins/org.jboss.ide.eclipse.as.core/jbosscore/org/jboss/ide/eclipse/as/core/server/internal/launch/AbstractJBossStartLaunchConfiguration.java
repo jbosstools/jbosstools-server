@@ -11,12 +11,9 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -25,7 +22,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
 import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
@@ -33,20 +29,12 @@ import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
-import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
-import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
  * @author Rob Stryker
  */
-@Deprecated
-public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchConfigurationDelegate {
+public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
 
 	// we have no need to do anything in pre-launch check
 	@Override
@@ -136,60 +124,4 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 		// Launch the configuration
 		runner.run(runConfig, launch, monitor);
 	}
-
-	@Deprecated
-	public static JBossServer findJBossServer(String serverId) throws CoreException {
-		return ServerConverter.findJBossServer(serverId);
-	}
-	
-	@Deprecated
-	public static IJBossServerRuntime findJBossServerRuntime(IServer server) throws CoreException {
-		return RuntimeUtils.checkedGetJBossServerRuntime(server);
-	}
-	
-	@Deprecated
-	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, JBossServer jbs, String relative) throws CoreException {
-		String serverHome = org.jboss.ide.eclipse.as.core.util.ServerUtil.checkedGetServerHome(jbs);
-		LaunchConfigUtils.addCPEntry(serverHome, relative, list);
-	}
-
-	@Deprecated
-	public static void addCPEntry(ArrayList<IRuntimeClasspathEntry> list, IPath path) {
-		LaunchConfigUtils.addCPEntry(path, list);
-	}
-
-	@Deprecated
-	public static void addJREEntry(List<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
-		LaunchConfigUtils.addJREEntry(vmInstall, cp);
-	}
-
-	@Deprecated
-	public static void addToolsJar(ArrayList<IRuntimeClasspathEntry> cp, IVMInstall vmInstall) {
-		LaunchConfigUtils.addToolsJar(vmInstall, cp);
-	}
-
-	@Deprecated
-	public static ArrayList<String> convertClasspath(List<IRuntimeClasspathEntry> cp) {
-		return (ArrayList) LaunchConfigUtils.toStrings(cp);
-	}
-
-	@Deprecated
-	protected static void addDirectory(String serverHome, List<IRuntimeClasspathEntry> classpath,
-			String dirName) {
-		LaunchConfigUtils.addDirectory(serverHome, classpath, dirName); 
-	}
-
-	@Deprecated
-	public static String getServerHome(JBossServer jbs) throws CoreException {
-		return ServerUtil.checkedGetServerHome(jbs);
-	}
-	
-	@Deprecated
-	public IVMInstall getVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		String serverId = JBossLaunchConfigProperties.getServerId(configuration);
-		JBossServer jbs = ServerConverter.findJBossServer(serverId);
-		IJBossServerRuntime runtime = RuntimeUtils.checkedGetJBossServerRuntime(jbs.getServer());
-		return runtime.getVM();
-	}
-
 }

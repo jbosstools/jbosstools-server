@@ -39,7 +39,7 @@ import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
  * @author Rob Stryker
  * @author André Dietisheim
  */
-public class LocalJBossStartLaunchDelegate extends AbstractJBossLaunchConfigType implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
+public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfiguration implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {

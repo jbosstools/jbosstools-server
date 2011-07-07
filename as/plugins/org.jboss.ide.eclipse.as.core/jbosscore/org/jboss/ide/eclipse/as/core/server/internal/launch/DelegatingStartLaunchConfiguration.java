@@ -26,7 +26,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
-public class DelegatingStartLaunchConfiguration extends AbstractJBossLaunchConfigType {
+public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
 	
 	public static interface IStartLaunchSetupParticipant {
 		public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException;
