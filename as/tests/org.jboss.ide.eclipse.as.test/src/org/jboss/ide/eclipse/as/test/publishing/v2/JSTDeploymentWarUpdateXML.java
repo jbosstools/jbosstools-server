@@ -102,7 +102,7 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		assertEquals(filesToRemove.length, MockPublishMethod.getRemoved().length);
 		IPath[] removedFiles = MockPublishMethod.getRemoved();
 		for(int i = 0; i < removedFiles.length; i++) {
-			assertEquals(filesToRemove[i], removedFiles[i].toString());
+			assertEquals(MockPublishMethod.MOCK_ROOT + "/" + filesToRemove[i], removedFiles[i].toString());
 		}
 		MockPublishMethod.reset();
 	}

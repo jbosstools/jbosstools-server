@@ -27,6 +27,7 @@ import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCall
 public class MockPublishMethod extends AbstractPublishMethod {
 
 	public static final String PUBLISH_METHOD_ID = "mock";
+	public static final String MOCK_ROOT = "mockRoot";
 	public static ArrayList<IPath> changed = new ArrayList<IPath>();
 	public static ArrayList<IPath> removed = new ArrayList<IPath>();
 
@@ -36,7 +37,7 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	}
 
 	public String getPublishDefaultRootFolder(IServer server) {
-		return "/";
+		return "/" + MOCK_ROOT;
 	}
 
 	public String getPublishMethodId() {

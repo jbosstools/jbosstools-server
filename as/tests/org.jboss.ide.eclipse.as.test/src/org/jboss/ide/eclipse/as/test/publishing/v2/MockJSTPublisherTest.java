@@ -118,14 +118,14 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 
 		if (isAs7) {
 			for (String expectedPath : as7) {
-				if (contains(expectedPath, artifacts)) {
+				if (contains(MockPublishMethod.MOCK_ROOT + "/" + expectedPath, artifacts)) {
 					continue;
 				}
 				fail(expectedPath + " was not among the changed/removed artifacts");
 			}
 		} else {
 			for (String expectedPath : nonAs7) {
-				if (contains(expectedPath, artifacts)) {
+				if (contains(MockPublishMethod.MOCK_ROOT + "/" + expectedPath, artifacts)) {
 					continue;
 				}
 				fail(expectedPath + " was not among the changed/removed artifacts");
