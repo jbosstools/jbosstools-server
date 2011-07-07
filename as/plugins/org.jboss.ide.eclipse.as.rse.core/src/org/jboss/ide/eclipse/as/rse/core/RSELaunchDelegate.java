@@ -23,11 +23,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.rse.services.clientserver.messages.SystemMessageException;
-import org.eclipse.rse.services.shells.IHostOutput;
-import org.eclipse.rse.services.shells.IHostShell;
-import org.eclipse.rse.services.shells.IHostShellChangeEvent;
-import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
@@ -38,8 +33,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -50,8 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
-
+public class RSELaunchDelegate extends AbstractRSELaunchDelegate {
 	public void actualLaunch(
 			DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
@@ -62,41 +54,15 @@ public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetu
 			beh.setServerStarted();
 			return;
 		}
-
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
-		try {
-			ServerShellModel model = RSEHostShellModel.getInstance().getModel(beh.getServer());
-			IHostShell shell = model.createStartupShell("/", command, new String[] {}, new NullProgressMonitor());
-			addShellOutputListener(shell);
-			launchPingThread(beh);
-		} catch (SystemMessageException sme) {
-			beh.setServerStopped(); // Not sure when this comes, but we should
-									// try to keep track
-			throw new CoreException(new Status(IStatus.ERROR,
-					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
-					sme.getMessage(), sme));
-		}
+		executeRemoteCommand(command, beh);
+		launchPingThread(beh);
 	}
-
+	
 	private void launchPingThread(DeployableServerBehavior beh) {
 		// TODO do it properly here
 		RSEHostShellModel.delay(30000);
 		beh.setServerStarted();
-	}
-
-	// Only for debugging
-	private void addShellOutputListener(IHostShell shell) {
-		IHostShellOutputListener listener = null;
-		listener = new IHostShellOutputListener() {
-			public void shellOutputChanged(IHostShellChangeEvent event) {
-				IHostOutput[] out = event.getLines();
-				for (int i = 0; i < out.length; i++) {
-					// TODO listen here for obvious exceptions or failures
-					// System.out.println(out[i]);
-				}
-			}
-		};
-		// shell.addOutputListener(listener);
 	}
 
 	/**
@@ -149,6 +115,7 @@ public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetu
 			String mode, IProgressMonitor monitor) throws CoreException {
 		// ping if up
 		final DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		// TODO: use configured polelr
 		boolean started = WebPortPoller.onePing(beh.getServer());
 		if (started) {
 			beh.setServerStarting();
