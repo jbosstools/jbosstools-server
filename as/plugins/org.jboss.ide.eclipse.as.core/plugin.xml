@@ -622,7 +622,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             category="JBoss"
-            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration"
+            delegate="org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration"
             id="org.jboss.ide.eclipse.as.core.server.startupConfiguration"
             modes="run,debug,profile"
             name="JBoss Application Server Startup Configuration"
