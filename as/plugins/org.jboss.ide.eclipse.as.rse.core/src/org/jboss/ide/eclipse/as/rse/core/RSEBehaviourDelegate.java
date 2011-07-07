@@ -21,41 +21,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
-import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public class RSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
-	private PollThread pollThread = null;
+public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
-	@Override
-	public String getBehaviourTypeId() {
-		return RSEPublishMethod.RSE_ID;
-	}
-	
-	@Override
-	public void stop(boolean force) {
-		if( force ) {
-			forceStop();
-		}
-
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			setServerStopping();
-			serverStopped();
-			return;
-		}
-
-		setServerStopping();
-		if (!gracefullStop().isOK()) {
-			serverStarted();
-		} else {
-			serverStopped();
-		}
-	}
-	
 	@Override
 	protected void forceStop() {
 		serverStopped();
