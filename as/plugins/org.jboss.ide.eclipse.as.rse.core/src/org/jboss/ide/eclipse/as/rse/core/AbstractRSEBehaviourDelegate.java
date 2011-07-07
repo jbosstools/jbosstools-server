@@ -14,12 +14,9 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
-import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
-	private PollThread pollThread = null;
 	
 	@Override
 	public String getBehaviourTypeId() {
@@ -61,7 +58,4 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	
-	protected void pollServer(final boolean expectedState) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());	}
 }

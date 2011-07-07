@@ -16,14 +16,17 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss6Server;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourDelegate {
 
 	private DelegatingServerBehavior actualBehavior;
-	
+	protected PollThread pollThread = null;
+
 	@Override
 	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
 		this.actualBehavior = actualBehaviour;
@@ -85,6 +88,15 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 			args += IJBossRuntimeConstants.SHUTDOWN_PASS_ARG 
 			+ IJBossRuntimeConstants.SPACE + jbs.getPassword() + IJBossRuntimeConstants.SPACE;
 		return args;
+	}
+
+	protected void pollServer(final boolean expectedState) {
+		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
+	}
+	
+	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
 	}
 
 }

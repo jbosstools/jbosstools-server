@@ -53,7 +53,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	private static final String STOP_LAUNCH_TYPE = "org.jboss.ide.eclipse.as.core.server.stopLaunchConfiguration"; //$NON-NLS-1$
 
-	protected PollThread pollThread = null;
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
 	public LocalJBossBehaviorDelegate() {
@@ -209,16 +208,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		return process;
 	}
 	
-	protected void pollServer(final boolean expectedState) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
-	}
-	
-	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
-	}
-	
-
 	protected void stopPolling() {
 		cancelPolling(null);
 	}
