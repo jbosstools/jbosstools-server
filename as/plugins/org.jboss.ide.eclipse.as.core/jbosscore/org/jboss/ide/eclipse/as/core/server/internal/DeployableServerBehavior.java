@@ -90,7 +90,7 @@ public class DeployableServerBehavior extends ServerBehaviourDelegate {
 			setModulePublishState(module, result);
 			setModuleState(module, IServer.STATE_STARTED );
 		} catch(CoreException ce) {
-			setModulePublishState(module, IServer.PUBLISH_STATE_UNKNOWN);
+			setModulePublishState(module, IServer.PUBLISH_STATE_FULL);
 			setModuleState(module, IServer.STATE_UNKNOWN );
 			throw ce;
 		}
