@@ -200,9 +200,7 @@ public class RSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetu
 	}
 
 	private String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
-		String rseHome = null;
-		rseHome = RSEUtils.getRSEHomeDir(server, errorOnFail);
-		JBossServer jbs = ServerConverter.getJBossServer(server);
+		String rseHome = RSEUtils.getRSEHomeDir(server, errorOnFail);
 
 		String stop = new Path(rseHome)
 				.append(IJBossRuntimeResourceConstants.BIN)
