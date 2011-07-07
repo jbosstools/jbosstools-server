@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
@@ -72,10 +71,5 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	
 	public void serverStopped() {
 		getActualBehavior().setServerStopped();
-	}
-
-	protected void pollServer(final boolean expectedState) {
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, getActualBehavior());
 	}
 }
