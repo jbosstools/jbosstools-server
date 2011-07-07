@@ -219,7 +219,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	protected void pollServer(final boolean expectedState) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
-		PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller , pollThread, getActualBehavior());
 	}
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
