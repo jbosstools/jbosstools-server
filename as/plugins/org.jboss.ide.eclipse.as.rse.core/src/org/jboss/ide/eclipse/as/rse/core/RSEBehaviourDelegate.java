@@ -22,11 +22,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	@Override
-	protected void forceStop() {
-		setServerStopped();
-	}
-
-	@Override
 	protected String getShutdownCommand(IServer server) throws CoreException {
 		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
 		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());

@@ -53,6 +53,11 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	}
 
 	@Override
+	protected void forceStop() {
+		setServerStopped();
+	}
+
+	@Override
 	protected IStatus gracefullStop() {
 		try {
 			executeShutdownCommand(getShutdownCommand(getServer()));
