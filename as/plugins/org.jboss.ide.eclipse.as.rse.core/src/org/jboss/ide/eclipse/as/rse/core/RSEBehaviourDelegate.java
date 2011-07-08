@@ -33,10 +33,12 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
 	}
 
+	@Override
 	public void serverIsStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
+	@Override
 	public void serverIsStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
