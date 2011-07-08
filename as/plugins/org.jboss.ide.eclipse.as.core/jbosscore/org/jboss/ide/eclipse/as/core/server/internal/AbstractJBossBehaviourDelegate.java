@@ -25,7 +25,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourDelegate {
 
 	private DelegatingServerBehavior actualBehavior;
-	protected PollThread pollThread = null;
+	private PollThread pollThread = null;
 
 	@Override
 	public void setActualBehaviour(DelegatingServerBehavior actualBehaviour) {
@@ -93,6 +93,15 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
 		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, actualBehavior);
+	}
+
+	protected void stopPolling() {
+		cancelPolling(null);
+	}
+
+	protected void cancelPolling(String message) {
+		PollThreadUtils.cancelPolling(message, this.pollThread);
+		this.pollThread = null;
 	}
 
 	protected void setServerStopping() {

@@ -41,7 +41,6 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
-import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
@@ -197,15 +196,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	public synchronized IProcess getProcess() {
 		return process;
-	}
-	
-	protected void stopPolling() {
-		cancelPolling(null);
-	}
-
-	protected void cancelPolling(String message) {
-		PollThreadUtils.cancelPolling(message, this.pollThread);
-		this.pollThread = null;
 	}
 	
 	public void publishStart(final IProgressMonitor monitor) throws CoreException {
