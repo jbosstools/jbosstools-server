@@ -29,17 +29,34 @@ import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
+import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 
 /**
  * @author Rob Stryker
  */
 public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
 
-	// we have no need to do anything in pre-launch check
 	@Override
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
+		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
+		if (!jbsBehavior.canStart(mode).isOK())
+			throw new CoreException(jbsBehavior.canStart(mode));
+		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
+			jbsBehavior.setServerStarting();
+			jbsBehavior.setServerStarted();
+			return false;
+		}
+		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
+		if (started) {
+			jbsBehavior.setServerStarting();
+			jbsBehavior.setServerStarted();
+			return false;
+		}
+
 		return true;
 	}
 

@@ -56,26 +56,6 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 		actualLaunch(configuration, mode, launch, monitor);
 	}
 
-	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
-			throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if (!jbsBehavior.canStart(mode).isOK())
-			throw new CoreException(jbsBehavior.canStart(mode));
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
-			return false;
-		}
-		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
-		if (started) {
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
-			return false;
-		}
-
-		return true;
-	}
-
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		try {

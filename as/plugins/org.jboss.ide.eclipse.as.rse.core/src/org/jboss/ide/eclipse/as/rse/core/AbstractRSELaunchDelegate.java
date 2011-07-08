@@ -22,11 +22,10 @@ import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public abstract class AbstractRSELaunchDelegate implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
+public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunchConfiguration {
 
 	protected void executeRemoteCommand(String command, DelegatingServerBehavior behavior)
 			throws CoreException {
@@ -42,7 +41,6 @@ public abstract class AbstractRSELaunchDelegate implements IStartLaunchDelegate,
 					sme.getMessage(), sme));
 		}
 	}
-
 	// Only for debugging
 	private void addShellOutputListener(IHostShell shell) {
 		IHostShellOutputListener listener = null;
