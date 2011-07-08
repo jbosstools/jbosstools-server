@@ -60,6 +60,7 @@ public class JBossServerStartupLaunchConfiguration extends AbstractJBossStartLau
 		
 	}
 	
+	@Deprecated
 	public static interface IStartLaunchSetupParticipant {
 		public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException;
 	}
