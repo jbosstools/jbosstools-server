@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -38,7 +39,8 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 			String shutdownCommand = getShutdownCommand(getServer());
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
 			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
-			if( model.getStartupShell() != null && model.getStartupShell().isActive()) {
+			IHostShell shell = model.getStartupShell();
+			if( RSEUtils.isActive(shell)) {
 				model.getStartupShell().writeToShell("exit");
 			}
 			return Status.OK_STATUS;

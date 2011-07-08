@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.rse.core.RSECorePlugin;
 import org.eclipse.rse.core.model.IHost;
+import org.eclipse.rse.services.shells.IHostShell;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
@@ -169,6 +170,11 @@ public class RSEUtils {
 		wc.setAttribute(IDeployableServer.DEPLOY_DIRECTORY_TYPE,
 				IDeployableServer.DEPLOY_SERVER);
 		return wc.save(false, new NullProgressMonitor());
+	}
+	
+	public static boolean isActive(IHostShell shell) {
+		return shell != null
+				&& shell.isActive();
 	}
 
 }
