@@ -10,11 +10,15 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.util;
 
+import org.eclipse.debug.core.model.IProcess;
+
 /**
  * @Rob Stryker
  * @author André Dietisheim
  */
 public class ThreadUtils {
+
+	private static final int SLEEP_DELAY = 200;
 
 	/**
 	 * Sleeps the current thread for the given amount of milliseconds. InterruptedException are swallowed.
@@ -26,7 +30,17 @@ public class ThreadUtils {
 		while( x < delay) {
 			x+=200;
 			try {
-				Thread.sleep(200);
+				Thread.sleep(SLEEP_DELAY);
+			} catch(InterruptedException ie) {
+			}
+		}
+	}
+
+	public static void sleepWhileRunning(IProcess process) {
+		while( !process.isTerminated()) {
+			try {
+				Thread.yield();
+				Thread.sleep(SLEEP_DELAY);
 			} catch(InterruptedException ie) {
 			}
 		}

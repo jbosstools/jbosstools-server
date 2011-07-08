@@ -43,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
+import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
 /**
  * 
@@ -95,7 +96,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					new LocalStopLaunchConfigurator(getServer()).configure(wc);
 					ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 					IProcess stopProcess = launch.getProcesses()[0];
-					waitFor(stopProcess);
+					ThreadUtils.sleepWhileRunning(stopProcess);
 					if (stopProcess.getExitValue() == 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
 						if( isProcessRunning() ) { 
@@ -108,16 +109,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
 				}
 				
-			}
-
-			private void waitFor(IProcess process) {
-				while( !process.isTerminated()) {
-					try {
-						Thread.yield();
-						Thread.sleep(100);
-					} catch(InterruptedException ie) {
-					}
-				}
 			}
 		}.start();
 		// TODO: find out if this is ok. My current guess is that we should 
