@@ -27,11 +27,9 @@ import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupPar
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 
 /**
- * @deprecated replaced by {@link DelegatingJBoss7StartLaunchConfiguration}
- * 
  * @author Rob Stryker
  */
-public class JBoss7ServerStartupLaunchConfiguration extends DelegatingStartLaunchConfiguration {
+public class DelegatingJBoss7StartLaunchConfiguration extends DelegatingStartLaunchConfiguration {
 
 	private static HashMap<String, IStartLaunchDelegate> launchDelegates;
 	private static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
