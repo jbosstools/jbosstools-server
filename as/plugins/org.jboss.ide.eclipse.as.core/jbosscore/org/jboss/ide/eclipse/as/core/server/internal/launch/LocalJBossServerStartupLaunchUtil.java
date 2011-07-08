@@ -32,7 +32,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.JBossServerStartupLaunchConfiguration.StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
@@ -52,7 +52,7 @@ public class LocalJBossServerStartupLaunchUtil implements StartLaunchDelegate, I
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		new LocalJBossStartupConfigurator(server).configure(workingCopy);
+		new LocalJBossStartLaunchConfigurator(server).configure(workingCopy);
 	}
 
 	public static class JBossServerDefaultClasspathProvider extends StandardClasspathProvider {

@@ -24,9 +24,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
-public class LocalJBossStartupConfigurator extends AbstractStartupConfigurator {
+public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfigurator {
 
-	public LocalJBossStartupConfigurator(IServer server) throws CoreException {
+	public LocalJBossStartLaunchConfigurator(IServer server) throws CoreException {
 		super(server);
 	}
 

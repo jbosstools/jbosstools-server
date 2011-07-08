@@ -24,11 +24,11 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractStartupConfigurator extends AbstractLaunchConfigurator {
+public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConfigurator {
 
 	private static final String DEFAULT_CP_PROVIDER_ID = "org.jboss.ide.eclipse.as.core.server.internal.launch.serverClasspathProvider"; ///$NON-NLS-1$
 
-	public AbstractStartupConfigurator(IServer server) throws CoreException {
+	public AbstractStartLaunchConfigurator(IServer server) throws CoreException {
 		super(server);
 	}
 

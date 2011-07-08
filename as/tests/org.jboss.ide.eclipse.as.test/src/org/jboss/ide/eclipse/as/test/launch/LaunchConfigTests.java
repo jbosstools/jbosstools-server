@@ -21,7 +21,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.ILaunchConfigConfigurator;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
@@ -65,7 +65,7 @@ public class LaunchConfigTests extends TestCase {
 		assertEquals("dummyValue", launchConfig.getAttribute(attributeKey, "defaultValue"));
 	}
 
-	private class MockConfigurator extends AbstractStartupConfigurator {
+	private class MockConfigurator extends AbstractStartLaunchConfigurator {
 
 		private MockConfigurator(IServer server) throws CoreException {
 			super(server);

@@ -83,7 +83,7 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 	@Override
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		new LocalJBoss7StartupConfigurator(server).configure(workingCopy);
+		new LocalJBoss7StartConfigurator(server).configure(workingCopy);
 	}
 
 }

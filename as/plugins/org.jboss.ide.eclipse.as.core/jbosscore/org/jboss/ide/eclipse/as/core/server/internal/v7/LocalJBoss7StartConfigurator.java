@@ -19,14 +19,14 @@ import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.AbstractStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
-public class LocalJBoss7StartupConfigurator extends AbstractStartupConfigurator {
+public class LocalJBoss7StartConfigurator extends AbstractStartLaunchConfigurator {
 
-	public LocalJBoss7StartupConfigurator(IServer server) throws CoreException {
+	public LocalJBoss7StartConfigurator(IServer server) throws CoreException {
 		super(server);
 	}
 

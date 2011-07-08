@@ -28,7 +28,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.AbstractLocalJBossServerRun
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartupConfigurator;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalJBossStartLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
@@ -40,7 +40,7 @@ public class LocalJBossStartLaunchDelegate extends AbstractJBossStartLaunchConfi
 
 	public void setupLaunchConfiguration(
 			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		new LocalJBossStartupConfigurator(server).configure(workingCopy);
+		new LocalJBossStartLaunchConfigurator(server).configure(workingCopy);
 	}
 
 	/*
