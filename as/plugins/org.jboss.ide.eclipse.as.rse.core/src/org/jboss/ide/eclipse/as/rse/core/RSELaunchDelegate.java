@@ -41,6 +41,7 @@ import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
+import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 /**
@@ -65,7 +66,7 @@ public class RSELaunchDelegate extends AbstractRSELaunchDelegate {
 	
 	private void launchPingThread(DeployableServerBehavior beh) {
 		// TODO do it properly here
-		RSEHostShellModel.delay(30000);
+		ThreadUtils.sleepFor(30000);
 		beh.setServerStarted();
 	}
 

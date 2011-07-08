@@ -33,6 +33,7 @@ import org.eclipse.rse.subsystems.shells.core.subsystems.servicesubsystem.IShell
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 import org.jboss.ide.eclipse.as.rse.core.xpl.ConnectAllSubsystemsUtil;
 
 public class RSEHostShellModel {
@@ -152,7 +153,7 @@ public class RSEHostShellModel {
 				int delay, boolean exit)
 					throws CoreException {
 			executeRemoteCommand(initialWorkingDirectory, command, environment, monitor);
-			delay(delay);
+			ThreadUtils.sleepFor(delay);
 			if( exit ) {
 				singleUseShell.exit();
 				singleUseShell = null;
@@ -161,6 +162,10 @@ public class RSEHostShellModel {
 		
 	}
 	
+	/**
+	 * @deprecated moved to {@link ThreadUtils#sleepFor(int)}
+	 */
+	@Deprecated
 	public static void delay(int delay /* in ms */) {
 		int x = 0;
 		while( x < delay) {
@@ -171,7 +176,7 @@ public class RSEHostShellModel {
 			}
 		}
 	}
-
+	
 	public static IShellService findShellService(DelegatingServerBehavior behaviour) throws CoreException {
 		return findShellService(behaviour.getServer());
 	}
