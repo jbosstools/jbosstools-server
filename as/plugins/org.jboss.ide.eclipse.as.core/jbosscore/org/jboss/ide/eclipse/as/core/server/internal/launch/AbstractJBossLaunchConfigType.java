@@ -43,6 +43,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
+ * @deprecated replaced by {@link AbstractJBossStartLaunchConfiguration}
  * @author Rob Stryker
  */
 @Deprecated
