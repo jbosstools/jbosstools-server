@@ -25,12 +25,11 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	@Override
 	protected void pollServer(final boolean expectedState) {
-		stopPolling();
-		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 		// IF shutting down a process started OUTSIDE of eclipse, force use the web poller, 
 		// since there's no process watch for shutdowns
 		if( !expectedState 
 				&& process == null ) {
+			IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, getServer());
 			poller = PollThreadUtils.getPoller(WebPortPoller.WEB_POLLER_ID);
 			pollServer(expectedState, poller);
 		} else {
