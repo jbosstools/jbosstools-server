@@ -42,6 +42,11 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
  */
 @Deprecated
 public class JBossServerStartupLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
+	
+	/**
+	 * @deprecated replaced by {@link IStartLaunchDelegate}
+	 */
+	@Deprecated
 	public static interface StartLaunchDelegate {
 		public void actualLaunch(JBossServerStartupLaunchConfiguration launchConfig,
 				ILaunchConfiguration configuration, 
