@@ -69,7 +69,7 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 	private void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
-		JBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
+		DelegatingJBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
 		beh.markDoDeploy(p);
 	}
 	

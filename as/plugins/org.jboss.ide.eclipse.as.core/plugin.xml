@@ -113,7 +113,7 @@
             supportsRemoteHosts="true"/>
 
       <serverType
-            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerBehavior"
+            behaviourClass="org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior"
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server"
             description="%jboss.version.70.description"
             hasConfiguration="false"

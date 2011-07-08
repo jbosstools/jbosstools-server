@@ -5,7 +5,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
 
 public class JBossServerBehaviorUtils {
 
@@ -14,8 +14,8 @@ public class JBossServerBehaviorUtils {
 		return (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
 	}
 
-	public static JBoss7ServerBehavior getJBoss7ServerBehavior(ILaunchConfiguration configuration) throws CoreException {
+	public static DelegatingJBoss7ServerBehavior getJBoss7ServerBehavior(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
-		return (JBoss7ServerBehavior) server.getAdapter(JBoss7ServerBehavior.class);
+		return (DelegatingJBoss7ServerBehavior) server.getAdapter(DelegatingJBoss7ServerBehavior.class);
 	}
 }

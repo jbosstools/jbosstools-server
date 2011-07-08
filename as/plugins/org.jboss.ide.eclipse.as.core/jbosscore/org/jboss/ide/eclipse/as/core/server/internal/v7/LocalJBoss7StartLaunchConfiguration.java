@@ -68,7 +68,7 @@ public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDe
 	public void postLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
 			throws CoreException {
 		try {
-			JBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
+			DelegatingJBoss7ServerBehavior behavior = JBossServerBehaviorUtils.getJBoss7ServerBehavior(configuration);
 			IProcess[] processes = launch.getProcesses();
 			if (processes != null && processes.length >= 1) {
 				behavior.setProcess(processes[0]);
