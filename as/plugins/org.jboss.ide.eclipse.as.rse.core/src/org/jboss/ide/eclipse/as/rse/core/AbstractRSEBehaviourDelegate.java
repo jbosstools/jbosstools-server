@@ -55,13 +55,7 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 	@Override
 	protected IStatus gracefullStop() {
 		try {
-			String shutdownCommand = getShutdownCommand(getServer());
-			ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
-			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
-			IHostShell shell = model.getStartupShell();
-			if( RSEUtils.isActive(shell)) {
-				shell.writeToShell("exit");
-			}
+			executeShutdownCommand(getShutdownCommand(getServer()));
 			return Status.OK_STATUS;
 		} catch(CoreException ce) {
 			ServerLogger.getDefault().log(getServer(), ce.getStatus());
@@ -69,6 +63,15 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 					IStatus.ERROR, RSECorePlugin.PLUGIN_ID,
 					MessageFormat.format("Could not stop server {0}", getServer().getName()), 
 					ce);
+		}
+	}
+
+	private void executeShutdownCommand(String shutdownCommand) throws CoreException {
+		ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
+		model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
+		IHostShell shell = model.getStartupShell();
+		if( RSEUtils.isActive(shell)) {
+			shell.writeToShell("exit");
 		}
 	}
 
