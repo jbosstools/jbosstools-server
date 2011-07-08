@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IModuleFile;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractPublishMethod;
@@ -59,6 +60,10 @@ public class MockPublishMethod extends AbstractPublishMethod {
 	public class MockCopyCallbackHandler implements IPublishCopyCallbackHandler {
 		private IPath root;
 		public MockCopyCallbackHandler(IPath root) {
+			if( !(new Path(MOCK_ROOT).isPrefixOf(root))) {
+				System.out.println("Expected " + new Path(MOCK_ROOT) + " but got: " + root.toString());
+				throw new RuntimeException("Unacceptable use of callback handler");
+			}
 			this.root = root;
 		}
 		

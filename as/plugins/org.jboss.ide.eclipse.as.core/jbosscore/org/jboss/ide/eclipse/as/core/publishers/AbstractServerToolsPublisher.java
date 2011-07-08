@@ -126,7 +126,23 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 	protected IPath getDeployPath(IModule[] moduleTree, IDeployableServer server) {
 		return PublishUtil.getDeployPath(publishMethod, moduleTree, server);
 	}
-		
+
+	/**
+	 * Gets the actual deploy path for this module's parent
+	 * Given modules *MUST* be of length 2 or more
+	 * 
+	 * @param moduleTree
+	 * @param server
+	 * @return
+	 */
+	protected IPath getParentDeployPath(IModule[] moduleTree, IDeployableServer server) {
+		IModule[] tree2 = new IModule[moduleTree.length -1];
+		for( int i = 0; i < moduleTree.length-1; i++ ) {
+			tree2[i] = moduleTree[i];
+		}
+		return PublishUtil.getDeployPath(publishMethod, tree2, server);
+	}
+
 	
 	/**
 	 * Finish up the publishing. This may be moving a final zipped entity into the proper
@@ -197,14 +213,21 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute();
 			
 			try {
+				// Make local jar copy
 				File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
 				IPath tempFile = new Path(temp.getAbsolutePath());
 				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				String parentFolder = deployPath.removeLastSegments(1).toString();
-				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPath));
-				handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 200));
+				
+				// TODO !!!!! Transfer it
+				IPath deployPathInner = getParentDeployPath(moduleTree, server).removeLastSegments(1);
+				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPathInner).append(deployPathInner));
+				IPath filePath = deployPath.removeFirstSegments(deployPathInner.segments().length);
+				IPath parentFolderPath = filePath.removeLastSegments(1);
+				handler.makeDirectoryIfRequired(parentFolderPath, getSubMon(monitor, 200));
 				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
-				handler.copyFile(mf, deployPath, getSubMon(monitor, 500));
+				handler.copyFile(mf, filePath, getSubMon(monitor, 500));
+				
+				// Cleanup
 				tempFile.toFile().delete();
 			} catch( IOException ioe) {
 				list.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
@@ -291,13 +314,14 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		monitor.beginTask("Copying Child Module: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		try {
 			IPath destinationPath = getDeployPath(moduleTree, server);
+			IPath destinationFolder = destinationPath.removeLastSegments(1);
 			IModuleResource[] members = PublishUtil.getResources(moduleTree);
 			File source = PublishUtil.getFile(members[0]);
 			if( source != null ) {
-				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(destinationPath));
+				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(destinationFolder).append(destinationFolder));
 				IPath localFilePath = new Path(source.getAbsolutePath());
 				ModuleFile mf = new ModuleFile(localFilePath.toFile(), localFilePath.lastSegment(), localFilePath);
-				handler.copyFile(mf, destinationPath, new NullProgressMonitor());
+				handler.copyFile(mf, new Path(destinationPath.lastSegment()), new NullProgressMonitor());
 			} else {
 //				IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_COPY_BINARY_FAIL,
 //						NLS.bind(Messages.CouldNotPublishModule,
