@@ -38,7 +38,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends DelegatingStartLaunc
 		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
 		setupParticipants.add(new LocalJBossStartLaunchDelegate());
 		launchDelegates = new HashMap<String, IStartLaunchDelegate>();
-		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchConfiguration());
+		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
 	}
 	
 	public static void addLaunchDelegateMapping(String mode, IStartLaunchDelegate del) {
@@ -66,7 +66,7 @@ public class JBoss7ServerStartupLaunchConfiguration extends DelegatingStartLaunc
 //		return launchDelegates.get(type.getId());
 
 // always return local launch delegate until all parts were implemented
-		return new LocalJBoss7StartLaunchConfiguration();
+		return new LocalJBoss7StartLaunchDelegate();
 		
 	}
 	

@@ -25,11 +25,9 @@ import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 
 /**
- * @deprecated replaced by {@link LocalJBoss7StartLaunchDelegate}
- * 
  * @author Rob Stryker
  */
-public class LocalJBoss7StartLaunchConfiguration extends LocalJBossStartLaunchDelegate 
+public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegate 
 	implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
