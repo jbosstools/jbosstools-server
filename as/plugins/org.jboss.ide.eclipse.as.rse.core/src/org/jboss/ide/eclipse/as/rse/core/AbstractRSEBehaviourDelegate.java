@@ -12,9 +12,19 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
+import java.text.MessageFormat;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.rse.services.shells.IHostShell;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.AbstractJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
 public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviourDelegate {
 	
@@ -41,7 +51,29 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 			setServerStopped();
 		}
 	}
-		
+
+	@Override
+	protected IStatus gracefullStop() {
+		try {
+			String shutdownCommand = getShutdownCommand(getServer());
+			ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
+			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
+			IHostShell shell = model.getStartupShell();
+			if( RSEUtils.isActive(shell)) {
+				shell.writeToShell("exit");
+			}
+			return Status.OK_STATUS;
+		} catch(CoreException ce) {
+			ServerLogger.getDefault().log(getServer(), ce.getStatus());
+			return new Status(
+					IStatus.ERROR, RSECorePlugin.PLUGIN_ID,
+					MessageFormat.format("Could not stop server {0}", getServer().getName()), 
+					ce);
+		}
+	}
+
+	protected abstract String getShutdownCommand(IServer server) throws CoreException;
+	
 	/**
 	 * ATTENTION: don't call this directly, use {@link #getActualBehavior().getServerStarting()} instead. 
 	 * if we would call the delegating server behavior here to set it's state, we would cause an infinite loop.
