@@ -81,7 +81,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
 		// TODO: implement setup for RSE launch delegate too
-		new LocalJBoss7StartupConfigurator(getServer()).configure(launchConfig);
+		DelegatingJBoss7StartLaunchConfiguration.setupLaunchConfiguration(launchConfig, getServer());
 	}
 
 	public void setProcess(IProcess process) {

@@ -20,11 +20,16 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.IStartup;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
  * @author Rob Stryker
@@ -54,20 +59,16 @@ public class DelegatingJBoss7StartLaunchConfiguration extends DelegatingStartLau
 	// unless their operation mode (local / rse / etc) is in use
 	public static void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
 		for( Iterator<IStartLaunchSetupParticipant> i = setupParticipants.iterator(); i.hasNext(); ) {
-			i.next().setupLaunchConfiguration(workingCopy, server);
+			IStartLaunchSetupParticipant setupParticipant = i.next();
+			setupParticipant.setupLaunchConfiguration(workingCopy, server);
 		}
 	}	
 
 	protected IStartLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
-// TODO: choose delegate upon setting (server editor)
-//		IServer server = ServerUtil.getServer(configuration);
-//		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
-//		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
-//		return launchDelegates.get(type.getId());
-
-// always return local launch delegate until all parts were implemented
-		return new LocalJBoss7StartLaunchDelegate();
-		
+		IServer server = ServerUtil.getServer(configuration);
+		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
+		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
+		return launchDelegates.get(type.getId());
 	}
 	
 	public void actualLaunch(ILaunchConfiguration configuration, 

@@ -14,6 +14,8 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7StartLaunchConfiguration;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -35,6 +37,11 @@ public class RSECorePlugin implements BundleActivator {
 		DelegatingServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEBehaviourDelegate.class);
 		DelegatingStartLaunchConfiguration.addLaunchDelegateMapping(RSEPublishMethod.RSE_ID, new RSEJBossStartLaunchDelegate());
 		DelegatingStartLaunchConfiguration.addSetupLaunchParticipant(new RSEJBossStartLaunchDelegate());
+
+		DelegatingJBoss7ServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEJBoss7BehaviourDelegate.class);
+		DelegatingJBoss7StartLaunchConfiguration.addLaunchDelegateMapping(RSEPublishMethod.RSE_ID, new RSEJBoss7StartLaunchDelegate());
+		DelegatingJBoss7StartLaunchConfiguration.addSetupLaunchParticipant(new RSEJBossStartLaunchDelegate());
+
 	}
 
 	/*

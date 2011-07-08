@@ -14,7 +14,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
@@ -77,4 +79,11 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 			// report it
 		}
 	}
+	
+	@Override
+	public void setupLaunchConfiguration(
+			ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
+		new LocalJBoss7StartupConfigurator(server).configure(workingCopy);
+	}
+
 }
