@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
@@ -34,12 +35,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	@Override
 	protected IStatus gracefullStop() {
 		try {
-			ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-			//DelegatingServerBehavior serverBehavior = ServerUtil.checkedGetServerAdapter(getServer(), DelegatingServerBehavior.class);
-			//String defaultCmd = serverBehavior.getDefaultArguments();
-			String defaultCmd = ServerUtil.checkedGetBehaviorDelegate(getServer()).getDefaultStopArguments();
-			String shutdownCommand = config == null ? defaultCmd :
-				RSELaunchConfigProperties.getShutdownCommand(config, defaultCmd);
+			String shutdownCommand = getShutdownCommand(getServer());
 			ServerShellModel model = RSEHostShellModel.getInstance().getModel(getServer());
 			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
 			if( model.getStartupShell() != null && model.getStartupShell().isActive()) {
@@ -55,6 +51,12 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		}
 	}
 	
+	private String getShutdownCommand(IServer server) throws CoreException {
+		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
+		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
+		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
+	}
+
 	public void serverIsStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}

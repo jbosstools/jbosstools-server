@@ -84,6 +84,9 @@ public class RSELaunchConfigProperties {
 
 	public static String getShutdownCommand(ILaunchConfiguration launchConfig, String defaultCommand)
 			throws CoreException {
+		if (launchConfig == null) { 
+			return defaultCommand;
+		}
 		return launchConfig.getAttribute(RSE_SHUTDOWN_COMMAND, defaultCommand);
 	}
 
