@@ -28,10 +28,6 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
 	
-	public static interface IStartLaunchSetupParticipant {
-		public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException;
-	}
-	
 	private static HashMap<String, IStartLaunchDelegate> launchDelegates;
 	private static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
 	
