@@ -23,9 +23,12 @@ import org.eclipse.rse.services.shells.IHostShellChangeEvent;
 import org.eclipse.rse.services.shells.IHostShellOutputListener;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.AbstractJBossStartLaunchConfiguration;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 
-public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunchConfiguration {
+public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunchConfiguration 
+	implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
 
 	protected void executeRemoteCommand(String command, DelegatingServerBehavior behavior)
 			throws CoreException {
