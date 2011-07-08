@@ -139,36 +139,10 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 			throws CoreException {
 		new RSELaunchConfigurator(getDefaultLaunchCommand(workingCopy), getDefaultStopCommand(server))
 				.configure(workingCopy);
-		/*
-		 * /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M
-		 * -Xmx1530M -XX:PermSize=425M -XX:MaxPermSize=425M
-		 * -Dorg.jboss.resolver.warning=true
-		 * -Dsun.rmi.dgc.client.gcInterval=3600000
-		 * -Dsun.rmi.dgc.server.gcInterval=3600000
-		 * -Djboss.partition.udpGroup=228.1.2.3
-		 * -Djboss.webpartition.mcast_port=45577
-		 * -Djboss.hapartition.mcast_port=45566
-		 * -Djboss.ejb3entitypartition.mcast_port=43333
-		 * -Djboss.ejb3sfsbpartition.mcast_port=45551
-		 * -Djboss.jvmRoute=node-10.209.183.100 -Djboss.gossip_port=12001
-		 * -Djboss.gossip_refresh=5000 -Djava.awt.headless=true
-		 * -Djava.net.preferIPv4Stack=true
-		 * -Djava.endorsed.dirs=/opt/jboss-eap-5.1.0.Beta/jboss-as/lib/endorsed
-		 * -classpath /opt/jboss-eap-5.1.0.Beta/jboss-as/bin/run.jar
-		 * org.jboss.Main -c default -b 10.209.183.100
-		 */
 	}
 
-	private  String getDefaultStopCommand(IServer server) {
-		try {
-			return getDefaultStopCommand(server, false);
-		} catch (CoreException ce) {/* ignore, INTENTIONAL */
-		}
-		return null;
-	}
-
-	private String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
-		String rseHome = RSEUtils.getRSEHomeDir(server, errorOnFail);
+	private  String getDefaultStopCommand(IServer server) throws CoreException {
+		String rseHome = RSEUtils.getRSEHomeDir(server, false);
 
 		String stop = new Path(rseHome)
 				.append(IJBossRuntimeResourceConstants.BIN)
