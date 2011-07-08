@@ -41,7 +41,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 			model.executeRemoteCommand("/", shutdownCommand, new String[]{}, new NullProgressMonitor(), 10000, true);
 			IHostShell shell = model.getStartupShell();
 			if( RSEUtils.isActive(shell)) {
-				model.getStartupShell().writeToShell("exit");
+				shell.writeToShell("exit");
 			}
 			return Status.OK_STATUS;
 		} catch(CoreException ce) {
