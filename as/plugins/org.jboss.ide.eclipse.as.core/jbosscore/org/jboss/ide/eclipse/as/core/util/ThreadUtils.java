@@ -28,7 +28,7 @@ public class ThreadUtils {
 	public static void sleepFor(int delay /* in ms */) {
 		int x = 0;
 		while( x < delay) {
-			x+=200;
+			x += SLEEP_DELAY;
 			try {
 				Thread.sleep(SLEEP_DELAY);
 			} catch(InterruptedException ie) {
