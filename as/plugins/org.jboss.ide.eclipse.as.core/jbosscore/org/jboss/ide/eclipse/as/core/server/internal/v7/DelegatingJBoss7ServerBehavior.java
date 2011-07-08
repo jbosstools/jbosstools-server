@@ -72,10 +72,12 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		return delegateClassMap;
 	}
 	
+	@Override
 	public boolean shouldSuspendScanner() {
 		return false;
 	}
 
+	@Override
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
 		// TODO: implement setup for RSE launch delegate too
@@ -122,6 +124,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		createDoDeployMarker(paths, monitor);
 	}
 	
+	@Override
 	public void restartModule(IModule[] module, IProgressMonitor monitor) throws CoreException {
 		IDeployableServer ds = ServerConverter.getDeployableServer(getServer());
 		if( ds == null ) 
@@ -148,6 +151,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		}
 	}
 
+	@Override
 	public void stop(boolean force) {
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			super.setServerStopped();
