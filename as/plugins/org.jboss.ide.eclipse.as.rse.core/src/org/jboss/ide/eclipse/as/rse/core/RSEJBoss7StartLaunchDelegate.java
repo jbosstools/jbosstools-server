@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core;
 
-import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -21,12 +19,9 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
-import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
-import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -34,11 +29,9 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
-import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
-	private PollThread pollThread;
 
 	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
