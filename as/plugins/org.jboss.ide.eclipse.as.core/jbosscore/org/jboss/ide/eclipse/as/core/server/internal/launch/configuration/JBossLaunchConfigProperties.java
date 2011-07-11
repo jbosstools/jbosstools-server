@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.core.server.internal.launch.configuration;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -236,7 +236,7 @@ public class JBossLaunchConfigProperties {
 	@SuppressWarnings("unchecked")
 	public static List<String> getClasspath(ILaunchConfiguration launchConfig) throws CoreException {
 		return (List<String>) launchConfig.getAttribute(
-				IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, new ArrayList<String>());
+				IJavaLaunchConfigurationConstants.ATTR_CLASSPATH, Collections.emptyList());
 	}
 
 	private static boolean isSet(String value) {
