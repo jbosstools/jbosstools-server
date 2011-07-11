@@ -22,17 +22,14 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
-import org.jboss.ide.eclipse.as.core.util.ArgsUtil;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
 public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
@@ -97,39 +94,16 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 	}
 
 	private String getDefaultStopCommand(IServer server, boolean errorOnFail) throws CoreException {
-		String rseHome = RSEUtils.getRSEHomeDir(server, errorOnFail);
-
-		String stop = new Path(rseHome)
-				.append(IJBossRuntimeResourceConstants.BIN)
-				.append(IJBossRuntimeResourceConstants.SHUTDOWN_SH).toString()
-				+ IJBossRuntimeConstants.SPACE;
-
-		// Pull args from single utility method
-		// stop += StopLaunchConfiguration.getDefaultArgs(jbs);
-		IJBossBehaviourDelegate delegate = ServerUtil.checkedGetBehaviorDelegate(server);
-		stop += delegate.getDefaultStopArguments();
-		return stop;
+		return null;
 	}
 
 	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
 		String serverId = JBossLaunchConfigProperties.getServerId(config);
 		JBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
-		String rseHome = jbossServer.getServer().getAttribute(RSEUtils.RSE_SERVER_HOME_DIR, "");
+		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
 		// initialize startup command to something reasonable
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
-
-		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
-				new Path(rseHome).append(
-						IJBossRuntimeResourceConstants.LIB).append(
-						IJBossRuntimeResourceConstants.ENDORSED).toOSString(), true);
-
-		String libPath = new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN)
-				.append(IJBossRuntimeResourceConstants.NATIVE).toOSString();
-		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
-				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JAVA_LIB_PATH,
-				libPath, true);
 
 		String cmd = "java " + currentVMArgs + " -classpath " +
 				new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
