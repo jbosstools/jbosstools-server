@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -109,7 +110,7 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
-		String jarArg = getJarArg(config); 
+		String jarArg = LaunchConfigUtils.classpathUserClassesToString(config); 
 
 		String cmd = "java "
 				+ currentVMArgs
@@ -120,18 +121,5 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 				+ IJBossRuntimeConstants.SPACE + currentArgs 
 				+ "&";
 		return cmd;
-	}
-
-	private String getJarArg(ILaunchConfiguration config) throws CoreException {
-		StringBuilder builder = new StringBuilder();
-		List<String> classpath = JBossLaunchConfigProperties.getClasspath(config);
-		for(String entry : classpath) {
-			IRuntimeClasspathEntry runtimeEntry = JavaRuntime.newRuntimeClasspathEntry(entry);
-			int classpathProperty = runtimeEntry.getClasspathProperty();
-			if (classpathProperty == IRuntimeClasspathEntry.USER_CLASSES) {
-				builder.append(runtimeEntry.getLocation());
-			}
-		}
-		return builder.toString();
 	}
 }

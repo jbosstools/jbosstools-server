@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
@@ -23,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 
 /**
  * @author André Dietisheim
@@ -83,6 +85,20 @@ public class LaunchConfigUtils {
 		}
 
 		return list;
+	}
+	
+	public static String classpathUserClassesToString(ILaunchConfiguration config) throws CoreException {
+		StringBuilder builder = new StringBuilder();
+		List<String> classpath = JBossLaunchConfigProperties.getClasspath(config);
+		for(String entry : classpath) {
+			IRuntimeClasspathEntry runtimeEntry = JavaRuntime.newRuntimeClasspathEntry(entry);
+			int classpathProperty = runtimeEntry.getClasspathProperty();
+			if (classpathProperty == IRuntimeClasspathEntry.USER_CLASSES) {
+				builder.append(runtimeEntry.getLocation());
+				builder.append(IJBossRuntimeConstants.SPACE);
+			}
+		}
+		return builder.toString();
 	}
 	
 	public static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
