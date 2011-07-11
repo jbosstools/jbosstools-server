@@ -127,9 +127,12 @@ public class LaunchConfigUtils {
 	}
 
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
+		return JavaRuntime.newArchiveRuntimeClasspathEntry(getModulesPath(server));
+	}
+
+	public static IPath getModulesPath(IServer server) throws CoreException {
 		IPath runtimeLocation = server.getRuntime().getLocation();
-		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR);
-		return JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation);
+		return runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR);
 	}
 
 	public static void addDirectory(String serverHome, List<IRuntimeClasspathEntry> classpath, String dirName) {
