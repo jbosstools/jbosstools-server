@@ -54,13 +54,6 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 		launchPingThread(beh);
 	}
 
-	private void launchPingThread(DelegatingServerBehavior beh) {
-		// TODO do it properly here
-		// ThreadUtils.sleepFor(30000);
-		// beh.setServerStarted();
-		this.pollThread = PollThreadUtils.pollServer(true, this.pollThread, beh);
-	}
-
 	public void preLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 	}
