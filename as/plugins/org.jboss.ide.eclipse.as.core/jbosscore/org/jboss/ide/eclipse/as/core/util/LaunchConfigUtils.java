@@ -74,7 +74,29 @@ public class LaunchConfigUtils {
 		addCPEntry(serverHome.append(relative), list);
 	}
 
-	public static List<String> toStrings(List<IRuntimeClasspathEntry> cp) {
+	public static List<String> toStrings(List<?> cp) {
+		Iterator<?> cpi = cp.iterator();
+		ArrayList<String> list = new ArrayList<String>();
+		while (cpi.hasNext()) {
+			Object entry = cpi.next();
+			if (entry instanceof IRuntimeClasspathEntry) {
+				try {
+					list.add(((IRuntimeClasspathEntry) entry).getMemento());
+				} catch (Exception e) {
+					// Trace.trace(Trace.SEVERE, "Could not resolve classpath entry:
+					// " + entry, e);
+				}
+			} else if (entry instanceof String) {
+				list.add((String) entry);
+			} else if (entry != null){
+				list.add(entry.toString());
+			}
+		}
+
+		return list;
+	}
+	
+	public static List<String> toString(List<IRuntimeClasspathEntry> cp) {
 		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
@@ -106,7 +128,7 @@ public class LaunchConfigUtils {
 
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
 		IPath runtimeLocation = server.getRuntime().getLocation();
-		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS_MODULES_JAR);
+		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR);
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation);
 	}
 

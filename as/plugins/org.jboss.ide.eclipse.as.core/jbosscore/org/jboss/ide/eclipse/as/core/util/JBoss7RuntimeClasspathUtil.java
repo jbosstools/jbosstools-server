@@ -36,7 +36,7 @@ public class JBoss7RuntimeClasspathUtil {
 	@Deprecated
 	public static IRuntimeClasspathEntry getModulesClasspathEntry(IServer server) throws CoreException {
 		IPath runtimeLocation = server.getRuntime().getLocation();
-		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS_MODULES_JAR);
+		IPath modulesLocation = runtimeLocation.append(IJBossRuntimeResourceConstants.JBOSS7_MODULES_JAR);
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(modulesLocation);
 	}
 }
