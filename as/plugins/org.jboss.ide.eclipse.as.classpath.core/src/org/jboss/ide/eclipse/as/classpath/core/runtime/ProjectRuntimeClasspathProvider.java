@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Red Hat, Inc.
+ * Copyright (c) 2011 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -11,7 +11,7 @@
 
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +27,8 @@ import org.eclipse.jdt.core.IClasspathContainer;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.common.project.facet.core.IClasspathProvider;
 import org.eclipse.jst.common.project.facet.core.JavaFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -36,7 +38,8 @@ import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
-import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer.WebtoolsProjectJBossClasspathContainer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IWTPConstants;
 
 /**
  * This class acts as a front to add whatever entries are available 
@@ -46,7 +49,6 @@ import org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClass
  *
  */
 public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
-	public static final String CONTAINER_ID = "org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectInitializer"; //$NON-NLS-1$
 	private IRuntimeComponent rc;
 
 	public ProjectRuntimeClasspathProvider() {
@@ -56,43 +58,59 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 		this.rc = rc;
 	}
 
-	public List getClasspathEntries(final IProjectFacetVersion fv) {
-		IPath path = null;
+	public List<IClasspathEntry> getClasspathEntries(final IProjectFacetVersion fv) {
 		if( fv.getProjectFacet().equals(JavaFacet.FACET)) {
-			path = new Path(CONTAINER_ID);
-			path = path.append(rc.getProperty("id")); //$NON-NLS-1$
-			path = path.append(fv.getProjectFacet().getId());
-			path = path.append(fv.getVersionString());
-			IClasspathEntry[] entries =
-				new WebtoolsProjectJBossClasspathContainer(path).getClasspathEntries();
-			return Arrays.asList(entries);
+			return getJavaClasspathEntries();
 		} else if( isPrimaryFacet(fv.getProjectFacet()) || isSecondaryFacet(fv.getProjectFacet())) {
-			String id = rc.getProperty("id"); //$NON-NLS-1$
-			IPath containerPath = new Path("org.eclipse.jst.server.core.container").append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$ //$NON-NLS-2$
-			path = containerPath.append(id);
-		}
-		if( path != null ) {
-			IClasspathEntry cpentry = JavaCore.newContainerEntry(path);
-			return Collections.singletonList(cpentry);
+			return getClientAllClasspathEntry();
 		}
 		return Collections.emptyList();
+	}
+	
+	private List<IClasspathEntry> getJavaClasspathEntries() {
+		String runtimeId = rc.getProperty("id"); //$NON-NLS-1$
+		if( runtimeId != null ) {
+			IRuntime runtime = ServerCore.findRuntime(runtimeId);
+			if( runtime != null ) {
+				IJBossServerRuntime  jbsRuntime = (IJBossServerRuntime)runtime.loadAdapter(IJBossServerRuntime.class, null);
+				IVMInstall vmInstall = jbsRuntime.getVM();
+				if (vmInstall != null) {
+					String name = vmInstall.getName();
+					String typeId = vmInstall.getVMInstallType().getId();
+					IClasspathEntry[] entries = new IClasspathEntry[] { 
+							JavaCore.newContainerEntry(new Path(JavaRuntime.JRE_CONTAINER)
+								.append(typeId).append(name)) 
+					};
+					return Arrays.asList(entries);
+				}
+			}
+		}
+		return new ArrayList<IClasspathEntry>();
+	}
+	
+	private List<IClasspathEntry> getClientAllClasspathEntry() {
+		String id = rc.getProperty("id"); //$NON-NLS-1$
+		IPath containerPath = new Path("org.eclipse.jst.server.core.container") //$NON-NLS-1$
+			.append("org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"); //$NON-NLS-1$
+		IClasspathEntry cpentry = JavaCore.newContainerEntry(containerPath.append(id));
+		return Collections.singletonList(cpentry);
 	}
 	
 	// Bad name, I know, but checks if this is 
 	// an ear, war, ejb, or other top level facet
 	protected boolean isPrimaryFacet(IProjectFacet facet) {
-		return facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_WEB)
-			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_EJB)
-			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_EAR)
-			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_CONNECTOR)
-			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_APP_CLIENT);
+		return facet.getId().equals(IWTPConstants.FACET_WEB)
+			|| facet.getId().equals(IWTPConstants.FACET_EJB)
+			|| facet.getId().equals(IWTPConstants.FACET_EAR)
+			|| facet.getId().equals(IWTPConstants.FACET_CONNECTOR)
+			|| facet.getId().equals(IWTPConstants.FACET_APP_CLIENT);
 	}
 
 	// Also a bad name, but facets the server automatically knows
 	// how to provide classpath entries for
 	protected boolean isSecondaryFacet(IProjectFacet facet) {
-		return facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_JSF)
-			|| facet.getId().equals(WebtoolsProjectJBossClasspathContainerInitializer.FACET_JPA); 
+		return facet.getId().equals(IWTPConstants.FACET_JSF)
+			|| facet.getId().equals(IWTPConstants.FACET_JPA); 
 	}
 
 	public static final class Factory implements IAdapterFactory {
@@ -128,10 +146,8 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 			if( rt == null ) 
 				throw new CoreException(
 						new Status( IStatus.ERROR,  ClasspathCorePlugin.PLUGIN_ID, 
-								MessageFormat
-										.format(
-												Messages.ProjectRuntimeClasspathProvider_runtime_does_not_exist,
-												path.segment(1))));
+							Messages.bind(Messages.ProjectRuntimeClasspathProvider_runtime_does_not_exist,
+							path.segment(1))));
 		}
 
 		public IClasspathEntry[] getClasspathEntries() {
@@ -139,7 +155,7 @@ public class ProjectRuntimeClasspathProvider implements IClasspathProvider {
 		}
 
 		public String getDescription() {
-			return MessageFormat.format(Messages.ProjectRuntimeClasspathProvider_all_jboss_libraries_description, (rt == null ? "null" : rt.getName())); //$NON-NLS-1$
+			return Messages.bind(Messages.ProjectRuntimeClasspathProvider_all_jboss_libraries_description, (rt == null ? "null" : rt.getName())); //$NON-NLS-1$
 		}
 
 		public int getKind() {

@@ -115,19 +115,8 @@
       <factory class="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectRuntimeClasspathProvider$Factory"/>
       <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
 	</adapter>
-	
-	
    </extension>
-   
-   <extension
-         point="org.eclipse.jdt.core.classpathContainerInitializer">
-      <classpathContainerInitializer
-            class="org.jboss.ide.eclipse.as.classpath.core.runtime.WebtoolsProjectJBossClasspathContainerInitializer"
-            id="org.jboss.ide.eclipse.as.classpath.core.runtime.ProjectInitializer"/>
-   </extension>
- 
-
-
+  
    <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget"

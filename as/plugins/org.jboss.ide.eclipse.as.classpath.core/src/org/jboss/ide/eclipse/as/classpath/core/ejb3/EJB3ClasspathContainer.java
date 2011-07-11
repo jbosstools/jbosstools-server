@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Red Hat, Inc.
+ * Copyright (c) 2011 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -119,8 +119,8 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
 	   return new IClasspathEntry[]{};
    }
 
-   protected static IClasspathEntry[] get40Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
-		ArrayList list = new ArrayList();
+   public static IClasspathEntry[] get40Jars(IPath homePath, IPath configPath)  throws FileNotFoundException {
+		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 
 		// path roots
 		IPath deploy = configPath.append(DEPLOY);
@@ -141,8 +141,8 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
 		return (IClasspathEntry[]) list.toArray(new IClasspathEntry[list.size()]);
   }
   
-  protected static IClasspathEntry[] get42Jars(IPath homePath, IPath configPath) throws FileNotFoundException {
-		ArrayList list = new ArrayList();
+  public static IClasspathEntry[] get42Jars(IPath homePath, IPath configPath) throws FileNotFoundException {
+		ArrayList<IClasspathEntry> list = new ArrayList<IClasspathEntry>();
 
 		// path roots
 		IPath deploy = configPath.append(DEPLOY);
@@ -213,7 +213,6 @@ public class EJB3ClasspathContainer implements IClasspathContainer, ClasspathCon
    }   
 
 	protected static IClasspathEntry getEntry(IPath path) throws FileNotFoundException {
-		System.out.println("ls " + path.toOSString().substring(45)); //$NON-NLS-1$
 		if( !path.toFile().exists())
 			throw new FileNotFoundException();
 		return JavaRuntime.newArchiveRuntimeClasspathEntry(path).getClasspathEntry();
