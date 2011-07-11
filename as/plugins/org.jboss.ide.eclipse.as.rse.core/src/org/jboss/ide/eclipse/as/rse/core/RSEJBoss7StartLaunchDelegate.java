@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -19,20 +21,24 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.JBossLaunchConfigProperties;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ThreadUtils;
 
 public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
+	private PollThread pollThread;
+
 	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
@@ -46,11 +52,12 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 		executeRemoteCommand(command, beh);
 		launchPingThread(beh);
 	}
-	
-	private void launchPingThread(DeployableServerBehavior beh) {
+
+	private void launchPingThread(DelegatingServerBehavior beh) {
 		// TODO do it properly here
-		ThreadUtils.sleepFor(30000);
-		beh.setServerStarted();
+		// ThreadUtils.sleepFor(30000);
+		// beh.setServerStarted();
+		this.pollThread = PollThreadUtils.pollServer(true, this.pollThread, beh);
 	}
 
 	public void preLaunch(ILaunchConfiguration configuration, String mode,
@@ -65,27 +72,9 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 			throws CoreException {
 		new RSELaunchConfigurator(getDefaultLaunchCommand(workingCopy), getDefaultStopCommand(server))
 				.configure(workingCopy);
-		/*
-		 * /usr/lib/jvm/jre/bin/java -Dprogram.name=run.sh -server -Xms1530M
-		 * -Xmx1530M -XX:PermSize=425M -XX:MaxPermSize=425M
-		 * -Dorg.jboss.resolver.warning=true
-		 * -Dsun.rmi.dgc.client.gcInterval=3600000
-		 * -Dsun.rmi.dgc.server.gcInterval=3600000
-		 * -Djboss.partition.udpGroup=228.1.2.3
-		 * -Djboss.webpartition.mcast_port=45577
-		 * -Djboss.hapartition.mcast_port=45566
-		 * -Djboss.ejb3entitypartition.mcast_port=43333
-		 * -Djboss.ejb3sfsbpartition.mcast_port=45551
-		 * -Djboss.jvmRoute=node-10.209.183.100 -Djboss.gossip_port=12001
-		 * -Djboss.gossip_refresh=5000 -Djava.awt.headless=true
-		 * -Djava.net.preferIPv4Stack=true
-		 * -Djava.endorsed.dirs=/opt/jboss-eap-5.1.0.Beta/jboss-as/lib/endorsed
-		 * -classpath /opt/jboss-eap-5.1.0.Beta/jboss-as/bin/run.jar
-		 * org.jboss.Main -c default -b 10.209.183.100
-		 */
 	}
 
-	private  String getDefaultStopCommand(IServer server) {
+	private String getDefaultStopCommand(IServer server) {
 		try {
 			return getDefaultStopCommand(server, false);
 		} catch (CoreException ce) {/* ignore, INTENTIONAL */
@@ -98,17 +87,51 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 	}
 
 	private String getDefaultLaunchCommand(ILaunchConfiguration config) throws CoreException {
+		/*
+		 * -server -Xms64m -Xmx512m -XX:MaxPermSize=256m
+		 * -Djava.net.preferIPv4Stack=true -Dorg.jboss.resolver.warning=true
+		 * -Dsun.rmi.dgc.client.gcInterval=3600000
+		 * -Dsun.rmi.dgc.server.gcInterval=3600000
+		 * -Dorg.jboss.boot.log.file=/home
+		 * /adietish/jboss-runtimes/jboss-7.0.0.CR1/standalone/log/boot.log
+		 * -Dlogging
+		 * .configuration=file:/home/adietish/jboss-runtimes/jboss-7.0.0
+		 * .CR1/standalone/configuration/logging.properties -jar
+		 * /home/adietish/jboss-runtimes/jboss-7.0.0.CR1/jboss-modules.jar
+		 * (!!!!!!!!!MISSING) -mp
+		 * /home/adietish/jboss-runtimes/jboss-7.0.0.CR1/modules -logmodule
+		 * org.jboss.logmanager -jaxpmodule javax.xml.jaxp-provider
+		 * org.jboss.as.standalone
+		 * -Djboss.home.dir=/home/adietish/jboss-runtimes/jboss-7.0.0.CR1
+		 */
 		String serverId = JBossLaunchConfigProperties.getServerId(config);
 		JBossServer jbossServer = ServerConverter.checkedFindJBossServer(serverId);
 		String rseHome = RSEUtils.getRSEHomeDir(jbossServer.getServer());
-		// initialize startup command to something reasonable
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
+		String jarArg = getJarArg(config); 
 
-		String cmd = "java " + currentVMArgs + " -classpath " +
-				new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
-						IJBossRuntimeResourceConstants.START_JAR).toString() + IJBossRuntimeConstants.SPACE +
-				IJBossRuntimeConstants.START_MAIN_TYPE + IJBossRuntimeConstants.SPACE + currentArgs + "&";
+		String cmd = "java "
+				+ currentVMArgs
+				+ " -classpath "
+				+ new Path(rseHome).append(IJBossRuntimeResourceConstants.BIN).append(
+						IJBossRuntimeResourceConstants.START_JAR).toString()
+				+ " -jar " + jarArg + " "
+				+ IJBossRuntimeConstants.SPACE + currentArgs 
+				+ "&";
 		return cmd;
+	}
+
+	private String getJarArg(ILaunchConfiguration config) throws CoreException {
+		StringBuilder builder = new StringBuilder();
+		List<String> classpath = JBossLaunchConfigProperties.getClasspath(config);
+		for(String entry : classpath) {
+			IRuntimeClasspathEntry runtimeEntry = JavaRuntime.newRuntimeClasspathEntry(entry);
+			int classpathProperty = runtimeEntry.getClasspathProperty();
+			if (classpathProperty == IRuntimeClasspathEntry.USER_CLASSES) {
+				builder.append(runtimeEntry.getLocation());
+			}
+		}
+		return builder.toString();
 	}
 }
