@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.rse.core;
 
+import java.text.MessageFormat;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -41,7 +43,7 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			behavior.setServerStopped(); 
 			throw new CoreException(new Status(IStatus.ERROR,
 					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
-					sme.getMessage(), sme));
+					MessageFormat.format("Could not execute command on remote server {0}", behavior.getServer().getName()), sme));
 		}
 	}
 	// Only for debugging
