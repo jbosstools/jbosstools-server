@@ -40,7 +40,7 @@ public class RSECorePlugin implements BundleActivator {
 
 		DelegatingJBoss7ServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEJBoss7BehaviourDelegate.class);
 		DelegatingJBoss7StartLaunchConfiguration.addLaunchDelegateMapping(RSEPublishMethod.RSE_ID, new RSEJBoss7StartLaunchDelegate());
-		DelegatingJBoss7StartLaunchConfiguration.addSetupLaunchParticipant(new RSEJBossStartLaunchDelegate());
+		DelegatingJBoss7StartLaunchConfiguration.addSetupLaunchParticipant(new RSEJBoss7StartLaunchDelegate());
 
 	}
 

@@ -21,14 +21,12 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.core.internal.IStartup;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 /**
@@ -41,7 +39,7 @@ public class DelegatingJBoss7StartLaunchConfiguration extends DelegatingStartLau
 
 	static {
 		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-		setupParticipants.add(new LocalJBossStartLaunchDelegate());
+		setupParticipants.add(new LocalJBoss7StartLaunchDelegate());
 		launchDelegates = new HashMap<String, IStartLaunchDelegate>();
 		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
 	}
