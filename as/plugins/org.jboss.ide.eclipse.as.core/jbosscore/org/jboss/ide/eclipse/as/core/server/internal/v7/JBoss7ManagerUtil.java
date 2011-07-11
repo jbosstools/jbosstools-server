@@ -27,7 +27,7 @@ public class JBoss7ManagerUtil {
 	}
 
 	private static String getRequiredVersion(IServer server) {
-		String id = server.getRuntime().getId();
+		String id = server.getRuntime().getRuntimeType().getId();
 		if (JBOSS7_RUNTIME.equals(id)) { 
 			return IJBoss7ManagerService.AS_VERSION_700;
 		}
