@@ -37,8 +37,8 @@ public abstract class AbstractRSELaunchDelegate extends AbstractJBossStartLaunch
 			IHostShell shell = model.createStartupShell("/", command, new String[] {}, new NullProgressMonitor());
 			addShellOutputListener(shell);
 		} catch (SystemMessageException sme) {
-			behavior.setServerStopped(); // Not sure when this comes, but we should
-									// try to keep track
+			// could not connect to remote system
+			behavior.setServerStopped(); 
 			throw new CoreException(new Status(IStatus.ERROR,
 					org.jboss.ide.eclipse.as.rse.core.RSECorePlugin.PLUGIN_ID,
 					sme.getMessage(), sme));
