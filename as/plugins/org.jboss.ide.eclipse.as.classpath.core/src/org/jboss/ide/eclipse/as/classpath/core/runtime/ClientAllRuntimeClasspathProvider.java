@@ -12,10 +12,10 @@
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.internal.core.ClasspathEntry;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.RuntimeClasspathProviderDelegate;
 import org.eclipse.wst.server.core.IRuntime;
@@ -92,14 +91,6 @@ public class ClientAllRuntimeClasspathProvider
 					return false;
 			} else if (!name.equals(other.name))
 				return false;
-			return true;
-		}
-	}
-	
-	public static class ClientAllFilter {
-		public static boolean accepts(IPath path) {
-			if( !path.lastSegment().endsWith(EXT_JAR)) return false;
-			if( path.lastSegment().toLowerCase().endsWith("jaxb-xjc.jar")) return false; //$NON-NLS-1$
 			return true;
 		}
 	}
@@ -211,7 +202,8 @@ public class ClientAllRuntimeClasspathProvider
 	
 	protected Set<Entry> get70(IPath location) {
 		Set<Entry> list = new HashSet<Entry>();
-		addPaths(location.append(AS7_MODULES).append(JAVAX), list, true);
+		SimpleFileFilter filter = new SimpleFileFilter(new String[]{"jsf-api-1.2_13.jar", "jsf-impl-1.2_13.jar"}); // Problematic jar //$NON-NLS-1$
+		addPaths(location.append(AS7_MODULES).append(JAVAX), list, true, filter);
 		return list;
 	}
 	
@@ -223,20 +215,37 @@ public class ClientAllRuntimeClasspathProvider
 		addPaths(folder, list, false);
 	}
 	
+	protected class SimpleFileFilter implements FileFilter {
+		private List<String> ignore;
+		public SimpleFileFilter(String[] ignore) {
+			this.ignore = Arrays.asList(ignore);
+		}
+		public boolean accept(File pathname) {
+			if( !pathname.getName().endsWith(EXT_JAR)) return false;
+			boolean contains = ignore.contains(pathname.getName());
+			return !contains;
+		}
+	}
+	
 	protected void addPaths(IPath folder, Set<Entry> list, boolean recurse) {
+		addPaths(folder, list, recurse, new SimpleFileFilter(new String[]{"jaxb-xjc.jar"})); //$NON-NLS-1$
+	}
+	
+	protected void addPaths(IPath folder, Set<Entry> list, boolean recurse, FileFilter filter) {
 		if( folder.toFile().exists()) {
 			File f = folder.toFile();
 			if(f.isDirectory()) {
 				File[] asFiles = f.listFiles();
 				for( int i = 0; i < asFiles.length; i++ ) {
-					if( asFiles[i].getName().endsWith(EXT_JAR) && ClientAllFilter.accepts(folder.append(asFiles[i].getName()))) {
+					if( filter == null || filter.accept(folder.append(asFiles[i].getName()).toFile())) {
 						addSinglePath(folder.append(asFiles[i].getName()), list);
 					} else if( recurse && asFiles[i].isDirectory()) {
-						addPaths(folder.append(asFiles[i].getName()), list, true);
+						addPaths(folder.append(asFiles[i].getName()), list, true, filter);
 					}
 				}
 			} else { // item is a file, not a folder
-				addSinglePath(folder, list);
+				if( filter == null || filter.accept(folder.toFile()))
+					addSinglePath(folder, list);
 			}
 		}
 	}
