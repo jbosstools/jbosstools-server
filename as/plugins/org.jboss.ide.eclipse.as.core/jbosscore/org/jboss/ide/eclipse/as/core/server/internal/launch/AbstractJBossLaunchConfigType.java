@@ -170,7 +170,7 @@ public abstract class AbstractJBossLaunchConfigType extends AbstractJavaLaunchCo
 	}
 
 	@Deprecated
-	public static ArrayList<String> convertClasspath(List<IRuntimeClasspathEntry> cp) {
+	public static ArrayList<String> convertClasspath(List<IRuntimeClasspathEntry> cp) throws CoreException {
 		return (ArrayList) LaunchConfigUtils.toStrings(cp);
 	}
 

@@ -74,44 +74,17 @@ public class LaunchConfigUtils {
 		addCPEntry(serverHome.append(relative), list);
 	}
 
-	public static List<String> toStrings(List<?> cp) {
-		Iterator<?> cpi = cp.iterator();
+	public static List<String> toStrings(List<IRuntimeClasspathEntry> cp) throws CoreException {
+		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
 		ArrayList<String> list = new ArrayList<String>();
 		while (cpi.hasNext()) {
-			Object entry = cpi.next();
-			if (entry instanceof IRuntimeClasspathEntry) {
-				try {
-					list.add(((IRuntimeClasspathEntry) entry).getMemento());
-				} catch (Exception e) {
-					// Trace.trace(Trace.SEVERE, "Could not resolve classpath entry:
-					// " + entry, e);
-				}
-			} else if (entry instanceof String) {
-				list.add((String) entry);
-			} else if (entry != null){
-				list.add(entry.toString());
-			}
+			IRuntimeClasspathEntry entry = cpi.next();
+				list.add(entry.getMemento());
 		}
 
 		return list;
 	}
 	
-	public static List<String> toString(List<IRuntimeClasspathEntry> cp) {
-		Iterator<IRuntimeClasspathEntry> cpi = cp.iterator();
-		ArrayList<String> list = new ArrayList<String>();
-		while (cpi.hasNext()) {
-			IRuntimeClasspathEntry entry = cpi.next();
-			try {
-				list.add(entry.getMemento());
-			} catch (Exception e) {
-				// Trace.trace(Trace.SEVERE, "Could not resolve classpath entry:
-				// " + entry, e);
-			}
-		}
-
-		return list;
-	}
-
 	public static IRuntimeClasspathEntry getRunJarRuntimeCPEntry(IServer server) throws CoreException {
 		// TODO: improve/avoid server version check
 //		if (server.getServerType().getId().endsWith("70")) { //$NON-NLS-1$
