@@ -118,11 +118,12 @@ public class PollThreadUtils {
 	 * @param expectedState the state to wait for 
 	 * @param pollThread the poll thread to stop
 	 * @param behaviour the server behavior to use.
+	 * @return 
 	 * @return the new poll thread
 	 */
-	public static void pollServer(final boolean expectedState, PollThread pollThread, DelegatingServerBehavior behaviour) {
+	public static PollThread pollServer(final boolean expectedState, PollThread pollThread, DelegatingServerBehavior behaviour) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, behaviour.getServer());
-		pollServer(expectedState, poller, pollThread, behaviour);
+		return pollServer(expectedState, poller, pollThread, behaviour);
 	}
 
 	/**
