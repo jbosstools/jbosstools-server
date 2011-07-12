@@ -23,6 +23,9 @@ public class LaunchCommandPreferences {
 	}
 	
 	public static boolean isIgnoreLaunchCommand(IServerAttributes server, boolean defaultValue) {
+		if (server == null) {
+			return false;
+		}
 		String ignoreCommand = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(defaultValue));
 		return Boolean.valueOf(ignoreCommand);
 	}
