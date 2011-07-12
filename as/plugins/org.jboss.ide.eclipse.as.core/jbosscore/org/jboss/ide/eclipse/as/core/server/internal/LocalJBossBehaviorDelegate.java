@@ -58,9 +58,11 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	public LocalJBossBehaviorDelegate() {
 		super();
 	}
+
 	public String getBehaviourTypeId() {
 		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	}
+
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
 		if (force
