@@ -105,7 +105,6 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 
 	@Override
 	protected String getDefaultVMArguments(IJBossServerRuntime runtime) {
-		// not needed
-		return null;
+		return runtime.getDefaultRunVMArgs();
 	}
 }
