@@ -24,6 +24,7 @@ public interface IJBossToolingConstants {
 	public static final String AS_51 = "org.jboss.ide.eclipse.as.runtime.51"; //$NON-NLS-1$
 	public static final String AS_60 = "org.jboss.ide.eclipse.as.runtime.60"; //$NON-NLS-1$
 	public static final String AS_70 = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
+	public static final String EAP_RUNTIME_PREFIX = "org.jboss.ide.eclipse.as.runtime.eap."; //$NON-NLS-1$
 	public static final String EAP_43 = "org.jboss.ide.eclipse.as.runtime.eap.43"; //$NON-NLS-1$
 	public static final String EAP_50 = "org.jboss.ide.eclipse.as.runtime.eap.50"; //$NON-NLS-1$
 	
@@ -34,6 +35,7 @@ public interface IJBossToolingConstants {
 	public static final String SERVER_AS_51 = "org.jboss.ide.eclipse.as.51"; //$NON-NLS-1$
 	public static final String SERVER_AS_60 = "org.jboss.ide.eclipse.as.60"; //$NON-NLS-1$
 	public static final String SERVER_AS_70 = "org.jboss.ide.eclipse.as.70"; //$NON-NLS-1$
+	public static final String EAP_SERVER_PREFIX = "org.jboss.ide.eclipse.as.eap."; //$NON-NLS-1$
 	public static final String SERVER_EAP_43 = "org.jboss.ide.eclipse.as.eap.43"; //$NON-NLS-1$
 	public static final String SERVER_EAP_50 = "org.jboss.ide.eclipse.as.eap.50"; //$NON-NLS-1$
 	

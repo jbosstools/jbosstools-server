@@ -153,9 +153,6 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	}
 
 	protected IStatus canChangeState(String launchMode) {
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
-			return Status.CANCEL_STATUS;
-		}
 		return getDelegate().canChangeState(launchMode);
 	}
 	

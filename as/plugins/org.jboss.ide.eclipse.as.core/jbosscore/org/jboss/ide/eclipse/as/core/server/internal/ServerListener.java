@@ -32,28 +32,8 @@ public class ServerListener extends UnitedServerListener {
 		return true;
 	}
 
-	public void init(IServer server) {
-		initUnmanagedServerState(server);
-	}
-	
-	protected void initUnmanagedServerState(IServer server) {
-		DelegatingServerBehavior beh = ServerConverter.getJBossServerBehavior(server);
-		if( beh != null ) {
-			String ignoreLaunch = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, Boolean.toString(false));
-			if( new Boolean(ignoreLaunch).booleanValue()) {
-				// Assume started already
-				beh.setServerStarted();
-			}
-		}
-	}
-	public void serverChanged(IServer server) {
-		// double check if the user toggled the 'assume started' flag to true
-		initUnmanagedServerState(server);
-	}
-
 	public void serverAdded(IServer server) {
 		ServerUtil.createStandardFolders(server);
-		initUnmanagedServerState(server);
 	}
 
 	public void serverRemoved(IServer server) {
