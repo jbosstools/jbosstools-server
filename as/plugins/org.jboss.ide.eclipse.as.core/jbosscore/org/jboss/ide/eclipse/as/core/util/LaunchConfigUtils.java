@@ -157,4 +157,10 @@ public class LaunchConfigUtils {
 		String launchName = launchManager.generateLaunchConfigurationName(name); 
 		return launchConfigType.newInstance(null, launchName);
 	}
+	
+	public static IServer checkedGetServer(ILaunchConfiguration launchConfig) throws CoreException {
+		String serverId = JBossLaunchConfigProperties.getServerId(launchConfig);
+		JBossServer server = ServerConverter.checkedFindJBossServer(serverId);
+		return server.getServer();
+	}
 }
