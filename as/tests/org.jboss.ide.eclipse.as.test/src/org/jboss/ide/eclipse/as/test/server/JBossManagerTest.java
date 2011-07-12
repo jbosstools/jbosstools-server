@@ -105,6 +105,10 @@ public class JBossManagerTest {
 			throw new UnsupportedOperationException();
 		}
 
+		public boolean isRunning(String host, int port) {
+			throw new UnsupportedOperationException();
+		}
+
 		public void stop(String host, int port) throws JBoss7ManangerException {
 		}
 
