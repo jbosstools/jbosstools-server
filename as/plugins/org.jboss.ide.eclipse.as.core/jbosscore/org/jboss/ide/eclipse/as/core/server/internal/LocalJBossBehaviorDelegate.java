@@ -63,24 +63,21 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
-		if( force 
-				|| !isProcessRunning() 
-				|| state == IServer.STATE_STOPPED 
+		if (force
+				|| !isProcessRunning()
+				|| state == IServer.STATE_STOPPED
 				|| nextStopRequiresForce) {
 			forceStop();
-			return;
-		}
-		
-		// if we're starting up or shutting down and they've tried again, 
-		// then force it to stop. 
-		if( state == IServer.STATE_STARTING || state == IServer.STATE_STOPPING ) {
+		} else if (state == IServer.STATE_STARTING
+				|| state == IServer.STATE_STOPPING) {
+			// if we're starting up or shutting down and they've tried again,
+			// then force it to stop.
 			stopPolling();
 			forceStop();
-			return;
+		} else {
+			setServerStopping();
+			gracefullStop();
 		}
-		
-		setServerStopping();
-		gracefullStop();
 	}
 	
 	@Override
