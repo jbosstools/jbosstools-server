@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.wst.server.core.IModule;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
@@ -47,6 +48,7 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
@@ -63,9 +65,14 @@ public class JBossServer extends DeployableServer
 		setAttribute("id", getAttribute("id", (String)"") + new Date().getTime()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		setUsername("admin"); //$NON-NLS-1$
 		setPassword("admin"); //$NON-NLS-1$
-		setDeployLocationType(isAS50() ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
+		boolean defaultServerDeployment = isAS50() || isEAP(getServer());
+		setDeployLocationType(defaultServerDeployment ? IDeployableServer.DEPLOY_SERVER : IDeployableServer.DEPLOY_METADATA);
 	}
 	
+	public static boolean isEAP(IServer server) {
+		return server.getServerType().getId().startsWith(IJBossToolingConstants.EAP_SERVER_PREFIX);
+	}
+
 	private boolean isAS50() {
 		return getServer().getServerType().getRuntimeType().getId().equals(SERVER_AS_50);
 	}

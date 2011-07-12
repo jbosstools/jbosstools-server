@@ -78,7 +78,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	}
 	
 	public static boolean isEAP(IRuntime rt) {
-		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
+		return rt.getRuntimeType().getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
 	}
 	
 	@Override
