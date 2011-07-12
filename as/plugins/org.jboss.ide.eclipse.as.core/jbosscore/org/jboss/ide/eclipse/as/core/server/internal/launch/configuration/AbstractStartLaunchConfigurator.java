@@ -57,13 +57,6 @@ public abstract class AbstractStartLaunchConfigurator extends AbstractLaunchConf
 
 	protected abstract String getServerHome(IJBossServerRuntime runtime);
 
-	private void setServerHome(String serverHome, IJBossServerRuntime runtime,
-			ILaunchConfigurationWorkingCopy launchConfig) throws CoreException {
-		if (!isCustomConfigLocation(runtime)) {
-			JBossLaunchConfigProperties.setServerHome(serverHome, runtime, launchConfig);
-		}
-	}
-
 	protected boolean isCustomConfigLocation(IJBossServerRuntime runtime) {
 		return runtime.getConfigLocation().equals(IJBossRuntimeResourceConstants.SERVER);
 	}
