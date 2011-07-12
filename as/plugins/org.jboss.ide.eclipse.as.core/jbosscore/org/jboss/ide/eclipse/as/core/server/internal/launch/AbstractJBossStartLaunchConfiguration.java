@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
+import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
 
 /**
  * @author Rob Stryker
@@ -73,11 +74,15 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
+		IServer server = LaunchConfigUtils.checkedGetServer(configuration);
+		if( LaunchCommandPreferences.isIgnoreLaunchCommand(server)) {
+			return;
+		}
 		preLaunch(configuration, mode, launch, monitor);
 		actualLaunch(configuration, mode, launch, monitor);
 		postLaunch(configuration, mode, launch, monitor);
 	}
-	
+
 	protected void actualLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// And off we go!
