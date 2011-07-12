@@ -46,7 +46,15 @@ public class JBoss7ManagerServiceProxy extends ServiceTracker<IJBoss7ManagerServ
 	public JBoss7ServerState getServerState(String host, int port) throws Exception {
 		return checkedGetService().getServerState(host, port);
 	}
-	
+
+	public boolean isRunning(String host, int port) throws Exception {
+		try {
+			return checkedGetService().isRunning(host, port);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	@Deprecated
 	public JBoss7ServerState getServerState(String host) throws Exception {
 		return checkedGetService().getServerState(host);
