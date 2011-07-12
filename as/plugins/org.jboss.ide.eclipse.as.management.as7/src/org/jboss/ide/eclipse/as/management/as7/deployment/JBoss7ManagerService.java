@@ -62,6 +62,14 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		return manager.getServerState();
 	}
 
+	public boolean isRunning(String host, int port) {
+		try {
+			return getServerState(host, port) == JBoss7ServerState.RUNNING;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	@Deprecated
 	public void stop(String host) throws Exception {
 		stop(host, AS7Manager.MGMT_PORT);

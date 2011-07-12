@@ -129,7 +129,18 @@ public interface IJBoss7ManagerService {
 	 * @throws Exception
 	 */
 	public JBoss7ServerState getServerState(String host, int port) throws Exception;
-	
+
+	/**
+	 * Returns <code>true</code> if the server is running, <code>false</code>
+	 * otherwise.
+	 * 
+	 * @param host the server to to query
+	 * @param port the port to communicate on
+	 * @return true if it's running, false otherwise
+	 * @throws Exception
+	 */
+	public boolean isRunning(String host, int port) throws Exception;
+
 	@Deprecated
 	public JBoss7ServerState getServerState(String host) throws Exception;
 	
