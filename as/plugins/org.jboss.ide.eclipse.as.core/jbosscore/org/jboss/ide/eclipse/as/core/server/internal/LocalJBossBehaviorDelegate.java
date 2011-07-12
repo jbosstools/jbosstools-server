@@ -55,6 +55,8 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 
 	protected IProcess process;
 	protected boolean nextStopRequiresForce = false;
+	protected transient IDebugEventSetListener processListener;
+
 	public LocalJBossBehaviorDelegate() {
 		super();
 	}
@@ -148,8 +150,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				Messages.TERMINATED, null);
 		ServerLogger.getDefault().log(getServer(), status);
 	}
-	
-	protected transient IDebugEventSetListener processListener;
 	
 	public synchronized void setProcess(final IProcess newProcess) {
 		if (process != null) { 
@@ -302,12 +302,15 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	public IStatus canStart(String launchMode) {
 		return canChangeState(launchMode);
 	}
+	
 	public IStatus canRestart(String launchMode) {
 		return canChangeState(launchMode);
 	}
+	
 	public IStatus canStop() {
 		return canChangeState(null);
 	}
+	
 	public IStatus canStop(String launchMode) {
 		return canChangeState(launchMode);
 	}
