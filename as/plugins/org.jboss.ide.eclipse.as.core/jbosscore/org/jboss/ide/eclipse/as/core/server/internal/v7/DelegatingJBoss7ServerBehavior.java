@@ -135,53 +135,13 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 		createDoDeployMarker(new IPath[]{depPath}, monitor);
 	}
 
-
-	protected IJBoss7ManagerService getService() throws Exception {
-		if (service == null) {
-			service = JBoss7ManagerUtil.getService(getServer());
-		}
-		return service;
-	}
-
-	private boolean isServerRunning(String host, int port) throws Exception {
-		try {
-			return getService().getServerState(host, port) == JBoss7ServerState.RUNNING;
-		} catch (JBoss7ManangerConnectException e) {
-			return false;
-		}
-	}
-
 	@Override
 	public void stop(boolean force) {
 		if( LaunchCommandPreferences.isIgnoreLaunchCommand(getServer())) {
 			super.setServerStopped();
 			return;
 		}
-		try {
-			if (force) {
-				if( serverProcess != null )
-					serverProcess.terminate();
-			} else {
-				setServerStopping();
-				String host = getServer().getHost();
-				JBoss7Server server = ServerConverter.checkedGetJBossServer(getServer(), JBoss7Server.class);
-				int mgmtPort = server.getManagementPort();
-				// TODO: for now only local, implement for remote afterwards
-				if (isServerRunning(host, mgmtPort)) {
-					// The service and Poller will make sure the server is down
-					getService().stop(host, mgmtPort); 
-					return;
-				} else {
-					if( serverProcess != null && !serverProcess.isTerminated()) {
-						serverProcess.terminate();
-					}
-				}
-			}
-		} catch (Exception e) {
-			IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, getServer().getName()), e);
-			JBossServerCorePlugin.getDefault().getLog().log(status);
-		}
-		setServerStopped();
+		getDelegate().stop(force);
 	}
 
 	@Override

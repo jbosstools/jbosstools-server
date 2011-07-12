@@ -10,17 +10,50 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
+import java.text.MessageFormat;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
+	}
+
+	@Override
+	public void stop(boolean force) {
+		if (force) {
+			forceStop();
+		} else {
+			IStatus result = gracefullStop();
+			if (!result.isOK()) {
+				forceStop();
+			}
+		}
+	}
+
+	@Override
+	protected IStatus gracefullStop() {
+		IServer server = getServer();
+		try {
+			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
+			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
+			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
+			return Status.OK_STATUS;
+		} catch (Exception e) {
+			return new Status(
+					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, server.getName()), e);
+		}
 	}
 
 	@Override
