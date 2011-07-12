@@ -49,10 +49,6 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 			IProgressMonitor monitor) throws CoreException {
 		DelegatingServerBehavior beh = JBossServerBehaviorUtils.getServerBehavior(configuration);
 		beh.setServerStarting();
-		if (LaunchCommandPreferences.isIgnoreLaunchCommand(beh.getServer())) {
-			beh.setServerStarted();
-			return;
-		}
 		String command = RSELaunchConfigProperties.getStartupCommand(configuration);
 		executeRemoteCommand(command, beh);
 		launchPingThread(beh);
