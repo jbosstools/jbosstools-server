@@ -22,11 +22,9 @@ import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptio
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SERVER_STATE;
 import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SHUTDOWN;
 
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.IProgressMonitor;
