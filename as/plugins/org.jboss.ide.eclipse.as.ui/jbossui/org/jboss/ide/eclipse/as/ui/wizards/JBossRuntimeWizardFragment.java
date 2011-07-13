@@ -78,13 +78,13 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.ui.wizard.IWizardHandle;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
@@ -582,7 +582,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations.setFolder(folder);
 		File f = new File(folder);
 		configurations.getControl().setEnabled(f.exists() && f.isDirectory());
-		configurations.setConfiguration(IJBossServerConstants.DEFAULT_CONFIGURATION);
+		configurations.setConfiguration(IJBossRuntimeResourceConstants.DEFAULT_CONFIGURATION);
 
 		int sel = jreCombo.getSelectionIndex();
 		int offset = -1;
