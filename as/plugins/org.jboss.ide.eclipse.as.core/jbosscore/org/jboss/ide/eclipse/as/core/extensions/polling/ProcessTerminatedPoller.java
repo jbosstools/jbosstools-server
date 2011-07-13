@@ -33,10 +33,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 public class ProcessTerminatedPoller implements IServerStatePoller {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
-	public static interface IProcessProvider {
-		public IProcess getProcess();
-	}
-	
 	
 	private ServerStatePollerType type;
 	private DelegatingServerBehavior server;
