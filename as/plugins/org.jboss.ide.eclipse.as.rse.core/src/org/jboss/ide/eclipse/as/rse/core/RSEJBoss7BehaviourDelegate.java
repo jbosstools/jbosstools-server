@@ -33,7 +33,7 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	private IJBoss7ManagerService service;
 
-	private RSEJBoss7BehaviourDelegate() throws Exception {
+	public RSEJBoss7BehaviourDelegate() throws Exception {
 		this.service = JBoss7ManagerUtil.getService(getServer());
 	}
 

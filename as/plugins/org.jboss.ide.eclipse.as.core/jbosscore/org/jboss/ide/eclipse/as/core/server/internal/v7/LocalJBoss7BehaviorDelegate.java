@@ -27,7 +27,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	private IJBoss7ManagerService service;
 
-	private LocalJBoss7BehaviorDelegate() throws Exception {
+	public LocalJBoss7BehaviorDelegate() throws Exception {
 		this.service = JBoss7ManagerUtil.getService(getServer());
 	}
 
