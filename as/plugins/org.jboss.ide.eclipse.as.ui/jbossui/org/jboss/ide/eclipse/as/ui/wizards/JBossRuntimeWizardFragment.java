@@ -85,6 +85,7 @@ import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.ide.eclipse.as.core.util.IConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
@@ -169,9 +170,10 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		createConfigurationComposite(main);
 	}
 
+	
 	protected boolean isEAP() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-		return LocalJBossServerRuntime.isEAP(rt);
+		return RuntimeUtils.isEAP(rt);
 	}
 	
 	protected ImageDescriptor getImageDescriptor() {
