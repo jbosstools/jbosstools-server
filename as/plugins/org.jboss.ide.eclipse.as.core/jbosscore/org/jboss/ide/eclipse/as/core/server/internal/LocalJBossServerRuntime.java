@@ -52,6 +52,7 @@ import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.core.server.bean.ServerBeanLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.RuntimeUtils;
 
 public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime implements IJBossServerRuntime {
 
@@ -65,7 +66,7 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	protected String getNextRuntimeName() {
 		String rtVersion = getRuntime().getRuntimeType().getVersion(); 
 		String prefix = Messages.jboss;
-		if( isEAP(getRuntime())) {
+		if( isEAP()) {
 			prefix = Messages.jboss + " EAP "; //$NON-NLS-1$
 			if( rtVersion.equals(IJBossToolingConstants.V5_0)) {
 				rtVersion = "5.x"; //$NON-NLS-1$
@@ -77,10 +78,21 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		return getNextRuntimeName(base);
 	}
 	
+	/**
+	 * @deprecated replaced by {@link #isEAP()} and {@link RuntimeUtils#isEAP(IRuntime)}
+	 */
+	@Deprecated
 	public static boolean isEAP(IRuntime rt) {
-		return rt.getRuntimeType().getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
+		return rt.getRuntimeType().getId().startsWith("org.jboss.ide.eclipse.as.runtime.eap."); //$NON-NLS-1$
 	}
 	
+	public boolean isEAP() {
+		return getRuntime() != null
+				&& getRuntime().getRuntimeType() != null
+				&& getRuntime().getRuntimeType().getId() != null
+				&& getRuntime().getRuntimeType().getId().startsWith(IJBossToolingConstants.EAP_RUNTIME_PREFIX);
+	}
+
 	@Override
 	public IStatus validate() {
 		IStatus s = super.validate();

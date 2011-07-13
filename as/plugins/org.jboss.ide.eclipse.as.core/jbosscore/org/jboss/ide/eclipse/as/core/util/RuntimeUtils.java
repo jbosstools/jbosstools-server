@@ -13,13 +13,14 @@ import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.IServerAttributes;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.TaskModel;
 import org.eclipse.wst.server.core.internal.RuntimeWorkingCopy;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 
 public class RuntimeUtils {
-
+	
 	public static IJBossServerRuntime getJBossServerRuntime(IServerAttributes server) {
 		IRuntime rt = null;
 		if (server != null) {
@@ -37,6 +38,27 @@ public class RuntimeUtils {
 			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.ServerRuntimeNotFound, server.getName())));
 		return jbrt;
+	}
+	
+	public static IJBossServerRuntime getJBossServerRuntime(IRuntime runtime) {
+		return (IJBossServerRuntime) runtime.loadAdapter(IJBossServerRuntime.class, new NullProgressMonitor());
+	}
+	
+	public static boolean isEAP(IRuntime runtime) {
+		IJBossServerRuntime jbossRuntime = getJBossServerRuntime(runtime);
+		if (jbossRuntime == null) {
+			return false;
+		}
+		return jbossRuntime.isEAP();
+		
+	}
+	
+	public static IJBossServerRuntime checkedGetJBossServerRuntime(IRuntime runtime) throws CoreException {
+		IJBossServerRuntime jbossRuntime = getJBossServerRuntime(runtime);
+		if (jbossRuntime == null)
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
+					NLS.bind(Messages.ServerRuntimeNotFound, runtime.getName())));
+		return jbossRuntime;
 	}
 	
 	public static IRuntime createRuntime(String runtimeId, String homeDir,
