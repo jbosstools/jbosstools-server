@@ -11,7 +11,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
