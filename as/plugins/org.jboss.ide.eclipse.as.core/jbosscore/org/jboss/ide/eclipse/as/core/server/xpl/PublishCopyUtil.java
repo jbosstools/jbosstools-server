@@ -74,7 +74,6 @@ public final class PublishCopyUtil {
 		 */
 		public IStatus[] copyFile(IModuleFile mf, IPath path, IProgressMonitor monitor) throws CoreException;
 		
-		
 		/**
 		 * Delete a directory for this path relative to where the module belongs.
 		 * For example if this path is "/someFolder" you may want to 
@@ -86,6 +85,18 @@ public final class PublishCopyUtil {
 		 */
 		public IStatus[] deleteResource(IPath path, IProgressMonitor monitor) throws CoreException ;
 		
+		
+		/**
+		 * Return true if the given path exists and is a file. 
+		 * Return false if hte given path does not exist, or, is a folder.
+		 * 
+		 * @param path
+		 * @param monitor
+		 * @return
+		 * @throws CoreException
+		 */
+		public boolean isFile(IPath path, IProgressMonitor monitor) throws CoreException;
+
 		/**
 		 * Make a directory for this path relative to where the module belongs.
 		 * For example if this path is "/someFolder" you may want to 
@@ -413,6 +424,12 @@ public final class PublishCopyUtil {
 				tmp = deployRootFolder.toFile();
 			tmp.setLastModified(new Date().getTime());
 			return null;
+		}
+
+		public boolean isFile(IPath path, IProgressMonitor monitor)
+				throws CoreException {
+			File tmp = deployRootFolder.append(path).toFile();
+			return tmp.exists() && tmp.isFile();
 		}
 		
 	}

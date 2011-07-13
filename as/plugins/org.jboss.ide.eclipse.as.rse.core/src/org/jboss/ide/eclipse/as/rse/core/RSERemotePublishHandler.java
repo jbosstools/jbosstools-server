@@ -113,5 +113,18 @@ public class RSERemotePublishHandler implements IPublishCopyCallbackHandler {
 		}
 		return new IStatus[]{};
 	}
+
+	public boolean isFile(IPath path, IProgressMonitor monitor)
+			throws CoreException {
+		IPath file = root.append(path);
+		try {
+			IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(file.toString(), new NullProgressMonitor());
+			return rf.exists() && rf.isFile();
+		} catch(SystemMessageException sme) {
+			IStatus s = new Status(IStatus.ERROR, RSECorePlugin.PLUGIN_ID, IEventCodes.JST_PUB_FAIL,
+					"failed to touch remote resource " + file.toString(), sme);
+			throw new CoreException(s);
+		}
+	}
 }
 

@@ -61,7 +61,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		IDeployableServer ds = ServerConverter.getDeployableServer(server);
 		if( ds == null ) 
 			return false;
-		if( ServerModelUtilities.isBinaryModule(module[module.length-1]))
+		// If this is a root module (not nested) and is binary, let this publisher handle it
+		if( module.length == 1 && ServerModelUtilities.isBinaryModule(module[module.length-1]))
 			return true;
 		return !ds.zipsWTPDeployments();
 	}
@@ -208,30 +209,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		} else if( isBinaryObject )
 			list.addAll(Arrays.asList(copyBinaryModule(moduleTree, getSubMon(monitor, 700))));
 		else {
-			// A child that must be zipped, forceZip is true
-			IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
-				append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute();
-			
-			try {
-				// Make local jar copy
-				File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
-				IPath tempFile = new Path(temp.getAbsolutePath());
-				list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
-				
-				// TODO !!!!! Transfer it
-				IPath deployPathInner = getParentDeployPath(moduleTree, server).removeLastSegments(1);
-				IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPathInner).append(deployPathInner));
-				IPath filePath = deployPath.removeFirstSegments(deployPathInner.segments().length);
-				IPath parentFolderPath = filePath.removeLastSegments(1);
-				handler.makeDirectoryIfRequired(parentFolderPath, getSubMon(monitor, 200));
-				ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
-				handler.copyFile(mf, filePath, getSubMon(monitor, 500));
-				
-				// Cleanup
-				tempFile.toFile().delete();
-			} catch( IOException ioe) {
-				list.add(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
-			}
+			list.addAll(Arrays.asList(transferForceZippedChild(deployPath, module, moduleTree, monitor)));
 		}
 		
 		monitor.done();
@@ -243,6 +221,35 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				NLS.bind(Messages.ModulePublished, module.getName()), null);
 		return status;
 	}
+	
+	protected IStatus[] transferForceZippedChild(IPath deployPath, IModule module, IModule[] moduleTree, IProgressMonitor monitor) throws CoreException {
+		// A child that must be zipped, forceZip is true
+		ArrayList<IStatus> list = new ArrayList<IStatus>();
+		IPath deployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
+			append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute();
+		
+		try {
+			// Make local jar copy
+			File temp = File.createTempFile(module.getName(), ".tmp", deployRoot.toFile()); //$NON-NLS-1$
+			IPath tempFile = new Path(temp.getAbsolutePath());
+			list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
+			
+			// TODO !!!!! Transfer it
+			IPath deployPathInner = getParentDeployPath(moduleTree, server).removeLastSegments(1);
+			IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPathInner).append(deployPathInner));
+			IPath filePath = deployPath.removeFirstSegments(deployPathInner.segments().length);
+			IPath parentFolderPath = filePath.removeLastSegments(1);
+			handler.makeDirectoryIfRequired(parentFolderPath, getSubMon(monitor, 200));
+			ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
+			handler.copyFile(mf, filePath, getSubMon(monitor, 500));
+			
+			// Cleanup
+			tempFile.toFile().delete();
+		} catch( IOException ioe) {
+			list.add( new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
+		}
+		return list.toArray(new IStatus[list.size()]);
+	}
 		
 	// TODO consider moving to utility class?
 	public static Path getRootPath(IPath deployPath) {
@@ -252,10 +259,17 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 
 	
 	protected IStatus incrementalPublish(IModule[] moduleTree, IModule module, IProgressMonitor monitor) throws CoreException {
-		monitor.beginTask("Incremental Publish: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		IStatus[] results = new IStatus[] {};
 		IPath deployPath = getDeployPath(moduleTree, server);
+		IPublishCopyCallbackHandler h1 = getCallbackHandler(deployPath);
+		// quick switch to full publish for JBIDE-9112, recent switch from zip to unzipped requires full publish
+		if( h1.isFile(new Path("/"), new NullProgressMonitor())) { //$NON-NLS-1$
+			return fullPublish(moduleTree, module, monitor);
+		}
+
+		
 		boolean isBinaryObject = ServerModelUtilities.isBinaryModule(module);
+		monitor.beginTask("Incremental Publish: " + moduleTree[moduleTree.length-1].getName(), 100); //$NON-NLS-1$
 		boolean forceZip = forceZipModule(moduleTree);
 		IPublishCopyCallbackHandler  handler = null;
 		if( !forceZip && !isBinaryObject) {
@@ -266,21 +280,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 				results = copyBinaryModule(moduleTree, getSubMon(monitor, 100));
 			else {
 				// forceZip a child module
-				IPath localDeployRoot = JBossServerCorePlugin.getServerStateLocation(server.getServer()).
-					append(IJBossToolingConstants.TEMP_DEPLOY).makeAbsolute(); 
-				try {
-					File temp = File.createTempFile(module.getName(), ".tmp", localDeployRoot.toFile()); //$NON-NLS-1$
-					IPath tempFile = new Path(temp.getAbsolutePath());
-					PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile);
-					handler = getCallbackHandler(getRootPath(deployPath));
-					String parentFolder = deployPath.removeLastSegments(1).toString();
-					handler.makeDirectoryIfRequired(new Path(parentFolder), getSubMon(monitor, 50));
-					ModuleFile mf = new ModuleFile(tempFile.toFile(), tempFile.lastSegment(), tempFile);
-					handler.copyFile(mf, deployPath, getSubMon(monitor, 50));
-				} catch( IOException ioe) {
-					IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe);
-					results = new IStatus[] { s };
-				}
+				results = transferForceZippedChild(deployPath, module, moduleTree, monitor);
 			}
 		}
 		

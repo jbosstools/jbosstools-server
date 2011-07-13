@@ -108,5 +108,11 @@ public class MockPublishMethod extends AbstractPublishMethod {
 				changed.add(path2.makeRelative());
 			return new IStatus[]{};
 		}
+
+		public boolean isFile(IPath path, IProgressMonitor monitor)
+				throws CoreException {
+			IPath path2 = root.append(path);
+			return path2.toFile().exists() && path2.toFile().isFile();
+		}
 	}
 }
