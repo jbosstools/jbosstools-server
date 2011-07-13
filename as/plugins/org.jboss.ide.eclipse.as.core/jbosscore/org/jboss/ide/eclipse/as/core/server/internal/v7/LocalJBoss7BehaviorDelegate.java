@@ -27,10 +27,6 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	private IJBoss7ManagerService service;
 
-	public LocalJBoss7BehaviorDelegate() throws Exception {
-		this.service = JBoss7ManagerUtil.getService(getServer());
-	}
-
 	public IStatus canChangeState(String launchMode) {
 		return Status.OK_STATUS;
 	}
@@ -52,7 +48,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		IServer server = getServer();
 		IJBoss7ManagerService service = null;
 		try {
-			service = JBoss7ManagerUtil.getService(server);
+			service = getService();
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
 			return Status.OK_STATUS;
@@ -81,6 +77,17 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	@Override
 	public void dispose() {
-		JBoss7ManagerUtil.dispose(service);
+		try {
+			JBoss7ManagerUtil.dispose(getService());
+		} catch(Exception e) {
+			// ignore
+		}
+	}
+
+	protected IJBoss7ManagerService getService() throws Exception {
+		if (service == null) {
+			this.service = JBoss7ManagerUtil.getService(getServer());
+		}
+		return service;
 	}
 }

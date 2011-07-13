@@ -33,10 +33,6 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	private IJBoss7ManagerService service;
 
-	public RSEJBoss7BehaviourDelegate() throws Exception {
-		this.service = JBoss7ManagerUtil.getService(getServer());
-	}
-
 	@Override
 	protected String getShutdownCommand(IServer server) throws CoreException {
 		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
@@ -57,8 +53,10 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	@Override
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
+		IJBoss7ManagerService service = null;
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
+			service = getService();
 			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
 			return Status.OK_STATUS;
 		} catch (Exception e) {
@@ -69,6 +67,17 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	}
 	
 	public void dispose() {
-		JBoss7ManagerUtil.dispose(service);
+		try {
+			JBoss7ManagerUtil.dispose(getService());
+		} catch(Exception e) {
+			// ignore
+		}
+	}
+	
+	protected IJBoss7ManagerService getService() throws Exception {
+		if (service == null) {
+			this.service = JBoss7ManagerUtil.getService(getServer());
+		}
+		return service;
 	}
 }

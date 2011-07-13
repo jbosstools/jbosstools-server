@@ -16,7 +16,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.osgi.framework.BundleContext;
 
 public class JBoss7ManagerUtil {
-	
+
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 
 	public static IJBoss7ManagerService getService(IServer server) throws Exception {
@@ -28,7 +28,7 @@ public class JBoss7ManagerUtil {
 
 	private static String getRequiredVersion(IServer server) {
 		String id = server.getRuntime().getRuntimeType().getId();
-		if (JBOSS7_RUNTIME.equals(id)) { 
+		if (JBOSS7_RUNTIME.equals(id)) {
 			return IJBoss7ManagerService.AS_VERSION_700;
 		}
 		return null;
