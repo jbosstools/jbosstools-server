@@ -13,11 +13,8 @@ package org.jboss.ide.eclipse.as.core.extensions.polling;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -35,14 +32,14 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"; //$NON-NLS-1$
 	
 	private ServerStatePollerType type;
-	private DelegatingServerBehavior server;
+	private IServer server;
 	public void beginPolling(IServer server, boolean expectedState,
 			PollThread pt) {
-		this.server = (DelegatingServerBehavior)server.loadAdapter(DelegatingServerBehavior.class, new NullProgressMonitor());
+		this.server = server;
 	}
 
 	public IServer getServer() {
-		return server.getServer();
+		return server;
 	}
 
 	public void cancel(int type) {
