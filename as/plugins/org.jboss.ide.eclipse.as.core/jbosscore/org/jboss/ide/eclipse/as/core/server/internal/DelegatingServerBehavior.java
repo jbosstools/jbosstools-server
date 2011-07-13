@@ -42,20 +42,23 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
 public class DelegatingServerBehavior extends DeployableServerBehavior {
 	
 	private static HashMap<String, Class> delegateClassMap;
+
 	static {
 		delegateClassMap = new HashMap<String, Class>();
 		delegateClassMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, LocalJBossBehaviorDelegate.class);
 	}
+
 	public static void addDelegateMapping(String s, Class c) {
 		delegateClassMap.put(s, c);
 	}
 	
+	private IJBossBehaviourDelegate delegate;
+	private String lastModeId;
+
 	public DelegatingServerBehavior() {
 		super();
 	}
 
-	private IJBossBehaviourDelegate delegate;
-	private String lastModeId;
 	public IJBossBehaviourDelegate getDelegate() {
 		IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(getServer());
 		String id = type == null ? LocalPublishMethod.LOCAL_PUBLISH_METHOD : type.getId();
