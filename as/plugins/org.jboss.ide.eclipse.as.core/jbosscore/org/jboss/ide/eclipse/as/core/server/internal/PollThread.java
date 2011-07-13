@@ -98,39 +98,43 @@ public class PollThread extends Thread {
 
 		long startTime = new Date().getTime();
 		boolean done = false;
-		poller.beginPolling(getServer(), expectedState, this);
-
-		// begin the loop; ask the poller every so often
-		while (!stateStartedOrStopped && !abort && !done
-				&& (new Date().getTime() < startTime + maxWait) || maxWait < 0) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException ie) {
-			}
-
-			try {
-				done = poller.isComplete();
-			} catch (PollingException e) {
-				// abort and put the message in event log
-				poller.cancel(IServerStatePoller.CANCEL);
-				poller.cleanup();
-				alertEventLogPollerException(e);
-				alertBehavior(!expectedState, false);
-				return;
-			} catch (RequiresInfoException rie) {
-				// This way each request for new info is checked only once.
-				if (!rie.getChecked()) {
-					rie.setChecked();
-					String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING
-							: SERVER_STOPPING;
-					IPollerFailureHandler handler = ExtensionManager
-							.getDefault().getFirstPollFailureHandler(poller,
-									action, poller.getRequiredProperties());
-					handler.handle(poller, action, poller
-							.getRequiredProperties());
+		try {
+			poller.beginPolling(getServer(), expectedState, this);
+	
+			// begin the loop; ask the poller every so often
+			while (!stateStartedOrStopped && !abort && !done
+					&& (new Date().getTime() < startTime + maxWait) || maxWait < 0) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException ie) {
 				}
+	
+				try {
+					done = poller.isComplete();
+				} catch (PollingException e) {
+					// abort and put the message in event log
+					poller.cancel(IServerStatePoller.CANCEL);
+					poller.cleanup();
+					alertEventLogPollerException(e);
+					alertBehavior(!expectedState, false);
+					return;
+				} catch (RequiresInfoException rie) {
+					// This way each request for new info is checked only once.
+					if (!rie.getChecked()) {
+						rie.setChecked();
+						String action = expectedState == IServerStatePoller.SERVER_UP ? SERVER_STARTING
+								: SERVER_STOPPING;
+						IPollerFailureHandler handler = ExtensionManager
+								.getDefault().getFirstPollFailureHandler(poller,
+										action, poller.getRequiredProperties());
+						handler.handle(poller, action, poller
+								.getRequiredProperties());
+					}
+				}
+				stateStartedOrStopped = checkServerState();
 			}
-			stateStartedOrStopped = checkServerState();
+		} catch(Exception e) {
+			abort = true;
 		}
 
 		// we stopped. Did we abort?

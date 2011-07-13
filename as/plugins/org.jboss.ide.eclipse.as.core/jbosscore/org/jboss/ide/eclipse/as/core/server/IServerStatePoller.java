@@ -52,11 +52,17 @@ public interface IServerStatePoller {
 	
 	public ServerStatePollerType getPollerType();
 	public void setPollerType(ServerStatePollerType type);
-	public void beginPolling(IServer server, boolean expectedState, PollThread pt); // expected to launch own thread
+	/*
+	 * expected to launch own thread
+	 */
+	public void beginPolling(IServer server, boolean expectedState, PollThread pt) throws Exception; 
 	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	public boolean getState() throws PollingException, RequiresInfoException; 
-	public void cleanup();   // clean up any resources / processes. Will ALWAYS be called
+	/*
+	 * clean up any resources / processes. Will ALWAYS be called
+	 */
+	public void cleanup();
 	public List<String> getRequiredProperties();
 	public void failureHandled(Properties properties);
 	

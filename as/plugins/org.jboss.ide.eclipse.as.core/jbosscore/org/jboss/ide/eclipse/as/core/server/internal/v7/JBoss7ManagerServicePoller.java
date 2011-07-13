@@ -31,8 +31,10 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 	private IServer server;
 	private ServerStatePollerType type;
 	private boolean expectedState;
+	private IJBoss7ManagerService service;
 
-	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) {
+	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) throws Exception {
+		this.service = JBoss7ManagerUtil.getService(server);
 		this.server = server;
 		this.expectedState = expectedState;
 	}
@@ -61,7 +63,6 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 	public boolean isComplete() throws PollingException, RequiresInfoException {
 		IJBoss7ManagerService service = null;
 		try {
-			service = JBoss7ManagerUtil.getService(server);
 			if (expectedState == SERVER_DOWN) {
 				return awaitShutdown(service);
 			} else {
@@ -121,6 +122,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 	}
 
 	public void cleanup() {
+		service.dispose();
 	}
 
 	public List<String> getRequiredProperties() {
