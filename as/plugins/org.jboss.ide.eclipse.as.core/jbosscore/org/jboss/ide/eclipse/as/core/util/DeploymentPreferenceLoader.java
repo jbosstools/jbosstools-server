@@ -28,6 +28,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
 import org.jboss.ide.eclipse.as.core.util.internal.XMLMemento;
@@ -41,7 +42,7 @@ public class DeploymentPreferenceLoader {
 	 * is currently stored in a server's deployment preferences.
 	 * 
 	 * To get a more accurate version (with a default) please use
-	 * DeployableServerBehavior.createPublishMethod().getPublishMethodType()
+	 * {@link DeployableServerBehavior#createPublishMethod()#getPublishMethodType()}
 	 * 
 	 * @param server
 	 * @return
