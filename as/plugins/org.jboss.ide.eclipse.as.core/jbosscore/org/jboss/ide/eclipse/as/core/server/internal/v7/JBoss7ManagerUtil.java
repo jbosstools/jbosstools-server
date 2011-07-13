@@ -33,4 +33,10 @@ public class JBoss7ManagerUtil {
 		}
 		return null;
 	}
+
+	public static void dispose(IJBoss7ManagerService service) {
+		if (service != null) {
+			service.dispose();
+		}
+	}
 }

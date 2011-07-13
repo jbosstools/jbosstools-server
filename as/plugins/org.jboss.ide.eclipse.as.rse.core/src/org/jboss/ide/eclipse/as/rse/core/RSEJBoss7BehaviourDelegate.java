@@ -31,6 +31,12 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
+	private IJBoss7ManagerService service;
+
+	private RSEJBoss7BehaviourDelegate() throws Exception {
+		this.service = JBoss7ManagerUtil.getService(getServer());
+	}
+
 	@Override
 	protected String getShutdownCommand(IServer server) throws CoreException {
 		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
@@ -52,7 +58,6 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
 		try {
-			IJBoss7ManagerService service = JBoss7ManagerUtil.getService(server);
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
 			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
 			return Status.OK_STATUS;
@@ -62,5 +67,8 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 					MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, server.getName()), e);
 		}
 	}
-
+	
+	public void dispose() {
+		JBoss7ManagerUtil.dispose(service);
+	}
 }

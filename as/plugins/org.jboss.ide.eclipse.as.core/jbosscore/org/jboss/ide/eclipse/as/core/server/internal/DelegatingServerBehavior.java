@@ -178,4 +178,9 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 			JSTPublisherXMLToucher.getInstance().touch(depPath, module[0], callback);
 		}
 	}
+
+	@Override
+	public void dispose() {
+		getDelegate().dispose();
+	}
 }

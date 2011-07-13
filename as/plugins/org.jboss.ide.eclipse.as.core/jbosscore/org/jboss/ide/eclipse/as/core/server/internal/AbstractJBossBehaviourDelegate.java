@@ -122,4 +122,8 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 		actualBehavior.setServerStarting();
 	}
 
+	@Override
+	public void dispose() {
+		// do nothing
+	}
 }

@@ -33,5 +33,7 @@ public interface IJBossBehaviourDelegate {
 
 	public IStatus canChangeState(String launchMode);
 
-	public String getDefaultStopArguments() throws CoreException; 
+	public String getDefaultStopArguments() throws CoreException;
+	
+	public void dispose();
 }
