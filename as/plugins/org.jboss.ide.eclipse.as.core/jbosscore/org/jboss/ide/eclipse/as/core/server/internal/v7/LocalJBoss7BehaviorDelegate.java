@@ -46,18 +46,14 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	@Override
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
-		IJBoss7ManagerService service = null;
 		try {
-			service = getService();
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
-			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
+			getService().stop(jbossServer.getHost(), jbossServer.getManagementPort());
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return new Status(
 					IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					MessageFormat.format(Messages.JBoss7ServerBehavior_could_not_stop, server.getName()), e);
-		} finally {
-			JBoss7ManagerUtil.dispose(service);
 		}
 	}
 

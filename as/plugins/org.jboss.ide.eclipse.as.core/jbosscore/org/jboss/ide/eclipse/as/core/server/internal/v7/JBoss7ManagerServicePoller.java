@@ -61,7 +61,6 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 	}
 	
 	public boolean isComplete() throws PollingException, RequiresInfoException {
-		IJBoss7ManagerService service = null;
 		try {
 			if (expectedState == SERVER_DOWN) {
 				return awaitShutdown(service);
@@ -70,8 +69,6 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 			}
 		} catch (Exception e) {
 			throw new PollingException(e.getMessage());
-		} finally {
-			disposeService(service);
 		}
 	}
 
@@ -101,28 +98,18 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 		}
 	}
 
-	private void disposeService(IJBoss7ManagerService service) {
-		if (service != null) {
-			service.dispose();
-		}
-	}
-
 	public boolean getState() throws PollingException, RequiresInfoException {
-		IJBoss7ManagerService service = null;
 		try {
-			service = JBoss7ManagerUtil.getService(getServer());
 			JBoss7ServerState serverState = service.getServerState(getServer().getHost(), getManagementPort());
 			return serverState == JBoss7ServerState.RUNNING
 					|| serverState == JBoss7ServerState.RESTART_REQUIRED;
 		} catch (Exception e) {
 			throw new PollingException(e.getMessage());
-		} finally {
-			disposeService(service);
 		}
 	}
 
 	public void cleanup() {
-		service.dispose();
+		JBoss7ManagerUtil.dispose(service);
 	}
 
 	public List<String> getRequiredProperties() {
