@@ -47,7 +47,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	public static final String MARK_DO_DEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
 
 	private IProcess serverProcess;
-	private IJBoss7ManagerService service;
 	private IDebugEventSetListener serverProcessListener;
 	private PollThread pollThread;
 
@@ -139,10 +138,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 
 	@Override
 	public void dispose() {
-		super.dispose();
-		if (service != null) {
-			service.dispose();
-		}
+		getDelegate().dispose();
 	}
 
 	@Override
