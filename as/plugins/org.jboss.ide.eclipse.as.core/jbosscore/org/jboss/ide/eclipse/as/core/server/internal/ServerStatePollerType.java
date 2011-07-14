@@ -40,6 +40,10 @@ public class ServerStatePollerType {
 	public String getId() {
 		return el.getAttribute("id"); //$NON-NLS-1$
 	}
+	public String getServerTypes() {
+		return el.getAttribute("serverTypes"); //$NON-NLS-1$
+	}
+	
 	public IServerStatePoller createPoller() {
 		try {
 			return (IServerStatePoller)el.createExecutableExtension("class"); //$NON-NLS-1$
