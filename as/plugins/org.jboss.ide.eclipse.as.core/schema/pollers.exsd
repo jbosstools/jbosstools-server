@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.jboss.ide.eclipse.as.core">
+<schema targetNamespace="org.jboss.ide.eclipse.as.core" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appInfo>
          <meta.schema plugin="org.jboss.ide.eclipse.as.core" id="pollers" name="org.jboss.ide.eclipse.as.core.runtime.server.pollers"/>
@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="serverPoller" minOccurs="0" maxOccurs="unbounded"/>
@@ -82,6 +87,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="serverTypes" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -121,13 +133,5 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="copyright"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
 </schema>

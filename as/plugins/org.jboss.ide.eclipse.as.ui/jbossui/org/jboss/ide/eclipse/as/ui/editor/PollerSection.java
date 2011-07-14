@@ -98,8 +98,8 @@ public class PollerSection extends ServerEditorSection {
 	}
 	
 	protected void findPossiblePollers() {
-		startupTypes = ExtensionManager.getDefault().getStartupPollers();
-		shutdownTypes = ExtensionManager.getDefault().getShutdownPollers();
+		startupTypes = ExtensionManager.getDefault().getStartupPollers(server.getServerType());
+		shutdownTypes = ExtensionManager.getDefault().getShutdownPollers(server.getServerType());
 		startupTypesStrings = new String[startupTypes.length];
 		shutdownTypesStrings = new String[shutdownTypes.length];
 		

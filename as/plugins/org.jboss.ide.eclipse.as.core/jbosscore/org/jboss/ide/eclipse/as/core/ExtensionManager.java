@@ -83,7 +83,7 @@ public class ExtensionManager {
 	}
 	
 	/** Get only the pollers that can poll for startups */
-	public ServerStatePollerType[] getStartupPollers() {
+	public ServerStatePollerType[] getStartupPollers(IServerType serverType) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -91,14 +91,14 @@ public class ExtensionManager {
 		ServerStatePollerType type;
 		while(i.hasNext()) {
 			type = i.next();
-			if( type.supportsStartup())
+			if( type.supportsStartup() && pollerSupportsServerType(type, serverType))
 				list.add(type);
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
 	
 	/** Get only the pollers that can poll for shutdowns */
-	public ServerStatePollerType[] getShutdownPollers() {
+	public ServerStatePollerType[] getShutdownPollers(IServerType serverType) {
 		if( pollers == null ) 
 			loadPollers();
 		ArrayList<ServerStatePollerType> list = new ArrayList<ServerStatePollerType>();
@@ -106,13 +106,26 @@ public class ExtensionManager {
 		ServerStatePollerType type;
 		while(i.hasNext()) {
 			type = i.next();
-			if( type.supportsShutdown() )
+			if( type.supportsShutdown()  && pollerSupportsServerType(type, serverType))
 				list.add(type);
 		}
 		return list.toArray(new ServerStatePollerType[list.size()]);
 	}
 	
 
+	protected boolean pollerSupportsServerType(ServerStatePollerType type, IServerType serverType) {
+		String sTypes = type.getServerTypes();
+		if(sTypes == null || sTypes.equals("")) //$NON-NLS-1$
+			return true;
+		String[] allTypes = sTypes.split(","); //$NON-NLS-1$
+		for( int i = 0; i < allTypes.length; i++ ) {
+			if( allTypes[i].equals(serverType.getId())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/** The method used to load / instantiate the failure handlers */
 	public void loadFailureHandler() {
 		pollerFailureHandlers = new HashMap<String, IPollerFailureHandler>();

@@ -733,6 +733,7 @@
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
             id="org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"
             name="JBoss 7 Manager Service Poller"
+            serverTypes="org.jboss.ide.eclipse.as.70"
             supportsShutdown="true"
             supportsStartup="true">
        </serverPoller>

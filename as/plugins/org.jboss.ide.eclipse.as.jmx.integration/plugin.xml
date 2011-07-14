@@ -20,8 +20,9 @@
             class="org.jboss.ide.eclipse.as.jmx.integration.JMXPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"
             name="JMX Poller"
-            supportsStartup="true"
-            supportsShutdown="true"/>
+            serverTypes="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.60,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50"
+            supportsShutdown="true"
+            supportsStartup="true"/>
    </extension>
    
    
