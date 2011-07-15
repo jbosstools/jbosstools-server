@@ -19,13 +19,14 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
 /**
  * @author André Dietisheim
  */
-public class JBoss7ManagerServicePoller implements IServerStatePoller {
+public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"; //$NON-NLS-1$
 	private IServer server;
@@ -124,5 +125,14 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller {
 
 	public int getTimeoutBehavior() {
 		return TIMEOUT_BEHAVIOR_FAIL;
+	}
+
+	public boolean getCurrentStateSynchronous(IServer server) {
+		try {
+			JBoss7ServerState state = service.getServerState(getServer().getHost(), getManagementPort());
+			return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+		} catch(Exception e) {
+		}
+		return IServerStatePoller.SERVER_DOWN;
 	}
 }

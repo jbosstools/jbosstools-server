@@ -30,6 +30,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -40,7 +41,7 @@ import org.jboss.tools.jmx.core.IJMXRunnable;
  * @author Rob rob.stryker@redhat.com
  *
  */
-public class JMXPoller implements IServerStatePoller {
+public class JMXPoller implements IServerStatePoller2 {
 
 	public static final String POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.JMXPoller"; //$NON-NLS-1$
 	public static final int JMXPOLLER_CODE = IEventCodes.JMXPOLLER_CODE;
@@ -75,20 +76,13 @@ public class JMXPoller implements IServerStatePoller {
 		launchJMXPoller();
 	}
 
-	private class JMXPollerRunnable implements IJMXRunnable {
+	private static class JMXPollerRunnable implements IJMXRunnable {
+		private boolean result;
 		public void run(MBeanServerConnection connection) throws Exception {
 			Object attInfo = connection.getAttribute(
 					new ObjectName(IJBossRuntimeConstants.SYSTEM_MBEAN),
 					IJBossRuntimeConstants.STARTED_METHOD);
-			boolean b = ((Boolean) attInfo).booleanValue();
-			started = b ? STATE_STARTED : STATE_TRANSITION;
-			done = b;
-			if( !startingFound ) {
-				startingFound = true;
-				IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
-						JMXPOLLER_CODE|started, Messages.ServerStarting, null);
-				log(s);
-			}
+			result = ((Boolean) attInfo).booleanValue();
 		}
 	}
 	
@@ -100,6 +94,14 @@ public class JMXPoller implements IServerStatePoller {
 			while( !done && !canceled) {
 				try {
 					runner.run(runnable);
+					started = runnable.result ? STATE_STARTED : STATE_TRANSITION;
+					done = runnable.result;
+					if( !startingFound ) {
+						startingFound = true;
+						IStatus s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
+								JMXPOLLER_CODE|started, Messages.ServerStarting, null);
+						log(s);
+					}
 				} catch(CoreException ce) {
 					handleException(ce.getCause());
 				} 
@@ -246,5 +248,21 @@ public class JMXPoller implements IServerStatePoller {
 	private void log(IStatus s) {
 		if( !canceled )
 			ServerLogger.getDefault().log(server,s);		
+	}
+
+	public boolean getCurrentStateSynchronous(IServer server) {
+		JMXClassLoaderRepository.getDefault().addConcerned(server, this);
+		JMXPollerRunnable runnable2 = new JMXPollerRunnable();
+		JMXSafeRunner runner2 = new JMXSafeRunner(server);
+		try {
+			runner2.run(runnable);
+			int started2 = runnable2.result ? STATE_STARTED : STATE_TRANSITION;
+			if( started2 == STATE_STARTED )
+				return IServerStatePoller.SERVER_UP;
+		} catch(CoreException ce) {
+		} finally {
+			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
+		}
+		return IServerStatePoller.SERVER_DOWN;
 	}
 }

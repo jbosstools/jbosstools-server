@@ -9,13 +9,15 @@ import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.PollingException;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller.RequiresInfoException;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
-public class WebPortPoller implements IServerStatePoller {
+public class WebPortPoller implements IServerStatePoller2 {
 
 	public static final String WEB_POLLER_ID = "org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"; //$NON-NLS-1$
 	private IServer server;
@@ -66,7 +68,7 @@ public class WebPortPoller implements IServerStatePoller {
 		return onePing(getURL(server));
 	}
 	
-	public static boolean onePing(String url) {
+	private static boolean onePing(String url) {
 		try {
 			URL pingUrl = new URL(url);
 			URLConnection conn = pingUrl.openConnection();
@@ -115,6 +117,10 @@ public class WebPortPoller implements IServerStatePoller {
 
 	public int getTimeoutBehavior() {
 		return TIMEOUT_BEHAVIOR_FAIL;
+	}
+
+	public boolean getCurrentStateSynchronous(IServer server) {
+		return onePing(server);
 	}
 
 }
