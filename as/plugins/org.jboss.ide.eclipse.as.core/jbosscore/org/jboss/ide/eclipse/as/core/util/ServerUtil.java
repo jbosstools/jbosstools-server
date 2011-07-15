@@ -48,23 +48,17 @@ public class ServerUtil {
 	
 	@SuppressWarnings("unchecked")
 	public static <ADAPTER> ADAPTER checkedGetServerAdapter(IServer server, Class<ADAPTER> behaviorClass) throws CoreException {
-		ADAPTER serverBehavior = (ADAPTER) server.loadAdapter(behaviorClass, new NullProgressMonitor());
-		if (serverBehavior == null) {
+		ADAPTER adapter = (ADAPTER) server.loadAdapter(behaviorClass, new NullProgressMonitor());
+		if (adapter == null) {
 			throw new CoreException(					
 					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 							NLS.bind(Messages.CouldNotFindServerBehavior, server.getName())));
 		}
-		return serverBehavior;
+		return adapter;
 	}
 	
 	public static IJBossBehaviourDelegate checkedGetBehaviorDelegate(IServer server) throws CoreException {
-		IJBossBehaviourDelegate delegate = checkedGetServerAdapter(server, DelegatingServerBehavior.class).getDelegate();
-		if (delegate == null) {
-			throw new CoreException(					
-					new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-							NLS.bind(Messages.CouldNotFindServerBehavior, server.getName())));
-		}
-		return delegate;
+		return checkedGetServerAdapter(server, DelegatingServerBehavior.class).getDelegate();
 	}
 	
 	@Deprecated
