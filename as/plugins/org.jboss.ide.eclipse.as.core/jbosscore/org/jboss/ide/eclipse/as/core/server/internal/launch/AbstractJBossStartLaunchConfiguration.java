@@ -27,13 +27,18 @@ import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jst.server.core.ServerProfilerDelegate;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
+import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.LaunchConfigUtils;
+import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 
 /**
  * @author Rob Stryker
@@ -51,16 +56,46 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			jbsBehavior.setServerStarted();
 			return false;
 		}
-		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
+		boolean started = isServerStarted(jbsBehavior);
 		if (started) {
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
-			return false;
+			return handleAlreadyStartedScenario(jbsBehavior);
 		}
 
 		return true;
 	}
 
+	/*
+	 * A solution needs to be found here. 
+	 * Should ideally use the poller that the server says is its poller,
+	 * but some pollers such as timeout poller 
+	 */
+	protected boolean isServerStarted(DelegatingServerBehavior jbsBehavior) {
+		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
+		
+		// Need to be able to FORCE the poller to poll immediately
+		if( poller == null || !(poller instanceof IServerStatePoller2)) 
+			poller = new WebPortPoller();
+		boolean started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
+		return started;
+	}
+	
+	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior) {
+		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(jbsBehavior.getServer());
+		if( handler != null ) {
+			int handlerResult = handler.promptForBehaviour(jbsBehavior.getServer());
+			if( handlerResult == IServerAlreadyStartedHandler.CONTINUE_STARTUP) {
+				return true;
+			}
+			if( handlerResult == IServerAlreadyStartedHandler.CANCEL) {
+				return false;
+			}
+		}
+		// force server to started mode
+		jbsBehavior.setServerStarting();
+		jbsBehavior.setServerStarted();
+		return false;
+	}
+	
 	public void preLaunch(ILaunchConfiguration configuration,
 			String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		// override me

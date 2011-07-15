@@ -33,6 +33,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
+import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -317,4 +318,17 @@ public class ExtensionManager {
 		JMX_RUNNER_NOT_FOUND = new Object();
 		return null;
 	}
+	
+	
+	// TODO Replace with extension point or cleaner API
+	// Should have an array of possible handlers
+	// Should ask each handler if they 'accept' this handler, etc
+	private IServerAlreadyStartedHandler defaultAlreadyStartedHandler;
+	public IServerAlreadyStartedHandler getAlreadyStartedHandler(IServer server) {
+		return defaultAlreadyStartedHandler;
+	}
+	public void setAlreadyStartedHandler(IServerAlreadyStartedHandler handler) {
+		defaultAlreadyStartedHandler = handler;
+	}
+	
 }

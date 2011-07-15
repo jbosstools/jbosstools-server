@@ -33,9 +33,11 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.ui.internal.ServerUIPreferences;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.UnitedServerListenerManager;
 import org.jboss.ide.eclipse.as.ui.console.ShowConsoleServerStateListener;
+import org.jboss.ide.eclipse.as.ui.dialogs.ServerAlreadyStartedDialog.ServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.ui.views.server.extensions.XPathRuntimeListener;
 import org.jboss.ide.eclipse.as.ui.wizards.JBInitialSelectionProvider;
 import org.osgi.framework.BundleContext;
@@ -87,12 +89,14 @@ public class JBossServerUIPlugin extends AbstractUIPlugin implements IStartup {
 		UnitedServerListenerManager.getDefault().addListener(ShowConsoleServerStateListener.getDefault());
 		ServerCore.addServerLifecycleListener(selectionProvider);
 		ServerCore.addRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
+		ExtensionManager.getDefault().setAlreadyStartedHandler(new ServerAlreadyStartedHandler());
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
 	public void stop(BundleContext context) throws Exception {
+		ExtensionManager.getDefault().setAlreadyStartedHandler(null);
 		ServerCore.removeRuntimeLifecycleListener(XPathRuntimeListener.getDefault()); 
 		ServerCore.removeServerLifecycleListener(selectionProvider);
 		UnitedServerListenerManager.getDefault().removeListener(ShowConsoleServerStateListener.getDefault());
