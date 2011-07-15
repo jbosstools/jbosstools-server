@@ -34,7 +34,11 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	private boolean expectedState;
 	private IJBoss7ManagerService service;
 
+	@Deprecated
 	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) throws Exception {
+	}
+	
+	public void beginPolling(IServer server, boolean expectedState) throws Exception {
 		this.service = JBoss7ManagerUtil.getService(server);
 		this.server = server;
 		this.expectedState = expectedState;

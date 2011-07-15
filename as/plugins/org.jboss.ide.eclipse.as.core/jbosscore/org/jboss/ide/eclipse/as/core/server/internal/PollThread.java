@@ -99,7 +99,7 @@ public class PollThread extends Thread {
 		long startTime = new Date().getTime();
 		boolean done = false;
 		try {
-			poller.beginPolling(getServer(), expectedState, this);
+			poller.beginPolling(getServer(), expectedState);
 	
 			// begin the loop; ask the poller every so often
 			while (!stateStartedOrStopped && !abort && !done

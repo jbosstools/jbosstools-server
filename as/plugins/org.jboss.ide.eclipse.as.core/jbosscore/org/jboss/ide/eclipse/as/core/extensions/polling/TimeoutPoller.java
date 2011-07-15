@@ -32,8 +32,11 @@ public class TimeoutPoller implements IServerStatePoller {
 	private IServer server;
 	private ServerStatePollerType type;
 
+	@Deprecated
+	public void beginPolling(IServer server, boolean expectedState, PollThread pollThread) {
+	}
 	
-	public void beginPolling(IServer server, boolean expectedState, PollThread pt) {
+	public void beginPolling(IServer server, boolean expectedState) {
 		this.expectedState = expectedState;
 		this.server = server;
 		this.endTime = new Date().getTime() + getTimeout();

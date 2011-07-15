@@ -64,6 +64,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 		return LocalPublishMethod.LOCAL_PUBLISH_METHOD;
 	}
 
+	@Override
 	public void stop(boolean force) {
 		int state = getServer().getServerState();
 		if (force

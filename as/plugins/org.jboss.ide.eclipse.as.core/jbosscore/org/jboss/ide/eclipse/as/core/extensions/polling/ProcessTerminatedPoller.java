@@ -33,8 +33,12 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	
 	private ServerStatePollerType type;
 	private IServer server;
-	public void beginPolling(IServer server, boolean expectedState,
-			PollThread pt) {
+	
+	@Deprecated
+	public void beginPolling(IServer server, boolean expectedState, PollThread pollThread) {
+	}
+	
+	public void beginPolling(IServer server, boolean expectedState) {
 		this.server = server;
 	}
 

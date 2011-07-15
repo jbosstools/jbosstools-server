@@ -55,7 +55,9 @@ public interface IServerStatePoller {
 	/*
 	 * expected to launch own thread
 	 */
+	@Deprecated
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) throws Exception; 
+	public void beginPolling(IServer server, boolean expectedState) throws Exception; 
 	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	public boolean getState() throws PollingException, RequiresInfoException; 
