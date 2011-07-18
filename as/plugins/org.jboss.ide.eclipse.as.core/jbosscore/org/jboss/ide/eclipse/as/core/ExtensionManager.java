@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
+import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
@@ -37,6 +38,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 /**
  * Manages the extensions for this plugin
@@ -329,6 +335,41 @@ public class ExtensionManager {
 	}
 	public void setAlreadyStartedHandler(IServerAlreadyStartedHandler handler) {
 		defaultAlreadyStartedHandler = handler;
+	}
+	
+	
+	/**
+	 * Temporary home for start launch setup participants and launch configs
+	 * Should eventually be replaced by an extension point of some type
+	 * 
+	 * TODO Convert this into a suitable fixed API
+	 */
+	public static HashMap<String, IStartLaunchDelegate> JBoss7launchDelegates;
+	public static ArrayList<IStartLaunchSetupParticipant> JBoss7setupParticipants;
+	public static HashMap<String, IStartLaunchDelegate> JBossLaunchDelegates;
+	public static ArrayList<IStartLaunchSetupParticipant> JBossSetupParticipants;
+	static {
+		JBoss7setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
+		JBoss7launchDelegates = new HashMap<String, IStartLaunchDelegate>();
+		JBoss7setupParticipants.add(new LocalJBoss7StartLaunchDelegate());
+		JBoss7launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
+
+		JBossSetupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
+		JBossLaunchDelegates = new HashMap<String, IStartLaunchDelegate>();
+		JBossSetupParticipants.add(new LocalJBossStartLaunchDelegate());
+		JBossLaunchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
+	}
+	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
+		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+			return JBoss7launchDelegates;
+		}
+		return JBossLaunchDelegates;
+	}
+	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
+		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+			return JBoss7setupParticipants;
+		}
+		return JBossSetupParticipants;
 	}
 	
 }

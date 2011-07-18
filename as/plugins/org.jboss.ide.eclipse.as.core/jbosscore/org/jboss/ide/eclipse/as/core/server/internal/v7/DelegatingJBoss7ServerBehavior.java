@@ -35,10 +35,10 @@ import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
@@ -73,7 +73,7 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy launchConfig, IProgressMonitor monitor)
 			throws CoreException {
 		// TODO: implement setup for RSE launch delegate too
-		DelegatingJBoss7StartLaunchConfiguration.setupLaunchConfiguration(launchConfig, getServer());
+		new DelegatingStartLaunchConfiguration().setupLaunchConfiguration(launchConfig, getServer());
 	}
 
 	public void setProcess(IProcess process) {

@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -21,36 +21,24 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
-	
-	private static HashMap<String, IStartLaunchDelegate> launchDelegates;
-	private static ArrayList<IStartLaunchSetupParticipant> setupParticipants;
-	
-	static {
-		setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-		setupParticipants.add(new LocalJBossStartLaunchDelegate());
-		launchDelegates = new HashMap<String, IStartLaunchDelegate>();
-		launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
+	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
+		return ExtensionManager.getDefault().getSetupParticipants(server);
 	}
-	
-	public static void addLaunchDelegateMapping(String mode, IStartLaunchDelegate del) {
-		launchDelegates.put(mode, del);
+	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
+		return ExtensionManager.getDefault().getLaunchDelegates(server);
 	}
 
-	public static void addSetupLaunchParticipant(IStartLaunchSetupParticipant participant) {
-		setupParticipants.add(participant);
-	}
-	
 	// Allow all participants to set some defaults for their own details
 	// Participants should be careful not to change shared launch keys / values 
 	// unless their operation mode (local / rse / etc) is in use
-	public static void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		for( Iterator<IStartLaunchSetupParticipant> i = setupParticipants.iterator(); i.hasNext(); ) {
+	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
+		for( Iterator<IStartLaunchSetupParticipant> i = getSetupParticipants(server).iterator(); i.hasNext(); ) {
 			i.next().setupLaunchConfiguration(workingCopy, server);
 		}
 	}	
@@ -59,7 +47,7 @@ public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunch
 		IServer server = ServerUtil.getServer(configuration);
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
 		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
-		return launchDelegates.get(type.getId());
+		return getLaunchDelegates(server).get(type.getId());
 	}
 	
 	public void actualLaunch(ILaunchConfiguration configuration, 

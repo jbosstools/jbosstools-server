@@ -98,7 +98,7 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	 * to participate? 
 	 */
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IProgressMonitor monitor) throws CoreException {
-		DelegatingStartLaunchConfiguration.setupLaunchConfiguration(workingCopy, getServer());
+		new DelegatingStartLaunchConfiguration().setupLaunchConfiguration(workingCopy, getServer());
 	}
 
 	public void setRunMode(String mode) {
