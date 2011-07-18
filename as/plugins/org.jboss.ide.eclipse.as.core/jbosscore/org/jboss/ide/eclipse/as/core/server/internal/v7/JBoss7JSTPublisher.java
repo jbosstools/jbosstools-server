@@ -49,7 +49,9 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 		DeploymentMarkerUtils.removeDeployFailedMarker(method, server, PublishUtil.getDeployPath(method, module, ds), monitor);
 		
 		if( publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
-			DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
+			IStatus s = DeploymentMarkerUtils.removeDeployedMarkerIfExists(method, ds, module, monitor);
+			super.publishModule(method, server, module, publishType, delta, monitor);
+			return s;
 		} else {
 			IStatus s = super.publishModule(method, server, module, publishType, delta, monitor);
 			if( module.length == 1 && 
@@ -60,7 +62,6 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 			}
 			return s;
 		}
-		return Status.OK_STATUS;
 	}    
 	
 	private void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
