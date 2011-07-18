@@ -121,9 +121,9 @@ public class PollThreadUtils {
 	 * @return 
 	 * @return the new poll thread
 	 */
-	public static PollThread pollServer(final boolean expectedState, PollThread pollThread, DelegatingServerBehavior behaviour) {
+	public static PollThread pollServer(final boolean expectedState, PollThread currentPollThread, DelegatingServerBehavior behaviour) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, behaviour.getServer());
-		return pollServer(expectedState, poller, pollThread, behaviour);
+		return pollServer(expectedState, poller, currentPollThread, behaviour);
 	}
 
 	/**
@@ -136,9 +136,9 @@ public class PollThreadUtils {
 	 * @param behaviour the server behavior to use.
 	 * @return the new poll thread
 	 */
-	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread pollThread,
+	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread currentPollThread,
 			DelegatingServerBehavior behaviour) {
-		stopPolling(pollThread);
+		stopPolling(currentPollThread);
 		PollThread newPollThread = new PollThread(expectedState, poller, behaviour);
 		newPollThread.start();
 		return newPollThread;
