@@ -86,6 +86,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	@Override
 	protected IStatus gracefullStop() {
+		// If you do not set the server as stopping BEFORE returning from this method, 
+		// The WTP framework will assume you have not begun stopping, and will assume 
+		// you CANNOT attempt to stop, and thus, that the stop cannot succeed / has failed. 
+		setServerStopping(); 
 		new Thread() {
 			
 			@Override
@@ -97,13 +101,12 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 					ILaunch launch = wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
 					IProcess stopProcess = launch.getProcesses()[0];
 					ThreadUtils.sleepWhileRunning(stopProcess);
-					if (stopProcess.getExitValue() == 0) {
+					if (stopProcess.getExitValue() != 0) {
 						// TODO: correct concurrent access to process, pollThread and nextStopRequiresForce
-						if( isProcessRunning() ) { 
-							setServerStarted();
-							cancelPolling(Messages.STOP_FAILED_MESSAGE);
-							nextStopRequiresForce = true;
-						}
+						// Stop process exit value was NOT zero, so the stop process failed
+						setServerStarted();
+						cancelPolling(Messages.STOP_FAILED_MESSAGE);
+						nextStopRequiresForce = true;
 					}
 				} catch( CoreException ce ) {
 					JBossServerCorePlugin.getDefault().getLog().log(ce.getStatus());
