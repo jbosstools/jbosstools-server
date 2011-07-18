@@ -21,10 +21,12 @@ public class RSELaunchConfigurator implements ILaunchConfigConfigurator {
 
 	private String defaultLaunchCommand;
 	private String defaultStopCommand;
+	private String rseHome;
 
 	public RSELaunchConfigurator(String defaultLaunchCommand, String defaultStopCommand) throws CoreException {
 		this.defaultLaunchCommand = defaultLaunchCommand;
 		this.defaultStopCommand = defaultStopCommand;
+		this.rseHome = rseHome;
 	}
 
 	@Override
