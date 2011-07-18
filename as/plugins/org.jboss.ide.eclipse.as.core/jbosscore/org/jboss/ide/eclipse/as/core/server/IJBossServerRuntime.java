@@ -31,6 +31,7 @@ public interface IJBossServerRuntime {
 	public static String PROPERTY_CONFIG_LOCATION="org.jboss.ide.eclipse.as.core.runtime.configurationLocation"; //$NON-NLS-1$
 	
 	public IRuntime getRuntime();
+	public IVMInstall getHardVM();
 	public IVMInstall getVM();
 	public void setVM(IVMInstall install);
 	public IExecutionEnvironment getExecutionEnvironment();

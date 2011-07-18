@@ -740,7 +740,7 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		size = size+1;
 		int index = 0;
 		jreNames = new String[size];
-		jreNames[index++] = "Default JRE for " + getRuntime().getExecutionEnvironment().getId(); //$NON-NLS-1$
+		jreNames[index++] = NLS.bind(Messages.rwf_DefaultJREForExecEnv, getRuntime().getExecutionEnvironment().getId());
 		 
 		for (int i = 0; i < installedJREs.size(); i++) {
 			IVMInstall vmInstall = installedJREs.get(i);

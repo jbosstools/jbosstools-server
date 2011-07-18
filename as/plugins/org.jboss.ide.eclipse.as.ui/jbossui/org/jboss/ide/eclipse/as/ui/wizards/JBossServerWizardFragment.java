@@ -1,23 +1,13 @@
-/*
- * Copyright 2006, JBoss Inc., and individual contributors as indicated
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+/******************************************************************************* 
+ * Copyright (c) 2011 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.wizards;
 
 
@@ -26,6 +16,7 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
@@ -48,6 +39,7 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossServerRuntime;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
+import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI.IServerModeUICallback;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite;
 
@@ -60,8 +52,8 @@ public class JBossServerWizardFragment extends WizardFragment {
 	private IWizardHandle handle;
 	private Label serverExplanationLabel, 
 					runtimeExplanationLabel; 
-	private Label homeDirLabel, installedJRELabel, configLabel;
-	private Label homeValLabel, jreValLabel, configValLabel, configLocValLabel;
+	private Label homeDirLabel, execEnvironmentLabel, installedJRELabel, configLabel;
+	private Label homeValLabel, execEnvironmentValLabel, jreValLabel, configValLabel, configLocValLabel;
 	
 	private Group runtimeGroup;
 	
@@ -120,10 +112,7 @@ public class JBossServerWizardFragment extends WizardFragment {
 		
 		runtimeGroup = new Group(main, SWT.NONE);
 		runtimeGroup.setText(Messages.swf_RuntimeInformation);
-		FormData groupData = new FormData();
-		groupData.left = new FormAttachment(0,5);
-		groupData.right = new FormAttachment(100, -5);
-		groupData.top = new FormAttachment(serverExplanationLabel, 5);
+		FormData groupData = UIUtil.createFormData2(serverExplanationLabel, 5, null, 0, 0,5,100,-5);
 		runtimeGroup.setLayoutData(groupData);
 
 		runtimeGroup.setLayout(new GridLayout(2, false));
@@ -141,6 +130,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 		homeDirLabel.setText(Messages.wf_HomeDirLabel);
 		homeValLabel = new Label(runtimeGroup, SWT.NONE);
 		homeValLabel.setLayoutData(d);
+		execEnvironmentLabel = new Label(runtimeGroup, SWT.NONE);
+		execEnvironmentLabel.setText(Messages.wf_ExecEnvironmentLabel);
+		execEnvironmentValLabel= new Label(runtimeGroup, SWT.NONE);
+		d = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+		execEnvironmentValLabel.setLayoutData(d);
 		
 		installedJRELabel = new Label(runtimeGroup, SWT.NONE);
 		installedJRELabel.setText(Messages.wf_JRELabel);
@@ -208,7 +202,11 @@ public class JBossServerWizardFragment extends WizardFragment {
 			IJBossServerRuntime srt = getRuntime();
 			homeValLabel.setText(srt.getRuntime().getLocation().toOSString());
 			configValLabel.setText(srt.getJBossConfiguration());
-			jreValLabel.setText(srt.getVM().getInstallLocation().getAbsolutePath() + " (" + srt.getVM().getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+			execEnvironmentValLabel.setText(srt.getExecutionEnvironment().getDescription());
+			IVMInstall vm = srt.getHardVM();
+			String jreVal = vm == null ? NLS.bind(Messages.rwf_DefaultJREForExecEnv, getRuntime().getExecutionEnvironment().getId()) : 
+				vm.getInstallLocation().getAbsolutePath() + " (" + vm.getName() + ")";//$NON-NLS-1$ //$NON-NLS-2$
+			jreValLabel.setText(jreVal);
 			configLocValLabel.setText(srt.getConfigLocation());
 			runtimeGroup.layout();
 			updateErrorMessage();

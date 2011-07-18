@@ -56,7 +56,8 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 		return base + " " + i; //$NON-NLS-1$
 	}
 	
-	public IVMInstall getVM() {
+	/* Return a vm that is hard-coded in the runtime's attributes*/
+	public IVMInstall getHardVM() {
 		if (getVMInstallTypeId() != null) {
 			String id = getAttribute(PROPERTY_VM_ID, (String)null);
 			String type = getAttribute(PROPERTY_VM_TYPE_ID, (String)null);
@@ -69,6 +70,14 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 					return vmInstalls[i];
 			}
 		}
+		return null;
+	}
+	
+	public IVMInstall getVM() {
+		IVMInstall hard = getHardVM();
+		if( hard != null )
+			return hard;
+		
 		if( getExecutionEnvironment() != null ) {
 			IVMInstall[] installs = getExecutionEnvironment().getCompatibleVMs();
 			if( getExecutionEnvironment().getDefaultVM() != null )

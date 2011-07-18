@@ -38,6 +38,7 @@ public class Messages extends NLS {
 	public static String wf_HomeDirLabel;
 	public static String wf_JRELabel;
 	public static String wf_ConfigLabel;
+	public static String wf_ExecEnvironmentLabel;
 	
 	public static String J2EEModuleExportOperation_could_not_export_module;
 	public static String J2EEModuleExportOperation_ErrorExportingArchive;
@@ -63,6 +64,7 @@ public class Messages extends NLS {
 	public static String rwf_NoVMSelected;
 	public static String rwf_jre6NotFound;
 	public static String rwf_noValidJRE;
+	public static String rwf_DefaultJREForExecEnv;
 	public static String swf_Title;
 	public static String swf_RuntimeInformation;
 	public static String swf_AuthorizationDescription;
