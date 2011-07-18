@@ -55,18 +55,17 @@ public class PollThread extends Thread {
 	private String pollerId;
 
 	public PollThread(boolean expectedState, IServerStatePoller poller, DelegatingServerBehavior behavior) {
-		super(getThreadName(behavior));
+		super(getThreadName(behavior.getServer()));
 		this.expectedState = expectedState;
-		this.abort = false;
-		this.abortMessage = null;
 		this.behavior = behavior;
 		this.poller = poller;
+		this.abort = false;
 	}
 
-	private static String getThreadName(DelegatingServerBehavior behavior) {
-		return NLS.bind(Messages.ServerPollerThreadName, behavior.getServer().getName());
+	private static String getThreadName(IServer server) {
+		return NLS.bind(Messages.ServerPollerThreadName, server.getName());
 	}
-	
+
 	public void cancel() {
 		cancel(null);
 	}
@@ -89,7 +88,7 @@ public class PollThread extends Thread {
 		if (poller == null) {
 			alertEventLogStarting();
 			alertPollerNotFound();
-			alertBehavior(!expectedState, false);
+			alertBehavior(!expectedState);
 			return;
 		}
 
@@ -116,7 +115,7 @@ public class PollThread extends Thread {
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(e);
-					alertBehavior(!expectedState, false);
+					alertBehavior(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
 					// This way each request for new info is checked only once.
@@ -160,13 +159,16 @@ public class PollThread extends Thread {
 				try {
 					currentState = poller.getState();
 					poller.cleanup();
-					alertBehavior(currentState, finalAlert);
+					alertBehavior(currentState);
+					if (finalAlert) {
+						alertEventLog(currentState);
+					}
 				} catch (PollingException pe) {
 					// abort and put the message in event log
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(pe);
-					alertBehavior(!expectedState, false);
+					alertBehavior(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
 					// You don't have an answer... liar!
@@ -186,7 +188,11 @@ public class PollThread extends Thread {
 					// all other cases, we're down.
 					currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
 					finalAlert = false;
-					alertBehavior(currentState, finalAlert);
+					alertBehavior(currentState);
+					if (finalAlert) {
+						alertEventLog(currentState);
+					}
+					
 				}
 			}
 		}
@@ -201,20 +207,23 @@ public class PollThread extends Thread {
 		return false;
 	}
 
-	protected void alertBehavior(boolean currentState, boolean finalAlert) {
+	protected void alertEventLog(boolean currentState) {
+		if (currentState != expectedState) {
+			alertEventLogFailure();			
+		} else {
+			alertEventLogSuccess(currentState);
+		}
+	}
+	
+	protected void alertBehavior(boolean currentState) {
 		if (currentState != expectedState) {
 			// it didnt work... cancel all processes! force stop
 			behavior.stop(true);
-			if (finalAlert)
-				alertEventLogFailure();
 		} else {
 			if (currentState == IServerStatePoller.SERVER_UP)
 				behavior.setServerStarted();
 			else 
 				behavior.stop(true);
-
-			if (finalAlert)
-				alertEventLogSuccess(currentState);
 		}
 	}
 
