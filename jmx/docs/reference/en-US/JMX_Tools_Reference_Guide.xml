@@ -15,5 +15,6 @@
 <xi:include href="mbean_explorer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"></xi:include>
 <xi:include href="mbean_editor.xml" xmlns:xi="http://www.w3.org/2001/XInclude"></xi:include>
 -->
+<xi:include href="Feedback.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 <xi:include href="Revision_History.xml" xmlns:xi="http://www.w3.org/2001/XInclude"></xi:include>
 </book>
