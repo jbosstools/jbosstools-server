@@ -187,12 +187,7 @@ public class PollThread extends Thread {
 					// we're up (failed to shutdown)
 					// all other cases, we're down.
 					currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
-					finalAlert = false;
 					alertBehavior(currentState);
-					if (finalAlert) {
-						alertEventLog(currentState);
-					}
-					
 				}
 			}
 		}
