@@ -93,7 +93,27 @@ public abstract class AbstractJBossBehaviourDelegate implements IJBossBehaviourD
 	
 	protected void pollServer(boolean expectedState, IServerStatePoller poller) {
 		stopPolling();
-		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, actualBehavior);
+		this.pollThread = PollThreadUtils.pollServer(expectedState, poller, pollThread, onPollingFinished(),
+				getServer());
+	}
+
+	protected IPollResultListener onPollingFinished() {
+		return new IPollResultListener() {
+
+			@Override
+			public void stateNotAsserted(boolean expectedState, boolean currentState) {
+				stop(true);
+			}
+
+			@Override
+			public void stateAsserted(boolean expectedState, boolean currentState) {
+				if (currentState == IServerStatePoller.SERVER_UP) {
+					setServerStarted();
+				} else {
+					stop(true);
+				}
+			}
+		};
 	}
 
 	protected void stopPolling() {

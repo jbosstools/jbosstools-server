@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import java.util.Date;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
@@ -49,14 +51,28 @@ public class PollThread extends Thread {
 	private boolean expectedState, abort, stateStartedOrStopped;
 	private IServerStatePoller poller;
 	private String abortMessage;
+	@Deprecated
 	private DelegatingServerBehavior behavior;
 	private String pollerId;
+	private IPollResultListener listener;
+	private IServer server;
 
+	@Deprecated
 	public PollThread(boolean expectedState, IServerStatePoller poller, DelegatingServerBehavior behavior) {
 		super(getThreadName(behavior.getServer()));
 		this.expectedState = expectedState;
 		this.behavior = behavior;
+		this.server = behavior.getServer();
 		this.poller = poller;
+		this.abort = false;
+	}
+
+	public PollThread(boolean expectedState, IServerStatePoller poller, IPollResultListener listener, IServer server) {
+		super(getThreadName(server));
+		this.expectedState = expectedState;
+		this.poller = poller;
+		this.server = server;
+		this.listener = listener;
 		this.abort = false;
 	}
 
@@ -86,7 +102,8 @@ public class PollThread extends Thread {
 		if (poller == null) {
 			alertEventLogStarting();
 			alertPollerNotFound();
-			alertBehavior(!expectedState);
+//			alertBehavior(!expectedState);
+			alertListener(!expectedState);
 			return;
 		}
 
@@ -115,7 +132,8 @@ public class PollThread extends Thread {
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(e);
-					alertBehavior(!expectedState);
+//					alertBehavior(!expectedState);
+					alertListener(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
 					// This way each request for new info is checked only once.
@@ -138,7 +156,7 @@ public class PollThread extends Thread {
 
 		// we stopped. Did we abort?
 		if (stateStartedOrStopped) {
-			int state = behavior.getServer().getServerState();
+			int state = server.getServerState();
 			boolean success = false;
 			if (expectedState == IServerStatePoller.SERVER_UP)
 				success = state == IServer.STATE_STARTED;
@@ -159,7 +177,8 @@ public class PollThread extends Thread {
 				try {
 					currentState = poller.getState();
 					poller.cleanup();
-					alertBehavior(currentState);
+//					alertBehavior(currentState);
+					alertListener(currentState);
 					if (finalAlert) {
 						alertEventLog(currentState);
 					}
@@ -168,7 +187,8 @@ public class PollThread extends Thread {
 					poller.cancel(IServerStatePoller.CANCEL);
 					poller.cleanup();
 					alertEventLogPollerException(pe);
-					alertBehavior(!expectedState);
+//					alertBehavior(!expectedState);
+					alertListener(!expectedState);
 					return;
 				} catch (RequiresInfoException rie) {
 					// You don't have an answer... liar!
@@ -187,7 +207,8 @@ public class PollThread extends Thread {
 					// we're up (failed to shutdown)
 					// all other cases, we're down.
 					currentState = (expectedState == (behavior == IServerStatePoller.TIMEOUT_BEHAVIOR_SUCCEED));
-					alertBehavior(currentState);
+//					alertBehavior(currentState);					
+					alertListener(currentState);
 				}
 			}
 		}
@@ -198,7 +219,7 @@ public class PollThread extends Thread {
 	}
 
 	protected boolean checkServerState() {
-		int state = behavior.getServer().getServerState();
+		int state = server.getServerState();
 		if (state == IServer.STATE_STARTED)
 			return true;
 		if (state == IServer.STATE_STOPPED)
@@ -214,6 +235,7 @@ public class PollThread extends Thread {
 		}
 	}
 	
+	@Deprecated
 	protected void alertBehavior(boolean currentState) {
 		if (currentState != expectedState) {
 			// it didnt work... cancel all processes! force stop
@@ -226,8 +248,16 @@ public class PollThread extends Thread {
 		}
 	}
 
+	protected void alertListener(boolean currentState) {
+		if (currentState != expectedState) {
+			listener.stateNotAsserted(currentState, expectedState);
+		} else {
+			listener.stateAsserted(currentState, expectedState);
+		}
+	}
+	
 	protected IServer getServer() {
-		return behavior.getServer();
+		return server;
 	}
 
 	/*
@@ -240,26 +270,26 @@ public class PollThread extends Thread {
 		
 		IStatus status = new Status(IStatus.INFO,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_ROOT_CODE | state, message, null);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertEventLogPollerException(PollingException e) {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE, Messages.PollerFailure, e);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertEventLogAbort() {
 		IStatus status = new Status(IStatus.WARNING,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), 
 				NLS.bind(Messages.PollerAborted, abortMessage), null);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertEventLogTimeout() {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false), "", null); //$NON-NLS-1$
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertEventLogFailure() {
@@ -268,7 +298,7 @@ public class PollThread extends Thread {
 		IStatus status = new Status(IStatus.ERROR,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_FAIL_CODE | getStateMask(expectedState, false),
 				expectedState ? startupFailed : shutdownFailed, null);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertEventLogSuccess(boolean currentState) {
@@ -278,7 +308,7 @@ public class PollThread extends Thread {
 		IStatus status = new Status(IStatus.INFO,
 				JBossServerCorePlugin.PLUGIN_ID, POLLING_ROOT_CODE | state |  SUCCESS,
 				expectedState ? startupSuccess : shutdownSuccess, null);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 
 	protected void alertPollerNotFound() {
@@ -287,7 +317,7 @@ public class PollThread extends Thread {
 		IStatus status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				POLLING_FAIL_CODE | getStateMask(expectedState, false), 
 				expectedState ? startupPollerNotFound : shutdownPollerNotFound, null);
-		ServerLogger.getDefault().log(behavior.getServer(), status);
+		ServerLogger.getDefault().log(server, status);
 	}
 	
 	protected int getStateMask(boolean expected, boolean success) {

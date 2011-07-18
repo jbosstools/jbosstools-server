@@ -13,8 +13,9 @@ package org.jboss.ide.eclipse.as.core.util;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.IPollResultListener;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -121,6 +122,7 @@ public class PollThreadUtils {
 	 * @return 
 	 * @return the new poll thread
 	 */
+	@Deprecated
 	public static PollThread pollServer(final boolean expectedState, PollThread currentPollThread, DelegatingServerBehavior behaviour) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(expectedState, behaviour.getServer());
 		return pollServer(expectedState, poller, currentPollThread, behaviour);
@@ -136,10 +138,29 @@ public class PollThreadUtils {
 	 * @param behaviour the server behavior to use.
 	 * @return the new poll thread
 	 */
+	@Deprecated
 	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread currentPollThread,
 			DelegatingServerBehavior behaviour) {
 		stopPolling(currentPollThread);
 		PollThread newPollThread = new PollThread(expectedState, poller, behaviour);
+		newPollThread.start();
+		return newPollThread;
+	}
+
+	/**
+	 * Stops the given poll thread and creates a new poll thread for the given
+	 * expected state, poller, result listener and server.
+	 * 
+	 * @param expectedState the state to wait for 
+	 * @param poller the poller to use to wait for the expected state
+	 * @param pollThread the poll thread to stop
+	 * @param listener the listener to inform about the polling result 
+	 * @return the new poll thread
+	 */
+	public static PollThread pollServer(boolean expectedState, IServerStatePoller poller, PollThread currentPollThread,
+			IPollResultListener listener, IServer server) {
+		stopPolling(currentPollThread);
+		PollThread newPollThread = new PollThread(expectedState, poller, listener, server);
 		newPollThread.start();
 		return newPollThread;
 	}
