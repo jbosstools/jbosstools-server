@@ -26,6 +26,18 @@ import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
+	
+	public IStatus publishModule(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module,
+			int publishType, IModuleResourceDelta[] delta,
+			IProgressMonitor monitor) throws CoreException {
+		boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server);
+		if( useAS7Behavior )
+			return publishModuleToAS7(method, server, module, publishType, delta, monitor);
+		else
+			return super.publishModule(method, server, module, publishType, delta, monitor);
+	}
 
 	public IStatus publishModuleToAS7(
 			IJBossServerPublishMethod method,
@@ -49,43 +61,12 @@ public class JBoss7JSTPublisher extends AbstractServerToolsPublisher {
 			return s;
 		}
 		return Status.OK_STATUS;
-	}
+	}    
 	
-	public IStatus publishModule(
-			IJBossServerPublishMethod method,
-			IServer server, IModule[] module,
-			int publishType, IModuleResourceDelta[] delta,
-			IProgressMonitor monitor) throws CoreException {
-		boolean useAS7Behavior = DeploymentMarkerUtils.supportsJBoss7MarkerDeployment(server);
-		if( useAS7Behavior )
-			return publishModuleToAS7(method, server, module, publishType, delta, monitor);
-		else
-			return super.publishModule(method, server, module, publishType, delta, monitor);
-	}
-    
-	
-//	public static final String MARK_UNDEPLOY = "org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher.markUndeploy"; //$NON-NLS-1$
-
 	private void markDeployed(IJBossServerPublishMethod method,IDeployableServer server,
 			IModule[] moduleTree, IProgressMonitor monitor ) throws CoreException {
 		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
 		DelegatingJBoss7ServerBehavior beh = ServerConverter.getJBoss7ServerBehavior(server.getServer());
 		beh.markDoDeploy(p);
 	}
-	
-//	public static void markUndeployed(
-//			IJBossServerPublishMethod method,
-//			IDeployableServer server, IModule[] moduleTree,
-//			IProgressMonitor monitor) throws CoreException {
-//		IPath p = PublishUtil.getDeployPath(method, moduleTree, server);
-//		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server.getServer());
-//		Object o = beh.getPublishData(MARK_UNDEPLOY);
-//		if( o == null || !(o instanceof ArrayList<?>)) {
-//			o = new ArrayList<IPath>();
-//			beh.setPublishData(MARK_UNDEPLOY, o);
-//		}
-//		ArrayList<IPath> list = (ArrayList<IPath>)o;
-//		if( !list.contains(p))
-//			list.add(p);
-//	}
 }
