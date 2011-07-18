@@ -36,6 +36,7 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 		if (force) {
 			forceStop();
 		} else {
+			setServerStopping();
 			IStatus result = gracefullStop();
 			if (!result.isOK()) {
 				forceStop();
