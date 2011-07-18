@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.util.Date;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
@@ -95,14 +93,16 @@ public class PollThread extends Thread {
 		int maxWait = getTimeout();
 		alertEventLogStarting();
 
-		long startTime = new Date().getTime();
+		long startTime = System.currentTimeMillis();
 		boolean done = false;
 		try {
 			poller.beginPolling(getServer(), expectedState);
 	
 			// begin the loop; ask the poller every so often
-			while (!stateStartedOrStopped && !abort && !done
-					&& (new Date().getTime() < startTime + maxWait) || maxWait < 0) {
+			while (!stateStartedOrStopped 
+					&& !abort 
+					&& !done
+					&& !timeoutReached(startTime, maxWait)) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException ie) {
@@ -191,6 +191,10 @@ public class PollThread extends Thread {
 				}
 			}
 		}
+	}
+
+	private boolean timeoutReached(long startTime, int maxWait) {
+		return System.currentTimeMillis() >= (startTime + maxWait);
 	}
 
 	protected boolean checkServerState() {
