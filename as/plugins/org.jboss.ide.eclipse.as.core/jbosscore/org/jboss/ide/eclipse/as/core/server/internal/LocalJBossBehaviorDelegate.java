@@ -86,10 +86,6 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	
 	@Override
 	protected IStatus gracefullStop() {
-		// If you do not set the server as stopping BEFORE returning from this method, 
-		// The WTP framework will assume you have not begun stopping, and will assume 
-		// you CANNOT attempt to stop, and thus, that the stop cannot succeed / has failed. 
-		setServerStopping(); 
 		new Thread() {
 			
 			@Override
