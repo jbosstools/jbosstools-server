@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.osgi.framework.BundleContext;
 
 public class JBoss7ManagerUtil {
@@ -39,4 +40,23 @@ public class JBoss7ManagerUtil {
 			service.dispose();
 		}
 	}
+	
+	public static <RESULT> RESULT executeWithService(IServiceAware<RESULT> serviceAware, IServer server) throws Exception {
+		IJBoss7ManagerService service = null;
+		try {
+			service = JBoss7ManagerUtil.getService(server);
+			return serviceAware.execute(service);
+		} finally {
+			if (service != null) {
+				service.dispose();
+			}
+		}
+	}
+	
+	public static interface IServiceAware<RESULT> {
+		
+		public RESULT execute(IJBoss7ManagerService service) throws Exception;
+		
+	}
+	
 }

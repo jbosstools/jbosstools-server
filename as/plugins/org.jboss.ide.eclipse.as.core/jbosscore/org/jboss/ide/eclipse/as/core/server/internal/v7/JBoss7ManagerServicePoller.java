@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerUtil.IServiceAware;
 
 /**
  * @author André Dietisheim
@@ -131,18 +132,18 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return TIMEOUT_BEHAVIOR_FAIL;
 	}
 
-	public boolean getCurrentStateSynchronous(IServer server) {
-		IJBoss7ManagerService service = null;
+	public boolean getCurrentStateSynchronous(final IServer server) {
 		try {
-			service = JBoss7ManagerUtil.getService(server);
-			JBoss7ServerState state = service.getServerState(server.getHost(), getManagementPort(server));
-			return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+			JBoss7ManagerUtil.executeWithService(new IServiceAware<Boolean>() {
+	
+				@Override
+				public Boolean execute(IJBoss7ManagerService service) throws Exception {
+					JBoss7ServerState state = service.getServerState(server.getHost(), getManagementPort(server));
+					return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
+				}
+			}, server);
 		} catch(Exception e) {
 			// ignore
-		} finally {
-			if (service != null) {
-				service.dispose();
-			}
 		}
 		return IServerStatePoller.SERVER_DOWN;
 	}
