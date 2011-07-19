@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
@@ -26,7 +28,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	protected void updateModels() {
-		// Do nothing
+		updateJREs();
 	}
 
 	@Override
@@ -34,6 +36,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 		createExplanation(main);
 		createNameComposite(main);
 		createHomeComposite(main);
+		createJREComposite(main);
 	}
 
 	protected void fillWidgets() {
@@ -42,6 +45,7 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 			try {
 				fillNameWidgets(rt);
 				fillHomeDir(rt);
+				fillJREWidgets(getRuntime());
 			} catch (Exception e) {
 				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerWizardFragment_could_not_create_ui, rt.getName()), e);
 				JBossServerUIPlugin.getDefault().getLog().log(status);
@@ -51,7 +55,12 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	protected void updatePage() {
-		// Do Nothing
+		int sel = jreCombo.getSelectionIndex();
+		int offset = -1;
+		if( sel + offset >= 0 )
+			selectedVM = installedJREs.get(sel + offset);
+		else // if sel < 0 or sel == 0 and offset == -1
+			selectedVM = null;
 		updateErrorMessage();
 	}
 
@@ -108,6 +117,10 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 
 		runtimeWC.setName(name);
 		runtimeWC.setLocation(new Path(homeDir));
+		IJBossServerRuntime srt = (IJBossServerRuntime) runtimeWC.loadAdapter(
+				IJBossServerRuntime.class, new NullProgressMonitor());
+		srt.setVM(selectedVM);
+
 		getTaskModel().putObject(TaskModel.TASK_RUNTIME, runtimeWC);
 	}
 }

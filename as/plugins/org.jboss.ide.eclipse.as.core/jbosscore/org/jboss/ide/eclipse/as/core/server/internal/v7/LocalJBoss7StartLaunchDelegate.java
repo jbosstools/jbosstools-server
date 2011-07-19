@@ -38,20 +38,7 @@ public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegat
 
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
-		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if( LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
-			return false;
-		}
-		// TODO: use the configured poller
-		boolean started = WebPortPoller.onePing(jbsBehavior.getServer());
-		if( started ) {
-			jbsBehavior.setServerStarting();
-			jbsBehavior.setServerStarted();
-			return false;
-		}
-		return true;
+		return super.preLaunchCheck(configuration, mode, monitor);
 	}
 
 	public void preLaunch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)

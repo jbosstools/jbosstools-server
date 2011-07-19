@@ -221,8 +221,9 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		if (jbsrt.isUsingDefaultJRE()) {
 			jreCombo.select(0);
 		} else {
-			IVMInstall install = jbsrt.getVM();
+			IVMInstall install = jbsrt.getHardVM();
 			if( install != null ) {
+				selectedVM = install;
 				String vmName = install.getName();
 				String[] jres = jreCombo.getItems();
 				for (int i = 0; i < jres.length; i++) {
