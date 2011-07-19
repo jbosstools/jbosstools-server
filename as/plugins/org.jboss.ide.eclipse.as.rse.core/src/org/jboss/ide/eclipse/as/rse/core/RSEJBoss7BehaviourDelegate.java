@@ -41,12 +41,12 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	}
 	
 	@Override
-	public void serverIsStarting() {
+	public void onServerStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
 	@Override
-	public void serverIsStopping() {
+	public void onServerStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 

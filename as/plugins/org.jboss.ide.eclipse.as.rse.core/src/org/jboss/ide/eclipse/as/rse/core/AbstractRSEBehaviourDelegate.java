@@ -45,19 +45,13 @@ public abstract class AbstractRSEBehaviourDelegate extends AbstractJBossBehaviou
 
 	protected abstract String getShutdownCommand(IServer server) throws CoreException;
 	
-	/**
-	 * ATTENTION: don't call this directly, use {@link #getActualBehavior().getServerStarting()} instead. 
-	 * if we would call the delegating server behavior here to set it's state, we would cause an infinite loop.
-	 */
-	public void serverIsStarting() {
+	@Override
+	public void onServerStarting() {
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	/**
-	 * ATTENTION: don't call this directly, use {@link #getActualBehavior().getServerStopping()} instead. 
-	 * if we would call the delegating server behavior here to set it's state, we would cause an infinite loop.
-	 */
-	public void serverIsStopping() {
+	@Override
+	public void onServerStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	

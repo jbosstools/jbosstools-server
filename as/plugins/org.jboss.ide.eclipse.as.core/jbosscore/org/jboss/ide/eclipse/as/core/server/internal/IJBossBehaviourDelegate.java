@@ -27,9 +27,9 @@ public interface IJBossBehaviourDelegate {
 
 	public void publishFinish(final IProgressMonitor monitor) throws CoreException;
 
-	public void serverIsStarting();
+	public void onServerStarting();
 
-	public void serverIsStopping();
+	public void onServerStopping();
 
 	public IStatus canChangeState(String launchMode);
 

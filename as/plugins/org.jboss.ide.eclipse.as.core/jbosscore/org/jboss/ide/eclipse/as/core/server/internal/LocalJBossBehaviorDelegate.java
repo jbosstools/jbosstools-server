@@ -183,12 +183,12 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				&& !process.isTerminated();
 	}
 	
-	public void serverIsStarting() {
+	public void onServerStarting() {
 		nextStopRequiresForce = false;
 		pollServer(IServerStatePoller.SERVER_UP);
 	}
 	
-	public void serverIsStopping() {
+	public void onServerStopping() {
 		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 	

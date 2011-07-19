@@ -108,13 +108,13 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 	@Override
 	public void setServerStarting() {
 		super.setServerStarting();
-		getDelegate().serverIsStarting();
+		getDelegate().onServerStarting();
 	}
 	
 	@Override
 	public void setServerStopping() {
 		super.setServerStopping();
-		getDelegate().serverIsStopping();
+		getDelegate().onServerStopping();
 	}
 	
 	protected void publishStart(final IProgressMonitor monitor) throws CoreException {
