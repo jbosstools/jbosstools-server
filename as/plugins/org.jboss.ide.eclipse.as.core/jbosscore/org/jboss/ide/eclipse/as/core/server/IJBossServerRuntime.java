@@ -70,7 +70,9 @@ public interface IJBossServerRuntime {
 	
 	// for startup
 	public String getDefaultRunArgs();
+	public String getDefaultRunArgs(IPath serverHome);
 	public String getDefaultRunVMArgs();
+	public String getDefaultRunVMArgs(IPath serverHome);
 	public HashMap<String, String> getDefaultRunEnvVars();
 	public boolean isUsingDefaultJRE();
 	public boolean isEAP();

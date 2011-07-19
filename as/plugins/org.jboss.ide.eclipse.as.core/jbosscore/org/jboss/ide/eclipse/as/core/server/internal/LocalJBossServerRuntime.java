@@ -121,8 +121,18 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 	}
 
 	@Override
+	public String getDefaultRunArgs(IPath serverHome) {
+		return getDefaultRunArgs();
+	}
+
+	@Override
 	public String getDefaultRunVMArgs() {
-		File sysJar = new File(getRuntime().getLocation().toFile(), JBossServerType.AS.getSystemJarPath());
+		return getDefaultRunVMArgs(getRuntime().getLocation());
+	}
+	
+	@Override
+	public String getDefaultRunVMArgs(IPath serverHome) {
+		File sysJar = new File(serverHome.toFile(), JBossServerType.AS.getSystemJarPath());
 		String version = new ServerBeanLoader().getFullServerVersion(sysJar);
 
 		String name = getRuntime().getName();
@@ -145,18 +155,18 @@ public class LocalJBossServerRuntime extends AbstractLocalJBossServerRuntime imp
 		ret += SYSPROP + SUN_CLIENT_GC_ARG + EQ + 3600000 + SPACE;
 		ret += SYSPROP + SUN_SERVER_GC_ARG + EQ + 3600000 + SPACE;
 		ret += QUOTE + SYSPROP + ENDORSED_DIRS + EQ + 
-			(getRuntime().getLocation().append(LIB).append(ENDORSED)) + QUOTE + SPACE;
-		if( getRuntime().getLocation().append(BIN).append(NATIVE).toFile().exists() ) 
+			(serverHome.append(LIB).append(ENDORSED)) + QUOTE + SPACE;
+		if( serverHome.append(BIN).append(NATIVE).toFile().exists() ) 
 			ret += SYSPROP + JAVA_LIB_PATH + EQ + QUOTE + 
-				getRuntime().getLocation().append(BIN).append(NATIVE) + QUOTE + SPACE;
+				serverHome.append(BIN).append(NATIVE) + QUOTE + SPACE;
 		
 		if( version.startsWith(IJBossToolingConstants.V6_1)) {
 			ret += SYSPROP + LOGGING_CONFIG_PROP + EQ + QUOTE + FILE_COLON + 
-					getRuntime().getLocation().append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
+					serverHome.append(BIN).append(LOGGING_PROPERTIES) + QUOTE + SPACE;
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public HashMap<String, String> getDefaultRunEnvVars(){
 		HashMap<String, String> envVars = new HashMap<String, String>(1);
