@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 
+	@Override
 	public void actualLaunch(DelegatingStartLaunchConfiguration launchConfig,
 			ILaunchConfiguration configuration, String mode, ILaunch launch,
 			IProgressMonitor monitor) throws CoreException {
@@ -47,14 +48,17 @@ public class RSEJBoss7StartLaunchDelegate extends AbstractRSELaunchDelegate {
 		launchPingThread(beh);
 	}
 
+	@Override
 	public void preLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 	}
 
+	@Override
 	public void postLaunch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 	}
 
+	@Override
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server)
 			throws CoreException {
 		new RSELaunchConfigurator(getDefaultLaunchCommand(workingCopy), getDefaultStopCommand(server))
