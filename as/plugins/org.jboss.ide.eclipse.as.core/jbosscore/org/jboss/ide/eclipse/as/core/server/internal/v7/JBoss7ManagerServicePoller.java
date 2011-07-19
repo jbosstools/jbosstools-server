@@ -56,10 +56,10 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		return server;
 	}
 
-	private int getManagementPort() {
-		JBoss7Server server = (JBoss7Server)getServer().loadAdapter(JBoss7Server.class, new NullProgressMonitor());
+	private int getManagementPort(IServer server) {
+		JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
 		if( server != null )
-			return server.getManagementPort();
+			return jbossServer.getManagementPort();
 		// TODO: provide this default in a single place (currently it is spread across the 
 		// behavior and this poller). This port is already offered as constant in AS7Manager#MGMT_PORT
 		return 9999;
@@ -81,7 +81,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		try {
 			JBoss7ServerState serverState = null;
 			do {
-				serverState = service.getServerState(getServer().getHost(), getManagementPort());
+				serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
 			} while (serverState == JBoss7ServerState.STARTING);
 			return serverState == JBoss7ServerState.RUNNING;
 		} catch (Exception e) {
@@ -93,7 +93,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		try {
 			JBoss7ServerState serverState = null;
 			do {
-				serverState = service.getServerState(getServer().getHost(), getManagementPort());
+				serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
 			} while (serverState == JBoss7ServerState.RUNNING);
 			return false;
 		} catch (JBoss7ManangerConnectException e) {
@@ -105,7 +105,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 
 	public boolean getState() throws PollingException, RequiresInfoException {
 		try {
-			JBoss7ServerState serverState = service.getServerState(getServer().getHost(), getManagementPort());
+			JBoss7ServerState serverState = service.getServerState(getServer().getHost(), getManagementPort(getServer()));
 			return serverState == JBoss7ServerState.RUNNING
 					|| serverState == JBoss7ServerState.RESTART_REQUIRED;
 		} catch (Exception e) {
@@ -132,10 +132,15 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	}
 
 	public boolean getCurrentStateSynchronous(IServer server) {
+		IJBoss7ManagerService service = null;
 		try {
-			JBoss7ServerState state = service.getServerState(getServer().getHost(), getManagementPort());
+			service = JBoss7ManagerUtil.getService(server);
+			JBoss7ServerState state = service.getServerState(server.getHost(), getManagementPort(server));
 			return state == JBoss7ServerState.RUNNING ? IServerStatePoller.SERVER_UP : IServerStatePoller.SERVER_DOWN;
 		} catch(Exception e) {
+			// ignore
+		} finally {
+			service.dispose();
 		}
 		return IServerStatePoller.SERVER_DOWN;
 	}
