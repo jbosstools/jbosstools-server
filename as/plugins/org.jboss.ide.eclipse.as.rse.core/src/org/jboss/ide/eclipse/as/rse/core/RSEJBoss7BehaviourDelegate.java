@@ -53,11 +53,9 @@ public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
 	@Override
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
-		IJBoss7ManagerService service = null;
 		try {
 			JBoss7Server jbossServer = ServerConverter.checkedGetJBossServer(server, JBoss7Server.class);
-			service = getService();
-			service.stop(jbossServer.getHost(), jbossServer.getManagementPort());
+			getService().stop(jbossServer.getHost(), jbossServer.getManagementPort());
 			return Status.OK_STATUS;
 		} catch (Exception e) {
 			return new Status(
