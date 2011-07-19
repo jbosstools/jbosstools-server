@@ -169,6 +169,10 @@ public class RSEJBossStartLaunchDelegate extends AbstractRSELaunchDelegate {
 		String currentArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ""); //$NON-NLS-1$
 		String currentVMArgs = config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, ""); //$NON-NLS-1$
 
+		currentArgs = ArgsUtil.setArg(currentArgs, null,
+				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.JBOSS_SERVER_HOME_URL,
+				"file:" + new Path(rseHome).append(IJBossRuntimeResourceConstants.SERVER).toOSString());
+
 		currentVMArgs = ArgsUtil.setArg(currentVMArgs, null,
 				IJBossRuntimeConstants.SYSPROP + IJBossRuntimeConstants.ENDORSED_DIRS,
 				new Path(rseHome).append(
