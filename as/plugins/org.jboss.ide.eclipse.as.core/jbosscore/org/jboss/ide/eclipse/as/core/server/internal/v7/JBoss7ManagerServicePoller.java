@@ -140,7 +140,9 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		} catch(Exception e) {
 			// ignore
 		} finally {
-			service.dispose();
+			if (service != null) {
+				service.dispose();
+			}
 		}
 		return IServerStatePoller.SERVER_DOWN;
 	}
