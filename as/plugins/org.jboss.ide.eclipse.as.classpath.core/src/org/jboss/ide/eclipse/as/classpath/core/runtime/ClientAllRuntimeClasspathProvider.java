@@ -204,6 +204,10 @@ public class ClientAllRuntimeClasspathProvider
 		Set<Entry> list = new HashSet<Entry>();
 		SimpleFileFilter filter = new SimpleFileFilter(new String[]{"jsf-api-1.2_13.jar", "jsf-impl-1.2_13.jar"}); // Problematic jar //$NON-NLS-1$
 		addPaths(location.append(AS7_MODULES).append(JAVAX), list, true, filter);
+		addPaths(location.append(AS7_MODULES).append("org/hibernate/validator"),list, true);
+		addPaths(location.append(AS7_MODULES).append("org/resteasy"),list, true);
+		addPaths(location.append(AS7_MODULES).append("org/picketbox"),list, true);
+		
 		return list;
 	}
 	
