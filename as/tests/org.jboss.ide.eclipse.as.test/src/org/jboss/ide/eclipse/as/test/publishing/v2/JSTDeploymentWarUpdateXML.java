@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.test.publishing.v2;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -84,7 +86,9 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		 *  <li>newModule.war.failed</li>
 		 * </ul>
 		 */
-		testMockPublishMethod(8,"newModule.war" + DeploymentMarkerUtils.FAILED_DEPLOY,"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
+		testMockPublishMethod(8, "newModule.war",
+				"newModule.war" + DeploymentMarkerUtils.FAILED_DEPLOY,
+				"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
 	}
 	
 	private void testMockPublishMethod(int initial, String... filesToRemove) throws CoreException, IOException {
@@ -93,16 +97,19 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(initial, MockPublishMethod.getChanged().length);
+		IPath[] changed = MockPublishMethod.getChanged();
+		assertEquals(initial, changed.length);
 		MockPublishMethod.reset();
 		
 		// remove
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		assertEquals(filesToRemove.length, MockPublishMethod.getRemoved().length);
+		IPath[] rem = MockPublishMethod.getRemoved();
+		assertEquals(filesToRemove.length, rem.length);
 		IPath[] removedFiles = MockPublishMethod.getRemoved();
+		List<IPath> removedAsList = Arrays.asList(removedFiles);
 		for(int i = 0; i < removedFiles.length; i++) {
-			assertEquals(MockPublishMethod.MOCK_ROOT + "/" + filesToRemove[i], removedFiles[i].toString());
+			assertTrue(removedAsList.contains(new Path(MockPublishMethod.MOCK_ROOT + "/" + filesToRemove[i])));
 		}
 		MockPublishMethod.reset();
 	}

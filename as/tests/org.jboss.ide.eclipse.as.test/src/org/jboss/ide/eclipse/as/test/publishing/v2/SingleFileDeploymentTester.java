@@ -203,7 +203,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		assertEquals(changed2.size(), 0);
-		assertEquals(removed2.size(), 2); // [test.xml.failed, test.xml.deployed]
+		assertEquals(removed2.size(), 3); // [test.xml, test.xml.failed, test.xml.deployed]
 		MockPublishMethod.reset();
 	}
 
@@ -249,7 +249,7 @@ public class SingleFileDeploymentTester extends AbstractJSTDeploymentTester {
 		ServerRuntimeUtils.publish(server);
 		JobUtils.waitForIdle();
 		assertEquals(changed2.size(), 0);
-		assertEquals(removed2.size(), 2); // [test.failed, test.deployed]
+		assertEquals(removed2.size(), 3); // [test.xml, test.failed, test.deployed]
 		MockPublishMethod.reset();
 
 	}

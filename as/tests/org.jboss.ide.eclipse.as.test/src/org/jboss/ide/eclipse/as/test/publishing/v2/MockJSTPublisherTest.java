@@ -98,7 +98,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 		assertRemoved(
 				isAs7,
 				new String[] { "newModule.ear" }, 
-				new String[] { "newModule.ear.deployed", "newModule.ear.failed" });
+				new String[] { "newModule.ear", "newModule.ear.deployed", "newModule.ear.failed" });
 	}
 	
 	protected void assertRemoved(boolean isAs7, String[] nonAs7, String[] as7) {
