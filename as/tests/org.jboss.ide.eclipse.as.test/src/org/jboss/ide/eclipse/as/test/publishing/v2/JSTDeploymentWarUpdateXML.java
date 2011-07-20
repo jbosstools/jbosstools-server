@@ -11,10 +11,7 @@
 package org.jboss.ide.eclipse.as.test.publishing.v2;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -25,6 +22,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.DeploymentMarkerUtils;
+import org.jboss.ide.eclipse.as.test.util.PathUtils;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 import org.jboss.ide.eclipse.as.test.util.wtp.JavaEEFacetConstants;
 import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
@@ -45,7 +43,7 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		IModule mod = ServerUtil.getModule(project);
 		IModule[] module = new IModule[] { mod };
 		verifyJSTPublisher(module);
-		IFile f = project.getFolder(CONTENT_DIR).getFolder("WEB-INF").getFile("web.xml");
+//		IFile f = project.getFolder(CONTENT_DIR).getFolder("WEB-INF").getFile("web.xml");
 
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
@@ -80,15 +78,18 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		server = ServerRuntimeUtils.createMockJBoss7Server();
 		server = ServerRuntimeUtils.useMockPublishMethod(server);
 		/*
-		 * removing module newModule.war will remove 2 markers:
+		 * removing module newModule.war will remove 2 markers and the war:
 		 * <ul>
+		 * 	<li>newModule.war</li>
 		 * 	<li>newModule.war.deployed</li>
 		 *  <li>newModule.war.failed</li>
 		 * </ul>
 		 */
-		testMockPublishMethod(8, "newModule.war",
-				"newModule.war" + DeploymentMarkerUtils.FAILED_DEPLOY,
-				"newModule.war" + DeploymentMarkerUtils.DEPLOYED);
+		String moduleName = "newModule.war";
+		testMockPublishMethod(8, 
+				moduleName, 
+				DeploymentMarkerUtils.getFailedMarkerName(moduleName), 
+				DeploymentMarkerUtils.getDeployedMarker(moduleName));
 	}
 	
 	private void testMockPublishMethod(int initial, String... filesToRemove) throws CoreException, IOException {
@@ -97,19 +98,16 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
-		IPath[] changed = MockPublishMethod.getChanged();
-		assertEquals(initial, changed.length);
+		assertEquals(initial, MockPublishMethod.getChanged().length);
 		MockPublishMethod.reset();
 		
 		// remove
 		server = ServerRuntimeUtils.removeModule(server, mod);
 		ServerRuntimeUtils.publish(server);
-		IPath[] rem = MockPublishMethod.getRemoved();
-		assertEquals(filesToRemove.length, rem.length);
+		assertEquals(filesToRemove.length, MockPublishMethod.getRemoved().length);
 		IPath[] removedFiles = MockPublishMethod.getRemoved();
-		List<IPath> removedAsList = Arrays.asList(removedFiles);
 		for(int i = 0; i < removedFiles.length; i++) {
-			assertTrue(removedAsList.contains(new Path(MockPublishMethod.MOCK_ROOT + "/" + filesToRemove[i])));
+			assertTrue(PathUtils.containsPath(MockPublishMethod.MOCK_ROOT + "/" + filesToRemove[i], removedFiles));
 		}
 		MockPublishMethod.reset();
 	}

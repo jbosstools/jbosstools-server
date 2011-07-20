@@ -217,4 +217,16 @@ public class DeploymentMarkerUtils {
 		return Status.OK_STATUS;
 	}
 
+	public static String getDeployedMarker(String file) {
+		return file + DEPLOYED;
+	}
+
+	public static String getFailedMarkerName(String file) {
+		return file + FAILED_DEPLOY;
+	}
+
+	public static String getDoDeployMarkerName(String file) {
+		return file + DO_DEPLOY;
+	}
 }
+
