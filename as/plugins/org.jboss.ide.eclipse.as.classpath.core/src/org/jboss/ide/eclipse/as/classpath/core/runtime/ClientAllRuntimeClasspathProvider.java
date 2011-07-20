@@ -207,6 +207,8 @@ public class ClientAllRuntimeClasspathProvider
 		addPaths(location.append(AS7_MODULES).append("org/hibernate/validator"),list, true);
 		addPaths(location.append(AS7_MODULES).append("org/resteasy"),list, true);
 		addPaths(location.append(AS7_MODULES).append("org/picketbox"),list, true);
+		addPaths(location.append(AS7_MODULES).append("org/jboss/as/controller-client/main/"),list, true);
+		addPaths(location.append(AS7_MODULES).append("org/jboss/dmr/main/"),list, true);
 		
 		return list;
 	}
