@@ -23,6 +23,11 @@ public class LocalJBoss7ServerRuntime extends LocalJBossServerRuntime {
 	}
 
 	@Override
+	public String getDefaultRunArgs() {
+		return getDefaultRunArgs(getRuntime().getLocation());
+	}
+
+	@Override
 	public String getDefaultRunArgs(IPath serverHome) {
 		return "-mp \"" //$NON-NLS-1$
 				+ serverHome.append("modules").toString() //$NON-NLS-1$ 
