@@ -134,7 +134,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 
 	public boolean getCurrentStateSynchronous(final IServer server) {
 		try {
-			JBoss7ManagerUtil.executeWithService(new IServiceAware<Boolean>() {
+			return JBoss7ManagerUtil.executeWithService(new IServiceAware<Boolean>() {
 	
 				@Override
 				public Boolean execute(IJBoss7ManagerService service) throws Exception {
@@ -143,6 +143,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 				}
 			}, server);
 		} catch(Exception e) {
+e.printStackTrace();
 			// ignore
 		}
 		return IServerStatePoller.SERVER_DOWN;
