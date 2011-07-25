@@ -4,10 +4,9 @@
 	<parent>
 		<groupId>org.jboss.tools.as</groupId>
 		<artifactId>features</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>2.3.0-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.as.features</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.serverAdapter.wtp.feature</artifactId> 
-	<version>2.3.0-SNAPSHOT</version>
 	<packaging>eclipse-feature</packaging>
 </project>

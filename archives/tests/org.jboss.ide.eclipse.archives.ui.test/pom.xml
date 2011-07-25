@@ -4,11 +4,10 @@
 	<parent>
 		<groupId>org.jboss.tools.archives</groupId>
 		<artifactId>tests</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>3.2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.archives.tests</groupId>
 	<artifactId>org.jboss.ide.eclipse.archives.ui.test</artifactId> 
-	<version>3.2.0-SNAPSHOT</version>
 	<packaging>eclipse-test-plugin</packaging>
 	<properties>
 		<emma.filter>org.jboss.ide.eclipse.archives.ui*</emma.filter>

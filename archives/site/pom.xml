@@ -4,11 +4,10 @@
 	<parent>
 		<groupId>org.jboss.tools</groupId>
 		<artifactId>archives</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>3.2.1-SNAPSHOT</version>
 	</parent>
 	<groupId>org.jboss.tools.archives</groupId>
 	<artifactId>site</artifactId>
 	<name>archives.site</name>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>eclipse-update-site</packaging>
 </project>
