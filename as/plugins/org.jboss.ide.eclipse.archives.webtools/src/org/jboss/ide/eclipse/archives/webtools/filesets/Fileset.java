@@ -50,10 +50,12 @@ public class Fileset implements Cloneable {
 	 */
 	public String getFolder() {
 		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
-		tmp = tmp.replace("${jboss_config_dir}",  //$NON-NLS-1$
-					"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-		tmp = tmp.replace("${jboss_config}",  //$NON-NLS-1$
-				"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		if( server != null ) {
+			tmp = tmp.replace("${jboss_config_dir}",  //$NON-NLS-1$
+						"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+			tmp = tmp.replace("${jboss_config}",  //$NON-NLS-1$
+					"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 
 		try {
 			StringSubstitutionEngine engine = new StringSubstitutionEngine();
