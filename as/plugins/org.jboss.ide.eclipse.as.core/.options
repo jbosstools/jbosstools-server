@@ -1,0 +1,30 @@
+# Debugging options for the org.jboss.ide.eclipse.as.core plugin
+
+# Turn on general debugging
+org.jboss.ide.eclipse.as.core/debug=true
+
+# Tracing options
+org.jboss.ide.eclipse.as.core/config=false
+org.jboss.ide.eclipse.as.core/info=false
+org.jboss.ide.eclipse.as.core/warning=false
+org.jboss.ide.eclipse.as.core/severe=false
+org.jboss.ide.eclipse.as.core/finest=false
+org.jboss.ide.eclipse.as.core/finer=false
+
+# Tracking of server resources
+org.jboss.ide.eclipse.as.core/resources=false
+
+# Loading of extension points
+org.jboss.ide.eclipse.as.core/extension_point=false
+
+# Server listeners
+org.jboss.ide.eclipse.as.core/listeners=false
+
+# runtime targets
+org.jboss.ide.eclipse.as.core/runtime_target=false
+
+# Performance of loading and calling delegates
+org.jboss.ide.eclipse.as.core/performance=false
+
+# Publishing
+org.jboss.ide.eclipse.as.core/publishing=false

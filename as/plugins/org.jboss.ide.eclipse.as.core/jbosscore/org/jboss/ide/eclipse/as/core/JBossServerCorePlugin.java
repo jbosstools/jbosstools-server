@@ -1,5 +1,5 @@
 /******************************************************************************* 
- * Copyright (c) 2007 Red Hat, Inc. 
+ * Copyright (c) 2011 Red Hat, Inc. 
  * Distributed under license by Red Hat, Inc. All rights reserved. 
  * This program is made available under the terms of the 
  * Eclipse Public License v1.0 which accompanies this distribution, 
@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core;
 
+import java.util.Hashtable;
+
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -18,6 +20,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.service.debug.DebugOptions;
+import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.server.core.IServer;
@@ -42,6 +46,9 @@ public class JBossServerCorePlugin extends Plugin  {
 		super();
 		plugin = this;
 	}
+	public static JBossServerCorePlugin getInstance() {
+		return plugin;
+	}
 
 	public IExtension[] getExtensions (String extensionPoint) {
 		IExtensionRegistry reg = Platform.getExtensionRegistry();
@@ -61,6 +68,11 @@ public class JBossServerCorePlugin extends Plugin  {
 		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
 		UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
 		FacetedProjectFramework.addListener( JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
+		
+		// register the debug options listener
+		final Hashtable<String, String> props = new Hashtable<String, String>(4);
+		props.put(DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
+		context.registerService(DebugOptionsListener.class.getName(), new Trace(), props);
 	}
 
 	/**
