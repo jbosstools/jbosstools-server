@@ -712,27 +712,27 @@
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.extensions.polling.TimeoutPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.timeoutpoller"
-            name="Timeout Poller"
+            name="Timeout"
             supportsStartup="true"
             supportsShutdown="true"/>
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.extensions.polling.ProcessTerminatedPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.processTerminatedPoller"
-            name="Process Terminated Poller"
+            name="Process Terminated"
             supportsShutdown="true"
             supportsStartup="false">
       </serverPoller>
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller"
             id="org.jboss.ide.eclipse.as.core.runtime.server.WebPoller"
-            name="Web Port Poller"
+            name="Web Port"
             supportsShutdown="true"
             supportsStartup="true">
       </serverPoller>
       <serverPoller
             class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServicePoller"
             id="org.jboss.ide.eclipse.as.core.server.JBoss7ManagerServicePoller"
-            name="JBoss 7 Manager Service Poller"
+            name="JBoss 7 Manager Service"
             serverTypes="org.jboss.ide.eclipse.as.70"
             supportsShutdown="true"
             supportsStartup="true">
@@ -1181,13 +1181,13 @@
          point="org.eclipse.core.variables.dynamicVariables">
       <variable
             name="jboss_config"
-            description="Returns the configuration name for the server who&apos;s name matches the variable"
+            description="Returns the configuration name for the server who&apos;s name matches the variable, or, if none, the runtime who&apos;s name matches the variable"
             resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
             supportsArgument="true">
       </variable>
       <variable
             name="jboss_config_dir"
-            description="Returns the full path of the configuration folder for the server who&apos;s name matches the variable"
+            description="Returns the full path of the configuration folder for the server who&apos;s name matches the variable, or, if none, the runtime who&apos;s name matches the variable"
             resolver="org.jboss.ide.eclipse.as.core.resolvers.ConfigNameResolver"
             supportsArgument="true">
       </variable>
