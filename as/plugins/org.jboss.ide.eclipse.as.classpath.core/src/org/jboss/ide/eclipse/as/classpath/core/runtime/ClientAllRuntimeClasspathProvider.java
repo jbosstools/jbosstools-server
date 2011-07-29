@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007 Red Hat, Inc.
+ * Copyright (c) 2011 Red Hat, Inc.
  * Distributed under license by Red Hat, Inc. All rights reserved.
  * This program is made available under the terms of the
  * Eclipse Public License v1.0 which accompanies this distribution,
@@ -16,7 +16,7 @@ import java.io.FileFilter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -33,6 +33,7 @@ import org.jboss.ide.eclipse.as.classpath.core.ClasspathConstants;
 import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.classpath.core.Messages;
 import org.jboss.ide.eclipse.as.classpath.core.RuntimeKey;
+import org.jboss.ide.eclipse.as.classpath.core.runtime.CustomRuntimeClasspathModel.IDefaultPathProvider;
 
 /**
  * This class uses the "throw everything you can find" strategy
@@ -111,34 +112,12 @@ public class ClientAllRuntimeClasspathProvider
 		if (runtimeClasspath != null) {
 			return runtimeClasspath;
 		}
-		IPath loc = key.getLocation();
-		IPath configPath = key.getConfigPath();
-		String rtID  = key.getId();
-		Set<Entry> list = new HashSet<Entry>();
-		if(AS_32.equals(rtID)) list = get32(loc, configPath);
-		if(AS_40.equals(rtID)) list = get40(loc,configPath);
-		if(AS_42.equals(rtID)) list = get42(loc,configPath);
-		if(AS_50.equals(rtID)) list = get50(loc,configPath);
-		if(EAP_43.equals(rtID)) list = getEAP43(loc,configPath);
-		
-		// Added cautiously, not sure on changes, may change
-		if(AS_51.equals(rtID)) list = get50(loc,configPath);
-		if(AS_60.equals(rtID)) list = get60(loc,configPath);
-		if(EAP_50.equals(rtID)) list = get50(loc,configPath);
-		
-		if( AS_70.equals(rtID)) list = get70(loc);
-		
-		if( list == null ) {
-			runtimeClasspath = new IClasspathEntry[0];
-		} else {
-			List<IClasspathEntry> entries = convert(list);
-			runtimeClasspath = entries.toArray(new IClasspathEntry[entries.size()]);
-		}
+		runtimeClasspath = getClasspathEntriesForRuntime(runtime);
 		ClasspathCorePlugin.getRuntimeClasspaths().put(key, runtimeClasspath);
 		return runtimeClasspath;
 	}
 
-	protected List<IClasspathEntry> convert(Set<Entry> list) {
+	protected List<IClasspathEntry> convert(Collection<Entry> list) {
 		List<IClasspathEntry> fin = new ArrayList<IClasspathEntry>();
 		Iterator<Entry> i = list.iterator();
 		while(i.hasNext()) {
@@ -147,70 +126,15 @@ public class ClientAllRuntimeClasspathProvider
 		return fin;
 	}
 	
-	protected Set<Entry> get32(IPath location, IPath configPath) {
-		Set<Entry> list = new HashSet<Entry>();
-		addPaths(location.append(LIB), list);
-		addPaths(configPath.append(LIB), list);
-		addPaths(location.append(CLIENT), list);
-		return list;
-	}
-	
-	protected Set<Entry> get40(IPath location, IPath configPath) {
-		Set<Entry> list = new HashSet<Entry>();
-		addPaths(location.append(LIB), list);
-		addPaths(configPath.append(LIB), list);
-		IPath deployPath = configPath.append(DEPLOY);
-		addPaths(deployPath.append(JBOSS_WEB_DEPLOYER).append(JSF_LIB), list);
-		addPaths(deployPath.append(AOP_JDK5_DEPLOYER), list);
-		addPaths(deployPath.append(EJB3_DEPLOYER), list);
-		addPaths(location.append(CLIENT), list);
-		return list;
-	}
-
-	protected Set<Entry> get42(IPath location, IPath configPath) {
-		return get40(location, configPath);
-	}
-
-	protected Set<Entry> getEAP43(IPath location, IPath configPath) {
-		return get40(location, configPath);
-	}
-	
-	protected Set<Entry> get50(IPath location, IPath configPath) {
-		Set<Entry> list = new HashSet<Entry>();
-		addPaths(location.append(COMMON).append(LIB), list);
-		addPaths(location.append(LIB), list);
-		addPaths(configPath.append(LIB), list);
-		IPath deployerPath = configPath.append(DEPLOYERS);
-		IPath deployPath = configPath.append(DEPLOY);
-		addPaths(deployPath.append(JBOSSWEB_SAR).append(JSF_LIB),list);
-		addPaths(deployPath.append(JBOSSWEB_SAR).append(JBOSS_WEB_SERVICE_JAR),list);
-		addPaths(deployPath.append(JBOSSWEB_SAR).append(JSTL_JAR),list);
-		addPaths(deployerPath.append(AS5_AOP_DEPLOYER), list);
-		addPaths(deployerPath.append(EJB3_DEPLOYER), list);
-		addPaths(deployerPath.append(WEBBEANS_DEPLOYER).append(JSR299_API_JAR), list);
-		addPaths(location.append(CLIENT), list);
-		return list;
-	}
-	
-	protected Set<Entry> get60(IPath location, IPath configPath) {
-		Set<Entry> list = new HashSet<Entry>();
-		list.addAll(get50(location, configPath));
-		addPaths(configPath.append(DEPLOYERS).append(REST_EASY_DEPLOYER), list);
-		addPaths(configPath.append(DEPLOYERS).append(JSF_DEPLOYER).append(MOJARRA_20).append(JSF_LIB), list);
-		return list;
-	}
-	
-	protected Set<Entry> get70(IPath location) {
-		Set<Entry> list = new HashSet<Entry>();
-		SimpleFileFilter filter = new SimpleFileFilter(new String[]{"jsf-api-1.2_13.jar", "jsf-impl-1.2_13.jar"}); // Problematic jar //$NON-NLS-1$
-		addPaths(location.append(AS7_MODULES).append(JAVAX), list, true, filter);
-		addPaths(location.append(AS7_MODULES).append("org/hibernate/validator"),list, true);
-		addPaths(location.append(AS7_MODULES).append("org/resteasy"),list, true);
-		addPaths(location.append(AS7_MODULES).append("org/picketbox"),list, true);
-		addPaths(location.append(AS7_MODULES).append("org/jboss/as/controller-client/main/"),list, true);
-		addPaths(location.append(AS7_MODULES).append("org/jboss/dmr/main/"),list, true);
-		
-		return list;
+	protected IClasspathEntry[] getClasspathEntriesForRuntime(IRuntime rt) {
+		IDefaultPathProvider[] sets = CustomRuntimeClasspathModel.getInstance().getEntries(rt.getRuntimeType());
+		IPath[] allPaths = CustomRuntimeClasspathModel.getInstance().getAllEntries(rt, sets);
+		ArrayList<Entry> entries = new ArrayList<Entry>();
+		for( int i = 0; i < allPaths.length; i++ ) {
+			addSinglePath(allPaths[i], entries);
+		}
+		List<IClasspathEntry> ret = convert(entries);
+		return (IClasspathEntry[]) ret.toArray(new IClasspathEntry[ret.size()]);
 	}
 	
 	protected IClasspathEntry getEntry(Entry entry) {
@@ -261,7 +185,11 @@ public class ClientAllRuntimeClasspathProvider
 			return;
 		}
 		list.add(new Entry(p, p.lastSegment(), p.toFile().length()));
-		
 	}
-
+	protected void addSinglePath(IPath p, ArrayList<Entry> list) {
+		if (!p.toFile().exists()) {
+			return;
+		}
+		list.add(new Entry(p, p.lastSegment(), p.toFile().length()));
+	}
 }

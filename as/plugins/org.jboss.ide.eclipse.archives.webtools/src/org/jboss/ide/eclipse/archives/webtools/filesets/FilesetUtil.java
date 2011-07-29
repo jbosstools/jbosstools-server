@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2011 Red Hat, Inc.
+ * Distributed under license by Red Hat, Inc. All rights reserved.
+ * This program is made available under the terms of the
+ * Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Red Hat, Inc. - initial API and implementation
+ ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
 import java.io.File;
@@ -31,6 +41,14 @@ public class FilesetUtil {
 	}
 	
 	public static Fileset[] loadFilesets(InputStream is, IServer server) {
+		Fileset[] sets = loadFilesets(is);
+		for( int i = 0; i < sets.length; i++ ) {
+			sets[i].setServer(server);
+		}
+		return sets;
+	}
+	
+	public static Fileset[] loadFilesets(InputStream is) {
 		Fileset[] filesets = null;
 		XMLMemento memento = XMLMemento.createReadRoot(is);
 		IMemento[] categoryMementos = memento.getChildren("fileset");//$NON-NLS-1$
@@ -42,7 +60,6 @@ public class FilesetUtil {
 			includes = categoryMementos[i].getString("includes");//$NON-NLS-1$
 			excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
 			filesets[i] = new Fileset(name, folder, includes, excludes);
-			filesets[i].setServer(server);
 		}
 		return filesets == null ? new Fileset[] { } : filesets;
 	}

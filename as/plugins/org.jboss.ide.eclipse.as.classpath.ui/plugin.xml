@@ -34,5 +34,15 @@
             id="org.jboss.ide.eclipse.as.classpath.core.javaee-5.0">
       </classpathContainerPage>
    </extension>
+    <extension
+          point="org.eclipse.ui.preferencePages">
+       <page
+             id="org.jboss.ide.eclipse.as.classpath.ui.containers.custom"
+             name="Default Classpath Entries"
+             category="org.eclipse.wst.server.ui.runtime.preferencePage"
+             class="org.jboss.ide.eclipse.as.classpath.ui.containers.custom.CustomClasspathPreferencePage">
+                 <keywordReference id="org.eclipse.wst.server.preferenceKeywords"/>
+       </page>
+  </extension>
    
 </plugin>

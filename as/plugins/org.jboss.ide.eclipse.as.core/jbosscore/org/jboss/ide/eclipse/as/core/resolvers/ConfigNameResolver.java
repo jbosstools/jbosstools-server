@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
@@ -20,34 +21,64 @@ public class ConfigNameResolver implements IDynamicVariableResolver {
 	}
 	
 	protected String handleConfig(IDynamicVariable variable, String argument) {
+		IJBossServerRuntime ajbsrt = null;
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
 			if( servers[i].getName().equals(argument)) {
-				IJBossServerRuntime ajbsrt = (IJBossServerRuntime) servers[i].getRuntime()
-				.loadAdapter(IJBossServerRuntime.class,
+				ajbsrt = (IJBossServerRuntime) servers[i].getRuntime()
+						.loadAdapter(IJBossServerRuntime.class,
 						new NullProgressMonitor());
-				String config = null;
-				if( ajbsrt != null ) 
-					config = ajbsrt.getJBossConfiguration();
-				if( config != null )
-					return config;
+				break;
 			}
+		}
+		if( ajbsrt == null ) {
+			IRuntime[] runtimes = ServerCore.getRuntimes();
+			for( int i = 0; i < runtimes.length; i++ ) {
+				if( runtimes[i].getName().equals(argument)) {
+					ajbsrt = (IJBossServerRuntime) runtimes[i]
+							.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+					break;
+				}
+			}
+		}
+		if( ajbsrt != null ) {
+			String config = null;
+			if( ajbsrt != null ) 
+				config = ajbsrt.getJBossConfiguration();
+			if( config != null )
+				return config;
 		}
 		return null;
 	}
 	protected String handleConfigDir(IDynamicVariable variable, String argument) {
+		IJBossServerRuntime ajbsrt = null;
 		IServer[] servers = ServerCore.getServers();
 		for( int i = 0; i < servers.length; i++ ) {
 			if( servers[i].getName().equals(argument)) {
-				IJBossServerRuntime ajbsrt = (IJBossServerRuntime) servers[i].getRuntime()
+				ajbsrt = (IJBossServerRuntime) servers[i].getRuntime()
 				.loadAdapter(IJBossServerRuntime.class,
 						new NullProgressMonitor());
-				String config = null;
-				if( ajbsrt != null ) 
-					config = ajbsrt.getConfigLocationFullPath().append(ajbsrt.getJBossConfiguration()).toString();
-				if( config != null )
-					return config;
+				break;
 			}
+		}
+		if( ajbsrt == null ) {
+			IRuntime[] runtimes = ServerCore.getRuntimes();
+			for( int i = 0; i < runtimes.length; i++ ) {
+				if( runtimes[i].getName().equals(argument)) {
+					ajbsrt = (IJBossServerRuntime) runtimes[i]
+							.loadAdapter(IJBossServerRuntime.class,
+							new NullProgressMonitor());
+					break;
+				}
+			}
+		}
+		if( ajbsrt != null ) {
+			String config = null;
+			if( ajbsrt != null ) 
+				config = ajbsrt.getConfigLocationFullPath().append(ajbsrt.getJBossConfiguration()).toString();
+			if( config != null )
+				return config;
 		}
 		return null;
 	}

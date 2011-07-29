@@ -21,8 +21,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 
 public class FilesetContentProvider implements ITreeContentProvider {
@@ -185,8 +183,7 @@ public class FilesetContentProvider implements ITreeContentProvider {
 			Fileset fs = (Fileset) parentElement;
 			IPath[] paths = null;
 			try {
-				paths = findPaths(fs.getFolder(), fs.getIncludesPattern(), fs
-						.getExcludesPattern());
+				paths = findPaths(fs);
 			} catch (BuildException be) {
 				return new Object[] {};
 			}
@@ -227,24 +224,8 @@ public class FilesetContentProvider implements ITreeContentProvider {
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
-	private IPath[] findPaths(String dir, String includes, String excludes) {
-		IPath[] paths = new IPath[0];
-		try {
-			if (dir != null) {
-				DirectoryScanner scanner = DirectoryScannerFactory
-						.createDirectoryScanner(dir, null, includes, excludes,
-								null, false, 1, true);
-				if (scanner != null) {
-					String[] files = scanner.getIncludedFiles();
-					paths = new IPath[files.length];
-					for (int i = 0; i < files.length; i++) {
-						paths[i] = new Path(files[i]);
-					}
-				}
-			}
-		} catch (IllegalStateException ise) {
-		}
-		return paths;
+	private IPath[] findPaths(Fileset fs) {
+		return fs.findPaths();
 	}
 
 	private static void addPath(ArrayList<PathWrapper> children,

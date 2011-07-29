@@ -24,7 +24,6 @@ import org.jboss.ide.eclipse.archives.webtools.Messages;
 import org.jboss.ide.eclipse.as.ui.preferences.ServerTypePreferencePage;
 
 public class DefaultFilesetPreferencePage extends ServerTypePreferencePage {
-	private FilesetPreferenceComposite rootComp;
 	@Override
 	protected Control createContents(Composite parent) {
 		rootComp = new FilesetPreferenceComposite(parent, SWT.NONE);
@@ -38,7 +37,7 @@ public class DefaultFilesetPreferencePage extends ServerTypePreferencePage {
 		ArrayList<Object> list;
 		Fileset[] arr;
 		for( int i = 0; i < changed2.length; i++ ) {
-			list = rootComp.getDataForServer(changed2[i]);
+			list = rootComp.getDataForComboSelection(changed2[i]);
 			arr = (Fileset[]) list.toArray(new Fileset[list.size()]);
 			IPath fileToWrite = FilesetUtil.DEFAULT_FS_ROOT.append(changed2[i]);
 			FilesetUtil.saveFilesets(fileToWrite.toFile(), arr);
@@ -72,7 +71,7 @@ public class DefaultFilesetPreferencePage extends ServerTypePreferencePage {
 			super.initializeDataModel();
 		}
 
-		protected Object[] getCurrentServerDataModel() {
+		protected Object[] getCurrentSelectionDataModel() {
 			return getCurrentServerSets();
 		}
 		
@@ -80,7 +79,7 @@ public class DefaultFilesetPreferencePage extends ServerTypePreferencePage {
 			String id = getCurrentId();
 			ArrayList<Object> list = new ArrayList<Object>();
 			if( id != null ) {
-				list = getDataForServer(id);
+				list = getDataForComboSelection(id);
 				if( list == null ) {
 					IPath fileToRead = FilesetUtil.DEFAULT_FS_ROOT.append(id);
 					Fileset[] sets = FilesetUtil.loadFilesets(fileToRead.toFile(), null);

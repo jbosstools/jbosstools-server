@@ -10,10 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -36,9 +32,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
-import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory.DirectoryScannerExtension.FileWrapper;
 import org.jboss.ide.eclipse.archives.ui.util.composites.FilesetPreviewComposite;
 import org.jboss.ide.eclipse.archives.webtools.Messages;
 
@@ -240,28 +233,7 @@ public class FilesetDialog extends TitleAreaDialog {
 		return fileset;
 	}
 	
-	
 	private static IPath[] findPaths(String dir, String includes, String excludes) {
-		try {
-			if( dir != null ) {
-				DirectoryScanner scanner  =
-					DirectoryScannerFactory.createDirectoryScanner(dir, null, includes, excludes, null, false, 1, false);
-				if( scanner != null ) {
-					Iterator<File> i = scanner.iterator();
-					ArrayList<IPath> paths2 = new ArrayList<IPath>();
-					while(i.hasNext() && paths2.size() < 30) {
-						FileWrapper fw = (FileWrapper)i.next();
-						paths2.add(new Path(fw.getFilesetRelative()));
-					}
-					
-					return (IPath[]) paths2.toArray(new IPath[paths2.size()]);
-				}
-			}
-		} catch( IllegalStateException ise ) {}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return new IPath[]{};
+		return Fileset.findPaths(dir, includes, excludes);
 	}
-
 }

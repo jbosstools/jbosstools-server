@@ -10,19 +10,26 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.archives.webtools.filesets;
 
+import java.io.File;
+
 import org.eclipse.core.internal.variables.StringSubstitutionEngine;
 import org.eclipse.core.internal.variables.StringVariableManager;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.archives.core.asf.DirectoryScanner;
+import org.jboss.ide.eclipse.archives.core.model.DirectoryScannerFactory;
 
 
 public class Fileset implements Cloneable {
 	private static final String HASH_SEPARATOR = "::_::"; //$NON-NLS-1$
 	private static final String SEP = "\n"; //$NON-NLS-1$
 	private String name, folder, includesPattern, excludesPattern;
+	private IRuntime runtime;
 	private IServer server;
+	
 	public Fileset() {
 	}
 	public Fileset(String string) {
@@ -45,18 +52,31 @@ public class Fileset implements Cloneable {
 	public String toString() {
 		return name + SEP + folder + SEP + includesPattern + SEP + excludesPattern;
 	}
-	/**
+	
+	public static final String JBOSS_CONFIG_DIR_ARG = "${jboss_config_dir}"; //$NON-NLS-1$
+	public static final String JBOSS_SERVER_ARG = "${jboss_config}"; //$NON-NLS-1$
+	
+	public static final String getConfigDirSubstitute(IRuntime rt) {
+		return "${jboss_config_dir:" + rt.getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	public static final String getServerSubstitute(IRuntime rt) {
+		return "${jboss_config:" + rt.getName() + "}"; //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+    /**
 	 * @return the folder
 	 */
 	public String getFolder() {
+		return getFolder(folder, runtime);
+	}
+	
+	public static String getFolder(String folder, IRuntime runtime) {
 		String tmp = folder == null ? "" : folder;  //$NON-NLS-1$
-		if( server != null ) {
-			tmp = tmp.replace("${jboss_config_dir}",  //$NON-NLS-1$
-						"${jboss_config_dir:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
-			tmp = tmp.replace("${jboss_config}",  //$NON-NLS-1$
-					"${jboss_config:" + server.getName() + "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		if( runtime != null ) {
+			tmp = tmp.replace(JBOSS_CONFIG_DIR_ARG, getConfigDirSubstitute(runtime));
+			tmp = tmp.replace(JBOSS_SERVER_ARG, getServerSubstitute(runtime));
 		}
-
 		try {
 			StringSubstitutionEngine engine = new StringSubstitutionEngine();
 			tmp = engine.performStringSubstitution(tmp, true,
@@ -64,9 +84,8 @@ public class Fileset implements Cloneable {
 		} catch( CoreException ce ) {}
 
 		IPath p = new Path(tmp);
-		if( !p.isAbsolute() && server != null ) {
-			if( server.getRuntime() != null ) 
-				p = server.getRuntime().getLocation().append(p);
+		if( !p.isAbsolute() && runtime != null ) {
+			p = runtime.getLocation().append(p);
 		}
 		return p.toString();
 	}
@@ -122,9 +141,22 @@ public class Fileset implements Cloneable {
 		this.name = name;
 	}
 	
-	public IServer getServer() { return this.server; }
-	public void setServer(IServer server) { this.server = server; }
-
+	public IServer getServer() { 
+		return this.server; 
+	}
+	public void setServer(IServer server) { 
+		this.server = server;
+		this.runtime = server == null ? null : server.getRuntime();
+	}
+	public IRuntime getRuntime() {
+		return runtime;
+	}
+	public void setRuntime(IRuntime rt) {
+		runtime = rt;
+		if( server == null || server.getRuntime().equals(rt))
+			server = null;
+	}
+	
 	public Object clone() {
 		try {
 			return super.clone();
@@ -142,4 +174,32 @@ public class Fileset implements Cloneable {
 	public int hashCode() {
 		return (name + HASH_SEPARATOR +  folder + HASH_SEPARATOR +  includesPattern + HASH_SEPARATOR +  excludesPattern + HASH_SEPARATOR).hashCode();
 	}
+	
+	public IPath[] findPaths() {
+		String dir = getFolder();
+		String includes = getIncludesPattern();
+		String excludes = getExcludesPattern();
+		return findPaths(dir, includes, excludes);
+	}
+	public static IPath[] findPaths(String dir, String includes, String excludes) {
+		IPath[] paths = new IPath[0];
+		try {
+			if (dir != null && new File(dir).exists()) {
+				DirectoryScanner scanner = DirectoryScannerFactory
+						.createDirectoryScanner(dir, null, includes, excludes,
+								null, false, 1, true);
+				if (scanner != null) {
+					String[] files = scanner.getIncludedFiles();
+					paths = new IPath[files.length];
+					for (int i = 0; i < files.length; i++) {
+						paths[i] = new Path(files[i]);
+					}
+				}
+			}
+		} catch (IllegalStateException ise) {
+		}
+		return paths;
+	}
+
+	
 }

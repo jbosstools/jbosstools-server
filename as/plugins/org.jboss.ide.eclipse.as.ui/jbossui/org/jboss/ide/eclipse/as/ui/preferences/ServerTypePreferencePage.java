@@ -45,7 +45,7 @@ import org.eclipse.wst.server.core.IServerType;
 import org.eclipse.wst.server.core.ServerCore;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 
-public class ServerTypePreferencePage extends PreferencePage implements
+public abstract class ServerTypePreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 	
 	public ServerTypePreferencePage() {
@@ -62,39 +62,51 @@ public class ServerTypePreferencePage extends PreferencePage implements
 	public void init(IWorkbench workbench) {
 	}
 
+	protected  AbstractComboDataPreferenceComposite rootComp;
+	
 	@Override
-	protected Control createContents(Composite parent) {
-		ServerTypePreferenceComposite c = new ServerTypePreferenceComposite(parent, SWT.NONE);
-		c.setLayoutData(new GridData(GridData.FILL_BOTH));
-		c.layout();
-		return c;
-	}
+	protected abstract Control createContents(Composite parent);
+//		rootComp = new ServerTypePreferenceComposite(parent, SWT.NONE);
+//		rootComp.setLayoutData(new GridData(GridData.FILL_BOTH));
+//		rootComp.layout();
+//		return rootComp;
+//	}
+	
+    protected void performDefaults() {
+		String id = rootComp.getCurrentId();
+		ArrayList<Object> o = new ArrayList<Object>();
+		o.addAll(Arrays.asList(rootComp.getCurrentComboSelectionDefaultDataModel()));
+		rootComp.cacheMap.put(id, o);
+		rootComp.changed.add(id);
+		rootComp.viewer.refresh();
+    	updateApplyButton();
+    }
 		
-	public static class ServerTypePreferenceComposite extends Composite {
+	public static abstract class AbstractComboDataPreferenceComposite extends Composite {
 		
 		protected ArrayList<String> changed;
 		protected HashMap<String, ArrayList<Object>> cacheMap;
 
-		protected Combo servers;
+		protected Combo combo;
 		protected TreeViewer viewer;
 		protected Button addButton;
 		protected Button removeButton;
 		protected Button moveUp;
 		protected Button moveDown;
-		public ServerTypePreferenceComposite(Composite parent, int style) {
+		public AbstractComboDataPreferenceComposite(Composite parent, int style) {
 			super(parent, style);
 			setLayout(new FormLayout());
 			Label l = new Label(this, SWT.None);
 			l.setText(getDescriptionLabel());
 			l.setLayoutData(createFormData(0,5,null,0,0,5,100,-5));
 			
-			servers = new Combo(this, SWT.READ_ONLY);
-			servers.setLayoutData(createFormData(l,5,null,0,0,5,null,0));
-			servers.setItems(getComboItems());
+			combo = new Combo(this, SWT.READ_ONLY);
+			combo.setLayoutData(createFormData(l,5,null,0,0,5,null,0));
+			combo.setItems(getComboItems());
 			
 			viewer = new TreeViewer(this);
 			viewer.getTree().setLayoutData(createFormData(
-					servers,5,100,-5,0,5,80,0));
+					combo,5,100,-5,0,5,80,0));
 			viewer.setLabelProvider(getLabelProvider());
 			viewer.setContentProvider(getContentProvider());
 			viewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -105,23 +117,27 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			
 			
 			Composite buttonWrapper = new Composite(this, SWT.NONE);
-			buttonWrapper.setLayoutData(createFormData(servers,5,null,0,viewer.getTree(),5,100,-5));
+			buttonWrapper.setLayoutData(createFormData(combo,5,null,0,viewer.getTree(),5,100,-5));
 			buttonWrapper.setLayout(new GridLayout(1, true));
 			
 			createRightColumnButtons(buttonWrapper);
-			servers.addSelectionListener(new SelectionListener() {
+			combo.addSelectionListener(new SelectionListener() {
 				public void widgetDefaultSelected(SelectionEvent e) {
 				}
 				public void widgetSelected(SelectionEvent e) {
-					getCurrentServerDataModel(); // force load
+					getCurrentSelectionDataModel(); // force load
 					viewer.refresh();
 					updateMoveUpMoveDown();
 				} });
 	
-			servers.select(0);
+			initializeSelection();
 			initializeDataModel(); // force load
 			viewer.setInput(ResourcesPlugin.getWorkspace());
 			updateMoveUpMoveDown();
+		}
+		
+		protected void initializeSelection() {
+			combo.select(0);
 		}
 		
 		protected void handleViewerSelectionChanged() {
@@ -140,7 +156,7 @@ public class ServerTypePreferencePage extends PreferencePage implements
 					enableUp = enableDown = false;
 				} else {
 					Object selected = sel.getFirstElement();
-					Object[] arr = getCurrentServerDataModel();
+					Object[] arr = getCurrentSelectionDataModel();
 					ArrayList<Object> asList = new ArrayList<Object>();
 					asList.addAll(Arrays.asList(arr));
 					int index = asList.indexOf(selected);
@@ -161,7 +177,7 @@ public class ServerTypePreferencePage extends PreferencePage implements
 		protected void initializeDataModel() {
 			cacheMap = new HashMap<String, ArrayList<Object>>();
 			changed = new ArrayList<String>();
-			getCurrentServerDataModel();
+			getCurrentSelectionDataModel();
 		}
 		
 		public String getDescriptionLabel() {
@@ -198,7 +214,7 @@ public class ServerTypePreferencePage extends PreferencePage implements
 
 		protected void insertMoveUpDown(Composite c) {
 			moveUp = new Button(c, SWT.PUSH);
-			moveUp.setText("MoveUp");
+			moveUp.setText("Move Up");
 			moveUp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			moveDown = new Button(c, SWT.PUSH);
 			moveDown.setText("Move down");
@@ -219,10 +235,22 @@ public class ServerTypePreferencePage extends PreferencePage implements
 				}
 			});
 		}
-		protected Object[] getCurrentServerDataModel() {
+		
+		/**
+		 * Return the current list of objects for the selected server type
+		 * @return
+		 */
+		protected Object[] getCurrentSelectionDataModel() {
 			return new Object[]{};
 		}
 	
+		/**
+		 * Get the defaults for this data model
+		 * @return
+		 */
+		protected Object[] getCurrentComboSelectionDefaultDataModel() {
+			return new Object[]{};
+		}
 		
 		protected void addObject(Object o) {
 			if( o != null ) {
@@ -249,15 +277,14 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			Object o = sel.getFirstElement();
 			removeObject(o);
 		}
-		protected void addPressed() {
-			// TODO
-		}
+		
+		protected abstract void addPressed();
 		
 		protected void moveUpPressed() {
 			IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 			Object fs = (Object)sel.getFirstElement();
 			String id = getCurrentId();
-			Object[] sets = getCurrentServerDataModel();
+			Object[] sets = getCurrentSelectionDataModel();
 			ArrayList<Object> asList = new ArrayList<Object>();
 			asList.addAll(Arrays.asList(sets));
 			int ind = asList.indexOf(fs);
@@ -274,7 +301,7 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			IStructuredSelection sel = (IStructuredSelection)viewer.getSelection();
 			Object fs = (Object)sel.getFirstElement();
 			String id = getCurrentId();
-			Object[] sets = getCurrentServerDataModel();
+			Object[] sets = getCurrentSelectionDataModel();
 			ArrayList<Object> asList = new ArrayList<Object>();
 			asList.addAll(Arrays.asList(sets));
 			int ind = asList.indexOf(fs);
@@ -287,20 +314,22 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			viewer.refresh();
 		}
 	
-		protected String getCurrentId() {
-			int index = servers.getSelectionIndex();
-			if( showAllServerTypeOption() && index == 0 )
-				return "All Servers";
+		protected abstract String getAllOptionString();
+		
+		public String getCurrentId() {
+			int index = combo.getSelectionIndex();
+			if( showAllOption() && index == 0 )
+				return getAllOptionString();
 			if( index == -1 )
 				return null;
-			int i2 = showAllServerTypeOption() ? index - 1 : index;
-			IServerType type = getServerTypes()[i2];
-			String id = type.getId();
-			return id;
+			int i2 = showAllOption() ? index - 1 : index;
+			return getIdAtIndex(i2);
 		}
 		
-		public ArrayList<Object> getDataForServer(String serverId) {
-			return cacheMap.get(serverId);
+		protected abstract String getIdAtIndex(int index);
+		
+		public ArrayList<Object> getDataForComboSelection(String id) {
+			return cacheMap.get(id);
 		}
 	
 		protected LabelProvider getLabelProvider() {
@@ -315,7 +344,7 @@ public class ServerTypePreferencePage extends PreferencePage implements
 				public void dispose() {
 				}
 				public Object[] getElements(Object inputElement) {
-					return getCurrentServerDataModel();
+					return getCurrentSelectionDataModel();
 				}
 				public boolean hasChildren(Object element) {
 					return false;
@@ -334,23 +363,51 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			return true;
 		}
 		// Return true if we show a combo option for "all server types" or not
-		protected boolean showAllServerTypeOption() {
+		protected boolean showAllOption() {
 			return true;
 		}
 		
 
-		private String[] getComboItems() {
+		protected String[] getComboItems() {
 			ArrayList<String> list = new ArrayList<String>();
-			if( showAllServerTypeOption())
+			if( showAllOption())
 				list.add(0,"All Server Types");
-			IServerType[] types = getServerTypes();
-			for( int i = 0; i < types.length; i++ ) 
-				list.add(types[i].getName());
+			String[] names = getComboItemNames();
+			list.addAll(Arrays.asList(names));
 			return (String[]) list.toArray(new String[list.size()]);
 		}
 		
+		protected abstract String[] getComboItemNames(); 
+		
+		private FormData createFormData(Object topStart, int topOffset,
+				Object bottomStart, int bottomOffset, Object leftStart,
+				int leftOffset, Object rightStart, int rightOffset) {
+			return UIUtil.createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+		}
+		
+		public String[] getChanged() {
+			return (String[]) changed.toArray(new String[changed.size()]);
+		}
+		
+		public void clearChanged() {
+			changed.clear();
+		}
+	} // inner class ends
+
+	public static abstract class ServerTypePreferenceComposite extends AbstractComboDataPreferenceComposite {
+		public ServerTypePreferenceComposite(Composite parent, int style) {
+			super(parent, style);
+		}
+		protected String[] getComboItemNames() {
+			IServerType[] types = getComboModel();
+			String[] names = new String[types.length];
+			for( int i = 0; i < types.length; i++ ) 
+				names[i] = types[i].getName();
+			return names;
+		}
+
 		private IServerType[] types = null;
-		private IServerType[] getServerTypes() {
+		private IServerType[] getComboModel() {
 			if( types == null ) {
 				ArrayList<IServerType> retval = new ArrayList<IServerType>();
 				ArrayList<IServerType> all = new ArrayList<IServerType>(
@@ -374,22 +431,16 @@ public class ServerTypePreferencePage extends PreferencePage implements
 			}
 			return types;
 		}
-		
-		private FormData createFormData(Object topStart, int topOffset,
-				Object bottomStart, int bottomOffset, Object leftStart,
-				int leftOffset, Object rightStart, int rightOffset) {
-			return UIUtil.createFormData2(topStart, topOffset, bottomStart, bottomOffset, leftStart, leftOffset, rightStart, rightOffset);
+		protected String getIdAtIndex(int index) {
+			IServerType type = getComboModel()[index];
+			String id = type.getId();
+			return id;
 		}
-		
-		public String[] getChanged() {
-			return (String[]) changed.toArray(new String[changed.size()]);
+		protected String getAllOptionString() {
+			return "All Servers";
 		}
-		
-		public void clearChanged() {
-			changed.clear();
-		}
-	} // inner class ends
-
+	}
+	
 	public boolean performOk() {
     	// TODO do stuff 
         return true;
