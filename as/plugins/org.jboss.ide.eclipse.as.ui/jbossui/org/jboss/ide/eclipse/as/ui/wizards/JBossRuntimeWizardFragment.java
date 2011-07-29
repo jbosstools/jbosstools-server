@@ -677,6 +677,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			v = "5.";
 		if( !isEAP() && v.startsWith("6."))
 			v = "6.";
+		if( !isEAP() && v.startsWith("7."))
+			v = "7.";
 		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 
