@@ -30,6 +30,7 @@ import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
+import org.jboss.ide.eclipse.as.core.Trace;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -49,18 +50,26 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	public boolean preLaunchCheck(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor)
 			throws CoreException {
 		DelegatingServerBehavior jbsBehavior = JBossServerBehaviorUtils.getServerBehavior(configuration);
-		if (!jbsBehavior.canStart(mode).isOK())
+		IStatus s = jbsBehavior.canStart(mode);
+
+		Trace.trace(Trace.STRING_FINEST, "Ensuring Server can start: " + s.getMessage()); //$NON-NLS-1$
+		if (!s.isOK())
 			throw new CoreException(jbsBehavior.canStart(mode));
 		if (LaunchCommandPreferences.isIgnoreLaunchCommand(jbsBehavior.getServer())) {
+			Trace.trace(Trace.STRING_FINEST, "Server is marked as ignore Launch. Marking as started."); //$NON-NLS-1$
 			jbsBehavior.setServerStarting();
 			jbsBehavior.setServerStarted();
 			return false;
 		}
+		
+		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
 		boolean started = isServerStarted(jbsBehavior);
 		if (started) {
+			Trace.trace(Trace.STRING_FINEST, "A server is already started. Now handling the already started scenario."); //$NON-NLS-1$
 			return handleAlreadyStartedScenario(jbsBehavior);
 		}
 
+		Trace.trace(Trace.STRING_FINEST, "A full launch will now proceed."); //$NON-NLS-1$
 		return true;
 	}
 
@@ -75,8 +84,11 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		// Need to be able to FORCE the poller to poll immediately
 		if( poller == null || !(poller instanceof IServerStatePoller2)) 
 			poller = new WebPortPoller();
-		boolean started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
-		return started;
+		IStatus started = ((IServerStatePoller2)poller).getCurrentStateSynchronous(jbsBehavior.getServer());
+		// Trace
+		Trace.trace(Trace.STRING_FINER, "Checking if a server is already started: " + started.getMessage()); //$NON-NLS-1$
+		
+		return started.isOK();
 	}
 	
 	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior) {
@@ -90,6 +102,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 				return false;
 			}
 		}
+		Trace.trace(Trace.STRING_FINEST, "There is no handler available to prompt the user. The server will be set to started automatically. "); //$NON-NLS-1$
 		// force server to started mode
 		jbsBehavior.setServerStarting();
 		jbsBehavior.setServerStarted();

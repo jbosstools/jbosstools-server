@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 
 /**
@@ -32,5 +33,5 @@ public interface IServerStatePoller2 extends IServerStatePoller {
 	 * 
 	 * @return IServerStatePoller.SERVER_UP or SERVER_DOWN
 	 */
-	public boolean getCurrentStateSynchronous(IServer server);
+	public IStatus getCurrentStateSynchronous(IServer server);
 }

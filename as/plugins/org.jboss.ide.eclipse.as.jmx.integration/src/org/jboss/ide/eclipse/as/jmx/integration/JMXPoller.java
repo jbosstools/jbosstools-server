@@ -29,7 +29,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
@@ -257,19 +256,24 @@ public class JMXPoller implements IServerStatePoller2 {
 			ServerLogger.getDefault().log(server,s);		
 	}
 
-	public boolean getCurrentStateSynchronous(IServer server) {
+	public IStatus getCurrentStateSynchronous(IServer server) {
 		JMXClassLoaderRepository.getDefault().addConcerned(server, this);
 		JMXPollerRunnable runnable2 = new JMXPollerRunnable();
 		JMXSafeRunner runner2 = new JMXSafeRunner(server);
 		try {
 			runner2.run(runnable);
 			int started2 = runnable2.result ? STATE_STARTED : STATE_TRANSITION;
-			if( started2 == STATE_STARTED )
-				return IServerStatePoller.SERVER_UP;
+			if( started2 == STATE_STARTED ) {
+				Status s = new Status(IStatus.OK, Activator.PLUGIN_ID, 
+						"JMX Poller found a running server on " + server.getHost());
+				return s;
+			}
 		} catch(CoreException ce) {
 		} finally {
 			JMXClassLoaderRepository.getDefault().removeConcerned(server, this);
 		}
-		return IServerStatePoller.SERVER_DOWN;
+		Status s = new Status(IStatus.INFO, Activator.PLUGIN_ID, 
+				"JMX Poller did not find a running server on " + server.getHost());
+		return s;
 	}
 }

@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.osgi.framework.BundleContext;
 
 public class JBoss7ManagerUtil {
