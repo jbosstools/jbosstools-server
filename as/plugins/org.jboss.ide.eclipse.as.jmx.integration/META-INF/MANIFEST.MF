@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Integration
+Bundle-Name: JBoss AS Server Adapter / JMX Integration
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.jmx.integration;singleton:=true
 Bundle-Version: 2.3.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.jmx.integration.Activator
@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.7.0",
  org.jboss.ide.eclipse.as.ui;bundle-version="2.2.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: JBoss by Red Hat
