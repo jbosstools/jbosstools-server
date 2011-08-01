@@ -53,7 +53,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			"AS", //$NON-NLS-1$
 			"Application Server", //$NON-NLS-1$
 			BIN_PATH+File.separatorChar + TWIDDLE_JAR_NAME,
-			new String[]{V6_0,V5_1, V5_0, V4_2, V4_0, V3_2}, new ASServerTypeCondition());
+			new String[]{V6_0, V6_1, V5_1, V5_0, V4_2, V4_0, V3_2}, new ASServerTypeCondition());
 	
 	public static final JBossServerType AS7 = new JBossServerType(
 			"AS", //$NON-NLS-1$
@@ -64,7 +64,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			"as" + File.separatorChar + //$NON-NLS-1$
 			"server" + File.separatorChar + //$NON-NLS-1$
 			"main", //$NON-NLS-1$
-			new String[]{V7_0,}, new AS7ServerTypeCondition());
+			new String[]{V7_0,V7_1}, new AS7ServerTypeCondition());
 	
 	public static final JBossServerType EAP_STD = new JBossServerType(
 			"EAP_STD",//$NON-NLS-1$
@@ -106,7 +106,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V6_0, V5_1, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
 
 	public String toString() {
 		return id;
