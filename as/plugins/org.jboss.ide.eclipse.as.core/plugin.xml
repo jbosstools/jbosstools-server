@@ -478,6 +478,11 @@
                 types="bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
+          <moduleType
+                types="jboss.osgi"
+                versions="1.0">
+          </moduleType>
+          
       </runtimeType>
 
 
@@ -680,6 +685,15 @@
             projects="false">
          <moduleType
                types="jboss.singlefile"
+               versions="1.0">
+         </moduleType>
+      </moduleFactory>
+      <moduleFactory
+            class="org.jboss.ide.eclipse.as.core.modules.OSGiModuleFactory"
+            id="org.jboss.ide.eclipse.as.core.osgiModuleFactory"
+            projects="true">
+         <moduleType
+               types="jboss.osgi"
                versions="1.0">
          </moduleType>
       </moduleFactory>

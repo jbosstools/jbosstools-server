@@ -90,6 +90,11 @@
             icon="$nl$/icons/file.gif"
             id="org.jboss.ide.eclipse.as.ui.simplefile.image"
             typeIds="jboss.singlefile"/>
+      <image
+            icon="icons/osgi16.gif"
+            id="org.jboss.ide.eclipse.as.ui.osgi.image"
+            typeIds="jboss.osgi">
+      </image>
    </extension>
 
 

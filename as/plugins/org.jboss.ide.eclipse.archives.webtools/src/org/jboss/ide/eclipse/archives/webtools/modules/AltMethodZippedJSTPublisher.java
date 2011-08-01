@@ -96,13 +96,8 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 				if (isDeployedExploded(destination)) {
 					removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
 				}
-				// Locally zip it up into the remote tmp folder
-				result = super.publishModule(method, server, module, publishType, delta, 
-						AbstractServerToolsPublisher.getSubMon(monitor, 50));
-				if( result.isOK() ) {
-					result = remoteFullPublish(sourcePath, destination.removeLastSegments(1), name, 
-							AbstractServerToolsPublisher.getSubMon(monitor, 150));
-				}
+				
+				result = handleLocalZipAndRemotePublish(method, server, module, publishType, delta, AbstractServerToolsPublisher.getSubMon(monitor, 50));
 			} 
 	
 			if( result == null ) {
@@ -114,6 +109,26 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			monitor.done();
 		}
 	}
+	
+	protected IStatus handleLocalZipAndRemotePublish(
+			IJBossServerPublishMethod method,
+			IServer server, IModule[] module,
+			int publishType, IModuleResourceDelta[] delta,
+			IProgressMonitor monitor) throws CoreException {
+		IDeployableServer server2 = ServerConverter.getDeployableServer(server);
+		String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
+		IPath sourcePath = PublishUtil.getDeployPath(module, remoteTempDeployRoot, server2);
+		IPath destination = PublishUtil.getDeployPath(method, module, server2);
+		String name = sourcePath.lastSegment();
+		
+		// Locally zip it up into the remote tmp folder
+		IStatus result = super.publishModule(method, server, module, publishType, delta, monitor);
+		if( result.isOK() ) {
+			result = remoteFullPublish(sourcePath, destination.removeLastSegments(1), name, 
+					AbstractServerToolsPublisher.getSubMon(monitor, 150));
+		}
+		return result;
+	}
 
 	private boolean isDeployedExploded(IPath destination) {
 		File file = destination.toFile();
@@ -122,7 +137,7 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 				&& file.isDirectory();
 	}
 	
-	private IStatus remoteFullPublish(IPath sourcePath, 
+	protected IStatus remoteFullPublish(IPath sourcePath, 
 			IPath destFolder, String name, IProgressMonitor monitor) {
 		// Now transfer the file to RSE
 		try {
