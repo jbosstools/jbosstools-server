@@ -170,7 +170,8 @@ public class JBossServerConnection implements IConnectionWrapper, IServerListene
 	}
 
 	public void connectionRemoved(IConnectionWrapper connection) {
-		server.removeServerListener(this);
+		if( connection == this )
+			server.removeServerListener(this);
 	}
 
 	public boolean canControl() {

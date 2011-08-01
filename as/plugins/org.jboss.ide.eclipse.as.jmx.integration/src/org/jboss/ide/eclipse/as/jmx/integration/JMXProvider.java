@@ -117,7 +117,7 @@ public class JMXProvider {
 										JBossServerConnectionProvider provider = 
 											(JBossServerConnectionProvider)ExtensionManager.getProvider(
 													JBossServerConnectionProvider.PROVIDER_ID);
-										JBossServerConnection connection = provider.getConnection(server);
+										IConnectionWrapper connection = provider.getConnection(server);
 										if( connection != null ) {
 											view.getCommonViewer().collapseAll();
 											ISelection sel = new StructuredSelection(new Object[] { connection });
