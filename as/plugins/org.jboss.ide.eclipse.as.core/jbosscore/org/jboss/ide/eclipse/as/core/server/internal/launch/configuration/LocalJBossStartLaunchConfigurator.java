@@ -11,10 +11,13 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch.configuration;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jdt.launching.IVMInstall;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
@@ -49,6 +52,16 @@ public class LocalJBossStartLaunchConfigurator extends AbstractStartLaunchConfig
 			if (!replaced) {
 				String runJarEntry = LaunchConfigUtils.getRunJarRuntimeCPEntry(server.getServer()).getMemento();
 				currentClasspath.add(runJarEntry);
+			}
+			IVMInstall vmInstall = runtime.getVM();
+			List<IRuntimeClasspathEntry> classpath = new ArrayList<IRuntimeClasspathEntry>();
+			LaunchConfigUtils.addJREEntry(vmInstall, classpath);
+			List<String> runtimeClassPaths = LaunchConfigUtils.toStrings(classpath);
+			if (runtimeClassPaths != null && runtimeClassPaths.size() == 1) {
+				String jreEntry = runtimeClassPaths.get(0);
+				if (!currentClasspath.contains(jreEntry)) {
+					currentClasspath.add(jreEntry);
+				}
 			}
 			return currentClasspath;
 		} catch (CoreException ce) {
