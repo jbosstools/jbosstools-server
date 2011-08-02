@@ -30,7 +30,7 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	@Override
 	public IStatus canChangeState(String launchMode) {
-		if( launchMode.equals("debug"))
+		if( "debug".equals(launchMode))
 			return Status.CANCEL_STATUS;
 		return Status.OK_STATUS;
 	}
