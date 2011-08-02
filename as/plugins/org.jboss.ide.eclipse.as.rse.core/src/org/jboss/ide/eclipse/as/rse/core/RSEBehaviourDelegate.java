@@ -29,6 +29,14 @@ import org.jboss.ide.eclipse.as.rse.core.RSEHostShellModel.ServerShellModel;
 public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 
 	@Override
+	public IStatus canChangeState(String launchMode) {
+		if( launchMode.equals("debug"))
+			return Status.CANCEL_STATUS;
+		return Status.OK_STATUS;
+	}
+
+	
+	@Override
 	protected String getShutdownCommand(IServer server) throws CoreException {
 		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
 		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
@@ -56,15 +64,5 @@ public class RSEBehaviourDelegate extends AbstractRSEBehaviourDelegate {
 		if( RSEUtils.isActive(shell)) {
 			shell.writeToShell("exit");
 		}
-	}
-
-	@Override
-	public void onServerStarting() {
-		pollServer(IServerStatePoller.SERVER_UP);
-	}
-	
-	@Override
-	public void onServerStopping() {
-		pollServer(IServerStatePoller.SERVER_DOWN);
 	}
 }
