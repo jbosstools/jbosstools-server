@@ -14,42 +14,20 @@ package org.jboss.ide.eclipse.as.rse.core;
 
 import java.text.MessageFormat;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
-public class RSEJBoss7BehaviourDelegate extends AbstractRSEBehaviourDelegate {
+public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 
 	private IJBoss7ManagerService service;
-
-	@Override
-	protected String getShutdownCommand(IServer server) throws CoreException {
-		String defaultCommand = ServerUtil.checkedGetBehaviorDelegate(server).getDefaultStopArguments();
-		ILaunchConfiguration config = getServer().getLaunchConfiguration(false, new NullProgressMonitor());
-		return RSELaunchConfigProperties.getShutdownCommand(config, defaultCommand);
-	}
 	
-	@Override
-	public void onServerStarting() {
-		pollServer(IServerStatePoller.SERVER_UP);
-	}
-	
-	@Override
-	public void onServerStopping() {
-		pollServer(IServerStatePoller.SERVER_DOWN);
-	}
-
 	@Override
 	protected IStatus gracefullStop() {
 		IServer server = getServer();
