@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -208,7 +210,7 @@ public class PortSection extends ServerEditorSection {
 
 			data = new FormData();
 			data.right = new FormAttachment(detect, -5);
-			data.left = new FormAttachment(0, 100);
+			data.left = new FormAttachment(0, 75);
 			data.top = new FormAttachment(0,5);
 			text.setLayoutData(data);
 
@@ -220,6 +222,20 @@ public class PortSection extends ServerEditorSection {
 			label.setText(labelText);
 			detect.setText(Messages.EditorAutomaticallyDetectPort);
 			link.setText("<a href=\"\">" + Messages.Configure + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			text.addVerifyListener(new VerifyListener() {
+				public void verifyText(VerifyEvent e) {
+					if( e.text == null || e.text.equals(""))
+						return;
+					try {
+						Integer i = Integer.parseInt(e.text);
+					} catch( NumberFormatException nfe ) {
+						e.doit = false;
+					}
+				}
+			});
+			
+			
 			return child;
 		}
 		protected void initialize() {
