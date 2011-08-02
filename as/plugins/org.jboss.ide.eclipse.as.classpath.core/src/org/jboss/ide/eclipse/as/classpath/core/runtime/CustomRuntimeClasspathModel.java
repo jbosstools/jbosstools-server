@@ -140,11 +140,11 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		sets.add(new PathProviderFileset(configPath + "/" + LIB));
 		
 		sets.add(new PathProviderFileset(deployPath + "/" + JBOSSWEB_SAR + "/" + JSF_LIB));
-		sets.add(new PathProviderFileset(deployPath + "/" + JBOSSWEB_SAR + "/" + JBOSS_WEB_SERVICE_JAR));
-		sets.add(new PathProviderFileset(deployPath + "/" + JBOSSWEB_SAR + "/" + JSTL_JAR));
+		sets.add(new PathProviderFileset("", deployPath + "/" + JBOSSWEB_SAR, JBOSS_WEB_SERVICE_JAR, ""));
+		sets.add(new PathProviderFileset("", deployPath + "/" + JBOSSWEB_SAR, JSTL_JAR, ""));
 		sets.add(new PathProviderFileset(deployerPath + "/" + AS5_AOP_DEPLOYER));
 		sets.add(new PathProviderFileset(deployerPath + "/" + EJB3_DEPLOYER));
-		sets.add(new PathProviderFileset(deployerPath + "/" + WEBBEANS_DEPLOYER + "/" +JSR299_API_JAR));
+		sets.add(new PathProviderFileset("", deployerPath + "/" + WEBBEANS_DEPLOYER,JSR299_API_JAR, ""));
 		sets.add(new PathProviderFileset(CLIENT));
 		return sets.toArray(new PathProviderFileset[sets.size()]);
 	}
