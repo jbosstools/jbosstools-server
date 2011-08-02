@@ -10,6 +10,9 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.editor;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,6 +34,7 @@ import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerConstants;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
+import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
 /**
@@ -38,7 +42,7 @@ import org.jboss.ide.eclipse.as.ui.Messages;
  * @author rob Stryker (rob.stryker@redhat.com)
  *
  */
-public class PollerSection extends ServerEditorSection {
+public class PollerSection extends ServerEditorSection implements PropertyChangeListener {
 	private Combo startPollerCombo, stopPollerCombo;
 	private Composite pollers;
 	private String[] startupTypesStrings, shutdownTypesStrings;
@@ -50,6 +54,7 @@ public class PollerSection extends ServerEditorSection {
 	public void init(IEditorSite site, IEditorInput input) {
 		super.init(site, input);
 		helper = new ServerAttributeHelper(server.getOriginal(), server);
+		server.addPropertyChangeListener(this);
 	}
 	
 	public void createSection(Composite parent) {
@@ -57,6 +62,10 @@ public class PollerSection extends ServerEditorSection {
 		findPossiblePollers();
 		createUI(parent);
 		addListeners();
+		String ignoreLaunch = server.getAttribute(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS, (String)null);
+		Boolean b = new Boolean(ignoreLaunch);
+		startPollerCombo.setEnabled(!b.booleanValue());
+		stopPollerCombo.setEnabled(!b.booleanValue());
 	}
 	
 	protected void createUI(Composite parent) {
@@ -182,6 +191,24 @@ public class PollerSection extends ServerEditorSection {
 				if( pollerArray[i].getId().equals(id))
 					return i;
 			return -1;
+		}
+	}
+
+	/**
+	 * Disposes of the section.
+	 */
+	public void dispose() {
+		server.removePropertyChangeListener(this);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		String propertyName = evt.getPropertyName();
+		if( propertyName.equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
+			Object val = evt.getNewValue();
+			Boolean b = new Boolean((String)val);
+			startPollerCombo.setEnabled(!b.booleanValue());
+			stopPollerCombo.setEnabled(!b.booleanValue());
 		}
 	}
 
