@@ -201,7 +201,6 @@ public class PollerSection extends ServerEditorSection implements PropertyChange
 		server.removePropertyChangeListener(this);
 	}
 
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		String propertyName = evt.getPropertyName();
 		if( propertyName.equals(IJBossToolingConstants.IGNORE_LAUNCH_COMMANDS)) {
