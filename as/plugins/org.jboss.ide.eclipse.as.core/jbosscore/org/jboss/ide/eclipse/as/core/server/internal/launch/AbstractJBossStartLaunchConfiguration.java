@@ -62,6 +62,13 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 			return false;
 		}
 		
+		if( jbsBehavior.getServer().getRuntime() == null || jbsBehavior.getServer().getRuntime().getLocation() == null 
+				||  !jbsBehavior.getServer().getRuntime().getLocation().toFile().exists()) {
+			jbsBehavior.setServerStopped();
+			throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					"The server's runtime folder does not exist: " + jbsBehavior.getServer().getRuntime().getLocation())); //$NON-NLS-1$
+		}
+		
 		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
 		boolean started = isServerStarted(jbsBehavior);
 		if (started) {
