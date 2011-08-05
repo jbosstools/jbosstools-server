@@ -1,11 +1,9 @@
 package org.jboss.ide.eclipse.as.ui.views.server.extensions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
@@ -26,18 +24,14 @@ import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.internal.PublishServerJob;
 import org.eclipse.wst.server.core.internal.Server;
+import org.eclipse.wst.server.ui.internal.cnf.ServerActionProvider;
 import org.eclipse.wst.server.ui.internal.view.servers.ModuleServer;
-import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.util.ModuleUtil;
-import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.Messages;
-import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
-import org.jboss.tools.as.wst.server.ui.xpl.ServerActionProvider;
 
 public class ModuleActionProvider extends CommonActionProvider {
 	private Action deleteModuleAction, fullPublishModuleAction, incrementalPublishModuleAction;
-	private Action exploreAction;
 	private ModuleServer[] selection;
 
 	private ICommonActionExtensionSite actionSite;
@@ -77,17 +71,6 @@ public class ModuleActionProvider extends CommonActionProvider {
 			if( selection.size() > 1 ) {
 				deleteModuleAction.setActionDefinitionId(IWorkbenchCommandConstants.EDIT_DELETE);
 				menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, deleteModuleAction);
-			}
-			if (selection.size() == 1) {
-				ModuleServer moduleServer = (ModuleServer) selection.getFirstElement();
-				IServer server = moduleServer.getServer();
-				if (ExploreUtils.canExplore(server)) {
-					if (getDeployPath() != null) {
-						menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
-						boolean exists = getDeployPath().toFile().exists();
-						exploreAction.setEnabled(exists);
-					}
-				}
 			}
 		}
 	}
@@ -133,20 +116,6 @@ public class ModuleActionProvider extends CommonActionProvider {
 		incrementalPublishModuleAction.setDescription(Messages.PublishModuleDescription);
 		incrementalPublishModuleAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.PUBLISH_IMAGE));
 
-		exploreAction = new Action() {
-			public void run() {
-				IPath path = getDeployPath();
-				if (path != null) {
-					File file = path.toFile();
-					if (file.exists()) {
-						ExploreUtils.explore(file.getAbsolutePath());
-					}
-				}
-			}
-		};
-		exploreAction.setText(ExploreUtils.EXPLORE);
-		exploreAction.setDescription(ExploreUtils.EXPLORE_DESCRIPTION);
-		exploreAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.EXPLORE_IMAGE));
 	}
 
 	protected void actionPublish(int type) {
@@ -191,14 +160,5 @@ public class ModuleActionProvider extends CommonActionProvider {
 			}};
 			t.start();
 		}
-	}
-	
-	private IPath getDeployPath() {
-		ModuleServer ms = selection[0];
-		IModule[] module = ms.module;
-		IDeployableServer deployableServer = ServerConverter.getDeployableServer(ms.server);
-		if( deployableServer != null )
-			return ExploreUtils.getDeployPath(deployableServer, module);
-		return null;
 	}
 }
