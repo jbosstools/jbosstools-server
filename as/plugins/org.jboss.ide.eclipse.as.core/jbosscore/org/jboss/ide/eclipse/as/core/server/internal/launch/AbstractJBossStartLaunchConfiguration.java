@@ -70,10 +70,11 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		}
 		
 		Trace.trace(Trace.STRING_FINEST, "Checking if similar server is already up on the same ports."); //$NON-NLS-1$
-		boolean started = isServerStarted(jbsBehavior);
+		IStatus startedStatus = isServerStarted(jbsBehavior);
+		boolean started = startedStatus.isOK();
 		if (started) {
 			Trace.trace(Trace.STRING_FINEST, "A server is already started. Now handling the already started scenario."); //$NON-NLS-1$
-			return handleAlreadyStartedScenario(jbsBehavior);
+			return handleAlreadyStartedScenario(jbsBehavior, startedStatus);
 		}
 
 		Trace.trace(Trace.STRING_FINEST, "A full launch will now proceed."); //$NON-NLS-1$
@@ -85,7 +86,7 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 	 * Should ideally use the poller that the server says is its poller,
 	 * but some pollers such as timeout poller 
 	 */
-	protected boolean isServerStarted(DelegatingServerBehavior jbsBehavior) {
+	protected IStatus isServerStarted(DelegatingServerBehavior jbsBehavior) {
 		IServerStatePoller poller = PollThreadUtils.getPoller(IServerStatePoller.SERVER_UP, jbsBehavior.getServer());
 		
 		// Need to be able to FORCE the poller to poll immediately
@@ -95,13 +96,13 @@ public abstract class AbstractJBossStartLaunchConfiguration extends AbstractJava
 		// Trace
 		Trace.trace(Trace.STRING_FINER, "Checking if a server is already started: " + started.getMessage()); //$NON-NLS-1$
 		
-		return started.isOK();
+		return started;
 	}
 	
-	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior) {
+	protected boolean handleAlreadyStartedScenario(	DelegatingServerBehavior jbsBehavior, IStatus startedStatus) {
 		IServerAlreadyStartedHandler handler = ExtensionManager.getDefault().getAlreadyStartedHandler(jbsBehavior.getServer());
 		if( handler != null ) {
-			int handlerResult = handler.promptForBehaviour(jbsBehavior.getServer());
+			int handlerResult = handler.promptForBehaviour(jbsBehavior.getServer(), startedStatus);
 			if( handlerResult == IServerAlreadyStartedHandler.CONTINUE_STARTUP) {
 				return true;
 			}

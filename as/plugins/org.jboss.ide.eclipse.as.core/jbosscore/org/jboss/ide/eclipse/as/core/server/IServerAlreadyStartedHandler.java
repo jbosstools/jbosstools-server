@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.server.core.IServer;
 
 public interface IServerAlreadyStartedHandler {
@@ -28,7 +29,8 @@ public interface IServerAlreadyStartedHandler {
 	 * Handle the prompt for this server
 	 * 
 	 * @param server
+	 * @param startedStatus
 	 * @return One of the constants of this interface
 	 */
-	public int promptForBehaviour(IServer server);
+	public int promptForBehaviour(IServer server, IStatus startedStatus);
 }

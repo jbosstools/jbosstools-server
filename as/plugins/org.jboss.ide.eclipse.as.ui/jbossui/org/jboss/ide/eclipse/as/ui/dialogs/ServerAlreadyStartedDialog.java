@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.ui.dialogs;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.Window;
@@ -35,11 +36,12 @@ public class ServerAlreadyStartedDialog extends TitleAreaDialog {
 		public boolean accepts(IServer server) {
 			return true;
 		}
-		public int promptForBehaviour(final IServer server) {
+		public int promptForBehaviour(final IServer server, final IStatus status) {
 			final int[] result = new int[1]; 
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
-					ServerAlreadyStartedDialog d = new ServerAlreadyStartedDialog(server,Display.getDefault().getActiveShell()); 
+					ServerAlreadyStartedDialog d = new ServerAlreadyStartedDialog(server, status,
+							Display.getDefault().getActiveShell()); 
 					int dResult = d.open();
 					if( dResult == Window.CANCEL ) {
 						result[0] = IServerAlreadyStartedHandler.CANCEL;
@@ -53,10 +55,12 @@ public class ServerAlreadyStartedDialog extends TitleAreaDialog {
 	}
 	
 	private IServer server;
+	private IStatus status;
 	private boolean launch;
-	public ServerAlreadyStartedDialog(IServer server, Shell parentShell) {
+	public ServerAlreadyStartedDialog(IServer server, IStatus status, Shell parentShell) {
 		super(parentShell);
 		this.server = server;
+		this.status = status;
 	}
 	@Override
 	protected Control createContents(Composite parent) {
@@ -78,7 +82,7 @@ public class ServerAlreadyStartedDialog extends TitleAreaDialog {
 		main.setLayout(new FormLayout());
 		
 		Label desc = new Label(main, SWT.NONE);
-		desc.setText(Messages.ServerAlreadyStartedDialog_Desc);
+		desc.setText(NLS.bind(Messages.ServerAlreadyStartedDialog_Desc, status.getMessage()));
 		Button connectButton = new Button(main, SWT.RADIO);
 		connectButton.setText(Messages.ServerAlreadyStartedDialog_Connect);
 		Button launchButton = new Button(main, SWT.RADIO);
