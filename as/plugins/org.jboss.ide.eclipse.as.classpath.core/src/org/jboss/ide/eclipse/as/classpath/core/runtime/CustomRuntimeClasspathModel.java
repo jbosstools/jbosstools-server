@@ -10,6 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.classpath.core.runtime;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,6 +22,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.XMLMemento;
 import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetUtil;
@@ -61,7 +67,7 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 
 	public IDefaultPathProvider[] getEntries(IRuntimeType type) {
 		IDefaultPathProvider[] sets = loadFilesets(type);
-		if( sets == null || sets.length == 0) {
+		if( sets == null ) {
 			return getDefaultEntries(type);
 		}
 		return sets;
@@ -193,14 +199,25 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 	
 	public static IDefaultPathProvider[] loadFilesets(IRuntimeType rt) {
 		IPath fileToRead = DEFAULT_CLASSPATH_FS_ROOT.append(rt.getId());
-		Fileset[] sets = FilesetUtil.loadFilesets(fileToRead.toFile(), null);
-		PathProviderFileset[] newSets = new PathProviderFileset[sets.length];
-		for( int i = 0; i < sets.length; i++ ) {
-			newSets[i] = new PathProviderFileset(sets[i]);
+		Fileset[] sets = loadFilesets(fileToRead.toFile(), null);
+		if( sets != null ) {
+			PathProviderFileset[] newSets = new PathProviderFileset[sets.length];
+			for( int i = 0; i < sets.length; i++ ) {
+				newSets[i] = new PathProviderFileset(sets[i]);
+			}
+			return newSets;
 		}
-		return newSets;
+		return null;
 	}
-	
+	public static Fileset[] loadFilesets(File file, IServer server) {
+		if( file != null && file.exists()) {
+			try {
+				return FilesetUtil.loadFilesets(new FileInputStream(file), server);
+			} catch( FileNotFoundException fnfe) {}
+		}
+		return null;
+	}
+
 	public static void saveFilesets(IRuntimeType runtime, IDefaultPathProvider[] sets) {
 		IPath fileToWrite = DEFAULT_CLASSPATH_FS_ROOT.append(runtime.getId());
 		XMLMemento memento = XMLMemento.createWriteRoot("classpathProviders"); //$NON-NLS-1$
@@ -215,6 +232,11 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 			} else {
 				// TODO
 			}
+		}
+		try {
+			memento.save(new FileOutputStream(fileToWrite.toFile()));
+		} catch( IOException ioe) {
+			// TODO LOG
 		}
 	}
 }

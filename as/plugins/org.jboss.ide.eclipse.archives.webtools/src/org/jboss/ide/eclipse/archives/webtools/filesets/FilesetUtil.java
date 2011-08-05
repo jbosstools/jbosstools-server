@@ -31,6 +31,12 @@ public class FilesetUtil {
 		return loadFilesets(getFile(server), server);
 	}
 	
+	/**
+	 * Must return a list of filesets. NOT NULL
+	 * @param file
+	 * @param server
+	 * @return
+	 */
 	public static Fileset[] loadFilesets(File file, IServer server) {
 		if( file != null && file.exists()) {
 			try {
@@ -40,14 +46,27 @@ public class FilesetUtil {
 		return new Fileset[]{};
 	}
 	
+	/**
+	 * May return null, or a list of filesets
+	 * @param is
+	 * @param server
+	 * @return
+	 */
 	public static Fileset[] loadFilesets(InputStream is, IServer server) {
 		Fileset[] sets = loadFilesets(is);
-		for( int i = 0; i < sets.length; i++ ) {
-			sets[i].setServer(server);
+		if( sets != null ) {
+			for( int i = 0; i < sets.length; i++ ) {
+				sets[i].setServer(server);
+			}
 		}
 		return sets;
 	}
 	
+	/**
+	 * may return null
+	 * @param is
+	 * @return
+	 */
 	public static Fileset[] loadFilesets(InputStream is) {
 		Fileset[] filesets = null;
 		XMLMemento memento = XMLMemento.createReadRoot(is);
@@ -61,7 +80,7 @@ public class FilesetUtil {
 			excludes = categoryMementos[i].getString("excludes");//$NON-NLS-1$
 			filesets[i] = new Fileset(name, folder, includes, excludes);
 		}
-		return filesets == null ? new Fileset[] { } : filesets;
+		return filesets;
 	}
 	
 	public static void saveFilesets(IServer server, Fileset[] sets) {

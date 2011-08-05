@@ -36,7 +36,7 @@ public class NewServerFilesetHandler extends UnitedServerListener {
 					if( url != null ) {
 					    InputStream fis  = url.openStream();
 					    Fileset[] sets = FilesetUtil.loadFilesets(fis, null);
-					    if( sets.length != 0 ) {
+					    if( sets != null && sets.length != 0 ) {
 							FilesetUtil.saveFilesets(fileToWrite.toFile(), sets);
 					    }
 					}
