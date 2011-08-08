@@ -48,13 +48,17 @@ public class DeploymentPreferenceLoader {
 	 * @return
 	 */
 	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server) {
-		String type = server.getAttribute(IDeployableServer.SERVER_MODE, (String)null);
+		return getCurrentDeploymentMethodType(server, null);
+	}
+
+	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server, String defaultType) {
+		String type = server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 		if( type != null ) {
 			return ExtensionManager.getDefault().getPublishMethod(type);
 		}
 		return null;
 	}
-	
+
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {
 		File f = getFile(server);
 		InputStream is = null;

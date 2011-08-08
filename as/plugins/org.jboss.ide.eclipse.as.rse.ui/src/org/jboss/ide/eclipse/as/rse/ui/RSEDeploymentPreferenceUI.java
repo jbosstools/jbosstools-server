@@ -13,8 +13,10 @@ package org.jboss.ide.eclipse.as.rse.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -23,6 +25,7 @@ import org.eclipse.rse.core.events.ISystemModelChangeEvent;
 import org.eclipse.rse.core.events.ISystemModelChangeListener;
 import org.eclipse.rse.core.model.IHost;
 import org.eclipse.rse.files.ui.dialogs.SystemRemoteFileDialog;
+import org.eclipse.rse.services.files.IHostFile;
 import org.eclipse.rse.subsystems.files.core.subsystems.IRemoteFile;
 import org.eclipse.rse.ui.wizards.newconnection.RSEMainNewConnectionWizard;
 import org.eclipse.swt.SWT;
@@ -41,13 +44,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
+import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod;
 import org.jboss.ide.eclipse.as.rse.core.RSEUtils;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
@@ -55,6 +64,7 @@ import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
+import org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider;
 
 public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	static {
@@ -63,6 +73,32 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 				String current = page.getServer().getAttribute(RSEUtils.RSE_SERVER_HOST, (String)null);
 				IHost h = findHost(current, null);
 				return browseClicked4(new Shell(), h);
+			}
+		});
+		ExploreActionProvider.exploreBehaviorMap.put("rse", new ExploreActionProvider.IExploreBehavior() {
+			public void openExplorer(IServer server, IModule[] module) {
+				IDeployableServer ds = ServerConverter.getDeployableServer(server);
+				IPath remoteFolder = new Path(RSEUtils.getDeployRootFolder(ds));
+				IJBossServerPublishMethodType type = DeploymentPreferenceLoader.getCurrentDeploymentMethodType(server);
+				RSEPublishMethod method = (RSEPublishMethod)type.createPublishMethod();
+				method.setBehaviour(ServerConverter.getDeployableServerBehavior(server));
+				if( module != null ) {
+					remoteFolder = PublishUtil.getDeployPath(method, module, ds);
+				}
+				try {
+					method.getFileService();
+					method.ensureConnection(new NullProgressMonitor());
+					IHostFile file = method.getFileService().getFile(remoteFolder.removeLastSegments(1).toOSString(), remoteFolder.lastSegment(), new NullProgressMonitor());
+					String path = file.getAbsolutePath();
+					
+					IRemoteFile rf = method.getFileServiceSubSystem().getRemoteFileObject(path, null);
+					
+					SystemShowInTableAction act = new SystemShowInTableAction(Display.getDefault().getActiveShell()); 
+					act.setSelectedObject(rf);
+					act.run();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 	}

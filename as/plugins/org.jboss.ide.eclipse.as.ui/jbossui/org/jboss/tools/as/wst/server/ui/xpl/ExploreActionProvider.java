@@ -11,6 +11,7 @@
 package org.jboss.tools.as.wst.server.ui.xpl;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
@@ -34,6 +35,44 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUISharedImages;
 import org.jboss.ide.eclipse.as.ui.actions.ExploreUtils;
 public class ExploreActionProvider extends CommonActionProvider {
+	public static interface IExploreBehavior {
+		public void openExplorer(IServer server, IModule[] module);
+	}
+	public static HashMap<String, IExploreBehavior> exploreBehaviorMap = new HashMap<String, IExploreBehavior>();
+	static {
+		exploreBehaviorMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new IExploreBehavior() {
+			public void openExplorer(IServer server, IModule[] module) {
+				if( module != null ) 
+					runExploreModuleServer(server, module);
+				else
+					runExploreServer(server);
+			}
+			public void runExploreServer(IServer server) {
+				String deployDirectory = ExploreUtils.getDeployDirectory(server);
+				if (deployDirectory != null && deployDirectory.length() > 0) {
+					ExploreUtils.explore(deployDirectory);
+				} 
+			}
+			
+			public void runExploreModuleServer(IServer server, IModule[] module) {
+				IPath path = getModuleDeployPath(server, module);
+				if (path != null) {
+					File file = path.toFile();
+					if (file.exists()) {
+						ExploreUtils.explore(file.getAbsolutePath());
+					}
+				}
+			}
+			private IPath getModuleDeployPath(IServer server, IModule[] module) {
+				IDeployableServer deployableServer = ServerConverter.getDeployableServer(server);
+				if( deployableServer != null )
+					return ExploreUtils.getDeployPath(deployableServer, module);
+				return null;
+			}
+		});
+	}
+
+	
 	private ICommonActionExtensionSite actionSite;
 	private CommonViewer cv;
 	public ExploreActionProvider() {
@@ -66,52 +105,23 @@ public class ExploreActionProvider extends CommonActionProvider {
 		exploreAction.setDescription(ExploreUtils.EXPLORE_DESCRIPTION);
 		exploreAction.setImageDescriptor(JBossServerUISharedImages.getImageDescriptor(JBossServerUISharedImages.EXPLORE_IMAGE));
 	}
-	
+	 
 	private void runExplore() {
-		if( getModuleServer() != null ) 
-			runExploreModuleServer();
-		else
-			runExploreServer();
+		runExplore(getServer(), getModuleServer());
+	}
+	
+	private void runExplore(IServer server, ModuleServer ms) {
+		String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		IExploreBehavior beh = exploreBehaviorMap.get(mode);
+		beh.openExplorer(server, ms == null ? null : ms.module);
 	}
 	
 	public void fillContextMenu(IMenuManager menu) {
-		boolean enabled = false;
 		if( getModuleServer() != null )
 			menu.insertBefore(ServerActionProvider.CONTROL_MODULE_SECTION_END_SEPARATOR, exploreAction);
 		else
 			menu.insertBefore(ServerActionProvider.SERVER_ETC_SECTION_END_SEPARATOR, exploreAction);
-		if( getServer() != null ) {
-			String mode = getServer().getAttribute(IDeployableServer.SERVER_MODE, LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-			if( LocalPublishMethod.LOCAL_PUBLISH_METHOD.equals(mode)) {
-				enabled = true;
-			}
-		}
-		exploreAction.setEnabled(enabled);
-	}
-	
-	public void runExploreServer() {
-		String deployDirectory = ExploreUtils.getDeployDirectory(getServer());
-		if (deployDirectory != null && deployDirectory.length() > 0) {
-			ExploreUtils.explore(deployDirectory);
-		} 
-	}
-	
-	public void runExploreModuleServer() {
-		IPath path = getModuleDeployPath();
-		if (path != null) {
-			File file = path.toFile();
-			if (file.exists()) {
-				ExploreUtils.explore(file.getAbsolutePath());
-			}
-		}
-	}
-	private IPath getModuleDeployPath() {
-		ModuleServer ms = getModuleServer();
-		IModule[] module = ms.module;
-		IDeployableServer deployableServer = ServerConverter.getDeployableServer(ms.server);
-		if( deployableServer != null )
-			return ExploreUtils.getDeployPath(deployableServer, module);
-		return null;
+		exploreAction.setEnabled(true);
 	}
 	
 	public IServer getServer() {

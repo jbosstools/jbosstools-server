@@ -50,6 +50,10 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return RSE_ID;
 	}
 	
+	public void setBehaviour(DeployableServerBehavior beh) {
+		this.behaviour = beh;
+	}
+	
 	private IFileServiceSubSystem fileSubSystem = null;
 	private IPath remoteRootFolder;
 	@Deprecated	private IPath remoteTemporaryFolder;
@@ -123,7 +127,7 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		return behaviour.getServer();
 	}
 	
-	private void ensureConnection(IProgressMonitor monitor) {
+	public void ensureConnection(IProgressMonitor monitor) {
 		if (fileSubSystem != null && !fileSubSystem.isConnected()) {
 		    try {
 		    	fileSubSystem.connect(monitor, false);
@@ -132,6 +136,12 @@ public class RSEPublishMethod extends AbstractPublishMethod {
 		}
 	}
 	public IPath getRemoteRootFolder() {
+		if( remoteRootFolder == null )
+			try {
+				loadRemoteDeploymentDetails();
+			} catch(CoreException ce) {
+				// TODO
+			}
 		return remoteRootFolder;
 	}
 	
