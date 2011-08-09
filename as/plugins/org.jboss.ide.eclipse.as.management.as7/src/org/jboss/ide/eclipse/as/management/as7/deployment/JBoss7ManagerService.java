@@ -62,12 +62,8 @@ public class JBoss7ManagerService implements IJBoss7ManagerService {
 		return manager.getServerState();
 	}
 
-	public boolean isRunning(String host, int port) {
-		try {
-			return getServerState(host, port) == JBoss7ServerState.RUNNING;
-		} catch (Exception e) {
-			return false;
-		}
+	public boolean isRunning(String host, int port) throws Exception {
+		return new AS7Manager(host, port).isRunning();
 	}
 
 	@Deprecated

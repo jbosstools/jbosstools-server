@@ -163,6 +163,14 @@ public class AS7Manager {
 		return toJBoss7ServerState(response);
 	}
 
+	public boolean isRunning() {
+		try {
+			return getServerState() == JBoss7ServerState.RUNNING;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	private JBoss7ServerState toJBoss7ServerState(ModelNode response) throws JBoss7ManangerException {
 		try {
 			return JBoss7ServerState.valueOfIgnoreCase(response.asString());
