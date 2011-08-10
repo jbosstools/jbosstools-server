@@ -56,3 +56,4 @@ Export-Package: org.jboss.ide.eclipse.as.test,
  org.jboss.ide.eclipse.as.test.util,
  org.jboss.ide.eclipse.as.test.util.jdt,
  org.jboss.ide.eclipse.as.test.util.wtp
+Import-Package: org.jboss.ide.eclipse.as.management.as7

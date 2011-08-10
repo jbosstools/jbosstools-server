@@ -8,13 +8,12 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server.internal.v7;
+package org.jboss.ide.eclipse.as.management.as7;
 
 import java.io.File;
 import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;

@@ -36,11 +36,11 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentManager
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.as.protocol.old.StreamUtils;
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.internal.management.as7.util.AS7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
 
 /**
  * @author André Dietisheim

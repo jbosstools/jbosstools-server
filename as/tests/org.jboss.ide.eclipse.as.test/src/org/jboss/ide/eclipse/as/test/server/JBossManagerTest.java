@@ -17,12 +17,12 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerServiceProxy;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerServiceProxy;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerException;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
 import org.jboss.ide.eclipse.as.test.ASTest;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;

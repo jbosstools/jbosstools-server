@@ -8,25 +8,17 @@
  * Contributors:
  *     Red Hat Incorporated - initial API and implementation
  *******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server.internal.v7;
+package org.jboss.ide.eclipse.as.management.as7;
 
 /**
  * @author André Dietisheim
  */
-public class JBoss7ManangerException extends Exception {
+public class JBoss7ManangerConnectException extends JBoss7ManangerException {
 
 	private static final long serialVersionUID = 1L;
 
-	public JBoss7ManangerException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public JBoss7ManangerException(Throwable cause) {
+	public JBoss7ManangerConnectException(Throwable cause) {
 		super(cause);
-	}
-
-	public JBoss7ManangerException(String message) {
-		super(message);
 	}
 
 }

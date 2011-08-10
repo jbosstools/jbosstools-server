@@ -19,10 +19,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
 
 public class RSEJBoss7BehaviourDelegate extends RSEBehaviourDelegate {
 

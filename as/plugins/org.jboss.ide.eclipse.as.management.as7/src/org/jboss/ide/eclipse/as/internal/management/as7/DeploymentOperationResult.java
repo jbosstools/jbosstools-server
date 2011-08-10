@@ -20,8 +20,8 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.as.controller.client.helpers.standalone.DeploymentAction;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionResult;
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerException;
 
 /**
  * A class that holds the status of a deployment operation.

@@ -20,12 +20,15 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManagerUtil.IServiceAware;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerConnectException;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil.IServiceAware;
 
 /**
  * @author André Dietisheim

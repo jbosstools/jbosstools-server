@@ -8,11 +8,10 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server.internal.v7;
+package org.jboss.ide.eclipse.as.management.as7;
 
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.internal.management.as7.Activator;
 import org.osgi.framework.BundleContext;
 
 public class JBoss7ManagerUtil {
@@ -20,7 +19,7 @@ public class JBoss7ManagerUtil {
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 
 	public static IJBoss7ManagerService getService(IServer server) throws Exception {
-		BundleContext context = JBossServerCorePlugin.getContext();
+		BundleContext context = Activator.getContext();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
 		proxy.open();
 		return proxy;

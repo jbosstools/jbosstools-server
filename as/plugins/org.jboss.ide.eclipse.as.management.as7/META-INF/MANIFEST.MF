@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.jboss.ide.eclipse.as.management.as7
 Bundle-Version: 2.3.0.qualifier
 Bundle-Activator: org.jboss.ide.eclipse.as.internal.management.as7.Activator
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.7.0,4.0.0)",
- org.jboss.ide.eclipse.as.core
+ org.eclipse.wst.server.core;bundle-version="1.1.302"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
@@ -20,5 +20,6 @@ Bundle-ClassPath: .,
  xnio-api-3.0.0.Beta3.jar,
  xnio-nio-3.0.0.Beta3.jar
 Service-Component: META-INF/jboss-management-service.xml
-Export-Package: org.jboss.ide.eclipse.as.internal.management.as7;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests"
+Export-Package: org.jboss.ide.eclipse.as.internal.management.as7;x-friends:="org.jboss.ide.eclipse.as.management.as7.tests",
+ org.jboss.ide.eclipse.as.management.as7
 Bundle-Vendor: JBoss by Red Hat

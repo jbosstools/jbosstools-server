@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.UnknownHostException;
 
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

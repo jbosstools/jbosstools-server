@@ -13,10 +13,10 @@ package org.jboss.ide.eclipse.as.internal.management.as7;
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7DeploymentResult;
+import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7DeploymentState;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
 
 /**
  * @author Rob Stryker

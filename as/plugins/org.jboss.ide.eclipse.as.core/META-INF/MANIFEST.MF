@@ -44,3 +44,4 @@ Bundle-ClassPath: dom4j-1.6.1.jar,
  .
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.jboss.ide.eclipse.as.management.as7

@@ -8,21 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.core.server;
+package org.jboss.ide.eclipse.as.management.as7;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
 
 public interface IJBoss7ManagerService {
 
 	public static final String AS_VERSION_PROPERTY = "as.version"; //$NON-NLS-1$
 
 	public static final String AS_VERSION_700 = "700"; //$NON-NLS-1$
+
+	public static final int MGMT_PORT = 9999;
 
 	/**
 	 * Asynchronously deploy a file to a server

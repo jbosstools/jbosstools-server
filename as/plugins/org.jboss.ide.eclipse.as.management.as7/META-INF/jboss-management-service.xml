@@ -2,7 +2,7 @@
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.jboss.ide.eclipse.as.management.as7.service">
    <implementation class="org.jboss.ide.eclipse.as.internal.management.as7.JBoss7ManagerService"/>
    <service>
-      <provide interface="org.jboss.ide.eclipse.as.core.server.IJBoss7ManagerService"/>
+      <provide interface="org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService"/>
    </service>
    <property name="as.version" type="String" value="700"/>
 </scr:component>

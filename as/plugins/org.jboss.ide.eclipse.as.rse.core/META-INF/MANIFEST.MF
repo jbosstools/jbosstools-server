@@ -28,3 +28,4 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.jboss.ide.eclipse.as.rse.core
 Bundle-Localization: plugin
+Import-Package: org.jboss.ide.eclipse.as.management.as7
