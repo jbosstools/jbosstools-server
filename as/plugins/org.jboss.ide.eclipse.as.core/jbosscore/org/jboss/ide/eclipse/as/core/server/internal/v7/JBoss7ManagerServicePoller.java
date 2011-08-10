@@ -158,7 +158,7 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 		} catch(Exception e) {
 			Status s = new Status(IStatus.INFO, JBossServerCorePlugin.PLUGIN_ID, 
 					"An attempt to reach the JBoss 7 Management Service on host " + server.getHost() //$NON-NLS-1$
-					+ " and port " + getManagementPort(server) + " has resulted in an exception"); //$NON-NLS-1$ //$NON-NLS-2$
+					+ " and port " + getManagementPort(server) + " has resulted in an exception", e); //$NON-NLS-1$ //$NON-NLS-2$
 			return s;
 		}
 	}
