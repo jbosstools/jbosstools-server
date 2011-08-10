@@ -64,12 +64,11 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	}
 
 	private int getManagementPort(IServer server) {
-		JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
-		if( server != null )
+		if( server != null ) {
+			JBoss7Server jbossServer = (JBoss7Server) server.loadAdapter(JBoss7Server.class, new NullProgressMonitor());
 			return jbossServer.getManagementPort();
-		// TODO: provide this default in a single place (currently it is spread across the 
-		// behavior and this poller). This port is already offered as constant in AS7Manager#MGMT_PORT
-		return 9999;
+		}
+		return IJBoss7ManagerService.MGMT_PORT;
 	}
 	
 	public boolean isComplete() throws PollingException, RequiresInfoException {
