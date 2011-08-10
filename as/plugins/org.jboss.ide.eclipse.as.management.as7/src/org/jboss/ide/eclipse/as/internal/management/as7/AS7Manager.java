@@ -8,19 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ADDRESS;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.ENABLED;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.FAILURE_DESCRIPTION;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.NAME;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OP;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SERVER_STATE;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SHUTDOWN;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.ADDRESS;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.ENABLED;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.FAILURE_DESCRIPTION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.NAME;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.OP;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_ATTRIBUTE_OPERATION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_RESOURCE_OPERATION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SERVER_STATE;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SHUTDOWN;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7DeploymentState;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ServerState;
-import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
+import org.jboss.ide.eclipse.as.internal.management.as7.util.AS7ManagerUtil;
 
 /**
  * @author André Dietisheim

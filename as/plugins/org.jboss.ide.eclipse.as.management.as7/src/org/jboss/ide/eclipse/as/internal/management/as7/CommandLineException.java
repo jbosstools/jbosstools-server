@@ -19,43 +19,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.management.as7.internal;
-
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
 /**
- *
  * @author Alexey Loubyansky
+ *
  */
-public class OperationFormatException extends CommandFormatException {
+public class CommandLineException extends Exception {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3481664048439674648L;
+    private static final long serialVersionUID = 423938082439473323L;
 
-    /**
-     * @param message
-     * @param cause
-     */
-    public OperationFormatException(String message, Throwable cause) {
+    public CommandLineException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param message
-     */
-    public OperationFormatException(String message) {
+    public CommandLineException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @param cause
-     */
-    public OperationFormatException(Throwable cause) {
+    public CommandLineException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
-
 }

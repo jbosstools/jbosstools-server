@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
 
 /**
@@ -45,6 +45,7 @@ public class ModelDescriptionConstants {
     public static final String DEFAULT_INTERFACE = "default-interface";
     public static final String DEPLOY = "deploy";
     public static final String DEPLOYMENT = "deployment";
+    public static final String DEPLOYMENT_SCANNER = "deployment-scanner";
     public static final String DESCRIPTION = "description";
     public static final String DISABLE = "disable";
     public static final String DOMAIN_CONTROLLER = "domain-controller";
@@ -143,6 +144,9 @@ public class ModelDescriptionConstants {
     public static final String ROLLOUT_PLAN = "rollout-plan";
     public static final String RUNTIME_NAME = "runtime-name";
     public static final String RUNNING_SERVER = "server";
+    public static final String SCANNER = "scanner";
+    public static final String SCAN_ENABLED = "scan-enabled";
+    public static final String SCAN_INTERVAL = "scan-interval";
     public static final String SCHEMA_LOCATION = "schema-location";
     public static final String SCHEMA_LOCATIONS = "schema-locations";
     public static final String SERVER = "server";

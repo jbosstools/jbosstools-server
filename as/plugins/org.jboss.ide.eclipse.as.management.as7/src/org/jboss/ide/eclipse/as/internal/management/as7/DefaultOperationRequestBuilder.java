@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.ide.eclipse.as.management.as7.internal;
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -28,7 +28,7 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.management.as7.internal.OperationRequestAddress.Node;
+import org.jboss.ide.eclipse.as.internal.management.as7.OperationRequestAddress.Node;
 
 /**
  *

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
 import java.text.MessageFormat;
 import java.util.concurrent.Future;
@@ -22,8 +22,6 @@ import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentActionR
 import org.jboss.as.controller.client.helpers.standalone.ServerDeploymentPlanResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
-import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
-import org.jboss.ide.eclipse.as.management.as7.Activator;
 
 /**
  * A class that holds the status of a deployment operation.

@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.management.as7;
+package org.jboss.ide.eclipse.as.internal.management.as7;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.IJBoss7DeploymentResult;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.management.as7.deployment.AS7Manager;
+import org.jboss.ide.eclipse.as.internal.management.as7.AS7Manager;
 import org.osgi.framework.Bundle;
 
 /**

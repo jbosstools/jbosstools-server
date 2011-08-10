@@ -8,16 +8,16 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.management.as7.deployment;
+package org.jboss.ide.eclipse.as.internal.management.as7.util;
 
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.CHILD_TYPE;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.DEPLOYMENT;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.FAILURE_DESCRIPTION;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.OUTCOME;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.REQUEST_PROPERTIES;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.RESULT;
-import static org.jboss.ide.eclipse.as.management.as7.deployment.ModelDescriptionConstants.SUCCESS;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.CHILD_TYPE;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.FAILURE_DESCRIPTION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.OUTCOME;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.READ_CHILDREN_NAMES_OPERATION;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.REQUEST_PROPERTIES;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.RESULT;
+import static org.jboss.ide.eclipse.as.internal.management.as7.ModelDescriptionConstants.SUCCESS;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7ManangerException;
-import org.jboss.ide.eclipse.as.management.as7.AS7Messages;
-import org.jboss.ide.eclipse.as.management.as7.internal.DefaultOperationRequestBuilder;
-import org.jboss.ide.eclipse.as.management.as7.internal.OperationFormatException;
+import org.jboss.ide.eclipse.as.internal.management.as7.AS7Messages;
+import org.jboss.ide.eclipse.as.internal.management.as7.DefaultOperationRequestBuilder;
+import org.jboss.ide.eclipse.as.internal.management.as7.OperationFormatException;
 
 /**
  * Various utility methods to deal with the as7 management api.
