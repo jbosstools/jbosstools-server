@@ -32,4 +32,5 @@ public interface IWTPConstants {
 	public static final String EXT_WAR = ".war"; //$NON-NLS-1$
 	public static final String EXT_EAR = ".ear"; //$NON-NLS-1$
 	public static final String EXT_XML = ".xml"; //$NON-NLS-1$
+	public static final String EXT_SAR = ".sar"; //$NON-NLS-1$
 }

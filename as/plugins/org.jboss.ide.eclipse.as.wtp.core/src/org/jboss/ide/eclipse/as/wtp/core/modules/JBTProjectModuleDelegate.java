@@ -29,6 +29,14 @@ import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.web.internal.deployables.ComponentDeployable;
 import org.jboss.ide.eclipse.as.wtp.core.vcf.JBTVirtualArchiveComponent;
 
+/**
+ * This class is deprecated because it inherits from a deprecated class.
+ * 
+ * ESB NEEDS TO STOP USING THIS!!!
+ * @author rob
+ *
+ */
+@Deprecated
 public abstract class JBTProjectModuleDelegate extends ComponentDeployable implements IJBTModule {
 
 	public JBTProjectModuleDelegate(IProject project) {

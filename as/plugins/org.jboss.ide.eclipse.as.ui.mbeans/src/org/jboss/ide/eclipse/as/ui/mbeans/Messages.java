@@ -75,6 +75,17 @@ public class Messages extends NLS {
 	
 	public static String ServiceXMLEditorUtil_could_not_get_methods;
 
+	
+	/*
+	 * Sar Project
+	 */
+	public static String NewSarProject_ContentRootLabel;
+	public static String NewSarProject_FacetInstallationPage;
+	public static String NewSarProject_FacetInstallationPageDesc;
+	public static String NewSarProject_FacetInstallationPage_ContentRootError;
+	public static String NewSarProject_FirstPageTitle;
+	public static String NewSarProject_FirstPageDesc;
+	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

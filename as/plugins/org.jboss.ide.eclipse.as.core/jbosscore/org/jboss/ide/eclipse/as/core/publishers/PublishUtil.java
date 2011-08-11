@@ -258,8 +258,8 @@ public class PublishUtil {
 			suffix = ""; //$NON-NLS-1$
 		else if( "jboss.singlefile".equals(type)) //$NON-NLS-1$
 			suffix = ""; //$NON-NLS-1$
-		else
-			suffix = IWTPConstants.EXT_JAR;
+		else if( "jst.jboss.sar".equals(type)) //$NON-NLS-1$
+			suffix = IWTPConstants.EXT_SAR;
 		return suffix;
 	}
 	

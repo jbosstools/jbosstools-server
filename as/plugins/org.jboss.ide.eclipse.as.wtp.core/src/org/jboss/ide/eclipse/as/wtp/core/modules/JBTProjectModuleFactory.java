@@ -35,6 +35,14 @@ import org.eclipse.wst.server.core.model.ModuleFactoryDelegate;
 import org.eclipse.wst.server.core.util.ProjectModuleFactoryDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.ASWTPToolsPlugin;
 
+/**
+ * This class is deprecated because it inherits from a deprecated class.
+ * 
+ * ESB NEEDS TO STOP USING THIS!!!
+ * @author rob
+ *
+ */
+@Deprecated
 public abstract class JBTProjectModuleFactory extends ProjectModuleFactoryDelegate {
 	public static JBTProjectModuleFactory getFactory(String id) {
 		ModuleFactory[] factories = ServerPlugin.getModuleFactories();
