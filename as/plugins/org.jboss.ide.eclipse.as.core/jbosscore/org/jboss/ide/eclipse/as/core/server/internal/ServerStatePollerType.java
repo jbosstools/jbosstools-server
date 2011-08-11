@@ -10,6 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -47,7 +48,7 @@ public class ServerStatePollerType {
 	public IServerStatePoller createPoller() {
 		try {
 			return (IServerStatePoller)el.createExecutableExtension("class"); //$NON-NLS-1$
-		} catch( Exception e ) {
+		} catch( CoreException e ) {
 			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
 					NLS.bind(Messages.CannotLoadServerPoller, el.getAttribute("name")), e); //$NON-NLS-1$
 			JBossServerCorePlugin.getDefault().getLog().log(s);
