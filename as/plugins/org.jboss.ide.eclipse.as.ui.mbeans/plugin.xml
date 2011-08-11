@@ -74,10 +74,9 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
-            name="MBean Components"
-            parentCategory="org.jboss.ide.eclipse.ui.wizards"/>
+            name="SAR / MBean Components"/>
       <wizard
-            category="org.jboss.ide.eclipse.ui.wizards/org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
+            category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.wizards.NewMBeanWizard"
             icon="icons/mbean16.gif"
             id="org.jboss.ide.eclipse.as.ui.MBeanComponents"
@@ -207,13 +206,13 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
-            category="org.jboss.ide.eclipse.as.ui.sar"
+            category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.project.ui.SARProjectWizard"
-            icon="$nl$/icons/wizards/sar.gif"
+            icon="$nl$/icons/sar2.gif"
             id="JBoss.SAR.Project.Wizard"
             name="SAR Project"
             project="true">
-      </wizard>T
+      </wizard>
    </extension>
 
    <extension
@@ -225,6 +224,12 @@
          </page>
       </wizard-pages>
    </extension>
-
+   <extension
+         point="org.eclipse.wst.server.ui.serverImages">
+      <image
+            icon="icons/sar2.gif"
+            id="org.jboss.ide.eclipse.as.ui.mbeans.sar.module"
+            typeIds="jst.jboss.sar"/>
+   </extension>
 
 </plugin>
