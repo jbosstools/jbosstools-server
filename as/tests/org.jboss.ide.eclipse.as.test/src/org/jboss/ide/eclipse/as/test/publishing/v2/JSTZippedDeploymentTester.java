@@ -54,13 +54,13 @@ public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 	
 	@Override
 	protected IProject createProject() throws Exception {
-		IDataModel dm = ProjectCreationUtil.getEARDataModel(MODULE_NAME, CONTENT_DIR, null, null, JavaEEFacetConstants.EAR_5, false);
+		IDataModel dm = ProjectCreationUtil.getEARDataModel(getModuleName(), getContentDir(), null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(getModuleName());
 		assertTrue(p.exists());
 		
 		File srcFile = AbstractDeploymentTest.getFileLocation("projectPieces/mvel2.jar");
-		IPath contentDir = p.getFolder(CONTENT_DIR).getLocation();
+		IPath contentDir = p.getFolder(getContentDir()).getLocation();
 		File destFile = new File(contentDir.toFile(), "mvel2.jar");
 		FileUtil.fileSafeCopy(srcFile, destFile);
 		p.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
@@ -95,7 +95,7 @@ public class JSTZippedDeploymentTester extends AbstractJSTDeploymentTester {
 		IPath projLoc = project.getLocation();
 		System.out.println(projLoc);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
-		IPath zipped = deployRoot.append(MODULE_NAME + ".ear");
+		IPath zipped = deployRoot.append(getModuleName() + ".ear");
 		assertTrue(zipped.toFile().exists());
 		assertTrue(zipped.toFile().isFile());
 		IPath unzip1 = ASTest.getDefault().getStateLocation().append("unzip1");

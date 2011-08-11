@@ -35,13 +35,29 @@ import org.jboss.ide.eclipse.as.test.util.wtp.ProjectUtility;
 public class AbstractJSTDeploymentTester extends TestCase {
 	protected IProject project;
 	protected IServer server;
-	final String MODULE_NAME = "newModule";
-	final String CONTENT_DIR = "contentDirS"; 
-	final String TEXT_FILE = "test.txt";
-	final IPath CONTENT_TEXT_FILE = new Path(CONTENT_DIR).append(TEXT_FILE);
+	private final String MODULE_NAME = "newModule";
+	private final String CONTENT_DIR = "contentDirS"; 
+	private final String TEXT_FILE = "test.txt";
+	private final IPath CONTENT_TEXT_FILE = new Path(CONTENT_DIR).append(TEXT_FILE);
 	public void setUp() throws Exception {
 		project = createProject();
 		server = ServerRuntimeUtils.createMockDeployOnlyServer();
+	}
+	
+	protected String getModuleName() {
+		return MODULE_NAME;
+	}
+	
+	protected String getContentDir() {
+		return CONTENT_DIR;
+	}
+	
+	protected String getTextFile() {
+		return TEXT_FILE;
+	}
+	
+	protected IPath getContentTextFilePath() {
+		return CONTENT_TEXT_FILE;
 	}
 	
 	public void tearDown() throws Exception {
@@ -51,9 +67,9 @@ public class AbstractJSTDeploymentTester extends TestCase {
 		ASTest.clearStateLocation();
 	}
 	protected IProject createProject() throws Exception {
-		IDataModel dm = ProjectCreationUtil.getEARDataModel(MODULE_NAME, CONTENT_DIR, null, null, JavaEEFacetConstants.EAR_5, false);
+		IDataModel dm = ProjectCreationUtil.getEARDataModel(getModuleName(), getContentDir(), null, null, JavaEEFacetConstants.EAR_5, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(getModuleName());
 		assertTrue(p.exists());
 		return p;
 	}

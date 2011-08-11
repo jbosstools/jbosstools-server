@@ -56,7 +56,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 				new String[] { "newModule.ear", "newModule.ear.failed" }); 
 		MockPublishMethod.reset();
 
-		IFile textFile = project.getFile(CONTENT_TEXT_FILE);
+		IFile textFile = project.getFile(getContentTextFilePath());
 		IOUtil.setContents(textFile, 0);
 		assertEquals(0, MockPublishMethod.getChanged().length);
 		ServerRuntimeUtils.publish(server);

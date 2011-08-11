@@ -30,11 +30,15 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
 public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester {
+	protected String getModuleName() {
+		return super.getModuleName() + "JSTDeployBinaryChild";
+	}
+	
 	@Override
 	protected IProject createProject() throws Exception {
-		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, null, null, JavaEEFacetConstants.WEB_24, false);
+		IDataModel dm = ProjectCreationUtil.getWebDataModel(getModuleName(), null, null, null, null, JavaEEFacetConstants.WEB_24, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(getModuleName());
 		assertTrue(p.exists());
 		File srcFile = AbstractDeploymentTest.getFileLocation("projectPieces/EJB3NoDescriptor.jar");
 		String proj = p.getLocation().toOSString();
@@ -52,7 +56,7 @@ public class JSTDeployBinaryChildModuleTest extends AbstractJSTDeploymentTester 
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
-		IPath rootFolder = deployRoot.append(MODULE_NAME + ".war");
+		IPath rootFolder = deployRoot.append(getModuleName() + ".war");
 		assertTrue(rootFolder.toFile().exists());
 		IPath webinf_lib_testjar = rootFolder.append("WEB-INF").append("lib").append("test.jar");
 		assertTrue("test.jar exists in deployment", webinf_lib_testjar.toFile().exists());

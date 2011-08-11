@@ -37,11 +37,14 @@ import org.jboss.ide.eclipse.as.test.util.wtp.OperationTestCase;
 import org.jboss.ide.eclipse.as.test.util.wtp.ProjectCreationUtil;
 
 public class MockJSTPublisherTestDynUtil extends MockJSTPublisherTest {
-	final String MODULE_NAME = "newModule5";
+	protected String getModuleName() {
+		return "newModule5";
+	}
 	protected IProject createProject() throws Exception {
-		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, CONTENT_DIR, null, JavaEEFacetConstants.WEB_25, false);
+		IDataModel dm = ProjectCreationUtil.getWebDataModel(getModuleName(), null, null, 
+				getContentDir(), null, JavaEEFacetConstants.WEB_25, false);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(getModuleName());
 		System.out.println(p.getLocation().toOSString());
 
 		IDataModel dm2 = ProjectCreationUtil.getUtilityProjectCreationDataModel("util", null);

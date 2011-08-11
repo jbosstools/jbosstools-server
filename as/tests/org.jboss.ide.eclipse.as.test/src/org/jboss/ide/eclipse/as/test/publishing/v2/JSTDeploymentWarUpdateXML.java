@@ -32,9 +32,10 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 	
 	@Override
 	protected IProject createProject() throws Exception {
-		IDataModel dm = ProjectCreationUtil.getWebDataModel(MODULE_NAME, null, null, CONTENT_DIR, null, JavaEEFacetConstants.WEB_25, true);
+		IDataModel dm = ProjectCreationUtil.getWebDataModel(getModuleName(), null, null, 
+				getContentDir(), null, JavaEEFacetConstants.WEB_25, true);
 		OperationTestCase.runAndVerify(dm);
-		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(MODULE_NAME);
+		IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(getModuleName());
 		assertTrue(p.exists());
 		return p;
 	}
@@ -48,10 +49,10 @@ public class JSTDeploymentWarUpdateXML extends AbstractJSTDeploymentTester {
 		server = ServerRuntimeUtils.addModule(server,mod);
 		ServerRuntimeUtils.publish(server);
 		IPath deployRoot = new Path(ServerRuntimeUtils.getDeployRoot(server));
-		IPath rootFolder = deployRoot.append(MODULE_NAME + ".war");
+		IPath rootFolder = deployRoot.append(getModuleName() + ".war");
 		assertTrue(rootFolder.toFile().exists());
 
-		long workspaceModified = project.getFolder(CONTENT_DIR).getFolder("WEB-INF").getFile("web.xml").getLocation().toFile().lastModified();
+		long workspaceModified = project.getFolder(getContentDir()).getFolder("WEB-INF").getFile("web.xml").getLocation().toFile().lastModified();
 		long publishedModified = rootFolder.append("WEB-INF").append("web.xml").toFile().lastModified();
 		
 		// FULL PUBLISH and verify web xml's timestamp
