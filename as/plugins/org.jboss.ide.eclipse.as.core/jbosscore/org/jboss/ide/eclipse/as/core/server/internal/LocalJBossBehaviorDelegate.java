@@ -316,10 +316,10 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 
 	public IStatus canChangeState(String launchMode) {
 		try {
-		if( getServer() != null 
-				&& getServer().getRuntime() != null 
-				&& RuntimeUtils.checkedGetJBossServerRuntime(getServer()).getVM() != null )
-			return Status.OK_STATUS;
+			if( getServer() != null 
+					&& getServer().getRuntime() != null 
+					&& RuntimeUtils.checkedGetJBossServerRuntime(getServer()).getVM() != null )
+				return Status.OK_STATUS;
 		} catch(CoreException e) {
 			return e.getStatus();
 		}
