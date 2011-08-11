@@ -320,8 +320,8 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 				&& getServer().getRuntime() != null 
 				&& RuntimeUtils.checkedGetJBossServerRuntime(getServer()).getVM() != null )
 			return Status.OK_STATUS;
-		} catch(Exception e) {
-			// ignore
+		} catch(CoreException e) {
+			return e.getStatus();
 		}
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
 				MessageFormat.format(Messages.ServerHasNoRuntime, getServer().getName())); 
