@@ -108,10 +108,8 @@ public class ServerAttributeHelper {
 	public IServer save() {
 		try {
 			return save(false, new NullProgressMonitor());
-		} catch( Exception e ) {
-			IStatus s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID,
-					Messages.ServerSaveFailed, e);
-			JBossServerCorePlugin.getDefault().getLog().log(s);
+		} catch( CoreException e ) {
+			JBossServerCorePlugin.log(IStatus.ERROR, Messages.ServerSaveFailed, e);
 		}
 		return null;
 	}	
