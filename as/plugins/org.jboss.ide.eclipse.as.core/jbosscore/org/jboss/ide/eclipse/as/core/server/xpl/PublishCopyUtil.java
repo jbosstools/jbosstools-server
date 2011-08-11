@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,7 @@ import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
+import org.jboss.ide.eclipse.as.core.util.StreamUtils;
 import org.jboss.ide.eclipse.as.core.util.internal.FileUtils;
 /**
  * Utility class with an assortment of useful file methods.
@@ -174,18 +174,14 @@ public final class PublishCopyUtil {
 			try {
 				FileUtils.writeTo(in, to);
 				return Status.OK_STATUS;
-			} catch (Exception e) {
+			} catch (IOException e) {
 				//Trace.trace(Trace.SEVERE, "Error copying file", e);
 				return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID,  IEventCodes.JST_PUB_FAIL, NLS.bind(Messages.errorCopyingFile, new String[] {to, e.getLocalizedMessage()}), e);
 			} finally {
-				try {
-					if (in != null)
-						in.close();
-				} catch (Exception ex) {
-					// ignore
-				}
+				StreamUtils.safeClose(in);
 			}
 		}
+
 		
 		/**
 		 * Copy a file from a to b. Closes the input stream after use.
