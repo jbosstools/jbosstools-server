@@ -68,7 +68,7 @@ public class JMXPoller implements IServerStatePoller2 {
 	private JMXPollerRunnable runnable;
 	private JMXSafeRunner runner;
 	
-	public void beginPolling(IServer server, boolean expectedState) throws Exception {
+	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
 		ceFound = nnfeFound = startingFound = canceled = done = false;
 		this.server = server;
 		launchJMXPoller();

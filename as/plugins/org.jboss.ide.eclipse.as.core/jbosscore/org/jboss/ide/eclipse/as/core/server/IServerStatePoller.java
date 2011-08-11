@@ -87,6 +87,10 @@ public interface IServerStatePoller {
 		public PollingException(String message) {
 			super(message);
 		}
+
+		public PollingException(String message, Throwable t) {
+			super(message, t);
+		}
 	}
 	
 	public class RequiresInfoException extends Exception {

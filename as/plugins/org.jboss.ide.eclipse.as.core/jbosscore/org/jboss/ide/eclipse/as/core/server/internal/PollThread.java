@@ -148,7 +148,7 @@ public class PollThread extends Thread {
 				}
 				stateStartedOrStopped = checkServerState();
 			}
-		} catch(Exception e) {
+		} catch(PollingException e) {
 			abort = true;
 		}
 

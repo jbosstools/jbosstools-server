@@ -18,17 +18,20 @@ import java.util.Properties;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil.IServiceAware;
 import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerConnectException;
 import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil.IServiceAware;
+import org.osgi.framework.InvalidSyntaxException;
 
 /**
  * @author André Dietisheim
@@ -45,10 +48,14 @@ public class JBoss7ManagerServicePoller implements IServerStatePoller2 {
 	public void beginPolling(IServer server, boolean expectedState, PollThread pollTread) throws Exception {
 	}
 	
-	public void beginPolling(IServer server, boolean expectedState) throws Exception {
-		this.service = JBoss7ManagerUtil.getService(server);
-		this.server = server;
-		this.expectedState = expectedState;
+	public void beginPolling(IServer server, boolean expectedState) throws PollingException {
+		try {
+			this.service = JBoss7ManagerUtil.getService(server);
+			this.server = server;
+			this.expectedState = expectedState;
+		} catch(InvalidSyntaxException e) {
+			throw new PollingException(NLS.bind(Messages.CouldNotBeginPolling,server.getName()), e);
+		}
 	}
 
 	public ServerStatePollerType getPollerType() {

@@ -14,7 +14,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = "org.jboss.ide.eclipse.as.core.Messages"; //$NON-NLS-1$
-	
+
 	/* Standard and re-usable */
 	public static String jboss;
 	public static String server;
@@ -60,6 +60,7 @@ public class Messages extends NLS {
 	public static String ModuleDeleted;
 	public static String ModulePublished;
 	public static String NoPublisherFound;
+	public static String CouldNotBeginPolling;
 	public static String PollingStartupSuccess;
 	public static String PollingShutdownSuccess;
 	public static String PollingStartupFailed;
