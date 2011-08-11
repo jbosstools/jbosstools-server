@@ -13,12 +13,13 @@ package org.jboss.ide.eclipse.as.management.as7;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.internal.management.as7.Activator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 
 public class JBoss7ManagerUtil {
 
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
 
-	public static IJBoss7ManagerService getService(IServer server) throws Exception {
+	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
 		BundleContext context = Activator.getContext();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
 		proxy.open();

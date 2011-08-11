@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.core.server.internal.v7;
 
 import java.text.MessageFormat;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
@@ -23,6 +24,7 @@ import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
 import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
+import org.osgi.framework.InvalidSyntaxException;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
@@ -77,12 +79,12 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 	public void dispose() {
 		try {
 			JBoss7ManagerUtil.dispose(getService());
-		} catch(Exception e) {
-			// ignore
+		} catch (InvalidSyntaxException e) {
+			JBossServerCorePlugin.log(IStatus.ERROR, Messages.ErrorDisposingLocalJBoss7BehaviorDelegate, e);
 		}
 	}
 
-	protected IJBoss7ManagerService getService() throws Exception {
+	protected IJBoss7ManagerService getService() throws InvalidSyntaxException {
 		if (service == null) {
 			this.service = JBoss7ManagerUtil.getService(getServer());
 		}
