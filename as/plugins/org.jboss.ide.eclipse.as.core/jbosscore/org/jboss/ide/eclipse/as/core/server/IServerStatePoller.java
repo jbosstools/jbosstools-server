@@ -57,7 +57,7 @@ public interface IServerStatePoller {
 	 */
 	@Deprecated
 	public void beginPolling(IServer server, boolean expectedState, PollThread pt) throws Exception; 
-	public void beginPolling(IServer server, boolean expectedState) throws Exception; 
+	public void beginPolling(IServer server, boolean expectedState) throws PollingException; 
 	public IServer getServer();
 	public boolean isComplete() throws PollingException, RequiresInfoException;
 	public boolean getState() throws PollingException, RequiresInfoException; 
@@ -81,15 +81,29 @@ public interface IServerStatePoller {
 	public int getTimeoutBehavior();
 
 	public class PollingException extends Exception {
+
 		private static final long serialVersionUID = -7830978018908940551L;
-		public PollingException(String message) {super(message);}
+
+		public PollingException(String message) {
+			super(message);
+		}
 	}
 	
 	public class RequiresInfoException extends Exception {
+
 		private static final long serialVersionUID = 5050044329807740335L;
 		private boolean checked = false;
-		public RequiresInfoException(String msg) {super(msg);}
-		public void setChecked() { this.checked = true; }
-		public boolean getChecked() { return this.checked; }
+
+		public RequiresInfoException(String msg) {
+			super(msg);
+		}
+
+		public void setChecked() { 
+			this.checked = true; 
+		}
+
+		public boolean getChecked() { 
+			return this.checked; 
+		}
 	}
 }
