@@ -227,7 +227,7 @@
    <extension
          point="org.eclipse.wst.server.ui.serverImages">
       <image
-            icon="icons/sar2.gif"
+            icon="icons/sar.gif"
             id="org.jboss.ide.eclipse.as.ui.mbeans.sar.module"
             typeIds="jst.jboss.sar"/>
    </extension>
