@@ -15,26 +15,21 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jst.common.internal.modulecore.AddClasspathFoldersParticipant;
-import org.eclipse.jst.common.internal.modulecore.AddClasspathLibReferencesParticipant;
 import org.eclipse.jst.common.internal.modulecore.AddMappedOutputFoldersParticipant;
 import org.eclipse.jst.common.internal.modulecore.IgnoreJavaInSourceFolderParticipant;
-import org.eclipse.jst.common.internal.modulecore.ReplaceManifestExportParticipant;
-import org.eclipse.jst.common.internal.modulecore.SingleRootExportParticipant;
-import org.eclipse.jst.j2ee.internal.J2EEConstants;
-import org.eclipse.jst.j2ee.internal.classpathdep.ClasspathDependencyEnablement;
 import org.eclipse.jst.j2ee.internal.common.exportmodel.JEEHeirarchyExportParticipant;
-import org.eclipse.jst.j2ee.internal.common.exportmodel.JavaEESingleRootCallback;
 import org.eclipse.wst.common.componentcore.internal.flat.IFlattenParticipant;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.model.IModuleResource;
-import org.eclipse.wst.web.internal.deployables.FlatComponentDeployable;
 import org.jboss.ide.eclipse.as.wtp.core.modules.IJBTModule;
+import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatModuleDelegate;
+import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
 
-public class JBossSARModuleDelegate extends FlatComponentDeployable implements IJBTModule {
+public class JBossSARModuleDelegate extends JBTFlatModuleDelegate implements IJBTModule {
 
-	public JBossSARModuleDelegate(IProject project){
-		super(project);
+	public JBossSARModuleDelegate(IProject project,
+			IVirtualComponent aComponent, JBTFlatProjectModuleFactory myFactory) {
+		super(project, aComponent, myFactory);
 	}
 
 	public IModuleResource[] members() throws CoreException {

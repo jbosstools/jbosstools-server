@@ -15,11 +15,13 @@ import java.io.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.componentcore.internal.flat.IChildModuleReference;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.web.internal.deployables.FlatComponentDeployable;
+import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatModuleDelegate;
 import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
 
 public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
@@ -34,8 +36,8 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 		super();
 	}
 
-	protected FlatComponentDeployable createDelegate(IProject project) {
-		return new JBossSARModuleDelegate(project);
+	protected FlatComponentDeployable createModuleDelegate(IProject project, IVirtualComponent component) {
+		return new JBossSARModuleDelegate(project, component, this);
 	}
 
 	@Override
