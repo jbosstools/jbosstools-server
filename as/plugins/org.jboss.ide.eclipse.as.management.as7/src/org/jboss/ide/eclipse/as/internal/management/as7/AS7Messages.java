@@ -13,8 +13,6 @@ package org.jboss.ide.eclipse.as.internal.management.as7;
 import org.eclipse.osgi.util.NLS;
 
 public class AS7Messages extends NLS {
-	public static String JBoss7ServerState_noEnumForString;
-
 	public static String ModuleStateEvaluationFailed;
 	public static String OperationOnAddressFailed;
 	public static String FailedToBuildOperation;

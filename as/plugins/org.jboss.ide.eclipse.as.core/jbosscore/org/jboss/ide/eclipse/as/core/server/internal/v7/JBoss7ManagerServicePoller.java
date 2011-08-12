@@ -26,11 +26,11 @@ import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller2;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
-import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil.IServiceAware;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerConnectException;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerConnectException;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ServerState;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil.IServiceAware;
 import org.osgi.framework.InvalidSyntaxException;
 
 /**

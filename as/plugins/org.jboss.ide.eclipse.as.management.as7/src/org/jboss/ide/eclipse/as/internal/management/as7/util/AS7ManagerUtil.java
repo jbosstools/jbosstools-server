@@ -30,10 +30,10 @@ import org.jboss.as.controller.client.Operation;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.dmr.Property;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManangerException;
 import org.jboss.ide.eclipse.as.internal.management.as7.AS7Messages;
 import org.jboss.ide.eclipse.as.internal.management.as7.DefaultOperationRequestBuilder;
 import org.jboss.ide.eclipse.as.internal.management.as7.OperationFormatException;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManangerException;
 
 /**
  * Various utility methods to deal with the as7 management api.

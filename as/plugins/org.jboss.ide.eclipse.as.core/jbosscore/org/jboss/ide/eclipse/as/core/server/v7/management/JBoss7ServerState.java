@@ -8,11 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.management.as7;
+package org.jboss.ide.eclipse.as.core.server.v7.management;
 
 import java.text.MessageFormat;
 
-import org.jboss.ide.eclipse.as.internal.management.as7.AS7Messages;
+import org.jboss.ide.eclipse.as.core.Messages;
 
 /**
  * @author André Dietisheim
@@ -32,7 +32,7 @@ public enum JBoss7ServerState {
 		}
 		if (matchingState == null) {
 			throw new IllegalArgumentException(MessageFormat.format(
-					AS7Messages.JBoss7ServerState_noEnumForString,
+					Messages.JBoss7ServerState_noEnumForString,
 					stateString));
 		}
 

@@ -94,6 +94,8 @@ public class Messages extends NLS {
 	public static String PublishRenameFailure;
 	public static String ErrorDisposingLocalJBoss7BehaviorDelegate;
 	
+	public static String JBoss7ServerState_noEnumForString;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

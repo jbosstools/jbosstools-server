@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.management.as7;
+package org.jboss.ide.eclipse.as.core.server.v7.management;
 
 import java.io.File;
 

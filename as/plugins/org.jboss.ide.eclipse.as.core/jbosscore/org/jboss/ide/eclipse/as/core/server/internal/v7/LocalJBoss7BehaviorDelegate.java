@@ -20,10 +20,10 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
+import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.core.server.v7.management.JBoss7ManagerUtil;
 import org.jboss.ide.eclipse.as.core.util.PollThreadUtils;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
-import org.jboss.ide.eclipse.as.management.as7.IJBoss7ManagerService;
-import org.jboss.ide.eclipse.as.management.as7.JBoss7ManagerUtil;
 import org.osgi.framework.InvalidSyntaxException;
 
 public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
