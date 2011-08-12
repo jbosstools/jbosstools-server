@@ -208,7 +208,7 @@
       <wizard
             category="org.jboss.ide.eclipse.as.ui.MBeanComponentsCategory"
             class="org.jboss.ide.eclipse.as.ui.mbeans.project.ui.SARProjectWizard"
-            icon="$nl$/icons/sar2.gif"
+            icon="$nl$/icons/sar.gif"
             id="JBoss.SAR.Project.Wizard"
             name="SAR Project"
             project="true">
