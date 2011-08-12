@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.ui.mbeans.project;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -18,6 +19,7 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -71,7 +73,7 @@ public class JBossSARFacetInstallationDelegate implements IDelegate {
 		
 		final IVirtualFolder jbiRoot = newComponent.getRootFolder();
 
-		// Map the esbcontent to root for deploy
+		// Map the sarcontent to root for deploy
 		String resourcesFolder = model.getStringProperty(
 				IJBossSARFacetDataModelProperties.SAR_CONTENT_FOLDER);
 		jbiRoot.createLink(new Path("/" + resourcesFolder), 0, null); //$NON-NLS-1$
@@ -120,12 +122,26 @@ public class JBossSARFacetInstallationDelegate implements IDelegate {
 			e.printStackTrace();
 		}
 
-		IFolder esbContent = project.getFolder(strContentFolder);
-		if(!esbContent.exists()) {
-			esbContent.create(true, true, null);			
-		}
-		
-		esbContent.getFolder(IJBossSARFacetDataModelProperties.META_INF).create(true, true, null);
+		IFolder sarContent = project.getFolder(strContentFolder);
+		IProgressMonitor monitor = new NullProgressMonitor();
+		createFolder(sarContent.getFolder(IJBossSARFacetDataModelProperties.META_INF), monitor);
 		project.refreshLocal(IResource.DEPTH_ZERO, null);
+	}
+	
+	/**
+	 * Creates the underlying folder if it doesn't exist.
+	 * It also recursively creates parent folders if necessary
+	 * @param folder the folder to create
+	 * @throws CoreException 
+	 */
+	//TODO Check if that kind of method exists elsewhere to avoid duplication
+	private void createFolder(IFolder folder, IProgressMonitor monitor) throws CoreException {
+	    if(!folder.exists()) {
+	        IContainer parent = folder.getParent();
+	        if(parent != null && !parent.exists()) {
+	          createFolder((IFolder) parent, monitor);
+	        }
+	        folder.create(true, true, monitor);
+	    }
 	}
 }
