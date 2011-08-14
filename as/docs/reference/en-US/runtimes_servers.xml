@@ -204,11 +204,11 @@
 				</mediaobject>
 			</figure>
 			<para>
-       The JBoss Runtimes preference page allows you to perform three different actions: <guibutton>Search</guibutton> for a JBoss runtime installation, <guibutton>Export</guibutton> a JBoss runtime configuration and <guibutton>Import</guibutton> the configuration of a JBoss runtime.
-    </para>
+				The JBoss Tools Runtimes preference page is split into two different sections. One section defines <guilabel>Paths</guilabel> to be searched for installed server runtimes, the other section defines the runtime detectors available when the paths in the previous section are checked.
+			</para>
 			<para>
-       The <guibutton>Search</guibutton> button opens a file system browser window. Select the directory where you wish JBoss Tools to begin recursively searching for JBoss runtimes and upon completion it will return all those found. From the returned list, choose the runtimes you wish to make available to your JBoss Tools instance by clicking the box beside each runtime and clicking the <guibutton>OK</guibutton> button.
-    </para>
+				The <guibutton>Add</guibutton> button in the <guilabel>Paths</guilabel> section opens a file system browser window. Select the directory you wish to have recursively searched for JBoss runtimes. The directory will  be searched and all found servers will be displayed as a list in the <guilabel>Searching for runtimes</guilabel> dialog. From the returned list, choose the runtimes you wish to make available by clicking the box beside each runtime and clicking the <guibutton>OK</guibutton> button.
+			</para>
 			<figure>
 				<title>JBoss Runtime search results</title>
 				<mediaobject>
@@ -217,7 +217,20 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
+			<para>
+				The path you searched is now added to a list in the <guilabel>JBoss Tools Runtime Detection</guilabel> dialog <guilabel>Paths</guilabel> section. All the paths in this section will be automatically searched when a new workspace is created. If you wish for a path to be searched on startup then check the checkbox in the <guilabel>Every start</guilabel> column associated with it. 
+			</para>
+			<figure>
+				<title>JBoss Runtime search results</title>
+				<mediaobject>
+					<imageobject>
+						<imagedata fileref="images/runtimes_servers/runtimes_servers-detecting_new_runtime_3.png"/>
+					</imageobject>
+				</mediaobject>
+			</figure>
 		</section>
+<!--		No longer valid - cannot export or import runtime preferences
+
 		<section id="Exporting_and_Importing_runtime_preferences">
 			<title>Exporting and Importing runtime preferences</title>
 			<para>
@@ -253,7 +266,7 @@
 					</imageobject>
 				</mediaobject>
 			</figure>
-		</section>
+		</section> -->
 		<section id="CopyRuntime">
 			<title>Duplicating a runtime configuration</title>
 			<para>
