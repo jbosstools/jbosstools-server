@@ -335,14 +335,14 @@
 				</mediaobject>
 			</figure>
 			<para>
-				A server object keeps track of things like command line arguments when starting or stopping and the runtimes keep track of the location of the installation. Thus, each server instance must be backed by an appropriate runtime.
+				A server object keeps track of the command line arguments when starting or stopping and the runtimes keep track of the location of the installation. This means that each server instance must be backed by an appropriate runtime.
 			</para>
 			
 			<para>
-				The <guilabel>New server wizard</guilabel> allows you to name the server via the <guilabel>Server name</guilabel> field, or you can use a generated default name .If it is necessary to restore the default name, click the <guibutton>Reset default</guibutton> button (<inlinemediaobject>          <imageobject><imagedata fileref="images/runtimes_servers/runtimes_servers_4d.png"/></imageobject></inlinemediaobject>).
+				The <guilabel>New server wizard</guilabel> allows you to name the server via the <guilabel>Server name</guilabel> field, or you can use a generated default name.
 			</para>
 			<para>
-				You can select the appropriate runtime from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs just press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtimes you should go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
+				You can select the appropriate runtime from the <guilabel>Server runtime environment</guilabel> combo box. If there is no runtime that matches your needs, press the <guilabel>Add...</guilabel> link nearby to bring up the wizard for creating a new runtime (see <xref linkend="add_runtime_figure"/>). To configure an existing runtime, go to server preferences by pressing the <guilabel>Configure runtime environments...</guilabel> link.
 			</para>
 			
 			<para>If the server you want to create does not have any installed runtime yet, the combobox and the links are absent.</para>
@@ -360,7 +360,7 @@
 				In this case the next page of the wizard which has the same form as in <link linkend="add_runtime_figure">the previous section</link> and will ask you to create the associated runtime.
 			</para>
 			<para>
-				Either way, after targeting your server to a runtime, the final screen in this wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.
+				After targeting your server to a runtime, the final screen in this wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.
 			</para>
 			
 			<figure>
@@ -375,9 +375,9 @@
 			<para>Click the <guibutton>Finish</guibutton> button to complete the process of the server creation.</para>
 			<para>Now that we have created our runtimes and servers, we can explore the services and tools provided by the JBoss Server Manager.</para>
 			
-			<para>
+	<!--		<para>
 				We hope this guide helped you to get started with the JBoss Tools server manager. For additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.
-			</para>
+			</para> -->
 		</section>
 	</section>
 
