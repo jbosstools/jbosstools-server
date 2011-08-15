@@ -639,6 +639,14 @@
                 types="jbt.bpel.module"
                 versions="1.1, 2.0">
           </moduleType>
+          <moduleType
+                types="jbt.bpel.module"
+                versions="1.1, 2.0">
+          </moduleType>
+          <moduleType
+                types="jbt.egit"
+                versions="1.0">
+          </moduleType>
       </runtimeType>
    </extension>
 
