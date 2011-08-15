@@ -44,7 +44,7 @@
 		
 		</section>
 		
-		<section id="single_file_deployment">
+<!--		<section id="single_file_deployment">
 			<?dbhtml filename="DeployToServer.html"?>
 			<title>Deploying single files</title>
 			
@@ -70,7 +70,7 @@
 				</mediaobject>
 			</figure>
 		
-		</section>
+		</section> -->
 	
 	</section>
 	<section>
