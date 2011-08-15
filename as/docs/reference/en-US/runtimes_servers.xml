@@ -320,7 +320,7 @@
 			Servers can be started or stopped with different <link linkend="com_line_arg">command-line arguments</link>. They are often backed by a runtime object representing that server's location.
 		</para>
 		
-		<section>
+		<section id="creating_a_new_server">
 			<title>Creating a New Server</title>
 			
 			<para>
@@ -362,7 +362,9 @@
 			<para>
 				After targeting your server to a runtime, the final screen in this wizard presents a summary of the selected options, giving you a chance to verify that you have selected the appropriate runtime.
 			</para>
-			
+	<!--		<para>
+				You are also given the option to select the <guilabel>Server Behaviour</guilabel>. Through the drop-down list you can select whether the server is to be treated as a <guimenuitem>Local</guimenuitem> or <guimenuitem>Remote System Deployment</guimenuitem>. For setting up a remote server, see <xref linkend="remote_system_deployment" />.
+			</para> -->
 			<figure>
 				<title>Installed Server Runtime Environments</title>
 				<mediaobject>
@@ -379,6 +381,12 @@
 				We hope this guide helped you to get started with the JBoss Tools server manager. For additional information you are welcome on <ulink url="http://www.jboss.com/index.html?module=bb&amp;op=viewforum&amp;f=201">JBoss forum</ulink>.
 			</para> -->
 		</section>
+<!--		<section id="remote_system_deployment">
+			<title>Creating a new remote server</title>
+			<para>
+				The option to create a new remote server comes at the end of the <guilabel>New Server</guilabel> wizard. For information on creating a new server before this stage, see <xref linkend="creating_a_new_server" />.
+			</para>
+		</section> -->
 	</section>
 
 
