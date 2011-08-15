@@ -78,13 +78,25 @@
 				<para>BIRT Reporting Runtime Component</para>
 			</listitem>
 			<listitem>
-				<para>JBoss ESB</para>
+				<para>CDI (Contexts and Dependency Injection)</para>
+			</listitem>
+			<listitem>
+				<para>CXF 2.x Web Services</para>
+			</listitem>
+			<listitem>
+				<para>JAX-RS (REST Web Services)</para>
+			</listitem>
+			<listitem>
+				<para>JAXB</para>
 			</listitem>
 			<listitem>
 				<para>JBoss Portlets</para>
 			</listitem>
 			<listitem>
-				<para>JBoss Web Services</para>
+				<para>JBoss Web Services Core</para>
+			</listitem>
+			<listitem>
+				<para>JPA</para>
 			</listitem>
 			<listitem>
 				<para>Seam</para>
