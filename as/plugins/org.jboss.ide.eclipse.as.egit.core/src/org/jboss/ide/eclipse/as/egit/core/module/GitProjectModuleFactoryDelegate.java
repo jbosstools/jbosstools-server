@@ -14,6 +14,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.egit.core.project.RepositoryMapping;
+import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.team.internal.core.IRepositoryProviderListener;
+import org.eclipse.team.internal.core.RepositoryProviderManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.ModuleDelegate;
@@ -50,6 +53,20 @@ public class GitProjectModuleFactoryDelegate extends ProjectModuleFactoryDelegat
 			}
 		};
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener, IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
+		RepositoryProviderManager.getInstance().addListener(new IRepositoryProviderListener() {
+			public void providerUnmapped(IProject project) {
+				if( moduleIdToModule != null ) {
+					IModule mod = moduleIdToModule.get(project.getName());
+					if( mod != null ) {
+						moduleIdToModule.remove(project.getName());
+						moduleToDelegate.remove(mod);
+					}
+				}
+			}
+			public void providerMapped(RepositoryProvider provider) {
+				clearCache(provider.getProject());
+			}
+		});
 	}	
 	protected void incrementChanged(IProject p) {
 		IModule mod = moduleIdToModule.get(p.getName());
