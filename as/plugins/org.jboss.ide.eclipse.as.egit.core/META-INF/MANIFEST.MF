@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EGit Integration Core
+Bundle-SymbolicName: org.jboss.ide.eclipse.as.egit.core
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jboss.ide.eclipse.as.egit.core.Activator
+Require-Bundle: org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: JBoss by Red Hat
