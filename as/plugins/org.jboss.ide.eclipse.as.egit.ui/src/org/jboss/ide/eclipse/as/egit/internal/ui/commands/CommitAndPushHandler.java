@@ -20,19 +20,20 @@ public class CommitAndPushHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
-		executeCommand(EGIT_COMMIT_COMMAND_ID, selection );
-		executeCommand(EGIT_PUSH_COMMAND_ID, selection);
+		if (executeCommand(EGIT_COMMIT_COMMAND_ID, selection )) {
+			executeCommand(EGIT_PUSH_COMMAND_ID, selection);
+		}
 		return null;
 	}
 
-	private static void executeCommand(String commandId, ISelection selection) throws ExecutionException {
+	private static boolean executeCommand(String commandId, ISelection selection) throws ExecutionException {
 		if (!(selection instanceof IStructuredSelection)) {
 			throw new ExecutionException(NLS.bind("Could not execute command \"{0}\" since there's no valid selection",
 					commandId));
 		}
 		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 		try {
-			CommandUtils.executeCommand(commandId, structuredSelection);
+			return CommandUtils.executeCommand(commandId, structuredSelection);
 		} catch (NotDefinedException e) {
 			throw new ExecutionException(NLS.bind("Could not execute command \"{0}\" since it is not defined",
 					commandId), e);
