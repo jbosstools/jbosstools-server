@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.egit.core.internal;
+package org.jboss.ide.eclipse.as.egit.core;
 
 import java.util.Collection;
 import java.util.Collections;
