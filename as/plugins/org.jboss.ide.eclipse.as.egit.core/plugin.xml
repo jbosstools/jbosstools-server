@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.egit.core.module.GitProjectModuleFactoryDelegate"
+            class="org.jboss.ide.eclipse.as.egit.core.internal.module.GitProjectModuleFactoryDelegate"
             id="org.jboss.ide.eclipse.as.egit.core.module.gitProjectModuleFactory"
             projects="true">
          <moduleType
