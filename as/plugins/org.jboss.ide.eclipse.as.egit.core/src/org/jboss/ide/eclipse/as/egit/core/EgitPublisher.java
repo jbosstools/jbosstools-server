@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.egit.core.internal;
+package org.jboss.ide.eclipse.as.egit.core;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

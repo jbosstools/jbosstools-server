@@ -16,3 +16,6 @@ Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="2.3.0",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: JBoss by Red Hat
+Export-Package: org.jboss.ide.eclipse.as.egit.core,
+ org.jboss.ide.eclipse.as.egit.core.internal;x-friends:="org.jboss.ide.eclipse.as.egit.test",
+ org.jboss.ide.eclipse.as.egit.core.module
