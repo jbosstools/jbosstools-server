@@ -5,7 +5,7 @@
          point="org.eclipse.ui.commands">
       <command
             description="psuhes and commits"
-            id="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit"
+            id="org.jboss.ide.eclipse.as.egit.ui.commands.CommitAndPushCommand"
             name="pushAndCommit">
       </command>
    </extension>
@@ -13,8 +13,8 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="org.jboss.ide.eclipse.as.egit.internal.ui.commands.CommitAndPushHandler"
-            commandId="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit">
-<!--    	<activeWhen>
+            commandId="org.jboss.ide.eclipse.as.egit.ui.commands.CommitAndPushCommand">
+    	<activeWhen>
             <and>
                <count
                      value="+">
@@ -33,7 +33,7 @@
                   </or>
                </iterate>
             </and>
-         </activeWhen> -->
+         </activeWhen>
        </handler>
    </extension>
    <extension
@@ -42,12 +42,39 @@
             allPopups="true"
             locationURI="popup:team.main?after=group1">
          <command
-               commandId="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit"
+               commandId="org.jboss.ide.eclipse.as.egit.ui.commands.CommitAndPushCommand"
                label="Commit and Push"
                style="push"
                tooltip="Commit And Push">
+	         <visibleWhen
+		             checkEnabled="false">
+		          <and>
+		             <count
+		                   value="1">
+		             </count>
+		             <iterate>
+		                <and>
+		                   <adapt
+		                         type="org.eclipse.core.resources.IProject">
+		                      <test
+		                            property="GitResource.isShared">
+		                      </test>
+		                   </adapt>
+		                </and>
+		             </iterate>
+		          </and>
+	         </visibleWhen>
          </command>
       </menuContribution>
    </extension>
-
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.jboss.ide.eclipse.as.egit.internal.ui.commands.ResourcePropertyTester"
+            id="org.eclipse.egit.ui.ResourceTester"
+            namespace="GitResource"
+            properties="isShared,isSafe,isContainer"
+            type="org.eclipse.core.resources.IResource">
+      </propertyTester>
+   </extension>
 </plugin>
