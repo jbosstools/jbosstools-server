@@ -3,8 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: EGit integration UI
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.egit.ui;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Bundle-Activator: org.jboss.ide.eclipse.as.egit.ui.Activator
+Bundle-Activator: org.jboss.ide.eclipse.as.egit.internal.ui.EGitUIActivator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.core.expressions;bundle-version="3.4.300"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

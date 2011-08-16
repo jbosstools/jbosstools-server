@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="psuhes and commits"
+            id="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit"
+            name="pushAndCommit">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.jboss.ide.eclipse.as.egit.internal.ui.commands.CommitAndPushHandler"
+            commandId="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit">
+<!--    	<activeWhen>
+            <and>
+               <count
+                     value="+">
+               </count>
+               <iterate>
+                  <or>
+                    <adapt
+                        type="org.eclipse.core.resources.IResource">
+                    </adapt>
+                    <adapt
+                        type="org.eclipse.core.resources.mapping.ResourceMapping">
+                    </adapt>
+                    <adapt
+                        type="org.eclipse.ui.IContributorResourceAdapter">
+                    </adapt>
+                  </or>
+               </iterate>
+            </and>
+         </activeWhen> -->
+       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="true"
+            locationURI="popup:team.main?after=group1">
+         <command
+               commandId="org.jboss.ide.eclipse.as.egit.ui.commands.PushAndCommit"
+               label="Commit and Push"
+               style="push"
+               tooltip="Commit And Push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>
