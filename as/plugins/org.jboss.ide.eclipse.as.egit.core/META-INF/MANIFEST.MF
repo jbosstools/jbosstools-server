@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: EGit Integration Core
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.egit.core;singleton:=true
 Bundle-Version: 0.0.1.qualifier
-Bundle-Activator: org.jboss.ide.eclipse.as.egit.core.Activator
+Bundle-Activator: org.jboss.ide.eclipse.as.egit.core.internal.EGitCoreActivator
 Require-Bundle: org.jboss.ide.eclipse.as.core;bundle-version="2.3.0",
  org.eclipse.jgit;bundle-version="[1.1.0,2.0.0)",
  org.eclipse.egit;bundle-version="[1.1.0,2.0.0)",
