@@ -39,7 +39,7 @@ public class EGitUtilsTest {
 	@Before
 	public void setUp() throws Exception {
 		Activator.getDefault().getRepositoryCache().clear();
-				
+
 		this.testProject = new TestProject(true);
 		this.project = testProject.getProject();
 
@@ -59,9 +59,10 @@ public class EGitUtilsTest {
 	}
 
 	private File createGitDir(TestProject testProject) throws IOException {
-		IPath workspaceRoot = project.getWorkspace().getRoot().getRawLocation(); 
-//		IPath randomFolder = workspaceRoot.append(String.valueOf(System.currentTimeMillis()));
-//		File gitDir = new File(randomFolder.toFile(), Constants.DOT_GIT);
+		IPath workspaceRoot = project.getWorkspace().getRoot().getRawLocation();
+		// IPath randomFolder =
+		// workspaceRoot.append(String.valueOf(System.currentTimeMillis()));
+		// File gitDir = new File(randomFolder.toFile(), Constants.DOT_GIT);
 		File gitDir = new File(workspaceRoot.toFile(), Constants.DOT_GIT);
 		if (gitDir.exists()) {
 			// guard
@@ -87,13 +88,13 @@ public class EGitUtilsTest {
 	public void commitsFileInProject() throws Exception {
 		IFile file = testUtils.addFileToProject(
 				testProject.getProject(),
-				"sub/a.txt", "some text");
-		resources.add(testProject.getProject().getFolder("sub"));
+				"a.txt", "some text");
+		resources.add(file);
 		new AddToIndexOperation(resources).execute(null);
 
 		EgitUtils.commit(testProject.getProject());
-		
-		testUtils.assertRepositoryContainsFiles(repository, new String[]{file.toString()});
+
+		testUtils.assertRepositoryContainsFiles(repository, new String[] { testUtils.getRepositoryPath(file) });
 	}
 
 }

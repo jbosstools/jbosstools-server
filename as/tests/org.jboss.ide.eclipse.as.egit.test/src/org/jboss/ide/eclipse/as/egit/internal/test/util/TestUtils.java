@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -251,6 +252,11 @@ public class TestUtils {
 			map.put(args[i], args[i+1]);
 		}
 		return map;
+	}
+	
+	public String getRepositoryPath(IResource resource) {
+		String fullPath = resource.getFullPath().toString();
+		return fullPath.substring(1, fullPath.length());
 	}
 
 }
