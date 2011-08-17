@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2011 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.egit.core;
 
 import java.util.Collection;
@@ -6,14 +16,22 @@ import java.util.Collections;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egit.core.op.CommitOperation;
 import org.eclipse.egit.core.project.RepositoryMapping;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
 
+/**
+ * @author André Dietisheim
+ */
 public class EgitUtils {
 
 	public static void commit(IProject project) throws CoreException {
+		commit(project, null);
+	}
+	
+	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
 
 		IFile[] commitables = new IFile[] {};
 		Collection<IFile> untracked = Collections.emptyList();
@@ -28,7 +46,15 @@ public class EgitUtils {
 				"Initial commit");
 		op.setCommitAll(true);
 		op.setRepository(repository );
-		op.execute(null);
+		op.execute(monitor);
+	}
+
+	public static void push(IProject project) throws CoreException {
+		push(project, null);
+	}
+
+	public static void push(IProject project, IProgressMonitor monitor) throws CoreException {
+		
 	}
 
 	private static Repository getRepository(IProject project) {
