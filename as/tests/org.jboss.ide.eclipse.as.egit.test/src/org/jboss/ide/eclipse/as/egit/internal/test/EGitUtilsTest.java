@@ -85,7 +85,7 @@ public class EGitUtilsTest {
 	}
 
 	@Test
-	public void commitsFileInProject() throws Exception {
+	public void canCommitFileInProject() throws Exception {
 		IFile file = testUtils.addFileToProject(
 				testProject.getProject(),
 				"a.txt", "some text");
@@ -97,4 +97,9 @@ public class EGitUtilsTest {
 		testUtils.assertRepositoryContainsFiles(repository, new String[] { testUtils.getRepositoryPath(file) });
 	}
 
+	@Test
+	public void canPushRepoToAntoherRepo() {
+//		EgitUtils.push(project, destinationRepository)
+	}
+	
 }

@@ -30,6 +30,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.egit.core.project.RepositoryMapping;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -255,8 +256,8 @@ public class TestUtils {
 	}
 	
 	public String getRepositoryPath(IResource resource) {
-		String fullPath = resource.getFullPath().toString();
-		return fullPath.substring(1, fullPath.length());
+		RepositoryMapping mapping = RepositoryMapping.getMapping(resource);
+		return mapping.getRepoRelativePath(resource);
 	}
 
 }
