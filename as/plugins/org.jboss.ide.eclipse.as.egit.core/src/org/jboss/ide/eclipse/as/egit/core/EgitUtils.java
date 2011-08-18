@@ -37,37 +37,31 @@ import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.egit.core.internal.EGitCoreActivator;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class EgitUtils.
- *
+ * 
  * @author André Dietisheim
  */
 public class EgitUtils {
 
-	/** The Constant DEFAULT_PUSH_REF_SPEC. */
 	private static final RefSpec DEFAULT_PUSH_REF_SPEC =
 			new RefSpec("refs/heads/*:refs/heads/*"); //$NON-NLS-1$
 
-	/** The Constant PUSH_TIMEOUT. */
 	private static final int PUSH_TIMEOUT = 10 * 1024;
 
-	/**
-	 * Commit.
-	 *
-	 * @param project the project
-	 * @throws CoreException the core exception
-	 */
 	public static void commit(IProject project) throws CoreException {
 		commit(project, null);
 	}
 
 	/**
 	 * Commits the given project to it's configured repository.
-	 *
-	 * @param project the project
-	 * @param monitor the monitor
-	 * @throws CoreException the core exception
+	 * 
+	 * @param project
+	 *            the project
+	 * @param monitor
+	 *            the monitor
+	 * @throws CoreException
+	 *             the core exception
 	 */
 	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
 		/**
@@ -76,7 +70,7 @@ public class EgitUtils {
 		Repository repository = getRepository(project);
 		UserConfig userConfig = getUserConfig(repository);
 		CommitOperation op = new CommitOperation(
-				null, 
+				null,
 				null,
 				null,
 				getSubject(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
@@ -87,13 +81,6 @@ public class EgitUtils {
 		op.execute(monitor);
 	}
 
-	/**
-	 * Push.
-	 *
-	 * @param project the project
-	 * @param monitor the monitor
-	 * @throws CoreException the core exception
-	 */
 	public static void push(IProject project, IProgressMonitor monitor)
 			throws CoreException {
 		push(getRepository(project), monitor);
@@ -101,10 +88,13 @@ public class EgitUtils {
 
 	/**
 	 * Pushes the given repository to it's configured remote.
-	 *
-	 * @param repository the source repository
-	 * @param monitor the monitor
-	 * @throws CoreException the core exception
+	 * 
+	 * @param repository
+	 *            the source repository
+	 * @param monitor
+	 *            the monitor
+	 * @throws CoreException
+	 *             the core exception
 	 */
 	public static void push(Repository repository, IProgressMonitor monitor)
 			throws CoreException {
@@ -124,25 +114,10 @@ public class EgitUtils {
 		}
 	}
 
-	/**
-	 * Creates the push operation.
-	 *
-	 * @param remoteName the remote name
-	 * @param repository the repository
-	 * @return the push operation
-	 */
 	private static PushOperation createPushOperation(String remoteName, Repository repository) {
 		return new PushOperation(repository, remoteName, false, PUSH_TIMEOUT);
 	}
 
-	/**
-	 * Creates the push operation.
-	 *
-	 * @param repository the repository
-	 * @param remoteConfig the remote config
-	 * @return the push operation
-	 * @throws CoreException the core exception
-	 */
 	private static PushOperation createPushOperation(Repository repository, RemoteConfig remoteConfig)
 			throws CoreException {
 
@@ -155,13 +130,18 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Adds the uri ref to push specification.
-	 *
-	 * @param urisToPush the uris to push
-	 * @param pushRefSpecs the push ref specs
-	 * @param repository the repository
-	 * @param spec the spec
-	 * @throws CoreException the core exception
+	 * Adds the given push uris to the given push operation specification.
+	 * 
+	 * @param urisToPush
+	 *            the uris to push
+	 * @param pushRefSpecs
+	 *            the push ref specs
+	 * @param repository
+	 *            the repository
+	 * @param spec
+	 *            the spec
+	 * @throws CoreException
+	 *             the core exception
 	 */
 	private static void addURIRefToPushSpecification(List<URIish> urisToPush, List<RefSpec> pushRefSpecs,
 			Repository repository, PushOperationSpecification spec) throws CoreException {
@@ -184,9 +164,10 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the push ur is.
-	 *
-	 * @param remoteConfig the remote config
+	 * Gets the push uris from the given remoteConfig.
+	 * 
+	 * @param remoteConfig
+	 *            the remote config
 	 * @return the push ur is
 	 */
 	private static List<URIish> getPushURIs(RemoteConfig remoteConfig) {
@@ -199,9 +180,10 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the push ref specs.
-	 *
-	 * @param config the config
+	 * Gets the push RefSpecs from the given remote configuration.
+	 * 
+	 * @param config
+	 *            the config
 	 * @return the push ref specs
 	 */
 	private static List<RefSpec> getPushRefSpecs(RemoteConfig config) {
@@ -215,9 +197,10 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the repository.
-	 *
-	 * @param project the project
+	 * Gets the repository that is configured to the given project.
+	 * 
+	 * @param project
+	 *            the project
 	 * @return the repository
 	 */
 	private static Repository getRepository(IProject project) {
@@ -229,29 +212,23 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the user config.
-	 *
-	 * @param repository the repository
+	 * Gets the UserConfig from the given repository
+	 * 
+	 * @param repository
+	 *            the repository
 	 * @return the user config
 	 */
 	private static UserConfig getUserConfig(Repository repository) {
 		return repository.getConfig().get(UserConfig.KEY);
 	}
 
-	/**
-	 * Gets the subject.
-	 *
-	 * @param name the name
-	 * @param email the email
-	 * @return the subject
-	 */
 	private static String getSubject(String name, String email) {
 		return new StringBuilder().append(name).append(" <").append(email).append('>').toString();
 	}
 
 	/**
-	 * Returns the configuration of the configured remote repository for a given
-	 * repository. Returns
+	 * Returns the configuration of the remote repository that is set to the
+	 * given repository. Returns
 	 * <code>null</null> if none was configured or if there's no remote repo configured.
 	 * 
 	 * @param repository
@@ -276,10 +253,13 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the remote config.
-	 *
-	 * @param remoteName the remote name
-	 * @param remoteRepositories the remote repositories
+	 * Gets the remote config with the given name from the list of remote
+	 * repositories.
+	 * 
+	 * @param remoteName
+	 *            the remote name
+	 * @param remoteRepositories
+	 *            the remote repositories
 	 * @return the remote config
 	 */
 	private static RemoteConfig getRemoteConfig(String remoteName, List<RemoteConfig> remoteRepositories) {
@@ -299,9 +279,10 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the remote configs.
-	 *
-	 * @param repository the repository
+	 * Gets the remote configs from the given repository.
+	 * 
+	 * @param repository
+	 *            the repository
 	 * @return the remote configs
 	 */
 	private static List<RemoteConfig> getRemoteConfigs(Repository repository) {
@@ -316,14 +297,16 @@ public class EgitUtils {
 	}
 
 	/**
-	 * Gets the remote name.
-	 *
-	 * @param repository the repository
-	 * @param branch the branch
+	 * Gets the name of the remote repository for a given repository and branch.
+	 * 
+	 * @param repository
+	 *            the repository
+	 * @param branch
+	 *            the branch
 	 * @return the remote name
 	 */
 	private static String getRemoteName(Repository repository, String branch) {
-		String remoteName;
+		String remoteName = null;
 		if (ObjectId.isId(branch)) {
 			remoteName = Constants.DEFAULT_REMOTE_NAME;
 		} else {
@@ -333,5 +316,4 @@ public class EgitUtils {
 		}
 		return remoteName;
 	}
-
 }
