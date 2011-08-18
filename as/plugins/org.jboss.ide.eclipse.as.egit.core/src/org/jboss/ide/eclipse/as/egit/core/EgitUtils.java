@@ -77,11 +77,6 @@ public class EgitUtils {
 		op.execute(monitor);
 	}
 
-	public static void push(IProject project, IProgressMonitor monitor)
-			throws CoreException {
-		push(getRepository(project), monitor);
-	}
-
 	/**
 	 * Pushes the given repository to it's configured remote.
 	 * 
@@ -103,6 +98,8 @@ public class EgitUtils {
 			}
 			PushOperation pop = createPushOperation(repository, remoteConfig);
 			pop.run(monitor);
+		} catch (CoreException e) {
+			throw e;
 		} catch (Exception e) {
 			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
 					NLS.bind("Could not push repo {0}", repository.toString()), e);
