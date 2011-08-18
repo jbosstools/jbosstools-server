@@ -97,25 +97,15 @@ public abstract class JBTFlatProjectModuleFactory extends ProjectModuleFactoryDe
 	}
 
 	protected IModule[] createModuleDelegates(IVirtualComponent component) {
-		if(component == null)
-			return null;
-		
-		List<IModule> projectModules = new ArrayList<IModule>();
-		try {
-			if (canHandleProject(component.getProject())) {
-				String type = getModuleType(component.getProject());
-				String version = getModuleVersion(component.getProject());
-				IModule module = createModule(component.getName(), component.getName(), type, version, component.getProject());
-				FlatComponentDeployable moduleDelegate = createModuleDelegate(component.getProject(), component);
-				moduleDelegates.put(module, moduleDelegate);
-				projectModules.add(module);
-			} else {
-				return new IModule[]{};
-			}
-		} catch (Exception e) {
-			J2EEPlugin.logError(e);
+		if(component != null && canHandleProject(component.getProject())) {
+			String type = getModuleType(component.getProject());
+			String version = getModuleVersion(component.getProject());
+			IModule module = createModule(component.getName(), component.getName(), type, version, component.getProject());
+			FlatComponentDeployable moduleDelegate = createModuleDelegate(component.getProject(), component);
+			moduleDelegates.put(module, moduleDelegate);
+			return new IModule[]{module};
 		}
-		return projectModules.toArray(new IModule[projectModules.size()]);
+		return null; 
 	}
 
 	
