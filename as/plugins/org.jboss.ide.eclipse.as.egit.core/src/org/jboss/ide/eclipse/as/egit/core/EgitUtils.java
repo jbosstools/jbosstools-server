@@ -10,13 +10,11 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.egit.core;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,33 +24,61 @@ import org.eclipse.egit.core.op.CommitOperation;
 import org.eclipse.egit.core.op.PushOperation;
 import org.eclipse.egit.core.op.PushOperationSpecification;
 import org.eclipse.egit.core.project.RepositoryMapping;
+import org.eclipse.jgit.errors.NotSupportedException;
+import org.eclipse.jgit.lib.ConfigConstants;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.UserConfig;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
-import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.egit.core.internal.EGitCoreActivator;
 
+// TODO: Auto-generated Javadoc
 /**
+ * The Class EgitUtils.
+ *
  * @author André Dietisheim
  */
 public class EgitUtils {
 
+	/** The Constant DEFAULT_PUSH_REF_SPEC. */
+	private static final RefSpec DEFAULT_PUSH_REF_SPEC =
+			new RefSpec("refs/heads/*:refs/heads/*"); //$NON-NLS-1$
+
+	/** The Constant PUSH_TIMEOUT. */
+	private static final int PUSH_TIMEOUT = 10 * 1024;
+
+	/**
+	 * Commit.
+	 *
+	 * @param project the project
+	 * @throws CoreException the core exception
+	 */
 	public static void commit(IProject project) throws CoreException {
 		commit(project, null);
 	}
 
+	/**
+	 * Commits the given project to it's configured repository.
+	 *
+	 * @param project the project
+	 * @param monitor the monitor
+	 * @throws CoreException the core exception
+	 */
 	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
-
-		IFile[] commitables = new IFile[] {};
-		Collection<IFile> untracked = Collections.emptyList();
+		/**
+		 * TODO: add capability to commit selectively
+		 */
 		Repository repository = getRepository(project);
 		UserConfig userConfig = getUserConfig(repository);
 		CommitOperation op = new CommitOperation(
-				commitables,
-				null, // committables
-				null, // untracked
+				null, 
+				null,
+				null,
 				getSubject(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
 				getSubject(userConfig.getCommitterName(), userConfig.getCommitterEmail()),
 				"Initial commit");
@@ -61,53 +87,139 @@ public class EgitUtils {
 		op.execute(monitor);
 	}
 
-	public static void push(IProject project, Repository destinationRepository) throws CoreException {
-		push(project, destinationRepository, null);
-	}
-
-	public static void push(IProject project, Repository destinationRepository, IProgressMonitor monitor)
+	/**
+	 * Push.
+	 *
+	 * @param project the project
+	 * @param monitor the monitor
+	 * @throws CoreException the core exception
+	 */
+	public static void push(IProject project, IProgressMonitor monitor)
 			throws CoreException {
-		push(getRepository(project), destinationRepository, monitor);
+		push(getRepository(project), monitor);
 	}
 
-	public static void push(Repository sourceRepository, Repository destinationRepository, IProgressMonitor monitor)
+	/**
+	 * Pushes the given repository to it's configured remote.
+	 *
+	 * @param repository the source repository
+	 * @param monitor the monitor
+	 * @throws CoreException the core exception
+	 */
+	public static void push(Repository repository, IProgressMonitor monitor)
 			throws CoreException {
 		try {
-			PushOperationSpecification spec = new PushOperationSpecification();
-			URIish destinationURIisch = getPushUri(destinationRepository);
-			List<RemoteRefUpdate> refUpdates = new ArrayList<RemoteRefUpdate>();
-			RemoteRefUpdate update =
-					new RemoteRefUpdate(destinationRepository, "HEAD", "refs/heads/test", false, null, null);
-			refUpdates.add(update);
-			spec.addURIRefUpdates(destinationURIisch, refUpdates);
-			PushOperation pop =
-					new PushOperation(sourceRepository, spec, false, 0);
+			RemoteConfig remoteConfig = getRemoteConfig(repository);
+			if (remoteConfig == null) {
+				IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
+						"Repository \"{0}\" has no remote repository configured", repository.toString()));
+				throw new CoreException(status);
+			}
+			PushOperation pop = createPushOperation(repository, remoteConfig);
 			pop.run(monitor);
 		} catch (Exception e) {
 			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
-					NLS.bind("Could not push repo {0} to {1}", sourceRepository.toString(),
-							destinationRepository.toString()), e);
+					NLS.bind("Could not push repo {0}", repository.toString()), e);
 			throw new CoreException(status);
 		}
 	}
 
 	/**
-	 * Gets the first push uri configured for the given repository or <code>null</code>.
+	 * Creates the push operation.
 	 *
+	 * @param remoteName the remote name
 	 * @param repository the repository
-	 * @return the push uri
-	 * @throws URISyntaxException the uRI syntax exception
+	 * @return the push operation
 	 */
-	private static URIish getPushUri(Repository repository) throws URISyntaxException {
-//		return new URIish("file:///" + destinationRepository.getDirectory().toString());
-		RemoteConfig remoteConfig = new RemoteConfig(repository.getConfig(), "");
-		List<URIish> pushURIs = remoteConfig.getPushURIs();
-		if (pushURIs == null || pushURIs.isEmpty()) {
-			return null;
-		}
-		return pushURIs.get(0);
+	private static PushOperation createPushOperation(String remoteName, Repository repository) {
+		return new PushOperation(repository, remoteName, false, PUSH_TIMEOUT);
 	}
 
+	/**
+	 * Creates the push operation.
+	 *
+	 * @param repository the repository
+	 * @param remoteConfig the remote config
+	 * @return the push operation
+	 * @throws CoreException the core exception
+	 */
+	private static PushOperation createPushOperation(Repository repository, RemoteConfig remoteConfig)
+			throws CoreException {
+
+		PushOperationSpecification spec = new PushOperationSpecification();
+		List<URIish> urisToPush = getPushURIs(remoteConfig);
+		List<RefSpec> pushRefSpecs = getPushRefSpecs(remoteConfig);
+		addURIRefToPushSpecification(urisToPush, pushRefSpecs, repository, spec);
+
+		return new PushOperation(repository, spec, false, PUSH_TIMEOUT);
+	}
+
+	/**
+	 * Adds the uri ref to push specification.
+	 *
+	 * @param urisToPush the uris to push
+	 * @param pushRefSpecs the push ref specs
+	 * @param repository the repository
+	 * @param spec the spec
+	 * @throws CoreException the core exception
+	 */
+	private static void addURIRefToPushSpecification(List<URIish> urisToPush, List<RefSpec> pushRefSpecs,
+			Repository repository, PushOperationSpecification spec) throws CoreException {
+		for (URIish uri : urisToPush) {
+			try {
+				spec.addURIRefUpdates(uri,
+						Transport.open(repository, uri).findRemoteRefUpdatesFor(pushRefSpecs));
+			} catch (NotSupportedException e) {
+				IStatus status =
+						new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
+								"Could not connect repository \"{0}\" to a remote", repository.toString()), e);
+				throw new CoreException(status);
+			} catch (IOException e) {
+				IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
+						"Could not convert remote specifications for repository \"{0}\" to a remote",
+						repository.toString()), e);
+				throw new CoreException(status);
+			}
+		}
+	}
+
+	/**
+	 * Gets the push ur is.
+	 *
+	 * @param remoteConfig the remote config
+	 * @return the push ur is
+	 */
+	private static List<URIish> getPushURIs(RemoteConfig remoteConfig) {
+		List<URIish> urisToPush = new ArrayList<URIish>();
+		for (URIish uri : remoteConfig.getPushURIs())
+			urisToPush.add(uri);
+		if (urisToPush.isEmpty() && !remoteConfig.getURIs().isEmpty())
+			urisToPush.add(remoteConfig.getURIs().get(0));
+		return urisToPush;
+	}
+
+	/**
+	 * Gets the push ref specs.
+	 *
+	 * @param config the config
+	 * @return the push ref specs
+	 */
+	private static List<RefSpec> getPushRefSpecs(RemoteConfig config) {
+		List<RefSpec> pushRefSpecs = new ArrayList<RefSpec>();
+		pushRefSpecs.addAll(config.getPushRefSpecs());
+		if (pushRefSpecs.isEmpty()) {
+			// default push to all branches
+			pushRefSpecs.add(DEFAULT_PUSH_REF_SPEC);
+		}
+		return pushRefSpecs;
+	}
+
+	/**
+	 * Gets the repository.
+	 *
+	 * @param project the project
+	 * @return the repository
+	 */
 	private static Repository getRepository(IProject project) {
 		RepositoryMapping repositoryMapping = RepositoryMapping.getMapping(project);
 		if (repositoryMapping == null) {
@@ -116,11 +228,110 @@ public class EgitUtils {
 		return repositoryMapping.getRepository();
 	}
 
+	/**
+	 * Gets the user config.
+	 *
+	 * @param repository the repository
+	 * @return the user config
+	 */
 	private static UserConfig getUserConfig(Repository repository) {
 		return repository.getConfig().get(UserConfig.KEY);
 	}
 
+	/**
+	 * Gets the subject.
+	 *
+	 * @param name the name
+	 * @param email the email
+	 * @return the subject
+	 */
 	private static String getSubject(String name, String email) {
 		return new StringBuilder().append(name).append(" <").append(email).append('>').toString();
 	}
+
+	/**
+	 * Returns the configuration of the configured remote repository for a given
+	 * repository. Returns
+	 * <code>null</null> if none was configured or if there's no remote repo configured.
+	 * 
+	 * @param repository
+	 *            the repository to get the remote repo configuration from
+	 * @return the configurtion of the remote repository
+	 * @throws CoreException
+	 *             the core exception
+	 */
+	public static RemoteConfig getRemoteConfig(Repository repository) throws CoreException {
+		String branch = null;
+		try {
+			branch = repository.getBranch();
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
+					NLS.bind("Could not get branch on repository \"{0}\"", repository.toString()), e);
+			throw new CoreException(status);
+		}
+
+		String remoteName = getRemoteName(repository, branch);
+		List<RemoteConfig> allRemotes = getRemoteConfigs(repository);
+		return getRemoteConfig(remoteName, allRemotes);
+	}
+
+	/**
+	 * Gets the remote config.
+	 *
+	 * @param remoteName the remote name
+	 * @param remoteRepositories the remote repositories
+	 * @return the remote config
+	 */
+	private static RemoteConfig getRemoteConfig(String remoteName, List<RemoteConfig> remoteRepositories) {
+		RemoteConfig defaultConfig = null;
+		RemoteConfig configuredConfig = null;
+		for (RemoteConfig config : remoteRepositories) {
+			if (config.getName().equals(Constants.DEFAULT_REMOTE_NAME))
+				defaultConfig = config;
+			if (remoteName != null && config.getName().equals(remoteName))
+				configuredConfig = config;
+		}
+
+		if (configuredConfig == null) {
+			return defaultConfig;
+		}
+		return configuredConfig;
+	}
+
+	/**
+	 * Gets the remote configs.
+	 *
+	 * @param repository the repository
+	 * @return the remote configs
+	 */
+	private static List<RemoteConfig> getRemoteConfigs(Repository repository) {
+		List<RemoteConfig> remoteConfigs = new ArrayList<RemoteConfig>();
+		try {
+			remoteConfigs =
+					RemoteConfig.getAllRemoteConfigs(repository.getConfig());
+		} catch (URISyntaxException e) {
+			remoteConfigs = new ArrayList<RemoteConfig>();
+		}
+		return remoteConfigs;
+	}
+
+	/**
+	 * Gets the remote name.
+	 *
+	 * @param repository the repository
+	 * @param branch the branch
+	 * @return the remote name
+	 */
+	private static String getRemoteName(Repository repository, String branch) {
+		String remoteName;
+		if (ObjectId.isId(branch)) {
+			remoteName = Constants.DEFAULT_REMOTE_NAME;
+		} else {
+			remoteName = repository.getConfig().getString(
+					ConfigConstants.CONFIG_BRANCH_SECTION, branch,
+					ConfigConstants.CONFIG_REMOTE_SECTION);
+		}
+		return remoteName;
+	}
+
 }
