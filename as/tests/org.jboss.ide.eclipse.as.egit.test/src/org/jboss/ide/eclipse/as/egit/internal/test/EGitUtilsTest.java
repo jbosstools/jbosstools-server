@@ -13,9 +13,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.egit.core.Activator;
+import org.eclipse.egit.core.RepositoryCache;
 import org.eclipse.egit.core.op.AddToIndexOperation;
 import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.util.FileUtils;
@@ -39,7 +41,7 @@ public class EGitUtilsTest {
 	private Repository repository;
 	private TestProject testProject;
 	private IProject project;
-	private File clonedRepositoryFile;
+	private TestRepository clonedTestRepository;
 
 	@Before
 	public void setUp() throws Exception {
@@ -55,22 +57,22 @@ public class EGitUtilsTest {
 		this.repository = testRepository.getRepository();
 		testRepository.connect(project);
 
-		TestProject testProject2 = new TestProject(true);
-		// File gitDir2 = createGitDir(testProject2);
-		// TestRepository testRepository2 = new TestRepository(gitDir2);
-		// Repository repository2 = testRepository.getRepository();
-
-		this.clonedRepositoryFile = cloneRepository(repository);
+		this.clonedTestRepository = cloneRepository(repository);
 	}
 
-	private File cloneRepository(Repository repository) throws URISyntaxException, InvocationTargetException,
-			InterruptedException {
+	private TestRepository cloneRepository(Repository repository) throws URISyntaxException, InvocationTargetException,
+			InterruptedException, IOException {
 		URIish uri = new URIish("file:///" + repository.getDirectory().toString());
 		String repoParent = repository.getDirectory().getParent();
-		File clonedRepository = new File("clonedRepository" + String.valueOf(System.currentTimeMillis()), repoParent);
-		CloneOperation clop = new CloneOperation(uri, true, null, clonedRepository, "refs/heads/master", "origin", 0);
+		File clonedRepositoryFile =
+				new File(repoParent, "clonedRepository-" + String.valueOf(System.currentTimeMillis()));
+		CloneOperation clop =
+				new CloneOperation(uri, true, null, clonedRepositoryFile, "refs/heads/master", "origin", 0);
 		clop.run(null);
-		return clonedRepository;
+		RepositoryCache repositoryCache = Activator.getDefault().getRepositoryCache();
+		Repository clonedRepository =
+				repositoryCache.lookupRepository(new File(clonedRepositoryFile, Constants.DOT_GIT));
+		return new TestRepository(clonedRepository);
 	}
 
 	private void createMockSystemReader() {
@@ -96,19 +98,20 @@ public class EGitUtilsTest {
 
 	@After
 	public void tearDown() throws Exception {
-		testRepository.dispose();
-		repository = null;
-
+		cleanupRepository(testRepository);
+		cleanupRepository(clonedTestRepository);
+		
 		testProject.dispose();
 		project = null;
 		Activator.getDefault().getRepositoryCache().clear();
-		if (gitDir.exists()) {
-			FileUtils.delete(gitDir, FileUtils.RECURSIVE | FileUtils.RETRY);
+	}
+
+	private static void cleanupRepository(TestRepository testRepository) throws IOException {
+		File repositoryDirectory = testRepository.getRepository().getDirectory();
+		if (repositoryDirectory.exists()) {
+			FileUtils.delete(repositoryDirectory, FileUtils.RECURSIVE | FileUtils.RETRY);
 		}
-		
-		if (clonedRepositoryFile.exists()) {
-			FileUtils.delete(clonedRepositoryFile, FileUtils.RECURSIVE | FileUtils.RETRY);
-		}
+		testRepository.dispose();
 	}
 
 	@Test
@@ -119,20 +122,19 @@ public class EGitUtilsTest {
 		resources.add(file);
 		new AddToIndexOperation(resources).execute(null);
 
-		EgitUtils.commit(testProject.getProject(), null);
+		EgitUtils.commit(project, null);
 
 		testUtils.assertRepositoryContainsFiles(repository, new String[] { testUtils.getRepositoryPath(file) });
 	}
 
 	@Test
 	public void canPushRepoToAntoherRepo() throws Exception {
-		IFile file = testUtils.addFileToProject(
-				testProject.getProject(),
-				"a.txt", "some text");
+		IFile file = testUtils.addFileToProject(testProject.getProject(), "a.txt", "some text");
 		resources.add(file);
 		new AddToIndexOperation(resources).execute(null);
+		EgitUtils.commit(project, null);
 
-		EgitUtils.push(testProject.getProject(), null);
+		EgitUtils.push(clonedTestRepository.getRepository(), null);
 
 		testUtils.assertRepositoryContainsFiles(repository, new String[] { testUtils.getRepositoryPath(file) });
 	}
