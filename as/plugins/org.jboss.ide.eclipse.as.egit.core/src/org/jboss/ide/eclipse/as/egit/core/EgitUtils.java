@@ -49,10 +49,6 @@ public class EgitUtils {
 
 	private static final int PUSH_TIMEOUT = 10 * 1024;
 
-	public static void commit(IProject project) throws CoreException {
-		commit(project, null);
-	}
-
 	/**
 	 * Commits the given project to it's configured repository.
 	 * 
