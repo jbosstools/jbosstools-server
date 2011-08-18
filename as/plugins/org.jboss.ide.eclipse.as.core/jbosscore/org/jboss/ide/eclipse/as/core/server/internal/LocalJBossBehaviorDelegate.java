@@ -36,6 +36,7 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
+import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.configuration.LocalStopLaunchConfigurator;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -316,14 +317,13 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 
 	public IStatus canChangeState(String launchMode) {
 		try {
-			if( getServer() != null 
-					&& getServer().getRuntime() != null 
-					&& RuntimeUtils.checkedGetJBossServerRuntime(getServer()).getVM() != null )
+			IJBossServerRuntime rt = RuntimeUtils.checkedGetJBossServerRuntime(getServer());
+			if( rt != null && rt.getVM() != null )
 				return Status.OK_STATUS;
 		} catch(CoreException e) {
 			return e.getStatus();
 		}
 		return new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
-				MessageFormat.format(Messages.ServerHasNoRuntime, getServer().getName())); 
+				MessageFormat.format(Messages.ServerHasNoRuntimeVM, getServer().getName())); 
 	}
 }

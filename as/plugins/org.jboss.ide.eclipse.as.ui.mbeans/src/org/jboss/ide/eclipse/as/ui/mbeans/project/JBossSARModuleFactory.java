@@ -51,6 +51,13 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 				return true;
 			}
 		} catch (CoreException e) {
+			/*
+			 *  Ignore. No matter what problem occurs here, 
+			 *  if the project is closed, inaccessible, is not
+			 *  a faceted project, etc, it is not an error. The 
+			 *  project simply cannot be handled by this factory. 
+			 */
+			
 		}
 
 		return false;

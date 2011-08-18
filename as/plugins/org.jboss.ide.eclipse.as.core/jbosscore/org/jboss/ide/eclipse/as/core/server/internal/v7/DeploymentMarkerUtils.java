@@ -97,11 +97,11 @@ public class DeploymentMarkerUtils {
 		return Status.OK_STATUS;
 	}
 
-	private static IModuleFile createBlankModule() {
+	private static IModuleFile createBlankModule() throws CoreException {
 		return new ModuleFile(getOrCreateBlankFile(), "", new Path("/")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
-	private static File getOrCreateBlankFile() {
+	private static File getOrCreateBlankFile() throws CoreException {
 		IPath p = JBossServerCorePlugin.getDefault().getStateLocation().append("BLANK_FILE"); //$NON-NLS-1$
 		if (!p.toFile().exists()) {
 			try {
@@ -110,7 +110,7 @@ public class DeploymentMarkerUtils {
 					out.close();
 				}
 			} catch (IOException ioe) {
-				// TODO: implement error handling
+				throw new CoreException(new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, ioe.getMessage(), ioe));
 			}
 		}
 		return p.toFile();
@@ -172,8 +172,10 @@ public class DeploymentMarkerUtils {
 			IProgressMonitor monitor) throws CoreException {
 		try {
 			return removeFile(DEPLOYED, server, depPath, method, monitor);
-		} catch (Exception e) {
-			return Status.OK_STATUS;
+		} catch (CoreException e) {
+			// Not a critical error that should abort the publish. 
+			// Simply return the status object
+			return e.getStatus();
 		}
 	}
 

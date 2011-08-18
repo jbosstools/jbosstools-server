@@ -81,7 +81,7 @@ public class Messages extends NLS {
 	public static String CouldNotFindServer;
 	public static String ServerRuntimeNotFound;
 	public static String ServerRuntimeConfigNotFound;
-	public static String ServerHasNoRuntime;
+	public static String ServerHasNoRuntimeVM;
 	public static String ServerNotFound;
 	public static String CannotLoadServerPoller;
 	public static String AddingJMXDeploymentFailed;
@@ -95,6 +95,8 @@ public class Messages extends NLS {
 	public static String ErrorDisposingLocalJBoss7BehaviorDelegate;
 	
 	public static String JBoss7ServerState_noEnumForString;
+	public static String ServerStatePollerUnexpectedError;
+	public static String ServerArgsParseError;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

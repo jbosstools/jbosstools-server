@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.util.ModuleFile;
 import org.eclipse.wst.server.core.util.ModuleFolder;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 
 public class ResourceModuleResourceUtil {
 	public static IModuleResource createResource(IResource resource) {
@@ -48,12 +49,22 @@ public class ResourceModuleResourceUtil {
 		return folder;
 	}
 	
+	
+	/**
+	 * Get a list of module resources in this container. 
+	 * If the container is closed or does not exist, return an empty array. 
+	 * 
+	 * @param parent The container to be searched
+	 * @param forcedParentPath The parent's module-relative path
+	 * @return A list of module resources
+	 */
 	public static IModuleResource[] createChildrenResources(IContainer parent, IPath forcedParentPath) {
 		ArrayList<IModuleResource> modChildren = new ArrayList<IModuleResource>();
 		IResource[] children = new IResource[]{};
 		try {
 			children = parent.members();
 		} catch(CoreException ce) {
+			JBossServerCorePlugin.log(ce.getStatus());
 		}
 		for( int i = 0; i < children.length; i++ ) {
 			modChildren.add(createResource(children[i], forcedParentPath));

@@ -425,7 +425,7 @@
       </decorator>
    </extension>
 	
-	<!-- JMX Stuff -->
+	<!-- JMX Stuff 
 	   <extension
          point="org.jboss.tools.jmx.ui.providerUI">
       <providerUI
@@ -433,7 +433,7 @@
             id="org.jboss.ide.eclipse.as.core.extensions.jmx.JBossServerConnectionProvider"
             name="JBoss Server">
       </providerUI>
-   </extension>
+   </extension>-->
     <extension
           point="org.eclipse.debug.ui.launchConfigurationTypeImages">
        <launchConfigurationTypeImage

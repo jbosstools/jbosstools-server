@@ -14,6 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
+import org.jboss.ide.eclipse.as.core.Messages;
+
 public class ArgsUtil {
 
 	public static final Integer NO_VALUE = new Integer(-1); 
@@ -99,6 +105,9 @@ public class ArgsUtil {
 			}
 			return retVal;
 		} catch( Exception e ) {
+			Status status = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, 
+					NLS.bind(Messages.ServerArgsParseError, s), e);
+			JBossServerCorePlugin.log(status);
 			return new String[] { };
 		}
 	}

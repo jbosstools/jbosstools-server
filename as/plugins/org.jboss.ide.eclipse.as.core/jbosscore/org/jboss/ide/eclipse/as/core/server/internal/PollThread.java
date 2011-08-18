@@ -148,8 +148,10 @@ public class PollThread extends Thread {
 				}
 				stateStartedOrStopped = checkServerState();
 			}
-		} catch(PollingException e) {
+		} catch(Exception e) {
 			abort = true;
+			Status s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, Messages.ServerStatePollerUnexpectedError, e);
+			ServerLogger.getDefault().log(server, s);
 		}
 
 		// we stopped. Did we abort?

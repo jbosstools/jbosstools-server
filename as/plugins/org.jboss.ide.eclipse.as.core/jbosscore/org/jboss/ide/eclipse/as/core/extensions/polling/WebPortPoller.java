@@ -1,7 +1,9 @@
 package org.jboss.ide.eclipse.as.core.extensions.polling;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -80,8 +82,14 @@ public class WebPortPoller implements IServerStatePoller2 {
 			return true;
 		} catch( FileNotFoundException fnfe ) {
 			return true;
-		} catch( Exception e) {
-		}
+		} catch (MalformedURLException e) {
+			// Should NEVER happen since hte URL's are hand-crafted, but whatever
+			Status s = new Status(IStatus.ERROR, JBossServerCorePlugin.PLUGIN_ID, e.getMessage(), e);
+			JBossServerCorePlugin.getDefault().log(s);
+		} catch (IOException e) {
+			// Does not need to be logged
+			return false;
+		} 
 		return false;
 	}
 	

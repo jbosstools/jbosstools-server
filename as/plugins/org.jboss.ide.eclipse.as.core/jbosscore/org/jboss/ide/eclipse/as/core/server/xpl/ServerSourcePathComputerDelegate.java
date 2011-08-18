@@ -27,6 +27,7 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 /**
  * SourcePathComputer for the GenericLaunchConfiguration.
  * 
@@ -94,8 +95,8 @@ public class ServerSourcePathComputerDelegate implements ISourcePathComputerDele
 								javaProjectList.add(javaProject);
 							}
 						}
-					} catch (Exception e) {
-						// ignore
+					} catch (CoreException e) {
+						JBossServerCorePlugin.log(e.getStatus());
 					}
 				}
 			}
