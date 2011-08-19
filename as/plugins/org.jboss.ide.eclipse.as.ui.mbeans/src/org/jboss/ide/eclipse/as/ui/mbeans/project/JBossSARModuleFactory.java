@@ -14,6 +14,9 @@ import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.internal.flat.IChildModuleReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -21,7 +24,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.web.internal.deployables.FlatComponentDeployable;
-import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatModuleDelegate;
+import org.jboss.ide.eclipse.as.ui.mbeans.Activator;
 import org.jboss.ide.eclipse.as.wtp.core.modules.JBTFlatProjectModuleFactory;
 
 public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
@@ -56,8 +59,11 @@ public class JBossSARModuleFactory extends JBTFlatProjectModuleFactory {
 			 *  if the project is closed, inaccessible, is not
 			 *  a faceted project, etc, it is not an error. The 
 			 *  project simply cannot be handled by this factory. 
+			 *  
+			 *  But I'll log it anyway :/
 			 */
-			
+			Platform.getLog(Platform.getBundle(Activator.PLUGIN_ID)).log( 
+					new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
 		}
 
 		return false;
