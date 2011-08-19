@@ -1,8 +1,10 @@
 package org.jboss.ide.eclipse.as.egit.internal.test;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 
@@ -42,8 +44,6 @@ public class EGitUtilsTest {
 	private TestProject testProject;
 	private TestRepository clonedTestRepository;
 
-	private IFile testFile;
-
 	@Before
 	public void setUp() throws Exception {
 		Activator.getDefault().getRepositoryCache().clear();
@@ -51,14 +51,12 @@ public class EGitUtilsTest {
 		createMockSystemReader();
 
 		this.testProject = new TestProject(true);
-		this.testFile = testUtils.addFileToProject(testProject.getProject(), "a.txt", "1234");
 
 		this.gitDir = createGitDir(testProject);
 		this.testRepository = new TestRepository(gitDir);
 		setUserAndEmail(testRepository);
 		testRepository.connect(testProject.getProject());
-		testRepository.addAndCommit(testProject.getProject(), testFile.getLocation().toFile(), "commit");
-		
+
 		this.clonedTestRepository = cloneRepository(testRepository.getRepository());
 	}
 
@@ -132,37 +130,31 @@ public class EGitUtilsTest {
 	public void canCommitFileInProject() throws Exception {
 		IFile file = testUtils.addFileToProject(
 				testProject.getProject(),
-				"b.txt", "some text");
+				"a.txt", "some text");
 		addToRepository(file, testRepository);
 
 		EGitUtils.commit(testProject.getProject(), null);
 
 		testUtils.assertRepositoryContainsFiles(testRepository.getRepository(),
-				new String[] { testUtils.getRepositoryPath(file), testUtils.getRepositoryPath(testFile) });
+				new String[] { testUtils.getRepositoryPath(file) });
 	}
 
 	@Test
 	public void canPushRepoToAntoherRepo() throws Exception {
 
-		String clonedFilePath = testUtils.getRepositoryPath(testFile);
-		File clonedFile = new File(clonedFilePath);
-		FileWriter writer = new FileWriter(clonedFile);
-		writer.write("4321");
-		writer.close();
-
+		newRepositoryFile("b.txt", "9876", clonedTestRepository.getRepository());
 		new Git(clonedTestRepository.getRepository())
-				.commit()
-				.setCommitter(GIT_USER, GIT_EMAIL)
-				.setMessage("commit")
-				.call();
+				.add().addFilepattern("b.txt").call();
+		new Git(clonedTestRepository.getRepository())
+				.commit().setCommitter(GIT_USER, GIT_EMAIL).setMessage("commit").call();
 
 		EGitUtils.push(clonedTestRepository.getRepository(), null);
 
 		testUtils.assertRepositoryContainsFilesWithContent(
 				testRepository.getRepository(),
-				testUtils.getRepositoryPath(testFile),
-				"4321");
-		}
+				"b.txt",
+				"9876");
+	}
 
 	private void addToRepository(IFile file, TestRepository testRepository) throws IOException, CoreException {
 		// List<IResource> resources = new ArrayList<IResource>();
@@ -170,4 +162,20 @@ public class EGitUtilsTest {
 		// new AddToIndexOperation(resources).execute(null);
 		testRepository.track(new File(file.getLocation().toOSString()));
 	}
+
+	private static void newRepositoryFile(String name, String data, Repository repository) throws IOException {
+		File file = new File(repository.getWorkTree(), name);
+		write(file, data);
+	}
+
+	private static void write(final File file, final String body) throws IOException {
+		FileUtils.mkdirs(file.getParentFile(), true);
+		Writer w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		try {
+			w.write(body);
+		} finally {
+			w.close();
+		}
+	}
+
 }
