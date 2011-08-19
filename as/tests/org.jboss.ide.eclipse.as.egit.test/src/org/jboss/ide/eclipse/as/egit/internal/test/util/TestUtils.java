@@ -257,6 +257,9 @@ public class TestUtils {
 	
 	public String getRepositoryPath(IResource resource) {
 		RepositoryMapping mapping = RepositoryMapping.getMapping(resource);
+		if (mapping == null) {
+			throw new IllegalArgumentException(resource + " is not in any repository");
+		}
 		return mapping.getRepoRelativePath(resource);
 	}
 

@@ -48,7 +48,7 @@ import org.eclipse.jgit.util.FileUtils;
 
 /**
  * Helper class for creating and filling a test repository
- *
+ * 
  */
 public class TestRepository {
 
@@ -58,7 +58,7 @@ public class TestRepository {
 
 	/**
 	 * Creates a new test repository
-	 *
+	 * 
 	 * @param gitDir
 	 * @throws IOException
 	 */
@@ -80,7 +80,7 @@ public class TestRepository {
 
 	/**
 	 * Creates a test repository from an existing Repository
-	 *
+	 * 
 	 * @param repository
 	 * @throws IOException
 	 */
@@ -105,7 +105,7 @@ public class TestRepository {
 
 	/**
 	 * create an initial commit containing a file "dummy" in the
-	 *
+	 * 
 	 * @param message
 	 *            commit message
 	 * @return commit object
@@ -129,7 +129,7 @@ public class TestRepository {
 
 	/**
 	 * Create a file or get an existing one
-	 *
+	 * 
 	 * @param project
 	 *            instance of project inside with file will be created
 	 * @param name
@@ -151,7 +151,7 @@ public class TestRepository {
 
 	/**
 	 * Track, add to index and finally commit given file
-	 *
+	 * 
 	 * @param project
 	 * @param file
 	 * @param commitMessage
@@ -169,7 +169,7 @@ public class TestRepository {
 	/**
 	 * Appends file content to given file, then track, add to index and finally
 	 * commit it.
-	 *
+	 * 
 	 * @param project
 	 * @param file
 	 * @param content
@@ -186,7 +186,7 @@ public class TestRepository {
 	/**
 	 * Appends file content to given file, then track, add to index and finally
 	 * commit it.
-	 *
+	 * 
 	 * @param project
 	 * @param file
 	 * @param content
@@ -205,11 +205,11 @@ public class TestRepository {
 
 	/**
 	 * Commits the current index
-	 *
+	 * 
 	 * @param message
 	 *            commit message
 	 * @return commit object
-	 *
+	 * 
 	 * @throws NoHeadException
 	 * @throws NoMessageException
 	 * @throws UnmergedPathException
@@ -231,13 +231,13 @@ public class TestRepository {
 
 	/**
 	 * Adds file to version control
-	 *
+	 * 
 	 * @param file
 	 * @throws IOException
 	 */
 	public void track(File file) throws IOException {
-		String repoPath = getRepoRelativePath(new Path(file.getPath())
-				.toString());
+		String repoPath = getRepoRelativePath(
+				new Path(file.getPath()).toString());
 		try {
 			new Git(repository).add().addFilepattern(repoPath).call();
 		} catch (NoFilepatternException e) {
@@ -247,7 +247,7 @@ public class TestRepository {
 
 	/**
 	 * Creates a new branch and immediately checkout it.
-	 *
+	 * 
 	 * @param refName
 	 *            starting point for the new branch
 	 * @param newRefName
@@ -260,7 +260,7 @@ public class TestRepository {
 
 	/**
 	 * Creates a new branch
-	 *
+	 * 
 	 * @param refName
 	 *            starting point for the new branch
 	 * @param newRefName
@@ -286,7 +286,7 @@ public class TestRepository {
 
 	/**
 	 * Checkouts branch
-	 *
+	 * 
 	 * @param refName
 	 *            full name of branch
 	 * @throws CoreException
@@ -297,7 +297,7 @@ public class TestRepository {
 
 	/**
 	 * Adds the given file to the index
-	 *
+	 * 
 	 * @param project
 	 * @param file
 	 * @throws Exception
@@ -307,10 +307,9 @@ public class TestRepository {
 		addToIndex(iFile);
 	}
 
-
 	/**
 	 * Adds the given file to the index
-	 *
+	 * 
 	 * @param file
 	 * @throws CoreException
 	 * @throws IOException
@@ -326,7 +325,7 @@ public class TestRepository {
 
 	/**
 	 * Appends content to end of given file.
-	 *
+	 * 
 	 * @param file
 	 * @param content
 	 * @throws IOException
@@ -337,7 +336,7 @@ public class TestRepository {
 
 	/**
 	 * Appends content to end of given file.
-	 *
+	 * 
 	 * @param file
 	 * @param content
 	 * @throws IOException
@@ -348,7 +347,7 @@ public class TestRepository {
 
 	/**
 	 * Appends content to given file.
-	 *
+	 * 
 	 * @param file
 	 * @param content
 	 * @param append
@@ -363,7 +362,7 @@ public class TestRepository {
 
 	/**
 	 * Appends content to given file.
-	 *
+	 * 
 	 * @param file
 	 * @param content
 	 * @param append
@@ -385,7 +384,7 @@ public class TestRepository {
 
 	/**
 	 * Checks if a file with the given path exists in the HEAD tree
-	 *
+	 * 
 	 * @param path
 	 * @return true if the file exists
 	 * @throws IOException
@@ -464,7 +463,7 @@ public class TestRepository {
 
 	/**
 	 * Connect a project to this repository
-	 *
+	 * 
 	 * @param project
 	 * @throws CoreException
 	 */
@@ -476,7 +475,7 @@ public class TestRepository {
 
 	/**
 	 * Disconnects provider from project
-	 *
+	 * 
 	 * @param project
 	 * @throws CoreException
 	 */
