@@ -83,7 +83,7 @@ public class ServerSourcePathComputerDelegate implements ISourcePathComputerDele
 			{
 				processModules(sourcefolderList, cModule, javaProjectList, server, monitor);
 			}
-			if (project != null) {
+			if (project != null && project.isAccessible()) {
 				IFolder moduleFolder = project.getFolder(modules[i].getName());
 				if (moduleFolder.exists()) {
 					sourcefolderList.add(new FolderSourceContainer(moduleFolder, true));
