@@ -75,14 +75,11 @@ public class ServerSourcePathComputerDelegate implements ISourcePathComputerDele
 
 	private void processModules(List<FolderSourceContainer> sourcefolderList, IModule[] modules, List<IJavaProject> javaProjectList, IServer server, IProgressMonitor monitor) {
 		for (int i = 0; i < modules.length; i++) {
-			IProject project = modules[i].getProject();
-			IModule[] pModule = new IModule[1];
-			pModule[0]=modules[i];
-			IModule[] cModule = server.getChildModules(pModule, monitor);
-			if(cModule != null && cModule.length>0)
-			{
+			IModule[] cModule = server.getChildModules(new IModule[] {modules[i]}, monitor);
+			if (cModule != null && cModule.length>0) {
 				processModules(sourcefolderList, cModule, javaProjectList, server, monitor);
 			}
+			IProject project = modules[i].getProject();
 			if (project != null && project.isAccessible()) {
 				IFolder moduleFolder = project.getFolder(modules[i].getName());
 				if (moduleFolder.exists()) {
