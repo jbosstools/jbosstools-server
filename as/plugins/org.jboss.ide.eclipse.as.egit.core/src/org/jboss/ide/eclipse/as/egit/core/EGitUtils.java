@@ -38,11 +38,11 @@ import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.egit.core.internal.EGitCoreActivator;
 
 /**
- * The Class EgitUtils.
+ * The Class EGitUtils.
  * 
  * @author André Dietisheim
  */
-public class EgitUtils {
+public class EGitUtils {
 
 	private static final RefSpec DEFAULT_PUSH_REF_SPEC =
 			new RefSpec("refs/heads/*:refs/heads/*"); //$NON-NLS-1$
@@ -196,7 +196,7 @@ public class EgitUtils {
 	 *            the project
 	 * @return the repository
 	 */
-	private static Repository getRepository(IProject project) {
+	public static Repository getRepository(IProject project) {
 		RepositoryMapping repositoryMapping = RepositoryMapping.getMapping(project);
 		if (repositoryMapping == null) {
 			return null;
@@ -230,7 +230,7 @@ public class EgitUtils {
 	 * @throws CoreException
 	 *             the core exception
 	 */
-	public static RemoteConfig getRemoteConfig(Repository repository) throws CoreException {
+	private static RemoteConfig getRemoteConfig(Repository repository) throws CoreException {
 		String branch = null;
 		try {
 			branch = repository.getBranch();
