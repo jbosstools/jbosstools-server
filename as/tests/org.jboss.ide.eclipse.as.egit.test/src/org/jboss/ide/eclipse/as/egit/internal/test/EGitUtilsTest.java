@@ -135,25 +135,28 @@ public class EGitUtilsTest {
 
 		EGitUtils.commit(testProject.getProject(), null);
 
-		testUtils.assertRepositoryContainsFiles(testRepository.getRepository(),
+		testUtils.assertRepositoryContainsFiles(
+				testRepository.getRepository(),
 				new String[] { testUtils.getRepositoryPath(file) });
 	}
 
 	@Test
-	public void canPushRepoToAntoherRepo() throws Exception {
+	public void fileAddedToCloneIsInOriginAfterPush() throws Exception {
+		String fileName = "b.txt";
+		String fileContent = "adietish@redhat.com";
+		Repository clonedRepository = clonedTestRepository.getRepository();
+		newRepositoryFile(fileName, fileContent, clonedRepository);
+		Git git = new Git(clonedRepository);
+		git.add().addFilepattern(fileName).call();
+		git.commit().setCommitter(GIT_USER, GIT_EMAIL).setMessage("adding a new file").call();
 
-		newRepositoryFile("b.txt", "9876", clonedTestRepository.getRepository());
-		new Git(clonedTestRepository.getRepository())
-				.add().addFilepattern("b.txt").call();
-		new Git(clonedTestRepository.getRepository())
-				.commit().setCommitter(GIT_USER, GIT_EMAIL).setMessage("commit").call();
+		EGitUtils.push(clonedRepository, null);
 
-		EGitUtils.push(clonedTestRepository.getRepository(), null);
-
+		// does origin contain file added to clone?
 		testUtils.assertRepositoryContainsFilesWithContent(
-				testRepository.getRepository(),
-				"b.txt",
-				"9876");
+				clonedRepository,
+				fileName,
+				fileContent);
 	}
 
 	private void addToRepository(IFile file, TestRepository testRepository) throws IOException, CoreException {
