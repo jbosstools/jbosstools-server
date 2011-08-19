@@ -24,6 +24,7 @@ package org.jboss.ide.eclipse.as.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.wst.validation.ValidationFramework;
 import org.jboss.ide.eclipse.as.test.classpath.JBIDE1657Test;
 import org.jboss.ide.eclipse.as.test.classpath.JEEClasspathContainerTest;
 import org.jboss.ide.eclipse.as.test.classpath.ProjectRuntimeTest;
@@ -43,6 +44,7 @@ import org.jboss.ide.eclipse.as.test.server.JBossServerAPITest;
 
 public class ASTestSuite extends TestSuite {
     public static Test suite() { 
+        ValidationFramework.getDefault().suspendAllValidation(true);
         TestSuite suite = new TestSuite("ASTools Test Suite");
         suite.addTestSuite(PreReqTest.class);
         suite.addTestSuite(RuntimeServerModelTest.class);
