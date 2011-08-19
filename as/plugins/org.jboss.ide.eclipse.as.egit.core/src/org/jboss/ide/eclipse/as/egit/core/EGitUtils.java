@@ -69,8 +69,8 @@ public class EGitUtils {
 				null,
 				null,
 				null,
-				getSubject(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
-				getSubject(userConfig.getCommitterName(), userConfig.getCommitterEmail()),
+				getFormattedUser(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
+				getFormattedUser(userConfig.getCommitterName(), userConfig.getCommitterEmail()),
 				"Initial commit");
 		op.setCommitAll(true);
 		op.setRepository(repository);
@@ -205,17 +205,28 @@ public class EGitUtils {
 	}
 
 	/**
-	 * Gets the UserConfig from the given repository
+	 * Gets the UserConfig from the given repository. The UserConfig of a repo
+	 * holds the default author and committer.
 	 * 
 	 * @param repository
 	 *            the repository
-	 * @return the user config
+	 * @return the user configuration 
+	 * @throws CoreException
+	 * 
+	 * @see PersonIdent(Repository)
+	 * @see CommittHelper#calculateCommitInfo
 	 */
-	private static UserConfig getUserConfig(Repository repository) {
+	private static UserConfig getUserConfig(Repository repository) throws CoreException {
+		if (repository.getConfig() == null) {
+			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
+					NLS.bind("no user configuration (author, committer) are present in repository \"{0}\"",
+							repository.toString()));
+			throw new CoreException(status);
+		}
 		return repository.getConfig().get(UserConfig.KEY);
 	}
 
-	private static String getSubject(String name, String email) {
+	private static String getFormattedUser(String name, String email) {
 		return new StringBuilder().append(name).append(" <").append(email).append('>').toString();
 	}
 
