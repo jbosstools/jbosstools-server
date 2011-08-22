@@ -7,14 +7,10 @@ import java.net.URISyntaxException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.egit.core.Activator;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.util.SystemReader;
 import org.jboss.ide.eclipse.as.egit.core.EGitUtils;
-import org.jboss.ide.eclipse.as.egit.internal.test.util.MockSystemReader;
 import org.jboss.ide.eclipse.as.egit.internal.test.util.TestProject;
 import org.jboss.ide.eclipse.as.egit.internal.test.util.TestRepository;
 import org.jboss.ide.eclipse.as.egit.internal.test.util.TestUtils;
