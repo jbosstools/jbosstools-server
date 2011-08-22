@@ -31,6 +31,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egit.core.project.RepositoryMapping;
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.treewalk.TreeWalk;
@@ -59,6 +60,10 @@ public class TestUtils {
 		if (result.exists())
 			FileUtils.delete(result, FileUtils.RECURSIVE | FileUtils.RETRY);
 		return result;
+	}
+
+	public static File createGitDir(TestProject testProject) throws IOException {
+		return new File(testProject.getProject().getLocation().toFile(), Constants.DOT_GIT);
 	}
 
 	/**
@@ -255,7 +260,7 @@ public class TestUtils {
 		return map;
 	}
 	
-	public String getRepositoryPath(IResource resource) {
+	public String getPathInRepository(IResource resource) {
 		RepositoryMapping mapping = RepositoryMapping.getMapping(resource);
 		if (mapping == null) {
 			throw new IllegalArgumentException(resource + " is not in any repository");

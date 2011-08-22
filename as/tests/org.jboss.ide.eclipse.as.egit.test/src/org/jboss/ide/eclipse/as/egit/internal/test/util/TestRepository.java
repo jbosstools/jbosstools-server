@@ -10,8 +10,13 @@
 package org.jboss.ide.eclipse.as.egit.internal.test.util;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -19,9 +24,12 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.egit.core.Activator;
+import org.eclipse.egit.core.RepositoryCache;
 import org.eclipse.egit.core.op.BranchOperation;
+import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.egit.core.op.ConnectProviderOperation;
 import org.eclipse.egit.core.op.DisconnectProviderOperation;
 import org.eclipse.jgit.api.CommitCommand;
@@ -35,16 +43,20 @@ import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheEntry;
 import org.eclipse.jgit.errors.UnmergedPathException;
+import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepository;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FileUtils;
+import org.eclipse.jgit.util.SystemReader;
 
 /**
  * Helper class for creating and filling a test repository
@@ -149,6 +161,21 @@ public class TestRepository {
 		return file;
 	}
 
+	public void createFile(String name, String data) throws IOException {
+		File file = new File(repository.getWorkTree(), name);
+		write(file, data);
+	}
+
+	private void write(final File file, final String data) throws IOException {
+		FileUtils.mkdirs(file.getParentFile(), true);
+		Writer w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		try {
+			w.write(data);
+		} finally {
+			w.close();
+		}
+	}
+
 	/**
 	 * Track, add to index and finally commit given file
 	 * 
@@ -227,6 +254,10 @@ public class TestRepository {
 		commitCommand.setCommitter(commitCommand.getAuthor());
 		commitCommand.setMessage(message);
 		return commitCommand.call();
+	}
+
+	public void track(IFile file) throws IOException {
+		track(new File(file.getLocation().toOSString()));
 	}
 
 	/**
@@ -456,9 +487,18 @@ public class TestRepository {
 		return iFile;
 	}
 
-	public void dispose() {
+	public void dispose() throws IOException {
 		repository.close();
+		remove();
 		repository = null;
+	}
+
+	public void remove() throws IOException {
+		File repositoryDirectory = repository.getDirectory();
+		File repositoryParent = repositoryDirectory.getParentFile();
+		if (repositoryParent.exists()) {
+			FileUtils.delete(repositoryParent, FileUtils.RECURSIVE | FileUtils.RETRY);
+		}
 	}
 
 	/**
@@ -492,5 +532,32 @@ public class TestRepository {
 		DirCache dc = DirCache.read(repository.getIndexFile(), repository.getFS());
 
 		return dc.getEntry(repoPath);
+	}
+
+	public TestRepository cloneRepository(File path) throws URISyntaxException, InvocationTargetException,
+			InterruptedException, IOException {
+		URIish uri = new URIish("file:///" + repository.getDirectory().toString());
+		CloneOperation clop =
+				new CloneOperation(uri, true, null, path, Constants.R_HEADS + Constants.MASTER,
+						Constants.DEFAULT_REMOTE_NAME, 0);
+		clop.run(null);
+		RepositoryCache repositoryCache = Activator.getDefault().getRepositoryCache();
+		Repository clonedRepository = repositoryCache
+				.lookupRepository(new File(path, Constants.DOT_GIT));
+		return new TestRepository(clonedRepository);
+	}
+
+	public void setUserAndEmail(String user, String email) {
+		StoredConfig config = repository.getConfig();
+		config.setString(
+				ConfigConstants.CONFIG_USER_SECTION, null, ConfigConstants.CONFIG_KEY_NAME, user);
+		config.setString(
+				ConfigConstants.CONFIG_USER_SECTION, null, ConfigConstants.CONFIG_KEY_EMAIL, email);
+	}
+
+	public void createMockSystemReader(IPath ceilingPath) {
+		MockSystemReader mockSystemReader = new MockSystemReader();
+		SystemReader.setInstance(mockSystemReader);
+		mockSystemReader.setProperty(Constants.GIT_CEILING_DIRECTORIES_KEY, ceilingPath.toOSString());
 	}
 }
