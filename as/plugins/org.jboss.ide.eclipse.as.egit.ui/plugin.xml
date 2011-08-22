@@ -39,30 +39,6 @@
             </and>
          </activeWhen>
        </handler>
-       <handler
-            class="org.jboss.ide.eclipse.as.egit.internal.ui.commands.EGitUtilsCommitAndPushHandler"
-            commandId="org.jboss.ide.eclipse.as.egit.ui.commands.EGitUtilsCommitAndPushCommand">
-    	<activeWhen>
-            <and>
-               <count
-                     value="+">
-               </count>
-               <iterate>
-                  <or>
-                    <adapt
-                        type="org.eclipse.core.resources.IResource">
-                    </adapt>
-                    <adapt
-                        type="org.eclipse.core.resources.mapping.ResourceMapping">
-                    </adapt>
-                    <adapt
-                        type="org.eclipse.ui.IContributorResourceAdapter">
-                    </adapt>
-                  </or>
-               </iterate>
-            </and>
-         </activeWhen>
-       </handler>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -74,34 +50,6 @@
                label="Commit and Push"
                style="push"
                tooltip="Commit And Push">
-	         <visibleWhen
-		             checkEnabled="false">
-		          <and>
-		             <count
-		                   value="1">
-		             </count>
-		             <iterate>
-		                <and>
-		                   <adapt
-		                         type="org.eclipse.core.resources.IProject">
-		                      <test
-		                            property="GitResource.isShared">
-		                      </test>
-		                   </adapt>
-		                </and>
-		             </iterate>
-		          </and>
-	         </visibleWhen>
-         </command>
-      </menuContribution>
-      <menuContribution
-            allPopups="true"
-            locationURI="popup:team.main?after=group1">
-         <command
-               commandId="org.jboss.ide.eclipse.as.egit.ui.commands.EGitUtilsCommitAndPushCommand"
-               label="EGit utils Commit and Push --- REMOVE ME ---"
-               style="push"
-               tooltip="EGit utils Commit And Push">
 	         <visibleWhen
 		             checkEnabled="false">
 		          <and>
