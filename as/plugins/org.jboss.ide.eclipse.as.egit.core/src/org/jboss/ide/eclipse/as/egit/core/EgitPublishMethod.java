@@ -44,8 +44,8 @@ public class EgitPublishMethod implements IJBossServerPublishMethod {
 			throws CoreException {
 		// TODO Auto-generated method stub
 		IProject project = module[0].getProject();
-		EGitUtils.commit(project, null);
-		EGitUtils.push(EGitUtils.getRepository(project), null);
+		EGitUtils.commit(project, monitor);
+		EGitUtils.push(EGitUtils.getRepository(project), monitor);
 		return IServer.PUBLISH_STATE_NONE;
 	}
 
