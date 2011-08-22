@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.wst.server.core.moduleFactories">
       <moduleFactory
-            class="org.jboss.ide.eclipse.as.egit.core.internal.module.GitProjectModuleFactoryDelegate"
+            class="org.jboss.ide.eclipse.as.egit.core.module.GitProjectModuleFactoryDelegate"
             id="org.jboss.ide.eclipse.as.egit.core.module.gitProjectModuleFactory"
             projects="true">
          <moduleType
@@ -20,4 +20,14 @@
             name="Egit">
       </moduleType>
    </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishMethod">
+      <publishMethod
+            class="org.jboss.ide.eclipse.as.egit.core.EgitPublishMethod"
+            id="egit"
+            name="Egit Publish Method"
+            serverTypes="org.jboss.ide.eclipse.as.systemCopyServer">
+      </publishMethod>
+   </extension>
+   
 </plugin>

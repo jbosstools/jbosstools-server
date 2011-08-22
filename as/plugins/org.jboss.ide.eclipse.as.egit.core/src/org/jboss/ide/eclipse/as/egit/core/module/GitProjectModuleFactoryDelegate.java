@@ -31,6 +31,7 @@ public class GitProjectModuleFactoryDelegate extends ProjectModuleFactoryDelegat
 	private HashMap<IModule, GitProjectModuleDelegate> moduleToDelegate;
 	private IResourceChangeListener resourceListener;
 	public GitProjectModuleFactoryDelegate() {
+		System.out.println("test");
 	}
 	public void initialize() {
 		moduleIdToModule = new HashMap<String, IModule>();
@@ -42,7 +43,14 @@ public class GitProjectModuleFactoryDelegate extends ProjectModuleFactoryDelegat
 						public boolean visit(IResourceDelta delta) throws CoreException {
 							IResource r = delta.getResource();
 							if( r instanceof IProject ) {
-								incrementChanged((IProject)r);
+								IResourceDelta[] kids = delta.getAffectedChildren();
+								if( kids.length > 1 )
+									incrementChanged((IProject)r);
+								else if( kids.length == 1 ) {
+									String changedkid = kids[0].getResource().getName();
+									if( !changedkid.equals(".git"))
+										incrementChanged((IProject)r);
+								}
 							}
 							return !(r instanceof IProject);
 						}

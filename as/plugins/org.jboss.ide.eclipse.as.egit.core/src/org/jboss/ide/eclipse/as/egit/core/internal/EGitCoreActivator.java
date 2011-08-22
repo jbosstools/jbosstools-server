@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.egit.core.internal;
 
+import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
+import org.jboss.ide.eclipse.as.egit.core.EgitBehaviourDelegate;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -26,6 +28,7 @@ public class EGitCoreActivator implements BundleActivator {
 
 	public void start(BundleContext bundleContext) throws Exception {
 		EGitCoreActivator.context = bundleContext;
+		DelegatingJBoss7ServerBehavior.addDelegateMapping(EgitBehaviourDelegate.ID, EgitBehaviourDelegate.class);
 	}
 
 

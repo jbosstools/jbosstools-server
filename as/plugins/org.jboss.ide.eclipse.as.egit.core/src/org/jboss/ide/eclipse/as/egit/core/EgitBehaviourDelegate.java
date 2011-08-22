@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.IJBossBehaviourDelegate;
 
 public class EgitBehaviourDelegate implements IJBossBehaviourDelegate {
 
-	private static final String ID = "egit";
+	public static final String ID = "egit";
 
 	@Override
 	public String getBehaviourTypeId() {
