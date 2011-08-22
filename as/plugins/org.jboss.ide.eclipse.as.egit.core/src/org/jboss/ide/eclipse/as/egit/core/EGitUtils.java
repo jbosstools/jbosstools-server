@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -60,10 +61,14 @@ public class EGitUtils {
 	 *             the core exception
 	 */
 	public static void commit(IProject project, IProgressMonitor monitor) throws CoreException {
+		Assert.isLegal(project != null, "Cannot commit project. No project provided");
 		/**
 		 * TODO: add capability to commit selectively
 		 */
 		Repository repository = getRepository(project);
+		if (repository == null) {
+			throwCoreException(null, "Could not commit. Project \"{0}\" is not attached to a git repo", project.getName());
+		}
 		UserConfig userConfig = getUserConfig(repository);
 		CommitOperation op = new CommitOperation(
 				null,
@@ -92,18 +97,14 @@ public class EGitUtils {
 		try {
 			RemoteConfig remoteConfig = getRemoteConfig(repository);
 			if (remoteConfig == null) {
-				IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
-						"Repository \"{0}\" has no remote repository configured", repository.toString()));
-				throw new CoreException(status);
+				throwCoreException(null, "Repository \"{0}\" has no remote repository configured", repository.toString());
 			}
 			PushOperation pop = createPushOperation(repository, remoteConfig);
 			pop.run(monitor);
 		} catch (CoreException e) {
 			throw e;
 		} catch (Exception e) {
-			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
-					NLS.bind("Could not push repo {0}", repository.toString()), e);
-			throw new CoreException(status);
+			throwCoreException(e, "Could not push repo {0}", repository.toString());
 		}
 	}
 
@@ -143,15 +144,10 @@ public class EGitUtils {
 				spec.addURIRefUpdates(uri,
 						Transport.open(repository, uri).findRemoteRefUpdatesFor(pushRefSpecs));
 			} catch (NotSupportedException e) {
-				IStatus status =
-						new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
-								"Could not connect repository \"{0}\" to a remote", repository.toString()), e);
-				throw new CoreException(status);
+				throwCoreException(e, "Could not connect repository \"{0}\" to a remote", repository.toString());
 			} catch (IOException e) {
-				IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(
-						"Could not convert remote specifications for repository \"{0}\" to a remote",
-						repository.toString()), e);
-				throw new CoreException(status);
+				throwCoreException(e, "Could not convert remote specifications for repository \"{0}\" to a remote",
+						repository.toString());
 			}
 		}
 	}
@@ -197,6 +193,8 @@ public class EGitUtils {
 	 * @return the repository
 	 */
 	public static Repository getRepository(IProject project) {
+		Assert.isLegal(project != null, "Could not get repository. No project provided");
+		
 		RepositoryMapping repositoryMapping = RepositoryMapping.getMapping(project);
 		if (repositoryMapping == null) {
 			return null;
@@ -217,11 +215,11 @@ public class EGitUtils {
 	 * @see CommittHelper#calculateCommitInfo
 	 */
 	private static UserConfig getUserConfig(Repository repository) throws CoreException {
+		Assert.isLegal(repository != null, "Could not get user configuration. No repository provided.");
+
 		if (repository.getConfig() == null) {
-			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
-					NLS.bind("no user configuration (author, committer) are present in repository \"{0}\"",
-							repository.toString()));
-			throw new CoreException(status);
+			throwCoreException(null, "no user configuration (author, committer) are present in repository \"{0}\"",
+							repository.toString());
 		}
 		return repository.getConfig().get(UserConfig.KEY);
 	}
@@ -242,13 +240,13 @@ public class EGitUtils {
 	 *             the core exception
 	 */
 	private static RemoteConfig getRemoteConfig(Repository repository) throws CoreException {
+		Assert.isLegal(repository != null, "Could not get configuration. No repository provided.");
+		
 		String branch = null;
 		try {
 			branch = repository.getBranch();
 		} catch (IOException e) {
-			IStatus status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID,
-					NLS.bind("Could not get branch on repository \"{0}\"", repository.toString()), e);
-			throw new CoreException(status);
+			throwCoreException(e, "Could not get branch on repository \"{0}\"", repository.toString());
 		}
 
 		String remoteName = getRemoteName(repository, branch);
@@ -319,5 +317,15 @@ public class EGitUtils {
 					ConfigConstants.CONFIG_REMOTE_SECTION);
 		}
 		return remoteName;
+	}
+	
+	private static void throwCoreException(Exception e, String message, String... arguments) throws CoreException {
+		IStatus status = null;
+		if (e == null) {
+			new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments));
+		} else {
+			new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments), e);
+		}
+		throw new CoreException(status);
 	}
 }
