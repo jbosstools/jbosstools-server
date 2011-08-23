@@ -26,7 +26,7 @@ public class CommitAndPushHandler extends AbstractHandler {
 		return null;
 	}
 
-	private static boolean executeCommand(String commandId, ISelection selection) throws ExecutionException {
+	private boolean executeCommand(String commandId, ISelection selection) throws ExecutionException {
 		if (!(selection instanceof IStructuredSelection)) {
 			throw new ExecutionException(NLS.bind("Could not execute command \"{0}\" since there's no valid selection",
 					commandId));
