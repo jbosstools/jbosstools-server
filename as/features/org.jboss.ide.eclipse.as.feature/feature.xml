@@ -24,34 +24,6 @@ source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
 
-   <includes
-         id="org.jboss.ide.eclipse.archives.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.ide.eclipse.as.archives.integration"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.ide.eclipse.as.jmx.integration"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.ide.eclipse.as.server.rse.integration"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.ide.eclipse.as.serverAdapter.wtp"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.tools.jmx.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.jboss.ide.eclipse.archives.feature"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.debug.core"/>
@@ -115,5 +87,35 @@ Raleigh NC 27606 USA.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.archives.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.archives.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.jmx.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.server.rse.integration"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.as.serverAdapter.wtp"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.tools.jmx.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="org.jboss.ide.eclipse.archives.feature"
+         version="0.0.0"/>
+
+   <!-- JBIDE-9549: org.jboss.ide.eclipse.as.server.egit.integration.feature is NOT included here because it would cause eGit to become a Core dependency in JBDS instead of an Extra; therefore keep the egit feature SEPARATE for now -->
 
 </feature>
