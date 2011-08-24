@@ -18,7 +18,8 @@ import org.osgi.framework.InvalidSyntaxException;
 public class JBoss7ManagerUtil {
 
 	private static final String JBOSS7_RUNTIME = "org.jboss.ide.eclipse.as.runtime.70"; //$NON-NLS-1$
-
+	private static final String EAP6_RUNTIME = "org.jboss.ide.eclipse.as.runtime.eap.60"; //$NON-NLS-1$
+	
 	public static IJBoss7ManagerService getService(IServer server) throws InvalidSyntaxException  {
 		BundleContext context = JBossServerCorePlugin.getContext();
 		JBoss7ManagerServiceProxy proxy = new JBoss7ManagerServiceProxy(context, getRequiredVersion(server));
@@ -28,7 +29,8 @@ public class JBoss7ManagerUtil {
 
 	private static String getRequiredVersion(IServer server) {
 		String id = server.getRuntime().getRuntimeType().getId();
-		if (JBOSS7_RUNTIME.equals(id)) {
+		if (JBOSS7_RUNTIME.equals(id)
+				|| EAP6_RUNTIME.equals(id)) {
 			return IJBoss7ManagerService.AS_VERSION_700;
 		}
 		return null;
