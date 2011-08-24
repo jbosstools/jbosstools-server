@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -107,7 +109,7 @@ public class PortSection extends ServerEditorSection {
 	public static interface IPortEditorExtension {
 		public void setServerAttributeHelper(ServerAttributeHelper helper);
 		public void setSection(PortSection section);
-		public Control createControl(Composite parent);
+		public void createControl(Composite parent);
 		public String getValue();
 	}
 
@@ -182,43 +184,23 @@ public class PortSection extends ServerEditorSection {
 		public void setSection(PortSection section) {
 			this.section = section;
 		}
-		public Control createControl(Composite parent) {
-			Control c = createUI(parent);
+		public void createControl(Composite parent) {
+			createUI(parent);
 			initialize();
 			addListeners();
-			return c;
 		}
 
-		protected Control createUI(Composite parent) {
-			Composite child = new Composite(parent, SWT.NONE);
-			child.setLayout(new FormLayout());
-			label = new Label(child, SWT.NONE);
-			text = new Text(child, SWT.SINGLE | SWT.BORDER);
-			detect = new Button(child, SWT.CHECK);
-			link = new Link(child, SWT.NONE);
-
-			FormData data;
-			data = new FormData();
-			data.top = new FormAttachment(0,8);
-			data.right = new FormAttachment(100,-5);
-			link.setLayoutData(data);
-
-			data = new FormData();
-			data.right = new FormAttachment(link, -5);
-			data.top = new FormAttachment(0,5);
-			detect.setLayoutData(data);
-
-			data = new FormData();
-			data.right = new FormAttachment(detect, -5);
-			data.left = new FormAttachment(0, 75);
-			data.top = new FormAttachment(0,5);
-			text.setLayoutData(data);
-
-			data = new FormData();
-			data.left = new FormAttachment(0,5);
-			data.top = new FormAttachment(0,8);
-			label.setLayoutData(data);
-
+		protected void createUI(Composite parent) {
+			label = new Label(parent, SWT.NONE);
+			text = new Text(parent, SWT.SINGLE | SWT.BORDER);
+			detect = new Button(parent, SWT.CHECK);
+			link = new Link(parent, SWT.NONE);
+			
+			GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(text);
+			GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(detect);
+			GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).applyTo(link);
+			
 			label.setText(labelText);
 			detect.setText(Messages.EditorAutomaticallyDetectPort);
 			link.setText("<a href=\"\">" + Messages.Configure + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -236,7 +218,6 @@ public class PortSection extends ServerEditorSection {
 			});
 			
 			
-			return child;
 		}
 		protected void initialize() {
 			boolean shouldDetect = helper.getAttribute(detectXPathKey, true);
@@ -323,7 +304,7 @@ public class PortSection extends ServerEditorSection {
 		FormData data;
 		Control c;
 		Composite wrapper = new Composite(parent, SWT.NONE);
-		wrapper.setLayout(new FormLayout());
+		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(wrapper);
 		data = new FormData();
 		data.top = new FormAttachment(top,0);
 		data.left = new FormAttachment(0,0);
@@ -333,16 +314,7 @@ public class PortSection extends ServerEditorSection {
 		for( int i = 0; i < extensions.length; i++ ) {
 			extensions[i].setServerAttributeHelper(helper);
 			extensions[i].setSection(this);
-			c = extensions[i].createControl(wrapper);
-			data = new FormData();
-			if( top == null )
-				data.top = new FormAttachment(0, 5);
-			else
-				data.top = new FormAttachment(top, 5);
-			data.left = new FormAttachment(0,5);
-			data.right = new FormAttachment(100,-5);
-			c.setLayoutData(data);
-			top = c;
+			extensions[i].createControl(wrapper);
 		}
 	}
 
