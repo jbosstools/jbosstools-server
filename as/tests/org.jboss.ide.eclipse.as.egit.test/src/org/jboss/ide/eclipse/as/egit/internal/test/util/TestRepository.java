@@ -68,6 +68,8 @@ public class TestRepository {
 
 	String workdirPrefix;
 
+	private File gitDir;
+
 	/**
 	 * Creates a new test repository
 	 * 
@@ -79,15 +81,22 @@ public class TestRepository {
 		tmpRepository.create();
 		tmpRepository.close();
 		// use repository instance from RepositoryCache!
-		repository = Activator.getDefault().getRepositoryCache().lookupRepository(gitDir);
-		try {
-			workdirPrefix = repository.getWorkTree().getCanonicalPath();
-		} catch (IOException err) {
-			workdirPrefix = repository.getWorkTree().getAbsolutePath();
-		}
+		this.gitDir = gitDir;
+		this.repository = Activator.getDefault().getRepositoryCache().lookupRepository(gitDir);
+		this.workdirPrefix = getWorkdirPrefix(repository);
 		workdirPrefix = workdirPrefix.replace('\\', '/');
 		if (!workdirPrefix.endsWith("/")) //$NON-NLS-1$
 			workdirPrefix += "/"; //$NON-NLS-1$
+	}
+
+	private String getWorkdirPrefix(Repository repository) {
+		String workdirPrefix = repository.getWorkTree().getAbsolutePath();
+		try {
+			workdirPrefix = repository.getWorkTree().getCanonicalPath();
+		} catch (IOException err) {
+			// ignore;
+		}
+		return workdirPrefix;
 	}
 
 	/**
@@ -559,5 +568,9 @@ public class TestRepository {
 		MockSystemReader mockSystemReader = new MockSystemReader();
 		SystemReader.setInstance(mockSystemReader);
 		mockSystemReader.setProperty(Constants.GIT_CEILING_DIRECTORIES_KEY, ceilingPath.toOSString());
+	}
+	
+	public File getGitDir() {
+		return gitDir;
 	}
 }
