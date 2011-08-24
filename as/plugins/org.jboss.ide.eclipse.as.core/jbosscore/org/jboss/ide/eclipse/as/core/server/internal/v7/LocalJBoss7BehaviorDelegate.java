@@ -77,11 +77,8 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 
 	@Override
 	public void dispose() {
-		try {
-			JBoss7ManagerUtil.dispose(getService());
-		} catch (InvalidSyntaxException e) {
-			JBossServerCorePlugin.log(IStatus.ERROR, Messages.ErrorDisposingLocalJBoss7BehaviorDelegate, e);
-		}
+		JBoss7ManagerUtil.dispose(service);
+		this.service = null;
 	}
 
 	protected IJBoss7ManagerService getService() throws InvalidSyntaxException {
