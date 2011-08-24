@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +18,7 @@ import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
 import org.eclipse.wst.server.core.TaskModel;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.bean.JBossServerType;
+import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
@@ -41,11 +44,12 @@ public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
 
 	protected void fillWidgets() {
 		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		
 		if (rt != null) {
 			try {
 				fillNameWidgets(rt);
 				fillHomeDir(rt);
-				fillJREWidgets(getRuntime());
+				fillJREWidgets(rt);
 			} catch (Exception e) {
 				IStatus status = new Status(IStatus.ERROR, JBossServerUIPlugin.PLUGIN_ID, MessageFormat.format(Messages.JBoss7ServerWizardFragment_could_not_create_ui, rt.getName()), e);
 				JBossServerUIPlugin.getDefault().getLog().log(status);

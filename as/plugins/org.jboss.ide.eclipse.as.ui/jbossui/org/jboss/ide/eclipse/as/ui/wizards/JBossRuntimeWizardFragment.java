@@ -195,6 +195,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			
 			String locationDefault = Platform.getOS().equals(Platform.WS_WIN32) 
 			? "c:/program files/jboss-" : "/usr/bin/jboss-"; //$NON-NLS-1$ //$NON-NLS-2$
+			if( isEAP() )
+				locationDefault += "eap-"; //$NON-NLS-1$
 			String version = rt.getRuntimeType().getVersion();
 			locationDefault += version + ".x"; //$NON-NLS-1$
 			homeDir = (value != null && value.length() != 0) ? value : locationDefault;
@@ -204,12 +206,16 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		}
 		homeDirText.setText(homeDir);
 		
-		((IRuntimeWorkingCopy)rt).setLocation(new Path(homeDir));
-		homeDirText.setEditable(true);
-		homeDirButton.setEnabled(true);
+		boolean isWC = rt instanceof IRuntimeWorkingCopy;
+		if( isWC ) {
+			((IRuntimeWorkingCopy)rt).setLocation(new Path(homeDir));
+		} 
+		homeDirText.setEnabled(isWC);
+		homeDirButton.setEnabled(isWC);
 	}
 	
-	protected void fillConfigWidgets(IJBossServerRuntime jbsrt) {
+	protected void fillConfigWidgets(IRuntime rt) {
+		IJBossServerRuntime jbsrt = getRuntime();
 		String dirText = jbsrt.getConfigLocation();
 		configDirText.setText(dirText == null ? IConstants.SERVER : dirText);
 		configurations.setConfiguration(jbsrt.getJBossConfiguration() == null 
@@ -217,7 +223,8 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		configurations.getTable().setVisible(true);
 	}
 	
-	protected void fillJREWidgets(IJBossServerRuntime jbsrt) {
+	protected void fillJREWidgets(IRuntime rt) {
+		IJBossServerRuntime jbsrt = getRuntime();
 		if (jbsrt.isUsingDefaultJRE()) {
 			jreCombo.select(0);
 		} else {
@@ -235,13 +242,17 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 		jreComboIndex = jreCombo.getSelectionIndex();
 		if( jreCombo.getSelectionIndex() < 0 && jreCombo.getItemCount() > 0)
 			jreCombo.select(0);
+		
+		boolean isWC = rt instanceof IRuntimeWorkingCopy;
+		jreCombo.setEnabled(isWC);
+		jreButton.setEnabled(isWC);
 	}
 	
 	protected void fillWidgets() {
-		IJBossServerRuntime rt = getRuntime();
+		IRuntime rt = (IRuntime) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
 		if (rt != null) {
-			fillNameWidgets(rt.getRuntime());
-			fillHomeDir(rt.getRuntime());
+			fillNameWidgets(rt);
+			fillHomeDir(rt);
 			fillConfigWidgets(rt);
 			fillJREWidgets(rt);
 		}
@@ -679,6 +690,11 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 			v = "6.";
 		if( !isEAP() && v.startsWith("7."))
 			v = "7.";
+		if( isEAP() && v.startsWith("6."))
+			v = "7.";
+		if( !isEAP() && v.startsWith("7."))
+			v = "7.";
+
 		return version.startsWith(v) ? null : NLS.bind(Messages.rwf_homeIncorrectVersion, v, version);
 	}
 
@@ -780,13 +796,14 @@ public class JBossRuntimeWizardFragment extends WizardFragment {
 
 	public void performFinish(IProgressMonitor monitor) throws CoreException {
 		exit();
-		IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) getTaskModel().getObject(
-				TaskModel.TASK_RUNTIME);
-		IRuntime saved = r.save(false, new NullProgressMonitor());
-		Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
-		prefs.setValue(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + saved.getRuntimeType().getId(), homeDir);
-
-		getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
+		IRuntime rt = (IRuntime)getTaskModel().getObject(TaskModel.TASK_RUNTIME);
+		if( rt instanceof IRuntimeWorkingCopy ) {
+			IRuntimeWorkingCopy r = (IRuntimeWorkingCopy) rt;
+			IRuntime saved = r.save(false, new NullProgressMonitor());
+			Preferences prefs = JBossServerUIPlugin.getDefault().getPluginPreferences();
+			prefs.setValue(IPreferenceKeys.RUNTIME_HOME_PREF_KEY_PREFIX + saved.getRuntimeType().getId(), homeDir);
+			getTaskModel().putObject(TaskModel.TASK_RUNTIME, saved);
+		}
 	}
 
 	public boolean isComplete() {

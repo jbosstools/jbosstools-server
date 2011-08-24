@@ -31,21 +31,16 @@
          point="org.eclipse.wst.server.ui.wizardFragments">
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossRuntimeWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.32,org.jboss.ide.eclipse.as.runtime.40,org.jboss.ide.eclipse.as.runtime.42,org.jboss.ide.eclipse.as.runtime.50,org.jboss.ide.eclipse.as.runtime.51,org.jboss.ide.eclipse.as.runtime.eap.43,org.jboss.ide.eclipse.as.runtime.eap.50,org.jboss.ide.eclipse.as.runtime.60"
+            typeIds="%RuntimeTypesJBoss6OrLower"
         	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.runtime.70"/>
+            typeIds="%ServerTypesJBoss7"/>
       <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.32,org.jboss.ide.eclipse.as.40,org.jboss.ide.eclipse.as.42,org.jboss.ide.eclipse.as.50,org.jboss.ide.eclipse.as.51,org.jboss.ide.eclipse.as.eap.43,org.jboss.ide.eclipse.as.eap.50,org.jboss.ide.eclipse.as.60"/>
-   <!--
-      <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
-            typeIds="org.jboss.ide.eclipse.as.70"/>  -->
+            typeIds="%ServerTypesJBoss6OrLower"/>
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
@@ -181,7 +176,7 @@
             id="org.jboss.ide.eclipse.as.ui.editor.passwordSection"
             insertionId="org.eclipse.wst.server.editor.overview.left"
             order="10"
-            typeIds="%JBossServer6AndBelow"/>
+            typeIds="%ServerTypesJBoss6OrLower"/>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.ServerModeSection"
             id="org.jboss.ide.eclipse.as.ui.editor.serverModeSection"
@@ -268,7 +263,7 @@
          point="org.jboss.ide.eclipse.as.ui.ServerEditorPortSection">
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JNDIPortEditorExtension"
-            serverIds="%JBossServer6AndBelow">
+            serverIds="%ServerTypesJBoss6OrLower">
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$WebPortEditorExtension"
@@ -280,7 +275,7 @@
       </section>
       <section
             class="org.jboss.ide.eclipse.as.ui.editor.PortSection$JBoss7ManagementPortEditorExtension"
-            serverIds="org.jboss.ide.eclipse.as.70">
+            serverIds="%ServerTypesJBoss7">
       </section>
    </extension>
 

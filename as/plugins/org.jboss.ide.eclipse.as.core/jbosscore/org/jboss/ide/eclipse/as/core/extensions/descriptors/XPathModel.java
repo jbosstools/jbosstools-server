@@ -269,6 +269,7 @@ public class XPathModel extends UnitedServerListener {
 		rtToPortsFile.put(IConstants.AS_70, properties.append(IJBossToolingConstants.DEFAULT_PROPS_70));
 		rtToPortsFile.put(IConstants.EAP_43, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_43));
 		rtToPortsFile.put(IConstants.EAP_50, properties.append(IJBossToolingConstants.DEFAULT_PROPS_EAP_50));
+		rtToPortsFile.put(IConstants.EAP_60, properties.append(IJBossToolingConstants.DEFAULT_PROPS_70));
 	}
 
 	private static ArrayList<XPathCategory> loadDefaults(IServer server, String configFolder) {

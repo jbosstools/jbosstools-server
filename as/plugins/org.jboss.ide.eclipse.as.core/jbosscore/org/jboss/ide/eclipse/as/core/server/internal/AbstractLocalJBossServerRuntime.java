@@ -127,6 +127,7 @@ public abstract class AbstractLocalJBossServerRuntime extends RuntimeDelegate {
 		String typeId = rtType.getId();
 		if( typeId.equals(IConstants.EAP_50) 
 				|| typeId.equals(IConstants.AS_60)
+				|| typeId.equals(IConstants.EAP_60)
 				|| typeId.equals(IConstants.AS_70)) {
 			return EnvironmentsManager.getDefault().getEnvironment("JavaSE-1.6"); //$NON-NLS-1$
 		}

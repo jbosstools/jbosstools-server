@@ -41,8 +41,10 @@ import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
+import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
 import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
+import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
  * Manages the extensions for this plugin
@@ -126,7 +128,7 @@ public class ExtensionManager {
 			return true;
 		String[] allTypes = sTypes.split(","); //$NON-NLS-1$
 		for( int i = 0; i < allTypes.length; i++ ) {
-			if( allTypes[i].equals(serverType.getId())) {
+			if( allTypes[i].trim().equals(serverType.getId())) {
 				return true;
 			}
 		}
@@ -366,7 +368,7 @@ public class ExtensionManager {
 		return JBossLaunchDelegates;
 	}
 	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
-		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+		if( ServerUtil.isJBoss7(server)) {
 			return JBoss7setupParticipants;
 		}
 		return JBossSetupParticipants;
