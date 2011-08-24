@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.egit.core.Activator;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.Repository;
 import org.jboss.ide.eclipse.as.egit.core.EGitUtils;
 import org.jboss.ide.eclipse.as.egit.internal.test.util.TestProject;
 import org.jboss.ide.eclipse.as.egit.internal.test.util.TestRepository;
@@ -26,7 +24,6 @@ public class EGitUtilsTest {
 
 	protected final TestUtils testUtils = new TestUtils();
 
-	private File gitDir;
 	private TestRepository testRepository;
 	private TestProject testProject;
 	private TestRepository clonedTestRepository;
@@ -37,8 +34,7 @@ public class EGitUtilsTest {
 
 		this.testProject = new TestProject(true);
 
-		this.gitDir = TestUtils.createGitDir(testProject);
-		this.testRepository = new TestRepository(gitDir);
+		this.testRepository = new TestRepository(TestUtils.createGitDir(testProject));
 		testRepository.createMockSystemReader(ResourcesPlugin.getWorkspace().getRoot().getLocation());
 		testRepository.setUserAndEmail(GIT_USER, GIT_EMAIL);
 		testRepository.connect(testProject.getProject());
@@ -46,7 +42,8 @@ public class EGitUtilsTest {
 		this.clonedTestRepository = cloneRepository(testRepository);
 	}
 
-	private TestRepository cloneRepository(TestRepository repository) throws URISyntaxException, InvocationTargetException, InterruptedException, IOException {
+	private TestRepository cloneRepository(TestRepository repository) throws URISyntaxException,
+			InvocationTargetException, InterruptedException, IOException {
 		File workspaceDir = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
 		File clonedRepositoryFile =
 				new File(workspaceDir, "clonedRepository-" + String.valueOf(System.currentTimeMillis()));
@@ -66,10 +63,10 @@ public class EGitUtilsTest {
 	public void canCommitFileInProject() throws Exception {
 		String fileName = "a.txt";
 		String fileContent = "adietish@redhat.com";
-		
+
 		IFile file = testUtils.addFileToProject(
 				testProject.getProject(),
-				fileName, 
+				fileName,
 				fileContent);
 		testRepository.track(file);
 
@@ -84,19 +81,50 @@ public class EGitUtilsTest {
 	public void fileAddedToCloneIsInOriginAfterPush() throws Exception {
 		String fileName = "b.txt";
 		String fileContent = "adietish@redhat.com";
-		
-		clonedTestRepository.createFile(fileName, fileContent);
-		Repository clonedRepository = clonedTestRepository.getRepository();
-		Git git = new Git(clonedRepository);
-		git.add().addFilepattern(fileName).call();
-		git.commit().setCommitter(GIT_USER, GIT_EMAIL).setMessage("adding a new file").call();
 
-		EGitUtils.push(clonedRepository, null);
+		File file = clonedTestRepository.createFile(fileName, fileContent);
+		clonedTestRepository.addAndCommit(file, "adding a file");
+
+		EGitUtils.push(clonedTestRepository.getRepository(), null);
 
 		// does origin contain file added to clone?
 		testUtils.assertRepositoryContainsFilesWithContent(
-				clonedRepository,
+				clonedTestRepository.getRepository(),
 				fileName,
 				fileContent);
+	}
+
+	@Test
+	public void fileAddedToCloneIsInRemoteAfterPush() throws Exception {
+		TestProject testProject2 = null;
+		TestRepository testRepository2 = null;
+		String fileName = "c.txt";
+		String fileContent = "adietish@redhat.com";
+		String remoteRepoName = "openshift";
+		
+		try {
+			testProject2 = new TestProject(true);
+			File gitDir = TestUtils.createGitDir(testProject2);
+			testRepository2 = new TestRepository(gitDir);
+			clonedTestRepository.addRemoteTo(remoteRepoName, testRepository2.getRepository());
+
+			File file = clonedTestRepository.createFile(fileName, fileContent);
+			clonedTestRepository.addAndCommit(file, "adding a file");
+
+			EGitUtils.push(remoteRepoName, clonedTestRepository.getRepository(), null);
+
+			// does origin contain file added to clone?
+			testUtils.assertRepositoryContainsFilesWithContent(
+					clonedTestRepository.getRepository(),
+					fileName,
+					fileContent);
+		} finally {
+			if (testProject2 != null) {
+				testProject2.dispose();
+			}
+			if (testRepository2 != null) {
+				testRepository2.dispose();
+			}
+		}
 	}
 }

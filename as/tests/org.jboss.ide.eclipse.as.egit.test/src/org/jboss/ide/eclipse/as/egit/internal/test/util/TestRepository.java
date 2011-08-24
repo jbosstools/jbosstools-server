@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +54,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepository;
+import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FileUtils;
@@ -170,9 +172,10 @@ public class TestRepository {
 		return file;
 	}
 
-	public void createFile(String name, String data) throws IOException {
+	public File createFile(String name, String data) throws IOException {
 		File file = new File(repository.getWorkTree(), name);
 		write(file, data);
+		return file;
 	}
 
 	private void write(final File file, final String data) throws IOException {
@@ -198,6 +201,14 @@ public class TestRepository {
 			throws Exception {
 		track(file);
 		addToIndex(project, file);
+
+		return commit(commitMessage);
+	}
+
+	public RevCommit addAndCommit(File file, String commitMessage)
+			throws Exception {
+		track(file);
+		addToIndex(file);
 
 		return commit(commitMessage);
 	}
@@ -356,6 +367,15 @@ public class TestRepository {
 	 */
 	public void addToIndex(IFile file) throws CoreException, IOException {
 		String repoPath = getRepoRelativePath(file.getLocation().toOSString());
+		try {
+			new Git(repository).add().addFilepattern(repoPath).call();
+		} catch (NoFilepatternException e) {
+			throw new IOException(e.getMessage());
+		}
+	}
+
+	public void addToIndex(File file) throws CoreException, IOException {
+		String repoPath = getRepoRelativePath(file.getAbsolutePath());
 		try {
 			new Git(repository).add().addFilepattern(repoPath).call();
 		} catch (NoFilepatternException e) {
@@ -573,4 +593,16 @@ public class TestRepository {
 	public File getGitDir() {
 		return gitDir;
 	}
+
+	public void addRemoteTo(String remoteName, Repository remoteRepository)
+			throws URISyntaxException, MalformedURLException,
+			IOException {
+		StoredConfig config = repository.getConfig();
+		RemoteConfig remoteConfig = new RemoteConfig(config, remoteName);
+		URIish uri = new URIish(remoteRepository.getDirectory().toURI().toURL());
+		remoteConfig.addURI(uri);
+		remoteConfig.update(config);
+		config.save();
+	}
+
 }
