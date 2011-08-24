@@ -366,7 +366,9 @@ public class EGitUtils {
 	}
 
 	/**
-	 * Returns the name of the remote repository of the given branch.
+	 * Returns the name of the remote repository of the given branch. If there's
+	 * no current branch or no remote configured to it, the default remote is
+	 * returned ("origin").
 	 * 
 	 * @param branch
 	 *            the branch
@@ -383,6 +385,11 @@ public class EGitUtils {
 					ConfigConstants.CONFIG_BRANCH_SECTION, branch,
 					ConfigConstants.CONFIG_REMOTE_SECTION);
 		}
+
+		if (remoteName == null) {
+			remoteName = Constants.DEFAULT_REMOTE_NAME;
+		}
+
 		return remoteName;
 	}
 
