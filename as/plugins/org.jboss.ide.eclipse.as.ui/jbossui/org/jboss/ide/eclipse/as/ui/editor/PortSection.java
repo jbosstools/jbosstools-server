@@ -197,7 +197,7 @@ public class PortSection extends ServerEditorSection {
 			link = new Link(parent, SWT.NONE);
 			
 			GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(text);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).minSize(80, 10).grab(true, false).applyTo(text);
 			GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(detect);
 			GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).applyTo(link);
 			
@@ -304,7 +304,7 @@ public class PortSection extends ServerEditorSection {
 		FormData data;
 		Control c;
 		Composite wrapper = new Composite(parent, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(4).applyTo(wrapper);
+		GridLayoutFactory.fillDefaults().margins(6, 10).numColumns(4).applyTo(wrapper);
 		data = new FormData();
 		data.top = new FormAttachment(top,0);
 		data.left = new FormAttachment(0,0);
