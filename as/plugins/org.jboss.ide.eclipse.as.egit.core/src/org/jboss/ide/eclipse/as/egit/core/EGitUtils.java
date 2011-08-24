@@ -67,7 +67,8 @@ public class EGitUtils {
 		 */
 		Repository repository = getRepository(project);
 		if (repository == null) {
-			throw new CoreException(createStatus(null, "Could not commit. Project \"{0}\" is not attached to a git repo", project.getName()));
+			throw new CoreException(createStatus(null,
+					"Could not commit. Project \"{0}\" is not attached to a git repo", project.getName()));
 		}
 		UserConfig userConfig = getUserConfig(repository);
 		CommitOperation op = new CommitOperation(
@@ -83,26 +84,54 @@ public class EGitUtils {
 	}
 
 	/**
-	 * Pushes the given repository to it's configured remote.
+	 * Pushes the given repository to the remote repository it's current branch
+	 * originates from.
 	 * 
 	 * @param repository
-	 *            the source repository
+	 *            the repository that shall be pushed
 	 * @param monitor
-	 *            the monitor
+	 *            the monitor to report progress to
 	 * @throws CoreException
-	 *             the core exception
+	 *             core exception is thrown if the push could not be executed
 	 */
 	public static void push(Repository repository, IProgressMonitor monitor)
 			throws CoreException {
 		try {
 			RemoteConfig remoteConfig = getRemoteConfig(repository);
 			if (remoteConfig == null) {
-				throw new CoreException(createStatus(null, "Repository \"{0}\" has no remote repository configured", repository.toString()));
+				throw new CoreException(createStatus(null, "Repository \"{0}\" has no remote repository configured",
+						repository.toString()));
 			}
-			PushOperation pop = createPushOperation(repository, remoteConfig);
-			pop.run(monitor);
+			createPushOperation(remoteConfig, repository).run(monitor);
 		} catch (CoreException e) {
 			throw e;
+		} catch (Exception e) {
+			throw new CoreException(createStatus(e, "Could not push repo {0}", repository.toString()));
+		}
+	}
+
+	/**
+	 * Pushes the given repository to the remote repo with the given name.
+	 * 
+	 * @param remote
+	 * @param repository
+	 * @param monitor
+	 * @throws CoreException
+	 * 
+	 * @see git config file: "[remote..."
+	 * @see #getAllRemoteConfigs(Repository)
+	 * @see RemoteConfig#getName()
+	 */
+	public static void push(String remote, Repository repository, IProgressMonitor monitor)
+			throws CoreException {
+		try {
+			RemoteConfig remoteConfig = getRemoteConfig(remote, repository);
+			if (remoteConfig == null) {
+				throw new CoreException(createStatus(null,
+						"Repository \"{0}\" has no remote repository with the name \"{1}\"",
+						repository.toString(), remote));
+			}
+			createPushOperation(remote, repository).run(monitor);
 		} catch (Exception e) {
 			throw new CoreException(createStatus(e, "Could not push repo {0}", repository.toString()));
 		}
@@ -112,7 +141,7 @@ public class EGitUtils {
 		return new PushOperation(repository, remoteName, false, PUSH_TIMEOUT);
 	}
 
-	private static PushOperation createPushOperation(Repository repository, RemoteConfig remoteConfig)
+	private static PushOperation createPushOperation(RemoteConfig remoteConfig, Repository repository)
 			throws CoreException {
 
 		PushOperationSpecification spec = new PushOperationSpecification();
@@ -144,9 +173,11 @@ public class EGitUtils {
 				spec.addURIRefUpdates(uri,
 						Transport.open(repository, uri).findRemoteRefUpdatesFor(pushRefSpecs));
 			} catch (NotSupportedException e) {
-				throw new CoreException(createStatus(e, "Could not connect repository \"{0}\" to a remote", repository.toString()));
+				throw new CoreException(createStatus(e, "Could not connect repository \"{0}\" to a remote",
+						repository.toString()));
 			} catch (IOException e) {
-				throw new CoreException(createStatus(e, "Could not convert remote specifications for repository \"{0}\" to a remote",
+				throw new CoreException(createStatus(e,
+						"Could not convert remote specifications for repository \"{0}\" to a remote",
 						repository.toString()));
 			}
 		}
@@ -194,7 +225,7 @@ public class EGitUtils {
 	 */
 	public static Repository getRepository(IProject project) {
 		Assert.isLegal(project != null, "Could not get repository. No project provided");
-		
+
 		RepositoryMapping repositoryMapping = RepositoryMapping.getMapping(project);
 		if (repositoryMapping == null) {
 			return null;
@@ -208,7 +239,7 @@ public class EGitUtils {
 	 * 
 	 * @param repository
 	 *            the repository
-	 * @return the user configuration 
+	 * @return the user configuration
 	 * @throws CoreException
 	 * 
 	 * @see PersonIdent(Repository)
@@ -218,8 +249,9 @@ public class EGitUtils {
 		Assert.isLegal(repository != null, "Could not get user configuration. No repository provided.");
 
 		if (repository.getConfig() == null) {
-			throw new CoreException(createStatus(null, "no user configuration (author, committer) are present in repository \"{0}\"",
-							repository.toString()));
+			throw new CoreException(createStatus(null,
+					"no user configuration (author, committer) are present in repository \"{0}\"",
+					repository.toString()));
 		}
 		return repository.getConfig().get(UserConfig.KEY);
 	}
@@ -241,26 +273,41 @@ public class EGitUtils {
 	 */
 	private static RemoteConfig getRemoteConfig(Repository repository) throws CoreException {
 		Assert.isLegal(repository != null, "Could not get configuration. No repository provided.");
-		
-		String branch = getBranch(repository);
-		String remoteName = getRemoteName(repository, branch);
-		List<RemoteConfig> allRemotes = getAllRemoteConfigs(repository);
-		return getRemoteConfig(remoteName, allRemotes);
+
+		String currentBranch = getCurrentBranch(repository);
+		String remote = getRemoteName(currentBranch, repository);
+		return getRemoteConfig(remote, repository);
 	}
 
-	private static String getBranch(Repository repository) throws CoreException {
+	/**
+	 * Returns the remote config for the given remote in the given repository
+	 * 
+	 * @param remote
+	 * @param repository
+	 * @return
+	 * @throws CoreException
+	 */
+	private static RemoteConfig getRemoteConfig(String remote, Repository repository) throws CoreException {
+		Assert.isLegal(repository != null, "Could not get configuration. No repository provided.");
+
+		List<RemoteConfig> allRemotes = getAllRemoteConfigs(repository);
+		return getRemoteConfig(remote, allRemotes);
+	}
+
+	private static String getCurrentBranch(Repository repository) throws CoreException {
 		String branch = null;
 		try {
 			branch = repository.getBranch();
 		} catch (IOException e) {
-			throw new CoreException(createStatus(e, "Could not get branch on repository \"{0}\"", repository.toString()));
+			throw new CoreException(createStatus(e, "Could not get current branch on repository \"{0}\"",
+					repository.toString()));
 		}
 		return branch;
 	}
 
 	/**
 	 * Gets the remote config with the given name from the list of remote
-	 * repositories. Return the origin if none with the given name was found.
+	 * repositories. Returns <code>null</code> if it was not found.
 	 * 
 	 * @param remoteName
 	 *            the remote name
@@ -272,8 +319,8 @@ public class EGitUtils {
 		RemoteConfig defaultConfig = null;
 		RemoteConfig configuredConfig = null;
 		for (RemoteConfig config : remoteRepositories) {
-			if (config.getName().equals(Constants.DEFAULT_REMOTE_NAME))
-				defaultConfig = config;
+			// if (config.getName().equals(Constants.DEFAULT_REMOTE_NAME))
+			// defaultConfig = config;
 			if (remoteName != null && config.getName().equals(remoteName))
 				configuredConfig = config;
 		}
@@ -285,35 +332,49 @@ public class EGitUtils {
 	}
 
 	/**
-	 * Gets the remote configs from the given repository.
+	 * Returns all the remote configs from the given repository.
 	 * 
 	 * @param repository
-	 *            the repository
-	 * @return the remote configs
-	 * @throws CoreException 
+	 *            the repository to retrieve the remote configs of
+	 * @return the remote configs that are available on the repository
+	 * @throws CoreException
 	 */
 	public static List<RemoteConfig> getAllRemoteConfigs(Repository repository) throws CoreException {
 		try {
 			return RemoteConfig.getAllRemoteConfigs(repository.getConfig());
 		} catch (URISyntaxException e) {
-			throw new CoreException(createStatus(e, "Could not get all remote repositories for repository \"{0}\"", repository.toString()));
+			throw new CoreException(createStatus(e, "Could not get all remote repositories for repository \"{0}\"",
+					repository.toString()));
 		}
 	}
 
-	public static boolean hasMultipleRemoteConfigs(Repository repository) throws CoreException {
-		return getAllRemoteConfigs(repository).size() > 1;
-	}
-	
 	/**
-	 * Gets the name of the remote repository for a given repository and branch.
+	 * Returns <code>true</code> if the given repository has several configured
+	 * remotes
 	 * 
 	 * @param repository
-	 *            the repository
+	 * @return
+	 * @throws CoreException
+	 * 
+	 * @see git config file: "[remote..."
+	 * @see #getAllRemoteConfigs
+	 * @see RemoteConfig#getAllRemoteConfigs
+	 * 
+	 */
+	public static boolean hasMultipleRemotes(Repository repository) throws CoreException {
+		return getAllRemoteConfigs(repository).size() > 1;
+	}
+
+	/**
+	 * Returns the name of the remote repository of the given branch.
+	 * 
 	 * @param branch
 	 *            the branch
+	 * @param repository
+	 *            the repository
 	 * @return the remote name
 	 */
-	private static String getRemoteName(Repository repository, String branch) {
+	private static String getRemoteName(String branch, Repository repository) {
 		String remoteName = null;
 		if (ObjectId.isId(branch)) {
 			remoteName = Constants.DEFAULT_REMOTE_NAME;
@@ -324,7 +385,7 @@ public class EGitUtils {
 		}
 		return remoteName;
 	}
-	
+
 	private static IStatus createStatus(Exception e, String message, String... arguments) throws CoreException {
 		IStatus status = null;
 		if (e == null) {
