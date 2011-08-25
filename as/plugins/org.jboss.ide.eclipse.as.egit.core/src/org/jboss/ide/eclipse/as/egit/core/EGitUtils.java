@@ -131,15 +131,19 @@ public class EGitUtils {
 						"Repository \"{0}\" has no remote repository with the name \"{1}\"",
 						repository.toString(), remote));
 			}
-			createPushOperation(remote, repository).run(monitor);
+			createPushOperation(remoteConfig, repository).run(monitor);
 		} catch (Exception e) {
 			throw new CoreException(createStatus(e, "Could not push repo {0}", repository.toString()));
 		}
 	}
 
-	private static PushOperation createPushOperation(String remoteName, Repository repository) {
-		return new PushOperation(repository, remoteName, false, PUSH_TIMEOUT);
-	}
+	//
+	// only available in EGit 1.1
+	//
+	// private static PushOperation createPushOperation(String remoteName,
+	// Repository repository) { return new PushOperation(repository, remoteName,
+	// false, PUSH_TIMEOUT); }
+	//
 
 	private static PushOperation createPushOperation(RemoteConfig remoteConfig, Repository repository)
 			throws CoreException {
