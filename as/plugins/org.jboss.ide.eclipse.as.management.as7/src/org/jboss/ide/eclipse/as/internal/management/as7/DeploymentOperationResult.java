@@ -89,7 +89,7 @@ public class DeploymentOperationResult implements IJBoss7DeploymentResult {
 	}
 
 	private IStatus createStatus(int severity, String messagePattern, Object... messageArguments) {
-		return new Status(severity, Activator.getContext().getBundle().getSymbolicName(), MessageFormat.format(
+		return new Status(severity, AS7ManagementActivator.getContext().getBundle().getSymbolicName(), MessageFormat.format(
 				messagePattern, messageArguments));
 	}
 }

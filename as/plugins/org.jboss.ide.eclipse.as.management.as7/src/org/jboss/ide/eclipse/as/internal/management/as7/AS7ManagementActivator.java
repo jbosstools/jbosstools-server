@@ -6,18 +6,18 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class AS7ManagementActivator extends Plugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.management.as7"; //$NON-NLS-1$
 
 	// The shared instance
-	private static Activator plugin;
+	private static AS7ManagementActivator plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public AS7ManagementActivator() {
 	}
 
 	public static BundleContext getContext() {
@@ -47,7 +47,7 @@ public class Activator extends Plugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static AS7ManagementActivator getDefault() {
 		return plugin;
 	}
 
