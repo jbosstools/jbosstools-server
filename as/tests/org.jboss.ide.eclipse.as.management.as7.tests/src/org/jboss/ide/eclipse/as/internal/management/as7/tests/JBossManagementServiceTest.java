@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import java.net.UnknownHostException;
 
 import org.jboss.ide.eclipse.as.core.server.v7.management.IJBoss7ManagerService;
+import org.jboss.ide.eclipse.as.internal.management.as7.AS7ManagementActivator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,35 +43,48 @@ public class JBossManagementServiceTest {
 	@Test
 	public void serviceIsReachable() throws BundleException {
 		ensureDSIsRunning();
+		ensureServiceBundleIsRunning();
 		BundleContext context = Activator.getContext();
-		ServiceReference<IJBoss7ManagerService> reference = 
+		ServiceReference<IJBoss7ManagerService> reference =
 				context.getServiceReference(IJBoss7ManagerService.class);
 		assertNotNull(reference);
 		IJBoss7ManagerService service = context.getService(reference);
 		assertNotNull(service);
 	}
 
+	private void ensureServiceBundleIsRunning() throws BundleException {
+		BundleContext context = Activator.getContext();
+		assertNotNull("bundle of this test is not active", context);
+		Bundle bundle = getBundle(AS7ManagementActivator.PLUGIN_ID);
+		assertNotNull(AS7ManagementActivator.PLUGIN_ID + " not installed", bundle);
+		startBundle(bundle);
+	}
+
 	private void ensureDSIsRunning() throws BundleException {
 		BundleContext context = Activator.getContext();
 		assertNotNull("bundle of this test is not active", context);
-		Bundle bundle = getDSBundle();
+		Bundle bundle = getBundle(DS_BUNDLEID);
 		assertNotNull(
 				DS_BUNDLEID + " not installed. You have to install the declarative services daemon so that "
 						+ IJBoss7ManagerService.class + " service is registered"
 				, bundle);
+		startBundle(bundle);
+	}
+
+	private void startBundle(Bundle bundle) throws BundleException {
 		if (bundle.getState() != Bundle.ACTIVE) {
 			bundle.start();
 		}
 	}
 
-	private Bundle getDSBundle() {
-		Bundle dsBundle = null;
+	private Bundle getBundle(String id) {
+		Bundle bundleFound = null;
 		for (Bundle bundle : Activator.getContext().getBundles()) {
-			if (DS_BUNDLEID.equals(bundle.getSymbolicName())) {
-				dsBundle = bundle;
+			if (id.equals(bundle.getSymbolicName())) {
+				bundleFound = bundle;
 				break;
 			}
 		}
-		return dsBundle;
+		return bundleFound;
 	}
 }
