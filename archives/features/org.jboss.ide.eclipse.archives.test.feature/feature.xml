@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.jboss.ide.eclipse.archives.test.feature"
-      label="org.jboss.ide.eclipse.archives.test.feature"
+      label="JBoss Tools - Tests - Archives"
       version="3.2.1.qualifier"
       provider-name="JBoss by Red Hat">
 
