@@ -30,7 +30,14 @@ public class ServerBeanLoader {
 		JBossServerType type = getServerType(location);
 		String version = null;
 		if (!JBossServerType.UNKNOWN.equals(type)) {
-			version = getServerVersion(getFullServerVersion(new File(location,type.getSystemJarPath())));
+			String fullVersion = getFullServerVersion(new File(location,type.getSystemJarPath()));
+			if (fullVersion != null && fullVersion.startsWith("5.1.1") && JBossServerType.SOAP.equals(type)) { //$NON-NLS-1$
+				// SOA-P 5.2
+				String runJar = JBossServerType.JBOSS_AS_PATH + File.separatorChar + 
+						JBossServerType.BIN_PATH+ File.separatorChar + JBossServerType.RUN_JAR_NAME;
+				fullVersion = getFullServerVersion(new File(location, runJar));
+			}
+			version = getServerVersion(fullVersion);
 		} 
 		ServerBean server = new ServerBean(location.getPath(),getName(location),type,version);
 		return server;

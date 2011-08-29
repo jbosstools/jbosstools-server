@@ -11,11 +11,9 @@
 package org.jboss.ide.eclipse.as.core.server.bean;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
@@ -23,10 +21,10 @@ import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class JBossServerType implements IJBossToolingConstants {
 	
-	private static final String JBOSS_AS_PATH = "jboss-as"; //$NON-NLS-1$
-	private static final String BIN_PATH = "bin"; //$NON-NLS-1$
+	public static final String JBOSS_AS_PATH = "jboss-as"; //$NON-NLS-1$
+	public static final String BIN_PATH = "bin"; //$NON-NLS-1$
 	private static final String TWIDDLE_JAR_NAME = "twiddle.jar"; //$NON-NLS-1$
-	private static final String RUN_JAR_NAME = "run.jar"; //$NON-NLS-1$
+	public static final String RUN_JAR_NAME = "run.jar"; //$NON-NLS-1$
 	private static final String JBOSS_ESB_PATH = "jboss-esb"; //$NON-NLS-1$
 	private static final String SOAP_JBPM_JPDL_PATH = "jbpm-jpdl"; //$NON-NLS-1$
 	private static final String JBOSS_AS_WEB_PATH = "jboss-as-web"; //$NON-NLS-1$
@@ -106,7 +104,7 @@ public class JBossServerType implements IJBossToolingConstants {
 			UNKNOWN_STR,
 			UNKNOWN_STR,
 			"",//$NON-NLS-1$
-			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
+			new String[]{V7_0, V7_1, V6_0, V6_1, V5_1, V5_2, V5_0, V4_3, V4_2, V4_0, V3_2}, null);
 
 	public String toString() {
 		return id;

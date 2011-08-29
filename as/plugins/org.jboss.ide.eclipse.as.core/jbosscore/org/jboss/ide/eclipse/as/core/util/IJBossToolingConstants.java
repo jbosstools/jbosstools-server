@@ -53,6 +53,7 @@ public interface IJBossToolingConstants {
 	public static final String V4_3 = "4.3"; //$NON-NLS-1$
 	public static final String V5_0 = "5.0"; //$NON-NLS-1$
 	public static final String V5_1 = "5.1"; //$NON-NLS-1$
+	public static final String V5_2 = "5.2"; //$NON-NLS-1$
 	public static final String V6_0 = "6.0"; //$NON-NLS-1$
 	public static final String V6_1 = "6.1"; //$NON-NLS-1$
 	public static final String V7_0 = "7.0"; //$NON-NLS-1$
