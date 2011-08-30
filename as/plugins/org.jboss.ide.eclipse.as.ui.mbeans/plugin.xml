@@ -231,5 +231,19 @@
             id="org.jboss.ide.eclipse.as.ui.mbeans.sar.module"
             typeIds="jst.jboss.sar"/>
    </extension>
+   <extension
+         point="org.eclipse.wst.server.core.moduleArtifactAdapters">
+      <moduleArtifactAdapter
+            class="org.jboss.ide.eclipse.as.ui.mbeans.project.SarArtifactAdapter"
+            id="org.jboss.ide.eclipse.as.ui.mbeans.sarmoduleArtifactAdapter">
+        <enablement>
+            <or>
+               <instanceof value="org.eclipse.core.resources.IResource"/>
+               <instanceof value="org.eclipse.jdt.core.IJavaElement"/>
+            </or>
+        </enablement>
+            
+      </moduleArtifactAdapter>
+   </extension>
 
 </plugin>
