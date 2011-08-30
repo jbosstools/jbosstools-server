@@ -47,9 +47,9 @@
             locationURI="popup:team.main?after=group1">
          <command
                commandId="org.jboss.ide.eclipse.as.egit.ui.commands.CommitAndPushCommand"
-               label="Commit and Push"
+               label="Commit and Push..."
                style="push"
-               tooltip="Commit And Push">
+               tooltip="Commit And Push...">
 	         <visibleWhen
 		             checkEnabled="false">
 		          <and>
