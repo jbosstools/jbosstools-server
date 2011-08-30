@@ -5,15 +5,15 @@
       version="3.2.1.qualifier"
       provider-name="JBoss by Red Hat">
 
-   <description url="http://www.jboss.com/products/jbosside">
-      Select &apos;More Info&apos;
+   <description url="http://www.jboss.org/tools">
+      %description
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright>
+      %copyright
    </copyright>
 
-   <license>
+   <license url="license.html">
       Red Hat, Inc. licenses these features and plugins to you under
 certain open source licenses (or aggregations of such licenses), which
 in a particular case may include the Eclipse Public License, the GNU
