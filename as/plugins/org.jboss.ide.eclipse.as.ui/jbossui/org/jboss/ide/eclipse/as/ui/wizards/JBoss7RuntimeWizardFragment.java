@@ -22,7 +22,7 @@ import org.jboss.ide.eclipse.as.ui.IPreferenceKeys;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 import org.jboss.ide.eclipse.as.ui.Messages;
 
-public class JBoss7ServerWizardFragment extends JBossRuntimeWizardFragment {
+public class JBoss7RuntimeWizardFragment extends JBossRuntimeWizardFragment {
 
 	@Override
 	public boolean hasComposite() {

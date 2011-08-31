@@ -34,13 +34,17 @@
             typeIds="%RuntimeTypesJBoss6OrLower"
         	id="org.jboss.ide.eclipse.as.ui.JBossRuntimeWizardFragment"/>
       <fragment
-            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7ServerWizardFragment"
-            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
-            typeIds="%ServerTypesJBoss7"/>
-      <fragment
             class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
             id="org.jboss.ide.eclipse.as.ui.jbossServerWizardFragment"
             typeIds="%ServerTypesJBoss6OrLower"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBoss7RuntimeWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss7RuntimeWizardFragment"
+            typeIds="%RuntimeTypesJBoss7"/>
+      <fragment
+            class="org.jboss.ide.eclipse.as.ui.wizards.JBossServerWizardFragment"
+            id="org.jboss.ide.eclipse.as.ui.jboss7ServerWizardFragment"
+            typeIds="%ServerTypesJBoss7"/>
       <fragment
              class="org.jboss.ide.eclipse.as.ui.wizards.StrippedServerWizardFragment"
              id="org.jboss.ide.eclipse.as.ui.strippedServerWizardFragment"
