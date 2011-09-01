@@ -97,6 +97,14 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		return makeDeployable(resource.getFullPath());
 	}
 	
+	public static boolean makeDeployable(IProject project, IPath[] workspaceRelative) {
+		boolean ret = true;
+		for( int i = 0; i < workspaceRelative.length; i++ ) {
+			ret &= getFactory().addModule(workspaceRelative[i]);
+		}
+		getFactory().saveDeployableList(project.getName());
+		return ret;
+	}
 	public static boolean makeDeployable(IPath workspaceRelative) {
 		boolean ret = getFactory().addModule(workspaceRelative);
 		getFactory().saveDeployableList(workspaceRelative.segment(0));
@@ -110,6 +118,13 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	public static void unmakeDeployable(IPath workspaceRelative) {
 		getFactory().removeModule(workspaceRelative);
 		getFactory().saveDeployableList(workspaceRelative.segment(0));
+	}
+
+	public static void unmakeDeployable(IProject project, IPath[] workspaceRelative) {
+		for( int i = 0; i < workspaceRelative.length; i++ ) {
+			getFactory().removeModule(workspaceRelative[i]);
+		}
+		getFactory().saveDeployableList(project.getName());
 	}
 
 	public static IModule findModule(IResource resource) {
@@ -236,12 +251,15 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 	}
 
 	
+	private SingleDeployableWorkspaceListener workspaceChangeListener;
 	protected void registerListener() {
 		UnitedServerListenerManager.getDefault().addListener(new UnitedServerListener() { 
 			public void publishFinished(IServer server, IStatus status) {
 				cleanUnusedModules();
 			}
 		});
+		workspaceChangeListener = new SingleDeployableWorkspaceListener();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(workspaceChangeListener);
 	}
 	
 	protected void cleanUnusedModules() {
