@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
+import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.polling.WebPortPoller;
@@ -74,6 +75,12 @@ public class LocalJBoss7BehaviorDelegate extends LocalJBossBehaviorDelegate {
 			super.pollServer(expectedState);
 		}
 	}
+	
+	@Override
+	protected boolean shouldSuspendScanner() {
+		return false;
+	}
+
 
 	@Override
 	public void dispose() {
