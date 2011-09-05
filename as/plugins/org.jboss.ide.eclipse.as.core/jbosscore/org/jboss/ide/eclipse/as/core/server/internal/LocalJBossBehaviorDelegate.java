@@ -233,7 +233,7 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 	}
 	
 	protected boolean shouldSuspendScanner() {
-		return getServer().getServerState() != IServer.STATE_STARTED
+		return getServer().getServerState() == IServer.STATE_STARTED
 				&&  ExtensionManager.getDefault().getJMXRunner() != null;
 	}
 
