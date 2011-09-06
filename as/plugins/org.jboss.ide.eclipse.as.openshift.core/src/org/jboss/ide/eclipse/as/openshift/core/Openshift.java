@@ -15,15 +15,20 @@ import java.net.URL;
 import java.util.List;
 
 import org.eclipse.osgi.util.NLS;
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.internal.core.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UrlConnectionHttpClient;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseFactory;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 
 /**
  * @author André Dietisheim
@@ -58,14 +63,6 @@ public class Openshift implements IOpenshift {
 		}
 	}
 
-	public UserInfo createApplication(String name) throws OpenshiftException {
-		throw new UnsupportedOperationException();
-	}
-
-	private IHttpClient createHttpClient(URL url) {
-		return new UrlConnectionHttpClient(url);
-	}
-
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
 		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(username, true);
@@ -84,6 +81,32 @@ public class Openshift implements IOpenshift {
 					NLS.bind("Could not list available cartridges at \"{0}\"",
 							listCartridgesRequest.getUrlString(BASE_URL)), e);
 		}
+	}	
+
+	@Override
+	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		ApplicationRequest applicationRequest = new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE, username, true);
+		try {
+			String listCartridgesRequestString =
+					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
+			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
+			String response = createHttpClient(applicationRequest.getUrl(BASE_URL)).post(request);
+			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseFactory(response, name, cartridge).create();
+			return openshiftResponse.getData();
+		} catch (MalformedURLException e) {
+			throw new OpenshiftException(
+					NLS.bind("Could not create application \"{0}\" at \"{1}\"",
+							name, applicationRequest.getUrlString(BASE_URL)), e);
+		} catch (HttpClientException e) {
+			throw new OpenshiftException(
+					NLS.bind("Could not create application \"{0}\" at \"{1}\"",
+							name, applicationRequest.getUrlString(BASE_URL)), e);
+		}
+
+	}
+
+	private IHttpClient createHttpClient(URL url) {
+		return new UrlConnectionHttpClient(url);
 	}
 
 }

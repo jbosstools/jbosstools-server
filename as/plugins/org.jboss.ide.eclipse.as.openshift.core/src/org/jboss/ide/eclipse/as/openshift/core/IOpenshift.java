@@ -18,6 +18,8 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
 public interface IOpenshift {
 
 	public UserInfo getUserInfo() throws OpenshiftException;
-	
+
 	public List<Cartridge> getCartridges() throws OpenshiftException;  
+
+	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException;
 }

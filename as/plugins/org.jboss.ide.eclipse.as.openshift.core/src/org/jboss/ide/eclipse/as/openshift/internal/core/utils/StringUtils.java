@@ -8,22 +8,26 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.utils;
 
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftObject;
 
 /**
  * @author André Dietisheim
  */
-public class Cartridge implements IOpenshiftObject {
+public class StringUtils {
 
-	private String name;
-
-	public Cartridge(String name) {
-		this.name = name;
+	public static String toLowerCase(String message) {
+		if (message == null) {
+			return null;
+		}
+		return message.toLowerCase();
 	}
 
-	public String getName() {
-		return name;
+	public static String toLowerCase(Enum<?> aEnum) {
+		if (aEnum == null) {
+			return null;
+		}
+		return toLowerCase(aEnum.name());
 	}
+
 }

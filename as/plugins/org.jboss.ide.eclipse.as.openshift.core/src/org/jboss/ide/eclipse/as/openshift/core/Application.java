@@ -8,32 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core.request;
+package org.jboss.ide.eclipse.as.openshift.core;
 
 import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 
-/**
- * @author André Dietisheim
- */
-public class ApplicationRequest extends AbstractOpenshiftRequest {
+public class Application implements IOpenshiftObject {
 
 	private String name;
-	private Cartridge cartridge ;
-	private ApplicationAction action;
+	private Cartridge cartridge;
 
-	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction action, String username) {
-		this(name, cartridge, action, username, false);
-	}
-
-	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction action, String username, boolean debug) {
-		super(username, debug);
+	public Application(String name, Cartridge cartridge) {
 		this.name = name;
 		this.cartridge = cartridge;
-		this.action = action;
-	}
-
-	public ApplicationAction getAction() {
-		return action;
 	}
 
 	public String getName() {
@@ -44,8 +30,4 @@ public class ApplicationRequest extends AbstractOpenshiftRequest {
 		return cartridge;
 	}
 
-	@Override
-	public String getResourcePath() {
-		return "cartridge";
-	}
 }

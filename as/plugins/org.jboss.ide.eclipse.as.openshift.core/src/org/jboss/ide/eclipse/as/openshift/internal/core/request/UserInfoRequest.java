@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
-
 /**
  * @author André Dietisheim
  */

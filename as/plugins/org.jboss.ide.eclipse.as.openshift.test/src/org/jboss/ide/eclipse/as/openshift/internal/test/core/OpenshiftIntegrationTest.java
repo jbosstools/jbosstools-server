@@ -1,17 +1,7 @@
 package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
-import static org.junit.Assert.assertEquals;
-
-import java.net.URLEncoder;
-
 import org.jboss.ide.eclipse.as.openshift.core.Openshift;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.OpenshiftJsonRequestFactory;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
