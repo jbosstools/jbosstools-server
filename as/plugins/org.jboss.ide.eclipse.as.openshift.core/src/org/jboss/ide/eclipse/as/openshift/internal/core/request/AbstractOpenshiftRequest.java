@@ -10,12 +10,16 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.IOpenshiftRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.utils.UrlBuilder;
 
 /**
  * @author André Dietisheim
  */
-public class AbstractOpenshiftRequest implements IOpenshiftRequest {
+public abstract class AbstractOpenshiftRequest implements IOpenshiftRequest {
 
 	private String rhlogin;
 	private boolean debug;
@@ -36,5 +40,15 @@ public class AbstractOpenshiftRequest implements IOpenshiftRequest {
 	public boolean isDebug() {
 		return debug;
 	}
+	
+	public URL getUrl(String baseUrl) throws MalformedURLException {
+		return new UrlBuilder(baseUrl).path(getResourcePath()).toUrl();
+	}
+	
+	public String getUrlString(String baseUrl) {
+		return new UrlBuilder(baseUrl).path(getResourcePath()).toString();
+	}
+
+	protected abstract String getResourcePath();
 	
 }

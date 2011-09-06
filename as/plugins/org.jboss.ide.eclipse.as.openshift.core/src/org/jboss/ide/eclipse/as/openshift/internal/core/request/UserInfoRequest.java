@@ -23,4 +23,9 @@ public class UserInfoRequest extends AbstractOpenshiftRequest {
 	public UserInfoRequest(String username, boolean debug) {
 		super(username, debug);
 	}
+
+	@Override
+	protected String getResourcePath() {
+		return "userinfo";
+	}
 }

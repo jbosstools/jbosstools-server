@@ -37,4 +37,9 @@ public class ApplicationRequest extends AbstractOpenshiftRequest {
 	protected Cartridge getCartridge() {
 		return cartridge;
 	}
+
+	@Override
+	protected String getResourcePath() {
+		return "cartridge";
+	}
 }

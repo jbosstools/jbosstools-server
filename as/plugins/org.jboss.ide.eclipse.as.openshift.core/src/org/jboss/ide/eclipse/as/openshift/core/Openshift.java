@@ -7,16 +7,14 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.osgi.util.NLS;
-import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
@@ -26,7 +24,6 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.UrlConnectionHttpClient;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
-import org.jboss.ide.eclipse.as.openshift.internal.core.utils.UrlBuilder;
 
 /**
  * @author André Dietisheim
@@ -44,55 +41,48 @@ public class Openshift implements IOpenshift {
 	}
 
 	public UserInfo getUserInfo() throws OpenshiftException {
-		UrlBuilder userInfoUrlBuilder = new UrlBuilder(BASE_URL).path("userinfo");
+		UserInfoRequest userInfoRequest = new UserInfoRequest(username, true);
 		try {
-			String userInfoRequest = new UserInfoRequestJsonMarshaller().marshall(new UserInfoRequest(username, true));
-			String request = new OpenshiftJsonRequestFactory(password, userInfoRequest).create();
-			String userInfoResponse = createHttpClient(userInfoUrlBuilder.toUrl()).post(request);
-			ModelNode userInfoReponse = ModelNode.fromJSONString(userInfoResponse);
-			return new UserInfo(
-					userInfoReponse.get("rhlogin").asString(),
-					userInfoReponse.get("uuid").asString(),
-					userInfoReponse.get("ssh_key").asString(),
-					userInfoReponse.get("rhc_domain").asString(),
-					userInfoReponse.get("namespace").asString());
+			String userInfoRequestString = new UserInfoRequestJsonMarshaller().marshall(userInfoRequest);
+			String request = new OpenshiftJsonRequestFactory(password, userInfoRequestString).create();
+			String userInfoResponse = createHttpClient(userInfoRequest.getUrl(BASE_URL)).post(request);
+			throw new UnsupportedOperationException();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
 					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoUrlBuilder.toString()), e);
+							userInfoRequest.getUrlString(BASE_URL)), e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftException(
 					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoUrlBuilder.toString()), e);
+							userInfoRequest.getUrlString(BASE_URL)), e);
 		}
 	}
 
 	public UserInfo createApplication(String name) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	private IHttpClient createHttpClient(URL url) {
 		return new UrlConnectionHttpClient(url);
 	}
 
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
-		UrlBuilder userInfoUrlBuilder = new UrlBuilder(BASE_URL).path("userinfo");
+		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(username, true);
 		try {
-			String listCartridgesRequest = new ListCartridgesRequestJsonMarshaller().marshall(new ListCartridgesRequest(username, true));
-			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequest).create();
-			String listCatridgesReponse = createHttpClient(userInfoUrlBuilder.toUrl()).post(request);
-			ModelNode userInfoReponse = ModelNode.fromJSONString(listCatridgesReponse);
-			List<Cartridge> cartridges = new ArrayList<Cartridge>();
-			return cartridges;
+			String listCartridgesRequestString =
+					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
+			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
+			String listCatridgesReponse = createHttpClient(listCartridgesRequest.getUrl(BASE_URL)).post(request);
+			throw new UnsupportedOperationException();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
-					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoUrlBuilder.toString()), e);
+					NLS.bind("Could not list available cartridges at \"{0}\"",
+							listCartridgesRequest.getUrlString(BASE_URL)), e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftException(
-					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoUrlBuilder.toString()), e);
+					NLS.bind("Could not list available cartridges at \"{0}\"",
+							listCartridgesRequest.getUrlString(BASE_URL)), e);
 		}
 	}
 

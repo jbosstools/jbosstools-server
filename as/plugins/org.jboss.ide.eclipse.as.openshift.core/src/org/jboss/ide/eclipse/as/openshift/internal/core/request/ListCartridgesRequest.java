@@ -29,4 +29,10 @@ public class ListCartridgesRequest extends AbstractOpenshiftRequest {
 	public String getCartType() {
 		return CART_TYPE_STANDALONE;
 	}
+	
+	@Override
+	protected String getResourcePath() {
+		return "cartlist";
+	}
+
 }
