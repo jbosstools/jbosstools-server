@@ -32,7 +32,7 @@ public class OpenshiftTest {
 	public void canMarshallRequestCorrectly() throws OpenshiftException {
 		String expectedRequestString = "password=" + PASSWORD + "&json_data=%7B%22rhlogin%22+%3A+%22dietisheim%40gmx.net%22%2C+%22debug%22+%3A+%22true%22%7D";
 		
-		String userInfoRequest = new UserInfoRequestJsonMarshaller(new UserInfoRequest(USERNAME, true)).create();
+		String userInfoRequest = new UserInfoRequestJsonMarshaller().marshall(new UserInfoRequest(USERNAME, true));
 		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, userInfoRequest).create();
 
 		assertEquals(expectedRequestString, effectiveRequest);

@@ -6,9 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.MessageFormat;
 
+import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
 import org.jboss.ide.eclipse.as.openshift.internal.core.utils.StreamUtils;
 
-public class UrlConnectionHttpClient implements HttpClient {
+public class UrlConnectionHttpClient implements IHttpClient {
 
 	private static final String PROPERTY_CONTENT_TYPE = "Content-Type";
 	private static final int TIMEOUT = 10 * 1024;

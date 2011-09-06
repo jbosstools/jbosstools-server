@@ -6,9 +6,10 @@ import java.net.URL;
 import org.eclipse.osgi.util.NLS;
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.OpenshiftJsonRequestFactory;
-import org.jboss.ide.eclipse.as.openshift.internal.core.HttpClient;
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UrlConnectionHttpClient;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.utils.UrlBuilder;
 
 public class Openshift {
@@ -26,12 +27,10 @@ public class Openshift {
 	public UserInfo getUserInfo() throws OpenshiftException {
 		UrlBuilder userInfoUrlBuilder = new UrlBuilder(BASE_URL).path("userinfo");
 		try {
-			ModelNode node = new ModelNode();
-			node.get("rhlogin").set(username);
-			node.get("debug").set("true");
-			HttpClient httpClient = createHttpClient(userInfoUrlBuilder.toUrl());
-			String request = new OpenshiftJsonRequestFactory(password, node.toJSONString(true)).create();
-			String userInfoResponse = httpClient.post(request);
+			String userInfoRequest = new UserInfoRequestJsonMarshaller().marshall(new UserInfoRequest(username, true));
+			IHttpClient iHttpClient = createHttpClient(userInfoUrlBuilder.toUrl());
+			String request = new OpenshiftJsonRequestFactory(password, userInfoRequest).create();
+			String userInfoResponse = iHttpClient.post(request);
 			ModelNode userInfoReponse = ModelNode.fromJSONString(userInfoResponse);
 			return new UserInfo(
 					userInfoReponse.get("rhlogin").asString(),
@@ -52,7 +51,7 @@ public class Openshift {
 
 	}
 
-	private HttpClient createHttpClient(URL url) {
+	private IHttpClient createHttpClient(URL url) {
 		return new UrlConnectionHttpClient(url);
 	}
 
