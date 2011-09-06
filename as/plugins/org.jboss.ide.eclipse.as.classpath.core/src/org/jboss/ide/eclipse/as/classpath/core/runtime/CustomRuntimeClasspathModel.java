@@ -19,19 +19,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.XMLMemento;
 import org.jboss.ide.eclipse.archives.webtools.filesets.Fileset;
 import org.jboss.ide.eclipse.archives.webtools.filesets.FilesetUtil;
+import org.jboss.ide.eclipse.as.classpath.core.ClasspathCorePlugin;
 import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeResourceConstants;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 
 public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBossRuntimeResourceConstants {
-	protected static IPath DEFAULT_CLASSPATH_FS_ROOT = JBossServerCorePlugin.getGlobalSettingsLocation().append("filesets").append("runtimeClasspaths"); //$NON-NLS-1$ //$NON-NLS-2$
+	protected static final IPath DEFAULT_CLASSPATH_FS_ROOT = JBossServerCorePlugin.getGlobalSettingsLocation().append("filesets").append("runtimeClasspaths"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static CustomRuntimeClasspathModel instance;
 	public static CustomRuntimeClasspathModel getInstance() {
@@ -219,6 +222,9 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 	}
 
 	public static void saveFilesets(IRuntimeType runtime, IDefaultPathProvider[] sets) {
+		if( !DEFAULT_CLASSPATH_FS_ROOT.toFile().exists()) {
+			DEFAULT_CLASSPATH_FS_ROOT.toFile().mkdirs();
+		}
 		IPath fileToWrite = DEFAULT_CLASSPATH_FS_ROOT.append(runtime.getId());
 		XMLMemento memento = XMLMemento.createWriteRoot("classpathProviders"); //$NON-NLS-1$
 		for( int i = 0; i < sets.length; i++ ) {
@@ -236,7 +242,8 @@ public class CustomRuntimeClasspathModel implements IJBossToolingConstants, IJBo
 		try {
 			memento.save(new FileOutputStream(fileToWrite.toFile()));
 		} catch( IOException ioe) {
-			// TODO LOG
+			IStatus status = new Status(IStatus.ERROR, ClasspathCorePlugin.PLUGIN_ID, "Could not save default classpath entries", ioe);
+			ClasspathCorePlugin.getDefault().getLog().log(status);
 		}
 	}
 }
