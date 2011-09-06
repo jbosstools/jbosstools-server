@@ -8,25 +8,25 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.request;
+
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
+public class ListCartridgesRequest extends AbstractOpenshiftRequest {
 
-	private static final long serialVersionUID = 1L;
+	private static final String CART_TYPE_STANDALONE = "standalone";
 
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
+	public ListCartridgesRequest(String username) {
+		this(username, false);
 	}
 
-	public OpenshiftException(String message) {
-		super(message);
+	public ListCartridgesRequest(String username, boolean debug) {
+		super(username, debug);
 	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
+	
+	public String getCartType() {
+		return CART_TYPE_STANDALONE;
 	}
-
 }

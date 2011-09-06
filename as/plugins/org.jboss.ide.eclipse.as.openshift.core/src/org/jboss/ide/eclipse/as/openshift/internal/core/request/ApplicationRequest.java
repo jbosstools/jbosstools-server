@@ -10,17 +10,31 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
+import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 
 /**
  * @author André Dietisheim
  */
-public class UserInfoRequest extends AbstractOpenshiftRequest {
+public class ApplicationRequest extends AbstractOpenshiftRequest {
 
-	public UserInfoRequest(String username) {
-		this(username, false);
+	private String name;
+	private Cartridge cartridge ;
+
+	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction action, String username) {
+		this(name, cartridge, action, username, false);
 	}
 
-	public UserInfoRequest(String username, boolean debug) {
+	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction applicationAction, String username, boolean debug) {
 		super(username, debug);
+		this.name = name;
+		this.cartridge = cartridge;
+	}
+
+	protected String getName() {
+		return name;
+	}
+
+	protected Cartridge getCartridge() {
+		return cartridge;
 	}
 }

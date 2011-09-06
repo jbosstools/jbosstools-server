@@ -8,25 +8,33 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.request;
+
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.IOpenshiftRequest;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
+public class AbstractOpenshiftRequest implements IOpenshiftRequest {
 
-	private static final long serialVersionUID = 1L;
+	private String rhlogin;
+	private boolean debug;
 
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
+	public AbstractOpenshiftRequest(String username) {
+		this(username, false);
 	}
 
-	public OpenshiftException(String message) {
-		super(message);
+	public AbstractOpenshiftRequest(String username, boolean debug) {
+		this.rhlogin = username;
+		this.debug = debug;
 	}
 
-	public OpenshiftException(Throwable cause) {
-		super(cause);
+	public String getRhLogin() {
+		return rhlogin;
 	}
 
+	public boolean isDebug() {
+		return debug;
+	}
+	
 }

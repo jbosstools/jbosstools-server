@@ -13,20 +13,6 @@ package org.jboss.ide.eclipse.as.openshift.core;
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
-
-	private static final long serialVersionUID = 1L;
-
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public OpenshiftException(String message) {
-		super(message);
-	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
-	}
+public interface IOpenshiftObject {
 
 }

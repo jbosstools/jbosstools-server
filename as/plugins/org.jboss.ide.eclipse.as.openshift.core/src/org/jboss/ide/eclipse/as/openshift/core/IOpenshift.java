@@ -10,23 +10,14 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
-/**
- * @author André Dietisheim
- */
-public class OpenshiftException extends Exception {
+import java.util.List;
 
-	private static final long serialVersionUID = 1L;
+import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
 
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
-	}
+public interface IOpenshift {
 
-	public OpenshiftException(String message) {
-		super(message);
-	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
-	}
-
+	public UserInfo getUserInfo() throws OpenshiftException;
+	
+	public List<Cartridge> getCartridges() throws OpenshiftException;  
 }

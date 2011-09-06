@@ -8,25 +8,22 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core;
+
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftObject;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
+public class Cartridge implements IOpenshiftObject {
 
-	private static final long serialVersionUID = 1L;
+	private String name;
 
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
+	private Cartridge(String name) {
+		this.name = name;
 	}
 
-	public OpenshiftException(String message) {
-		super(message);
+	public String getName() {
+		return name;
 	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
-	}
-
 }

@@ -1,10 +1,10 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 
-public abstract class AbstractOpenshiftMarshaller<OPENSHIFTOBJECT extends IOpenshiftRequest> implements IOpenshiftMarshaller<OPENSHIFTOBJECT> {
+public abstract class AbstractOpenshiftMarshaller<REQUEST extends IOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {
 
 	@Override
-	public String marshall(OPENSHIFTOBJECT object) {
+	public String marshall(REQUEST object) {
 		StringBuilder builder = new StringBuilder();
 		append(builder);
 		return builder.toString();

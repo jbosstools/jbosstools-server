@@ -8,25 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftException extends Exception {
+public class ListCartridgesRequestJsonMarshaller extends AbstractJsonMarshaller<ListCartridgesRequest> {
 
-	private static final long serialVersionUID = 1L;
-
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
+	@Override
+	protected void setNodeProperties(ModelNode node, ListCartridgesRequest request) {
+		node.get(IOpenshiftJsonConstants.PROPERTY_CART_TYPE).set(request.getCartType());
 	}
-
-	public OpenshiftException(String message) {
-		super(message);
-	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
-	}
-
 }

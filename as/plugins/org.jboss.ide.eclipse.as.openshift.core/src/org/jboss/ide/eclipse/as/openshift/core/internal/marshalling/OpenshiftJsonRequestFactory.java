@@ -1,3 +1,13 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import java.io.UnsupportedEncodingException;
@@ -5,6 +15,9 @@ import java.net.URLEncoder;
 
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
+/**
+ * @author André Dietisheim
+ */
 public class OpenshiftJsonRequestFactory {
 
 	private static final char EQ = '=';
@@ -12,6 +25,7 @@ public class OpenshiftJsonRequestFactory {
 	private static final String PROPERTY_JSON_DATA = "json_data";
 	private static final String DATA_ENCODING = "UTF-8";
 	private static final char AMP = '&';
+
 	private String[] payloads;
 	private String password;
 
