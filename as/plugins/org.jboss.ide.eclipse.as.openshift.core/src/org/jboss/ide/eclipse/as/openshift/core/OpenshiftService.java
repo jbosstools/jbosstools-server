@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.eclipse.osgi.util.NLS;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
@@ -47,40 +46,41 @@ public class OpenshiftService implements IOpenshiftService {
 
 	public UserInfo getUserInfo() throws OpenshiftException {
 		UserInfoRequest userInfoRequest = new UserInfoRequest(username, true);
+		String url = userInfoRequest.getUrlString(BASE_URL);
 		try {
 			String userInfoRequestString = new UserInfoRequestJsonMarshaller().marshall(userInfoRequest);
 			String request = new OpenshiftJsonRequestFactory(password, userInfoRequestString).create();
-			String userInfoResponse = createHttpClient(userInfoRequest.getUrl(BASE_URL)).post(request);
+			String userInfoResponse = createHttpClient(url).post(request);
 			throw new UnsupportedOperationException();
 		} catch (MalformedURLException e) {
-			throw new OpenshiftException(
-					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoRequest.getUrlString(BASE_URL)), e);
+			throw new OpenshiftEndpointException(
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", username, url, e);
 		} catch (HttpClientException e) {
-			throw new OpenshiftException(
-					NLS.bind("Could not get user info for user \"{0}\" at \"{1}\"", username,
-							userInfoRequest.getUrlString(BASE_URL)), e);
+			throw new OpenshiftEndpointException(
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", username, url, e);
 		}
 	}
 
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
 		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(username, true);
+		String url = listCartridgesRequest.getUrlString(BASE_URL);
 		try {
 			String listCartridgesRequestString =
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
 			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
-			String listCatridgesReponse = createHttpClient(listCartridgesRequest.getUrl(BASE_URL)).post(request);
+			String listCatridgesReponse = createHttpClient(url).post(request);
 			throw new UnsupportedOperationException();
 		} catch (MalformedURLException e) {
-			throw new OpenshiftException(
-					NLS.bind("Could not list available cartridges at \"{0}\"",
-							listCartridgesRequest.getUrlString(BASE_URL)), e);
+			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		} catch (HttpClientException e) {
-			throw new OpenshiftException(
-					NLS.bind("Could not list available cartridges at \"{0}\"",
-							listCartridgesRequest.getUrlString(BASE_URL)), e);
+			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		}
+	}
+
+	@Override
+	public Application createDomain(String name) throws OpenshiftException {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -97,30 +97,28 @@ public class OpenshiftService implements IOpenshiftService {
 
 	protected Application requestApplicationAction(String name, Cartridge cartridge,
 			ApplicationRequest applicationRequest) throws OpenshiftException {
+		String url = applicationRequest.getUrlString(BASE_URL);
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
 			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).create();
-			String response = createHttpClient(applicationRequest.getUrl(BASE_URL)).post(request);
+			String response = createHttpClient(url).post(request);
 			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseUnmarshaller(response, name,
 					cartridge).unmarshall();
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
-			throw new OpenshiftException(
-					NLS.bind(
-							"Could not {0} application \"{1}\" at \"{2}\"", new String[] {
-									applicationRequest.getAction().toHumanReadable(), name,
-									applicationRequest.getUrlString(BASE_URL) }), e);
+			throw new OpenshiftEndpointException(
+					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
+					applicationRequest.getAction().toHumanReadable(), name, url);
 		} catch (HttpClientException e) {
-			throw new OpenshiftException(
-					NLS.bind("Could not {0} application \"{1}\" at \"{2}\"", new String[] {
-							applicationRequest.getAction().toHumanReadable(), name,
-							applicationRequest.getUrlString(BASE_URL) }), e);
+			throw new OpenshiftEndpointException(
+					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
+					applicationRequest.getAction().toHumanReadable(), name, url);
 		}
 	}
 
-	private IHttpClient createHttpClient(URL url) {
-		return new UrlConnectionHttpClient(url);
+	private IHttpClient createHttpClient(String url) throws MalformedURLException {
+		return new UrlConnectionHttpClient(new URL(url));
 	}
 
 }

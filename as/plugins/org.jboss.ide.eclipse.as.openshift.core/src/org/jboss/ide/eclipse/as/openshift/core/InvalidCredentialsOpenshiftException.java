@@ -8,25 +8,30 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.core;
+
 
 /**
  * @author André Dietisheim
  */
-public class HttpClientException extends Exception {
+public class InvalidCredentialsOpenshiftException extends OpenshiftEndpointException {
 
 	private static final long serialVersionUID = 1L;
 
-	public  HttpClientException(String message, Throwable cause) {
-		super(message, cause);
+	private String username;
+	private String password;
+
+	public  InvalidCredentialsOpenshiftException(String url, Throwable cause, String username, String password, String message, String... arguments) {
+		super(url, cause, message);
+		this.username = username;
+		this.password = password;
 	}
 
-	public HttpClientException(String message) {
-		super(message);
+	protected String getUsername() {
+		return username;
 	}
 
-	public HttpClientException(Throwable cause) {
-		super(cause);
+	protected String getPassword() {
+		return password;
 	}
-
 }

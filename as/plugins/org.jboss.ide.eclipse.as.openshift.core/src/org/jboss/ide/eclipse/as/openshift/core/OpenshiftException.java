@@ -10,6 +10,8 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.text.MessageFormat;
+
 /**
  * @author André Dietisheim
  */
@@ -17,16 +19,7 @@ public class OpenshiftException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public OpenshiftException(String message, Throwable cause) {
-		super(message, cause);
+	public OpenshiftException(Throwable cause, String message, Object... arguments) {
+		super(MessageFormat.format(message, arguments), cause);
 	}
-
-	public OpenshiftException(String message) {
-		super(message);
-	}
-
-	public OpenshiftException(Throwable cause) {
-		super(cause);
-	}
-
 }

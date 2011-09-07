@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.internal.core.response;
 
-import org.eclipse.osgi.util.NLS;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
@@ -37,9 +36,9 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 			OPENSHIFTOBJECT openshiftObject = createOpenshiftObject(node.get(IOpenshiftJsonConstants.PROPERTY_DATA));
 			return new OpenshiftResponse<OPENSHIFTOBJECT>(debug, messages, result, openshiftObject, exitCode);
 		} catch (IllegalArgumentException e) {
-			throw new OpenshiftException(NLS.bind("Could not parse response \"{0}\"", response), e);
+			throw new OpenshiftException(e, "Could not parse response \"{0}\"", response);
 		} catch (Exception e) {
-			throw new OpenshiftException(NLS.bind("Could not unmarshall response \"{0}\"", response), e);
+			throw new OpenshiftException(e, "Could not unmarshall response \"{0}\"", response);
 		}
 	}
 

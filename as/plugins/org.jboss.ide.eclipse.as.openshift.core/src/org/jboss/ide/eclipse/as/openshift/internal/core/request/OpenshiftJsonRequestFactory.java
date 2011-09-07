@@ -13,6 +13,7 @@ package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
@@ -45,7 +46,7 @@ public class OpenshiftJsonRequestFactory {
 			appendPayload(builder);
 			return builder.toString();
 		} catch (UnsupportedEncodingException e) {
-			throw new OpenshiftException("Could not create request", e);
+			throw new OpenshiftException(e, "Could not create request");
 		}
 	}
 

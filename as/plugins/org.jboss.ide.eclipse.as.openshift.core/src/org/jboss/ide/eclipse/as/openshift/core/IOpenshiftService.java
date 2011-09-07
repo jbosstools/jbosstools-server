@@ -24,4 +24,6 @@ public interface IOpenshiftService {
 	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
 	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException;
+
+	public Application createDomain(String name) throws OpenshiftException;
 }

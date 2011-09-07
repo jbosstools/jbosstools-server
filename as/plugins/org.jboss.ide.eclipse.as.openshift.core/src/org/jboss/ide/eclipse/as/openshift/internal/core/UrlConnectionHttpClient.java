@@ -44,11 +44,12 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private HttpClientException getException(IOException ioe, HttpURLConnection connection) {
 		try {
+			String errorMessage = StreamUtils.readToString(connection.getErrorStream());
 			int responseCode = connection.getResponseCode();
 			if (responseCode == 500) {
-				return new InternalServerErrorException(ioe);
+				return new InternalServerErrorException(errorMessage, ioe);
 			} else {
-				return new HttpClientException(ioe);
+				return new HttpClientException(errorMessage, ioe);
 			}
 		} catch (IOException e) {
 			return new HttpClientException(e);
