@@ -2,6 +2,7 @@ package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
 import org.jboss.ide.eclipse.as.openshift.core.Openshift;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,5 +28,9 @@ public class OpenshiftIntegrationTest {
 		openshift.getCartridges();		
 	}
 
+	@Test
+	public void canCreateApplication() throws Exception {
+		openshift.createApplication("test-application", new Cartridge("jbossas-7.0"));		
+	}
 	
 }

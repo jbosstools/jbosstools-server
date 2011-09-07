@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationReque
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
-import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseFactory;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 
 /**
@@ -91,7 +91,7 @@ public class Openshift implements IOpenshift {
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
 			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
 			String response = createHttpClient(applicationRequest.getUrl(BASE_URL)).post(request);
-			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseFactory(response, name, cartridge).create();
+			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseUnmarshaller(response, name, cartridge).unmarshall();
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(

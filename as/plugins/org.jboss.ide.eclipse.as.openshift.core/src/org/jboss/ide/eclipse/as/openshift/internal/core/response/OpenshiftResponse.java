@@ -10,12 +10,11 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.response;
 
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftObject;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftResponse<OPENSHIFTOBJECT extends IOpenshiftObject> {
+public class OpenshiftResponse<OPENSHIFTOBJECT> {
 
 	private boolean debug;
 	private String messages;

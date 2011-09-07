@@ -1,9 +1,13 @@
 package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.net.URLEncoder;
+import java.text.MessageFormat;
+import java.util.List;
 
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
@@ -13,6 +17,8 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationReque
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 import org.junit.Test;
 
 public class OpenshiftTest {
@@ -69,5 +75,52 @@ public class OpenshiftTest {
 		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, createApplicationRequest).create();
 
 		assertEquals(expectedRequestString, effectiveRequest);
+	}
+
+	@Test
+	public void canUnmarshallCartridgeListResponse() throws OpenshiftException {
+		/*
+		 * WARNING: the current (9-7-2011) response from the openshift rest
+		 * service is invalid. It quotes the nested json object in the data
+		 * property: '"data" : "{'. My current unmarshalling code does not
+		 * handle this bad json.
+		 */
+		String cartridgeListResponse =
+				"{"
+						+ "\"messages\":\"\","
+						+ "\"debug\":\"\","
+						+ "\"data\":"
+						+ "{\"carts\":[\"perl-5.10\",\"jbossas-7.0\",\"wsgi-3.2\",\"rack-1.1\",\"php-5.3\"]},"
+						+ "\"api\":\"1.1.1\","
+						+ "\"api_c\":[\"placeholder\"],"
+						+ "\"result\":null,"
+						+ "\"broker\":\"1.1.1\","
+						+ "\"broker_c\":[\"namespace\",\"rhlogin\",\"ssh\",\"app_uuid\",\"debug\",\"alter\",\"cartridge\",\"cart_type\",\"action\",\"app_name\",\"api\"],"
+						+ "\"exit_code\":0}";
+
+		OpenshiftResponse<List<Cartridge>> response = new ListCartridgesResponseUnmarshaller(cartridgeListResponse)
+				.unmarshall();
+		assertEquals("", response.getMessages());
+		assertEquals(false, response.isDebug());
+
+		List<Cartridge> cartridges = response.getData();
+		assertEquals(5, cartridges.size());
+		assertThatContainsCartridge("perl-5.10", cartridges);
+		assertEquals(null, response.getResult());
+		assertEquals(0, response.getExitCode());
+
+	}
+
+	private void assertThatContainsCartridge(String cartridgeName, List<Cartridge> cartridges) {
+		boolean found = false;
+		for (Cartridge cartridge : cartridges) {
+			if (cartridgeName.equals(cartridge.getName())) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			fail(MessageFormat.format("Could not find cartridge with name \"{0}\"", cartridgeName));
+		}
 	}
 }

@@ -17,12 +17,12 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 /**
  * @author André Dietisheim
  */
-public class ApplicationResponseFactory extends AbstractOpenshiftJsonResponseFactory<Application> {
+public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Application> {
 
 	private String applicationName;
 	private Cartridge cartridge;
 
-	public ApplicationResponseFactory(String response, String applicationName, Cartridge cartridge) {
+	public ApplicationResponseUnmarshaller(String response, String applicationName, Cartridge cartridge) {
 		super(response);
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;

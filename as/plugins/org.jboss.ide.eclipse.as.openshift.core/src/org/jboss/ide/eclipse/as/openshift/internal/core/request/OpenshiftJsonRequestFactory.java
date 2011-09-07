@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
 import java.io.UnsupportedEncodingException;
@@ -16,6 +16,9 @@ import java.net.URLEncoder;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
+ * A factory that creates the json string that the openshift rest service
+ * would consume.
+ * 
  * @author André Dietisheim
  */
 public class OpenshiftJsonRequestFactory {
