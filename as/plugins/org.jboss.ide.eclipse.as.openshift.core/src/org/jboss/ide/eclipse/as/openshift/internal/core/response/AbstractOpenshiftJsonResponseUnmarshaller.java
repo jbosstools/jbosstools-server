@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.openshift.internal.core.response;
 
 import org.eclipse.osgi.util.NLS;
 import org.jboss.dmr.ModelNode;
+import org.jboss.dmr.ModelType;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
@@ -30,8 +31,8 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 		try {
 			ModelNode node = ModelNode.fromJSONString(response);
 			boolean debug = node.get(IOpenshiftJsonConstants.PROPERTY_DEBUG).asBoolean();
-			String messages = node.get(IOpenshiftJsonConstants.PROPERTY_MESSAGES).asString();
-			String result = node.get(IOpenshiftJsonConstants.PROPERTY_RESULT).asString();
+			String messages = getString(IOpenshiftJsonConstants.PROPERTY_MESSAGES, node);
+			String result = getString(IOpenshiftJsonConstants.PROPERTY_RESULT, node);
 			int exitCode = node.get(IOpenshiftJsonConstants.PROPERTY_EXIT_CODE).asInt();
 			OPENSHIFTOBJECT openshiftObject = createOpenshiftObject(node.get(IOpenshiftJsonConstants.PROPERTY_DATA));
 			return new OpenshiftResponse<OPENSHIFTOBJECT>(debug, messages, result, openshiftObject, exitCode);
@@ -46,6 +47,14 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 	protected String getResponse() {
 		return response;
+	}
+
+	protected String getString(String property, ModelNode node) {
+		ModelNode propertyNode = node.get(property);
+		if (propertyNode.getType() == ModelType.UNDEFINED) {
+			return null;
+		}
+		return propertyNode.asString();
 	}
 
 }

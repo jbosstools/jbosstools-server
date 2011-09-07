@@ -106,6 +106,10 @@ public class OpenshiftTest {
 		List<Cartridge> cartridges = response.getData();
 		assertEquals(5, cartridges.size());
 		assertThatContainsCartridge("perl-5.10", cartridges);
+		assertThatContainsCartridge("jbossas-7.0", cartridges);
+		assertThatContainsCartridge("wsgi-3.2", cartridges);
+		assertThatContainsCartridge("rack-1.1", cartridges);
+		assertThatContainsCartridge("php-5.3", cartridges);
 		assertEquals(null, response.getResult());
 		assertEquals(0, response.getExitCode());
 
