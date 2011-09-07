@@ -17,6 +17,8 @@ import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftObject;
  */
 public class Cartridge implements IOpenshiftObject {
 
+	public static final Cartridge JBOSSAS_7 = new Cartridge("jbossas-7.0");
+	
 	private String name;
 
 	public Cartridge(String name) {

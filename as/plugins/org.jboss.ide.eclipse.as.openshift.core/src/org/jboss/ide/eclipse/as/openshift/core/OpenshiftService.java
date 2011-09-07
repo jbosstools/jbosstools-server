@@ -33,14 +33,14 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftRespon
 /**
  * @author André Dietisheim
  */
-public class Openshift implements IOpenshift {
+public class OpenshiftService implements IOpenshiftService {
 
 	private static final String BASE_URL = "https://openshift.redhat.com/broker";
 
 	private String username;
 	private String password;
 
-	public Openshift(String username, String password) {
+	public OpenshiftService(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
@@ -81,28 +81,42 @@ public class Openshift implements IOpenshift {
 					NLS.bind("Could not list available cartridges at \"{0}\"",
 							listCartridgesRequest.getUrlString(BASE_URL)), e);
 		}
-	}	
+	}
 
 	@Override
 	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		ApplicationRequest applicationRequest = new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE, username, true);
+		return requestApplicationAction(name, cartridge,
+				new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE, username, true));
+	}
+
+	@Override
+	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		return requestApplicationAction(name, cartridge,
+				new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE, username, true));
+	}
+
+	protected Application requestApplicationAction(String name, Cartridge cartridge,
+			ApplicationRequest applicationRequest) throws OpenshiftException {
 		try {
-			String listCartridgesRequestString =
+			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
-			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
+			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).create();
 			String response = createHttpClient(applicationRequest.getUrl(BASE_URL)).post(request);
-			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseUnmarshaller(response, name, cartridge).unmarshall();
+			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseUnmarshaller(response, name,
+					cartridge).unmarshall();
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
-					NLS.bind("Could not create application \"{0}\" at \"{1}\"",
-							name, applicationRequest.getUrlString(BASE_URL)), e);
+					NLS.bind(
+							"Could not {0} application \"{1}\" at \"{2}\"", new String[] {
+									applicationRequest.getAction().toHumanReadable(), name,
+									applicationRequest.getUrlString(BASE_URL) }), e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftException(
-					NLS.bind("Could not create application \"{0}\" at \"{1}\"",
-							name, applicationRequest.getUrlString(BASE_URL)), e);
+					NLS.bind("Could not {0} application \"{1}\" at \"{2}\"", new String[] {
+							applicationRequest.getAction().toHumanReadable(), name,
+							applicationRequest.getUrlString(BASE_URL) }), e);
 		}
-
 	}
 
 	private IHttpClient createHttpClient(URL url) {

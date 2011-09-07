@@ -21,7 +21,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesR
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 import org.junit.Test;
 
-public class OpenshiftTest {
+public class OpenshiftServiceTest {
 
 	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";

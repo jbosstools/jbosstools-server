@@ -11,5 +11,9 @@
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
 public enum ApplicationAction {
-	CONFIGURE, DECONFIGURE, START, STOP, RESTART, STATUS
+	CONFIGURE, DECONFIGURE, START, STOP, RESTART, STATUS;
+
+	public String toHumanReadable() {
+		return name().toLowerCase();
+	}
 }
