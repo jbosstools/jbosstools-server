@@ -8,24 +8,23 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+/**
+ * @author André Dietisheim
+ */
+public class ChangeCreateDomainRequest extends AbstractDomainRequest {
 
-	private static BundleContext context;
-
-	static BundleContext getContext() {
-		return context;
+	public ChangeCreateDomainRequest(String name, String namespace, String sshKey, ApplicationAction action, String username) {
+		this(name, namespace, sshKey, username, false);
 	}
 
-	public void start(BundleContext bundleContext) throws Exception {
-		Activator.context = bundleContext;
+	public ChangeCreateDomainRequest(String name, String namespace, String sshKey, String username, boolean debug) {
+		super(name, sshKey, username, debug);
 	}
 
-	public void stop(BundleContext bundleContext) throws Exception {
-		Activator.context = null;
+	public boolean isAlter() {
+		return true;
 	}
 }

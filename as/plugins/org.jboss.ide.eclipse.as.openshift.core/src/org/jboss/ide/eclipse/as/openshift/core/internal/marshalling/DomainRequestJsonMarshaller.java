@@ -12,22 +12,16 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractOpenshiftRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractDomainRequest;
 
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {
+public class DomainRequestJsonMarshaller extends AbstractJsonMarshaller<AbstractDomainRequest> {
 
-	public String marshall(REQUEST request) {
-		ModelNode node = new ModelNode();
-		node.get(IOpenshiftJsonConstants.PROPERTY_RHLOGIN).set(request.getRhLogin());
-		node.get(IOpenshiftJsonConstants.PROPERTY_DEBUG).set(String.valueOf(request.isDebug()));
-		setJsonDataProperties(node, request);
-		return node.toJSONString(true);
-	}
-
-	protected void setJsonDataProperties(ModelNode node, REQUEST request) {
-		// empty default implementation
+	@Override
+	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) {
+		node.get(IOpenshiftJsonConstants.PROPERTY_NAMESPACE).set(request.getName());
+		node.get(IOpenshiftJsonConstants.PROPERTY_ALTER).set(request.isAlter());
 	}
 }

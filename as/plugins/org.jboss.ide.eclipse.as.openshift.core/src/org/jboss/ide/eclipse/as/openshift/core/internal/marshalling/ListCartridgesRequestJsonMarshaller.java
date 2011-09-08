@@ -20,7 +20,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRe
 public class ListCartridgesRequestJsonMarshaller extends AbstractJsonMarshaller<ListCartridgesRequest> {
 
 	@Override
-	protected void setNodeProperties(ModelNode node, ListCartridgesRequest request) {
+	protected void setJsonDataProperties(ModelNode node, ListCartridgesRequest request) {
 		node.get(IOpenshiftJsonConstants.PROPERTY_CART_TYPE).set(request.getCartType());
 	}
 }

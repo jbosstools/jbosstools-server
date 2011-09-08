@@ -1,10 +1,17 @@
+/******************************************************************************* 
+ * Copyright (c) 2007 Red Hat, Inc. 
+ * Distributed under license by Red Hat, Inc. All rights reserved. 
+ * This program is made available under the terms of the 
+ * Eclipse Public License v1.0 which accompanies this distribution, 
+ * and is available at http://www.eclipse.org/legal/epl-v10.html 
+ * 
+ * Contributors: 
+ * Red Hat, Inc. - initial API and implementation 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
@@ -13,10 +20,12 @@ import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftExcept
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class OpenshiftServiceIntegrationTest {
+/**
+ * @author André Dietisheim
+ */
+public class ApplicationIntegrationTest {
 
 	private OpenshiftService openshiftService;
 	private OpenshiftService invalidCredentialsOpenshiftService;
@@ -28,20 +37,6 @@ public class OpenshiftServiceIntegrationTest {
 	public void setUp() {
 		this.openshiftService = new OpenshiftService(USERNAME, PASSWORD);
 		this.invalidCredentialsOpenshiftService = new OpenshiftService(USERNAME, "bogus");
-	}
-
-	@Ignore
-	@Test(expected = OpenshiftException.class)
-	public void cannotGetUserInfoIfNotAppNorDomainCreated() throws OpenshiftException {
-		openshiftService.getUserInfo();
-	}
-
-	@Ignore
-	@Test
-	public void canRequestListCartridges() throws Exception {
-		List<Cartridge> cartridges = openshiftService.getCartridges();
-		assertNotNull(cartridges);
-		assertTrue(cartridges.size() > 0);
 	}
 
 	@Test(expected = InvalidCredentialsOpenshiftException.class)
@@ -87,6 +82,5 @@ public class OpenshiftServiceIntegrationTest {
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

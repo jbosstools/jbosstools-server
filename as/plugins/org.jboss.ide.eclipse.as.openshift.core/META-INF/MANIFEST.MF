@@ -3,9 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Openshift Core Plugin
 Bundle-SymbolicName: org.jboss.ide.eclipse.as.openshift.core
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: org.jboss.ide.eclipse.as.openshift.internal.core.Activator
+Bundle-Activator: org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftCoreActivator
 Bundle-Vendor: JBoss by Red Hat
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ com.jcraft.jsch;bundle-version="[0.1.41,2.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: jboss-dmr-1.0.0.Final.jar,

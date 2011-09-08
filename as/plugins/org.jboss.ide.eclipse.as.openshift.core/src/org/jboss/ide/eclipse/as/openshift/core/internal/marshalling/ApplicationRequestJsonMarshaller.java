@@ -22,7 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationReque
 public class ApplicationRequestJsonMarshaller extends AbstractJsonMarshaller<ApplicationRequest> {
 
 	@Override
-	protected void setNodeProperties(ModelNode node, ApplicationRequest request) {
+	protected void setJsonDataProperties(ModelNode node, ApplicationRequest request) {
 		node.get(IOpenshiftJsonConstants.PROPERTY_CARTRIDGE).set(getCartridgeName(request.getCartridge()));
 		node.get(IOpenshiftJsonConstants.PROPERTY_ACTION).set(getActionName(request.getAction()));
 		node.get(IOpenshiftJsonConstants.PROPERTY_APP_NAME).set(request.getName());

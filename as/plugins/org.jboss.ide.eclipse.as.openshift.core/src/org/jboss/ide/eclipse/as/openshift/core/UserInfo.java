@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.IOpenshiftRequest;
-
 /**
  * @author André Dietisheim
  */

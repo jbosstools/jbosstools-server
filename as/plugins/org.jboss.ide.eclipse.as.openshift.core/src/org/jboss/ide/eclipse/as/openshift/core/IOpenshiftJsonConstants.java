@@ -28,5 +28,7 @@ public class IOpenshiftJsonConstants {
 	public static final String PROPERTY_ACTION = "action";
 	public static final String PROPERTY_CARTRIDGE = "cartridge";
 	public static final String PROPERTY_CARTS = "carts";
+	public static final String PROPERTY_NAMESPACE = "namespace";
+	public static final String PROPERTY_ALTER = "alter";
 	
 }

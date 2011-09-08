@@ -14,17 +14,33 @@ package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 /**
  * @author André Dietisheim
  */
-public class CreateDomainRequest extends AbstractDomainRequest {
+public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
 
-	public CreateDomainRequest(String name, String sshKey, ApplicationAction action, String username) {
+	private String name;
+	private String sshKey;
+
+	public AbstractDomainRequest(String name, String sshKey, ApplicationAction action, String username) {
 		this(name, sshKey, username, false);
 	}
 
-	public CreateDomainRequest(String name, String sshKey, String username, boolean debug) {
-		super(name, sshKey, username, debug);
+	public AbstractDomainRequest(String name, String sshKey, String username, boolean debug) {
+		super(username, debug);
+		this.name = name;
+		this.sshKey = sshKey;
 	}
 
-	public boolean isAlter() {
-		return false;
+	public String getName() {
+		return name;
 	}
+
+	public String getSshKey() {
+		return sshKey;
+	}
+
+	@Override
+	public String getResourcePath() {
+		return "domain";
+	}
+
+	public abstract boolean isAlter();
 }

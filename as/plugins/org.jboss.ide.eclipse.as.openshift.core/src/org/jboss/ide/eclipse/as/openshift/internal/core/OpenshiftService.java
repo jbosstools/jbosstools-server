@@ -16,20 +16,26 @@ import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.UrlConnectionHttpClient;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
@@ -72,7 +78,7 @@ public class OpenshiftService implements IOpenshiftService {
 	/**
 	 * WARNING: the current server implementation returns invalid json.
 	 * 
-	 *  @see ListCartridgesResponseUnmarshaller
+	 * @see ListCartridgesResponseUnmarshaller
 	 */
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
@@ -91,9 +97,30 @@ public class OpenshiftService implements IOpenshiftService {
 		}
 	}
 
+	public Domain createDomain(String name, SSHKey sshKey) throws OpenshiftException {
+		return createDomain(name, sshKey.getPublicKeyContent());
+	}
+
 	@Override
-	public Application createDomain(String name) throws OpenshiftException {
-		throw new UnsupportedOperationException();
+	public Domain createDomain(String name, String sshKey) throws OpenshiftException {
+		return requestDomainAction(new CreateDomainRequest(name, sshKey, username, true));
+	}
+
+	protected Domain requestDomainAction(AbstractDomainRequest request) throws OpenshiftException {
+		String url = request.getUrlString(BASE_URL);
+		try {
+			String requestString =
+					new OpenshiftJsonRequestFactory(
+							password,
+							new DomainRequestJsonMarshaller().marshall(request))
+							.create();
+			String domainReponse = createHttpClient(url).post(requestString);
+			return new Domain(new User("", ""));
+		} catch (MalformedURLException e) {
+			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
+		} catch (HttpClientException e) {
+			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
+		}
 	}
 
 	@Override
@@ -125,7 +152,8 @@ public class OpenshiftService implements IOpenshiftService {
 					applicationRequest.getAction().toHumanReadable(), name, url);
 		} catch (UnauthorizedException e) {
 			throw new InvalidCredentialsOpenshiftException(
-					url, e, "Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
+					url, e,
+					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
 					applicationRequest.getAction().toHumanReadable(), name, url, username, password);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(

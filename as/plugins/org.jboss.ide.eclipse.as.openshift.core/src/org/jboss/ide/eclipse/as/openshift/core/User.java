@@ -8,23 +8,26 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core.request;
-
+package org.jboss.ide.eclipse.as.openshift.core;
 
 /**
  * @author André Dietisheim
  */
-public class CreateDomainRequest extends AbstractDomainRequest {
+public class User {
 
-	public CreateDomainRequest(String name, String sshKey, ApplicationAction action, String username) {
-		this(name, sshKey, username, false);
+	private String rhlogin;
+	private String uuid;
+
+	public User(String rhlogin, String uuid) {
+		this.rhlogin = rhlogin;
+		this.uuid = uuid;
 	}
 
-	public CreateDomainRequest(String name, String sshKey, String username, boolean debug) {
-		super(name, sshKey, username, debug);
+	public String getRhlogin() {
+		return rhlogin;
 	}
 
-	public boolean isAlter() {
-		return false;
+	public String getUuid() {
+		return uuid;
 	}
 }

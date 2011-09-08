@@ -7,23 +7,19 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
-import java.text.MessageFormat;
 
-/**
- * @author André Dietisheim
- */
-public class OpenshiftException extends Exception {
+public class Domain implements IOpenshiftObject {
 
-	private static final long serialVersionUID = 1L;
+	private User user;
 
-	public OpenshiftException(Throwable cause, String message, Object... arguments) {
-		super(MessageFormat.format(message, arguments), cause);
+	public Domain(User user) {
+		this.user = user;
 	}
 
-	public OpenshiftException(String message, Object... arguments) {
-		super(MessageFormat.format(message, arguments));
+	public User getUser() {
+		return user;
 	}
 }

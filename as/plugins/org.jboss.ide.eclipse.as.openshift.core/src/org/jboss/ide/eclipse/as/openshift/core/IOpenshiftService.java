@@ -12,7 +12,9 @@ package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.List;
 
-
+/**
+ * @author André Dietisheim
+ */
 public interface IOpenshiftService {
 
 	public UserInfo getUserInfo() throws OpenshiftException;
@@ -23,5 +25,7 @@ public interface IOpenshiftService {
 
 	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
-	public Application createDomain(String name) throws OpenshiftException;
+	public Domain createDomain(String name, String sshKey) throws OpenshiftException;
+
+	public Domain createDomain(String name, SSHKey keyPair) throws OpenshiftException;
 }
