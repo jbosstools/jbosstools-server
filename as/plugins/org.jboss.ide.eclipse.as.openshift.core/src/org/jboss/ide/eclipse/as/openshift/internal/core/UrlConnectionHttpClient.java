@@ -28,11 +28,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			StreamUtils.writeTo(data.getBytes(), connection.getOutputStream());
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (FileNotFoundException e) {
-			/*
-			 * thrown by #connect when server resonds with 404
-			 */
-			throw new HttpClientNotFoundException(
-					MessageFormat.format("Could not find resource {0}", url.toString()));
+			throw new NotFoundException(
+					MessageFormat.format("Could not find resource {0}", url.toString()), e);
 		} catch (IOException e) {
 			throw getException(e, connection);
 		} finally {
@@ -44,11 +41,14 @@ public class UrlConnectionHttpClient implements IHttpClient {
 
 	private HttpClientException getException(IOException ioe, HttpURLConnection connection) {
 		try {
-			String errorMessage = StreamUtils.readToString(connection.getErrorStream());
 			int responseCode = connection.getResponseCode();
-			if (responseCode == 500) {
+			String errorMessage = StreamUtils.readToString(connection.getErrorStream());
+			switch (responseCode) {
+			case 500:
 				return new InternalServerErrorException(errorMessage, ioe);
-			} else {
+			case 401:
+				return new UnauthorizedException(errorMessage, ioe);
+			default:
 				return new HttpClientException(errorMessage, ioe);
 			}
 		} catch (IOException e) {

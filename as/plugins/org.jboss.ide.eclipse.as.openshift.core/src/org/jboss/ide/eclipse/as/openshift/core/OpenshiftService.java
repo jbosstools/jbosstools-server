@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridg
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.internal.core.HttpClientException;
+import org.jboss.ide.eclipse.as.openshift.internal.core.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UrlConnectionHttpClient;
 import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
@@ -107,9 +108,13 @@ public class OpenshiftService implements IOpenshiftService {
 					cartridge).unmarshall();
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
-			throw new OpenshiftEndpointException(
-					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
+			throw new OpenshiftException(
+					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
 					applicationRequest.getAction().toHumanReadable(), name, url);
+		} catch (UnauthorizedException e) {
+			throw new InvalidCredentialsOpenshiftException(
+					url, e, "Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
+					applicationRequest.getAction().toHumanReadable(), name, url, username, password);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not {0} application \"{1}\" at \"{2}\"",

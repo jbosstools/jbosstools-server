@@ -18,20 +18,7 @@ public class InvalidCredentialsOpenshiftException extends OpenshiftEndpointExcep
 
 	private static final long serialVersionUID = 1L;
 
-	private String username;
-	private String password;
-
-	public  InvalidCredentialsOpenshiftException(String url, Throwable cause, String username, String password, String message, String... arguments) {
+	public  InvalidCredentialsOpenshiftException(String url, Throwable cause, String message, String... arguments) {
 		super(url, cause, message);
-		this.username = username;
-		this.password = password;
-	}
-
-	protected String getUsername() {
-		return username;
-	}
-
-	protected String getPassword() {
-		return password;
 	}
 }

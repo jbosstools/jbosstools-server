@@ -8,25 +8,21 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
-
+package org.jboss.ide.eclipse.as.openshift.internal.core;
 
 /**
  * @author André Dietisheim
  */
-public class OpenshiftEndpointException extends OpenshiftException {
+public class NotFoundException extends HttpClientException {
 
 	private static final long serialVersionUID = 1L;
 
-	private String url;
-
-	public OpenshiftEndpointException(String url, Throwable cause, String message, Object... arguments) {
-		super(cause, message, arguments);
-		this.url = url;
+	public NotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	protected String getUrl() {
-		return url;
+	private NotFoundException(Throwable cause) {
+		super(cause);
 	}
 
 }
