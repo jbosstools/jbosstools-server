@@ -783,9 +783,9 @@ public class DeploymentModuleOptionCompositeAssistant implements PropertyChangeL
 					.getOrCreateModulePrefs(module);
 			if (property == COLUMN_LOC) {
 				String outputName, outPath;
-				if( ((String)value).equals("")) {
-					outputName = null;
-					outPath = null;
+				if( value == null || ((String)value).equals("")) { //$NON-NLS-1$
+					outputName = ""; //$NON-NLS-1$
+					outPath = ""; //$NON-NLS-1$
 				} else {
 					outputName = new Path(((String)value)).lastSegment();
 					outPath = ((String)value).substring(0, ((String)value).length()-outputName.length());
