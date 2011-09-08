@@ -13,8 +13,11 @@ package org.jboss.ide.eclipse.as.core.extensions.polling;
 import java.util.List;
 import java.util.Properties;
 
+import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
+import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.IProcessProvider;
 import org.jboss.ide.eclipse.as.core.server.internal.PollThread;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
 
@@ -57,12 +60,14 @@ public class ProcessTerminatedPoller implements IServerStatePoller {
 	}
 
 	public boolean isComplete() throws PollingException {
-//		IJBossBehaviourDelegate del = server.getDelegate();
-//		if( del instanceof IProcessProvider ) {
-//			IProcess p = ((IProcessProvider)del).getProcess();
-//			boolean b = p == null || p.isTerminated();
-//			System.out.println(p + " " + b); //$NON-NLS-1$
-//		} 
+		if( server.getServerState() == IServer.STATE_STOPPED)
+			return true;
+		DelegatingServerBehavior beh = (DelegatingServerBehavior) server.getAdapter(DelegatingServerBehavior.class);
+		if(beh != null && beh.getDelegate() != null && beh.getDelegate() instanceof IProcessProvider) {
+			IProcess p = ((IProcessProvider)beh.getDelegate()).getProcess();
+			if( p == null || p.isTerminated())
+				return true;
+		}
 		return false;
 	}
 
