@@ -23,6 +23,7 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.ServerCore;
+import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.modules.SingleDeployableFactory.SingleDeployableModuleDelegate;
 
 public class SingleDeployableWorkspaceListener implements
@@ -41,9 +42,10 @@ public class SingleDeployableWorkspaceListener implements
 			changedMods = shouldChange.toArray(new IModule[shouldChange.size()]);
 		} else {
 			try {
-				event.getDelta().accept(this);
+				if( event.getDelta() != null )
+					event.getDelta().accept(this);
 			} catch( CoreException ce) {
-				// TODO 
+				JBossServerCorePlugin.log(ce.getStatus());
 			}
 		}
 	}
