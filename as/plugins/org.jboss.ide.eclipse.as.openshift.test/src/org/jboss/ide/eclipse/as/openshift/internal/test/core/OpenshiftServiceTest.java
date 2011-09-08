@@ -71,12 +71,35 @@ public class OpenshiftServiceTest {
 
 		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
 				new ApplicationRequest(
-						"test-application", new Cartridge("jbossas-7.0"), ApplicationAction.CONFIGURE, USERNAME, true));
+						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.CONFIGURE, USERNAME, true));
 		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, createApplicationRequest).create();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
 
+	@Test
+	public void canMarshallApplicationDestroyRequest() throws Exception {
+		String expectedRequestString =
+				"password="
+						+ PASSWORD
+						+ "&json_data=%7B"
+						+ "%22rhlogin%22+%3A+%22"
+						+ URLEncoder.encode(USERNAME, "UTF-8")
+						+ "%22"
+						+ "%2C+%22debug%22+%3A+%22true%22"
+						+ "%2C+%22cartridge%22+%3A+%22jbossas-7.0%22"
+						+ "%2C+%22action%22+%3A+%22deconfigure%22"
+						+ "%2C+%22app_name%22+%3A+%22test-application%22"
+						+ "%7D";
+
+		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
+				new ApplicationRequest(
+						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE, USERNAME, true));
+		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, createApplicationRequest).create();
+
+		assertEquals(expectedRequestString, effectiveRequest);
+	}
+	
 	@Test
 	public void canUnmarshallCartridgeListResponse() throws OpenshiftException {
 		/*

@@ -46,6 +46,8 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			switch (responseCode) {
 			case 500:
 				return new InternalServerErrorException(errorMessage, ioe);
+			case 400:
+				return new BadRequestException(errorMessage, ioe);
 			case 401:
 				return new UnauthorizedException(errorMessage, ioe);
 			default:
