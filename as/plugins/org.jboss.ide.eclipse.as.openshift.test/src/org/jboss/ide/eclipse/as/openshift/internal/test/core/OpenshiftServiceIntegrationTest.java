@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
@@ -51,11 +52,15 @@ public class OpenshiftServiceIntegrationTest {
 	@Test
 	public void canCreateApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
-		Cartridge cartridge = Cartridge.JBOSSAS_7;
-		Application application = openshiftService.createApplication(applicationName, cartridge);
-		assertNotNull(application);
-		assertEquals(applicationName, application.getName());
-		assertEquals(cartridge, application.getCartridge());
+		try {
+			Cartridge cartridge = Cartridge.JBOSSAS_7;
+			Application application = openshiftService.createApplication(applicationName, cartridge);
+			assertNotNull(application);
+			assertEquals(applicationName, application.getName());
+			assertEquals(cartridge, application.getCartridge());
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
 	}
 
 	@Test
@@ -74,5 +79,14 @@ public class OpenshiftServiceIntegrationTest {
 
 	private String createRandomApplicationName() {
 		return String.valueOf(System.currentTimeMillis());
+	}
+
+	private void silentlyDestroyApplication(String name, IOpenshiftService service) {
+		try {
+			service.destroyApplication(name, Cartridge.JBOSSAS_7);
+		} catch (OpenshiftException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
