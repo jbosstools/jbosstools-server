@@ -8,26 +8,33 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.internal.core.HttpClientException;
-import org.jboss.ide.eclipse.as.openshift.internal.core.UnauthorizedException;
-import org.jboss.ide.eclipse.as.openshift.internal.core.UrlConnectionHttpClient;
-import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.HttpClientException;
+import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.UnauthorizedException;
+import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.UrlConnectionHttpClient;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 
 /**
@@ -62,6 +69,11 @@ public class OpenshiftService implements IOpenshiftService {
 		}
 	}
 
+	/**
+	 * WARNING: the current server implementation returns invalid json.
+	 * 
+	 *  @see ListCartridgesResponseUnmarshaller
+	 */
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
 		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(username, true);

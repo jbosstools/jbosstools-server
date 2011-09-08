@@ -7,11 +7,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -12,8 +12,6 @@ package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.internal.core.UserInfo;
 
 public interface IOpenshiftService {
 

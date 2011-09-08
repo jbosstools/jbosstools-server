@@ -8,20 +8,24 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.httpclient;
 
 /**
  * @author André Dietisheim
  */
-public class UnauthorizedException extends HttpClientException {
+public class InternalServerErrorException extends HttpClientException {
 
 	private static final long serialVersionUID = 1L;
 
-	public UnauthorizedException(String message, Throwable cause) {
+	public InternalServerErrorException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public UnauthorizedException(Throwable cause) {
+	public InternalServerErrorException(String message) {
+		super(message);
+	}
+
+	public InternalServerErrorException(Throwable cause) {
 		super(cause);
 	}
 

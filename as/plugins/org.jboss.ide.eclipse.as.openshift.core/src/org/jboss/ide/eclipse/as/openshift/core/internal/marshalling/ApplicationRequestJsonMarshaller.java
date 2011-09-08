@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
 

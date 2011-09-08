@@ -10,7 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 
 public class Application implements IOpenshiftObject {
 

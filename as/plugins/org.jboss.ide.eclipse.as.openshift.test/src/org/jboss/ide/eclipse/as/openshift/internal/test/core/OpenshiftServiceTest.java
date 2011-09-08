@@ -7,11 +7,11 @@ import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
@@ -102,12 +102,6 @@ public class OpenshiftServiceTest {
 	
 	@Test
 	public void canUnmarshallCartridgeListResponse() throws OpenshiftException {
-		/*
-		 * WARNING: the current (9-7-2011) response from the openshift rest
-		 * service is invalid. It quotes the nested json object in the data
-		 * property: '"data" : "{'. My current unmarshalling code does not
-		 * handle this bad json.
-		 */
 		String cartridgeListResponse =
 				"{"
 						+ "\"messages\":\"\","

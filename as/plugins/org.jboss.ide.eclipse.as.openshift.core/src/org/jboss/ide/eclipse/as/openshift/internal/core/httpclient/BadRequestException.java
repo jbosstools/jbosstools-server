@@ -7,26 +7,21 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+ ******************************************************************************/ 
+package org.jboss.ide.eclipse.as.openshift.internal.core.httpclient;
 
 /**
  * @author André Dietisheim
  */
-public class HttpClientException extends Exception {
+public class BadRequestException extends HttpClientException {
 
 	private static final long serialVersionUID = 1L;
 
-	public  HttpClientException(String message, Throwable cause) {
+	public BadRequestException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public HttpClientException(String message) {
-		super(message);
-	}
-
-	public HttpClientException(Throwable cause) {
+	public BadRequestException(Throwable cause) {
 		super(cause);
 	}
-
 }

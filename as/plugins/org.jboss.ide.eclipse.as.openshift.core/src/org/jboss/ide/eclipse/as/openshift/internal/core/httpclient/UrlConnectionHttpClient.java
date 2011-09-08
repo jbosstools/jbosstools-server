@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.httpclient;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

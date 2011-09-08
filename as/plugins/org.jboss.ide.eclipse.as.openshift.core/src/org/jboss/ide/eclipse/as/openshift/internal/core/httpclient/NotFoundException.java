@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.core;
+package org.jboss.ide.eclipse.as.openshift.internal.core.httpclient;
 
 /**
  * @author André Dietisheim

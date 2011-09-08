@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
-import org.jboss.ide.eclipse.as.openshift.internal.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 
 /**
  * @author André Dietisheim
