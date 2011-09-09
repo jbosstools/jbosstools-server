@@ -33,7 +33,7 @@ public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRe
 	}
 	
 	protected void setStringProperty(String propertyName, Object value, ModelNode node) {
-		if (isSet(value)) {
+		if (!isSet(value)) {
 			if (value instanceof String) {
 				setStringProperty((String) value, propertyName, node);
 			}
@@ -41,7 +41,7 @@ public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRe
 	}
 	
 	protected void setStringProperty(String propertyName, String value, ModelNode node) {
-		if (isSet(value)) {
+		if (!isSet(value)) {
 			return;
 		}
 				

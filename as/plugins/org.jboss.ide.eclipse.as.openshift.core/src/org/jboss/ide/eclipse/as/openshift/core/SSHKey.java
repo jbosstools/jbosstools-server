@@ -22,6 +22,15 @@ import com.jcraft.jsch.KeyPair;
  */
 public class SSHKey {
 
+	/**
+	 * the length of the key that is created when using #create. ssh-keygen uses
+	 * a default of 2048
+	 * 
+	 * @see #create(String, String, String)
+	 * @see http://en.wikipedia.org/wiki/Ssh-keygen
+	 */
+	private static final int KEYLENGTH = 2048;
+
 	private KeyPair keyPair;
 	private String privateKeyPath;
 	private String publicKeyPath;
@@ -49,7 +58,7 @@ public class SSHKey {
 	public static SSHKey create(String passPhrase, String privateKeyPath, String publicKeyPath)
 			throws OpenshiftException {
 		try {
-			KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.RSA);
+			KeyPair keyPair = KeyPair.genKeyPair(new JSch(), KeyPair.RSA, KEYLENGTH);
 			keyPair.setPassphrase(passPhrase);
 			keyPair.writePublicKey(publicKeyPath, "created by " + OpenshiftCoreActivator.PLUGIN_ID);
 			keyPair.writePrivateKey(privateKeyPath);
@@ -62,8 +71,10 @@ public class SSHKey {
 	/**
 	 * Loads existing private and public ssh key from the given paths.
 	 * 
-	 * @param privateKeyPath the path to the private key
-	 * @param publicKeyPath the path to the public key
+	 * @param privateKeyPath
+	 *            the path to the private key
+	 * @param publicKeyPath
+	 *            the path to the public key
 	 * @return
 	 * @throws OpenshiftException
 	 */
