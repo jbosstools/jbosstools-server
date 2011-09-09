@@ -31,7 +31,6 @@ public class SarArtifactAdapter extends ModuleArtifactAdapterDelegate {
 			this.module = mod;
 		}
 		
-		@Override
 		public IModule getModule() {
 			return module;
 		}
