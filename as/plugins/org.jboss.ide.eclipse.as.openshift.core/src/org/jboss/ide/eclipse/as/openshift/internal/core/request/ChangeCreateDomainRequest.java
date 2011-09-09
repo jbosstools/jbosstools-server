@@ -10,17 +10,19 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 
+import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+
 
 /**
  * @author André Dietisheim
  */
 public class ChangeCreateDomainRequest extends AbstractDomainRequest {
 
-	public ChangeCreateDomainRequest(String name, String namespace, String sshKey, ApplicationAction action, String username) {
+	public ChangeCreateDomainRequest(String name, String namespace, SSHKey sshKey, ApplicationAction action, String username) {
 		this(name, namespace, sshKey, username, false);
 	}
 
-	public ChangeCreateDomainRequest(String name, String namespace, String sshKey, String username, boolean debug) {
+	public ChangeCreateDomainRequest(String name, String namespace, SSHKey sshKey, String username, boolean debug) {
 		super(name, sshKey, username, debug);
 	}
 

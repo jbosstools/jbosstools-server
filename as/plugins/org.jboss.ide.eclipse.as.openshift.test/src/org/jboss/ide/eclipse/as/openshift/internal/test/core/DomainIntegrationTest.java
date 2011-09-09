@@ -12,10 +12,12 @@ package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
 import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class DomainIntegrationTest {
@@ -30,15 +32,17 @@ public class DomainIntegrationTest {
 		this.openshiftService = new OpenshiftService(USERNAME, PASSWORD);
 	}
 
-	@Ignore
 	@Test
 	public void canCreateDomain() throws Exception {
-		String name = createRandomDomainName();
-		Domain domain = openshiftService.createDomain(name, (String) null);
+		String domainName = createRandomString();
+		File publicKey = File.createTempFile(createRandomString(), null);
+		File privateKey = File.createTempFile(createRandomString(), null);
+		SSHKey key = openshiftService.createKey("12345", privateKey.getAbsolutePath(), publicKey.getAbsolutePath());
+		Domain domain = openshiftService.createDomain(domainName, key);
 		assertNotNull(domain);
 	}
 
-	private String createRandomDomainName() {
+	private String createRandomString() {
 		return String.valueOf(System.currentTimeMillis());
 	}
 }

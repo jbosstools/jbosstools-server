@@ -21,6 +21,6 @@ public class ListCartridgesRequestJsonMarshaller extends AbstractJsonMarshaller<
 
 	@Override
 	protected void setJsonDataProperties(ModelNode node, ListCartridgesRequest request) {
-		node.get(IOpenshiftJsonConstants.PROPERTY_CART_TYPE).set(request.getCartType());
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_CART_TYPE, request.getCartType(), node);
 	}
 }

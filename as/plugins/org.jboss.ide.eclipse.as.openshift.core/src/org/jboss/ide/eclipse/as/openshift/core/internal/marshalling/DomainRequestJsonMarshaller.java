@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractDomainRequest;
 
 /**
@@ -20,8 +21,9 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractDomainRe
 public class DomainRequestJsonMarshaller extends AbstractJsonMarshaller<AbstractDomainRequest> {
 
 	@Override
-	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) {
+	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) throws OpenshiftException {
 		node.get(IOpenshiftJsonConstants.PROPERTY_NAMESPACE).set(request.getName());
-		node.get(IOpenshiftJsonConstants.PROPERTY_ALTER).set(request.isAlter());
+		node.get(IOpenshiftJsonConstants.PROPERTY_ALTER).set(String.valueOf(request.isAlter()));
+		node.get(IOpenshiftJsonConstants.PROPERTY_SSH).set(request.getSshKey().getPublicKeyContent());
 	}
 }

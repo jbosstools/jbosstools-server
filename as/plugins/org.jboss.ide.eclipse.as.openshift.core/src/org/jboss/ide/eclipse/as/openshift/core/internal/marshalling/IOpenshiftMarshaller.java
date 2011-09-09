@@ -10,11 +10,13 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+
 /**
  * @author André Dietisheim
  */
 public interface IOpenshiftMarshaller<REQUEST extends IOpenshiftRequest> {
 
-	public String marshall(REQUEST object);
+	public String marshall(REQUEST object) throws OpenshiftException;
 	
 }

@@ -59,6 +59,14 @@ public class SSHKey {
 		}
 	}
 
+	/**
+	 * Loads existing private and public ssh key from the given paths.
+	 * 
+	 * @param privateKeyPath the path to the private key
+	 * @param publicKeyPath the path to the public key
+	 * @return
+	 * @throws OpenshiftException
+	 */
 	public static SSHKey load(String privateKeyPath, String publicKeyPath)
 			throws OpenshiftException {
 		try {

@@ -97,12 +97,18 @@ public class OpenshiftService implements IOpenshiftService {
 		}
 	}
 
-	public Domain createDomain(String name, SSHKey sshKey) throws OpenshiftException {
-		return createDomain(name, sshKey.getPublicKeyContent());
+	@Override
+	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+		return SSHKey.create(passPhrase, privateKeyPath, publicKeyPath);
+	}
+	
+	@Override
+	public SSHKey loadKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+		return SSHKey.load(privateKeyPath, publicKeyPath);
 	}
 
 	@Override
-	public Domain createDomain(String name, String sshKey) throws OpenshiftException {
+	public Domain createDomain(String name, SSHKey sshKey) throws OpenshiftException {
 		return requestDomainAction(new CreateDomainRequest(name, sshKey, username, true));
 	}
 

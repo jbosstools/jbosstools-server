@@ -25,7 +25,10 @@ public interface IOpenshiftService {
 
 	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
-	public Domain createDomain(String name, String sshKey) throws OpenshiftException;
-
 	public Domain createDomain(String name, SSHKey keyPair) throws OpenshiftException;
+
+	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+	
+	public SSHKey loadKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+
 }

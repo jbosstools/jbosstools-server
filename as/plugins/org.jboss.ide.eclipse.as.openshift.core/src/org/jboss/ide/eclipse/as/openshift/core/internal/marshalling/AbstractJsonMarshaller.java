@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractOpenshiftRequest;
 
 /**
@@ -19,15 +20,41 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractOpenshif
  */
 public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {
 
-	public String marshall(REQUEST request) {
+	public String marshall(REQUEST request) throws OpenshiftException {
 		ModelNode node = new ModelNode();
-		node.get(IOpenshiftJsonConstants.PROPERTY_RHLOGIN).set(request.getRhLogin());
-		node.get(IOpenshiftJsonConstants.PROPERTY_DEBUG).set(String.valueOf(request.isDebug()));
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, request.getRhLogin(), node);
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_DEBUG, request.isDebug(), node);
 		setJsonDataProperties(node, request);
 		return node.toJSONString(true);
 	}
 
-	protected void setJsonDataProperties(ModelNode node, REQUEST request) {
+	protected void setJsonDataProperties(ModelNode node, REQUEST request) throws OpenshiftException {
 		// empty default implementation
 	}
+	
+	protected void setStringProperty(String propertyName, Object value, ModelNode node) {
+		if (isSet(value)) {
+			if (value instanceof String) {
+				setStringProperty((String) value, propertyName, node);
+			}
+		}
+	}
+	
+	protected void setStringProperty(String propertyName, String value, ModelNode node) {
+		if (isSet(value)) {
+			return;
+		}
+				
+		node.get(propertyName).set(value);
+	}
+
+	protected boolean isSet(String value) {
+		return value != null
+				&& value.length() > 0;
+	}
+
+	protected boolean isSet(Object value) {
+		return value != null;
+	}
+
 }

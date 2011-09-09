@@ -23,9 +23,9 @@ public class ApplicationRequestJsonMarshaller extends AbstractJsonMarshaller<App
 
 	@Override
 	protected void setJsonDataProperties(ModelNode node, ApplicationRequest request) {
-		node.get(IOpenshiftJsonConstants.PROPERTY_CARTRIDGE).set(getCartridgeName(request.getCartridge()));
-		node.get(IOpenshiftJsonConstants.PROPERTY_ACTION).set(getActionName(request.getAction()));
-		node.get(IOpenshiftJsonConstants.PROPERTY_APP_NAME).set(request.getName());
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_CARTRIDGE, getCartridgeName(request.getCartridge()), node);
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_ACTION, getActionName(request.getAction()), node);
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_APP_NAME, request.getName(), node);
 	}
 
 	private String getCartridgeName(Cartridge cartridge) {

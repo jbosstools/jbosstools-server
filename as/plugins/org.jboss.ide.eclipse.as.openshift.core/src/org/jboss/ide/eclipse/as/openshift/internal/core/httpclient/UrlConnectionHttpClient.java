@@ -31,7 +31,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 			throw new NotFoundException(
 					MessageFormat.format("Could not find resource {0}", url.toString()), e);
 		} catch (IOException e) {
-			throw getException(e, connection);
+			throw createException(e, connection);
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
@@ -39,7 +39,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private HttpClientException getException(IOException ioe, HttpURLConnection connection) {
+	private HttpClientException createException(IOException ioe, HttpURLConnection connection) {
 		try {
 			int responseCode = connection.getResponseCode();
 			String errorMessage = StreamUtils.readToString(connection.getErrorStream());
