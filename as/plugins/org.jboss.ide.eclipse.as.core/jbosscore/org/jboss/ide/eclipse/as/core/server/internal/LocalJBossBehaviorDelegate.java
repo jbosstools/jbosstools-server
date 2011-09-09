@@ -35,6 +35,7 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
+import org.jboss.ide.eclipse.as.core.publishers.AbstractServerToolsPublisher;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
@@ -245,8 +246,11 @@ public class LocalJBossBehaviorDelegate extends AbstractJBossBehaviourDelegate i
 
 	
 	protected void resumeDeployment(final MBeanServerConnection connection, IProgressMonitor monitor) throws Exception {
+		monitor.beginTask("Resuming Deployment Scanner", 1000); //$NON-NLS-1$
 		ObjectName name = new ObjectName(IJBossRuntimeConstants.DEPLOYMENT_SCANNER_MBEAN_NAME);
 		launchDeployCommand(connection, name, IJBossRuntimeConstants.START, monitor);
+		monitor.worked(1000);
+		monitor.done();
 	}
 	
 	protected void launchDeployCommand(final MBeanServerConnection connection, final ObjectName objectName, 

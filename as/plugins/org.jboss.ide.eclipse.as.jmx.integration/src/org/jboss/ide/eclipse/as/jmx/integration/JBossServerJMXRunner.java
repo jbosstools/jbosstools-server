@@ -13,6 +13,8 @@ package org.jboss.ide.eclipse.as.jmx.integration;
 import javax.management.MBeanServerConnection;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunnable;
 import org.jboss.ide.eclipse.as.core.ExtensionManager.IServerJMXRunner;
@@ -31,6 +33,7 @@ public class JBossServerJMXRunner implements IServerJMXRunner {
 			JBossServerConnectionProvider.run(server, runnable2);
 		} catch(JMXException jmxe) {
 			// TODO wrap and log
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, jmxe.getMessage(), jmxe));
 		}
 	}
 

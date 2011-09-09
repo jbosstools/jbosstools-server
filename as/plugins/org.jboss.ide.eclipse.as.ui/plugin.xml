@@ -449,4 +449,16 @@
             typeIds="%AllJBossServerTypes">
       </runtimeLocator>
    </extension>
+   <extension
+         point="org.eclipse.wst.server.core.clients">
+      <client
+            class="org.jboss.ide.eclipse.as.ui.launch.JBTWebLaunchableClient"
+            description="Launches URLs in a web browser"
+            id="org.jboss.ide.eclipse.as.core.server.internal.launch.jbtLaunchClient"
+            launchable="org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter$JBTCustomHttpLaunchable"
+            name="Web Launchable Client"
+            priority="20">
+      </client>
+   </extension>
+
 </plugin>

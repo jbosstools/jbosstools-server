@@ -33,9 +33,9 @@ import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
+import org.eclipse.wst.server.core.model.IURLProvider2;
 import org.eclipse.wst.server.core.model.LaunchableAdapterDelegate;
 import org.eclipse.wst.server.core.model.ServerDelegate;
-import org.eclipse.wst.server.core.util.HttpLaunchable;
 import org.eclipse.wst.server.core.util.WebResource;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
 import org.jboss.ide.eclipse.as.core.util.IJBossRuntimeConstants;
@@ -146,7 +146,7 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 			if (portletURL != null) {
 				url = portletURL;
 			}
-			return new HttpLaunchable(url);
+			return new JBTCustomHttpLaunchable(moduleObject, url);
 		} catch (MalformedURLException e) {
 			return null; // no launchable available.
 		}
@@ -212,5 +212,32 @@ public class JBossLaunchAdapter extends LaunchableAdapterDelegate {
 		}
 		File file = new File(location,portalDir);
 		return file.exists();
+	}
+	
+	
+	public static class JBTCustomHttpLaunchable {
+		private IURLProvider2 urlProvider;
+		private IModuleArtifact artifact;
+		public JBTCustomHttpLaunchable(IModuleArtifact artifact, final URL url) {
+			this.artifact = artifact;
+			this.urlProvider = new IURLProvider2() {
+				public URL getModuleRootURL(IModule module){
+					return url;
+				}
+				public URL getLaunchableURL() {
+					return getModuleRootURL(null);
+				}
+			};
+		}
+
+		public JBTCustomHttpLaunchable(IURLProvider2 urlProvider){
+			this.urlProvider = urlProvider;
+		}
+		public URL getURL() {
+			return urlProvider.getLaunchableURL();
+		}
+		public IModule getModule() {
+			return artifact.getModule();
+		}
 	}
 }

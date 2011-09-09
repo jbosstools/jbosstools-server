@@ -97,6 +97,9 @@ public class SingleDeployableFactory extends ModuleFactoryDelegate {
 		return makeDeployable(resource.getFullPath());
 	}
 	
+	/**
+	 * @since 2.3
+	 */
 	public static boolean makeDeployable(IProject project, IPath[] workspaceRelative) {
 		boolean ret = true;
 		for( int i = 0; i < workspaceRelative.length; i++ ) {
