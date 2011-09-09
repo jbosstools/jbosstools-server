@@ -29,6 +29,6 @@ public interface IOpenshiftService {
 
 	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 	
-	public SSHKey loadKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 
 }

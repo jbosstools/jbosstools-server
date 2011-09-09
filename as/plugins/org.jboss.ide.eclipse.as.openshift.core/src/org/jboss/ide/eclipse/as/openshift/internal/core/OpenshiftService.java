@@ -103,7 +103,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 	
 	@Override
-	public SSHKey loadKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
 		return SSHKey.load(privateKeyPath, publicKeyPath);
 	}
 
