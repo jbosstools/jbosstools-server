@@ -27,6 +27,8 @@ import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
 import org.jboss.ide.eclipse.as.core.server.internal.JBossLaunchAdapter.JBTCustomHttpLaunchable;
+import org.jboss.ide.eclipse.as.core.server.internal.JBossServer;
+import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 import org.jboss.ide.eclipse.as.ui.JBossServerUIPlugin;
 
 public class JBTWebLaunchableClient extends ClientDelegate {
@@ -40,8 +42,9 @@ public class JBTWebLaunchableClient extends ClientDelegate {
 	}
 
 	protected boolean shouldSuspendScanner(IServer server) {
-		return server.getServerState() == IServer.STATE_STARTED
-				&&  ExtensionManager.getDefault().getJMXRunner() != null;
+		JBossServer jbs = ServerConverter.getJBossServer(server);
+		return jbs != null && server.getServerState() == IServer.STATE_STARTED
+				&&  jbs.hasJMXProvider() && ExtensionManager.getDefault().getJMXRunner() != null;
 	}
 
 	public IStatus launch(final IServer server, final Object launchable, final String launchMode, final ILaunch launch) {
