@@ -22,11 +22,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 	private String response;
 
-	public AbstractOpenshiftJsonResponseUnmarshaller(String response) {
-		this.response = response;
-	}
-
-	public OpenshiftResponse<OPENSHIFTOBJECT> unmarshall() throws OpenshiftException {
+	public OpenshiftResponse<OPENSHIFTOBJECT> unmarshall(String response) throws OpenshiftException {
 		try {
 			ModelNode node = ModelNode.fromJSONString(response);
 			boolean debug = node.get(IOpenshiftJsonConstants.PROPERTY_DEBUG).asBoolean();
@@ -42,6 +38,8 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 		}
 	}
 
+
+
 	protected abstract OPENSHIFTOBJECT createOpenshiftObject(ModelNode dataNode);
 
 	protected String getResponse() {
@@ -51,6 +49,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 	protected String getString(String property, ModelNode node) {
 		ModelNode propertyNode = node.get(property);
 		if (propertyNode.getType() == ModelType.UNDEFINED) {
+			// replace "undefined" by null
 			return null;
 		}
 		return propertyNode.asString();

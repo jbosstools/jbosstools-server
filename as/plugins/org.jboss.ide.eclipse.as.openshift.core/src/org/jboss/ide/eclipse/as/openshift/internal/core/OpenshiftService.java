@@ -40,6 +40,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonReq
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.DomainResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 
@@ -79,6 +80,7 @@ public class OpenshiftService implements IOpenshiftService {
 	 * WARNING: the current server implementation returns invalid json.
 	 * 
 	 * @see ListCartridgesResponseUnmarshaller
+	 * @see JsonSanitizer#sanitize(String)
 	 */
 	@Override
 	public List<Cartridge> getCartridges() throws OpenshiftException {
@@ -89,7 +91,10 @@ public class OpenshiftService implements IOpenshiftService {
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
 			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
 			String listCatridgesReponse = createHttpClient(url).post(request);
-			throw new UnsupportedOperationException();
+			listCatridgesReponse = JsonSanitizer.sanitize(listCatridgesReponse);
+			OpenshiftResponse<List<Cartridge>> response =
+					new ListCartridgesResponseUnmarshaller().unmarshall(listCatridgesReponse);
+			return response.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		} catch (HttpClientException e) {
@@ -101,7 +106,7 @@ public class OpenshiftService implements IOpenshiftService {
 	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
 		return SSHKey.create(passPhrase, privateKeyPath, publicKeyPath);
 	}
-	
+
 	@Override
 	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
 		return SSHKey.load(privateKeyPath, publicKeyPath);
@@ -121,7 +126,9 @@ public class OpenshiftService implements IOpenshiftService {
 							new DomainRequestJsonMarshaller().marshall(request))
 							.create();
 			String responseString = createHttpClient(url).post(requestString);
-			OpenshiftResponse<Domain> response = new DomainResponseUnmarshaller(responseString, request.getName()).unmarshall();
+			responseString = JsonSanitizer.sanitize(responseString);
+			OpenshiftResponse<Domain> response =
+					new DomainResponseUnmarshaller(request.getName()).unmarshall(responseString);
 			return response.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
@@ -150,8 +157,10 @@ public class OpenshiftService implements IOpenshiftService {
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
 			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).create();
 			String response = createHttpClient(url).post(request);
-			OpenshiftResponse<Application> openshiftResponse = new ApplicationResponseUnmarshaller(response, name,
-					cartridge).unmarshall();
+
+			response = JsonSanitizer.sanitize(response);
+			OpenshiftResponse<Application> openshiftResponse =
+					new ApplicationResponseUnmarshaller(name, cartridge).unmarshall(response);
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(

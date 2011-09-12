@@ -18,19 +18,13 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 
 /**
+ * WARNING: the current (9-7-2011) response from the openshift rest service is
+ * invalid. It quotes the nested json object in the data property: '"data" :
+ * "{'. My current unmarshalling code does not handle this bad json.
+ * 
  * @author André Dietisheim
  */
 public class ListCartridgesResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<List<Cartridge>> {
-
-	/*
-	 * WARNING: the current (9-7-2011) response from the openshift rest
-	 * service is invalid. It quotes the nested json object in the data
-	 * property: '"data" : "{'. My current unmarshalling code does not
-	 * handle this bad json.
-	 */
-	public ListCartridgesResponseUnmarshaller(String response) {
-		super(response);
-	}
 
 	@Override
 	protected List<Cartridge> createOpenshiftObject(ModelNode dataNode) {

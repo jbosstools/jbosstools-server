@@ -22,8 +22,7 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonRespon
 	private String applicationName;
 	private Cartridge cartridge;
 
-	public ApplicationResponseUnmarshaller(String response, String applicationName, Cartridge cartridge) {
-		super(response);
+	public ApplicationResponseUnmarshaller(String applicationName, Cartridge cartridge) {
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;
 	}

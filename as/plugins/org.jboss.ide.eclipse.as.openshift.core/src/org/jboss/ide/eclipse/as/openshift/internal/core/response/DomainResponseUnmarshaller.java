@@ -22,8 +22,7 @@ public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnm
 
 	private String domainName;
 
-	public DomainResponseUnmarshaller(String response, String domainName) {
-		super(response);
+	public DomainResponseUnmarshaller(String domainName) {
 		this.domainName = domainName;
 	}
 

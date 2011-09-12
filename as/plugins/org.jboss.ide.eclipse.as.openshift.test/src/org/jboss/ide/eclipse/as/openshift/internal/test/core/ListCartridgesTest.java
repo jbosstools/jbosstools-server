@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class ListCartridgesTest {
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
-	
+
 	@Test
 	public void canUnmarshallCartridgeListResponse() throws OpenshiftException {
 		String cartridgeListResponse =
@@ -54,16 +55,29 @@ public class ListCartridgesTest {
 						+ "\"messages\":\"\","
 						+ "\"debug\":\"\","
 						+ "\"data\":"
-						+ "{\"carts\":[\"perl-5.10\",\"jbossas-7.0\",\"wsgi-3.2\",\"rack-1.1\",\"php-5.3\"]},"
+						+ "\"{\\\"carts\\\":[\\\"perl-5.10\\\",\\\"jbossas-7.0\\\",\\\"wsgi-3.2\\\",\\\"rack-1.1\\\",\\\"php-5.3\\\"]}\","
 						+ "\"api\":\"1.1.1\","
 						+ "\"api_c\":[\"placeholder\"],"
 						+ "\"result\":null,"
 						+ "\"broker\":\"1.1.1\","
-						+ "\"broker_c\":[\"namespace\",\"rhlogin\",\"ssh\",\"app_uuid\",\"debug\",\"alter\",\"cartridge\",\"cart_type\",\"action\",\"app_name\",\"api\"],"
+						+ "\"broker_c\":["
+						+ "\"namespace\","
+						+ "\"rhlogin\","
+						+ "\"ssh\","
+						+ "\"app_uuid\","
+						+ "\"debug\","
+						+ "\"alter\","
+						+ "\"cartridge\","
+						+ "\"cart_type\","
+						+ "\"action\","
+						+ "\"app_name\","
+						+ "\"api"
+						+ "\"],"
 						+ "\"exit_code\":0}";
 
-		OpenshiftResponse<List<Cartridge>> response = new ListCartridgesResponseUnmarshaller(cartridgeListResponse)
-				.unmarshall();
+		cartridgeListResponse = JsonSanitizer.sanitize(cartridgeListResponse);
+		OpenshiftResponse<List<Cartridge>> response =
+				new ListCartridgesResponseUnmarshaller().unmarshall(cartridgeListResponse);
 		assertEquals("", response.getMessages());
 		assertEquals(false, response.isDebug());
 
