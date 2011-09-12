@@ -34,6 +34,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.httpclient.UrlConnection
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
@@ -117,6 +118,11 @@ public class OpenshiftService implements IOpenshiftService {
 		return requestDomainAction(new CreateDomainRequest(name, sshKey, username, true));
 	}
 
+	@Override
+	public Domain changeDomain(String newName, SSHKey sshKey) throws OpenshiftException {
+		return requestDomainAction(new ChangeDomainRequest(newName, sshKey, username, true));
+	}
+	
 	protected Domain requestDomainAction(AbstractDomainRequest request) throws OpenshiftException {
 		String url = request.getUrlString(BASE_URL);
 		try {
@@ -149,6 +155,18 @@ public class OpenshiftService implements IOpenshiftService {
 				new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE, username, true));
 	}
 
+	@Override
+	public Application startApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		return requestApplicationAction(name, cartridge,
+				new ApplicationRequest(name, cartridge, ApplicationAction.START, username, true));
+	}
+
+	@Override
+	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		return requestApplicationAction(name, cartridge,
+				new ApplicationRequest(name, cartridge, ApplicationAction.STOP, username, true));
+	}
+
 	protected Application requestApplicationAction(String name, Cartridge cartridge,
 			ApplicationRequest applicationRequest) throws OpenshiftException {
 		String url = applicationRequest.getUrlString(BASE_URL);
@@ -160,7 +178,7 @@ public class OpenshiftService implements IOpenshiftService {
 
 			response = JsonSanitizer.sanitize(response);
 			OpenshiftResponse<Application> openshiftResponse =
-					new ApplicationResponseUnmarshaller(name, cartridge).unmarshall(response);
+					new ApplicationResponseUnmarshaller(name, cartridge, this).unmarshall(response);
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
@@ -181,5 +199,4 @@ public class OpenshiftService implements IOpenshiftService {
 	private IHttpClient createHttpClient(String url) throws MalformedURLException {
 		return new UrlConnectionHttpClient(new URL(url));
 	}
-
 }

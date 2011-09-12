@@ -25,7 +25,7 @@ public class DomainIntegrationTest {
 
 	private OpenshiftService openshiftService;
 
-	private static final String USERNAME = "openshift.only.domain@gmail.com";
+	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 
 	@Before
@@ -39,6 +39,21 @@ public class DomainIntegrationTest {
 		String domainName = createRandomString();
 		SSHKey sshKey = TestSSHKey.create();
 		Domain domain = openshiftService.createDomain(domainName, sshKey);
+
+		assertNotNull(domain);
+		assertEquals(domainName, domain.getName());
+		assertNotNull(domain.getUser());
+		User user = domain.getUser();
+		assertEquals(USERNAME, user.getRhlogin());
+		assertNotNull(user.getUuid());
+	}
+
+	@Test
+	public void canChangeDomain() throws Exception {
+
+		String domainName = createRandomString();
+		SSHKey sshKey = TestSSHKey.create();
+		Domain domain = openshiftService.changeDomain(domainName, sshKey);
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getName());

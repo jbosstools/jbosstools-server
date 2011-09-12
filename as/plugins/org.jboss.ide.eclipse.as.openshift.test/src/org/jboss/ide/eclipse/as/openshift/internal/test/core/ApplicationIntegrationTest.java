@@ -68,8 +68,35 @@ public class ApplicationIntegrationTest {
 	@Test(expected = OpenshiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		String applicationName = createRandomApplicationName();
-		openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
-		openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+		try {
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+
+	@Test
+	public void canStopApplication() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+
+	@Test
+	public void canStartStoppedApplication() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.startApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
 	}
 
 	private String createRandomApplicationName() {
