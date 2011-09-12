@@ -10,11 +10,10 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
+import static org.jboss.ide.eclipse.as.openshift.internal.test.core.CartridgeAsserts.assertThatContainsCartridge;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.net.URLEncoder;
-import java.text.MessageFormat;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
@@ -92,16 +91,4 @@ public class ListCartridgesTest {
 		assertEquals(0, response.getExitCode());
 	}
 
-	private void assertThatContainsCartridge(String cartridgeName, List<Cartridge> cartridges) {
-		boolean found = false;
-		for (Cartridge cartridge : cartridges) {
-			if (cartridgeName.equals(cartridge.getName())) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			fail(MessageFormat.format("Could not find cartridge with name \"{0}\"", cartridgeName));
-		}
-	}
 }

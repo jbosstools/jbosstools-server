@@ -18,7 +18,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	ApplicationIntegrationTest.class,
 	CartridgesIntegrationTest.class,
-	DomainIntegrationTest.class
+	DomainIntegrationTest.class,
+	ListCartridgesIntegrationTest.class
 })
 /**
  * @author André Dietisheim
