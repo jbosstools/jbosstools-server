@@ -23,7 +23,6 @@ import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftExcept
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
@@ -40,6 +39,7 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.ListCartridgesRe
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ApplicationResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.internal.core.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.response.OpenshiftResponse;
 
@@ -120,8 +120,9 @@ public class OpenshiftService implements IOpenshiftService {
 							password,
 							new DomainRequestJsonMarshaller().marshall(request))
 							.create();
-			String domainReponse = createHttpClient(url).post(requestString);
-			return new Domain(new User("", ""));
+			String responseString = createHttpClient(url).post(requestString);
+			OpenshiftResponse<Domain> response = new DomainResponseUnmarshaller(responseString, request.getName()).unmarshall();
+			return response.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		} catch (HttpClientException e) {

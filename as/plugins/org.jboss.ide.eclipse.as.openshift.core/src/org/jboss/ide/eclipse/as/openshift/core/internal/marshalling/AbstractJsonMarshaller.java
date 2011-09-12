@@ -7,7 +7,7 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
+ ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
 
 import org.jboss.dmr.ModelNode;
@@ -18,12 +18,13 @@ import org.jboss.ide.eclipse.as.openshift.internal.core.request.AbstractOpenshif
 /**
  * @author André Dietisheim
  */
-public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {
+public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRequest> implements
+		IOpenshiftMarshaller<REQUEST> {
 
 	public String marshall(REQUEST request) throws OpenshiftException {
 		ModelNode node = new ModelNode();
 		setStringProperty(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, request.getRhLogin(), node);
-		setStringProperty(IOpenshiftJsonConstants.PROPERTY_DEBUG, request.isDebug(), node);
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_DEBUG, String.valueOf(request.isDebug()), node);
 		setJsonDataProperties(node, request);
 		return node.toJSONString(true);
 	}
@@ -31,20 +32,21 @@ public abstract class AbstractJsonMarshaller<REQUEST extends AbstractOpenshiftRe
 	protected void setJsonDataProperties(ModelNode node, REQUEST request) throws OpenshiftException {
 		// empty default implementation
 	}
-	
+
 	protected void setStringProperty(String propertyName, Object value, ModelNode node) {
-		if (!isSet(value)) {
-			if (value instanceof String) {
-				setStringProperty((String) value, propertyName, node);
-			}
+		if (!(value instanceof String)
+				&& !isSet((String) value)) {
+			return;
 		}
+
+		setStringProperty((String) value, propertyName, node);
 	}
-	
+
 	protected void setStringProperty(String propertyName, String value, ModelNode node) {
 		if (!isSet(value)) {
 			return;
 		}
-				
+
 		node.get(propertyName).set(value);
 	}
 

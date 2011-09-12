@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.test;
+package org.jboss.ide.eclipse.as.openshift.internal.test.core;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

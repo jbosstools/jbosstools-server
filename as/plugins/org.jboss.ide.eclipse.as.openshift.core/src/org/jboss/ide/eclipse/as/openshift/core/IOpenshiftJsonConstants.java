@@ -31,5 +31,6 @@ public class IOpenshiftJsonConstants {
 	public static final String PROPERTY_NAMESPACE = "namespace";
 	public static final String PROPERTY_ALTER = "alter";
 	public static final String PROPERTY_SSH = "ssh";
+	public static final String PROPERTY_UUID = "uuid";
 	
 }

@@ -7,28 +7,23 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+ ******************************************************************************/ 
+package org.jboss.ide.eclipse.as.openshift.internal.test.core;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	ApplicationTest.class,
+	ListCartridgesTest.class,
+	DomainTest.class,
+	UserInfoTest.class
+})
 /**
  * @author André Dietisheim
  */
-public class Domain implements IOpenshiftObject {
+public class OpenshiftTestSuite {
 
-	private User user;
-	private String name;
-
-	public Domain(String name, User user) {
-		this.name = name;
-		this.user = user;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public User getUser() {
-		return user;
-	}
 }
