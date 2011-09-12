@@ -21,7 +21,7 @@ public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
 	private String name;
 	private SSHKey sshKey;
 
-	public AbstractDomainRequest(String name, SSHKey sshKey, ApplicationAction action, String username) {
+	public AbstractDomainRequest(String name, SSHKey sshKey, String username) {
 		this(name, sshKey, username, false);
 	}
 
