@@ -15,7 +15,7 @@ public class JsonSanitizer {
 	/**
 	 * Corrects erroneously quoted json objects in the given string.
 	 * <p>
-	 * "{ \"property\": \"value\" }"
+	 * corrects: "{ \"property\": \"value\" }" to { "propery" : "value" }
 	 * 
 	 * @param json
 	 * @return
