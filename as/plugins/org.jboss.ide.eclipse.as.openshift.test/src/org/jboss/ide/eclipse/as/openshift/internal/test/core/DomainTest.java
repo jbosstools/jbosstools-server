@@ -33,6 +33,7 @@ public class DomainTest {
 
 	@Test
 	public void canMarshallDomainCreateResponse() throws IOException, OpenshiftException {
+		SSHKey sshKey = TestSSHKey.create();
 		String expectedRequestString =
 				"password="
 						+ PASSWORD
@@ -44,10 +45,11 @@ public class DomainTest {
 						+ "%2C+%22debug%22+%3A+%22true%22"
 						+ "%2C+%22namespace%22+%3A+%22toolsjboss%40gmail.com%22"
 						+ "%2C+%22alter%22+%3A+%22false%22"
-						+ "%2C+%22ssh%22+%3A+%22AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6BGRDydfGsQHhnZgo43dEfLzSJBke%2FhE8MLBBG1%2B5ZwktsrE%2Bf2VdVt0McRLVAO6rdJRyMUX0rTbm7SABRVSX%2BzeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA%2F7EzzyneS6iyw%3D%3D%22"
+						+ "%2C+%22ssh%22+%3A+%22"
+						+ URLEncoder.encode(sshKey.getPublicKeyContent(), "UTF-8")
+						+ "%22"
 						+ "%7D";
 
-		SSHKey sshKey = TestSSHKey.create();
 		CreateDomainRequest request = new CreateDomainRequest(USERNAME, sshKey, USERNAME, true);
 		String requestString =
 				new OpenshiftJsonRequestFactory(
