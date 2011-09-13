@@ -19,13 +19,15 @@ import org.junit.Test;
 public class EGitUtilsTest {
 
 	private static final String GIT_EMAIL = "dummyUser@redhat.com";
-
 	private static final String GIT_USER = "dummyUser";
-
+	private static final String REPO2_REMOTE_NAME = "openshift";
+	
 	protected final TestUtils testUtils = new TestUtils();
 
 	private TestRepository testRepository;
+	private TestRepository testRepository2;
 	private TestProject testProject;
+	private TestProject testProject2;
 	private TestRepository clonedTestRepository;
 
 	@Before
@@ -39,7 +41,14 @@ public class EGitUtilsTest {
 		testRepository.setUserAndEmail(GIT_USER, GIT_EMAIL);
 		testRepository.connect(testProject.getProject());
 
+		this.testProject2 = new TestProject(true);
+
+		this.testRepository2 = new TestRepository(TestUtils.createGitDir(testProject2));
+		testRepository2.setUserAndEmail(GIT_USER, GIT_EMAIL);
+		testRepository2.connect(testProject2.getProject());
+		
 		this.clonedTestRepository = cloneRepository(testRepository);
+		clonedTestRepository.addRemoteTo(REPO2_REMOTE_NAME, testRepository2.getRepository());
 	}
 
 	private TestRepository cloneRepository(TestRepository repository) throws URISyntaxException,
@@ -54,9 +63,11 @@ public class EGitUtilsTest {
 	public void tearDown() throws Exception {
 		testRepository.dispose();
 		clonedTestRepository.dispose();
-
-		testProject.dispose();
+		testRepository2.dispose();
 		Activator.getDefault().getRepositoryCache().clear();
+		
+		testProject.dispose();
+		testProject2.dispose();		
 	}
 
 	@Test
@@ -96,35 +107,42 @@ public class EGitUtilsTest {
 
 	@Test
 	public void fileAddedToCloneIsInRemoteAfterPush() throws Exception {
-		TestProject testProject2 = null;
-		TestRepository testRepository2 = null;
 		String fileName = "c.txt";
 		String fileContent = "adietish@redhat.com";
-		String remoteRepoName = "openshift";
-		
-		try {
-			testProject2 = new TestProject(true);
-			File gitDir = TestUtils.createGitDir(testProject2);
-			testRepository2 = new TestRepository(gitDir);
-			clonedTestRepository.addRemoteTo(remoteRepoName, testRepository2.getRepository());
 
-			File file = clonedTestRepository.createFile(fileName, fileContent);
-			clonedTestRepository.addAndCommit(file, "adding a file");
+		File file = clonedTestRepository.createFile(fileName, fileContent);
+		clonedTestRepository.addAndCommit(file, "adding a file");
 
-			EGitUtils.push(remoteRepoName, clonedTestRepository.getRepository(), null);
+		EGitUtils.push(REPO2_REMOTE_NAME, clonedTestRepository.getRepository(), null);
 
-			// does origin contain file added to clone?
-			testUtils.assertRepositoryContainsFilesWithContent(
-					clonedTestRepository.getRepository(),
-					fileName,
-					fileContent);
-		} finally {
-			if (testProject2 != null) {
-				testProject2.dispose();
-			}
-			if (testRepository2 != null) {
-				testRepository2.dispose();
-			}
-		}
+		// does origin contain file added to clone?
+		testUtils.assertRepositoryContainsFilesWithContent(
+				testRepository2.getRepository(),
+				fileName,
+				fileContent);
 	}
+
+	@Test
+	public void forcedPushRemovesFileInRemote() throws Exception {
+		String fileName = "c.txt";
+		String fileContent = "adietish@redhat.com";
+
+		IFile fileInRepo2 = testUtils.addFileToProject(
+				testProject2.getProject(),
+				fileName,
+				fileContent);
+		testRepository2.track(fileInRepo2);
+
+		File fileInClone = clonedTestRepository.createFile(fileName, fileContent);
+		clonedTestRepository.addAndCommit(fileInClone, "adding a file");
+
+		EGitUtils.push(REPO2_REMOTE_NAME, clonedTestRepository.getRepository(), null);
+
+		// does origin contain file added to clone?
+		testUtils.assertRepositoryContainsFilesWithContent(
+				clonedTestRepository.getRepository(),
+				fileName,
+				fileContent);
+	}
+
 }
