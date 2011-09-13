@@ -18,8 +18,10 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.Status;
 import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,8 +29,8 @@ import org.junit.Test;
  */
 public class ApplicationIntegrationTest {
 
-	private OpenshiftService openshiftService;
-	private OpenshiftService invalidCredentialsOpenshiftService;
+	private IOpenshiftService openshiftService;
+	private IOpenshiftService invalidCredentialsOpenshiftService;
 
 	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
@@ -39,11 +41,13 @@ public class ApplicationIntegrationTest {
 		this.invalidCredentialsOpenshiftService = new OpenshiftService(USERNAME, "bogus");
 	}
 
+	@Ignore
 	@Test(expected = InvalidCredentialsOpenshiftException.class)
 	public void createApplicationWithInvalidCredentialsThrowsException() throws Exception {
 		invalidCredentialsOpenshiftService.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7);
 	}
 
+	@Ignore
 	@Test
 	public void canCreateApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -58,6 +62,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canDestroyApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -65,6 +70,7 @@ public class ApplicationIntegrationTest {
 		openshiftService.destroyApplication(applicationName, Cartridge.JBOSSAS_7);
 	}
 
+	@Ignore
 	@Test(expected = OpenshiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -76,6 +82,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canStopApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -87,6 +94,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canStartStoppedApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -99,6 +107,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canStartStartedApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -116,6 +125,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canStopStoppedApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -134,6 +144,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void canRestartApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -151,6 +162,18 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Test
+	public void canGetStatus() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			Application application = openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			Status status = openshiftService.getStatus(application);
+			assertNotNull(status);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+	
 	private String createRandomApplicationName() {
 		return String.valueOf(System.currentTimeMillis());
 	}

@@ -46,5 +46,8 @@ public class Application implements IOpenshiftObject {
 	public void stop() throws OpenshiftException {
 		service.stopApplication(name, cartridge);
 	}
-
+	
+	public Status getStatus() throws OpenshiftException {
+		return service.getStatus(this);
+	}
 }

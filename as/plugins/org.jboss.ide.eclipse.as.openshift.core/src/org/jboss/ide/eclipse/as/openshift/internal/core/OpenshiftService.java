@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftExcept
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.Status;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
@@ -122,7 +123,7 @@ public class OpenshiftService implements IOpenshiftService {
 	public Domain changeDomain(String newName, SSHKey sshKey) throws OpenshiftException {
 		return requestDomainAction(new ChangeDomainRequest(newName, sshKey, username, true));
 	}
-	
+
 	protected Domain requestDomainAction(AbstractDomainRequest request) throws OpenshiftException {
 		String url = request.getUrlString(BASE_URL);
 		try {
@@ -145,36 +146,52 @@ public class OpenshiftService implements IOpenshiftService {
 
 	@Override
 	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		return requestApplicationAction(name, cartridge,
-				new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE, username, true));
+		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE, username,
+				true));
 	}
 
 	@Override
 	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		return requestApplicationAction(name, cartridge,
-				new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE, username, true));
+		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
+				username, true));
 	}
 
 	@Override
 	public Application startApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		return requestApplicationAction(name, cartridge,
-				new ApplicationRequest(name, cartridge, ApplicationAction.START, username, true));
+		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.START, username, true));
 	}
 
 	@Override
 	public Application restartApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		return requestApplicationAction(name, cartridge,
-				new ApplicationRequest(name, cartridge, ApplicationAction.RESTART, username, true));
-	}
-	
-	@Override
-	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException {
-		return requestApplicationAction(name, cartridge,
-				new ApplicationRequest(name, cartridge, ApplicationAction.STOP, username, true));
+		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.RESTART, username,
+				true));
 	}
 
-	protected Application requestApplicationAction(String name, Cartridge cartridge,
-			ApplicationRequest applicationRequest) throws OpenshiftException {
+	@Override
+	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.STOP, username, true));
+	}
+
+	/**
+	 * This seems not implemented yet on the server. The service simply returns
+	 * a <code>null</code> data object. example response:
+	 * <p>
+	 * {"messages":"","debug":"","data":null,"api":"1.1.1","api_c":[
+	 * "placeholder"
+	 * ],"result":"Success","broker":"1.1.1","broker_c":["namespace"
+	 * ,"rhlogin","ssh"
+	 * ,"app_uuid","debug","alter","cartridge","cart_type","action"
+	 * ,"app_name","api"],"exit_code":0}
+	 */
+	@Override
+	public Status getStatus(Application application) throws OpenshiftException {
+		throw new UnsupportedOperationException();
+		// requestApplicationAction(
+		// new ApplicationRequest(application.getName(),
+		// application.getCartridge(), ApplicationAction.STOP, username, true));
+	}
+
+	protected Application requestApplicationAction(ApplicationRequest applicationRequest) throws OpenshiftException {
 		String url = applicationRequest.getUrlString(BASE_URL);
 		try {
 			String applicationRequestString =
@@ -184,21 +201,23 @@ public class OpenshiftService implements IOpenshiftService {
 
 			response = JsonSanitizer.sanitize(response);
 			OpenshiftResponse<Application> openshiftResponse =
-					new ApplicationResponseUnmarshaller(name, cartridge, this).unmarshall(response);
+					new ApplicationResponseUnmarshaller(applicationRequest.getName(),
+							applicationRequest.getCartridge(), this).unmarshall(response);
 			return openshiftResponse.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
 					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
-					applicationRequest.getAction().toHumanReadable(), name, url);
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
 		} catch (UnauthorizedException e) {
 			throw new InvalidCredentialsOpenshiftException(
 					url, e,
 					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
-					applicationRequest.getAction().toHumanReadable(), name, url, username, password);
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url, username,
+					password);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
-					applicationRequest.getAction().toHumanReadable(), name, url);
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
 		}
 	}
 

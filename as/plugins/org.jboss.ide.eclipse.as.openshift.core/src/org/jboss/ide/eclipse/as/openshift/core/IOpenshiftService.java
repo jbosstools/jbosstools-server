@@ -31,6 +31,8 @@ public interface IOpenshiftService {
 
 	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
+	public Status getStatus(Application application) throws OpenshiftException;
+
 	public Domain changeDomain(String domainName, SSHKey sshKey) throws OpenshiftException;
 
 	public Domain createDomain(String name, SSHKey keyPair) throws OpenshiftException;
@@ -38,5 +40,4 @@ public interface IOpenshiftService {
 	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 	
 	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException;
-
 }
