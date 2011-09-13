@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
-import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftCoreActivator;
-import org.jboss.ide.eclipse.as.openshift.internal.core.utils.Base64Encoder;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftCoreActivator;
+import org.jboss.ide.eclipse.as.openshift.core.internal.utils.Base64Encoder;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
