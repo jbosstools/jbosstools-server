@@ -21,7 +21,7 @@ import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.internal.core.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;

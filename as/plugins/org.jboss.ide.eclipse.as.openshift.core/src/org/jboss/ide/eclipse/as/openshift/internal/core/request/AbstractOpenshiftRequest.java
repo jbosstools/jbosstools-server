@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.openshift.internal.core.request;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.IOpenshiftRequest;
+import org.jboss.ide.eclipse.as.openshift.internal.core.marshalling.IOpenshiftRequest;
 import org.jboss.ide.eclipse.as.openshift.internal.core.utils.UrlBuilder;
 
 /**
