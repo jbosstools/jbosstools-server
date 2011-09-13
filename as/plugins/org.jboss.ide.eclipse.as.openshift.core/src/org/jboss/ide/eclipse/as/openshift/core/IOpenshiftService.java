@@ -27,6 +27,8 @@ public interface IOpenshiftService {
 
 	public Application startApplication(String name, Cartridge cartridge) throws OpenshiftException;
 	
+	public Application restartApplication(String name, Cartridge cartridge) throws OpenshiftException;
+
 	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
 	public Domain changeDomain(String domainName, SSHKey sshKey) throws OpenshiftException;

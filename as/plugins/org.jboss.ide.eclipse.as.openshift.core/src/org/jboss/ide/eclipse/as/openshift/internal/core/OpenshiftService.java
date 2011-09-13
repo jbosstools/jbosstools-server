@@ -162,6 +162,12 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
+	public Application restartApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		return requestApplicationAction(name, cartridge,
+				new ApplicationRequest(name, cartridge, ApplicationAction.RESTART, username, true));
+	}
+	
+	@Override
 	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException {
 		return requestApplicationAction(name, cartridge,
 				new ApplicationRequest(name, cartridge, ApplicationAction.STOP, username, true));

@@ -99,6 +99,58 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Test
+	public void canStartStartedApplication() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			/**
+			 * freshly created apps are started
+			 * 
+			 * @link 
+			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 */
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.startApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+
+	@Test
+	public void canStopStoppedApplication() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			/**
+			 * freshly created apps are started
+			 * 
+			 * @link 
+			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 */
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+	
+	@Test
+	public void canRestartApplication() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			/**
+			 * freshly created apps are started
+			 * 
+			 * @link 
+			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 */
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.restartApplication(applicationName, Cartridge.JBOSSAS_7);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+
 	private String createRandomApplicationName() {
 		return String.valueOf(System.currentTimeMillis());
 	}

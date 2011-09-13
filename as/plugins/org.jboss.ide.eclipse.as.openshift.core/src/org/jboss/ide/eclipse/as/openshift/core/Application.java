@@ -39,6 +39,10 @@ public class Application implements IOpenshiftObject {
 		service.startApplication(name, cartridge);
 	}
 
+	public void restart() throws OpenshiftException {
+		service.restartApplication(name, cartridge);
+	}
+
 	public void stop() throws OpenshiftException {
 		service.stopApplication(name, cartridge);
 	}
