@@ -251,6 +251,8 @@ public class PublishUtil {
 			suffix = IWTPConstants.EXT_WAR;
 		else if( IWTPConstants.FACET_CONNECTOR.equals(type)) 
 			suffix = IWTPConstants.EXT_RAR;
+		else if( IWTPConstants.FACET_UTILITY.equals(type)) 
+			suffix = IWTPConstants.EXT_JAR;
 		else if( IWTPConstants.FACET_ESB.equals(type))
 			suffix = IWTPConstants.EXT_ESB;
 		else if( "jboss.package".equals(type)) //$NON-NLS-1$ 

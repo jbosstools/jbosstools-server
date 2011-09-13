@@ -141,6 +141,8 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 		for( int i = 0; i < moduleTree.length-1; i++ ) {
 			tree2[i] = moduleTree[i];
 		}
+		if( tree2.length == 0 ) 
+			return new Path("/"); //$NON-NLS-1$
 		return PublishUtil.getDeployPath(publishMethod, tree2, server);
 	}
 
