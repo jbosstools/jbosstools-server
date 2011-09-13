@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.internal.test.core.utils;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core.utils;
 
 import java.io.File;
 import java.io.FileWriter;

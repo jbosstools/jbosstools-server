@@ -8,14 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.internal.test.core.fakes;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
-import org.jboss.ide.eclipse.as.openshift.internal.test.core.utils.StreamUtils;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.StreamUtils;
 
 /**
  * @author André Dietisheim

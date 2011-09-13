@@ -8,9 +8,9 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.internal.test.core;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
-import static org.jboss.ide.eclipse.as.openshift.internal.test.core.CartridgeAsserts.assertThatContainsCartridge;
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.CartridgeAsserts.assertThatContainsCartridge;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 

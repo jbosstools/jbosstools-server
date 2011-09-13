@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.test.core;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

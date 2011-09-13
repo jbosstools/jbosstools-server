@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.openshift.internal.test.core;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

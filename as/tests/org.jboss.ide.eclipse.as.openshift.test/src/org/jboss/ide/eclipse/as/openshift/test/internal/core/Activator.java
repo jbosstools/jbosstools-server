@@ -8,22 +8,25 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.internal.test.core;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
+public class Activator implements BundleActivator {
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	ApplicationIntegrationTest.class,
-	CartridgesIntegrationTest.class,
-	DomainIntegrationTest.class,
-	ListCartridgesIntegrationTest.class
-})
-/**
- * @author André Dietisheim
- */
-public class OpenshiftIntegrationTestSuite {
+	private static BundleContext context;
+
+	static BundleContext getContext() {
+		return context;
+	}
+
+	public void start(BundleContext bundleContext) throws Exception {
+		Activator.context = bundleContext;
+	}
+
+	public void stop(BundleContext bundleContext) throws Exception {
+		Activator.context = null;
+	}
 
 }
