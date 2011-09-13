@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.Status;
-import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

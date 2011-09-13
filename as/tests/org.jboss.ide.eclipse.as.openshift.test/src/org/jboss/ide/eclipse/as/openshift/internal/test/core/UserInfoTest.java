@@ -14,9 +14,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URLEncoder;
 
-import org.jboss.ide.eclipse.as.openshift.internal.core.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.UserInfoRequest;
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.junit.Test;
 
 /**

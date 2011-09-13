@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.internal.core.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.internal.test.core.fakes.TestSSHKey;
 import org.junit.Before;
 import org.junit.Test;

@@ -15,10 +15,10 @@ import static org.junit.Assert.assertEquals;
 import java.net.URLEncoder;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.internal.core.marshalling.ApplicationRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationAction;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.ApplicationRequest;
-import org.jboss.ide.eclipse.as.openshift.internal.core.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
 import org.junit.Test;
 
 /**
