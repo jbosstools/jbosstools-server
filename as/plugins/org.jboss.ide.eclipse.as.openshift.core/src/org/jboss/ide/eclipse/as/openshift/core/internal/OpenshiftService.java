@@ -28,10 +28,6 @@ import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UrlConnectionHttpClient;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ApplicationRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.AbstractDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
@@ -40,11 +36,16 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequ
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ApplicationRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.DomainRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.UserInfoResponseUnmarshaller;
 
 /**
  * @author André Dietisheim
@@ -62,13 +63,16 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	public UserInfo getUserInfo() throws OpenshiftException {
-		UserInfoRequest userInfoRequest = new UserInfoRequest(username, true);
-		String url = userInfoRequest.getUrlString(BASE_URL);
+		UserInfoRequest request = new UserInfoRequest(username, true);
+		String url = request.getUrlString(BASE_URL);
 		try {
-			String userInfoRequestString = new UserInfoRequestJsonMarshaller().marshall(userInfoRequest);
-			String request = new OpenshiftJsonRequestFactory(password, userInfoRequestString).create();
-			String userInfoResponse = createHttpClient(url).post(request);
-			throw new UnsupportedOperationException();
+			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
+			String openShiftRequestString = new OpenshiftJsonRequestFactory(password, requestString).create();
+			String responseString = createHttpClient(url).post(openShiftRequestString);
+			responseString = JsonSanitizer.sanitize(responseString);
+			OpenshiftResponse<UserInfo> response =
+					new UserInfoResponseUnmarshaller().unmarshall(responseString);
+			return response.getData();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", username, url, e);
@@ -185,10 +189,9 @@ public class OpenshiftService implements IOpenshiftService {
 	 */
 	@Override
 	public Status getStatus(Application application) throws OpenshiftException {
+		application = requestApplicationAction(
+				new ApplicationRequest(application.getName(), application.getCartridge(),ApplicationAction.STATUS, username, true));
 		throw new UnsupportedOperationException();
-		// requestApplicationAction(
-		// new ApplicationRequest(application.getName(),
-		// application.getCartridge(), ApplicationAction.STOP, username, true));
 	}
 
 	protected Application requestApplicationAction(ApplicationRequest applicationRequest) throws OpenshiftException {

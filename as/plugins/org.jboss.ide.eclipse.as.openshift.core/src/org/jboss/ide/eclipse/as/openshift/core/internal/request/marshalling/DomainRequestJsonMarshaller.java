@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
+package org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;

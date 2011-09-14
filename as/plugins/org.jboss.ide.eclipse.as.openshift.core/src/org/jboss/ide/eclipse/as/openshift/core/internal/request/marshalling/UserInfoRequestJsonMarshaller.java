@@ -8,11 +8,12 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
+package org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling;
+
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 
 /**
  * @author André Dietisheim
  */
-public interface IOpenshiftRequest {
-
+public class UserInfoRequestJsonMarshaller extends AbstractJsonMarshaller<UserInfoRequest> {
 }

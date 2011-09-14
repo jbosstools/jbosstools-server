@@ -1,4 +1,6 @@
-package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
+package org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling;
+
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.IOpenshiftRequest;
 
 
 public abstract class AbstractOpenshiftMarshaller<REQUEST extends IOpenshiftRequest> implements IOpenshiftMarshaller<REQUEST> {

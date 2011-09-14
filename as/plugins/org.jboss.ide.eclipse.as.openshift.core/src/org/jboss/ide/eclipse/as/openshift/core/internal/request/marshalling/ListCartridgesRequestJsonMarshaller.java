@@ -8,12 +8,19 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core.internal.marshalling;
+package org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
+import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
 
 /**
  * @author André Dietisheim
  */
-public class UserInfoRequestJsonMarshaller extends AbstractJsonMarshaller<UserInfoRequest> {
+public class ListCartridgesRequestJsonMarshaller extends AbstractJsonMarshaller<ListCartridgesRequest> {
+
+	@Override
+	protected void setJsonDataProperties(ModelNode node, ListCartridgesRequest request) {
+		setStringProperty(IOpenshiftJsonConstants.PROPERTY_CART_TYPE, request.getCartType(), node);
+	}
 }
