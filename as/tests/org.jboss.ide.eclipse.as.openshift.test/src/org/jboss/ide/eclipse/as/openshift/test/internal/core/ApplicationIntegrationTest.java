@@ -174,6 +174,19 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
+	@Test
+	public void getStatusReturnsTheWholeLog() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			Application application = openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			String applicationStatus = openshiftService.getStatus(application.getName(), application.getCartridge());
+			String applicationStatus2 = openshiftService.getStatus(application.getName(), application.getCartridge());
+			assertEquals(applicationStatus, applicationStatus2);
+		} finally {
+			silentlyDestroyApplication(applicationName, openshiftService);
+		}
+	}
+
 	private String createRandomApplicationName() {
 		return String.valueOf(System.currentTimeMillis());
 	}

@@ -11,26 +11,14 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.Application;
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationStatusUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Application> {
-
-	private String applicationName;
-	private Cartridge cartridge;
-	private IOpenshiftService service;
-
-	public ApplicationStatusUnmarshaller(String applicationName, IOpenshiftService service) {
-		this.applicationName = applicationName;
-		this.service = service;
-	}
+public class ApplicationStatusResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
 
 	@Override
-	protected Application createOpenshiftObject(ModelNode node) {
-		return new Application(applicationName, cartridge, service);
+	protected String createFromResultNode(ModelNode node) {
+		return node.asString();
 	}
 }

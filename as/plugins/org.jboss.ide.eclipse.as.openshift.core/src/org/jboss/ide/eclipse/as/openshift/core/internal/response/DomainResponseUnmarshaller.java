@@ -27,7 +27,7 @@ public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnm
 	}
 
 	@Override
-	protected Domain createOpenshiftObject(ModelNode node) {
+	protected Domain createFromResultNode(ModelNode node) {
 		User user = createUser(node);
 		return new Domain(domainName, user);
 	}

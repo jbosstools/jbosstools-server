@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<UserInfo> {
 
 	@Override
-	protected UserInfo createOpenshiftObject(ModelNode node) {
+	protected UserInfo createFromResultNode(ModelNode node) {
 		return new UserInfo("", "", "", "", "");
 	}
 }

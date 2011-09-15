@@ -29,7 +29,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 			String messages = getString(IOpenshiftJsonConstants.PROPERTY_MESSAGES, node);
 			String result = getString(IOpenshiftJsonConstants.PROPERTY_RESULT, node);
 			int exitCode = node.get(IOpenshiftJsonConstants.PROPERTY_EXIT_CODE).asInt();
-			OPENSHIFTOBJECT openshiftObject = createOpenshiftObject(node.get(IOpenshiftJsonConstants.PROPERTY_DATA));
+			OPENSHIFTOBJECT openshiftObject = createFromResultNode(node.get(IOpenshiftJsonConstants.PROPERTY_RESULT));
 			return new OpenshiftResponse<OPENSHIFTOBJECT>(debug, messages, result, openshiftObject, exitCode);
 		} catch (IllegalArgumentException e) {
 			throw new OpenshiftException(e, "Could not parse response \"{0}\"", response);
@@ -40,7 +40,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 
 
-	protected abstract OPENSHIFTOBJECT createOpenshiftObject(ModelNode dataNode);
+	protected abstract OPENSHIFTOBJECT createFromResultNode(ModelNode dataNode);
 
 	protected String getResponse() {
 		return response;

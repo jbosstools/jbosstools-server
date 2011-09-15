@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.net.URLEncoder;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class UserInfoTest {
 						+ "%7D";
 
 		String userInfoRequest = new UserInfoRequestJsonMarshaller().marshall(new UserInfoRequest(USERNAME, true));
-		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, userInfoRequest).createString();
+		String effectiveRequest = new OpenshiftEnvelopeFactory(PASSWORD, userInfoRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}

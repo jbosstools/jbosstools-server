@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 public class ListCartridgesResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<List<Cartridge>> {
 
 	@Override
-	protected List<Cartridge> createOpenshiftObject(ModelNode dataNode) {
+	protected List<Cartridge> createFromResultNode(ModelNode dataNode) {
 		List<Cartridge> cartridges = new ArrayList<Cartridge>();
 		ModelNode cartridgesNode = dataNode.get(IOpenshiftJsonConstants.PROPERTY_CARTS);
 		for (ModelNode cartridgeNode : cartridgesNode.asList()) {

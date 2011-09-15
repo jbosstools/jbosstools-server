@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
@@ -22,7 +21,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
  * 
  * @author André Dietisheim
  */
-public class OpenshiftJsonRequestFactory implements IOpenshiftRequestFactory {
+public class OpenshiftEnvelopeFactory implements IOpenshiftRequestFactory {
 
 	private static final char EQ = '=';
 	private static final String PROPERTY_PASSWORD = "password";
@@ -33,7 +32,7 @@ public class OpenshiftJsonRequestFactory implements IOpenshiftRequestFactory {
 	private String[] payloads;
 	private String password;
 
-	public OpenshiftJsonRequestFactory(String password, String... payloads) {
+	public OpenshiftEnvelopeFactory(String password, String... payloads) {
 		this.password = password;
 		this.payloads = payloads;
 	}

@@ -31,7 +31,7 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonRespon
 	}
 
 	@Override
-	protected Application createOpenshiftObject(ModelNode node) {
+	protected Application createFromResultNode(ModelNode node) {
 		return new Application(applicationName, cartridge, service);
 	}
 }

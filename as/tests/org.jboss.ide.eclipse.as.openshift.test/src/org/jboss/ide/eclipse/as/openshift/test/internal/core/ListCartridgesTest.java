@@ -19,7 +19,7 @@ import java.util.List;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
-import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
@@ -42,7 +42,7 @@ public class ListCartridgesTest {
 
 		String listCartridgeRequest = new ListCartridgesRequestJsonMarshaller().marshall(
 				new ListCartridgesRequest(USERNAME, true));
-		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, listCartridgeRequest).createString();
+		String effectiveRequest = new OpenshiftEnvelopeFactory(PASSWORD, listCartridgeRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}

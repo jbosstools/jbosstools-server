@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
-import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
@@ -48,7 +48,7 @@ public class DomainTest {
 
 		CreateDomainRequest request = new CreateDomainRequest("myDomain", sshKey, USERNAME, true);
 		String requestString =
-				new OpenshiftJsonRequestFactory(
+				new OpenshiftEnvelopeFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
 						.createString();
@@ -80,7 +80,7 @@ public class DomainTest {
 
 		ChangeDomainRequest request = new ChangeDomainRequest("myDomain", sshKey, USERNAME, true);
 		String requestString =
-				new OpenshiftJsonRequestFactory(
+				new OpenshiftEnvelopeFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
 						.createString();

@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationStatusReader;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
@@ -34,13 +33,14 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationReque
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
-import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ApplicationRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationStatusResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
@@ -67,7 +67,7 @@ public class OpenshiftService implements IOpenshiftService {
 		String url = request.getUrlString(BASE_URL);
 		try {
 			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
-			String openShiftRequestString = new OpenshiftJsonRequestFactory(password, requestString).createString();
+			String openShiftRequestString = new OpenshiftEnvelopeFactory(password, requestString).createString();
 			String responseString = createHttpClient(url).post(openShiftRequestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<UserInfo> response =
@@ -95,7 +95,7 @@ public class OpenshiftService implements IOpenshiftService {
 		try {
 			String listCartridgesRequestString =
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
-			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).createString();
+			String request = new OpenshiftEnvelopeFactory(password, listCartridgesRequestString).createString();
 			String listCatridgesReponse = createHttpClient(url).post(request);
 			listCatridgesReponse = JsonSanitizer.sanitize(listCatridgesReponse);
 			OpenshiftResponse<List<Cartridge>> response =
@@ -132,7 +132,7 @@ public class OpenshiftService implements IOpenshiftService {
 		String url = request.getUrlString(BASE_URL);
 		try {
 			String requestString =
-					new OpenshiftJsonRequestFactory(
+					new OpenshiftEnvelopeFactory(
 							password,
 							new DomainRequestJsonMarshaller().marshall(request))
 							.createString();
@@ -188,10 +188,35 @@ public class OpenshiftService implements IOpenshiftService {
 	 * ,"app_name","api"],"exit_code":0}
 	 */
 	@Override
-	public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException {
-		Application application = requestApplicationAction(
-				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, username, true));
-		throw new UnsupportedOperationException();
+	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException {
+		ApplicationRequest applicationRequest = 
+				new ApplicationRequest(name, cartridge, ApplicationAction.STATUS, username, true);
+		String url = applicationRequest.getUrlString(BASE_URL);
+		try {
+			String applicationRequestString =
+					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
+			String request = new OpenshiftEnvelopeFactory(password, applicationRequestString).createString();
+			String response = createHttpClient(url).post(request);
+
+			response = JsonSanitizer.sanitize(response);
+			OpenshiftResponse<String> openshiftResponse =
+					new ApplicationStatusResponseUnmarshaller().unmarshall(response);
+			return openshiftResponse.getOpenshiftObject();
+		} catch (MalformedURLException e) {
+			throw new OpenshiftException(
+					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
+		} catch (UnauthorizedException e) {
+			throw new InvalidCredentialsOpenshiftException(
+					url, e,
+					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url, username,
+					password);
+		} catch (HttpClientException e) {
+			throw new OpenshiftEndpointException(
+					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
+					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
+		}
 	}
 
 	protected Application requestApplicationAction(ApplicationRequest applicationRequest) throws OpenshiftException {
@@ -199,7 +224,7 @@ public class OpenshiftService implements IOpenshiftService {
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
-			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).createString();
+			String request = new OpenshiftEnvelopeFactory(password, applicationRequestString).createString();
 			String response = createHttpClient(url).post(request);
 
 			response = JsonSanitizer.sanitize(response);
