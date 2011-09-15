@@ -9,4 +9,5 @@
 	<groupId>org.jboss.tools.as.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.openshift.core</artifactId> 
 	<packaging>eclipse-plugin</packaging>
+	<version>0.0.1</version>
 </project>
