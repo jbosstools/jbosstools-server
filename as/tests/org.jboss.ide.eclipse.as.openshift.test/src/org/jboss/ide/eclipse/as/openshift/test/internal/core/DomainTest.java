@@ -21,10 +21,10 @@ import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
@@ -51,7 +51,7 @@ public class DomainTest {
 				new OpenshiftJsonRequestFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
-						.create();
+						.createString();
 		assertEquals(expectedRequestString, requestString);
 	}
 
@@ -64,7 +64,7 @@ public class DomainTest {
 		OpenshiftResponse<Domain> response = new DomainResponseUnmarshaller(domainName).unmarshall(responseString);
 
 		assertNotNull(response);
-		Domain domain = response.getData();
+		Domain domain = response.getOpenshiftObject();
 		assertEquals(domainName, domain.getName());
 		User user = domain.getUser();
 		assertNotNull(user);
@@ -83,7 +83,7 @@ public class DomainTest {
 				new OpenshiftJsonRequestFactory(
 						PASSWORD,
 						new DomainRequestJsonMarshaller().marshall(request))
-						.create();
+						.createString();
 		assertEquals(expectedRequestString, requestString);
 	}
 

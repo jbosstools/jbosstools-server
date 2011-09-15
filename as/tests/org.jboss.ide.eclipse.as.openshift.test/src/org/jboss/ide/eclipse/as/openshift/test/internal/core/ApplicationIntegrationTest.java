@@ -18,7 +18,6 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.Status;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,6 +34,7 @@ public class ApplicationIntegrationTest {
 	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 
+	@Ignore
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService(USERNAME, PASSWORD);
@@ -167,8 +167,8 @@ public class ApplicationIntegrationTest {
 		String applicationName = createRandomApplicationName();
 		try {
 			Application application = openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
-			Status status = openshiftService.getStatus(application);
-			assertNotNull(status);
+			String applicationStatus = openshiftService.getStatus(application.getName(), application.getCartridge());
+			assertNotNull(applicationStatus);
 		} finally {
 			silentlyDestroyApplication(applicationName, openshiftService);
 		}

@@ -18,9 +18,9 @@ import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftJsonRequestFactory;
+import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
@@ -42,7 +42,7 @@ public class ListCartridgesTest {
 
 		String listCartridgeRequest = new ListCartridgesRequestJsonMarshaller().marshall(
 				new ListCartridgesRequest(USERNAME, true));
-		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, listCartridgeRequest).create();
+		String effectiveRequest = new OpenshiftJsonRequestFactory(PASSWORD, listCartridgeRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
@@ -80,7 +80,7 @@ public class ListCartridgesTest {
 		assertEquals("", response.getMessages());
 		assertEquals(false, response.isDebug());
 
-		List<Cartridge> cartridges = response.getData();
+		List<Cartridge> cartridges = response.getOpenshiftObject();
 		assertEquals(5, cartridges.size());
 		assertThatContainsCartridge("perl-5.10", cartridges);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);
