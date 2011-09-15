@@ -8,6 +8,5 @@
 	</parent>
 	<groupId>org.jboss.tools.as.plugins</groupId>
 	<artifactId>org.jboss.ide.eclipse.as.openshift.core</artifactId> 
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>eclipse-plugin</packaging>
 </project>
