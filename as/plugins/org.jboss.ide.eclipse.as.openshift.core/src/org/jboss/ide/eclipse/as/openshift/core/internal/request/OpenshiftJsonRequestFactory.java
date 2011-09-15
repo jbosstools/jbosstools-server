@@ -22,7 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
  * 
  * @author André Dietisheim
  */
-public class OpenshiftJsonRequestFactory {
+public class OpenshiftJsonRequestFactory implements IOpenshiftRequestFactory {
 
 	private static final char EQ = '=';
 	private static final String PROPERTY_PASSWORD = "password";
@@ -38,7 +38,7 @@ public class OpenshiftJsonRequestFactory {
 		this.payloads = payloads;
 	}
 
-	public String create() throws OpenshiftException {
+	public String createString() throws OpenshiftException {
 		try {
 			StringBuilder builder = new StringBuilder();
 			appendPassword(builder);

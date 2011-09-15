@@ -14,7 +14,7 @@ package org.jboss.ide.eclipse.as.openshift.core;
 /**
  * @author André Dietisheim
  */
-public class Domain implements IOpenshiftObject {
+public class Domain {
 
 	private User user;
 	private String name;

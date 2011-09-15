@@ -13,7 +13,7 @@ package org.jboss.ide.eclipse.as.openshift.core;
 /**
  * @author André Dietisheim
  */
-public class UserInfo implements IOpenshiftObject {
+public class UserInfo {
 
 	private String rhlogin;
 	private String uuId;

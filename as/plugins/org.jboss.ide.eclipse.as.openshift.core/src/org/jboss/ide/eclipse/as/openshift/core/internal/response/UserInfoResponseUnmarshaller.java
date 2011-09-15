@@ -8,14 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 
 /**
  * @author André Dietisheim
  */
-public class Status implements IOpenshiftObject {
+public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<UserInfo> {
 
-	public Status() {
+	@Override
+	protected UserInfo createOpenshiftObject(ModelNode node) {
+		return new UserInfo("", "", "", "", "");
 	}
-
 }

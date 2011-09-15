@@ -42,7 +42,7 @@ public class OpenshiftResponse<OPENSHIFTOBJECT> {
 		return result;
 	}
 
-	public OPENSHIFTOBJECT getData() {
+	public OPENSHIFTOBJECT getOpenshiftObject() {
 		return openshiftObject;
 	}
 

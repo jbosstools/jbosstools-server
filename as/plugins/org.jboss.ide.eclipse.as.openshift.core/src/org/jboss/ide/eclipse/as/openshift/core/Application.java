@@ -11,7 +11,7 @@
 package org.jboss.ide.eclipse.as.openshift.core;
 
 
-public class Application implements IOpenshiftObject {
+public class Application {
 
 	private String name;
 	private Cartridge cartridge;
@@ -47,7 +47,7 @@ public class Application implements IOpenshiftObject {
 		service.stopApplication(name, cartridge);
 	}
 	
-	public Status getStatus() throws OpenshiftException {
-		return service.getStatus(this);
+	public ApplicationStatusReader getStatus() throws OpenshiftException {
+		return new ApplicationStatusReader(this, service);
 	}
 }

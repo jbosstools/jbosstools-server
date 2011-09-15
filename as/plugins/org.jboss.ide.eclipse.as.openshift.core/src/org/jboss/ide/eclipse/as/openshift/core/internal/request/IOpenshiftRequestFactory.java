@@ -7,12 +7,21 @@
  * 
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core;
+ ******************************************************************************/
+package org.jboss.ide.eclipse.as.openshift.core.internal.request;
+
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
  * @author André Dietisheim
  */
-public interface IOpenshiftObject {
+public interface IOpenshiftRequestFactory {
+
+	/**
+	 * Creates an request String that may be sent to the openshift server
+	 * @return
+	 * @throws OpenshiftException
+	 */
+	public String createString() throws OpenshiftException;
 
 }

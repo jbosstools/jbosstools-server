@@ -14,7 +14,7 @@ package org.jboss.ide.eclipse.as.openshift.core;
 /**
  * @author André Dietisheim
  */
-public class Cartridge implements IOpenshiftObject {
+public class Cartridge {
 
 	public static final Cartridge JBOSSAS_7 = new Cartridge("jbossas-7.0");
 	

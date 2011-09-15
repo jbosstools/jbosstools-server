@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.ApplicationStatusReader;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
@@ -23,7 +24,6 @@ import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftExcept
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
-import org.jboss.ide.eclipse.as.openshift.core.Status;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
@@ -67,12 +67,12 @@ public class OpenshiftService implements IOpenshiftService {
 		String url = request.getUrlString(BASE_URL);
 		try {
 			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
-			String openShiftRequestString = new OpenshiftJsonRequestFactory(password, requestString).create();
+			String openShiftRequestString = new OpenshiftJsonRequestFactory(password, requestString).createString();
 			String responseString = createHttpClient(url).post(openShiftRequestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<UserInfo> response =
 					new UserInfoResponseUnmarshaller().unmarshall(responseString);
-			return response.getData();
+			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", username, url, e);
@@ -95,12 +95,12 @@ public class OpenshiftService implements IOpenshiftService {
 		try {
 			String listCartridgesRequestString =
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
-			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).create();
+			String request = new OpenshiftJsonRequestFactory(password, listCartridgesRequestString).createString();
 			String listCatridgesReponse = createHttpClient(url).post(request);
 			listCatridgesReponse = JsonSanitizer.sanitize(listCatridgesReponse);
 			OpenshiftResponse<List<Cartridge>> response =
 					new ListCartridgesResponseUnmarshaller().unmarshall(listCatridgesReponse);
-			return response.getData();
+			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		} catch (HttpClientException e) {
@@ -135,12 +135,12 @@ public class OpenshiftService implements IOpenshiftService {
 					new OpenshiftJsonRequestFactory(
 							password,
 							new DomainRequestJsonMarshaller().marshall(request))
-							.create();
+							.createString();
 			String responseString = createHttpClient(url).post(requestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<Domain> response =
 					new DomainResponseUnmarshaller(request.getName()).unmarshall(responseString);
-			return response.getData();
+			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		} catch (HttpClientException e) {
@@ -188,9 +188,9 @@ public class OpenshiftService implements IOpenshiftService {
 	 * ,"app_name","api"],"exit_code":0}
 	 */
 	@Override
-	public Status getStatus(Application application) throws OpenshiftException {
-		application = requestApplicationAction(
-				new ApplicationRequest(application.getName(), application.getCartridge(),ApplicationAction.STATUS, username, true));
+	public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException {
+		Application application = requestApplicationAction(
+				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, username, true));
 		throw new UnsupportedOperationException();
 	}
 
@@ -199,14 +199,14 @@ public class OpenshiftService implements IOpenshiftService {
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
-			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).create();
+			String request = new OpenshiftJsonRequestFactory(password, applicationRequestString).createString();
 			String response = createHttpClient(url).post(request);
 
 			response = JsonSanitizer.sanitize(response);
 			OpenshiftResponse<Application> openshiftResponse =
 					new ApplicationResponseUnmarshaller(applicationRequest.getName(),
 							applicationRequest.getCartridge(), this).unmarshall(response);
-			return openshiftResponse.getData();
+			return openshiftResponse.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftException(
 					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
