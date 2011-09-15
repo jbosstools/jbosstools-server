@@ -27,6 +27,58 @@ public class UserInfoTest {
 	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 
+	private static final String userInfoRespose =
+			"{"
+					+ "	\"messages\":\"\","
+					+ " 	\"debug\":\"\","
+					+ "	\"data\":\""
+					+ ""
+					+ "	{"
+					+ "		\\\"user_info\\\":"
+					+ "		{"
+					+ "			\\\"rhc_domain\\\":\\\"rhcloud.com\\\","
+					+ "			\\\"rhlogin\\\":\\\"toolsjboss@gmail.com\\\","
+					+ "			\\\"namespace\\\":\\\"1315839296868\\\","
+					+ "			\\\"uuid\\\":\\\"5f34b742db754cc9ab70fd1db2c9a2bd\\\","
+					+ "			\\\"ssh_key\\\":\\\"AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6BGRDydfGsQHhnZgo43dEfLzSJBke/hE8MLBBG1+5ZwktsrE+f2VdVt0McRLVAO6rdJRyMUX0rTbm7SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==\\\""
+					+ "		},"
+					+ "		\\\"app_info\\\":"
+					+ "		{"
+					+ "			\\\"1315836963263\\\":"
+					+ "			{"
+					+ "				\\\"embedded\\\":null,"
+					+ "				\\\"uuid\\\":\\\"810540bafc1c4b5e8cac830fb8ca786f\\\","
+					+ "				\\\"framework\\\":\\\"jbossas-7.0\\\","
+					+ "				\\\"creation_time\\\":\\\"2011-09-12T10:15:48-04:00\\\""
+					+ "			},"
+					+ "			\\\"1315903559289\\\":"
+					+ "			{"
+					+ "				\\\"embedded\\\":null,"
+					+ "				\\\"uuid\\\":\\\"f5496311f43b42cd8fa5db5ecf83a352\\\","
+					+ "				\\\"framework\\\":\\\"jbossas-7.0\\\","
+					+ "				\\\"creation_time\\\":\\\"2011-09-13T04:45:44-04:00\\\""
+					+ "			}"
+					+ "		}"
+					+ "	}\","
+					+ "	\"api\":\"1.1.1\","
+					+ "	\"api_c\":[\"placeholder\"],"
+					+ "	\"result\":null,"
+					+ "	\"broker\":\"1.1.1\","
+					+ "	\"broker_c\":["
+					+ "		\"namespace\","
+					+ "		\"rhlogin\","
+					+ "		\"ssh\","
+					+ "		\"app_uuid\","
+					+ "		\"debug\","
+					+ "		\"alter\","
+					+ "		\"cartridge\","
+					+ "		\"cart_type\","
+					+ "		\"action\","
+					+ "		\"app_name\","
+					+ "		\"api\""
+					+ "		],"
+					+ "	\"exit_code\":0"
+					+ "}";
 	@Test
 	public void canMarshallUserInfoRequest() throws Exception {
 		String expectedRequestString =
@@ -41,4 +93,10 @@ public class UserInfoTest {
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
+
+	@Test
+	public void canUnmarshallUserInfoResponse() throws Exception {
+		
+	}
+
 }
