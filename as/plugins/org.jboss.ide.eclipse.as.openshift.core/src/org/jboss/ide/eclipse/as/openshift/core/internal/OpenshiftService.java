@@ -188,9 +188,9 @@ public class OpenshiftService implements IOpenshiftService {
 	 * ,"app_name","api"],"exit_code":0}
 	 */
 	@Override
-	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException {
+	public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException {
 		ApplicationRequest applicationRequest = 
-				new ApplicationRequest(name, cartridge, ApplicationAction.STATUS, username, true);
+				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, username, true);
 		String url = applicationRequest.getUrlString(BASE_URL);
 		try {
 			String applicationRequestString =

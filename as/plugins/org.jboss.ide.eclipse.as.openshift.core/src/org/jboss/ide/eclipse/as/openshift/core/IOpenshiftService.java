@@ -31,7 +31,7 @@ public interface IOpenshiftService {
 
 	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException;
 
-	public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException;
+	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException;
 
 	public Domain changeDomain(String domainName, SSHKey sshKey) throws OpenshiftException;
 

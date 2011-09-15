@@ -11,9 +11,14 @@
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 
+import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
@@ -38,20 +43,8 @@ public class ApplicationTest {
 	private static final String APPLICATION_NAME = "1316010645406";
 	private static final Cartridge APPLICATION_CARTRIDGE = Cartridge.JBOSSAS_7;
 
-	private static final String statusResponse =
-			"{\"messages\":\"\","
-					+ "\"debug\":\"\","
-					+ "\"data\":null,"
-					+ "\"api\":\"1.1.1\","
-					+ "\"api_c\":[\"placeholder\"],"
-					+ "\"result\":\""
-					+ "tailing /var/lib/libra/664e4d4dbce74c69ac321053149546df/"
-					+ APPLICATION_NAME
-					+ "//"
-					+ APPLICATION_CARTRIDGE
-					+ "/standalone/log/server.log\n"
-					+ "------ Tail of 1316010645406 application server.log ------\n"
-					+ "10:30:38,700 INFO  [org.apache.catalina.core.AprLifecycleListener] (MSC service thread 1-1) "
+	private static final String log =
+			"10:30:38,700 INFO  [org.apache.catalina.core.AprLifecycleListener] (MSC service thread 1-1) "
 					+ "The Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path:"
 					+ "/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64/server:/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/lib/amd64:"
 					+ "/usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0.x86_64/jre/../lib/amd64:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib\n"
@@ -63,7 +56,32 @@ public class ApplicationTest {
 					+ "10:30:39,339 INFO  [org.jboss.as.server.deployment] (MSC service thread 1-3) Starting deployment of \\\"ROOT.war\\\"\n"
 					+ "10:30:39,424 INFO  [org.jboss.as.jpa] (MSC service thread 1-1) added javax.persistence.api dependency to ROOT.war\n"
 					+ "10:30:39,700 INFO  [org.jboss.web] (MSC service thread 1-2) registering web context: \n"
-					+ "10:30:39,742 INFO  [org.jboss.as.server.controller] (DeploymentScanner-threads - 2) Deployed \\\"ROOT.war\\\"\n"
+					+ "10:30:39,742 INFO  [org.jboss.as.server.controller] (DeploymentScanner-threads - 2) Deployed \\\"ROOT.war\\\"\n";
+
+	private static final String tail =
+			"tailing /var/lib/libra/664e4d4dbce74c69ac321053149546df/"
+
+					+ APPLICATION_NAME
+
+					+ "//"
+
+					+ APPLICATION_CARTRIDGE
+
+					+ "/standalone/log/server.log\n"
+					+ "------ Tail of 1316010645406 application server.log ------\n"
+
+					+ log;
+
+	private static final String statusResponse =
+			"{\"messages\":\"\","
+					+ "\"debug\":\"\","
+					+ "\"data\":null,"
+					+ "\"api\":\"1.1.1\","
+					+ "\"api_c\":[\"placeholder\"],"
+					+ "\"result\":\""
+
+					+ tail
+
 					+ "\","
 					+ "\"broker\":\"1.1.1\","
 					+ "\"broker_c\":[\"namespace\",\"rhlogin\",\"ssh\",\"app_uuid\",\"debug\",\"alter\",\"cartridge\",\"cart_type\",\"action\",\"app_name\",\"api\"],"
@@ -120,16 +138,30 @@ public class ApplicationTest {
 		OpenshiftResponse<String> openshiftResponse =
 				new ApplicationStatusResponseUnmarshaller().unmarshall(response);
 		String status = openshiftResponse.getOpenshiftObject();
+		assertNotNull(status);
+		assertTrue(status.startsWith("tailing "));
 	}
 
 	@Test
-	public void canReadFromApplicationStatusReader() {
+	public void applicationLogReaderReturnsAllowsToReadFromStatus() throws IOException {
 
 		IOpenshiftService service = new NoopOpenshiftServiceFake() {
 			@Override
 			public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException {
-				return statusResponse;
+				return tail;
 			}
 		};
+
+		Application application = new Application(APPLICATION_NAME, APPLICATION_CARTRIDGE, service);
+		ApplicationLogReader reader = new ApplicationLogReader(application, service);
+
+		int toMatchIndex = 0;
+		for (int character = -1; (character = reader.read()) != -1;) {
+			assertEquals(
+					"character at position " + toMatchIndex
+							+ " was '" + ((char) character) + "'"
+							+ " but we expected '" + log.charAt(toMatchIndex) + "'.",
+					log.charAt(toMatchIndex++), character);
+		}
 	}
 }

@@ -10,10 +10,16 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
+import org.jboss.dmr.ModelNode;
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationStatusResponseUnmarshaller extends StringResponseUnmarshaller {
+public class StringResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
+
+	@Override
+	protected String createFromResultNode(ModelNode node) {
+		return node.asString();
+	}
 
 }

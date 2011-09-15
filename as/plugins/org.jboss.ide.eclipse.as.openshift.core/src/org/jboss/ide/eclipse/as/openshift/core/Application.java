@@ -16,6 +16,7 @@ public class Application {
 	private String name;
 	private Cartridge cartridge;
 	private IOpenshiftService service;
+	private ApplicationLogReader logReader;
 
 	public Application(String name, Cartridge cartridge, IOpenshiftService service) {
 		this.name = name;
@@ -47,7 +48,10 @@ public class Application {
 		service.stopApplication(name, cartridge);
 	}
 	
-	public ApplicationStatusReader getStatus() throws OpenshiftException {
-		return new ApplicationStatusReader(this, service);
+	public ApplicationLogReader getLog() throws OpenshiftException {
+		if (logReader == null) {
+			this.logReader = new ApplicationLogReader(this, service);
+		}
+		return logReader;
 	}
 }
