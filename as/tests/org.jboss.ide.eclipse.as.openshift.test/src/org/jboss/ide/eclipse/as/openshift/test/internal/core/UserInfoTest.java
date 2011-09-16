@@ -10,14 +10,18 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URLEncoder;
 
+import org.jboss.ide.eclipse.as.openshift.core.User;
+import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.UserInfoResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.NoopOpenshiftServiceFake;
 import org.junit.Test;
@@ -30,6 +34,10 @@ public class UserInfoTest {
 	private static final String USERNAME = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 
+	private static final String RHC_DOMAIN = "rhcloud.com";
+	private static final String NAMESPACE = "1315839296868";
+	private static final String UUID = "5f34b742db754cc9ab70fd1db2c9a2bd";
+	
 	private static final String userInfoRespose =
 			"{"
 					+ "	\"messages\":\"\","
@@ -39,10 +47,10 @@ public class UserInfoTest {
 					+ "\"{"
 					+ "		\\\"user_info\\\":"
 					+ "		{"
-					+ "			\\\"rhc_domain\\\":\\\"rhcloud.com\\\","
-					+ "			\\\"rhlogin\\\":\\\"toolsjboss@gmail.com\\\","
-					+ "			\\\"namespace\\\":\\\"1315839296868\\\","
-					+ "			\\\"uuid\\\":\\\"5f34b742db754cc9ab70fd1db2c9a2bd\\\","
+					+ "			\\\"rhc_domain\\\":\\\"" + RHC_DOMAIN + "\\\"," //
+					+ "			\\\"rhlogin\\\":\\\"" + USERNAME + "\\\","
+					+ "			\\\"namespace\\\":\\\"" + NAMESPACE + "\\\","
+					+ "			\\\"uuid\\\":\\\"" + UUID +"\\\","
 					+ "			\\\"ssh_key\\\":\\\"AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6BGRDydfGsQHhnZgo43dEfLzSJBke/hE8MLBBG1+5ZwktsrE+f2VdVt0McRLVAO6rdJRyMUX0rTbm7SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==\\\""
 					+ "		},"
 					+ "		\\\"app_info\\\":"
@@ -82,6 +90,7 @@ public class UserInfoTest {
 					+ "		],"
 					+ "	\"exit_code\":0"
 					+ "}";
+
 	@Test
 	public void canMarshallUserInfoRequest() throws Exception {
 		String expectedRequestString =
@@ -99,7 +108,16 @@ public class UserInfoTest {
 
 	@Test
 	public void canUnmarshallUserInfoResponse() throws Exception {
-		new UserInfoResponseUnmarshaller(new NoopOpenshiftServiceFake()).unmarshall(JsonSanitizer.sanitize(userInfoRespose));
+		UserInfoResponseUnmarshaller unmarshaller = new UserInfoResponseUnmarshaller(new NoopOpenshiftServiceFake());
+		OpenshiftResponse<UserInfo> response = unmarshaller.unmarshall(
+				JsonSanitizer.sanitize(userInfoRespose));
+
+		UserInfo userInfo = response.getOpenshiftObject();
+		assertNotNull(userInfo);
+		User user = userInfo.getUser();
+		assertNotNull(user);
+		assertEquals(USERNAME, user.getRhlogin());
+		assertEquals(UUID, user.getUuid());
 	}
 
 }

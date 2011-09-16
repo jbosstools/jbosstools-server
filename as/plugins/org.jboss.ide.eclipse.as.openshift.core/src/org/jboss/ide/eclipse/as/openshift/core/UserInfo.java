@@ -25,11 +25,11 @@ public class UserInfo {
 		this.applications = applications;
 	}
 
-	protected User getUser() {
+	public User getUser() {
 		return user;
 	}
 
-	protected List<Application> getApplications() {
+	public List<Application> getApplications() {
 		return applications;
 	}
 
