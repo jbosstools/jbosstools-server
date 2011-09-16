@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.request;
 
-import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 
 
 /**
@@ -18,11 +18,11 @@ import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
  */
 public class ChangeDomainRequest extends AbstractDomainRequest {
 
-	public ChangeDomainRequest(String name, SSHKeyPair sshKey, String username) {
+	public ChangeDomainRequest(String name, ISSHPublicKey sshKey, String username) {
 		this(name, sshKey, username, false);
 	}
 
-	public ChangeDomainRequest(String name, SSHKeyPair sshKey, String username, boolean debug) {
+	public ChangeDomainRequest(String name, ISSHPublicKey sshKey, String username, boolean debug) {
 		super(name, sshKey, username, debug);
 	}
 

@@ -10,9 +10,16 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
+import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.junit.Before;
@@ -37,5 +44,45 @@ public class UserInfoIntegrationTest {
 	public void canGetUserInfo() throws Exception {
 		UserInfo userInfo = openshiftService.getUserInfo();
 		assertNotNull(userInfo);
+
+		User user = userInfo.getUser();
+		assertEquals(USERNAME, user.getRhlogin());
 	}
+
+	@Test
+	public void userInfoContainsOneMoreApplicationAfterCreatingNewApplication() throws Exception {
+		UserInfo userInfo = openshiftService.getUserInfo();
+		assertNotNull(userInfo);
+
+		User user = userInfo.getUser();
+		assertEquals(USERNAME, user.getRhlogin());
+		assertNotNull(user.getSshKey());
+
+		List<Application> applications = userInfo.getApplications();
+		assertNotNull(applications);
+		int numberOfApplications = applications.size();
+
+		String applicationName = createRandomName();
+		try {
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+
+			UserInfo userInfo2 = openshiftService.getUserInfo();
+			assertEquals(numberOfApplications + 1, userInfo2.getApplications().size());
+		} finally {
+			silentlyDestroyAS7Application(applicationName, openshiftService);
+		}
+	}
+
+	private String createRandomName() {
+		return String.valueOf(System.currentTimeMillis());
+	}
+
+	private void silentlyDestroyAS7Application(String name, IOpenshiftService service) {
+		try {
+			service.destroyApplication(name, Cartridge.JBOSSAS_7);
+		} catch (OpenshiftException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

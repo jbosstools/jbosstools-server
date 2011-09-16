@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
@@ -119,12 +120,12 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public Domain createDomain(String name, SSHKeyPair sshKey) throws OpenshiftException {
+	public Domain createDomain(String name, ISSHPublicKey sshKey) throws OpenshiftException {
 		return requestDomainAction(new CreateDomainRequest(name, sshKey, username, true));
 	}
 
 	@Override
-	public Domain changeDomain(String newName, SSHKeyPair sshKey) throws OpenshiftException {
+	public Domain changeDomain(String newName, ISSHPublicKey sshKey) throws OpenshiftException {
 		return requestDomainAction(new ChangeDomainRequest(newName, sshKey, username, true));
 	}
 

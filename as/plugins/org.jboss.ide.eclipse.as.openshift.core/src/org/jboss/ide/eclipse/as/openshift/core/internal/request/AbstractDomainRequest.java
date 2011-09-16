@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.request;
 
-import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 
 
 /**
@@ -19,13 +19,13 @@ import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
 
 	private String name;
-	private SSHKeyPair sshKey;
+	private ISSHPublicKey sshKey;
 
-	public AbstractDomainRequest(String name, SSHKeyPair sshKey, String username) {
+	public AbstractDomainRequest(String name, ISSHPublicKey sshKey, String username) {
 		this(name, sshKey, username, false);
 	}
 
-	public AbstractDomainRequest(String name, SSHKeyPair sshKey, String username, boolean debug) {
+	public AbstractDomainRequest(String name, ISSHPublicKey sshKey, String username, boolean debug) {
 		super(username, debug);
 		this.name = name;
 		this.sshKey = sshKey;
@@ -35,7 +35,7 @@ public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
 		return name;
 	}
 
-	public SSHKeyPair getSshKey() {
+	public ISSHPublicKey getSshKey() {
 		return sshKey;
 	}
 

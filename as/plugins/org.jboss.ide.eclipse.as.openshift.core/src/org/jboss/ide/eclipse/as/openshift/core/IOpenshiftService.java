@@ -33,9 +33,9 @@ public interface IOpenshiftService {
 
 	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException;
 
-	public Domain changeDomain(String domainName, SSHKeyPair sshKey) throws OpenshiftException;
+	public Domain changeDomain(String domainName, ISSHPublicKey sshKey) throws OpenshiftException;
 
-	public Domain createDomain(String name, SSHKeyPair sshKey) throws OpenshiftException;
+	public Domain createDomain(String name, ISSHPublicKey sshKey) throws OpenshiftException;
 
 	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 	

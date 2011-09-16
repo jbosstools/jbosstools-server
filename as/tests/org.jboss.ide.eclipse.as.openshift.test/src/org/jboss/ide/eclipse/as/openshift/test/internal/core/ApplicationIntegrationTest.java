@@ -58,7 +58,7 @@ public class ApplicationIntegrationTest {
 			assertEquals(applicationName, application.getName());
 			assertEquals(cartridge, application.getCartridge());
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.startApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.startApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.stopApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 	
@@ -158,7 +158,7 @@ public class ApplicationIntegrationTest {
 			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
 			openshiftService.restartApplication(applicationName, Cartridge.JBOSSAS_7);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class ApplicationIntegrationTest {
 			String applicationStatus = openshiftService.getStatus(application.getName(), application.getCartridge());
 			assertNotNull(applicationStatus);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 	
@@ -183,7 +183,7 @@ public class ApplicationIntegrationTest {
 			String applicationStatus2 = openshiftService.getStatus(application.getName(), application.getCartridge());
 			assertEquals(applicationStatus, applicationStatus2);
 		} finally {
-			silentlyDestroyApplication(applicationName, openshiftService);
+			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
 	}
 
@@ -191,7 +191,7 @@ public class ApplicationIntegrationTest {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	private void silentlyDestroyApplication(String name, IOpenshiftService service) {
+	private void silentlyDestroyAS7Application(String name, IOpenshiftService service) {
 		try {
 			service.destroyApplication(name, Cartridge.JBOSSAS_7);
 		} catch (OpenshiftException e) {
