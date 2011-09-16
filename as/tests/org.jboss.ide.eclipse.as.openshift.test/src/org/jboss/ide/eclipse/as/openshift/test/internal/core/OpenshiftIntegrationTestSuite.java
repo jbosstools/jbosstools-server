@@ -19,7 +19,8 @@ import org.junit.runners.Suite;
 	ApplicationIntegrationTest.class,
 	CartridgesIntegrationTest.class,
 	DomainIntegrationTest.class,
-	ListCartridgesIntegrationTest.class
+	ListCartridgesIntegrationTest.class,
+	UserInfoIntegrationTest.class
 })
 /**
  * @author André Dietisheim

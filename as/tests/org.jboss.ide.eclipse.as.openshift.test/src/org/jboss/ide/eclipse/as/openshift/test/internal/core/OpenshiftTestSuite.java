@@ -19,7 +19,8 @@ import org.junit.runners.Suite;
 	ApplicationTest.class,
 	ListCartridgesTest.class,
 	DomainTest.class,
-	UserInfoTest.class
+	UserInfoTest.class,
+	SSHKeyTest.class
 })
 /**
  * @author André Dietisheim
