@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URLEncoder;
 
+import org.jboss.ide.eclipse.as.openshift.core.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -37,7 +39,12 @@ public class UserInfoTest {
 	private static final String RHC_DOMAIN = "rhcloud.com";
 	private static final String NAMESPACE = "1315839296868";
 	private static final String UUID = "5f34b742db754cc9ab70fd1db2c9a2bd";
-	
+	private static final String SSH_KEY =
+			"AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6BGRDydfGsQHhnZgo43dEfLz"
+					+ "SJBke/hE8MLBBG1+5ZwktsrE+f2VdVt0McRLVAO6rdJRyMUX0rTbm7"
+					+ "SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36"
+					+ "vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==";
+
 	private static final String userInfoRespose =
 			"{"
 					+ "	\"messages\":\"\","
@@ -50,8 +57,8 @@ public class UserInfoTest {
 					+ "			\\\"rhc_domain\\\":\\\"" + RHC_DOMAIN + "\\\"," //
 					+ "			\\\"rhlogin\\\":\\\"" + USERNAME + "\\\","
 					+ "			\\\"namespace\\\":\\\"" + NAMESPACE + "\\\","
-					+ "			\\\"uuid\\\":\\\"" + UUID +"\\\","
-					+ "			\\\"ssh_key\\\":\\\"AAAAB3NzaC1yc2EAAAADAQABAAAAgQC6BGRDydfGsQHhnZgo43dEfLzSJBke/hE8MLBBG1+5ZwktsrE+f2VdVt0McRLVAO6rdJRyMUX0rTbm7SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==\\\""
+					+ "			\\\"uuid\\\":\\\"" + UUID + "\\\","
+					+ "			\\\"ssh_key\\\":\\\"" + SSH_KEY + "\\\""
 					+ "		},"
 					+ "		\\\"app_info\\\":"
 					+ "		{"
@@ -114,10 +121,18 @@ public class UserInfoTest {
 
 		UserInfo userInfo = response.getOpenshiftObject();
 		assertNotNull(userInfo);
+		
 		User user = userInfo.getUser();
 		assertNotNull(user);
 		assertEquals(USERNAME, user.getRhlogin());
 		assertEquals(UUID, user.getUuid());
+		ISSHPublicKey sshKey = user.getSshKey();
+		assertNotNull(sshKey);
+		assertEquals(SSH_KEY,sshKey.getPublicKey());
+		
+		Domain domain = user.getDomain();
+		assertEquals(NAMESPACE, domain.getNamespace());
+		assertEquals(RHC_DOMAIN, domain.getRhcDomain());
+		
 	}
-
 }

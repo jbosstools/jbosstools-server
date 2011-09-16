@@ -22,7 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
@@ -109,22 +109,22 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
-		return SSHKey.create(passPhrase, privateKeyPath, publicKeyPath);
+	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+		return SSHKeyPair.create(passPhrase, privateKeyPath, publicKeyPath);
 	}
 
 	@Override
-	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
-		return SSHKey.load(privateKeyPath, publicKeyPath);
+	public SSHKeyPair loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+		return SSHKeyPair.load(privateKeyPath, publicKeyPath);
 	}
 
 	@Override
-	public Domain createDomain(String name, SSHKey sshKey) throws OpenshiftException {
+	public Domain createDomain(String name, SSHKeyPair sshKey) throws OpenshiftException {
 		return requestDomainAction(new CreateDomainRequest(name, sshKey, username, true));
 	}
 
 	@Override
-	public Domain changeDomain(String newName, SSHKey sshKey) throws OpenshiftException {
+	public Domain changeDomain(String newName, SSHKeyPair sshKey) throws OpenshiftException {
 		return requestDomainAction(new ChangeDomainRequest(newName, sshKey, username, true));
 	}
 

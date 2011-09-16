@@ -22,6 +22,8 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 
@@ -42,28 +44,35 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 		if (!isSet(dataNode)) {
 			return null;
 		}
+
 		ModelNode userInfoNode = dataNode.get(IOpenshiftJsonConstants.PROPERTY_USER_INFO);
 		if (!isSet(userInfoNode)) {
 			return null;
 		}
-		User user = createUser(userInfoNode, createDomain(userInfoNode));
-		return new UserInfo(
-				user,
-				createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO)));
+
+		ISSHPublicKey sshKey = createSSHKey(userInfoNode);
+		User user = createUser(userInfoNode, sshKey, createDomain(userInfoNode));
+		List<Application> applications = createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO));
+
+		return new UserInfo(user, applications);
 	}
 
-	private List<Application> createApplications(ModelNode appInfoNode) throws DatatypeConfigurationException  {
+	private ISSHPublicKey createSSHKey(ModelNode userInfoNode) {
+		String sshPublicKey = getString(IOpenshiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
+		return new SSHPublicKey(sshPublicKey);
+	}
+
+	private List<Application> createApplications(ModelNode appInfoNode) throws DatatypeConfigurationException {
 		List<Application> applications = new ArrayList<Application>();
 		if (!isSet(appInfoNode)) {
 			return applications;
 		}
 
-		for(String name : appInfoNode.keys()) {
+		for (String name : appInfoNode.keys()) {
 			applications.add(createApplication(name, appInfoNode.get(name)));
 		}
 		return applications;
 	}
-
 
 	private Application createApplication(String name, ModelNode appNode) throws DatatypeConfigurationException {
 		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
@@ -73,16 +82,15 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 		return new Application(name, uuid, cartrdige, embedded, creationTime.getTime(), service);
 	}
 
-	protected User createUser(ModelNode userInfoNode, Domain domain) {
+	private User createUser(ModelNode userInfoNode, ISSHPublicKey sshKey, Domain domain) {
 		String rhlogin = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
-		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
-		return new User(rhlogin, uuid, domain);
+		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, userInfoNode);
+		return new User(rhlogin, uuid, sshKey, domain);
 	}
 
-	protected Domain createDomain(ModelNode userInfoNode) {
+	private Domain createDomain(ModelNode userInfoNode) {
 		String namespace = getString(IOpenshiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
 		String rhcDomain = getString(IOpenshiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
 		return new Domain(namespace, rhcDomain);
 	}
-
 }

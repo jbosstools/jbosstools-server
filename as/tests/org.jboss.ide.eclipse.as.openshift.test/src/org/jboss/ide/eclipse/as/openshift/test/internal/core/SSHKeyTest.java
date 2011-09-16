@@ -16,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.junit.Test;
 
 public class SSHKeyTest {
@@ -27,8 +27,8 @@ public class SSHKeyTest {
 	public void canCreatePublicKey() throws Exception {
 		String publicKeyPath = createTempFile().getAbsolutePath();
 		String privateKeyPath = createTempFile().getAbsolutePath();
-		SSHKey sshKey = SSHKey.create(PASSPHRASE, privateKeyPath, publicKeyPath);
-		String publicKey = sshKey.getPublicKeyContent();
+		SSHKeyPair sshKey = SSHKeyPair.create(PASSPHRASE, privateKeyPath, publicKeyPath);
+		String publicKey = sshKey.getPublicKey();
 
 		assertNotNull(publicKey);
 		assertTrue(!publicKey.contains("ssh-rsa")); // no identifier
@@ -39,10 +39,10 @@ public class SSHKeyTest {
 	public void canLoadPublicKey() throws Exception {
 		String publicKeyPath = createTempFile().getAbsolutePath();
 		String privateKeyPath = createTempFile().getAbsolutePath();
-		SSHKey.create(PASSPHRASE, privateKeyPath, publicKeyPath);
+		SSHKeyPair.create(PASSPHRASE, privateKeyPath, publicKeyPath);
 
-		SSHKey sshKey = SSHKey.load(privateKeyPath, publicKeyPath);
-		String publicKey = sshKey.getPublicKeyContent();
+		SSHKeyPair sshKey = SSHKeyPair.load(privateKeyPath, publicKeyPath);
+		String publicKey = sshKey.getPublicKey();
 
 		assertNotNull(publicKey);
 		assertTrue(!publicKey.contains("ssh-rsa")); // no identifier

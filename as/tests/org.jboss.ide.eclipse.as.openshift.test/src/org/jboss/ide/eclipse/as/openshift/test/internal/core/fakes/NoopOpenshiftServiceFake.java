@@ -17,7 +17,7 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 
 /**
@@ -66,22 +66,22 @@ public class NoopOpenshiftServiceFake implements IOpenshiftService {
 	}
 
 	@Override
-	public Domain changeDomain(String domainName, SSHKey sshKey) throws OpenshiftException {
+	public Domain changeDomain(String domainName, SSHKeyPair sshKey) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Domain createDomain(String name, SSHKey keyPair) throws OpenshiftException {
+	public Domain createDomain(String name, SSHKeyPair keyPair) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
+	public SSHKeyPair loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 

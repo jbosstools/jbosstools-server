@@ -33,11 +33,11 @@ public interface IOpenshiftService {
 
 	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException;
 
-	public Domain changeDomain(String domainName, SSHKey sshKey) throws OpenshiftException;
+	public Domain changeDomain(String domainName, SSHKeyPair sshKey) throws OpenshiftException;
 
-	public Domain createDomain(String name, SSHKey keyPair) throws OpenshiftException;
+	public Domain createDomain(String name, SSHKeyPair sshKey) throws OpenshiftException;
 
-	public SSHKey createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 	
-	public SSHKey loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+	public SSHKeyPair loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException;
 }

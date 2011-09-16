@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -41,9 +41,9 @@ public class DomainTest {
 
 	@Test
 	public void canMarshallDomainCreateRequest() throws IOException, OpenshiftException {
-		SSHKey sshKey = TestSSHKey.create();
+		SSHKeyPair sshKey = TestSSHKey.create();
 		String expectedRequestString = createDomainRequestString(PASSWORD, USERNAME, true, "myDomain", false,
-				sshKey.getPublicKeyContent());
+				sshKey.getPublicKey());
 
 		CreateDomainRequest request = new CreateDomainRequest("myDomain", sshKey, USERNAME, true);
 		String requestString =
@@ -69,9 +69,9 @@ public class DomainTest {
 
 	@Test
 	public void canMarshallDomainAlterRequest() throws IOException, OpenshiftException {
-		SSHKey sshKey = TestSSHKey.create();
+		SSHKeyPair sshKey = TestSSHKey.create();
 		String expectedRequestString = createDomainRequestString(PASSWORD, USERNAME, true, "myDomain", true,
-				sshKey.getPublicKeyContent());
+				sshKey.getPublicKey());
 
 		ChangeDomainRequest request = new ChangeDomainRequest("myDomain", sshKey, USERNAME, true);
 		String requestString =

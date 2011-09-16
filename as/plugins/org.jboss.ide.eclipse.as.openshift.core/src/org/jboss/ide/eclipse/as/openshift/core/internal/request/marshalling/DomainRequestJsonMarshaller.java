@@ -24,6 +24,6 @@ public class DomainRequestJsonMarshaller extends AbstractJsonMarshaller<Abstract
 	protected void setJsonDataProperties(ModelNode node, AbstractDomainRequest request) throws OpenshiftException {
 		node.get(IOpenshiftJsonConstants.PROPERTY_NAMESPACE).set(request.getName());
 		node.get(IOpenshiftJsonConstants.PROPERTY_ALTER).set(String.valueOf(request.isAlter()));
-		node.get(IOpenshiftJsonConstants.PROPERTY_SSH).set(request.getSshKey().getPublicKeyContent());
+		node.get(IOpenshiftJsonConstants.PROPERTY_SSH).set(request.getSshKey().getPublicKey());
 	}
 }

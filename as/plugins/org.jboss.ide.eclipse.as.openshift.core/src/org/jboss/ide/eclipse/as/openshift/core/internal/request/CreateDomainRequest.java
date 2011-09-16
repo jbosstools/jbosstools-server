@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.request;
 
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 
 
 /**
@@ -18,11 +18,11 @@ import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
  */
 public class CreateDomainRequest extends AbstractDomainRequest {
 
-	public CreateDomainRequest(String name, SSHKey sshKey, ApplicationAction action, String username) {
+	public CreateDomainRequest(String name, SSHKeyPair sshKey, ApplicationAction action, String username) {
 		this(name, sshKey, username, false);
 	}
 
-	public CreateDomainRequest(String name, SSHKey sshKey, String username, boolean debug) {
+	public CreateDomainRequest(String name, SSHKeyPair sshKey, String username, boolean debug) {
 		super(name, sshKey, username, debug);
 	}
 

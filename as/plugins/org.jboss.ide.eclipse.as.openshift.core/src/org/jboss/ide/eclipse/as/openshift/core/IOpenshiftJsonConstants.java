@@ -38,5 +38,6 @@ public class IOpenshiftJsonConstants {
 	public static final String PROPERTY_EMBEDDED = "embedded";
 	public static final String PROPERTY_FRAMEWORK = "framework";
 	public static final String PROPERTY_CREATION_TIME = "creation_time";
+	public static final String PROPERTY_SSH_KEY = "ssh_key";
 	
 }

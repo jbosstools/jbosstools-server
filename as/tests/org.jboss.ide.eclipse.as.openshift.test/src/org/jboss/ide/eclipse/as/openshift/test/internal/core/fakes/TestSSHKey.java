@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
+import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.StreamUtils;
 
 /**
@@ -50,14 +50,14 @@ public class TestSSHKey {
 					"1rS3C4svRSjdWaG36vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw" +
 					"== created by org.jboss.ide.eclipse.as.openshift.core";
 
-	public static SSHKey create() throws IOException, OpenshiftException {
+	public static SSHKeyPair create() throws IOException, OpenshiftException {
 		File privateKeyFile = File.createTempFile(createRandomString(), null);
 		StreamUtils.writeTo(privateKey, privateKeyFile);
 
 		File publicKeyFile = File.createTempFile(createRandomString(), null);
 		StreamUtils.writeTo(publicKey, publicKeyFile);
 		
-		return SSHKey.load(privateKeyFile.getAbsolutePath(), publicKeyFile.getAbsolutePath());
+		return SSHKeyPair.load(privateKeyFile.getAbsolutePath(), publicKeyFile.getAbsolutePath());
 	}
 	
 	private static String createRandomString() {
