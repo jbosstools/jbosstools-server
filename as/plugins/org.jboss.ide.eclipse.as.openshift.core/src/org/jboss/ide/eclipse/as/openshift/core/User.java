@@ -17,10 +17,26 @@ public class User {
 
 	private String rhlogin;
 	private String uuid;
+	private SSHKey sshKey;
+	private Domain domain;
 
-	public User(String rhlogin, String uuid) {
+	public User(String rhlogin, String uuid, Domain domain) {
+		this(rhlogin, uuid, null, domain);
+	}
+
+	public User(String rhlogin, String uuid, SSHKey sshKey, Domain domain) {
 		this.rhlogin = rhlogin;
 		this.uuid = uuid;
+		this.sshKey = sshKey;
+		this.domain = domain;
+	}
+	
+	public Domain getDomain() {
+		return domain;
+	}
+
+	public SSHKey getSshKey() {
+		return sshKey;
 	}
 
 	public String getRhlogin() {

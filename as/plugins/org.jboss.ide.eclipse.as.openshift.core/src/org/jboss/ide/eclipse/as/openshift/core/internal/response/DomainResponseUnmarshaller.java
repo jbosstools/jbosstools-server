@@ -12,8 +12,6 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 
 /**
  * @author André Dietisheim
@@ -27,15 +25,7 @@ public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnm
 	}
 
 	@Override
-	protected Domain createFromResultNode(ModelNode node) {
-		User user = createUser(node);
-		return new Domain(domainName, user);
-	}
-
-	protected User createUser(ModelNode node) {
-		String username = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, node);
-		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, node);
-		
-		return new User(username, uuid);
+	protected Domain createOpenshiftObject(ModelNode node) {
+		return new Domain(domainName);
 	}
 }

@@ -16,19 +16,23 @@ package org.jboss.ide.eclipse.as.openshift.core;
  */
 public class Domain {
 
-	private User user;
-	private String name;
+	private String namespace;
+	private String rhcDomain;
 
-	public Domain(String name, User user) {
-		this.name = name;
-		this.user = user;
+	public Domain(String namespace) {
+		this(namespace, null);
 	}
 
-	public String getName() {
-		return name;
+	public Domain(String namespace, String rhcDomain) {
+		this.namespace = namespace;
+		this.rhcDomain = rhcDomain;
 	}
 
-	public User getUser() {
-		return user;
+	public String getRhcDomain() {
+		return rhcDomain;
+	}
+
+	public String getNamespace() {
+		return namespace;
 	}
 }

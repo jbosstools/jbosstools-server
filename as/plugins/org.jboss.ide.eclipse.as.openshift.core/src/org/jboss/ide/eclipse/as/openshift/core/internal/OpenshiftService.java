@@ -71,7 +71,7 @@ public class OpenshiftService implements IOpenshiftService {
 			String responseString = createHttpClient(url).post(openShiftRequestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<UserInfo> response =
-					new UserInfoResponseUnmarshaller().unmarshall(responseString);
+					new UserInfoResponseUnmarshaller(this).unmarshall(responseString);
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(

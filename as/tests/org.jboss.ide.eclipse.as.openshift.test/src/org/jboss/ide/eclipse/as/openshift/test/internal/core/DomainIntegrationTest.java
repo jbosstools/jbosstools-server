@@ -15,7 +15,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestSSHKey;
 import org.junit.Before;
@@ -41,11 +40,7 @@ public class DomainIntegrationTest {
 		Domain domain = openshiftService.createDomain(domainName, sshKey);
 
 		assertNotNull(domain);
-		assertEquals(domainName, domain.getName());
-		assertNotNull(domain.getUser());
-		User user = domain.getUser();
-		assertEquals(USERNAME, user.getRhlogin());
-		assertNotNull(user.getUuid());
+		assertEquals(domainName, domain.getNamespace());
 	}
 
 	@Test
@@ -56,11 +51,7 @@ public class DomainIntegrationTest {
 		Domain domain = openshiftService.changeDomain(domainName, sshKey);
 
 		assertNotNull(domain);
-		assertEquals(domainName, domain.getName());
-		assertNotNull(domain.getUser());
-		User user = domain.getUser();
-		assertEquals(USERNAME, user.getRhlogin());
-		assertNotNull(user.getUuid());
+		assertEquals(domainName, domain.getNamespace());
 	}
 
 	private String createRandomString() {

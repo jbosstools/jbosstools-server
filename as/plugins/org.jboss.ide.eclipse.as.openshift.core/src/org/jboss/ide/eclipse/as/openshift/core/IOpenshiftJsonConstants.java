@@ -32,5 +32,10 @@ public class IOpenshiftJsonConstants {
 	public static final String PROPERTY_ALTER = "alter";
 	public static final String PROPERTY_SSH = "ssh";
 	public static final String PROPERTY_UUID = "uuid";
+	public static final String PROPERTY_USER_INFO = "user_info";
+	public static final String PROPERTY_APP_INFO = "app.info";
+	public static final String PROPERTY_RHC_DOMAIN = "rhc_domain";
+	public static final String PROPERTY_EMBEDDED = "embedded";
+	public static final String PROPERTY_FRAMEWORK = "framework";
 	
 }

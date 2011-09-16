@@ -20,7 +20,6 @@ import java.net.URLEncoder;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKey;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -65,11 +64,7 @@ public class DomainTest {
 
 		assertNotNull(response);
 		Domain domain = response.getOpenshiftObject();
-		assertEquals(domainName, domain.getName());
-		User user = domain.getUser();
-		assertNotNull(user);
-		assertEquals(USERNAME, user.getRhlogin());
-		assertEquals(UUID, user.getUuid());
+		assertEquals(domainName, domain.getNamespace());
 	}
 
 	@Test

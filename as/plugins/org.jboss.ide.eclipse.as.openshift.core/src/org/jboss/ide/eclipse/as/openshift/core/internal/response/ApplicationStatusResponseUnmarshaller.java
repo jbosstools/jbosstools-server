@@ -10,10 +10,19 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
+import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationStatusResponseUnmarshaller extends StringResponseUnmarshaller {
+public class ApplicationStatusResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
+
+	@Override
+	protected String createOpenshiftObject(ModelNode responseNode) {
+		ModelNode resultNode = responseNode.get(IOpenshiftJsonConstants.PROPERTY_RESULT);
+		return resultNode.asString();
+	}
 
 }

@@ -15,12 +15,22 @@ public class Application {
 
 	private String name;
 	private Cartridge cartridge;
+	private String uuid;
+	private long creationTime;
 	private IOpenshiftService service;
 	private ApplicationLogReader logReader;
+	private String embedded;
 
 	public Application(String name, Cartridge cartridge, IOpenshiftService service) {
+		this(name, null, cartridge, null, -1, service);
+	}
+	
+	public Application(String name, String uuid, Cartridge cartridge, String embedded, long creationTime, IOpenshiftService service) {
 		this.name = name;
 		this.cartridge = cartridge;
+		this.uuid = uuid;
+		this.embedded = embedded;
+		this.creationTime = creationTime;
 		this.service = service;
 	}
 

@@ -10,42 +10,27 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.util.List;
+
 /**
  * @author André Dietisheim
  */
 public class UserInfo {
 
-	private String rhlogin;
-	private String uuId;
-	private String sshKey;
-	private String rhcDomain;
-	private String namespace;
+	private User user;
+	private List<Application> applications;
 
-	public UserInfo(String rhlogin, String uuid, String sshKey, String rhcDomain, String namespace) {
-		this.rhlogin = rhlogin;
-		this.uuId = uuid;
-		this.sshKey = sshKey;
-		this.rhcDomain = rhcDomain;
-		this.namespace = namespace;
+	public UserInfo(User user, List<Application> applications) {
+		this.user = user;
+		this.applications = applications;
 	}
 
-	public String getRhlogin() {
-		return rhlogin;
+	protected User getUser() {
+		return user;
 	}
 
-	public String getUuId() {
-		return uuId;
+	protected List<Application> getApplications() {
+		return applications;
 	}
 
-	public String getRhcDomain() {
-		return rhcDomain;
-	}
-
-	public String getSSHKey() {
-		return sshKey;
-	}
-
-	public String getNamespace() {
-		return namespace;
-	}
 }
