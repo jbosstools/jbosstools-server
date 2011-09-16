@@ -18,6 +18,7 @@ import java.util.List;
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
@@ -55,10 +56,6 @@ public class UserInfoIntegrationTest {
 		UserInfo userInfo = openshiftService.getUserInfo();
 		assertNotNull(userInfo);
 
-		User user = userInfo.getUser();
-		assertEquals(USERNAME, user.getRhlogin());
-		assertNotNull(user.getSshKey());
-
 		List<Application> applications = userInfo.getApplications();
 		assertNotNull(applications);
 		int numberOfApplications = applications.size();
@@ -75,6 +72,17 @@ public class UserInfoIntegrationTest {
 		}
 	}
 
+	@Test
+	public void canUseReturnedSSHKeyToChangeDomain() throws Exception {
+		UserInfo userInfo = openshiftService.getUserInfo();
+		assertNotNull(userInfo);
+
+		User user = userInfo.getUser();
+		assertNotNull(user);
+		ISSHPublicKey sshKey = user.getSshKey();
+		openshiftService.changeDomain(createRandomName(), sshKey);
+	}
+	
 	private String createRandomName() {
 		return String.valueOf(System.currentTimeMillis());
 	}
