@@ -10,11 +10,14 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertThatContainsApplication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URLEncoder;
+import java.util.List;
 
+import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.User;
@@ -45,6 +48,18 @@ public class UserInfoTest {
 					+ "SABRVSX+zeQjlfqbbUtYFc7TIfd4RQc3GaISG1rS3C4svRSjdWaG36"
 					+ "vDY2KxowdFvpKj8i8IYNPlLoRA/7EzzyneS6iyw==";
 
+	private static final String APP1_NAME = "1315836963263";
+	private static final String APP1_EMBEDDED = null;
+	private static final String APP1_UUID = "810540bafc1c4b5e8cac830fb8ca786f";
+	private static final String APP1_CARTRIDGE = "jbossas-7.0";
+	private static final String APP1_CREATION_TIME = "2011-09-12T10:15:48-04:00";
+	
+	private static final String APP2_NAME = "1315903559289";
+	private static final String APP2_EMBEDDED = null;
+	private static final String APP2_UUID = "f5496311f43b42cd8fa5db5ecf83a352";
+	private static final String APP2_CARTRIDGE = "jbossas-7.0";
+	private static final String APP2_CREATION_TIME = "2011-09-13T04:45:44-04:00";
+
 	private static final String userInfoRespose =
 			"{"
 					+ "	\"messages\":\"\","
@@ -62,19 +77,19 @@ public class UserInfoTest {
 					+ "		},"
 					+ "		\\\"app_info\\\":"
 					+ "		{"
-					+ "			\\\"1315836963263\\\":"
+					+ "			\\\"" + APP1_NAME + "\\\":"
 					+ "			{"
-					+ "				\\\"embedded\\\":null,"
-					+ "				\\\"uuid\\\":\\\"810540bafc1c4b5e8cac830fb8ca786f\\\","
-					+ "				\\\"framework\\\":\\\"jbossas-7.0\\\","
-					+ "				\\\"creation_time\\\":\\\"2011-09-12T10:15:48-04:00\\\""
+					+ "				\\\"embedded\\\":" + APP1_EMBEDDED + ","
+					+ "				\\\"uuid\\\":\\\"" + APP1_UUID + "\\\","
+					+ "				\\\"framework\\\":\\\"" + APP1_CARTRIDGE + "\\\","
+					+ "				\\\"creation_time\\\":\\\"" + APP1_CREATION_TIME + "\\\""
 					+ "			},"
-					+ "			\\\"1315903559289\\\":"
+					+ "			\\\"" + APP2_NAME + "\\\":"
 					+ "			{"
-					+ "				\\\"embedded\\\":null,"
-					+ "				\\\"uuid\\\":\\\"f5496311f43b42cd8fa5db5ecf83a352\\\","
-					+ "				\\\"framework\\\":\\\"jbossas-7.0\\\","
-					+ "				\\\"creation_time\\\":\\\"2011-09-13T04:45:44-04:00\\\""
+					+ "				\\\"embedded\\\":" + APP2_EMBEDDED + ","
+					+ "				\\\"uuid\\\":\\\"" + APP2_UUID + "\\\","
+					+ "				\\\"framework\\\":\\\"" + APP2_CARTRIDGE + "\\\","
+					+ "				\\\"creation_time\\\":\\\"" + APP2_CREATION_TIME + "\\\""
 					+ "			}"
 					+ "		}"
 					+ "	}\","
@@ -134,5 +149,10 @@ public class UserInfoTest {
 		assertEquals(NAMESPACE, domain.getNamespace());
 		assertEquals(RHC_DOMAIN, domain.getRhcDomain());
 		
+		List<Application> applications = userInfo.getApplications();
+		assertNotNull(applications);
+		assertEquals(2, applications.size());
+		assertThatContainsApplication(APP1_NAME, APP1_EMBEDDED, APP1_UUID, APP1_CARTRIDGE, APP1_CREATION_TIME, applications);
+		assertThatContainsApplication(APP2_NAME, APP2_EMBEDDED, APP2_UUID, APP2_CARTRIDGE, APP2_CREATION_TIME, applications);
 	}
 }

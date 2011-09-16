@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.test.internal.core;
+package org.jboss.ide.eclipse.as.openshift.test.internal.core.utils;
 
 import static org.junit.Assert.fail;
 

@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
-import static org.jboss.ide.eclipse.as.openshift.test.internal.core.CartridgeAsserts.assertThatContainsCartridge;
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.CartridgeAsserts.assertThatContainsCartridge;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URLEncoder;

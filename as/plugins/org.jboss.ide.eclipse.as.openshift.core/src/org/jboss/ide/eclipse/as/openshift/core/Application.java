@@ -10,22 +10,24 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.util.Date;
+
 
 public class Application {
 
 	private String name;
 	private Cartridge cartridge;
 	private String uuid;
-	private long creationTime;
+	private Date creationTime;
+	private String embedded;
 	private IOpenshiftService service;
 	private ApplicationLogReader logReader;
-	private String embedded;
 
 	public Application(String name, Cartridge cartridge, IOpenshiftService service) {
-		this(name, null, cartridge, null, -1, service);
+		this(name, null, cartridge, null, null, service);
 	}
 	
-	public Application(String name, String uuid, Cartridge cartridge, String embedded, long creationTime, IOpenshiftService service) {
+	public Application(String name, String uuid, Cartridge cartridge, String embedded, Date creationTime, IOpenshiftService service) {
 		this.name = name;
 		this.cartridge = cartridge;
 		this.uuid = uuid;
@@ -38,8 +40,20 @@ public class Application {
 		return name;
 	}
 
+	public String getUUID() {
+		return uuid;
+	}
+
 	public Cartridge getCartridge() {
 		return cartridge;
+	}
+
+	public String getEmbedded() {
+		return embedded;
+	}
+
+	public Date getCreationTime() {
+		return creationTime;
 	}
 
 	public void destroy() throws OpenshiftException {

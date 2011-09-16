@@ -10,19 +10,15 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 
 /**
  * @author André Dietisheim
@@ -55,7 +51,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 	protected String getString(String property, ModelNode node) {
 		ModelNode propertyNode = node.get(property);
-		if (!isSet(node)) {
+		if (!isSet(propertyNode)) {
 			// replace "undefined" by null
 			return null;
 		}
@@ -69,14 +65,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 	protected Date getDate(String property, ModelNode node) throws DatatypeConfigurationException {
 		ModelNode propertyNode = node.get(property);
-		// SimpleDateFormat can't handle RFC822 (-04:00 instead of GMT-04:00)
-		// date formats
-		// SimpleDateFormat dateFormat = new
-		// SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		// return dateFormat.parse(propertyNode.asString());
-		GregorianCalendar calendar =
-				DatatypeFactory.newInstance().newXMLGregorianCalendar(propertyNode.asString()).toGregorianCalendar();
-		return calendar.getTime();
+		return RFC822DateUtils.getDate(propertyNode.asString());
 	}
 
 	protected long getLong(String property, ModelNode node) {

@@ -79,7 +79,7 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
 		Cartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
 		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
-		return new Application(name, uuid, cartrdige, embedded, creationTime.getTime(), service);
+		return new Application(name, uuid, cartrdige, embedded, creationTime, service);
 	}
 
 	private User createUser(ModelNode userInfoNode, ISSHPublicKey sshKey, Domain domain) {
