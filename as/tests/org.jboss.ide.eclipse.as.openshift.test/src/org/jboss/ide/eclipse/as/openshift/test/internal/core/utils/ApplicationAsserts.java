@@ -29,19 +29,28 @@ public class ApplicationAsserts {
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
 			String cartridgeName, String creationTime, List<Application> applications) {
-		boolean found = false;
+		Application application = getApplication(applicationName, applications);
+		if (application == null) {
+			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
+		}
+		assertApplication(embedded, applicationUUID, cartridgeName, creationTime, application);
+	}
+
+	public static void assertThatContainsApplication(String applicationName, List<Application> applications) {
+		assertNotNull(getApplication(applicationName, applications));
+	}
+
+	private static Application getApplication(String name, List<Application> applications) {
+		Application matchingApplication = null;
 		for (Application application : applications) {
-			if (applicationName.equals(application.getName())) {
-				found = true;
-				assertApplication(embedded, applicationUUID, cartridgeName, creationTime, application);
+			if (name.equals(application.getName())) {
+				matchingApplication = application;
 				break;
 			}
 		}
-		if (!found) {
-			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
-		}
+		return matchingApplication;
 	}
-
+	
 	private static void assertApplication(String embedded, String uuid, String cartridgeName,
 			String creationTime, Application application) {
 		assertEquals(embedded, application.getEmbedded());

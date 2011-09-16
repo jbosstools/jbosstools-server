@@ -22,6 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,6 +69,7 @@ public class UserInfoIntegrationTest {
 
 			UserInfo userInfo2 = openshiftService.getUserInfo();
 			assertEquals(numberOfApplications + 1, userInfo2.getApplications().size());
+			ApplicationAsserts.assertThatContainsApplication(applicationName, userInfo2.getApplications());
 		} finally {
 			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
