@@ -11,7 +11,10 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.Application;
@@ -34,25 +37,24 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 	}
 
 	@Override
-	protected UserInfo createOpenshiftObject(ModelNode node) {
+	protected UserInfo createOpenshiftObject(ModelNode node) throws DatatypeConfigurationException {
 		ModelNode dataNode = node.get(IOpenshiftJsonConstants.PROPERTY_DATA);
-		if (dataNode == null) {
+		if (!isSet(dataNode)) {
 			return null;
 		}
-		ModelNode userInfoNode = node.get(IOpenshiftJsonConstants.PROPERTY_USER_INFO);
-		if (userInfoNode == null) {
+		ModelNode userInfoNode = dataNode.get(IOpenshiftJsonConstants.PROPERTY_USER_INFO);
+		if (!isSet(userInfoNode)) {
 			return null;
 		}
-		Domain domain = createDomain(userInfoNode);
-		User user = createUser(userInfoNode, domain);
+		User user = createUser(userInfoNode, createDomain(userInfoNode));
 		return new UserInfo(
 				user,
-				createApplications(node.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO)));
+				createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO)));
 	}
 
-	private List<Application> createApplications(ModelNode appInfoNode) {
+	private List<Application> createApplications(ModelNode appInfoNode) throws DatatypeConfigurationException  {
 		List<Application> applications = new ArrayList<Application>();
-		if (appInfoNode == null) {
+		if (!isSet(appInfoNode)) {
 			return applications;
 		}
 
@@ -63,12 +65,12 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 	}
 
 
-	private Application createApplication(String name, ModelNode appNode) {
+	private Application createApplication(String name, ModelNode appNode) throws DatatypeConfigurationException {
 		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
 		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
 		Cartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
-		long creationTime = getLong(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode);
-		return new Application(name, uuid, cartrdige, embedded, creationTime, service);
+		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
+		return new Application(name, uuid, cartrdige, embedded, creationTime.getTime(), service);
 	}
 
 	protected User createUser(ModelNode userInfoNode, Domain domain) {

@@ -17,6 +17,9 @@ import java.net.URLEncoder;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.UserInfoResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.NoopOpenshiftServiceFake;
 import org.junit.Test;
 
 /**
@@ -31,9 +34,9 @@ public class UserInfoTest {
 			"{"
 					+ "	\"messages\":\"\","
 					+ " 	\"debug\":\"\","
-					+ "	\"data\":\""
+					+ "	\"data\":"
 					+ ""
-					+ "	{"
+					+ "\"{"
 					+ "		\\\"user_info\\\":"
 					+ "		{"
 					+ "			\\\"rhc_domain\\\":\\\"rhcloud.com\\\","
@@ -96,7 +99,7 @@ public class UserInfoTest {
 
 	@Test
 	public void canUnmarshallUserInfoResponse() throws Exception {
-		
+		new UserInfoResponseUnmarshaller(new NoopOpenshiftServiceFake()).unmarshall(JsonSanitizer.sanitize(userInfoRespose));
 	}
 
 }

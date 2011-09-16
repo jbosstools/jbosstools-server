@@ -10,6 +10,15 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal.response;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
@@ -38,7 +47,7 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 		}
 	}
 
-	protected abstract OPENSHIFTOBJECT createOpenshiftObject(ModelNode responseNode);
+	protected abstract OPENSHIFTOBJECT createOpenshiftObject(ModelNode responseNode) throws Exception;
 
 	protected String getResponse() {
 		return response;
@@ -46,11 +55,28 @@ public abstract class AbstractOpenshiftJsonResponseUnmarshaller<OPENSHIFTOBJECT>
 
 	protected String getString(String property, ModelNode node) {
 		ModelNode propertyNode = node.get(property);
-		if (propertyNode.getType() == ModelType.UNDEFINED) {
+		if (!isSet(node)) {
 			// replace "undefined" by null
 			return null;
 		}
 		return propertyNode.asString();
+	}
+
+	protected boolean isSet(ModelNode node) {
+		return node != null
+				&& node.getType() != ModelType.UNDEFINED;
+	}
+
+	protected Date getDate(String property, ModelNode node) throws DatatypeConfigurationException {
+		ModelNode propertyNode = node.get(property);
+		// SimpleDateFormat can't handle RFC822 (-04:00 instead of GMT-04:00)
+		// date formats
+		// SimpleDateFormat dateFormat = new
+		// SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		// return dateFormat.parse(propertyNode.asString());
+		GregorianCalendar calendar =
+				DatatypeFactory.newInstance().newXMLGregorianCalendar(propertyNode.asString()).toGregorianCalendar();
+		return calendar.getTime();
 	}
 
 	protected long getLong(String property, ModelNode node) {
