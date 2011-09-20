@@ -49,6 +49,20 @@ public class JsonSanitizerTest {
 	@Test
 	public void doesNotRemoveEscapedQuoteInStringValue() throws OpenshiftException {
 		String quotedJsonObject =
+				"\"{"
+						+ "\\\"property\\\":"
+						+ "\\\"stringWithA\\\\\"Quote\""
+						+ "}\"";
+
+		String sanitizedJson = JsonSanitizer.sanitize(quotedJsonObject);
+		assertEquals("{\"property\":\"stringWithA\\\"Quote\"}", sanitizedJson);
+		ModelNode node = ModelNode.fromJSONString(sanitizedJson);
+		assertEquals("stringWithA\"Quote", node.get("property").asString());
+	}
+
+	@Test
+	public void doesNotRemoveEscapedQuoteInStringValueWithinValidJsonObject() throws OpenshiftException {
+		String quotedJsonObject =
 				"{"
 						+ "\"property\":"
 						+ "\"stringWithA\\\"Quote\""
@@ -59,5 +73,5 @@ public class JsonSanitizerTest {
 		ModelNode node = ModelNode.fromJSONString(sanitizedJson);
 		assertEquals("stringWithA\"Quote", node.get("property").asString());
 	}
-
+	
 }
