@@ -20,10 +20,6 @@ public class User {
 	private ISSHPublicKey sshKey;
 	private Domain domain;
 
-	public User(String rhlogin, String uuid, Domain domain) {
-		this(rhlogin, uuid, null, domain);
-	}
-
 	public User(String rhlogin, String uuid, ISSHPublicKey sshKey, Domain domain) {
 		this.rhlogin = rhlogin;
 		this.uuid = uuid;

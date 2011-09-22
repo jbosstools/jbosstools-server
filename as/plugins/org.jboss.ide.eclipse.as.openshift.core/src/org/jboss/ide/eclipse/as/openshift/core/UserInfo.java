@@ -33,4 +33,15 @@ public class UserInfo {
 		return applications;
 	}
 
+	public Application getApplicationByName(String applicationName) {
+		Application matchingApplication = null;
+		for (Application application : applications) {
+			if (applicationName.equals(application.getName())) {
+				matchingApplication = application;
+				break;
+			}
+		}
+		return matchingApplication;
+	}
+
 }

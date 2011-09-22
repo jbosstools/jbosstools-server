@@ -52,7 +52,7 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 
 		ISSHPublicKey sshKey = createSSHKey(userInfoNode);
 		User user = createUser(userInfoNode, sshKey, createDomain(userInfoNode));
-		List<Application> applications = createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO));
+		List<Application> applications = createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO), user);
 
 		return new UserInfo(user, applications);
 	}
@@ -62,24 +62,24 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 		return new SSHPublicKey(sshPublicKey);
 	}
 
-	private List<Application> createApplications(ModelNode appInfoNode) throws DatatypeConfigurationException {
+	private List<Application> createApplications(ModelNode appInfoNode, User user) throws DatatypeConfigurationException {
 		List<Application> applications = new ArrayList<Application>();
 		if (!isSet(appInfoNode)) {
 			return applications;
 		}
 
 		for (String name : appInfoNode.keys()) {
-			applications.add(createApplication(name, appInfoNode.get(name)));
+			applications.add(createApplication(name, appInfoNode.get(name), user));
 		}
 		return applications;
 	}
 
-	private Application createApplication(String name, ModelNode appNode) throws DatatypeConfigurationException {
+	private Application createApplication(String name, ModelNode appNode, User user) throws DatatypeConfigurationException {
 		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
 		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
 		Cartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
 		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
-		return new Application(name, uuid, cartrdige, embedded, creationTime, service);
+		return new Application(name, uuid, cartrdige, embedded, creationTime, user, service);
 	}
 
 	private User createUser(ModelNode userInfoNode, ISSHPublicKey sshKey, Domain domain) {

@@ -20,6 +20,7 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 
 /**
@@ -28,7 +29,7 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 public class ApplicationAsserts {
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
-			String cartridgeName, String creationTime, List<Application> applications) {
+			String cartridgeName, String creationTime, List<Application> applications) throws OpenshiftException {
 		Application application = getApplication(applicationName, applications);
 		if (application == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
@@ -52,7 +53,7 @@ public class ApplicationAsserts {
 	}
 	
 	private static void assertApplication(String embedded, String uuid, String cartridgeName,
-			String creationTime, Application application) {
+			String creationTime, Application application) throws OpenshiftException {
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());
 		assertNotNull(application.getCartridge());

@@ -47,7 +47,6 @@ public class ApplicationIntegrationTest {
 		invalidCredentialsOpenshiftService.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7);
 	}
 
-	@Ignore
 	@Test
 	public void canCreateApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -174,6 +173,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void getStatusReturnsTheWholeLog() throws Exception {
 		String applicationName = createRandomApplicationName();
