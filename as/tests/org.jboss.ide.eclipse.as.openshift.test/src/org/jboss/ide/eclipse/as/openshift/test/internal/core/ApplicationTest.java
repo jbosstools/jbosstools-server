@@ -26,6 +26,7 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationActio
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ApplicationRequestJsonMarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationStatusResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
@@ -43,6 +44,35 @@ public class ApplicationTest {
 	private static final String APPLICATION_NAME = "1316010645406";
 	private static final Cartridge APPLICATION_CARTRIDGE = Cartridge.JBOSSAS_7;
 
+	private static final String appResponse = 
+			"{"
+					+ "	\"messages\":\"\","
+					+ "	\"debug\":\"Validating application limit toolsjboss@gmail.com: num of apps(0) must be < app limit(5)\n\","
+					+ "	\"data\":{"
+					+ "		\"health_check_path\":\"health\""
+					+ "	},"
+					+ "	\"api\":\"1.1.1\","
+					+ "	\"api_c\":[\"placeholder\"],"
+					+ "	\"result\":\"Successfully created application: "
+					
+					+ APPLICATION_NAME 
+					
+					+ "\","
+					+ "	\"broker\":\"1.1.1\","
+					+ "	\"broker_c\":[\"namespace\","
+					+ "	\"rhlogin\","
+					+ "	\"ssh\","
+					+ "	\"app_uuid\","
+					+ "	\"debug\","
+					+ "	\"alter\","
+					+ "	\"cartridge\","
+					+ "	\"cart_type\","
+					+ "	\"action\","
+					+ "	\"app_name\","
+					+ "	\"api\"],"
+					+ "	\"exit_code\":0"
+					+ "}";
+	
 	private static final String log =
 			"10:30:38,700 INFO  [org.apache.catalina.core.AprLifecycleListener] (MSC service thread 1-1) "
 					+ "The Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path:"
@@ -132,6 +162,18 @@ public class ApplicationTest {
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
 
+	@Test
+	public void canUnmarshallApplicationResponse() throws OpenshiftException {
+		String response = JsonSanitizer.sanitize(statusResponse);
+		OpenshiftResponse<Application> openshiftResponse =
+				new ApplicationResponseUnmarshaller(APPLICATION_NAME, APPLICATION_CARTRIDGE, new NoopOpenshiftServiceFake())
+				.unmarshall(response);
+		Application application = openshiftResponse.getOpenshiftObject();
+		assertNotNull(application);
+		assertEquals(APPLICATION_NAME, application.getName());
+		assertEquals(APPLICATION_CARTRIDGE, application.getCartridge());
+	}
+	
 	@Test
 	public void canUnmarshallApplicationStatus() throws OpenshiftException {
 		String response = JsonSanitizer.sanitize(statusResponse);
