@@ -33,8 +33,11 @@ public class ApplicationLogReader extends Reader {
 	private Application application;
 	private int logIndex = 0;
 
-	public ApplicationLogReader(Application application, IOpenshiftService service) {
+	private User user;
+
+	public ApplicationLogReader(Application application, User user, IOpenshiftService service) {
 		this.application = application;
+		this.user = user;
 		this.service = service;
 	}
 
@@ -68,7 +71,7 @@ public class ApplicationLogReader extends Reader {
 
 	protected String requestStatus() throws IOException {
 		try {
-			return service.getStatus(application.getName(), application.getCartridge());
+			return service.getStatus(application.getName(), application.getCartridge(), user);
 		} catch (OpenshiftException e) {
 			throw new IOException(e);
 		}

@@ -2,7 +2,7 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
 public class UserInfoResponseFake {
 
-	public static final String USERNAME = "jbosstools@redhat.com";
+	public static final String RHLOGIN = "jbosstools@redhat.com";
 	public static final String PASSWORD = "$!445password%&";
 	
 	public static final String RHC_DOMAIN = "rhcloud.com";
@@ -36,7 +36,7 @@ public class UserInfoResponseFake {
 					+ "		\\\"user_info\\\":"
 					+ "		{"
 					+ "			\\\"rhc_domain\\\":\\\"" + RHC_DOMAIN + "\\\"," //
-					+ "			\\\"rhlogin\\\":\\\"" + USERNAME + "\\\","
+					+ "			\\\"rhlogin\\\":\\\"" + RHLOGIN + "\\\","
 					+ "			\\\"namespace\\\":\\\"" + NAMESPACE + "\\\","
 					+ "			\\\"uuid\\\":\\\"" + UUID + "\\\","
 					+ "			\\\"ssh_key\\\":\\\"" + SSH_KEY + "\\\""

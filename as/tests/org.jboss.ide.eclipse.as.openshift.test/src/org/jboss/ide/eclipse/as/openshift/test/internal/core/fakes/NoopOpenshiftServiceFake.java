@@ -15,75 +15,64 @@ import java.util.List;
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 
 /**
  * @author André Dietisheim
  */
-public class NoopOpenshiftServiceFake implements IOpenshiftService {
+public class NoopOpenshiftServiceFake extends OpenshiftService {
 
 	@Override
-	public UserInfo getUserInfo() throws OpenshiftException {
+	public UserInfo getUserInfo(User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<Cartridge> getCartridges() throws OpenshiftException {
+	public List<Cartridge> getCartridges(User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public Application destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application startApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public Application startApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application restartApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public Application restartApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public Application stopApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getStatus(String applicationName, Cartridge cartridge) throws OpenshiftException {
+	public String getStatus(String applicationName, Cartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Domain changeDomain(String domainName, ISSHPublicKey sshKey) throws OpenshiftException {
+	public Domain changeDomain(String domainName, ISSHPublicKey sshKey, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Domain createDomain(String name, ISSHPublicKey keyPair) throws OpenshiftException {
+	public Domain createDomain(String name, ISSHPublicKey keyPair, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
-
-	@Override
-	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public SSHKeyPair loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException {
-		throw new UnsupportedOperationException();
-	}
-
 }

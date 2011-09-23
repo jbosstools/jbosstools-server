@@ -13,13 +13,16 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.utils;
 import static org.junit.Assert.fail;
 
 import java.text.MessageFormat;
-import java.util.List;
+import java.util.Collection;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 
+/**
+ * @author André Dietisheim
+ */
 public class CartridgeAsserts {
 
-	public static void assertThatContainsCartridge(String cartridgeName, List<Cartridge> cartridges) {
+	public static void assertThatContainsCartridge(String cartridgeName, Collection<Cartridge> cartridges) {
 		boolean found = false;
 		for (Cartridge cartridge : cartridges) {
 			if (cartridgeName.equals(cartridge.getName())) {

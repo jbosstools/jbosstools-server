@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -27,6 +28,7 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.Doma
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.NoopOpenshiftServiceFake;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestSSHKey;
 import org.junit.Test;
 
@@ -35,17 +37,17 @@ import org.junit.Test;
  */
 public class DomainTest {
 
-	private static final String USERNAME = "toolsjboss@gmail.com";
+	private static final String RHLOGIN = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 	private static final String UUID = "0c82860dae904a4d87f8e5d87a5af840";
 
 	@Test
 	public void canMarshallDomainCreateRequest() throws IOException, OpenshiftException {
 		SSHKeyPair sshKey = TestSSHKey.create();
-		String expectedRequestString = createDomainRequestString(PASSWORD, USERNAME, true, "myDomain", false,
+		String expectedRequestString = createDomainRequestString(PASSWORD, RHLOGIN, true, "myDomain", false,
 				sshKey.getPublicKey());
 
-		CreateDomainRequest request = new CreateDomainRequest("myDomain", sshKey, USERNAME, true);
+		CreateDomainRequest request = new CreateDomainRequest("myDomain", sshKey, RHLOGIN, true);
 		String requestString =
 				new OpenshiftEnvelopeFactory(
 						PASSWORD,
@@ -57,10 +59,11 @@ public class DomainTest {
 	@Test
 	public void canUnmarshallDomainCreateResponse() throws IOException, OpenshiftException {
 		String domainName = "myDomain";
-		String responseString = createDomainResponseString(USERNAME, UUID);
+		String responseString = createDomainResponseString(RHLOGIN, UUID);
 
 		responseString = JsonSanitizer.sanitize(responseString);
-		OpenshiftResponse<Domain> response = new DomainResponseUnmarshaller(domainName).unmarshall(responseString);
+		User user = new User(RHLOGIN, PASSWORD, new NoopOpenshiftServiceFake());
+		OpenshiftResponse<Domain> response = new DomainResponseUnmarshaller(domainName, user).unmarshall(responseString);
 
 		assertNotNull(response);
 		Domain domain = response.getOpenshiftObject();
@@ -70,10 +73,10 @@ public class DomainTest {
 	@Test
 	public void canMarshallDomainAlterRequest() throws IOException, OpenshiftException {
 		SSHKeyPair sshKey = TestSSHKey.create();
-		String expectedRequestString = createDomainRequestString(PASSWORD, USERNAME, true, "myDomain", true,
+		String expectedRequestString = createDomainRequestString(PASSWORD, RHLOGIN, true, "myDomain", true,
 				sshKey.getPublicKey());
 
-		ChangeDomainRequest request = new ChangeDomainRequest("myDomain", sshKey, USERNAME, true);
+		ChangeDomainRequest request = new ChangeDomainRequest("myDomain", sshKey, RHLOGIN, true);
 		String requestString =
 				new OpenshiftEnvelopeFactory(
 						PASSWORD,

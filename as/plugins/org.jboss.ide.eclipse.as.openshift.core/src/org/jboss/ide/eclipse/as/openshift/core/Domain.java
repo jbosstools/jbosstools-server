@@ -18,21 +18,29 @@ public class Domain {
 
 	private String namespace;
 	private String rhcDomain;
+	private User user;
 
-	public Domain(String namespace) {
-		this(namespace, null);
+	public Domain(String namespace, User user) {
+		this(namespace, null, user);
 	}
 
-	public Domain(String namespace, String rhcDomain) {
+	public Domain(String namespace, String rhcDomain, User user) {
 		this.namespace = namespace;
 		this.rhcDomain = rhcDomain;
+		this.user = user;
 	}
 
-	public String getRhcDomain() {
+	public String getNamespace() throws OpenshiftException {
+		return namespace;
+	}
+
+	public String getRhcDomain() throws OpenshiftException {
+		user.loadLazyValues();
 		return rhcDomain;
 	}
 
-	public String getNamespace() {
-		return namespace;
+	void update(UserInfo userInfo) {
+		this.rhcDomain = userInfo.getRhcDomain();
+		this.namespace = userInfo.getNamespace();
 	}
 }

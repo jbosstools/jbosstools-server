@@ -20,6 +20,8 @@ import org.junit.runners.Suite;
 	ListCartridgesTest.class,
 	DomainTest.class,
 	UserInfoTest.class,
+	UserTest.class,
+	CartridgeTest.class,
 	SSHKeyTest.class
 })
 /**

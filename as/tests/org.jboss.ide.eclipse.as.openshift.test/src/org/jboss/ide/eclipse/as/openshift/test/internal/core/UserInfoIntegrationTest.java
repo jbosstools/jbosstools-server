@@ -15,7 +15,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
@@ -23,7 +23,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationInfoAsserts;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,39 +34,39 @@ public class UserInfoIntegrationTest {
 
 	private IOpenshiftService openshiftService;
 
-	private static final String USERNAME = "toolsjboss@gmail.com";
+	private static final String RHLOGIN = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
 
 	@Before
 	public void setUp() {
-		this.openshiftService = new OpenshiftService(USERNAME, PASSWORD);
+		this.openshiftService = new OpenshiftService();
 	}
 
 	@Test
 	public void canGetUserInfo() throws Exception {
-		UserInfo userInfo = openshiftService.getUserInfo();
+		UserInfo userInfo = openshiftService.getUserInfo(new User(RHLOGIN, PASSWORD));
 		assertNotNull(userInfo);
 
-		User user = userInfo.getUser();
-		assertEquals(USERNAME, user.getRhlogin());
+		assertEquals(RHLOGIN, userInfo.getRhLogin());
 	}
 
 	@Test
 	public void userInfoContainsOneMoreApplicationAfterCreatingNewApplication() throws Exception {
-		UserInfo userInfo = openshiftService.getUserInfo();
+		User user = new User(RHLOGIN, PASSWORD);
+		UserInfo userInfo = openshiftService.getUserInfo(user);
 		assertNotNull(userInfo);
 
-		List<Application> applications = userInfo.getApplications();
-		assertNotNull(applications);
-		int numberOfApplications = applications.size();
+		List<ApplicationInfo> applicationInfos = userInfo.getApplicationInfos();
+		assertNotNull(applicationInfos);
+		int numberOfApplicationInfos = applicationInfos.size();
 
 		String applicationName = createRandomName();
 		try {
-			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7);
+			openshiftService.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
 
-			UserInfo userInfo2 = openshiftService.getUserInfo();
-			assertEquals(numberOfApplications + 1, userInfo2.getApplications().size());
-			ApplicationAsserts.assertThatContainsApplication(applicationName, userInfo2.getApplications());
+			UserInfo userInfo2 = openshiftService.getUserInfo(user);
+			assertEquals(numberOfApplicationInfos + 1, userInfo2.getApplicationInfos().size());
+			ApplicationInfoAsserts.assertThatContainsApplicationInfo(applicationName, userInfo2.getApplicationInfos());
 		} finally {
 			silentlyDestroyAS7Application(applicationName, openshiftService);
 		}
@@ -74,13 +74,12 @@ public class UserInfoIntegrationTest {
 
 	@Test
 	public void canUseReturnedSSHKeyToChangeDomain() throws Exception {
-		UserInfo userInfo = openshiftService.getUserInfo();
+		User user = new User(RHLOGIN, PASSWORD);
+		UserInfo userInfo = openshiftService.getUserInfo(user);
 		assertNotNull(userInfo);
 
-		User user = userInfo.getUser();
-		assertNotNull(user);
-		ISSHPublicKey sshKey = user.getSshKey();
-		openshiftService.changeDomain(createRandomName(), sshKey);
+		ISSHPublicKey sshKey = userInfo.getSshPublicKey();
+		openshiftService.changeDomain(createRandomName(), sshKey, user);
 	}
 	
 	private String createRandomName() {
@@ -89,10 +88,9 @@ public class UserInfoIntegrationTest {
 
 	private void silentlyDestroyAS7Application(String name, IOpenshiftService service) {
 		try {
-			service.destroyApplication(name, Cartridge.JBOSSAS_7);
+			service.destroyApplication(name, Cartridge.JBOSSAS_7, new User(RHLOGIN, PASSWORD));
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
 		}
 	}
-
 }

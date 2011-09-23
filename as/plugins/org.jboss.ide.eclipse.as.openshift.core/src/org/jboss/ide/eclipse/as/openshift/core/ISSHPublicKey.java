@@ -23,6 +23,7 @@ public interface ISSHPublicKey {
 	 *         comment)
 	 * @throws OpenshiftException
 	 */
-	public String getPublicKey() throws OpenshiftException;
-
+	public String getPublicKey() throws OpenshiftException ;
+	
+	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException;
 }

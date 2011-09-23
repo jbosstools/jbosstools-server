@@ -17,27 +17,23 @@ import java.util.List;
  */
 public interface IOpenshiftService {
 
-	public UserInfo getUserInfo() throws OpenshiftException;
+	public UserInfo getUserInfo(User user) throws OpenshiftException;
 
-	public List<Cartridge> getCartridges() throws OpenshiftException;  
+	public List<Cartridge> getCartridges(User user) throws OpenshiftException;  
 
-	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public Application destroyApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public Application destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public Application startApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public Application startApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 	
-	public Application restartApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public Application restartApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public Application stopApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public Application stopApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public String getStatus(String name, Cartridge cartridge) throws OpenshiftException;
+	public String getStatus(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public Domain changeDomain(String domainName, ISSHPublicKey sshKey) throws OpenshiftException;
+	public Domain changeDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException;
 
-	public Domain createDomain(String name, ISSHPublicKey sshKey) throws OpenshiftException;
-
-	public SSHKeyPair createKey(String passPhrase, String privateKeyPath, String publicKeyPath) throws OpenshiftException;
-	
-	public SSHKeyPair loadKey(String privateKeyPath, String publicKeyPath) throws OpenshiftException;
+	public Domain createDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException;
 }

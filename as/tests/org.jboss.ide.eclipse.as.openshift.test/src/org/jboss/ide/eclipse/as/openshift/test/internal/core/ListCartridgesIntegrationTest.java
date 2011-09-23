@@ -10,13 +10,14 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.CartridgeAsserts.assertThatContainsCartridge;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.CartridgeAsserts.assertThatContainsCartridge;
 
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,12 +34,12 @@ public class ListCartridgesIntegrationTest {
 
 	@Before
 	public void setUp() {
-		this.openshiftService = new OpenshiftService(USERNAME, PASSWORD);
+		this.openshiftService = new OpenshiftService();
 	}
 
 	@Test
 	public void canListCartridges() throws Exception {
-		List<Cartridge> cartridges = openshiftService.getCartridges();
+		List<Cartridge> cartridges = openshiftService.getCartridges(new User(USERNAME, PASSWORD));
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);

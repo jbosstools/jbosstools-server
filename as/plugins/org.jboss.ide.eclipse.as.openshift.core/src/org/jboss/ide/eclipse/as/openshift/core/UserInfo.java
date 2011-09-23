@@ -17,31 +17,55 @@ import java.util.List;
  */
 public class UserInfo {
 
-	private User user;
-	private List<Application> applications;
+	private String rhLogin;
+	private String uuid;
+	private SSHPublicKey sshPublicKey;
+	private String rhcDomain;
+	private String namespace;
+	private List<ApplicationInfo> applicationInfos;
 
-	public UserInfo(User user, List<Application> applications) {
-		this.user = user;
-		this.applications = applications;
+	public UserInfo(String rhLogin, String uuid, String sshPublicKey, String rhcDomain, String namespace, List<ApplicationInfo> applicationInfos) {
+		this.rhLogin = rhLogin;
+		this.uuid = uuid;
+		this.sshPublicKey = new SSHPublicKey(sshPublicKey);
+		this.rhcDomain = rhcDomain;
+		this.namespace = namespace;
+		this.applicationInfos = applicationInfos;
 	}
 
-	public User getUser() {
-		return user;
+	public String getUuid() {
+		return uuid;
 	}
 
-	public List<Application> getApplications() {
-		return applications;
+	public SSHPublicKey getSshPublicKey() {
+		return sshPublicKey;
 	}
 
-	public Application getApplicationByName(String applicationName) {
-		Application matchingApplication = null;
-		for (Application application : applications) {
-			if (applicationName.equals(application.getName())) {
-				matchingApplication = application;
+	public String getRhLogin() {
+		return rhLogin;
+	}
+
+	public String getNamespace() {
+		return namespace;
+	}
+
+	public List<ApplicationInfo> getApplicationInfos() {
+		return applicationInfos;
+	}
+
+	public ApplicationInfo getApplicationInfoByName(String name) {
+		ApplicationInfo matchingApplicationInfo = null;
+		for (ApplicationInfo applicationInfo : applicationInfos) {
+			if (name.equals(applicationInfo.getName())) {
+				matchingApplicationInfo = applicationInfo;
 				break;
 			}
 		}
-		return matchingApplication;
+		return matchingApplicationInfo;
+	}
+	
+	public String getRhcDomain() {
+		return rhcDomain;
 	}
 
 }

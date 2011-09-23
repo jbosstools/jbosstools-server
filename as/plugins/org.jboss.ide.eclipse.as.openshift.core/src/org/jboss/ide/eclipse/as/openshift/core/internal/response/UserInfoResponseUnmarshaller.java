@@ -17,26 +17,15 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
-import org.jboss.ide.eclipse.as.openshift.core.SSHPublicKey;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 
 /**
  * @author André Dietisheim
  */
 public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<UserInfo> {
-
-	private IOpenshiftService service;
-
-	public UserInfoResponseUnmarshaller(IOpenshiftService service) {
-		this.service = service;
-	}
 
 	@Override
 	protected UserInfo createOpenshiftObject(ModelNode node) throws DatatypeConfigurationException {
@@ -50,47 +39,34 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 			return null;
 		}
 
-		ISSHPublicKey sshKey = createSSHKey(userInfoNode);
-		User user = createUser(userInfoNode, sshKey, createDomain(userInfoNode));
-		List<Application> applications = createApplications(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO), user);
-
-		return new UserInfo(user, applications);
-	}
-
-	private ISSHPublicKey createSSHKey(ModelNode userInfoNode) {
 		String sshPublicKey = getString(IOpenshiftJsonConstants.PROPERTY_SSH_KEY, userInfoNode);
-		return new SSHPublicKey(sshPublicKey);
+		String rhlogin = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
+		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, userInfoNode);
+		String namespace = getString(IOpenshiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
+		String rhcDomain = getString(IOpenshiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
+
+		List<ApplicationInfo> applicationInfos = createApplicationInfos(dataNode.get(IOpenshiftJsonConstants.PROPERTY_APP_INFO));
+
+		return new UserInfo(rhlogin, uuid, sshPublicKey, rhcDomain, namespace, applicationInfos);
 	}
 
-	private List<Application> createApplications(ModelNode appInfoNode, User user) throws DatatypeConfigurationException {
-		List<Application> applications = new ArrayList<Application>();
+	private List<ApplicationInfo> createApplicationInfos(ModelNode appInfoNode) throws DatatypeConfigurationException {
+		List<ApplicationInfo> applicationInfos = new ArrayList<ApplicationInfo>();
 		if (!isSet(appInfoNode)) {
-			return applications;
+			return applicationInfos;
 		}
 
 		for (String name : appInfoNode.keys()) {
-			applications.add(createApplication(name, appInfoNode.get(name), user));
+			applicationInfos.add(createApplicationInfo(name, appInfoNode.get(name)));
 		}
-		return applications;
+		return applicationInfos;
 	}
 
-	private Application createApplication(String name, ModelNode appNode, User user) throws DatatypeConfigurationException {
-		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
+	private ApplicationInfo createApplicationInfo(String name, ModelNode appNode) throws DatatypeConfigurationException {
 		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
+		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
 		Cartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
 		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
-		return new Application(name, uuid, cartrdige, embedded, creationTime, user, service);
-	}
-
-	private User createUser(ModelNode userInfoNode, ISSHPublicKey sshKey, Domain domain) {
-		String rhlogin = getString(IOpenshiftJsonConstants.PROPERTY_RHLOGIN, userInfoNode);
-		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, userInfoNode);
-		return new User(rhlogin, uuid, sshKey, domain);
-	}
-
-	private Domain createDomain(ModelNode userInfoNode) {
-		String namespace = getString(IOpenshiftJsonConstants.PROPERTY_NAMESPACE, userInfoNode);
-		String rhcDomain = getString(IOpenshiftJsonConstants.PROPERTY_RHC_DOMAIN, userInfoNode);
-		return new Domain(namespace, rhcDomain);
+		return new ApplicationInfo(name, uuid, embedded, cartrdige, creationTime);
 	}
 }

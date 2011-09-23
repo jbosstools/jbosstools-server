@@ -10,30 +10,45 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.util.Date;
+
 /**
- * CA cartridge that is available on the openshift server. This class is no enum
- * since we dont know all available types and they may change at any time.
- * 
  * @author André Dietisheim
  */
-public class Cartridge {
-
-	public static final Cartridge JBOSSAS_7 = new Cartridge("jbossas-7.0");
+public class ApplicationInfo {
 
 	private String name;
+	private String uuid;
+	private String embedded;
+	private Cartridge cartridge;
+	private Date creationTime;
 
-	public Cartridge(String name) {
+	public ApplicationInfo(String name, String uuid, String embedded, Cartridge cartridge, Date creationTime) {
 		this.name = name;
+		this.uuid = uuid;
+		this.embedded = embedded;
+		this.cartridge = cartridge;
+		this.creationTime = creationTime;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public static Cartridge valueOf(String name) {
-		if (JBOSSAS_7.getName().equals(name)) {
-			return JBOSSAS_7;
-		}
-		return null;
+	public String getEmbedded() {
+		return embedded;
 	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public Cartridge getCartridge() {
+		return cartridge;
+	}
+
+	public Date getCreationTime() {
+		return creationTime;
+	}
+
 }

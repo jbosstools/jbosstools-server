@@ -32,12 +32,8 @@ public class Application {
 	
 	private User user;
 
-	private boolean userInfoQueried;
-
-	public Application(String name, Cartridge cartridge, IOpenshiftService service) {
-		this(name, null, cartridge, null, null, null, service);
-
-		this.userInfoQueried = false;
+	public Application(String name, Cartridge cartridge, User user, IOpenshiftService service) {
+		this(name, null, cartridge, null, null, user, service);
 	}
 
 	public Application(String name, String uuid, Cartridge cartridge, String embedded, Date creationTime, User user,
@@ -49,8 +45,6 @@ public class Application {
 		this.creationTime = creationTime;
 		this.user = user;
 		this.service = service;
-
-		this.userInfoQueried = true;
 	}
 
 	public String getName() {
@@ -58,7 +52,7 @@ public class Application {
 	}
 
 	public String getUUID() throws OpenshiftException {
-		updateFromUserInfoIfNeeded();
+		user.loadLazyValues();
 		return uuid;
 	}
 
@@ -67,39 +61,38 @@ public class Application {
 	}
 
 	public String getEmbedded() throws OpenshiftException {
-		updateFromUserInfoIfNeeded();
+		user.loadLazyValues();
 		return embedded;
 	}
 
 	public Date getCreationTime() throws OpenshiftException {
-		updateFromUserInfoIfNeeded();
+		user.loadLazyValues();
 		return creationTime;
 	}
 
-	protected User getUser() throws OpenshiftException {
-		updateFromUserInfoIfNeeded();
+	protected IUser getUser() throws OpenshiftException {
 		return user;
 	}
 
 	public void destroy() throws OpenshiftException {
-		service.destroyApplication(name, cartridge);
+		service.destroyApplication(name, cartridge, user);
 	}
 
 	public void start() throws OpenshiftException {
-		service.startApplication(name, cartridge);
+		service.startApplication(name, cartridge, user);
 	}
 
 	public void restart() throws OpenshiftException {
-		service.restartApplication(name, cartridge);
+		service.restartApplication(name, cartridge, user);
 	}
 
 	public void stop() throws OpenshiftException {
-		service.stopApplication(name, cartridge);
+		service.stopApplication(name, cartridge, user);
 	}
 
 	public ApplicationLogReader getLog() throws OpenshiftException {
 		if (logReader == null) {
-			this.logReader = new ApplicationLogReader(this, service);
+			this.logReader = new ApplicationLogReader(this, user, service);
 		}
 		return logReader;
 	}
@@ -120,24 +113,39 @@ public class Application {
 		return Assert.assertNotNull(getUser()).getDomain();
 	}
 
-	private void updateFromUserInfoIfNeeded() throws OpenshiftException {
-		if (!userInfoQueried) {
-			updateFrom(service.getUserInfo());
-			this.userInfoQueried = true;
+	void update(ApplicationInfo applicationInfo) {
+		if (applicationInfo == null) {
+			return;
 		}
-	}
-	
-	private void updateFrom(UserInfo userInfo) {
-		updateFrom(userInfo.getApplicationByName(getName()));
-		this.user = userInfo.getUser();
+		this.cartridge = applicationInfo.getCartridge();
+		this.creationTime = applicationInfo.getCreationTime();
+		this.name = applicationInfo.getName();
+		this.uuid = applicationInfo.getUuid();
 	}
 
-	private void updateFrom(Application application) {
-		this.cartridge = application.cartridge;
-		this.creationTime = application.creationTime;
-		this.name = application.name;
-		this.uuid = application.uuid;
-		
-		this.userInfoQueried = false;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object)
+			return true;
+		if (object == null)
+			return false;
+		if (getClass() != object.getClass())
+			return false;
+		Application other = (Application) object;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
 }

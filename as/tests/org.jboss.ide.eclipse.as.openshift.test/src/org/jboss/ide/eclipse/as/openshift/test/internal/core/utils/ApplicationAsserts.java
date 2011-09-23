@@ -34,7 +34,7 @@ public class ApplicationAsserts {
 		if (application == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
 		}
-		assertApplication(embedded, applicationUUID, cartridgeName, creationTime, application);
+		assertApplication(applicationName, applicationUUID, cartridgeName, embedded, creationTime, application);
 	}
 
 	public static void assertThatContainsApplication(String applicationName, List<Application> applications) {
@@ -51,8 +51,8 @@ public class ApplicationAsserts {
 		}
 		return matchingApplication;
 	}
-	
-	private static void assertApplication(String embedded, String uuid, String cartridgeName,
+
+	public static void assertApplication(String name, String uuid, String cartridgeName, String embedded,
 			String creationTime, Application application) throws OpenshiftException {
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());

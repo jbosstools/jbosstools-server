@@ -21,7 +21,14 @@ public class SSHPublicKey implements ISSHPublicKey {
 		this.publicKey = publicKey;
 	}
 
-	public String getPublicKey() throws OpenshiftException {
+	public String getPublicKey() {
 		return publicKey;
+	}
+	
+	void update(String publicKey) {
+	}
+
+	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException {
+		this.publicKey = sshPublicKey.getPublicKey();
 	}
 }
