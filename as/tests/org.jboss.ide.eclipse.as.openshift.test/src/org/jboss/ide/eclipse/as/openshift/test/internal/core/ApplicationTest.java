@@ -17,15 +17,19 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -43,6 +47,8 @@ import org.junit.Test;
  */
 public class ApplicationTest {
 
+	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
+	
 	private User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, new NoopOpenshiftServiceFake());
 
 	@Test
@@ -108,8 +114,7 @@ public class ApplicationTest {
 
 	@Test
 	public void canGetGitUri() throws OpenshiftException {
-		String response = JsonSanitizer.sanitize(ApplicationResponseFake.appResponse);
-		IOpenshiftService service = new NoopOpenshiftServiceFake() {
+		OpenshiftService userInfoService = new NoopOpenshiftServiceFake() {
 			@Override
 			public UserInfo getUserInfo(User user) throws OpenshiftException {
 				ApplicationInfo applicationInfo = new ApplicationInfo(
@@ -127,15 +132,32 @@ public class ApplicationTest {
 						Arrays.asList(new ApplicationInfo[] { applicationInfo }));
 			}
 		};
+		User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
+
+		String response = JsonSanitizer.sanitize(ApplicationResponseFake.appResponse);
 		OpenshiftResponse<Application> openshiftResponse =
 				new ApplicationResponseUnmarshaller(
 						ApplicationResponseFake.APPLICATION_NAME, ApplicationResponseFake.APPLICATION_CARTRIDGE,
-						user, service)
+						user, userInfoService)
 						.unmarshall(response);
 		Application application = openshiftResponse.getOpenshiftObject();
 		assertNotNull(application);
 		String gitUri = application.getGitUri();
 		assertNotNull(gitUri);
+		Domain domain = user.getDomain();
+		assertNotNull(domain);
+		assertGitUri(gitUri, application.getUUID(), application.getName(), domain.getNamespace(), domain.getRhcDomain());
+	}
+
+	private void assertGitUri(String gitUri, String uuid, String name, String namespace, String rhcDomain) {
+		Matcher matcher = GIT_URI_REGEXP.matcher(gitUri);
+		assertTrue(matcher.matches());
+		assertEquals(5, matcher.groupCount());
+		assertEquals(uuid, matcher.group(1));
+		assertEquals(name, matcher.group(2));
+		assertEquals(namespace, matcher.group(3));
+		assertEquals(rhcDomain, matcher.group(4));
+		assertEquals(name, matcher.group(5));
 	}
 
 	@Test
