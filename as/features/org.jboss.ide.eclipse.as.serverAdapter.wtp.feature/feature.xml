@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.ide.eclipse.as.serverAdapter.wtp"
+      id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"
       label="%featureName"
       version="2.3.0.qualifier">
 
