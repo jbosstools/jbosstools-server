@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.ide.eclipse.as.archives.integration"
+      id="org.jboss.ide.eclipse.as.archives.integration.feature"
       label="%featureName"
       version="2.3.0.qualifier">
 
@@ -23,7 +23,7 @@ Raleigh NC 27606 USA.
    </license>
 
    <includes
-         id="org.jboss.ide.eclipse.as.serverAdapter.wtp"
+         id="org.jboss.ide.eclipse.as.serverAdapter.wtp.feature"
          version="0.0.0"/>
 
    <includes
