@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertAppliactionUrl;
 import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertGitUri;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,7 +24,6 @@ import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
@@ -115,48 +115,34 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void canGetGitUri() throws OpenshiftException {
-		OpenshiftService userInfoService = new NoopOpenshiftServiceFake() {
-			@Override
-			public UserInfo getUserInfo(User user) throws OpenshiftException {
-				ApplicationInfo applicationInfo = new ApplicationInfo(
-						ApplicationResponseFake.APPLICATION_NAME,
-						ApplicationResponseFake.APPLICATION_UUID,
-						ApplicationResponseFake.APPLICATION_EMBEDDED,
-						ApplicationResponseFake.APPLICATION_CARTRIDGE,
-						ApplicationResponseFake.APPLICATION_CREATIONTIME);
-				return new UserInfo(
-						ApplicationResponseFake.RHLOGIN,
-						ApplicationResponseFake.UUID,
-						ApplicationResponseFake.SSHPUBLICKEY,
-						ApplicationResponseFake.RHC_DOMAIN,
-						ApplicationResponseFake.NAMESPACE,
-						Arrays.asList(new ApplicationInfo[] { applicationInfo }));
-			}
-		};
-		User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
-		Application application = new Application(
-				ApplicationResponseFake.APPLICATION_NAME
-				, ApplicationResponseFake.APPLICATION_UUID
-				, ApplicationResponseFake.APPLICATION_CARTRIDGE
-				, ApplicationResponseFake.APPLICATION_EMBEDDED
-				, ApplicationResponseFake.APPLICATION_CREATIONTIME
-				, user
-				, userInfoService);
-		// we need to add it manually since we dont use the service
-		user.add(application);
+	public void returnsValidGitUri() throws OpenshiftException {
+		OpenshiftService userInfoService = createUserInfoService();
+		User user = createUser(userInfoService);
+		Application application = createApplication(userInfoService, user);
 
-		assertNotNull(application);
 		String gitUri = application.getGitUri();
 		assertNotNull(gitUri);
-		Domain domain = user.getDomain();
-		assertNotNull(domain);
 		assertGitUri(
 				ApplicationResponseFake.APPLICATION_UUID
 				, ApplicationResponseFake.APPLICATION_NAME
 				, ApplicationResponseFake.NAMESPACE
 				, ApplicationResponseFake.RHC_DOMAIN
 				, gitUri);
+	}
+
+	@Test
+	public void returnsValidApplicationUrl() throws OpenshiftException {
+		OpenshiftService userInfoService = createUserInfoService();
+		User user = createUser(userInfoService);
+		Application application = createApplication(userInfoService, user);
+
+		String applicationUrl = application.getApplicationUrl();
+		assertNotNull(applicationUrl);
+		assertAppliactionUrl(
+				ApplicationResponseFake.APPLICATION_NAME
+				, ApplicationResponseFake.NAMESPACE
+				, ApplicationResponseFake.RHC_DOMAIN
+				, applicationUrl);
 	}
 
 	@Test
@@ -192,5 +178,46 @@ public class ApplicationTest {
 							+ " but we expected '" + ApplicationResponseFake.log.charAt(toMatchIndex) + "'.",
 					ApplicationResponseFake.log.charAt(toMatchIndex++), character);
 		}
+	}
+
+	private Application createApplication(OpenshiftService userInfoService, User user) {
+		Application application = new Application(
+				ApplicationResponseFake.APPLICATION_NAME
+				, ApplicationResponseFake.APPLICATION_UUID
+				, ApplicationResponseFake.APPLICATION_CARTRIDGE
+				, ApplicationResponseFake.APPLICATION_EMBEDDED
+				, ApplicationResponseFake.APPLICATION_CREATIONTIME
+				, user
+				, userInfoService);
+		// we need to add it manually since we dont use the service
+		user.add(application);
+		return application;
+	}
+
+	private User createUser(OpenshiftService userInfoService) {
+		User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
+		return user;
+	}
+
+	private OpenshiftService createUserInfoService() {
+		OpenshiftService userInfoService = new NoopOpenshiftServiceFake() {
+			@Override
+			public UserInfo getUserInfo(User user) throws OpenshiftException {
+				ApplicationInfo applicationInfo = new ApplicationInfo(
+						ApplicationResponseFake.APPLICATION_NAME,
+						ApplicationResponseFake.APPLICATION_UUID,
+						ApplicationResponseFake.APPLICATION_EMBEDDED,
+						ApplicationResponseFake.APPLICATION_CARTRIDGE,
+						ApplicationResponseFake.APPLICATION_CREATIONTIME);
+				return new UserInfo(
+						ApplicationResponseFake.RHLOGIN,
+						ApplicationResponseFake.UUID,
+						ApplicationResponseFake.SSHPUBLICKEY,
+						ApplicationResponseFake.RHC_DOMAIN,
+						ApplicationResponseFake.NAMESPACE,
+						Arrays.asList(new ApplicationInfo[] { applicationInfo }));
+			}
+		};
+		return userInfoService;
 	}
 }

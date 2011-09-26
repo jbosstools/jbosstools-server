@@ -40,6 +40,8 @@ public class ApplicationAsserts {
 	 */
 	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
 
+	public static final Pattern APPLICATION_URL_REGEXP = Pattern.compile("http://(.+)-([^\\.]+)\\.(.+)/");
+
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
 			String cartridgeName, String creationTime, List<Application> applications) throws OpenshiftException {
 		Application application = getApplication(applicationName, applications);
@@ -96,4 +98,19 @@ public class ApplicationAsserts {
 		assertEquals(name, matcher.group(5));
 	}
 
+	public static void assertAppliactionUrl(String name, String applicationUrl) {
+		Matcher matcher = APPLICATION_URL_REGEXP.matcher(applicationUrl);
+		assertTrue(matcher.matches());
+		assertEquals(3, matcher.groupCount());
+		assertEquals(name, matcher.group(1));
+	}
+
+	public static void assertAppliactionUrl(String name, String namespace, String rhcDomain, String applicationUrl) {
+		Matcher matcher = APPLICATION_URL_REGEXP.matcher(applicationUrl);
+		assertTrue(matcher.matches());
+		assertEquals(3, matcher.groupCount());
+		assertEquals(name, matcher.group(1));
+		assertEquals(namespace, matcher.group(2));
+		assertEquals(rhcDomain, matcher.group(3));
+	}
 }

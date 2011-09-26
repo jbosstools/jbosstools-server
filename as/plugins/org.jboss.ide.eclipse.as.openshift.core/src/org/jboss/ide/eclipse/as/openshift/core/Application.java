@@ -13,14 +13,13 @@ package org.jboss.ide.eclipse.as.openshift.core;
 import java.text.MessageFormat;
 import java.util.Date;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.utils.Assert;
-
 /**
  * @author André Dietisheim
  */
 public class Application {
 
 	private static final String GIT_URI_PATTERN = "ssh://{0}@{1}-{2}.{3}/~/git/{1}.git/";
+	private static final String APPLICATION_URL_PATTERN = "http://{0}-{1}.{2}/";
 
 	private String name;
 	private Cartridge cartridge;
@@ -29,7 +28,7 @@ public class Application {
 	private String embedded;
 	private IOpenshiftService service;
 	private ApplicationLogReader logReader;
-	
+
 	private User user;
 
 	public Application(String name, Cartridge cartridge, User user, IOpenshiftService service) {
@@ -70,10 +69,6 @@ public class Application {
 		return creationTime;
 	}
 
-	protected IUser getUser() throws OpenshiftException {
-		return user;
-	}
-
 	public void destroy() throws OpenshiftException {
 		service.destroyApplication(name, cartridge, user);
 	}
@@ -98,19 +93,20 @@ public class Application {
 	}
 
 	public String getGitUri() throws OpenshiftException {
-		String namespace = null;
-		String rhcDomain = null;
-		Domain domain = getDomain();
-		if (domain != null) {
-			namespace = domain.getNamespace();
-			rhcDomain = domain.getRhcDomain();
+		Domain domain = user.getDomain();
+		if (domain == null) {
+			return null;
 		}
-
-		return MessageFormat.format(GIT_URI_PATTERN, getUUID(), getName(), namespace, rhcDomain);
+		return MessageFormat
+				.format(GIT_URI_PATTERN, getUUID(), getName(), domain.getNamespace(), domain.getRhcDomain());
 	}
 
-	private Domain getDomain() throws OpenshiftException {
-		return Assert.assertNotNull(getUser()).getDomain();
+	public String getApplicationUrl() throws OpenshiftException {
+		Domain domain = user.getDomain();
+		if (domain == null) {
+			return null;
+		}
+		return MessageFormat.format(APPLICATION_URL_PATTERN, name, domain.getNamespace(), domain.getRhcDomain());
 	}
 
 	void update(ApplicationInfo applicationInfo) {

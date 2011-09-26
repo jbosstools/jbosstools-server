@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertGitUri;
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertAppliactionUrl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +38,7 @@ public class ApplicationIntegrationTest {
 	private static final String PASSWORD = "1q2w3e";
 	private User user;
 	private User invalidUser;
-	
+
 	@Ignore
 	@Before
 	public void setUp() {
@@ -121,7 +122,8 @@ public class ApplicationIntegrationTest {
 			 * freshly created apps are started
 			 * 
 			 * @link 
-			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 *       https://github.com/openshift/os-client-tools/blob/master/express
+			 *       /doc/API
 			 */
 			service.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
 			service.startApplication(applicationName, Cartridge.JBOSSAS_7, user);
@@ -139,7 +141,8 @@ public class ApplicationIntegrationTest {
 			 * freshly created apps are started
 			 * 
 			 * @link 
-			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 *       https://github.com/openshift/os-client-tools/blob/master/express
+			 *       /doc/API
 			 */
 			service.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
 			service.stopApplication(applicationName, Cartridge.JBOSSAS_7, user);
@@ -148,7 +151,7 @@ public class ApplicationIntegrationTest {
 			silentlyDestroyAS7Application(applicationName, service);
 		}
 	}
-	
+
 	@Ignore
 	@Test
 	public void canRestartApplication() throws Exception {
@@ -158,7 +161,8 @@ public class ApplicationIntegrationTest {
 			 * freshly created apps are started
 			 * 
 			 * @link 
-			 *       https://github.com/openshift/os-client-tools/blob/master/express/doc/API
+			 *       https://github.com/openshift/os-client-tools/blob/master/express
+			 *       /doc/API
 			 */
 			service.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
 			service.restartApplication(applicationName, Cartridge.JBOSSAS_7, user);
@@ -179,7 +183,7 @@ public class ApplicationIntegrationTest {
 			silentlyDestroyAS7Application(applicationName, service);
 		}
 	}
-	
+
 	@Ignore
 	@Test
 	public void getStatusReturnsTheWholeLog() throws Exception {
@@ -202,6 +206,19 @@ public class ApplicationIntegrationTest {
 			String gitUri = application.getGitUri();
 			assertNotNull(gitUri);
 			assertGitUri(applicationName, gitUri);
+		} finally {
+			silentlyDestroyAS7Application(applicationName, service);
+		}
+	}
+
+	@Test
+	public void returnsValidApplicationUrl() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			Application application = service.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
+			String applicationUrl = application.getApplicationUrl();
+			assertNotNull(applicationUrl);
+			assertAppliactionUrl(applicationName, applicationUrl);
 		} finally {
 			silentlyDestroyAS7Application(applicationName, service);
 		}
