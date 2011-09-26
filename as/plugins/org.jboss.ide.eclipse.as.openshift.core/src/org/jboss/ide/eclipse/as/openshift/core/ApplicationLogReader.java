@@ -54,7 +54,7 @@ public class ApplicationLogReader extends Reader {
 				charactersRead = readStatus(cbuf, off, len);
 			} while (charactersRead == -1);
 		} catch (InterruptedException e) {
-			throw new IOException(e);
+			// do nothing
 		}
 		return charactersRead;
 	}
@@ -64,7 +64,7 @@ public class ApplicationLogReader extends Reader {
 		int charactersRead = -1;
 		if (logReader == null) {
 			String status = requestStatus();
-			if (isSameStatus(status, currentStatus)) {
+			if (status == null) {
 				Thread.sleep(STATUS_REQUEST_DELAY);
 				return -1;
 			}
@@ -75,6 +75,7 @@ public class ApplicationLogReader extends Reader {
 		charactersRead = logReader.read(cbuf, off, len);
 		if (charactersRead == -1) {
 			this.logReader = null;
+			return -1;
 		}
 		return charactersRead;
 	}
@@ -100,7 +101,12 @@ public class ApplicationLogReader extends Reader {
 
 	protected String requestStatus() throws IOException {
 		try {
-			return service.getStatus(application.getName(), application.getCartridge(), user);
+			String status = service.getStatus(application.getName(), application.getCartridge(), user);
+			if (isSameStatus(status, currentStatus)) {
+				return null;
+			}
+			return status;
+
 		} catch (OpenshiftException e) {
 			throw new IOException(e);
 		}
