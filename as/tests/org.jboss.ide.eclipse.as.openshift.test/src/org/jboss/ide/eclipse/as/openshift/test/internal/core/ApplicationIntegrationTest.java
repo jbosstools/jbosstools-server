@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertGitUri;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -30,7 +32,6 @@ import org.junit.Test;
 public class ApplicationIntegrationTest {
 
 	private IOpenshiftService service;
-	private IOpenshiftService invalidCredentialsOpenshiftService;
 
 	private static final String RHLOGIN = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";
@@ -51,6 +52,7 @@ public class ApplicationIntegrationTest {
 		service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, invalidUser);
 	}
 
+	@Ignore
 	@Test
 	public void canCreateApplication() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -165,6 +167,7 @@ public class ApplicationIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canGetStatus() throws Exception {
 		String applicationName = createRandomApplicationName();
@@ -186,6 +189,19 @@ public class ApplicationIntegrationTest {
 			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), user);
 			String applicationStatus2 = service.getStatus(application.getName(), application.getCartridge(), user);
 			assertEquals(applicationStatus, applicationStatus2);
+		} finally {
+			silentlyDestroyAS7Application(applicationName, service);
+		}
+	}
+
+	@Test
+	public void returnsValidGitUri() throws Exception {
+		String applicationName = createRandomApplicationName();
+		try {
+			Application application = service.createApplication(applicationName, Cartridge.JBOSSAS_7, user);
+			String gitUri = application.getGitUri();
+			assertNotNull(gitUri);
+			assertGitUri(applicationName, gitUri);
 		} finally {
 			silentlyDestroyAS7Application(applicationName, service);
 		}

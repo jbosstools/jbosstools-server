@@ -12,10 +12,13 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -27,6 +30,15 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
  * @author André Dietisheim
  */
 public class ApplicationAsserts {
+
+	/**
+	 * $1 = application uuid
+	 * $2 = application name
+	 * $3 = user uuid
+	 * $4 = rhc cloud domain (rhcloud.com)
+	 * $5 = application name 
+	 */
+	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
 			String cartridgeName, String creationTime, List<Application> applications) throws OpenshiftException {
@@ -63,6 +75,25 @@ public class ApplicationAsserts {
 		} catch (DatatypeConfigurationException e) {
 			fail(e.getMessage());
 		}
+	}
+
+	public static void assertGitUri(String applicationName, String gitUri) {
+		Matcher matcher = GIT_URI_REGEXP.matcher(gitUri);
+		assertTrue(matcher.matches());
+		assertEquals(5, matcher.groupCount());
+		assertEquals(applicationName, matcher.group(2));
+		assertEquals(applicationName, matcher.group(5));
+	}
+	
+	public static void assertGitUri(String uuid, String name, String namespace, String rhcDomain, String gitUri) {
+		Matcher matcher = GIT_URI_REGEXP.matcher(gitUri);
+		assertTrue(matcher.matches());
+		assertEquals(5, matcher.groupCount());
+		assertEquals(uuid, matcher.group(1));
+		assertEquals(name, matcher.group(2));
+		assertEquals(namespace, matcher.group(3));
+		assertEquals(rhcDomain, matcher.group(4));
+		assertEquals(name, matcher.group(5));
 	}
 
 }

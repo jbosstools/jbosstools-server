@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertGitUri;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -17,8 +18,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
@@ -46,8 +45,6 @@ import org.junit.Test;
  * @author André Dietisheim
  */
 public class ApplicationTest {
-
-	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
 
 	private User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD,
 			new NoopOpenshiftServiceFake());
@@ -154,22 +151,12 @@ public class ApplicationTest {
 		assertNotNull(gitUri);
 		Domain domain = user.getDomain();
 		assertNotNull(domain);
-		assertGitUri(gitUri
-				, ApplicationResponseFake.APPLICATION_UUID
+		assertGitUri(
+				ApplicationResponseFake.APPLICATION_UUID
 				, ApplicationResponseFake.APPLICATION_NAME
 				, ApplicationResponseFake.NAMESPACE
-				, ApplicationResponseFake.RHC_DOMAIN);
-	}
-
-	private void assertGitUri(String gitUri, String uuid, String name, String namespace, String rhcDomain) {
-		Matcher matcher = GIT_URI_REGEXP.matcher(gitUri);
-		assertTrue(matcher.matches());
-		assertEquals(5, matcher.groupCount());
-		assertEquals(uuid, matcher.group(1));
-		assertEquals(name, matcher.group(2));
-		assertEquals(namespace, matcher.group(3));
-		assertEquals(rhcDomain, matcher.group(4));
-		assertEquals(name, matcher.group(5));
+				, ApplicationResponseFake.RHC_DOMAIN
+				, gitUri);
 	}
 
 	@Test
