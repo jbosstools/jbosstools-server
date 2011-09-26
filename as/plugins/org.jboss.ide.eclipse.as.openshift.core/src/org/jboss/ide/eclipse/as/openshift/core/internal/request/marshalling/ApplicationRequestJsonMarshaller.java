@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftJsonConstants;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
 
@@ -28,7 +28,7 @@ public class ApplicationRequestJsonMarshaller extends AbstractJsonMarshaller<App
 		setStringProperty(IOpenshiftJsonConstants.PROPERTY_APP_NAME, request.getName(), node);
 	}
 
-	private String getCartridgeName(Cartridge cartridge) {
+	private String getCartridgeName(ICartridge cartridge) {
 		if (cartridge == null) {
 			return null;
 		}

@@ -8,7 +8,9 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal;
+
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 
 /**

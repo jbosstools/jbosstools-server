@@ -17,16 +17,16 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URLEncoder;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.UserInfoRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.UserInfoResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.UserInfoResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.UserInfoResponseFake;
 import org.junit.Test;
 

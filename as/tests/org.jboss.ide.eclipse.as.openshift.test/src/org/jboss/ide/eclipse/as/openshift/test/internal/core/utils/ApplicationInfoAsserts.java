@@ -19,8 +19,8 @@ import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 
 /**

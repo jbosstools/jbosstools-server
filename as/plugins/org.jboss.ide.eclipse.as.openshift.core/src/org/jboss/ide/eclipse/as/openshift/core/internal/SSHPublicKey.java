@@ -8,21 +8,30 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal;
 
-import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
  * @author André Dietisheim
  */
-public class ApplicationStatusResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
+public class SSHPublicKey implements ISSHPublicKey {
 
-	@Override
-	protected String createOpenshiftObject(ModelNode responseNode) {
-		ModelNode resultNode = responseNode.get(IOpenshiftJsonConstants.PROPERTY_RESULT);
-		return resultNode.asString();
+	private String publicKey;
+
+	public SSHPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 
+	public String getPublicKey() {
+		return publicKey;
+	}
+	
+	void update(String publicKey) {
+	}
+
+	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException {
+		this.publicKey = sshPublicKey.getPublicKey();
+	}
 }

@@ -12,7 +12,7 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
 import java.util.Date;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 
 /**
  * @author André Dietisheim
@@ -28,7 +28,7 @@ public class ApplicationResponseFake {
 	public static final String NAMESPACE = "1315839296868";
 
 	public static final String APPLICATION_NAME = "1316010645406";
-	public static final Cartridge APPLICATION_CARTRIDGE = Cartridge.JBOSSAS_7;
+	public static final ICartridge APPLICATION_CARTRIDGE = ICartridge.JBOSSAS_7;
 
 	public static final String APPLICATION_UUID = "0123456789abcdefg";
 	public static final String APPLICATION_EMBEDDED = null;

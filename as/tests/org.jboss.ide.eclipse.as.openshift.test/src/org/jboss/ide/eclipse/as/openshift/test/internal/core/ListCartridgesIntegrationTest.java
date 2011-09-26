@@ -17,8 +17,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 import org.junit.Before;
 import org.junit.Test;
 

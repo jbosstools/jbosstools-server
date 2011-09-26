@@ -8,13 +8,13 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.Application;
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.User;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 
 /**
  * @author André Dietisheim
@@ -23,10 +23,10 @@ public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonRespon
 
 	private User user;
 	private String applicationName;
-	private Cartridge cartridge;
-	private IOpenshiftService service;
+	private ICartridge cartridge;
+	private OpenshiftService service;
 
-	public ApplicationResponseUnmarshaller(String applicationName, Cartridge cartridge, User user, IOpenshiftService service) {
+	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, User user, OpenshiftService service) {
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;
 		this.user = user;

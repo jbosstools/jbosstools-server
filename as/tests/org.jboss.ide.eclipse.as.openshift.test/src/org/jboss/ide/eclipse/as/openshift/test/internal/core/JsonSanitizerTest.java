@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.JsonSanitizer;
 import org.junit.Test;
 
 /**

@@ -8,31 +8,21 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
+
+import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftJsonConstants;
+
 
 /**
- * A cartridge that is available on the openshift server. This class is no enum
- * since we dont know all available types and they may change at any time.
- * 
  * @author André Dietisheim
  */
-public class Cartridge implements ICartridge {
-
-	private String name;
-
-	public Cartridge(String name) {
-		this.name = name;
-	}
+public class ApplicationStatusResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<String> {
 
 	@Override
-	public String getName() {
-		return name;
+	protected String createOpenshiftObject(ModelNode responseNode) {
+		ModelNode resultNode = responseNode.get(IOpenshiftJsonConstants.PROPERTY_RESULT);
+		return resultNode.asString();
 	}
 
-	public static ICartridge valueOf(String name) {
-		if (JBOSSAS_7.getName().equals(name)) {
-			return JBOSSAS_7;
-		}
-		return null;
-	}
 }

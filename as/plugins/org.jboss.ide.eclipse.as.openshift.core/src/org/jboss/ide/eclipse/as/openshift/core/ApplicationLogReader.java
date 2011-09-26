@@ -16,6 +16,10 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+
 /**
  * TODO: make sure it behaves correctly on subsequent requests that get app
  * status on the server: The server would either repeat the whole log or just

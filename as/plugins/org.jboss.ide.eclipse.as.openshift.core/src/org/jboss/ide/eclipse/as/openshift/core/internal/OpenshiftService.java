@@ -14,17 +14,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UrlConnectionHttpClient;
@@ -40,13 +37,13 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.Appl
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.DomainRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.UserInfoRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationResponseUnmarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationStatusResponseUnmarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.DomainResponseUnmarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.UserInfoResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ApplicationResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ApplicationStatusResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.DomainResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ListCartridgesResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.UserInfoResponseUnmarshaller;
 
 /**
  * @author André Dietisheim
@@ -55,6 +52,7 @@ public class OpenshiftService implements IOpenshiftService {
 
 	private static final String BASE_URL = "https://openshift.redhat.com/broker";
 
+	@Override
 	public UserInfo getUserInfo(User user) throws OpenshiftException {
 		UserInfoRequest request = new UserInfoRequest(user.getRhlogin(), true);
 		String url = request.getUrlString(BASE_URL);
@@ -128,7 +126,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public Application createApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE,
 				user.getRhlogin(), true), user);
 		user.add(application);
@@ -136,26 +134,26 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public void destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
-		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
+	public void destroyApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
+		IApplication application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
 				user.getRhlogin(), true), user);
 		user.remove(application); 
 	}
 
 	@Override
-	public Application startApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication startApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.START,
 				user.getRhlogin(), true), user);
 	}
 
 	@Override
-	public Application restartApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication restartApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.RESTART,
 				user.getRhlogin(), true), user);
 	}
 
 	@Override
-	public Application stopApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication stopApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.STOP,
 				user.getRhlogin(), true), user);
 	}
@@ -172,7 +170,7 @@ public class OpenshiftService implements IOpenshiftService {
 	 * ,"app_name","api"],"exit_code":0}
 	 */
 	@Override
-	public String getStatus(String applicationName, Cartridge cartridge, User user) throws OpenshiftException {
+	public String getStatus(String applicationName, ICartridge cartridge, User user) throws OpenshiftException {
 		ApplicationRequest applicationRequest =
 				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, user.getRhlogin(), true);
 		String url = applicationRequest.getUrlString(BASE_URL);

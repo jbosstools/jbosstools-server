@@ -8,14 +8,14 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftJsonConstants;
 
 /**
  * WARNING: the current (9-7-2011) response from the openshift rest service is

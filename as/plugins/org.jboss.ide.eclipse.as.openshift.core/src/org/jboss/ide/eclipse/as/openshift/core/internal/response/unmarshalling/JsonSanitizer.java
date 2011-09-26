@@ -1,4 +1,4 @@
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

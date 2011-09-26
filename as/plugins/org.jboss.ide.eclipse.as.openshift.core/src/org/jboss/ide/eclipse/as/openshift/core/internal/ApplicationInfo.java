@@ -8,9 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import java.util.Date;
+
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 
 /**
  * @author André Dietisheim
@@ -20,10 +22,10 @@ public class ApplicationInfo {
 	private String name;
 	private String uuid;
 	private String embedded;
-	private Cartridge cartridge;
+	private ICartridge cartridge;
 	private Date creationTime;
 
-	public ApplicationInfo(String name, String uuid, String embedded, Cartridge cartridge, Date creationTime) {
+	public ApplicationInfo(String name, String uuid, String embedded, ICartridge cartridge, Date creationTime) {
 		this.name = name;
 		this.uuid = uuid;
 		this.embedded = embedded;
@@ -43,7 +45,7 @@ public class ApplicationInfo {
 		return uuid;
 	}
 
-	public Cartridge getCartridge() {
+	public ICartridge getCartridge() {
 		return cartridge;
 	}
 

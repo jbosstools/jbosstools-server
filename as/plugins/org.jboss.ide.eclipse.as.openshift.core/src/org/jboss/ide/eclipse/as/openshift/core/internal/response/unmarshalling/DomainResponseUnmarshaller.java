@@ -8,11 +8,11 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
-import org.jboss.ide.eclipse.as.openshift.core.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 
 /**
  * @author André Dietisheim

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import java.util.Date;
 
@@ -16,8 +16,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
 import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 
 /**

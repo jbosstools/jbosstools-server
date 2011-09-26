@@ -8,14 +8,18 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core;
+package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
+import org.jboss.ide.eclipse.as.openshift.core.IUser;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
  * @author André Dietisheim
@@ -89,7 +93,7 @@ public class User implements IUser {
 		return Collections.unmodifiableList(applications);
 	}
 
-	public Application getApplicationByName(String name) throws OpenshiftException {
+	public IApplication getApplicationByName(String name) throws OpenshiftException {
 		loadLazyValues();
 		return getApplicationByName(name, applications);
 	}
@@ -108,7 +112,7 @@ public class User implements IUser {
 		applications.add(application);
 	}
 
-	public void remove(Application application) {
+	public void remove(IApplication application) {
 		applications.remove(application);
 	}
 

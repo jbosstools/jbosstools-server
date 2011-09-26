@@ -22,15 +22,16 @@ import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.CartridgeResponseFake;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.NoopOpenshiftServiceFake;
@@ -109,7 +110,7 @@ public class UserTest {
 
 	@Test
 	public void canGetApplicationByName() throws OpenshiftException, DatatypeConfigurationException {
-		Application application = user.getApplicationByName(UserInfoResponseFake.APP2_NAME);
+		IApplication application = user.getApplicationByName(UserInfoResponseFake.APP2_NAME);
 		assertApplication(
 				UserInfoResponseFake.APP2_NAME
 				, UserInfoResponseFake.APP2_UUID

@@ -12,14 +12,16 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 
 /**
  * @author André Dietisheim
@@ -37,32 +39,32 @@ public class NoopOpenshiftServiceFake extends OpenshiftService {
 	}
 
 	@Override
-	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public Application createApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public void destroyApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application startApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication startApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application restartApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication restartApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application stopApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+	public IApplication stopApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getStatus(String applicationName, Cartridge cartridge, User user) throws OpenshiftException {
+	public String getStatus(String applicationName, ICartridge cartridge, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 

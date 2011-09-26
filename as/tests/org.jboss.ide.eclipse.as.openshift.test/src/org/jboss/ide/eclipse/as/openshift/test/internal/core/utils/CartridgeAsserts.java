@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 
 /**
  * @author André Dietisheim
@@ -24,7 +25,7 @@ public class CartridgeAsserts {
 
 	public static void assertThatContainsCartridge(String cartridgeName, Collection<Cartridge> cartridges) {
 		boolean found = false;
-		for (Cartridge cartridge : cartridges) {
+		for (ICartridge cartridge : cartridges) {
 			if (cartridgeName.equals(cartridge.getName())) {
 				found = true;
 				break;

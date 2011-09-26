@@ -20,23 +20,23 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ApplicationRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationResponseUnmarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ApplicationStatusResponseUnmarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ApplicationResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ApplicationStatusResponseUnmarshaller;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.JsonSanitizer;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.ApplicationResponseFake;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.NoopOpenshiftServiceFake;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public class ApplicationTest {
 
 		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
 				new ApplicationRequest(
-						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.CONFIGURE,
+						"test-application", ICartridge.JBOSSAS_7, ApplicationAction.CONFIGURE,
 						ApplicationResponseFake.RHLOGIN, true));
 		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
 				createApplicationRequest).createString();
@@ -92,7 +92,7 @@ public class ApplicationTest {
 
 		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
 				new ApplicationRequest(
-						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE,
+						"test-application", ICartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE,
 						ApplicationResponseFake.RHLOGIN, true));
 		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
 				createApplicationRequest).createString();
@@ -118,7 +118,7 @@ public class ApplicationTest {
 	public void returnsValidGitUri() throws OpenshiftException {
 		OpenshiftService userInfoService = createUserInfoService();
 		User user = createUser(userInfoService);
-		Application application = createApplication(userInfoService, user);
+		IApplication application = createApplication(userInfoService, user);
 
 		String gitUri = application.getGitUri();
 		assertNotNull(gitUri);
@@ -134,7 +134,7 @@ public class ApplicationTest {
 	public void returnsValidApplicationUrl() throws OpenshiftException {
 		OpenshiftService userInfoService = createUserInfoService();
 		User user = createUser(userInfoService);
-		Application application = createApplication(userInfoService, user);
+		IApplication application = createApplication(userInfoService, user);
 
 		String applicationUrl = application.getApplicationUrl();
 		assertNotNull(applicationUrl);
@@ -158,9 +158,9 @@ public class ApplicationTest {
 	@Test
 	public void applicationLogReaderReturnsAllowsToReadFromStatus() throws IOException {
 
-		IOpenshiftService service = new NoopOpenshiftServiceFake() {
+		OpenshiftService service = new NoopOpenshiftServiceFake() {
 			@Override
-			public String getStatus(String applicationName, Cartridge cartridge, User user) throws OpenshiftException {
+			public String getStatus(String applicationName, ICartridge cartridge, User user) throws OpenshiftException {
 				return ApplicationResponseFake.tail;
 			}
 		};
@@ -180,7 +180,7 @@ public class ApplicationTest {
 		}
 	}
 
-	private Application createApplication(OpenshiftService userInfoService, User user) {
+	private IApplication createApplication(OpenshiftService userInfoService, User user) {
 		Application application = new Application(
 				ApplicationResponseFake.APPLICATION_NAME
 				, ApplicationResponseFake.APPLICATION_UUID

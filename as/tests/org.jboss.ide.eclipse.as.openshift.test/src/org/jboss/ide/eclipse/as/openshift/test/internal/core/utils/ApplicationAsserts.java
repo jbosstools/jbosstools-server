@@ -22,8 +22,9 @@ import java.util.regex.Pattern;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.jboss.ide.eclipse.as.openshift.core.Application;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.utils.RFC822DateUtils;
 
 /**
@@ -44,7 +45,7 @@ public class ApplicationAsserts {
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
 			String cartridgeName, String creationTime, List<Application> applications) throws OpenshiftException {
-		Application application = getApplication(applicationName, applications);
+		IApplication application = getApplication(applicationName, applications);
 		if (application == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
 		}
@@ -55,8 +56,8 @@ public class ApplicationAsserts {
 		assertNotNull(getApplication(applicationName, applications));
 	}
 
-	private static Application getApplication(String name, List<Application> applications) {
-		Application matchingApplication = null;
+	private static IApplication getApplication(String name, List<Application> applications) {
+		IApplication matchingApplication = null;
 		for (Application application : applications) {
 			if (name.equals(application.getName())) {
 				matchingApplication = application;
@@ -67,7 +68,7 @@ public class ApplicationAsserts {
 	}
 
 	public static void assertApplication(String name, String uuid, String cartridgeName, String embedded,
-			String creationTime, Application application) throws OpenshiftException {
+			String creationTime, IApplication application) throws OpenshiftException {
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());
 		assertNotNull(application.getCartridge());

@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal.response;
+package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,10 +17,11 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.dmr.ModelNode;
-import org.jboss.ide.eclipse.as.openshift.core.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftJsonConstants;
-import org.jboss.ide.eclipse.as.openshift.core.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftJsonConstants;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 
 /**
  * @author André Dietisheim
@@ -65,7 +66,7 @@ public class UserInfoResponseUnmarshaller extends AbstractOpenshiftJsonResponseU
 	private ApplicationInfo createApplicationInfo(String name, ModelNode appNode) throws DatatypeConfigurationException {
 		String uuid = getString(IOpenshiftJsonConstants.PROPERTY_UUID, appNode);
 		String embedded = getString(IOpenshiftJsonConstants.PROPERTY_EMBEDDED, appNode);
-		Cartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
+		ICartridge cartrdige = new Cartridge(getString(IOpenshiftJsonConstants.PROPERTY_FRAMEWORK, appNode));
 		Date creationTime = getDate(IOpenshiftJsonConstants.PROPERTY_CREATION_TIME, appNode);
 		return new ApplicationInfo(name, uuid, embedded, cartrdige, creationTime);
 	}

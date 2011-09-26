@@ -21,9 +21,9 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.marshalling.ListCartridgesRequestJsonMarshaller;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.JsonSanitizer;
-import org.jboss.ide.eclipse.as.openshift.core.internal.response.ListCartridgesResponseUnmarshaller;
 import org.jboss.ide.eclipse.as.openshift.core.internal.response.OpenshiftResponse;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.JsonSanitizer;
+import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.ListCartridgesResponseUnmarshaller;
 import org.junit.Test;
 
 /**

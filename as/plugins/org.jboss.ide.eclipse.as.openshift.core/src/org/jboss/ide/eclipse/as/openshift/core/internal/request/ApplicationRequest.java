@@ -10,7 +10,7 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.openshift.core.internal.request;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 
 /**
  * @author André Dietisheim
@@ -18,14 +18,14 @@ import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 public class ApplicationRequest extends AbstractOpenshiftRequest {
 
 	private String name;
-	private Cartridge cartridge ;
+	private ICartridge cartridge ;
 	private ApplicationAction action;
 
-	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction action, String username) {
+	public ApplicationRequest(String name, ICartridge cartridge, ApplicationAction action, String username) {
 		this(name, cartridge, action, username, false);
 	}
 
-	public ApplicationRequest(String name, Cartridge cartridge, ApplicationAction action, String username, boolean debug) {
+	public ApplicationRequest(String name, ICartridge cartridge, ApplicationAction action, String username, boolean debug) {
 		super(username, debug);
 		this.name = name;
 		this.cartridge = cartridge;
@@ -40,7 +40,7 @@ public class ApplicationRequest extends AbstractOpenshiftRequest {
 		return name;
 	}
 
-	public Cartridge getCartridge() {
+	public ICartridge getCartridge() {
 		return cartridge;
 	}
 

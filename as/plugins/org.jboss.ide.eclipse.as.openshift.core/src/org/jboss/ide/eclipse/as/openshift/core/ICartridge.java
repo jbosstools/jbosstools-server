@@ -13,22 +13,10 @@ package org.jboss.ide.eclipse.as.openshift.core;
 /**
  * @author André Dietisheim
  */
-public class SSHPublicKey implements ISSHPublicKey {
+public interface ICartridge {
 
-	private String publicKey;
+	public static final ICartridge JBOSSAS_7 = new Cartridge("jbossas-7.0");
 
-	public SSHPublicKey(String publicKey) {
-		this.publicKey = publicKey;
-	}
+	public abstract String getName();
 
-	public String getPublicKey() {
-		return publicKey;
-	}
-	
-	void update(String publicKey) {
-	}
-
-	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException {
-		this.publicKey = sshPublicKey.getPublicKey();
-	}
 }
