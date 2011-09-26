@@ -108,6 +108,10 @@ public class User implements IUser {
 		applications.add(application);
 	}
 
+	public void remove(Application application) {
+		applications.remove(application);
+	}
+
 	/**
 	 * Loads the lazy values from the server if needed. Updates itself all
 	 * referenced objects (applications, domain).

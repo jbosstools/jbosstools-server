@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Application;
@@ -130,14 +129,17 @@ public class OpenshiftService implements IOpenshiftService {
 
 	@Override
 	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
-		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE,
+		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE,
 				user.getRhlogin(), true), user);
+		user.add(application);
+		return application;
 	}
 
 	@Override
-	public Application destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
-		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
+	public void destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException {
+		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
 				user.getRhlogin(), true), user);
+		user.remove(application); 
 	}
 
 	@Override

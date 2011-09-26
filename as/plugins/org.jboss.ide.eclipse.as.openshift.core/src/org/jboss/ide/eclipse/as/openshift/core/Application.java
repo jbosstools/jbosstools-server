@@ -45,10 +45,6 @@ public class Application {
 		this.creationTime = creationTime;
 		this.user = user;
 		this.service = service;
-
-		// add ourselves to the user!
-		user.add(this); 
-
 	}
 
 	public String getName() {

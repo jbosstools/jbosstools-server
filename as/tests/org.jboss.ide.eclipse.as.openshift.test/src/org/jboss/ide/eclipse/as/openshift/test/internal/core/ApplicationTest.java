@@ -48,8 +48,9 @@ import org.junit.Test;
 public class ApplicationTest {
 
 	public static final Pattern GIT_URI_REGEXP = Pattern.compile("ssh://(.+)@(.+)-([^\\.]+)\\.(.+)/~/git/(.+).git/");
-	
-	private User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, new NoopOpenshiftServiceFake());
+
+	private User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD,
+			new NoopOpenshiftServiceFake());
 
 	@Test
 	public void canMarshallApplicationCreateRequest() throws Exception {
@@ -69,8 +70,10 @@ public class ApplicationTest {
 
 		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
 				new ApplicationRequest(
-						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.CONFIGURE, ApplicationResponseFake.RHLOGIN, true));
-		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD, createApplicationRequest).createString();
+						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.CONFIGURE,
+						ApplicationResponseFake.RHLOGIN, true));
+		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
+				createApplicationRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
@@ -92,8 +95,10 @@ public class ApplicationTest {
 
 		String createApplicationRequest = new ApplicationRequestJsonMarshaller().marshall(
 				new ApplicationRequest(
-						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE, ApplicationResponseFake.RHLOGIN, true));
-		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD, createApplicationRequest).createString();
+						"test-application", Cartridge.JBOSSAS_7, ApplicationAction.DECONFIGURE,
+						ApplicationResponseFake.RHLOGIN, true));
+		String effectiveRequest = new OpenshiftEnvelopeFactory(ApplicationResponseFake.PASSWORD,
+				createApplicationRequest).createString();
 
 		assertEquals(expectedRequestString, effectiveRequest);
 	}
@@ -124,7 +129,7 @@ public class ApplicationTest {
 						ApplicationResponseFake.APPLICATION_CARTRIDGE,
 						ApplicationResponseFake.APPLICATION_CREATIONTIME);
 				return new UserInfo(
-						ApplicationResponseFake.RHLOGIN, 
+						ApplicationResponseFake.RHLOGIN,
 						ApplicationResponseFake.UUID,
 						ApplicationResponseFake.SSHPUBLICKEY,
 						ApplicationResponseFake.RHC_DOMAIN,
@@ -133,20 +138,27 @@ public class ApplicationTest {
 			}
 		};
 		User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
+		Application application = new Application(
+				ApplicationResponseFake.APPLICATION_NAME
+				, ApplicationResponseFake.APPLICATION_UUID
+				, ApplicationResponseFake.APPLICATION_CARTRIDGE
+				, ApplicationResponseFake.APPLICATION_EMBEDDED
+				, ApplicationResponseFake.APPLICATION_CREATIONTIME
+				, user
+				, userInfoService);
+		// we need to add it manually since we dont use the service
+		user.add(application);
 
-		String response = JsonSanitizer.sanitize(ApplicationResponseFake.appResponse);
-		OpenshiftResponse<Application> openshiftResponse =
-				new ApplicationResponseUnmarshaller(
-						ApplicationResponseFake.APPLICATION_NAME, ApplicationResponseFake.APPLICATION_CARTRIDGE,
-						user, userInfoService)
-						.unmarshall(response);
-		Application application = openshiftResponse.getOpenshiftObject();
 		assertNotNull(application);
 		String gitUri = application.getGitUri();
 		assertNotNull(gitUri);
 		Domain domain = user.getDomain();
 		assertNotNull(domain);
-		assertGitUri(gitUri, application.getUUID(), application.getName(), domain.getNamespace(), domain.getRhcDomain());
+		assertGitUri(gitUri
+				, ApplicationResponseFake.APPLICATION_UUID
+				, ApplicationResponseFake.APPLICATION_NAME
+				, ApplicationResponseFake.NAMESPACE
+				, ApplicationResponseFake.RHC_DOMAIN);
 	}
 
 	private void assertGitUri(String gitUri, String uuid, String name, String namespace, String rhcDomain) {

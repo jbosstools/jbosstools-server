@@ -23,7 +23,7 @@ public interface IOpenshiftService {
 
 	public Application createApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
-	public Application destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
+	public void destroyApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 
 	public Application startApplication(String name, Cartridge cartridge, User user) throws OpenshiftException;
 	
