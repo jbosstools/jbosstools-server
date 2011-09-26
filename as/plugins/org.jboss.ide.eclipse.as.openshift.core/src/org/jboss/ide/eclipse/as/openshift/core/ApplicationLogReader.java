@@ -32,12 +32,13 @@ public class ApplicationLogReader extends Reader {
 
 	private static final Pattern LOG_REGEX = Pattern.compile("Tail of .+$", Pattern.MULTILINE);
 
+	private static final long STATUS_REQUEST_DELAY = 4 * 1024;
+
 	private IOpenshiftService service;
 	private StringReader logReader;
 	private Application application;
-	private int logIndex = 0;
-
 	private User user;
+	private String currentStatus;
 
 	public ApplicationLogReader(Application application, User user, IOpenshiftService service) {
 		this.application = application;
@@ -48,16 +49,39 @@ public class ApplicationLogReader extends Reader {
 	@Override
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		int charactersRead = -1;
+		try {
+			do {
+				charactersRead = readStatus(cbuf, off, len);
+			} while (charactersRead == -1);
+		} catch (InterruptedException e) {
+			throw new IOException(e);
+		}
+		return charactersRead;
+	}
+
+	protected int readStatus(char[] cbuf, int off, int len) throws IOException,
+			InterruptedException {
+		int charactersRead = -1;
 		if (logReader == null) {
-			this.logReader = createLogReader(requestStatus());
+			String status = requestStatus();
+			if (isSameStatus(status, currentStatus)) {
+				Thread.sleep(STATUS_REQUEST_DELAY);
+				return -1;
+			}
+			this.currentStatus = status;
+			this.logReader = createLogReader(status);
 		}
+
 		charactersRead = logReader.read(cbuf, off, len);
-		if (charactersRead != -1) {
-			logIndex += charactersRead;
-			return charactersRead;
+		if (charactersRead == -1) {
+			this.logReader = null;
 		}
-		this.logReader = null;
-		return -1;
+		return charactersRead;
+	}
+
+	private boolean isSameStatus(String status, String currentStatus) {
+		return currentStatus != null
+				&& currentStatus.equals(status);
 	}
 
 	protected StringReader createLogReader(String status) throws IOException {
@@ -67,10 +91,11 @@ public class ApplicationLogReader extends Reader {
 
 	private String getLog(String status) throws IOException {
 		Matcher matcher = LOG_REGEX.matcher(status);
+		int logStart = 0;
 		if (matcher.find()) {
-			logIndex = matcher.end() + 1;
+			logStart = matcher.end() + 1;
 		}
-		return status.substring(logIndex);
+		return status.substring(logStart);
 	}
 
 	protected String requestStatus() throws IOException {

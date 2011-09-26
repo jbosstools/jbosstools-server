@@ -23,7 +23,6 @@ import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.utils.StreamUtils;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUtils;
 import org.junit.Before;
@@ -93,18 +92,18 @@ public class ApplicationLogReaderIntegrationTest {
 		try {
 			application = user.createTestApplication();
 			ApplicationLogReader logReader = application.getLog();
-			String log = StreamUtils.readToString(logReader);
-			System.err.println(log);
 			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader);
 			executor = Executors.newSingleThreadExecutor();
 			executor.submit(logReaderRunnable);
-			boolean logAvailable = waitForLog(startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
+			boolean logAvailable = waitForNewLogEntries(0, startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
+			int logLength = logReaderRunnable.getLog().length();
 			assertTrue(logReaderRunnable.isRunning());
-			assertFalse(logAvailable);
+			assertTrue(logAvailable);
 			application.restart();
-			logAvailable = waitForLog(startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
+			logAvailable = waitForNewLogEntries(logLength, startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
 			assertTrue(logAvailable);
 			assertTrue(logReaderRunnable.isRunning());
+			assertTrue(logReaderRunnable.getLog().length() > logLength);
 		} finally {
 			if (executor != null) {
 				executor.shutdownNow();
@@ -115,13 +114,14 @@ public class ApplicationLogReaderIntegrationTest {
 		}
 	}
 
-	protected boolean waitForLog(long startTime, long timeout, LogReaderRunnable logReaderRunnable)
+	protected boolean waitForNewLogEntries(int logLength, long startTime, long timeout, LogReaderRunnable logReaderRunnable)
 			throws InterruptedException {
 		while (logReaderRunnable.isEmpty()
+				&& logReaderRunnable.getLog().length() <= logLength
 				&& System.currentTimeMillis() <= timeout) {
 			Thread.sleep(1 * 1024);
 		}
-		return logReaderRunnable.isEmpty();
+		return logReaderRunnable.getLog().length() > logLength;
 	}
 
 	private static class LogReaderRunnable implements Runnable {
