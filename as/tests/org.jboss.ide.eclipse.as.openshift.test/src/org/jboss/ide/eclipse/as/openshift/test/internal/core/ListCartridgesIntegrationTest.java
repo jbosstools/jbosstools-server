@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,18 +28,17 @@ import org.junit.Test;
 public class ListCartridgesIntegrationTest {
 
 	private OpenshiftService openshiftService;
-
-	private static final String USERNAME = "toolsjboss@gmail.com";
-	private static final String PASSWORD = "1q2w3e";
+	private TestUser user;
 
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService();
+		this.user = new TestUser();
 	}
 
 	@Test
 	public void canListCartridges() throws Exception {
-		List<Cartridge> cartridges = openshiftService.getCartridges(new User(USERNAME, PASSWORD));
+		List<Cartridge> cartridges = openshiftService.getCartridges(user);
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);

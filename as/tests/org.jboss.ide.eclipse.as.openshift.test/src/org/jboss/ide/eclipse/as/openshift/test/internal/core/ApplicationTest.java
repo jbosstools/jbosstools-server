@@ -189,7 +189,11 @@ public class ApplicationTest {
 				, ApplicationResponseFake.APPLICATION_CREATIONTIME
 				, user
 				, userInfoService);
-		// we need to add it manually since we dont use the service
+		/**
+		 * we have to add it manually since we dont create the application with the user class
+		 * 
+		 * @see User#createApplication
+		 */
 		user.add(application);
 		return application;
 	}

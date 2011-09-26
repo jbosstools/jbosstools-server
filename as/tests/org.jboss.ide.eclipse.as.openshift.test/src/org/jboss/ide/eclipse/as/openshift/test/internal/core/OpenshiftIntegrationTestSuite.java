@@ -20,7 +20,8 @@ import org.junit.runners.Suite;
 	CartridgesIntegrationTest.class,
 	DomainIntegrationTest.class,
 	ListCartridgesIntegrationTest.class,
-	UserInfoIntegrationTest.class
+	UserInfoIntegrationTest.class,
+	ApplicationLogReaderIntegrationTest.class
 })
 /**
  * @author André Dietisheim

@@ -129,7 +129,6 @@ public class OpenshiftService implements IOpenshiftService {
 	public Application createApplication(String name, ICartridge cartridge, User user) throws OpenshiftException {
 		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE,
 				user.getRhlogin(), true), user);
-		user.add(application);
 		return application;
 	}
 

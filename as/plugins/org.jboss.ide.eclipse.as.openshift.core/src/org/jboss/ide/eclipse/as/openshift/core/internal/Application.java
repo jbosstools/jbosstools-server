@@ -135,6 +135,14 @@ public class Application implements IApplication {
 		this.uuid = applicationInfo.getUuid();
 	}
 
+	protected IOpenshiftService getService() {
+		return service;
+	}
+
+	protected User getUser() {
+		return user;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -159,5 +167,4 @@ public class Application implements IApplication {
 			return false;
 		return true;
 	}
-
 }

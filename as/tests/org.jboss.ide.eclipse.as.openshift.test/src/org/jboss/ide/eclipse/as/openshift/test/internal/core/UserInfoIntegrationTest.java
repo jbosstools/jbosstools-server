@@ -21,8 +21,8 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
+import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationInfoAsserts;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,26 +33,24 @@ import org.junit.Test;
 public class UserInfoIntegrationTest {
 
 	private OpenshiftService openshiftService;
-
-	private static final String RHLOGIN = "toolsjboss@gmail.com";
-	private static final String PASSWORD = "1q2w3e";
+	private TestUser user;
 
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService();
+		this.user = new TestUser();
 	}
 
 	@Test
 	public void canGetUserInfo() throws Exception {
-		UserInfo userInfo = openshiftService.getUserInfo(new User(RHLOGIN, PASSWORD));
+		UserInfo userInfo = openshiftService.getUserInfo(user);
 		assertNotNull(userInfo);
 
-		assertEquals(RHLOGIN, userInfo.getRhLogin());
+		assertEquals(user.getRhlogin(), userInfo.getRhLogin());
 	}
 
 	@Test
 	public void userInfoContainsOneMoreApplicationAfterCreatingNewApplication() throws Exception {
-		User user = new User(RHLOGIN, PASSWORD);
 		UserInfo userInfo = openshiftService.getUserInfo(user);
 		assertNotNull(userInfo);
 
@@ -74,7 +72,6 @@ public class UserInfoIntegrationTest {
 
 	@Test
 	public void canUseReturnedSSHKeyToChangeDomain() throws Exception {
-		User user = new User(RHLOGIN, PASSWORD);
 		UserInfo userInfo = openshiftService.getUserInfo(user);
 		assertNotNull(userInfo);
 
@@ -88,7 +85,7 @@ public class UserInfoIntegrationTest {
 
 	private void silentlyDestroyAS7Application(String name, IOpenshiftService service) {
 		try {
-			service.destroyApplication(name, ICartridge.JBOSSAS_7, new User(RHLOGIN, PASSWORD));
+			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
 		}

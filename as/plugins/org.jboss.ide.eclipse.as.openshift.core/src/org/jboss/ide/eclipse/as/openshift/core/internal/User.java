@@ -88,6 +88,13 @@ public class User implements IUser {
 	}
 
 	@Override
+	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
+		Application application = service.createApplication(name, cartridge, this);
+		add(application);
+		return application;
+	}
+	
+	@Override
 	public Collection<Application> getApplications() throws OpenshiftException {
 		loadLazyValues();
 		return Collections.unmodifiableList(applications);

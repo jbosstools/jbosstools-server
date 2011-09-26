@@ -30,6 +30,8 @@ public interface IUser {
 
 	public abstract Collection<Cartridge> getCartridges() throws OpenshiftException;
 
+	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	
 	public abstract Collection<Application> getApplications() throws OpenshiftException;
 
 }
