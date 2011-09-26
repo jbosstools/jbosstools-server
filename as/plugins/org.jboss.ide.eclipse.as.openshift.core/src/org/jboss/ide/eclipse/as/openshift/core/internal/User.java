@@ -35,17 +35,17 @@ public class User implements IUser {
 	private List<Cartridge> cartridges;
 	private List<Application> applications = new ArrayList<Application>();
 
-	private OpenshiftService service;
+	private IOpenshiftService service;
 
 	public User(String rhlogin, String password) {
 		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService());
 	}
 
-	public User(String rhlogin, String password, OpenshiftService service) {
+	public User(String rhlogin, String password, IOpenshiftService service) {
 		this(rhlogin, password, (ISSHPublicKey) null, service);
 	}
 
-	public User(String rhlogin, String password, ISSHPublicKey sshKey, OpenshiftService service) {
+	public User(String rhlogin, String password, ISSHPublicKey sshKey, IOpenshiftService service) {
 		this.rhlogin = rhlogin;
 		this.password = password;
 		this.sshKey = sshKey;
