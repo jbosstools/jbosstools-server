@@ -12,26 +12,27 @@ package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.Collection;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 
 /**
  * @author André Dietisheim
  */
 public interface IUser {
 
-	public abstract String getRhlogin();
+	public String getRhlogin();
 
-	public abstract String getPassword();
+	public String getPassword();
 
-	public abstract Domain getDomain() throws OpenshiftException;
+	public IDomain getDomain() throws OpenshiftException;
 
-	public abstract ISSHPublicKey getSshKey() throws OpenshiftException;
+	public ISSHPublicKey getSshKey() throws OpenshiftException;
 
-	public abstract Collection<Cartridge> getCartridges() throws OpenshiftException;
+	public Collection<ICartridge> getCartridges() throws OpenshiftException;
 
-	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException;
+	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException;
 	
-	public abstract Collection<Application> getApplications() throws OpenshiftException;
+	public Collection<IApplication> getApplications() throws OpenshiftException;
+
+	public IApplication getApplicationByName(String name) throws OpenshiftException;
 
 }

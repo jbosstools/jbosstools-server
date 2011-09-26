@@ -15,7 +15,6 @@ import static org.junit.Assert.fail;
 import java.text.MessageFormat;
 import java.util.Collection;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 
 /**
@@ -23,7 +22,7 @@ import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
  */
 public class CartridgeAsserts {
 
-	public static void assertThatContainsCartridge(String cartridgeName, Collection<Cartridge> cartridges) {
+	public static void assertThatContainsCartridge(String cartridgeName, Collection<ICartridge> cartridges) {
 		boolean found = false;
 		for (ICartridge cartridge : cartridges) {
 			if (cartridgeName.equals(cartridge.getName())) {
@@ -35,6 +34,4 @@ public class CartridgeAsserts {
 			fail(MessageFormat.format("Could not find cartridge with name \"{0}\"", cartridgeName));
 		}
 	}
-
-	
 }

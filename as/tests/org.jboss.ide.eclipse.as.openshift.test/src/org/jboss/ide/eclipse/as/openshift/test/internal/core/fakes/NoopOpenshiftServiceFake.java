@@ -12,13 +12,12 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
@@ -34,7 +33,7 @@ public class NoopOpenshiftServiceFake extends OpenshiftService {
 	}
 
 	@Override
-	public List<Cartridge> getCartridges(User user) throws OpenshiftException {
+	public List<ICartridge> getCartridges(User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -69,12 +68,12 @@ public class NoopOpenshiftServiceFake extends OpenshiftService {
 	}
 
 	@Override
-	public Domain changeDomain(String domainName, ISSHPublicKey sshKey, User user) throws OpenshiftException {
+	public IDomain changeDomain(String domainName, ISSHPublicKey sshKey, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Domain createDomain(String name, ISSHPublicKey keyPair, User user) throws OpenshiftException {
+	public IDomain createDomain(String name, ISSHPublicKey keyPair, User user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 }

@@ -108,7 +108,7 @@ public class Application implements IApplication {
 
 	@Override
 	public String getGitUri() throws OpenshiftException {
-		Domain domain = user.getDomain();
+		IDomain domain = user.getDomain();
 		if (domain == null) {
 			return null;
 		}
@@ -118,7 +118,7 @@ public class Application implements IApplication {
 
 	@Override
 	public String getApplicationUrl() throws OpenshiftException {
-		Domain domain = user.getDomain();
+		IDomain domain = user.getDomain();
 		if (domain == null) {
 			return null;
 		}

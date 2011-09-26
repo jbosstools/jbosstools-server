@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,27 +38,27 @@ public class StreamUtils {
 	}
 
 	public static String readToString(InputStream inputStream) throws IOException {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-			StringWriter writer = new StringWriter();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				writer.write(line);
-			}
-			return writer.toString();
-		} finally {
-			if (inputStream != null) {
-				inputStream.close();
-			}
+		return readToString(new InputStreamReader(inputStream));
+	}
+
+	public static String readToString(Reader reader) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		StringWriter writer = new StringWriter();
+		String line = null;
+		while ((line = bufferedReader.readLine()) != null) {
+			writer.write(line);
 		}
+		return writer.toString();
 	}
 
 	/**
 	 * Writes the given string to the given output stream. The stream is closed
 	 * after writing all data.
 	 * 
-	 * @param data the data to write
-	 * @param outputStream the stream to write to
+	 * @param data
+	 *            the data to write
+	 * @param outputStream
+	 *            the stream to write to
 	 * @throws IOException
 	 */
 	public static void writeTo(byte[] data, OutputStream outputStream) throws IOException {

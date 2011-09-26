@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
@@ -32,8 +32,8 @@ public class User implements IUser {
 	private ISSHPublicKey sshKey;
 	private Domain domain;
 	private UserInfo userInfo;
-	private List<Cartridge> cartridges;
-	private List<Application> applications = new ArrayList<Application>();
+	private List<ICartridge> cartridges;
+	private List<IApplication> applications = new ArrayList<IApplication>();
 
 	private IOpenshiftService service;
 
@@ -53,7 +53,7 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Domain getDomain() throws OpenshiftException {
+	public IDomain getDomain() throws OpenshiftException {
 		loadLazyValues();
 		return domain;
 	}
@@ -80,7 +80,7 @@ public class User implements IUser {
 	}
 
 	@Override
-	public List<Cartridge> getCartridges() throws OpenshiftException {
+	public List<ICartridge> getCartridges() throws OpenshiftException {
 		if (cartridges == null) {
 			this.cartridges = service.getCartridges(this);
 		}
@@ -88,26 +88,27 @@ public class User implements IUser {
 	}
 
 	@Override
-	public Application createApplication(String name, Cartridge cartridge) throws OpenshiftException {
+	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
 		Application application = service.createApplication(name, cartridge, this);
 		add(application);
 		return application;
 	}
-	
+
 	@Override
-	public Collection<Application> getApplications() throws OpenshiftException {
+	public Collection<IApplication> getApplications() throws OpenshiftException {
 		loadLazyValues();
 		return Collections.unmodifiableList(applications);
 	}
 
+	@Override
 	public IApplication getApplicationByName(String name) throws OpenshiftException {
 		loadLazyValues();
 		return getApplicationByName(name, applications);
 	}
 
-	private Application getApplicationByName(String name, Collection<Application> applications) {
-		Application matchingApplication = null;
-		for (Application application : applications) {
+	private IApplication getApplicationByName(String name, Collection<IApplication> applications) {
+		IApplication matchingApplication = null;
+		for (IApplication application : applications) {
 			if (name.equals(application.getName())) {
 				matchingApplication = application;
 			}
@@ -121,6 +122,10 @@ public class User implements IUser {
 
 	public void remove(IApplication application) {
 		applications.remove(application);
+	}
+
+	public void setSshPublicKey(ISSHPublicKey key) {
+		this.sshKey = key;
 	}
 
 	/**
@@ -166,9 +171,9 @@ public class User implements IUser {
 
 	private void update(List<ApplicationInfo> applicationInfos) {
 		for (ApplicationInfo applicationInfo : applicationInfos) {
-			Application application = getApplicationByName(applicationInfo.getName(), applications);
+			IApplication application = getApplicationByName(applicationInfo.getName(), applications);
 			if (application != null) {
-				application.update(applicationInfo);
+				((Application) application).update(applicationInfo);
 			} else {
 				applications.add(createApplication(applicationInfo));
 			}
@@ -184,7 +189,8 @@ public class User implements IUser {
 				, this, service);
 	}
 
-	public void setSshPublicKey(ISSHPublicKey key) {
-		this.sshKey = key;
+	protected IOpenshiftService getService() {
+		return service;
 	}
+
 }

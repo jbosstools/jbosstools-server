@@ -12,12 +12,13 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 
 /**
  * @author André Dietisheim
  */
-public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Domain> {
+public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<IDomain> {
 
 	private String domainName;
 	private User user;
@@ -28,7 +29,7 @@ public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnm
 	}
 
 	@Override
-	protected Domain createOpenshiftObject(ModelNode node) {
+	protected IDomain createOpenshiftObject(ModelNode node) {
 		return new Domain(domainName, user);
 	}
 }

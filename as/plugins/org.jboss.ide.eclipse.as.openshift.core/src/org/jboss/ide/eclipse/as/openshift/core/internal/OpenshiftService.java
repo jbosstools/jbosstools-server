@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
@@ -75,7 +74,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public List<Cartridge> getCartridges(User user) throws OpenshiftException {
+	public List<ICartridge> getCartridges(User user) throws OpenshiftException {
 		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(user.getRhlogin(), true);
 		String url = listCartridgesRequest.getUrlString(BASE_URL);
 		try {
@@ -85,7 +84,7 @@ public class OpenshiftService implements IOpenshiftService {
 					.createString();
 			String listCatridgesReponse = createHttpClient(url).post(request);
 			listCatridgesReponse = JsonSanitizer.sanitize(listCatridgesReponse);
-			OpenshiftResponse<List<Cartridge>> response =
+			OpenshiftResponse<List<ICartridge>> response =
 					new ListCartridgesResponseUnmarshaller().unmarshall(listCatridgesReponse);
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
@@ -96,16 +95,16 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	@Override
-	public Domain createDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException {
+	public IDomain createDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException {
 		return requestDomainAction(new CreateDomainRequest(name, sshKey, user.getRhlogin(), true), user);
 	}
 
 	@Override
-	public Domain changeDomain(String newName, ISSHPublicKey sshKey, User user) throws OpenshiftException {
+	public IDomain changeDomain(String newName, ISSHPublicKey sshKey, User user) throws OpenshiftException {
 		return requestDomainAction(new ChangeDomainRequest(newName, sshKey, user.getRhlogin(), true), user);
 	}
 
-	protected Domain requestDomainAction(AbstractDomainRequest request, User user) throws OpenshiftException {
+	protected IDomain requestDomainAction(AbstractDomainRequest request, User user) throws OpenshiftException {
 		String url = request.getUrlString(BASE_URL);
 		try {
 			String requestString =
@@ -115,7 +114,7 @@ public class OpenshiftService implements IOpenshiftService {
 							.createString();
 			String responseString = createHttpClient(url).post(requestString);
 			responseString = JsonSanitizer.sanitize(responseString);
-			OpenshiftResponse<Domain> response =
+			OpenshiftResponse<IDomain> response =
 					new DomainResponseUnmarshaller(request.getName(), user).unmarshall(responseString);
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {

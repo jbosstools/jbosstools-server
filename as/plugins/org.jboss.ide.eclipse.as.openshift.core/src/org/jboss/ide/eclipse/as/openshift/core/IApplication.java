@@ -17,26 +17,28 @@ import java.util.Date;
  */
 public interface IApplication {
 
-	public abstract String getUUID() throws OpenshiftException;
+	public String getName();
+	
+	public String getUUID() throws OpenshiftException;
 
-	public abstract ICartridge getCartridge();
+	public ICartridge getCartridge();
 
-	public abstract String getEmbedded() throws OpenshiftException;
+	public String getEmbedded() throws OpenshiftException;
 
-	public abstract Date getCreationTime() throws OpenshiftException;
+	public Date getCreationTime() throws OpenshiftException;
 
-	public abstract void destroy() throws OpenshiftException;
+	public void destroy() throws OpenshiftException;
 
-	public abstract void start() throws OpenshiftException;
+	public void start() throws OpenshiftException;
 
-	public abstract void restart() throws OpenshiftException;
+	public void restart() throws OpenshiftException;
 
-	public abstract void stop() throws OpenshiftException;
+	public void stop() throws OpenshiftException;
 
-	public abstract ApplicationLogReader getLog() throws OpenshiftException;
+	public ApplicationLogReader getLog() throws OpenshiftException;
 
-	public abstract String getGitUri() throws OpenshiftException;
+	public String getGitUri() throws OpenshiftException;
 
-	public abstract String getApplicationUrl() throws OpenshiftException;
+	public String getApplicationUrl() throws OpenshiftException;
 
 }

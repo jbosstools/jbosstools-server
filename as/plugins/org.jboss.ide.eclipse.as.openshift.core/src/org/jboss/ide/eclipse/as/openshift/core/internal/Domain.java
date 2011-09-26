@@ -16,7 +16,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 /**
  * @author André Dietisheim
  */
-public class Domain {
+public class Domain implements IDomain {
 
 	private String namespace;
 	private String rhcDomain;
@@ -32,10 +32,12 @@ public class Domain {
 		this.user = user;
 	}
 
+	@Override
 	public String getNamespace() throws OpenshiftException {
 		return namespace;
 	}
 
+	@Override
 	public String getRhcDomain() throws OpenshiftException {
 		user.loadLazyValues();
 		return rhcDomain;

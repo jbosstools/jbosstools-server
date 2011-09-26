@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.net.URLEncoder;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ListCartridgesRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -75,12 +75,12 @@ public class ListCartridgesTest {
 						+ "\"exit_code\":0}";
 
 		cartridgeListResponse = JsonSanitizer.sanitize(cartridgeListResponse);
-		OpenshiftResponse<List<Cartridge>> response =
+		OpenshiftResponse<List<ICartridge>> response =
 				new ListCartridgesResponseUnmarshaller().unmarshall(cartridgeListResponse);
 		assertEquals("", response.getMessages());
 		assertEquals(false, response.isDebug());
 
-		List<Cartridge> cartridges = response.getOpenshiftObject();
+		List<ICartridge> cartridges = response.getOpenshiftObject();
 		assertEquals(5, cartridges.size());
 		assertThatContainsCartridge("perl-5.10", cartridges);
 		assertThatContainsCartridge("jbossas-7.0", cartridges);

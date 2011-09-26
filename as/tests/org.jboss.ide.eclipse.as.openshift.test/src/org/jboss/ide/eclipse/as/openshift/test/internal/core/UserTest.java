@@ -24,11 +24,11 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
+import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
@@ -68,7 +68,7 @@ public class UserTest {
 
 	@Test
 	public void canGetDomain() throws OpenshiftException {
-		Domain domain = user.getDomain();
+		IDomain domain = user.getDomain();
 		assertNotNull(domain);
 		assertEquals(UserInfoResponseFake.RHC_DOMAIN, domain.getRhcDomain());
 		assertEquals(UserInfoResponseFake.NAMESPACE, domain.getNamespace());
@@ -79,8 +79,8 @@ public class UserTest {
 		OpenshiftService cartridgeListService = new NoopOpenshiftServiceFake() {
 
 			@Override
-			public List<Cartridge> getCartridges(User user) throws OpenshiftException {
-				ArrayList<Cartridge> cartridges = new ArrayList<Cartridge>();
+			public List<ICartridge> getCartridges(User user) throws OpenshiftException {
+				ArrayList<ICartridge> cartridges = new ArrayList<ICartridge>();
 				cartridges.add(new Cartridge(CartridgeResponseFake.CARTRIDGE_JBOSSAS70));
 				cartridges.add(new Cartridge(CartridgeResponseFake.CARTRIDGE_PERL5));
 				cartridges.add(new Cartridge(CartridgeResponseFake.CARTRIDGE_PHP53));
@@ -90,7 +90,7 @@ public class UserTest {
 			}
 		};
 		User user = new User(UserInfoResponseFake.RHLOGIN, UserInfoResponseFake.PASSWORD, cartridgeListService);
-		Collection<Cartridge> cartridges = user.getCartridges();
+		Collection<ICartridge> cartridges = user.getCartridges();
 		assertNotNull(cartridges);
 		assertEquals(5, cartridges.size());
 		assertThatContainsCartridge(CartridgeResponseFake.CARTRIDGE_JBOSSAS70, cartridges);
@@ -103,7 +103,7 @@ public class UserTest {
 	@Test
 	public void canGetApplications() throws OpenshiftException {
 		/** response is UserInfoResponseFake */
-		Collection<Application> applications = user.getApplications();
+		Collection<IApplication> applications = user.getApplications();
 		assertNotNull(applications);
 		assertEquals(2, applications.size());
 	}
