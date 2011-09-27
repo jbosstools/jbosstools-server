@@ -31,6 +31,7 @@ import org.junit.Test;
  */
 public class ApplicationLogReaderTest {
 
+	private static final int LOGREADER_TIMEOUT = 1 * 1024;
 	private Application application;
 
 	@Before
@@ -43,7 +44,7 @@ public class ApplicationLogReaderTest {
 		ExecutorService executor = null;
 		try {
 			ApplicationLogReader logReader = application.getLogReader();
-			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader, 1 * 1024);
+			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader, LOGREADER_TIMEOUT);
 			executor = Executors.newSingleThreadExecutor();
 			executor.submit(logReaderRunnable);
 

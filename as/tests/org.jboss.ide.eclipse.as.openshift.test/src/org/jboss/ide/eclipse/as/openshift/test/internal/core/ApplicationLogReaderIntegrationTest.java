@@ -35,6 +35,7 @@ import org.junit.Test;
  */
 public class ApplicationLogReaderIntegrationTest {
 
+	private static final int LOGREADER_TIMEOUT = 10 * 1024;
 	private IOpenshiftService service;
 	private TestUser user;
 
@@ -90,7 +91,7 @@ public class ApplicationLogReaderIntegrationTest {
 		try {
 			application = user.createTestApplication();
 			ApplicationLogReader logReader = application.getLogReader();
-			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader, 10 * 1024);
+			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader, LOGREADER_TIMEOUT);
 			executor = Executors.newSingleThreadExecutor();
 			executor.submit(logReaderRunnable);
 

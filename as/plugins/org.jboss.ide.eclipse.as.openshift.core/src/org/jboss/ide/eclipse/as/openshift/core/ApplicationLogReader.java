@@ -53,7 +53,6 @@ public class ApplicationLogReader extends Reader {
 				if (charactersRead == -1) {
 					this.logReader = null;
 				}
-				System.err.println("charactersRead = " + charactersRead);
 			}
 			return charactersRead;
 		} catch (OpenshiftException e) {
