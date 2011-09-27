@@ -16,7 +16,7 @@ import org.osgi.framework.BundleContext;
 public class OpenshiftCoreActivator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.jboss.ide.eclipse.as.openshift.core"; 
-			
+
 	private static BundleContext context;
 
 	static BundleContext getContext() {
