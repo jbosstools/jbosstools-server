@@ -16,6 +16,7 @@ import java.util.Date;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**

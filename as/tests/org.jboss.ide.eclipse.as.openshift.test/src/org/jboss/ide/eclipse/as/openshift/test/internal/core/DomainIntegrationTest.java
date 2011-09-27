@@ -13,8 +13,8 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
-import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestSSHKey;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;

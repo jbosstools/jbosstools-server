@@ -1,6 +1,5 @@
-package org.jboss.ide.eclipse.as.openshift.core.internal;
+package org.jboss.ide.eclipse.as.openshift.core;
 
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 public interface IDomain {
 

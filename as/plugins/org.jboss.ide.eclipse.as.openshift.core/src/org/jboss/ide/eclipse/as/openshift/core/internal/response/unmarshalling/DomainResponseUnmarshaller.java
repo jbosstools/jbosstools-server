@@ -11,8 +11,8 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Domain;
-import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 
 /**

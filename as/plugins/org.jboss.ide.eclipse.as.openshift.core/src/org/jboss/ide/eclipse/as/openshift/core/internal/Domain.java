@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal;
 
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 

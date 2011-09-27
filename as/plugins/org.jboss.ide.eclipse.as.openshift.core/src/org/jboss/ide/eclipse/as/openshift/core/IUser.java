@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.Collection;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 
 /**
  * @author André Dietisheim

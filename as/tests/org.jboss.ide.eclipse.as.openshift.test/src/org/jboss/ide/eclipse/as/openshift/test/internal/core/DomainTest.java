@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
-import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
