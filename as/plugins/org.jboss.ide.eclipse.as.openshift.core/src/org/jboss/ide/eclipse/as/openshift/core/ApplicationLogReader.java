@@ -70,7 +70,8 @@ public class ApplicationLogReader extends Reader {
 	private String getLog(String status) throws IOException {
 		Matcher matcher = LOG_REGEX.matcher(status);
 		int logStart = 0;
-		if (matcher.find()) {
+		if (matcher.find()
+				&& matcher.end() < status.length()) {
 			logStart = matcher.end() + 1;
 		}
 		return status.substring(logStart);
