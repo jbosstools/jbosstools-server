@@ -15,11 +15,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
@@ -37,8 +34,6 @@ import org.junit.Test;
  * @author André Dietisheim
  */
 public class ApplicationLogReaderIntegrationTest {
-
-	private static final long TIMEOUT = 10;
 
 	private IOpenshiftService service;
 	private TestUser user;
@@ -114,45 +109,6 @@ public class ApplicationLogReaderIntegrationTest {
 			if (application != null) {
 				user.silentlyDestroyApplication(application);
 			}
-		}
-	}
-
-	private static class LogReaderRunnable implements Runnable {
-
-		private ApplicationLogReader logReader;
-		private BlockingQueue<Character> logQueue;
-
-		public LogReaderRunnable(ApplicationLogReader logReader) {
-			this.logReader = logReader;
-			this.logQueue = new LinkedBlockingDeque<Character>();
-		}
-
-		@Override
-		public void run() {
-			try {
-				for (int data = -1; (data = logReader.read()) != -1;) {
-					logQueue.put((char) data);
-				}
-			} catch (Exception e) {
-				// do nothing
-			}
-		}
-
-		private boolean waitForNewLogentries(StringBuilder builder) throws InterruptedException {
-			Character character = logQueue.poll(TIMEOUT, TimeUnit.SECONDS);
-			boolean newEntry = character != null;
-			if (newEntry) {
-				builder.append(character);
-			}
-			return newEntry;
-		}
-
-		public String waitUntilNoNewLogentries() throws InterruptedException {
-			StringBuilder builder = new StringBuilder();
-			while (waitForNewLogentries(builder)) {
-				;
-			}
-			return builder.toString();
 		}
 	}
 }
