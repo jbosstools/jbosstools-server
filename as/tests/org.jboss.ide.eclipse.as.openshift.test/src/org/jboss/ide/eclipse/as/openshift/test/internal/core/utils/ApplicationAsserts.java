@@ -35,7 +35,7 @@ public class ApplicationAsserts {
 	/**
 	 * $1 = application uuid
 	 * $2 = application name
-	 * $3 = user uuid
+	 * $3 = InternalUser uuid
 	 * $4 = rhc cloud domain (rhcloud.com)
 	 * $5 = application name 
 	 */

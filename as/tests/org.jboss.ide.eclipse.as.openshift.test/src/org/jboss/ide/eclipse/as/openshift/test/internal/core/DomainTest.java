@@ -62,8 +62,8 @@ public class DomainTest {
 		String responseString = createDomainResponseString(RHLOGIN, UUID);
 
 		responseString = JsonSanitizer.sanitize(responseString);
-		InternalUser internalUser = new InternalUser(RHLOGIN, PASSWORD, new NoopOpenshiftServiceFake());
-		OpenshiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, internalUser).unmarshall(responseString);
+		InternalUser user = new InternalUser(RHLOGIN, PASSWORD, new NoopOpenshiftServiceFake());
+		OpenshiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, user).unmarshall(responseString);
 
 		assertNotNull(response);
 		IDomain domain = response.getOpenshiftObject();

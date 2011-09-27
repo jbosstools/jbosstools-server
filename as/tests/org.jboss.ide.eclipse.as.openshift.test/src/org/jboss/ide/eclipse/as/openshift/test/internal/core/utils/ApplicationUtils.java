@@ -26,13 +26,13 @@ public class ApplicationUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static Application createApplication(InternalUser internalUser, IOpenshiftService service) throws OpenshiftException {
-		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, internalUser);
+	public static Application createApplication(InternalUser user, IOpenshiftService service) throws OpenshiftException {
+		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, user);
 	}
 	
-	public static void silentlyDestroyAS7Application(String name, InternalUser internalUser, IOpenshiftService service) {
+	public static void silentlyDestroyAS7Application(String name, InternalUser user, IOpenshiftService service) {
 		try {
-			service.destroyApplication(name, ICartridge.JBOSSAS_7, internalUser);
+			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
 		}

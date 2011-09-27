@@ -21,15 +21,15 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 public class DomainResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<IDomain> {
 
 	private String domainName;
-	private InternalUser internalUser;
+	private InternalUser user;
 	
-	public DomainResponseUnmarshaller(String domainName, InternalUser internalUser) {
+	public DomainResponseUnmarshaller(String domainName, InternalUser user) {
 		this.domainName = domainName;
-		this.internalUser = internalUser;
+		this.user = user;
 	}
 
 	@Override
 	protected IDomain createOpenshiftObject(ModelNode node) {
-		return new Domain(domainName, internalUser);
+		return new Domain(domainName, user);
 	}
 }

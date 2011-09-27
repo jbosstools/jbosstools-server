@@ -20,12 +20,12 @@ public class Domain extends UserInfoAware implements IDomain {
 
 	private String namespace;
 
-	public Domain(String namespace, InternalUser internalUser) {
-		this(namespace, null, internalUser);
+	public Domain(String namespace, InternalUser user) {
+		this(namespace, null, user);
 	}
 
-	public Domain(String namespace, String rhcDomain, InternalUser internalUser) {
-		super(internalUser);
+	public Domain(String namespace, String rhcDomain, InternalUser user) {
+		super(user);
 		this.namespace = namespace;
 	}
 

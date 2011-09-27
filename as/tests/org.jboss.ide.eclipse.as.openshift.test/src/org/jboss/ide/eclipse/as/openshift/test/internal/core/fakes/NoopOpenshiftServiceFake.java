@@ -28,52 +28,52 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 public class NoopOpenshiftServiceFake extends OpenshiftService {
 
 	@Override
-	public UserInfo getUserInfo(InternalUser internalUser) throws OpenshiftException {
+	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public List<ICartridge> getCartridges(InternalUser internalUser) throws OpenshiftException {
+	public List<ICartridge> getCartridges(InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Application createApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public Application createApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void destroyApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public void destroyApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IApplication startApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public IApplication startApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getStatus(String applicationName, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
+	public String getStatus(String applicationName, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IDomain changeDomain(String domainName, ISSHPublicKey sshKey, InternalUser internalUser) throws OpenshiftException {
+	public IDomain changeDomain(String domainName, ISSHPublicKey sshKey, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public IDomain createDomain(String name, ISSHPublicKey keyPair, InternalUser internalUser) throws OpenshiftException {
+	public IDomain createDomain(String name, ISSHPublicKey keyPair, InternalUser user) throws OpenshiftException {
 		throw new UnsupportedOperationException();
 	}
 }

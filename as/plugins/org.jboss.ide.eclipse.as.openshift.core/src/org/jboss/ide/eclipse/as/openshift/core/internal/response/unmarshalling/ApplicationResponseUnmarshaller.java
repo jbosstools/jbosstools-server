@@ -21,20 +21,20 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
  */
 public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Application> {
 
-	private InternalUser internalUser;
+	private InternalUser user;
 	private String applicationName;
 	private ICartridge cartridge;
 	private OpenshiftService service;
 
-	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, InternalUser internalUser, OpenshiftService service) {
+	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, InternalUser user, OpenshiftService service) {
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;
-		this.internalUser = internalUser;
+		this.user = user;
 		this.service = service;
 	}
 
 	@Override
 	protected Application createOpenshiftObject(ModelNode node) {
-		return new Application(applicationName, cartridge, internalUser, service);
+		return new Application(applicationName, cartridge, user, service);
 	}
 }

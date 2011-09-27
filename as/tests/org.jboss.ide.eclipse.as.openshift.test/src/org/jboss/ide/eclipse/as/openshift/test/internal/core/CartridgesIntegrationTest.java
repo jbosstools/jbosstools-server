@@ -30,18 +30,18 @@ public class CartridgesIntegrationTest {
 
 	private OpenshiftService openshiftService;
 
-	private InternalUser internalUser;
+	private InternalUser user;
 	
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService();
-		this.internalUser = new TestUser();
+		this.user = new TestUser();
 	}
 
 	@Ignore
 	@Test
 	public void canRequestListCartridges() throws Exception {
-		List<ICartridge> cartridges = openshiftService.getCartridges(internalUser);
+		List<ICartridge> cartridges = openshiftService.getCartridges(user);
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
 	}

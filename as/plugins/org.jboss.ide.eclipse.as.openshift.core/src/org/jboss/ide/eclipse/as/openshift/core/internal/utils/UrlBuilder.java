@@ -7,7 +7,7 @@ import java.net.URLEncoder;
 import java.util.Collection;
 
 /**
- * A builder for an url. Currently no state checking is done, the user is
+ * A builder for an url. Currently no state checking is done, the InternalUser is
  * responsible to build something that makes sense.
  * 
  * @author André Dietisheim

@@ -19,10 +19,10 @@ import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUtils;
 import org.junit.Before;
@@ -35,13 +35,13 @@ public class ApplicationIntegrationTest {
 
 	private IOpenshiftService service;
 
-	private InternalUser internalUser;
-	private InternalUser invalidUser;
+	private User user;
+	private User invalidUser;
 
 	@Before
 	public void setUp() {
 		this.service = new OpenshiftService();
-		this.internalUser = new TestUser();
+		this.user = new TestUser();
 		this.invalidUser = new TestUser("bogusPassword");
 	}
 
@@ -55,30 +55,30 @@ public class ApplicationIntegrationTest {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
 			ICartridge cartridge = ICartridge.JBOSSAS_7;
-			Application application = service.createApplication(applicationName, cartridge, internalUser);
+			Application application = service.createApplication(applicationName, cartridge, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
 			assertEquals(cartridge, application.getCartridge());
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
 	@Test
 	public void canDestroyApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
-		service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-		service.destroyApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+		service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+		service.destroyApplication(applicationName, ICartridge.JBOSSAS_7, user);
 	}
 
 	@Test(expected = OpenshiftException.class)
 	public void createDuplicateApplicationThrowsException() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -86,10 +86,10 @@ public class ApplicationIntegrationTest {
 	public void canStopApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -97,11 +97,11 @@ public class ApplicationIntegrationTest {
 	public void canStartStoppedApplication() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.startApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.startApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -116,10 +116,10 @@ public class ApplicationIntegrationTest {
 			 *       https://github.com/openshift/os-client-tools/blob/master/express
 			 *       /doc/API
 			 */
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.startApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.startApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -134,11 +134,11 @@ public class ApplicationIntegrationTest {
 			 *       https://github.com/openshift/os-client-tools/blob/master/express
 			 *       /doc/API
 			 */
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.stopApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -153,10 +153,10 @@ public class ApplicationIntegrationTest {
 			 *       https://github.com/openshift/os-client-tools/blob/master/express
 			 *       /doc/API
 			 */
-			service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			service.restartApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			service.restartApplication(applicationName, ICartridge.JBOSSAS_7, user);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -164,11 +164,11 @@ public class ApplicationIntegrationTest {
 	public void canGetStatus() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			Application application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
-			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), internalUser);
+			Application application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), user);
 			assertNotNull(applicationStatus);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -176,12 +176,12 @@ public class ApplicationIntegrationTest {
 	public void returnsValidGitUri() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 			String gitUri = application.getGitUri();
 			assertNotNull(gitUri);
 			assertGitUri(applicationName, gitUri);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 
@@ -189,12 +189,12 @@ public class ApplicationIntegrationTest {
 	public void returnsValidApplicationUrl() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, internalUser);
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 			String applicationUrl = application.getApplicationUrl();
 			assertNotNull(applicationUrl);
 			assertAppliactionUrl(applicationName, applicationUrl);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, internalUser, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}
 	}
 }

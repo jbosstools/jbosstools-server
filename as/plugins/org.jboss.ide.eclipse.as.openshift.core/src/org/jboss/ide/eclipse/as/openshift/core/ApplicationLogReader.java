@@ -32,12 +32,12 @@ public class ApplicationLogReader extends Reader {
 	private IOpenshiftService service;
 	private StringReader logReader;
 	private Application application;
-	private InternalUser internalUser;
+	private InternalUser user;
 	private String currentStatus;
 
-	public ApplicationLogReader(Application application, InternalUser internalUser, IOpenshiftService service) {
+	public ApplicationLogReader(Application application, InternalUser user, IOpenshiftService service) {
 		this.application = application;
-		this.internalUser = internalUser;
+		this.user = user;
 		this.service = service;
 	}
 
@@ -91,7 +91,7 @@ public class ApplicationLogReader extends Reader {
 
 	protected String requestStatus() throws IOException {
 		try {
-			String status = service.getStatus(application.getName(), application.getCartridge(), internalUser);
+			String status = service.getStatus(application.getName(), application.getCartridge(), user);
 			if (isSameStatus(status, currentStatus)) {
 				status = null;
 			}
