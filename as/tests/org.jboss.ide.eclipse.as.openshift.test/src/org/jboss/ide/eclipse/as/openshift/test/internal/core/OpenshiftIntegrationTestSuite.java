@@ -17,11 +17,11 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	ApplicationIntegrationTest.class,
+	ApplicationLogReaderIntegrationTest.class,
 	CartridgesIntegrationTest.class,
 	DomainIntegrationTest.class,
 	ListCartridgesIntegrationTest.class,
-	UserInfoIntegrationTest.class,
-	ApplicationLogReaderIntegrationTest.class
+	UserInfoIntegrationTest.class
 })
 /**
  * @author André Dietisheim
