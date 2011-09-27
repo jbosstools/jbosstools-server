@@ -156,7 +156,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void applicationLogReaderReturnsAllowsToReadFromStatus() throws IOException {
+	public void canReadFromApplicationLogReader() throws IOException {
 
 		OpenshiftService service = new NoopOpenshiftServiceFake() {
 			@Override
@@ -170,27 +170,34 @@ public class ApplicationTest {
 						ApplicationResponseFake.APPLICATION_CARTRIDGE, user, service);
 		ApplicationLogReader reader = new ApplicationLogReader(application, user, service);
 
-		int toMatchIndex = 0;
-		for (int character = -1; (character = reader.read()) != -1;) {
+		int charactersRead = 0;
+		int character = -1;
+		while (charactersRead < ApplicationResponseFake.log.length()
+				&& (character = reader.read()) != -1) {
+			char characterToMatch = ApplicationResponseFake.log.charAt(charactersRead++);
 			assertEquals(
-					"character at position " + toMatchIndex
-							+ " was '" + ((char) character) + "'"
-							+ " but we expected '" + ApplicationResponseFake.log.charAt(toMatchIndex) + "'.",
-					ApplicationResponseFake.log.charAt(toMatchIndex++), character);
+					"character at position " + charactersRead
+							+ " was '" + character + "'"
+							+ " but we expected '" + characterToMatch + "'.",
+					characterToMatch, character);
 		}
 	}
 
 	private IApplication createApplication(OpenshiftService userInfoService, User user) {
 		Application application = new Application(
 				ApplicationResponseFake.APPLICATION_NAME
-				, ApplicationResponseFake.APPLICATION_UUID
 				, ApplicationResponseFake.APPLICATION_CARTRIDGE
-				, ApplicationResponseFake.APPLICATION_EMBEDDED
-				, ApplicationResponseFake.APPLICATION_CREATIONTIME
+				, new ApplicationInfo(
+						ApplicationResponseFake.APPLICATION_NAME
+						, ApplicationResponseFake.APPLICATION_UUID
+						, ApplicationResponseFake.APPLICATION_EMBEDDED
+						, ApplicationResponseFake.APPLICATION_CARTRIDGE
+						, ApplicationResponseFake.APPLICATION_CREATIONTIME)
 				, user
 				, userInfoService);
 		/**
-		 * we have to add it manually since we dont create the application with the user class
+		 * we have to add it manually since we dont create the application with
+		 * the user class
 		 * 
 		 * @see User#createApplication
 		 */

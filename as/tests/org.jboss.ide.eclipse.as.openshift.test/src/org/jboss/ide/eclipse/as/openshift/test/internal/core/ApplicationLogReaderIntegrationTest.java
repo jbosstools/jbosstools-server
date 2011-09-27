@@ -12,10 +12,14 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
@@ -34,7 +38,7 @@ import org.junit.Test;
  */
 public class ApplicationLogReaderIntegrationTest {
 
-	private static final long TIMEOUT = 6 * 1024;
+	private static final long TIMEOUT = 10;
 
 	private IOpenshiftService service;
 	private TestUser user;
@@ -88,22 +92,21 @@ public class ApplicationLogReaderIntegrationTest {
 	public void logReaderReturnsNewEntriesAfterApplicationRestart() throws Exception {
 		IApplication application = null;
 		ExecutorService executor = null;
-		long startTime = System.currentTimeMillis();
 		try {
 			application = user.createTestApplication();
-			ApplicationLogReader logReader = application.getLog();
+			ApplicationLogReader logReader = application.getLogReader();
 			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader);
 			executor = Executors.newSingleThreadExecutor();
 			executor.submit(logReaderRunnable);
-			boolean logAvailable = waitForNewLogEntries(0, startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
-			int logLength = logReaderRunnable.getLog().length();
-			assertTrue(logReaderRunnable.isRunning());
-			assertTrue(logAvailable);
+
+			String log = logReaderRunnable.waitUntilNoNewLogentries();
+			assertNotNull(log);
+			assertTrue(log.length() > 0);
+			
 			application.restart();
-			logAvailable = waitForNewLogEntries(logLength, startTime, System.currentTimeMillis() + TIMEOUT, logReaderRunnable);
-			assertTrue(logAvailable);
-			assertTrue(logReaderRunnable.isRunning());
-			assertTrue(logReaderRunnable.getLog().length() > logLength);
+
+			String newLog = logReaderRunnable.waitUntilNoNewLogentries();
+			assertFalse(log.equals(newLog));
 		} finally {
 			if (executor != null) {
 				executor.shutdownNow();
@@ -114,50 +117,42 @@ public class ApplicationLogReaderIntegrationTest {
 		}
 	}
 
-	protected boolean waitForNewLogEntries(int logLength, long startTime, long timeout, LogReaderRunnable logReaderRunnable)
-			throws InterruptedException {
-		while (logReaderRunnable.isEmpty()
-				&& logReaderRunnable.getLog().length() <= logLength
-				&& System.currentTimeMillis() <= timeout) {
-			Thread.sleep(1 * 1024);
-		}
-		return logReaderRunnable.getLog().length() > logLength;
-	}
-
 	private static class LogReaderRunnable implements Runnable {
 
 		private ApplicationLogReader logReader;
-		private StringBuilder builder;
-		private boolean running;
+		private BlockingQueue<Character> logQueue;
 
 		public LogReaderRunnable(ApplicationLogReader logReader) {
 			this.logReader = logReader;
-			this.builder = new StringBuilder();
+			this.logQueue = new LinkedBlockingDeque<Character>();
 		}
 
 		@Override
 		public void run() {
-			this.running = true;
 			try {
 				for (int data = -1; (data = logReader.read()) != -1;) {
-					builder.append((char) data);
+					logQueue.put((char) data);
 				}
 			} catch (Exception e) {
-				this.running = false;
+				// do nothing
 			}
 		}
 
-		public boolean isRunning() {
-			return running;
+		private boolean waitForNewLogentries(StringBuilder builder) throws InterruptedException {
+			Character character = logQueue.poll(TIMEOUT, TimeUnit.SECONDS);
+			boolean newEntry = character != null;
+			if (newEntry) {
+				builder.append(character);
+			}
+			return newEntry;
 		}
 
-		public String getLog() {
+		public String waitUntilNoNewLogentries() throws InterruptedException {
+			StringBuilder builder = new StringBuilder();
+			while (waitForNewLogentries(builder)) {
+				;
+			}
 			return builder.toString();
 		}
-
-		public boolean isEmpty() {
-			return builder.length() == 0;
-		}
 	}
-
 }

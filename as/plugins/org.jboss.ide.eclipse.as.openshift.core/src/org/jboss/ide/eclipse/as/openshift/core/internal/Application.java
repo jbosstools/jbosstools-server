@@ -21,33 +21,26 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 /**
  * @author André Dietisheim
  */
-public class Application implements IApplication {
+public class Application extends UserInfoAware implements IApplication {
 
 	private static final String GIT_URI_PATTERN = "ssh://{0}@{1}-{2}.{3}/~/git/{1}.git/";
 	private static final String APPLICATION_URL_PATTERN = "http://{0}-{1}.{2}/";
 
 	private String name;
 	private ICartridge cartridge;
-	private String uuid;
-	private Date creationTime;
-	private String embedded;
 	private IOpenshiftService service;
 	private ApplicationLogReader logReader;
-
-	private User user;
+	private ApplicationInfo applicationInfo;
 
 	public Application(String name, ICartridge cartridge, User user, IOpenshiftService service) {
-		this(name, null, cartridge, null, null, user, service);
+		this(name, cartridge, null, user, service);
 	}
 
-	public Application(String name, String uuid, ICartridge cartridge, String embedded, Date creationTime, User user,
+	public Application(String name, ICartridge cartridge, ApplicationInfo applicationInfo, User user,
 			IOpenshiftService service) {
+		super(user);
 		this.name = name;
 		this.cartridge = cartridge;
-		this.uuid = uuid;
-		this.embedded = embedded;
-		this.creationTime = creationTime;
-		this.user = user;
 		this.service = service;
 	}
 
@@ -57,8 +50,7 @@ public class Application implements IApplication {
 
 	@Override
 	public String getUUID() throws OpenshiftException {
-		user.loadLazyValues();
-		return uuid;
+		return getApplicationInfo().getUuid();
 	}
 
 	@Override
@@ -68,47 +60,45 @@ public class Application implements IApplication {
 
 	@Override
 	public String getEmbedded() throws OpenshiftException {
-		user.loadLazyValues();
-		return embedded;
+		return getApplicationInfo().getEmbedded();
 	}
 
 	@Override
 	public Date getCreationTime() throws OpenshiftException {
-		user.loadLazyValues();
-		return creationTime;
+		return getApplicationInfo().getCreationTime();
 	}
 
 	@Override
 	public void destroy() throws OpenshiftException {
-		service.destroyApplication(name, cartridge, user);
+		service.destroyApplication(name, cartridge, getUser());
 	}
 
 	@Override
 	public void start() throws OpenshiftException {
-		service.startApplication(name, cartridge, user);
+		service.startApplication(name, cartridge, getUser());
 	}
 
 	@Override
 	public void restart() throws OpenshiftException {
-		service.restartApplication(name, cartridge, user);
+		service.restartApplication(name, cartridge, getUser());
 	}
 
 	@Override
 	public void stop() throws OpenshiftException {
-		service.stopApplication(name, cartridge, user);
+		service.stopApplication(name, cartridge, getUser());
 	}
 
 	@Override
-	public ApplicationLogReader getLog() throws OpenshiftException {
+	public ApplicationLogReader getLogReader() throws OpenshiftException {
 		if (logReader == null) {
-			this.logReader = new ApplicationLogReader(this, user, service);
+			this.logReader = new ApplicationLogReader(this, getUser(), service);
 		}
 		return logReader;
 	}
 
 	@Override
 	public String getGitUri() throws OpenshiftException {
-		IDomain domain = user.getDomain();
+		IDomain domain = getUser().getDomain();
 		if (domain == null) {
 			return null;
 		}
@@ -118,29 +108,22 @@ public class Application implements IApplication {
 
 	@Override
 	public String getApplicationUrl() throws OpenshiftException {
-		IDomain domain = user.getDomain();
+		IDomain domain = getUser().getDomain();
 		if (domain == null) {
 			return null;
 		}
 		return MessageFormat.format(APPLICATION_URL_PATTERN, name, domain.getNamespace(), domain.getRhcDomain());
 	}
 
-	void update(ApplicationInfo applicationInfo) {
-		if (applicationInfo == null) {
-			return;
-		}
-		this.cartridge = applicationInfo.getCartridge();
-		this.creationTime = applicationInfo.getCreationTime();
-		this.name = applicationInfo.getName();
-		this.uuid = applicationInfo.getUuid();
-	}
-
 	protected IOpenshiftService getService() {
 		return service;
 	}
 
-	protected User getUser() {
-		return user;
+	protected ApplicationInfo getApplicationInfo() throws OpenshiftException {
+		if (applicationInfo == null) {
+			this.applicationInfo = getUserInfo().getApplicationInfoByName(getName());
+		}
+		return applicationInfo;
 	}
 
 	@Override

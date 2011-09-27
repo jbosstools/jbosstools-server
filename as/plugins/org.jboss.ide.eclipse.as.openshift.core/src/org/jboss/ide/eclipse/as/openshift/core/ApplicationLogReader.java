@@ -21,11 +21,6 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.User;
 
 /**
- * TODO: make sure it behaves correctly on subsequent requests that get app
- * status on the server: The server would either repeat the whole log or just
- * respond with the diff.
- * 
- * 
  * @author André Dietisheim
  */
 public class ApplicationLogReader extends Reader {
@@ -80,11 +75,6 @@ public class ApplicationLogReader extends Reader {
 		return charactersRead;
 	}
 
-	private boolean isSameStatus(String status, String currentStatus) {
-		return currentStatus != null
-				&& currentStatus.equals(status);
-	}
-
 	protected StringReader createLogReader(String status) throws IOException {
 		String log = getLog(status);
 		return new StringReader(log);
@@ -103,13 +93,18 @@ public class ApplicationLogReader extends Reader {
 		try {
 			String status = service.getStatus(application.getName(), application.getCartridge(), user);
 			if (isSameStatus(status, currentStatus)) {
-				return null;
+				status = null;
 			}
 			return status;
 
 		} catch (OpenshiftException e) {
 			throw new IOException(e);
 		}
+	}
+
+	private boolean isSameStatus(String thisStatus, String otherStatus) {
+		return otherStatus != null
+				&& otherStatus.equals(thisStatus);
 	}
 
 	@Override

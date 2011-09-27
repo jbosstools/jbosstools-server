@@ -35,7 +35,7 @@ public interface IApplication {
 
 	public void stop() throws OpenshiftException;
 
-	public ApplicationLogReader getLog() throws OpenshiftException;
+	public ApplicationLogReader getLogReader() throws OpenshiftException;
 
 	public String getGitUri() throws OpenshiftException;
 

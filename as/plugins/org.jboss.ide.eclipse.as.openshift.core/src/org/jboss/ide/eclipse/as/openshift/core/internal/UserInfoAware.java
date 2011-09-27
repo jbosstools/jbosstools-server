@@ -12,30 +12,24 @@ package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
+public class UserInfoAware {
 
-/**
- * @author André Dietisheim
- */
-public class Domain extends UserInfoAware implements IDomain {
-
-	private String namespace;
-
-	public Domain(String namespace, User user) {
-		this(namespace, null, user);
+	private UserInfo userInfo;
+	private User user;
+	
+	protected UserInfoAware(User user) {
+		this.user = user;
 	}
 
-	public Domain(String namespace, String rhcDomain, User user) {
-		super(user);
-		this.namespace = namespace;
+	protected UserInfo getUserInfo() throws OpenshiftException {
+		if (userInfo == null) {
+			this.userInfo = user.getUserInfo();
+		}
+		return userInfo;
 	}
 
-	@Override
-	public String getNamespace() throws OpenshiftException {
-		return namespace;
+	protected User getUser() {
+		return user;
 	}
-
-	@Override
-	public String getRhcDomain() throws OpenshiftException {
-		return getUserInfo().getRhcDomain();
-	}
+	
 }

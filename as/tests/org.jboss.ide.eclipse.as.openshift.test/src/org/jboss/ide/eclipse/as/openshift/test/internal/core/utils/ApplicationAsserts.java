@@ -69,6 +69,7 @@ public class ApplicationAsserts {
 
 	public static void assertApplication(String name, String uuid, String cartridgeName, String embedded,
 			String creationTime, IApplication application) throws OpenshiftException {
+		assertNotNull(application);
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());
 		assertNotNull(application.getCartridge());

@@ -28,7 +28,6 @@ public class User implements IUser {
 
 	private String rhlogin;
 	private String password;
-	private String uuid;
 	private ISSHPublicKey sshKey;
 	private Domain domain;
 	private UserInfo userInfo;
@@ -54,13 +53,19 @@ public class User implements IUser {
 
 	@Override
 	public IDomain getDomain() throws OpenshiftException {
-		loadLazyValues();
+		if (domain == null) {
+			this.domain = new Domain(
+					getUserInfo().getNamespace()
+					, getUserInfo().getRhcDomain(), this);
+		}
 		return domain;
 	}
 
 	@Override
 	public ISSHPublicKey getSshKey() throws OpenshiftException {
-		loadLazyValues();
+		if (sshKey == null) {
+			sshKey = getUserInfo().getSshPublicKey();
+		}
 		return sshKey;
 	}
 
@@ -75,8 +80,7 @@ public class User implements IUser {
 	}
 
 	public String getUUID() throws OpenshiftException {
-		loadLazyValues();
-		return uuid;
+		return getUserInfo().getUuid();
 	}
 
 	@Override
@@ -96,14 +100,15 @@ public class User implements IUser {
 
 	@Override
 	public Collection<IApplication> getApplications() throws OpenshiftException {
-		loadLazyValues();
+		if (getUserInfo().getApplicationInfos().size() > applications.size()) {
+			update(getUserInfo().getApplicationInfos());
+		}
 		return Collections.unmodifiableList(applications);
 	}
 
 	@Override
 	public IApplication getApplicationByName(String name) throws OpenshiftException {
-		loadLazyValues();
-		return getApplicationByName(name, applications);
+		return getApplicationByName(name, getApplications());
 	}
 
 	private IApplication getApplicationByName(String name, Collection<IApplication> applications) {
@@ -128,53 +133,23 @@ public class User implements IUser {
 		this.sshKey = key;
 	}
 
-	/**
-	 * Loads the lazy values from the server if needed. Updates itself all
-	 * referenced objects (applications, domain).
-	 * 
-	 * @throws OpenshiftException
-	 *             if an error occurred while loading the values
-	 */
-	void loadLazyValues() throws OpenshiftException {
+	public UserInfo getUserInfo() throws OpenshiftException {
 		if (userInfo == null) {
-			refresh();
+			this.userInfo = service.getUserInfo(this);
 		}
+		return userInfo;
 	}
 
 	public void refresh() throws OpenshiftException {
-		this.userInfo = service.getUserInfo(this);
-		update(userInfo);
+		this.domain = null;
+		this.sshKey = null;
+		getUserInfo();
 	}
-
-	private void update(UserInfo userInfo) throws OpenshiftException {
-		this.uuid = userInfo.getUuid();
-		updateDomain(userInfo);
-		updateSshPublicKey(userInfo);
-		update(userInfo.getApplicationInfos());
-	}
-
-	private void updateDomain(UserInfo userInfo) {
-		if (domain == null) {
-			this.domain = new Domain(userInfo.getNamespace(), userInfo.getRhcDomain(), this);
-		} else {
-			domain.update(userInfo);
-		}
-	}
-
-	private void updateSshPublicKey(UserInfo userInfo) throws OpenshiftException {
-		if (sshKey == null) {
-			sshKey = userInfo.getSshPublicKey();
-		} else {
-			sshKey.update(userInfo.getSshPublicKey());
-		}
-	}
-
+	
 	private void update(List<ApplicationInfo> applicationInfos) {
 		for (ApplicationInfo applicationInfo : applicationInfos) {
 			IApplication application = getApplicationByName(applicationInfo.getName(), applications);
-			if (application != null) {
-				((Application) application).update(applicationInfo);
-			} else {
+			if (application == null) {
 				applications.add(createApplication(applicationInfo));
 			}
 		}
@@ -182,10 +157,8 @@ public class User implements IUser {
 
 	private Application createApplication(ApplicationInfo applicationInfo) {
 		return new Application(applicationInfo.getName()
-				, applicationInfo.getUuid()
 				, applicationInfo.getCartridge()
-				, applicationInfo.getEmbedded()
-				, applicationInfo.getCreationTime()
+				, applicationInfo
 				, this, service);
 	}
 
