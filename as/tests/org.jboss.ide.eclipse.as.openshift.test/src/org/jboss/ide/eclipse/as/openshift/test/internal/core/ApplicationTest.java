@@ -27,7 +27,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationAction;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ApplicationRequest;
@@ -46,7 +46,7 @@ import org.junit.Test;
  */
 public class ApplicationTest {
 
-	private User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD,
+	private InternalUser internalUser = new InternalUser(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD,
 			new NoopOpenshiftServiceFake());
 
 	@Test
@@ -106,7 +106,7 @@ public class ApplicationTest {
 		OpenshiftResponse<Application> openshiftResponse =
 				new ApplicationResponseUnmarshaller(
 						ApplicationResponseFake.APPLICATION_NAME, ApplicationResponseFake.APPLICATION_CARTRIDGE,
-						user, new NoopOpenshiftServiceFake())
+						internalUser, new NoopOpenshiftServiceFake())
 						.unmarshall(response);
 		Application application = openshiftResponse.getOpenshiftObject();
 		assertNotNull(application);
@@ -117,8 +117,8 @@ public class ApplicationTest {
 	@Test
 	public void returnsValidGitUri() throws OpenshiftException {
 		OpenshiftService userInfoService = createUserInfoService();
-		User user = createUser(userInfoService);
-		IApplication application = createApplication(userInfoService, user);
+		InternalUser internalUser = createUser(userInfoService);
+		IApplication application = createApplication(userInfoService, internalUser);
 
 		String gitUri = application.getGitUri();
 		assertNotNull(gitUri);
@@ -133,8 +133,8 @@ public class ApplicationTest {
 	@Test
 	public void returnsValidApplicationUrl() throws OpenshiftException {
 		OpenshiftService userInfoService = createUserInfoService();
-		User user = createUser(userInfoService);
-		IApplication application = createApplication(userInfoService, user);
+		InternalUser internalUser = createUser(userInfoService);
+		IApplication application = createApplication(userInfoService, internalUser);
 
 		String applicationUrl = application.getApplicationUrl();
 		assertNotNull(applicationUrl);
@@ -160,15 +160,15 @@ public class ApplicationTest {
 
 		OpenshiftService service = new NoopOpenshiftServiceFake() {
 			@Override
-			public String getStatus(String applicationName, ICartridge cartridge, User user) throws OpenshiftException {
+			public String getStatus(String applicationName, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException {
 				return ApplicationResponseFake.tail;
 			}
 		};
 
 		Application application =
 				new Application(ApplicationResponseFake.APPLICATION_NAME,
-						ApplicationResponseFake.APPLICATION_CARTRIDGE, user, service);
-		ApplicationLogReader reader = new ApplicationLogReader(application, user, service);
+						ApplicationResponseFake.APPLICATION_CARTRIDGE, internalUser, service);
+		ApplicationLogReader reader = new ApplicationLogReader(application, internalUser, service);
 
 		int charactersRead = 0;
 		int character = -1;
@@ -183,7 +183,7 @@ public class ApplicationTest {
 		}
 	}
 
-	private IApplication createApplication(OpenshiftService userInfoService, User user) {
+	private IApplication createApplication(OpenshiftService userInfoService, InternalUser internalUser) {
 		Application application = new Application(
 				ApplicationResponseFake.APPLICATION_NAME
 				, ApplicationResponseFake.APPLICATION_CARTRIDGE
@@ -193,27 +193,27 @@ public class ApplicationTest {
 						, ApplicationResponseFake.APPLICATION_EMBEDDED
 						, ApplicationResponseFake.APPLICATION_CARTRIDGE
 						, ApplicationResponseFake.APPLICATION_CREATIONTIME)
-				, user
+				, internalUser
 				, userInfoService);
 		/**
 		 * we have to add it manually since we dont create the application with
-		 * the user class
+		 * the internalUser class
 		 * 
-		 * @see User#createApplication
+		 * @see InternalUser#createApplication
 		 */
-		user.add(application);
+		internalUser.add(application);
 		return application;
 	}
 
-	private User createUser(OpenshiftService userInfoService) {
-		User user = new User(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
-		return user;
+	private InternalUser createUser(OpenshiftService userInfoService) {
+		InternalUser internalUser = new InternalUser(ApplicationResponseFake.RHLOGIN, ApplicationResponseFake.PASSWORD, userInfoService);
+		return internalUser;
 	}
 
 	private OpenshiftService createUserInfoService() {
 		OpenshiftService userInfoService = new NoopOpenshiftServiceFake() {
 			@Override
-			public UserInfo getUserInfo(User user) throws OpenshiftException {
+			public UserInfo getUserInfo(InternalUser internalUser) throws OpenshiftException {
 				ApplicationInfo applicationInfo = new ApplicationInfo(
 						ApplicationResponseFake.APPLICATION_NAME,
 						ApplicationResponseFake.APPLICATION_UUID,

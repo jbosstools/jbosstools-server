@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,18 +30,18 @@ public class CartridgesIntegrationTest {
 
 	private OpenshiftService openshiftService;
 
-	private User user;
+	private InternalUser internalUser;
 	
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService();
-		this.user = new TestUser();
+		this.internalUser = new TestUser();
 	}
 
 	@Ignore
 	@Test
 	public void canRequestListCartridges() throws Exception {
-		List<ICartridge> cartridges = openshiftService.getCartridges(user);
+		List<ICartridge> cartridges = openshiftService.getCartridges(internalUser);
 		assertNotNull(cartridges);
 		assertTrue(cartridges.size() > 0);
 	}

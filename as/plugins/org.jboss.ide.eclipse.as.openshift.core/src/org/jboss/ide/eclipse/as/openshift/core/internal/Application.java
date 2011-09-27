@@ -32,13 +32,13 @@ public class Application extends UserInfoAware implements IApplication {
 	private ApplicationLogReader logReader;
 	private ApplicationInfo applicationInfo;
 
-	public Application(String name, ICartridge cartridge, User user, IOpenshiftService service) {
-		this(name, cartridge, null, user, service);
+	public Application(String name, ICartridge cartridge, InternalUser internalUser, IOpenshiftService service) {
+		this(name, cartridge, null, internalUser, service);
 	}
 
-	public Application(String name, ICartridge cartridge, ApplicationInfo applicationInfo, User user,
+	public Application(String name, ICartridge cartridge, ApplicationInfo applicationInfo, InternalUser internalUser,
 			IOpenshiftService service) {
-		super(user);
+		super(internalUser);
 		this.name = name;
 		this.cartridge = cartridge;
 		this.service = service;

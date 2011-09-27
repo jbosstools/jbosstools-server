@@ -15,7 +15,7 @@ import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 
 /**
  * @author André Dietisheim
@@ -26,13 +26,13 @@ public class ApplicationUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static Application createApplication(User user, IOpenshiftService service) throws OpenshiftException {
-		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, user);
+	public static Application createApplication(InternalUser internalUser, IOpenshiftService service) throws OpenshiftException {
+		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, internalUser);
 	}
 	
-	public static void silentlyDestroyAS7Application(String name, User user, IOpenshiftService service) {
+	public static void silentlyDestroyAS7Application(String name, InternalUser internalUser, IOpenshiftService service) {
 		try {
-			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
+			service.destroyApplication(name, ICartridge.JBOSSAS_7, internalUser);
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
 		}

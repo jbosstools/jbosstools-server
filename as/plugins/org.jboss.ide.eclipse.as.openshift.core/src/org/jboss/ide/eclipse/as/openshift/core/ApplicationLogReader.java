@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 
 /**
  * @author André Dietisheim
@@ -32,12 +32,12 @@ public class ApplicationLogReader extends Reader {
 	private IOpenshiftService service;
 	private StringReader logReader;
 	private Application application;
-	private User user;
+	private InternalUser internalUser;
 	private String currentStatus;
 
-	public ApplicationLogReader(Application application, User user, IOpenshiftService service) {
+	public ApplicationLogReader(Application application, InternalUser internalUser, IOpenshiftService service) {
 		this.application = application;
-		this.user = user;
+		this.internalUser = internalUser;
 		this.service = service;
 	}
 
@@ -91,7 +91,7 @@ public class ApplicationLogReader extends Reader {
 
 	protected String requestStatus() throws IOException {
 		try {
-			String status = service.getStatus(application.getName(), application.getCartridge(), user);
+			String status = service.getStatus(application.getName(), application.getCartridge(), internalUser);
 			if (isSameStatus(status, currentStatus)) {
 				status = null;
 			}

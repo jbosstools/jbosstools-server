@@ -24,7 +24,7 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 /**
  * @author André Dietisheim
  */
-public class User implements IUser {
+public class InternalUser implements IUser {
 
 	private String rhlogin;
 	private String password;
@@ -36,22 +36,21 @@ public class User implements IUser {
 
 	private IOpenshiftService service;
 
-	public User(String rhlogin, String password) {
+	public InternalUser(String rhlogin, String password) {
 		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService());
 	}
 
-	public User(String rhlogin, String password, IOpenshiftService service) {
+	public InternalUser(String rhlogin, String password, IOpenshiftService service) {
 		this(rhlogin, password, (ISSHPublicKey) null, service);
 	}
 
-	public User(String rhlogin, String password, ISSHPublicKey sshKey, IOpenshiftService service) {
+	public InternalUser(String rhlogin, String password, ISSHPublicKey sshKey, IOpenshiftService service) {
 		this.rhlogin = rhlogin;
 		this.password = password;
 		this.sshKey = sshKey;
 		this.service = service;
 	}
 
-	@Override
 	public IDomain getDomain() throws OpenshiftException {
 		if (domain == null) {
 			this.domain = new Domain(
@@ -61,7 +60,6 @@ public class User implements IUser {
 		return domain;
 	}
 
-	@Override
 	public ISSHPublicKey getSshKey() throws OpenshiftException {
 		if (sshKey == null) {
 			sshKey = getUserInfo().getSshPublicKey();
@@ -69,12 +67,10 @@ public class User implements IUser {
 		return sshKey;
 	}
 
-	@Override
 	public String getRhlogin() {
 		return rhlogin;
 	}
 
-	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -83,7 +79,6 @@ public class User implements IUser {
 		return getUserInfo().getUuid();
 	}
 
-	@Override
 	public List<ICartridge> getCartridges() throws OpenshiftException {
 		if (cartridges == null) {
 			this.cartridges = service.getCartridges(this);
@@ -91,14 +86,12 @@ public class User implements IUser {
 		return Collections.unmodifiableList(cartridges);
 	}
 
-	@Override
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
 		Application application = service.createApplication(name, cartridge, this);
 		add(application);
 		return application;
 	}
 
-	@Override
 	public Collection<IApplication> getApplications() throws OpenshiftException {
 		if (getUserInfo().getApplicationInfos().size() > applications.size()) {
 			update(getUserInfo().getApplicationInfos());
@@ -106,7 +99,6 @@ public class User implements IUser {
 		return Collections.unmodifiableList(applications);
 	}
 
-	@Override
 	public IApplication getApplicationByName(String name) throws OpenshiftException {
 		return getApplicationByName(name, getApplications());
 	}
@@ -133,7 +125,7 @@ public class User implements IUser {
 		this.sshKey = key;
 	}
 
-	public UserInfo getUserInfo() throws OpenshiftException {
+	protected UserInfo getUserInfo() throws OpenshiftException {
 		if (userInfo == null) {
 			this.userInfo = service.getUserInfo(this);
 		}

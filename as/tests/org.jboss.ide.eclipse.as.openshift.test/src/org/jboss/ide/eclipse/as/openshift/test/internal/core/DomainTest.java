@@ -20,7 +20,7 @@ import java.net.URLEncoder;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IDomain;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.ChangeDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.CreateDomainRequest;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.OpenshiftEnvelopeFactory;
@@ -62,8 +62,8 @@ public class DomainTest {
 		String responseString = createDomainResponseString(RHLOGIN, UUID);
 
 		responseString = JsonSanitizer.sanitize(responseString);
-		User user = new User(RHLOGIN, PASSWORD, new NoopOpenshiftServiceFake());
-		OpenshiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, user).unmarshall(responseString);
+		InternalUser internalUser = new InternalUser(RHLOGIN, PASSWORD, new NoopOpenshiftServiceFake());
+		OpenshiftResponse<IDomain> response = new DomainResponseUnmarshaller(domainName, internalUser).unmarshall(responseString);
 
 		assertNotNull(response);
 		IDomain domain = response.getOpenshiftObject();

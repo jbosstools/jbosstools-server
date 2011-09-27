@@ -13,13 +13,13 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUtils;
 
 /**
  * @author André Dietisheim
  */
-public class TestUser extends User {
+public class TestUser extends InternalUser {
 
 	private static final String RHLOGIN = "toolsjboss@gmail.com";
 	private static final String PASSWORD = "1q2w3e";

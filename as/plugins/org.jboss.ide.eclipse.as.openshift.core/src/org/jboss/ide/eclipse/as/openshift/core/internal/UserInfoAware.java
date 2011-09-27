@@ -15,21 +15,21 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 public class UserInfoAware {
 
 	private UserInfo userInfo;
-	private User user;
+	private InternalUser internalUser;
 	
-	protected UserInfoAware(User user) {
-		this.user = user;
+	protected UserInfoAware(InternalUser internalUser) {
+		this.internalUser = internalUser;
 	}
 
 	protected UserInfo getUserInfo() throws OpenshiftException {
 		if (userInfo == null) {
-			this.userInfo = user.getUserInfo();
+			this.userInfo = internalUser.getUserInfo();
 		}
 		return userInfo;
 	}
 
-	protected User getUser() {
-		return user;
+	protected InternalUser getUser() {
+		return internalUser;
 	}
 	
 }

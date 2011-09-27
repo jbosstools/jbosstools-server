@@ -14,27 +14,27 @@ import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.internal.User;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 
 /**
  * @author André Dietisheim
  */
 public class ApplicationResponseUnmarshaller extends AbstractOpenshiftJsonResponseUnmarshaller<Application> {
 
-	private User user;
+	private InternalUser internalUser;
 	private String applicationName;
 	private ICartridge cartridge;
 	private OpenshiftService service;
 
-	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, User user, OpenshiftService service) {
+	public ApplicationResponseUnmarshaller(String applicationName, ICartridge cartridge, InternalUser internalUser, OpenshiftService service) {
 		this.applicationName = applicationName;
 		this.cartridge = cartridge;
-		this.user = user;
+		this.internalUser = internalUser;
 		this.service = service;
 	}
 
 	@Override
 	protected Application createOpenshiftObject(ModelNode node) {
-		return new Application(applicationName, cartridge, user, service);
+		return new Application(applicationName, cartridge, internalUser, service);
 	}
 }

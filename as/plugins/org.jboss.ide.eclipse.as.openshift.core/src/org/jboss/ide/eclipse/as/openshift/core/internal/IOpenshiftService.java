@@ -22,23 +22,23 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
  */
 public interface IOpenshiftService {
 
-	public List<ICartridge> getCartridges(User user) throws OpenshiftException;  
+	public List<ICartridge> getCartridges(InternalUser internalUser) throws OpenshiftException;  
 
-	public Application createApplication(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public Application createApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 
-	public void destroyApplication(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public void destroyApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 
-	public IApplication startApplication(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public IApplication startApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 	
-	public IApplication restartApplication(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 
-	public IApplication stopApplication(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 
-	public String getStatus(String name, ICartridge cartridge, User user) throws OpenshiftException;
+	public String getStatus(String name, ICartridge cartridge, InternalUser internalUser) throws OpenshiftException;
 
-	public IDomain changeDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException;
+	public IDomain changeDomain(String name, ISSHPublicKey sshKey, InternalUser internalUser) throws OpenshiftException;
 
-	public IDomain createDomain(String name, ISSHPublicKey sshKey, User user) throws OpenshiftException;
+	public IDomain createDomain(String name, ISSHPublicKey sshKey, InternalUser internalUser) throws OpenshiftException;
 
-	public UserInfo getUserInfo(User user) throws OpenshiftException;
+	public UserInfo getUserInfo(InternalUser internalUser) throws OpenshiftException;
 }
