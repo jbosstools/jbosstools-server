@@ -90,7 +90,7 @@ public class ApplicationLogReaderIntegrationTest {
 		try {
 			application = user.createTestApplication();
 			ApplicationLogReader logReader = application.getLogReader();
-			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader);
+			LogReaderRunnable logReaderRunnable = new LogReaderRunnable(logReader, 10 * 1024);
 			executor = Executors.newSingleThreadExecutor();
 			executor.submit(logReaderRunnable);
 
@@ -101,6 +101,8 @@ public class ApplicationLogReaderIntegrationTest {
 			application.restart();
 
 			String newLog = logReaderRunnable.waitUntilNoNewLogentries();
+			assertNotNull(newLog);
+			assertTrue(newLog.length() > 0);
 			assertFalse(log.equals(newLog));
 		} finally {
 			if (executor != null) {

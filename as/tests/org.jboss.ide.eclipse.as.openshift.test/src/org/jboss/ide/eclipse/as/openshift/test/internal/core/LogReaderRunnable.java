@@ -20,14 +20,14 @@ import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 
 public class LogReaderRunnable implements Runnable {
 
-	private static final long TIMEOUT = 10; // 10 seconds
-
 	private ApplicationLogReader logReader;
 	private BlockingQueue<Character> logQueue;
+	private long timeout;
 
-	public LogReaderRunnable(ApplicationLogReader logReader) {
+	public LogReaderRunnable(ApplicationLogReader logReader, long timeout) {
 		this.logReader = logReader;
 		this.logQueue = new LinkedBlockingDeque<Character>();
+		this.timeout = timeout;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class LogReaderRunnable implements Runnable {
 	}
 
 	private boolean waitForNewLogentries(StringBuilder builder) throws InterruptedException {
-		Character character = logQueue.poll(TIMEOUT, TimeUnit.SECONDS);
+		Character character = logQueue.poll(timeout, TimeUnit.MILLISECONDS);
 		boolean isNewEntry = character != null;
 		if (isNewEntry) {
 			builder.append(character);

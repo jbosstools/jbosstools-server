@@ -30,7 +30,7 @@ public class ApplicationLogReader extends Reader {
 	private static final long STATUS_REQUEST_DELAY = 4 * 1024;
 
 	private IOpenshiftService service;
-	private StringReader logReader;
+	private Reader logReader;
 	private Application application;
 	private InternalUser user;
 	private String currentStatus;
@@ -45,37 +45,25 @@ public class ApplicationLogReader extends Reader {
 	public int read(char[] cbuf, int off, int len) throws IOException {
 		int charactersRead = -1;
 		try {
-			do {
-				charactersRead = readStatus(cbuf, off, len);
-			} while (charactersRead == -1);
-		} catch (InterruptedException e) {
-			// do nothing
-		}
-		return charactersRead;
-	}
-
-	protected int readStatus(char[] cbuf, int off, int len) throws IOException,
-			InterruptedException {
-		int charactersRead = -1;
-		if (logReader == null) {
-			String status = requestStatus();
-			if (status == null) {
-				Thread.sleep(STATUS_REQUEST_DELAY);
-				return -1;
+			while (charactersRead == -1) {
+				if (logReader == null) {
+					this.logReader = createLogReader(requestStatus());
+				}
+				charactersRead = logReader.read(cbuf, off, len);
+				if (charactersRead == -1) {
+					this.logReader = null;
+				}
+				System.err.println("charactersRead = " + charactersRead);
 			}
-			this.currentStatus = status;
-			this.logReader = createLogReader(status);
-		}
-
-		charactersRead = logReader.read(cbuf, off, len);
-		if (charactersRead == -1) {
-			this.logReader = null;
+			return charactersRead;
+		} catch (OpenshiftException e) {
+			throw new IOException(e);
+		} catch (InterruptedException e) {
 			return -1;
 		}
-		return charactersRead;
 	}
 
-	protected StringReader createLogReader(String status) throws IOException {
+	private Reader createLogReader(String status) throws InterruptedException, IOException {
 		String log = getLog(status);
 		return new StringReader(log);
 	}
@@ -89,17 +77,18 @@ public class ApplicationLogReader extends Reader {
 		return status.substring(logStart);
 	}
 
-	protected String requestStatus() throws IOException {
-		try {
-			String status = service.getStatus(application.getName(), application.getCartridge(), user);
-			if (isSameStatus(status, currentStatus)) {
+	protected String requestStatus() throws InterruptedException, OpenshiftException {
+		String status = null;
+		while (status == null) {
+			status = service.getStatus(application.getName(), application.getCartridge(), user);
+			if (isSameStatus(currentStatus, status)) {
+				Thread.sleep(STATUS_REQUEST_DELAY);
 				status = null;
+				continue;
 			}
-			return status;
-
-		} catch (OpenshiftException e) {
-			throw new IOException(e);
 		}
+		this.currentStatus = status;
+		return status;
 	}
 
 	private boolean isSameStatus(String thisStatus, String otherStatus) {
