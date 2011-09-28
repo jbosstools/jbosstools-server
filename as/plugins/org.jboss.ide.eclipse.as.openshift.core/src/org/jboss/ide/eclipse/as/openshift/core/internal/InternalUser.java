@@ -30,7 +30,7 @@ public class InternalUser implements IUser {
 	private String rhlogin;
 	private String password;
 	private ISSHPublicKey sshKey;
-	private Domain domain;
+	private IDomain domain;
 	private UserInfo userInfo;
 	private List<ICartridge> cartridges;
 	private List<IApplication> applications = new ArrayList<IApplication>();
@@ -52,6 +52,13 @@ public class InternalUser implements IUser {
 		this.service = service;
 	}
 
+	@Override
+	public IDomain createDomain(String name) throws OpenshiftException {
+		ISSHPublicKey key = getSshKey();
+		this.domain = getService().createDomain(name, key, this);
+		return domain;
+	}
+	
 	@Override
 	public IDomain getDomain() throws OpenshiftException {
 		if (domain == null) {

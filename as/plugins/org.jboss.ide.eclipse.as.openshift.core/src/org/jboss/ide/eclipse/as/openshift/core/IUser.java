@@ -20,6 +20,8 @@ public interface IUser {
 
 	public String getRhlogin();
 
+	public IDomain createDomain(String name) throws OpenshiftException;
+
 	public String getPassword();
 
 	public String getUUID() throws OpenshiftException;
