@@ -127,9 +127,9 @@ public class OpenshiftService implements IOpenshiftService {
 					new DomainResponseUnmarshaller(request.getName(), user).unmarshall(responseString);
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
-			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
+			throw new OpenshiftEndpointException(url, e, "Could reach openshift platform at \"{0}\"", url);
 		} catch (HttpClientException e) {
-			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
+			throw new OpenshiftEndpointException(url, e, "Could not {0}", request.toHumanReadable());
 		}
 	}
 

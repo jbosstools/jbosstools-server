@@ -29,4 +29,10 @@ public class CreateDomainRequest extends AbstractDomainRequest {
 	public boolean isAlter() {
 		return false;
 	}
+	
+	@Override
+	public String toHumanReadable() {
+		return "create domain " + getName();
+	}
+
 }

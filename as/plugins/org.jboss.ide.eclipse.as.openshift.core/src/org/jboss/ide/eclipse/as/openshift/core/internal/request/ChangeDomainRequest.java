@@ -29,4 +29,9 @@ public class ChangeDomainRequest extends AbstractDomainRequest {
 	public boolean isAlter() {
 		return true;
 	}
+
+	@Override
+	public String toHumanReadable() {
+		return "change domain to " + getName();
+	}
 }

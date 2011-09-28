@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
@@ -66,6 +67,15 @@ public class UserIntegrationTest {
 		assertTrue(domain.getRhcDomain().length() > 0);
 		assertNotNull(domain.getNamespace());
 		assertTrue(domain.getNamespace().length() > 0);
+	}
+
+	@Test(expected=OpenshiftEndpointException.class)
+	public void cannotCreateDomainIfAlreadyExists() throws OpenshiftException {
+		IDomain domain = user.getDomain();
+		assertNotNull(domain);
+		ISSHPublicKey key = user.getSshKey();
+		assertNotNull(key);
+		user.createDomain("newDomain", key);
 	}
 
 	@Test

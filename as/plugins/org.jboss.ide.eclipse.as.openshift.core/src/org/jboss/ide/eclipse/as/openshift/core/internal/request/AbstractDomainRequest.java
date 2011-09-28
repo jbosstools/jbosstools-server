@@ -45,4 +45,6 @@ public abstract class AbstractDomainRequest extends AbstractOpenshiftRequest {
 	}
 
 	public abstract boolean isAlter();
+	
+	public abstract String toHumanReadable();
 }
