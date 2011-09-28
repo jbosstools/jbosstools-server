@@ -53,8 +53,8 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
-	public IDomain createDomain(String name) throws OpenshiftException {
-		ISSHPublicKey key = getSshKey();
+	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenshiftException {
+		setSshKey(key);
 		this.domain = getService().createDomain(name, key, this);
 		return domain;
 	}
@@ -69,10 +69,14 @@ public class InternalUser implements IUser {
 		return domain;
 	}
 
+	private void setSshKey(ISSHPublicKey key) {
+		this.sshKey = key;
+	}
+	
 	@Override
 	public ISSHPublicKey getSshKey() throws OpenshiftException {
 		if (sshKey == null) {
-			sshKey = getUserInfo().getSshPublicKey();
+			this.sshKey = getUserInfo().getSshPublicKey();
 		}
 		return sshKey;
 	}

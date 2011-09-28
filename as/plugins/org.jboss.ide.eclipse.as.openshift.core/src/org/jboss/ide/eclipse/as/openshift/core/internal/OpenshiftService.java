@@ -50,12 +50,20 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling.U
  */
 public class OpenshiftService implements IOpenshiftService {
 
-	private static final String BASE_URL = "https://openshift.redhat.com/broker";
+	private String baseUrl;
+
+	public OpenshiftService() {
+		this(BASE_URL);
+	}
+
+	protected OpenshiftService(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
 
 	@Override
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
 		UserInfoRequest request = new UserInfoRequest(user.getRhlogin(), true);
-		String url = request.getUrlString(BASE_URL);
+		String url = request.getUrlString(baseUrl);
 		try {
 			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
 			String openShiftRequestString = new OpenshiftEnvelopeFactory(user.getPassword(), requestString)
@@ -106,7 +114,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	protected IDomain requestDomainAction(AbstractDomainRequest request, InternalUser user) throws OpenshiftException {
-		String url = request.getUrlString(BASE_URL);
+		String url = request.getUrlString(baseUrl);
 		try {
 			String requestString =
 					new OpenshiftEnvelopeFactory(
@@ -161,7 +169,7 @@ public class OpenshiftService implements IOpenshiftService {
 	public String getStatus(String applicationName, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		ApplicationRequest applicationRequest =
 				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, user.getRhlogin(), true);
-		String url = applicationRequest.getUrlString(BASE_URL);
+		String url = applicationRequest.getUrlString(baseUrl);
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
@@ -191,7 +199,7 @@ public class OpenshiftService implements IOpenshiftService {
 
 	protected Application requestApplicationAction(ApplicationRequest applicationRequest, InternalUser user)
 			throws OpenshiftException {
-		String url = applicationRequest.getUrlString(BASE_URL);
+		String url = applicationRequest.getUrlString(baseUrl);
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);

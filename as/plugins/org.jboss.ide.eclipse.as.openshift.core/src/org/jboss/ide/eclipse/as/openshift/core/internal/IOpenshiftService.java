@@ -23,6 +23,8 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
  */
 public interface IOpenshiftService {
 
+	public static final String BASE_URL = "https://openshift.redhat.com/broker";
+
 	public List<ICartridge> getCartridges(InternalUser user) throws OpenshiftException;  
 
 	public Application createApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;

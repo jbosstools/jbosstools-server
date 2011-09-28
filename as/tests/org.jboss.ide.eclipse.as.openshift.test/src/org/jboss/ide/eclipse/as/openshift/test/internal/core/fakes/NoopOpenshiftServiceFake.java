@@ -18,14 +18,13 @@ import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
-import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 
 /**
  * @author André Dietisheim
  */
-public class NoopOpenshiftServiceFake extends OpenshiftService {
+public class NoopOpenshiftServiceFake extends OpenshiftTestService  {
 
 	@Override
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {

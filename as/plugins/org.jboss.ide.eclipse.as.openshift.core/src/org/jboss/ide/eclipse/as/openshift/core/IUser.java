@@ -24,7 +24,7 @@ public interface IUser {
 
 	public String getUUID() throws OpenshiftException;
 	
-	public IDomain createDomain(String name) throws OpenshiftException;
+	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenshiftException;
 
 	public IDomain getDomain() throws OpenshiftException;
 
