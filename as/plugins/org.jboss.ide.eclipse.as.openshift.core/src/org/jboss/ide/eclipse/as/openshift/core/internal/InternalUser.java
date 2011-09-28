@@ -106,7 +106,7 @@ public class InternalUser implements IUser {
 
 	@Override
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
-		Application application = service.createApplication(name, cartridge, this);
+		IApplication application = service.createApplication(name, cartridge, this);
 		add(application);
 		return application;
 	}
@@ -134,7 +134,7 @@ public class InternalUser implements IUser {
 		return matchingApplication;
 	}
 
-	public void add(Application application) {
+	public void add(IApplication application) {
 		applications.add(application);
 	}
 

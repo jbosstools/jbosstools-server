@@ -47,8 +47,9 @@ public interface IOpenshiftService {
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
+	 * @see IApplication
 	 */
-	public Application createApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
+	public IApplication createApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
 
 	/**
 	 * Destroys the application with the given name and cartridge for the given user.
@@ -75,6 +76,7 @@ public interface IOpenshiftService {
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
+	 * @see IApplication
 	 */
 	public IApplication startApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
 	
@@ -89,6 +91,7 @@ public interface IOpenshiftService {
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
+	 * @see IApplication
 	 */
 	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
 
@@ -104,6 +107,7 @@ public interface IOpenshiftService {
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
+	 * @see IApplication
 	 */
 	public IApplication stopApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException;
 
@@ -127,18 +131,46 @@ public interface IOpenshiftService {
 	 * 
 	 * @param name the new domain name(-space)
 	 * @param sshKey the ssh key that shall be used.
-	 * @param user
-	 * @return
+	 * @param user the user account to use
+	 * @return the domain that was changed
 	 * @throws OpenshiftException
 	 * 
 	 * @see ICartridge
 	 * @see InternalUser
 	 * @see SSHKeyPair
 	 * @see ISSHPublicKey
+	 * @see IDomain
 	 */
 	public IDomain changeDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenshiftException;
 
+	/**
+	 * Creates a domain (namespace) with the given name for the given user account with the given ssh public key.
+	 * If a domain already exists an OpenshiftEndpointException is thrown.
+	 * 
+	 * @param name the new domain name(-space)
+	 * @param sshKey the ssh key that shall be used.
+	 * @param user the user account to use
+	 * @return the domain that was changed
+	 * @throws OpenshiftException
+	 * 
+	 * @see ICartridge
+	 * @see InternalUser
+	 * @see SSHKeyPair
+	 * @see ISSHPublicKey
+	 * @see IDomain
+	 */
 	public IDomain createDomain(String name, ISSHPublicKey sshKey, InternalUser user) throws OpenshiftException;
 
+	/**
+	 * Returns all informations for the given user and its applications.  
+	 * 
+	 * @param user the user account to use
+	 * @return all user informations (user related info and applications)
+	 * @throws OpenshiftException
+	 * 
+	 * @see InternalUser
+	 * @see UserInfo
+	 * @see ApplicationInfo
+	 */
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException;
 }
