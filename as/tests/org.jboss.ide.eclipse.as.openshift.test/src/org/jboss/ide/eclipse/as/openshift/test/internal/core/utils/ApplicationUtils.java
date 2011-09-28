@@ -11,10 +11,10 @@
 package org.jboss.ide.eclipse.as.openshift.test.internal.core.utils;
 
 import org.jboss.ide.eclipse.as.openshift.core.Cartridge;
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 
 /**
@@ -26,7 +26,7 @@ public class ApplicationUtils {
 		return String.valueOf(System.currentTimeMillis());
 	}
 
-	public static Application createApplication(User user, IOpenshiftService service) throws OpenshiftException {
+	public static IApplication createApplication(User user, IOpenshiftService service) throws OpenshiftException {
 		return service.createApplication(createRandomApplicationName(), Cartridge.JBOSSAS_7, user);
 	}
 	

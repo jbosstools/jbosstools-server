@@ -21,7 +21,6 @@ import java.util.concurrent.Executors;
 import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
@@ -56,7 +55,7 @@ public class ApplicationLogReaderIntegrationTest {
 	public void getStatusReturnsTheWholeLogIfNoNewLogEntryOnServer() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			Application application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), user);
 			String applicationStatus2 = service.getStatus(application.getName(), application.getCartridge(), user);
 			assertEquals(applicationStatus, applicationStatus2);
@@ -74,7 +73,7 @@ public class ApplicationLogReaderIntegrationTest {
 	public void getStatusReturnsNewEntriesIfNewLogEntriesOnServer() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			Application application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), user);
 			application.restart();
 			String applicationStatus2 = service.getStatus(application.getName(), application.getCartridge(), user);

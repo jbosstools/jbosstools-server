@@ -20,7 +20,6 @@ import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
-import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
@@ -55,7 +54,7 @@ public class ApplicationIntegrationTest {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
 			ICartridge cartridge = ICartridge.JBOSSAS_7;
-			Application application = service.createApplication(applicationName, cartridge, user);
+			IApplication application = service.createApplication(applicationName, cartridge, user);
 			assertNotNull(application);
 			assertEquals(applicationName, application.getName());
 			assertEquals(cartridge, application.getCartridge());
@@ -164,7 +163,7 @@ public class ApplicationIntegrationTest {
 	public void canGetStatus() throws Exception {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
 		try {
-			Application application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
 			String applicationStatus = service.getStatus(application.getName(), application.getCartridge(), user);
 			assertNotNull(applicationStatus);
 		} finally {
