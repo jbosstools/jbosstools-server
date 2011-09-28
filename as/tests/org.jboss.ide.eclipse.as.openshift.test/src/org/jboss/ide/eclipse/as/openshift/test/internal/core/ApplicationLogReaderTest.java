@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -34,10 +35,12 @@ public class ApplicationLogReaderTest {
 
 	private static final int LOGREADER_TIMEOUT = 2 * 1024;
 
-	private static final String INITIAL_LOG =
+	private static final String LOG_HEADER = 
 			"tailing /var/lib/libra/f36a4acf8a73450cb98637ed4483ea02/1317146294966//jbossas-7.0/standalone/log/server.log"
-					+ "------ Tail of 1317146294966 application server.log ------\n"
-					+ "11:31:36,289 INFO  [org.jboss.as.ee] (Controller Boot Thread) Activating EE subsystem\n"
+					+ "------ Tail of 1317146294966 application server.log ------\n";
+
+	private static final String INITIAL_LOG =
+					"11:31:36,289 INFO  [org.jboss.as.ee] (Controller Boot Thread) Activating EE subsystem\n"
 					+ "11:31:36,340 INFO  [org.apache.coyote.http11.Http11Protocol] (MSC service thread 1-1) Starting Coyote HTTP/1.1 on http--127.1.9.1-8080\n"
 					+ "11:31:36,440 INFO  [org.jboss.as.connector] (MSC service thread 1-4) Starting JCA Subsystem (JBoss IronJacamar 1.0.3.Final)\n"
 					+ "11:31:36,471 INFO  [org.jboss.as.connector.subsystems.datasources] (MSC service thread 1-1) Bound data source [java:jboss/datasources/ExampleDS]\n"
@@ -60,7 +63,7 @@ public class ApplicationLogReaderTest {
 					+ "11:32:14,176 INFO  [org.jboss.web] (MSC service thread 1-2) registering web context: \n"
 					+ "11:32:14,207 INFO  [org.jboss.as.server.controller] (DeploymentScanner-threads - 2) Deployed \"ROOT.war\"\n";
 
-	private String status = INITIAL_LOG;
+	private String status = LOG_HEADER + INITIAL_LOG;
 	private IOpenshiftService statusService;
 	private Application application;
 
@@ -97,6 +100,7 @@ public class ApplicationLogReaderTest {
 			assertNotNull(newLog);
 			assertTrue(newLog.length() > 0);
 			assertFalse(log.equals(newLog));
+			assertEquals(INITIAL_LOG + LOG_CONTINUATION, logReaderRunnable.getLog());
 		} finally {
 			if (executor != null) {
 				executor.shutdownNow();

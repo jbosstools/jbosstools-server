@@ -21,12 +21,12 @@ import org.jboss.ide.eclipse.as.openshift.core.ApplicationLogReader;
 public class LogReaderRunnable implements Runnable {
 
 	private ApplicationLogReader logReader;
-	private BlockingQueue<Character> logQueue;
 	private long timeout;
-
+	private BlockingQueue<Character> logQueue = new LinkedBlockingDeque<Character>();
+	private StringBuilder logBuilder = new StringBuilder();
+	
 	public LogReaderRunnable(ApplicationLogReader logReader, long timeout) {
 		this.logReader = logReader;
-		this.logQueue = new LinkedBlockingDeque<Character>();
 		this.timeout = timeout;
 	}
 
@@ -46,6 +46,7 @@ public class LogReaderRunnable implements Runnable {
 		boolean isNewEntry = character != null;
 		if (isNewEntry) {
 			builder.append(character);
+			logBuilder.append(character);
 		}
 		return isNewEntry;
 	}
@@ -56,5 +57,9 @@ public class LogReaderRunnable implements Runnable {
 			;
 		}
 		return builder.toString();
+	}
+
+	public String getLog() {
+		return logBuilder.toString();
 	}
 }
