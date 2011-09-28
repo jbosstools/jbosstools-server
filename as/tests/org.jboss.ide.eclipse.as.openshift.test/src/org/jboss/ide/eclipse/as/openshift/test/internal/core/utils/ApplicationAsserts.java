@@ -72,8 +72,6 @@ public class ApplicationAsserts {
 		assertNotNull(application);
 		assertEquals(embedded, application.getEmbedded());
 		assertEquals(uuid, application.getUUID());
-		assertNotNull(application.getCartridge());
-		assertEquals(cartridgeName, application.getCartridge().getName());
 		try {
 			assertEquals(RFC822DateUtils.getDate(creationTime), application.getCreationTime());
 		} catch (DatatypeConfigurationException e) {
@@ -81,6 +79,12 @@ public class ApplicationAsserts {
 		}
 	}
 
+	public static void assertApplication(String name, String cartridgeName, IApplication application) throws OpenshiftException {
+		assertNotNull(application);
+		assertNotNull(application.getCartridge());
+		assertEquals(cartridgeName, application.getCartridge().getName());
+	}
+	
 	public static void assertGitUri(String applicationName, String gitUri) {
 		Matcher matcher = GIT_URI_REGEXP.matcher(gitUri);
 		assertTrue(matcher.matches());
