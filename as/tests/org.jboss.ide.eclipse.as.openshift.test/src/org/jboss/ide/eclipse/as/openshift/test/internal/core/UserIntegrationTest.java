@@ -25,7 +25,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
+import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUtils;
@@ -37,7 +37,7 @@ import org.junit.Test;
  */
 public class UserIntegrationTest {
 
-	private InternalUser user;
+	private User user;
 
 	@Before
 	public void setUp() throws OpenshiftException, DatatypeConfigurationException {
