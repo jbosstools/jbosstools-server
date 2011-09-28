@@ -75,10 +75,10 @@ public class OpenshiftService implements IOpenshiftService {
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(
-					url, e, "Could not get InternalUser info for InternalUser \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
-					url, e, "Could not get InternalUser info for InternalUser \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
 		}
 	}
 
@@ -187,7 +187,7 @@ public class OpenshiftService implements IOpenshiftService {
 		} catch (UnauthorizedException e) {
 			throw new InvalidCredentialsOpenshiftException(
 					url, e,
-					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials InternalUser \"{3}\", password \"{4}\"",
+					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
 					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url,
 					user.getRhlogin(), user.getPassword());
 		} catch (HttpClientException e) {
@@ -218,7 +218,7 @@ public class OpenshiftService implements IOpenshiftService {
 		} catch (UnauthorizedException e) {
 			throw new InvalidCredentialsOpenshiftException(
 					url, e,
-					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials InternalUser \"{3}\", password \"{4}\"",
+					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
 					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url,
 					user.getRhlogin(),
 					user.getPassword());
