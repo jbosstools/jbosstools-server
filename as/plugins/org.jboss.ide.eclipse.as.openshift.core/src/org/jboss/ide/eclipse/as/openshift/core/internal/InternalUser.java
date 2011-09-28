@@ -52,6 +52,7 @@ public class InternalUser implements IUser {
 		this.service = service;
 	}
 
+	@Override
 	public IDomain getDomain() throws OpenshiftException {
 		if (domain == null) {
 			this.domain = new Domain(
@@ -61,6 +62,7 @@ public class InternalUser implements IUser {
 		return domain;
 	}
 
+	@Override
 	public ISSHPublicKey getSshKey() throws OpenshiftException {
 		if (sshKey == null) {
 			sshKey = getUserInfo().getSshPublicKey();
@@ -68,18 +70,22 @@ public class InternalUser implements IUser {
 		return sshKey;
 	}
 
+	@Override
 	public String getRhlogin() {
 		return rhlogin;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
 
+	@Override
 	public String getUUID() throws OpenshiftException {
 		return getUserInfo().getUuid();
 	}
 
+	@Override
 	public List<ICartridge> getCartridges() throws OpenshiftException {
 		if (cartridges == null) {
 			this.cartridges = service.getCartridges(this);
@@ -87,12 +93,14 @@ public class InternalUser implements IUser {
 		return Collections.unmodifiableList(cartridges);
 	}
 
+	@Override
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
 		Application application = service.createApplication(name, cartridge, this);
 		add(application);
 		return application;
 	}
 
+	@Override
 	public Collection<IApplication> getApplications() throws OpenshiftException {
 		if (getUserInfo().getApplicationInfos().size() > applications.size()) {
 			update(getUserInfo().getApplicationInfos());
@@ -100,6 +108,7 @@ public class InternalUser implements IUser {
 		return Collections.unmodifiableList(applications);
 	}
 
+	@Override
 	public IApplication getApplicationByName(String name) throws OpenshiftException {
 		return getApplicationByName(name, getApplications());
 	}
@@ -133,6 +142,7 @@ public class InternalUser implements IUser {
 		return userInfo;
 	}
 
+	@Override
 	public void refresh() throws OpenshiftException {
 		this.domain = null;
 		this.sshKey = null;
@@ -158,5 +168,4 @@ public class InternalUser implements IUser {
 	protected IOpenshiftService getService() {
 		return service;
 	}
-
 }

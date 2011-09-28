@@ -22,6 +22,8 @@ public interface IUser {
 
 	public String getPassword();
 
+	public String getUUID() throws OpenshiftException;
+	
 	public IDomain getDomain() throws OpenshiftException;
 
 	public ISSHPublicKey getSshKey() throws OpenshiftException;
@@ -33,5 +35,7 @@ public interface IUser {
 	public Collection<IApplication> getApplications() throws OpenshiftException;
 
 	public IApplication getApplicationByName(String name) throws OpenshiftException;
+	
+	public void refresh() throws OpenshiftException;
 
 }
