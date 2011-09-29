@@ -8,6 +8,9 @@
 	<feature url="features/org.jboss.tools.jmx.feature_0.0.0.jar" id="org.jboss.tools.jmx.feature" version="0.0.0">
 		<category name="JBoss Tools jmx Nightly Build Update Site"/>
 	</feature>
+	<feature url="features/org.jboss.tools.jmx.sdk.feature_0.0.0.jar" id="org.jboss.tools.jmx.sdk.feature" version="0.0.0">
+		<category name="JBoss Tools jmx Nightly Build Update Site"/>
+	</feature>
 	<feature url="features/org.jboss.tools.jmx.test.feature_0.0.0.jar" id="org.jboss.tools.jmx.test.feature" version="0.0.0">
         	<category name="JBoss Tools jmx Nightly Build Update Site"/>
         </feature>
