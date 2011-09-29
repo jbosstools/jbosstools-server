@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.jboss.tools.jmx.sdk.feature"
+      id="org.jboss.tools.jmx.source.feature"
       label="%featureName"
       version="1.2.0.qualifier"
       provider-name="%featureProvider">
@@ -20,11 +20,6 @@ for a full listing of individual contributors.
       %license
    </license>
 
-   <includes id="org.jboss.tools.jmx.feature" version="0.0.0"/>
    <plugin id="org.jboss.tools.jmx.core.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
    <plugin id="org.jboss.tools.jmx.ui.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-
-   <includes id="org.jboss.tools.jmx.test.feature" version="0.0.0"/>
-   <plugin id="org.jboss.tools.jmx.core.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
-   <plugin id="org.jboss.tools.jmx.ui.test.source" download-size="0" install-size="0" version="0.0.0" unpack="false"/>
 </feature>

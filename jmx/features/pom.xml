@@ -14,8 +14,9 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.jboss.tools.jmx.feature</module>
-		<module>org.jboss.tools.jmx.sdk.feature</module>
+		<module>org.jboss.tools.jmx.source.feature</module>
 		<module>org.jboss.tools.jmx.test.feature</module>
+		<module>org.jboss.tools.jmx.test.source.feature</module>
 	</modules>
 </project>
 	
