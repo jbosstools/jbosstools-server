@@ -20,4 +20,8 @@ public class User extends InternalUser {
 	public User(String rhlogin, String password) {
 		super(rhlogin, password);
 	}
+	
+	protected User(String rhlogin, String password, String url) {
+		super(rhlogin, password, url);
+	}
 }

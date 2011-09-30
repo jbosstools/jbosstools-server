@@ -18,6 +18,7 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.NotFoundException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UrlConnectionHttpClient;
 import org.jboss.ide.eclipse.as.openshift.core.internal.request.AbstractDomainRequest;
@@ -51,14 +52,25 @@ public class OpenshiftService implements IOpenshiftService {
 		this(BASE_URL);
 	}
 
-	protected OpenshiftService(String baseUrl) {
+	public OpenshiftService(String baseUrl) {
 		this.baseUrl = baseUrl;
 	}
 
+	@Override
 	public String getServiceUrl() {
 		return baseUrl + SERVICE_PATH;
 	}
-	
+
+	@Override
+	public String getPlatformUrl() {
+		return baseUrl;
+	}
+
+	@Override
+	public boolean isValid(InternalUser user) throws OpenshiftException {
+		return getUserInfo(user) != null;
+	}
+
 	@Override
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
 		UserInfoRequest request = new UserInfoRequest(user.getRhlogin(), true);
@@ -74,17 +86,21 @@ public class OpenshiftService implements IOpenshiftService {
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(
-					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url);
+		} catch (UnauthorizedException e) {
+			throw new InvalidCredentialsOpenshiftException(url, e);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenshiftException(url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
-					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url, e);
+					url, e, "Could not get user info for user \"{0}\" at \"{1}\"", user.getRhlogin(), url);
 		}
 	}
 
 	@Override
 	public List<ICartridge> getCartridges(InternalUser user) throws OpenshiftException {
 		ListCartridgesRequest listCartridgesRequest = new ListCartridgesRequest(user.getRhlogin(), true);
-		String url = listCartridgesRequest.getUrlString(BASE_URL);
+		String url = listCartridgesRequest.getUrlString(getServiceUrl());
 		try {
 			String listCartridgesRequestString =
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
@@ -95,8 +111,13 @@ public class OpenshiftService implements IOpenshiftService {
 			OpenshiftResponse<List<ICartridge>> response =
 					new ListCartridgesResponseUnmarshaller().unmarshall(listCatridgesReponse);
 			return response.getOpenshiftObject();
+			/**
+			 * always allowed to list cartridges, even with invalid credentials
+			 */
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenshiftException(url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not list available cartridges at \"{0}\"", url);
 		}
@@ -127,33 +148,42 @@ public class OpenshiftService implements IOpenshiftService {
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could reach openshift platform at \"{0}\"", url);
+		} catch (UnauthorizedException e) {
+			throw new InvalidCredentialsOpenshiftException(url, e);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenshiftException(url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(url, e, "Could not {0}", request.toHumanReadable());
 		}
 	}
 
 	@Override
-	public Application createApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
-		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.CONFIGURE,
+	public Application createApplication(String name, ICartridge cartridge, InternalUser user)
+			throws OpenshiftException {
+		Application application = requestApplicationAction(new ApplicationRequest(name, cartridge,
+				ApplicationAction.CONFIGURE,
 				user.getRhlogin(), true), user);
 		return application;
 	}
 
 	@Override
 	public void destroyApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
-		IApplication application = requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.DECONFIGURE,
+		IApplication application = requestApplicationAction(new ApplicationRequest(name, cartridge,
+				ApplicationAction.DECONFIGURE,
 				user.getRhlogin(), true), user);
-		user.remove(application); 
+		user.remove(application);
 	}
 
 	@Override
-	public IApplication startApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
+	public IApplication startApplication(String name, ICartridge cartridge, InternalUser user)
+			throws OpenshiftException {
 		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.START,
 				user.getRhlogin(), true), user);
 	}
 
 	@Override
-	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser user) throws OpenshiftException {
+	public IApplication restartApplication(String name, ICartridge cartridge, InternalUser user)
+			throws OpenshiftException {
 		return requestApplicationAction(new ApplicationRequest(name, cartridge, ApplicationAction.RESTART,
 				user.getRhlogin(), true), user);
 	}
@@ -184,11 +214,9 @@ public class OpenshiftService implements IOpenshiftService {
 					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
 					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
 		} catch (UnauthorizedException e) {
-			throw new InvalidCredentialsOpenshiftException(
-					url, e,
-					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
-					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url,
-					user.getRhlogin(), user.getPassword());
+			throw new InvalidCredentialsOpenshiftException(url, e);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenshiftException(url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not {0} application \"{1}\" at \"{2}\"",
@@ -215,12 +243,9 @@ public class OpenshiftService implements IOpenshiftService {
 					e, "Could not {0} application \"{1}\" at \"{2}\": Invalid url \"{2}\"",
 					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url);
 		} catch (UnauthorizedException e) {
-			throw new InvalidCredentialsOpenshiftException(
-					url, e,
-					"Could not {0} application \"{1}\" at \"{2}\": Invalid credentials user \"{3}\", password \"{4}\"",
-					applicationRequest.getAction().toHumanReadable(), applicationRequest.getName(), url,
-					user.getRhlogin(),
-					user.getPassword());
+			throw new InvalidCredentialsOpenshiftException(url, e);
+		} catch (NotFoundException e) {
+			throw new NotFoundOpenshiftException(url, e);
 		} catch (HttpClientException e) {
 			throw new OpenshiftEndpointException(
 					url, e, "Could not {0} application \"{1}\" at \"{2}\"",

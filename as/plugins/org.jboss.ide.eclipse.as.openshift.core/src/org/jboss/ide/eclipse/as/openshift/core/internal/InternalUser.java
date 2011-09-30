@@ -21,6 +21,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
+import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
 
@@ -43,6 +44,10 @@ public class InternalUser implements IUser {
 		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService());
 	}
 
+	public InternalUser(String rhlogin, String password, String url) {
+		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(url));
+	}
+
 	public InternalUser(String rhlogin, String password, IOpenshiftService service) {
 		this(rhlogin, password, (ISSHPublicKey) null, service);
 	}
@@ -52,6 +57,15 @@ public class InternalUser implements IUser {
 		this.password = password;
 		this.sshKey = sshKey;
 		this.service = service;
+	}
+	
+	@Override
+	public boolean isValid() throws OpenshiftException {
+		try {
+			return service.isValid(this);
+		} catch(InvalidCredentialsOpenshiftException e) {
+			return false;
+		}
 	}
 
 	@Override

@@ -22,6 +22,8 @@ public interface IUser {
 
 	public String getPassword();
 
+	public boolean isValid() throws OpenshiftException;
+	
 	public String getUUID() throws OpenshiftException;
 	
 	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenshiftException;

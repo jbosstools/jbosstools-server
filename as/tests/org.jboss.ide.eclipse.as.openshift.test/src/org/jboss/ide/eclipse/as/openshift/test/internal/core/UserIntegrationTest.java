@@ -12,6 +12,7 @@ package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
 import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationAsserts.assertApplication;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -23,6 +24,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
+import org.jboss.ide.eclipse.as.openshift.core.NotFoundOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
@@ -30,6 +32,7 @@ import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -38,12 +41,32 @@ import org.junit.Test;
 public class UserIntegrationTest {
 
 	private User user;
+	private TestUser invalidUser;
+	private TestUser badUrlUser;
 
 	@Before
 	public void setUp() throws OpenshiftException, DatatypeConfigurationException {
 		this.user = new TestUser();
+		this.invalidUser = new TestUser("bogusPassword");
+		this.badUrlUser = new TestUser(TestUser.RHLOGIN, TestUser.PASSWORD, "http://www.redhat.com");
 	}
 
+	@Test 
+	public void canCheckIfUserIsValid() throws OpenshiftException {
+		assertTrue(user.isValid());
+	}
+	
+	@Test
+	public void throwsExceptionIfInvalidCredentials() throws OpenshiftException {
+		assertFalse(invalidUser.isValid());
+	}
+
+	@Test(expected=NotFoundOpenshiftException.class)
+	public void throwsExceptionIfBadUrl() throws OpenshiftException {
+		badUrlUser.isValid();
+	}
+
+	@Ignore
 	@Test
 	public void canGetUserUUID() throws OpenshiftException {
 		String uuid = user.getUUID();
@@ -51,6 +74,7 @@ public class UserIntegrationTest {
 		assertTrue(uuid.length() > 0);
 	}
 
+	@Ignore
 	@Test
 	public void canGetPublicKey() throws OpenshiftException {
 		ISSHPublicKey key = user.getSshKey();
@@ -59,6 +83,7 @@ public class UserIntegrationTest {
 		assertTrue(key.getPublicKey().length() > 0);
 	}
 
+	@Ignore
 	@Test
 	public void canGetDomain() throws OpenshiftException {
 		IDomain domain = user.getDomain();
@@ -69,6 +94,7 @@ public class UserIntegrationTest {
 		assertTrue(domain.getNamespace().length() > 0);
 	}
 
+	@Ignore
 	@Test(expected=OpenshiftEndpointException.class)
 	public void cannotCreateDomainIfAlreadyExists() throws OpenshiftException {
 		IDomain domain = user.getDomain();
@@ -78,6 +104,7 @@ public class UserIntegrationTest {
 		user.createDomain("newDomain", key);
 	}
 
+	@Ignore
 	@Test
 	public void canGetCartridges() throws OpenshiftException {
 		Collection<ICartridge> cartridges = user.getCartridges();
@@ -85,12 +112,14 @@ public class UserIntegrationTest {
 		assertTrue(cartridges.size() >= 5);
 	}
 
+	@Ignore
 	@Test
 	public void canGetApplications() throws OpenshiftException {
 		Collection<IApplication> applications = user.getApplications();
 		assertNotNull(applications);
 	}
 
+	@Ignore
 	@Test
 	public void canCreateApplication() throws OpenshiftException {
 		String applicationName = ApplicationUtils.createRandomApplicationName();
@@ -106,6 +135,7 @@ public class UserIntegrationTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void canGetApplicationByName() throws OpenshiftException, DatatypeConfigurationException {
 		String applicationName = ApplicationUtils.createRandomApplicationName();

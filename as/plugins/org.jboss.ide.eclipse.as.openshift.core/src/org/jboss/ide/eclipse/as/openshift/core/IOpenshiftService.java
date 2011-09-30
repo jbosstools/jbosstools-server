@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
@@ -29,7 +30,7 @@ public interface IOpenshiftService {
 	/**
 	 * The path (url path addition) to the service
 	 */
-	public static final String SERVICE_PATH = "/com/broker";
+	public static final String SERVICE_PATH = "/broker";
 
 	/**
 	 * Returns the url at which the service is reachable.
@@ -46,20 +47,14 @@ public interface IOpenshiftService {
 	public String getPlatformUrl();
 
 	/**
-	 * Returns <code>true</code> if the service is reachable. Returns
+	 * Returns <code>true</code> if given user has valid credentials. Returns
 	 * <code>false</code> otherwise.
 	 * 
-	 * @return true if the service is reachable.
-	 */
-	public boolean isReachable();
-
-	/**
-	 * Returns <code>true</code> if the service is reachable and the credentials
-	 * are valid. Returns <code>false</code> otherwise.
-	 * 
 	 * @return
+	 * @throws OpenshiftException
+	 * @throws MalformedURLException
 	 */
-	public boolean areCredentialsValid();
+	public boolean isValid(InternalUser user) throws OpenshiftException;
 
 	/**
 	 * List all cartridges that are available on the Openshift Express platform.
@@ -68,6 +63,7 @@ public interface IOpenshiftService {
 	 *            the user account that shall be used
 	 * @return the list of cartridges available on the platform
 	 * @throws OpenshiftException
+	 * @throws MalformedURLException
 	 * 
 	 * @see InternalUser
 	 */

@@ -21,8 +21,8 @@ import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationUt
  */
 public class TestUser extends User {
 
-	private static final String RHLOGIN = "toolsjboss@gmail.com";
-	private static final String PASSWORD = "1q2w3e";
+	public static final String RHLOGIN = "toolsjboss@gmail.com";
+	public static final String PASSWORD = "1q2w3e";
 
 	public TestUser() {
 		super(RHLOGIN, PASSWORD);
@@ -32,6 +32,10 @@ public class TestUser extends User {
 		super(RHLOGIN, password);
 	}
 
+	public TestUser(String rhlogin, String password, String url) {
+		super(rhlogin, password, url);
+	}
+	
 	public IApplication createTestApplication() throws OpenshiftException {
 		return createApplication(ApplicationUtils.createRandomApplicationName(), Cartridge.JBOSSAS_7);
 	}
