@@ -8,22 +8,28 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/ 
-package org.jboss.ide.eclipse.as.openshift.core.internal;
+package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.IApplication;
-import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IDomain;
-import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 
 /**
  * @author André Dietisheim
  */
 public interface IOpenshiftService {
 
-	public static final String BASE_URL = "https://openshift.redhat.com/broker";
+	/**
+	 * The platform base url
+	 */
+	public static final String BASE_URL = "https://openshift.redhat.com";
+
+	/**
+	 * The service base url
+	 */
+	public static final String SERVICE_BASE_URL = BASE_URL + "/com/broker";
 
 	/**
 	 * List all cartridges that are available on the Openshift Express platform.
@@ -169,7 +175,7 @@ public interface IOpenshiftService {
 	 * @throws OpenshiftException
 	 * 
 	 * @see InternalUser
-	 * @see UserInfo
+	 * @see InternalUserInfo
 	 * @see ApplicationInfo
 	 */
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException;

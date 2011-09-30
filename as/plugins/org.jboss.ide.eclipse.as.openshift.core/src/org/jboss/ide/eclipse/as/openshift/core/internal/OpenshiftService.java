@@ -18,6 +18,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;

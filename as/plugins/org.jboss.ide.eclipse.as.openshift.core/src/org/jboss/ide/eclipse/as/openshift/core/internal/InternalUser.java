@@ -18,6 +18,7 @@ import java.util.List;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
