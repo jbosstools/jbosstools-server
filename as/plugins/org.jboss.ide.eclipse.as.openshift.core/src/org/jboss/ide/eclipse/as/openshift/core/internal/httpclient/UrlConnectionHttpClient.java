@@ -52,6 +52,23 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
+	public String get() throws HttpClientException {
+		HttpURLConnection connection = null;
+		try {
+			connection = createConnection(url);
+			return StreamUtils.readToString(connection.getInputStream());
+		} catch (FileNotFoundException e) {
+			throw new NotFoundException(
+					MessageFormat.format("Could not find resource {0}", url.toString()), e);
+		} catch (IOException e) {
+			throw createException(e, connection);
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
+		}
+	}
+	
 	private HttpClientException createException(IOException ioe, HttpURLConnection connection) {
 		try {
 			int responseCode = connection.getResponseCode();

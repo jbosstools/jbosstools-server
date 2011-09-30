@@ -18,4 +18,6 @@ import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientExc
 public interface IHttpClient {
 
 	public String post(String data) throws HttpClientException;
+
+	public String get() throws HttpClientException;
 }
