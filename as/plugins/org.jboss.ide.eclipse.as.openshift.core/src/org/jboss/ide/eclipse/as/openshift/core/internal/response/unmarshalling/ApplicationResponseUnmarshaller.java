@@ -12,8 +12,8 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.response.unmarshalling;
 
 import org.jboss.dmr.ModelNode;
 import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
-import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 
 /**

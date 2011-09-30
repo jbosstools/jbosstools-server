@@ -8,21 +8,15 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.ide.eclipse.as.openshift.core.internal;
+package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import org.jboss.ide.eclipse.as.openshift.core.IApplication;
-import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
-import org.jboss.ide.eclipse.as.openshift.core.IDomain;
-import org.jboss.ide.eclipse.as.openshift.core.IHttpClient;
-import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
-import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
-import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftEndpointException;
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.internal.Application;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
+import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.HttpClientException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UnauthorizedException;
 import org.jboss.ide.eclipse.as.openshift.core.internal.httpclient.UrlConnectionHttpClient;
@@ -61,10 +55,14 @@ public class OpenshiftService implements IOpenshiftService {
 		this.baseUrl = baseUrl;
 	}
 
+	public String getServiceUrl() {
+		return baseUrl + SERVICE_PATH;
+	}
+	
 	@Override
 	public UserInfo getUserInfo(InternalUser user) throws OpenshiftException {
 		UserInfoRequest request = new UserInfoRequest(user.getRhlogin(), true);
-		String url = request.getUrlString(baseUrl);
+		String url = request.getUrlString(getServiceUrl());
 		try {
 			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
 			String openShiftRequestString = new OpenshiftEnvelopeFactory(user.getPassword(), requestString)
@@ -115,7 +113,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	protected IDomain requestDomainAction(AbstractDomainRequest request, InternalUser user) throws OpenshiftException {
-		String url = request.getUrlString(baseUrl);
+		String url = request.getUrlString(getServiceUrl());
 		try {
 			String requestString =
 					new OpenshiftEnvelopeFactory(
@@ -170,7 +168,7 @@ public class OpenshiftService implements IOpenshiftService {
 	public String getStatus(String applicationName, ICartridge cartridge, InternalUser user) throws OpenshiftException {
 		ApplicationRequest applicationRequest =
 				new ApplicationRequest(applicationName, cartridge, ApplicationAction.STATUS, user.getRhlogin(), true);
-		String url = applicationRequest.getUrlString(baseUrl);
+		String url = applicationRequest.getUrlString(getServiceUrl());
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
@@ -200,7 +198,7 @@ public class OpenshiftService implements IOpenshiftService {
 
 	protected Application requestApplicationAction(ApplicationRequest applicationRequest, InternalUser user)
 			throws OpenshiftException {
-		String url = applicationRequest.getUrlString(baseUrl);
+		String url = applicationRequest.getUrlString(getServiceUrl());
 		try {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);

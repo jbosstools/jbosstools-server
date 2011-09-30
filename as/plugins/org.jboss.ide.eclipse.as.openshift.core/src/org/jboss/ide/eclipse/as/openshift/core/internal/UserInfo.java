@@ -12,6 +12,8 @@ package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import java.util.List;
 
+import org.jboss.ide.eclipse.as.openshift.core.SSHPublicKey;
+
 
 /**
  * @author André Dietisheim

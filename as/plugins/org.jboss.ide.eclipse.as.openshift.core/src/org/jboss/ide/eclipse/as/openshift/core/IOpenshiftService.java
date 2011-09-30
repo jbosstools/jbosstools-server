@@ -27,10 +27,17 @@ public interface IOpenshiftService {
 	public static final String BASE_URL = "https://openshift.redhat.com";
 
 	/**
-	 * The service base url
+	 * the path (url path addition)
 	 */
-	public static final String SERVICE_BASE_URL = BASE_URL + "/com/broker";
+	public static final String SERVICE_PATH = "/com/broker";
 
+	/**
+	 * returns the url at which the service is reachable.
+	 * 
+	 * @return
+	 */
+	public String getServiceUrl();
+	
 	/**
 	 * List all cartridges that are available on the Openshift Express platform.
 	 * 
