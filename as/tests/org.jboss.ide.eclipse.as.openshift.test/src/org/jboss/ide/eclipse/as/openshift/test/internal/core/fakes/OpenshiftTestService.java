@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.IOpenshiftTestService;
 
 public class OpenshiftTestService extends OpenshiftService implements IOpenshiftTestService {

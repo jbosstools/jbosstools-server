@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.test.internal.core;
 
-import org.jboss.ide.eclipse.as.openshift.core.internal.IOpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 
 /**
  * @author André Dietisheim
