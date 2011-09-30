@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.category"
+            name="Openshift Express">
+      </category>
+      <wizard
+            category="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.category"
+            class="org.jboss.ide.eclipse.as.openshift.ui.internal.wizard.ServerAdapterWizard"
+            icon="icons/openshift-logo-white-icon.png"
+            id="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.NewServerAdapter"
+            name="New Server Adapter">
+      </wizard>
+   </extension>
 </plugin>

@@ -1,5 +1,7 @@
-package org.jboss.ide.eclipse.as.openshift.ui;
+package org.jboss.ide.eclipse.as.openshift.ui.internal;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -45,6 +47,14 @@ public class OpenshiftUIActivator extends AbstractUIPlugin {
 	 */
 	public static OpenshiftUIActivator getDefault() {
 		return plugin;
+	}
+	
+	public static void log(IStatus status) {
+		plugin.getLog().log(status);
+	}
+
+	public static void log(Throwable e) {
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 	}
 
 }
