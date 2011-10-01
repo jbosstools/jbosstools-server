@@ -16,6 +16,8 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftImages;
 import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
 
@@ -37,14 +39,23 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		DataBindingContext dbc = new DataBindingContext();
+		final DataBindingContext dbc = new DataBindingContext();
 		ParametrizableWizardPageSupport.create(
 				IStatus.ERROR | IStatus.INFO | IStatus.WARNING | IStatus.CANCEL, this,
 				dbc);
 		Composite container = new Composite(parent, SWT.NONE);
 		setControl(container);
+		container.addListener(SWT.Show, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				onPageVisible(dbc);
+			}
+		});
 		doCreateControls(container, dbc);
 	}
 	
+	protected void onPageVisible(DataBindingContext dbc) {
+	}
+
 	protected abstract void doCreateControls(Composite parent, DataBindingContext dbc);
 }

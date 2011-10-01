@@ -33,6 +33,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	private String rhLogin;
 	private String password;
 	private IStatus credentialsValidity;
+	private IUser user;
 
 	public ServerAdapterWizardModel() {
 		this.serverUrl = IOpenshiftService.BASE_URL;
@@ -74,13 +75,17 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	public void validateCredentials() {
 		IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Your credentails are not valid.");
 		try {
-			IUser user = new User(getRhLogin(), getPassword());
+			this.user = new User(getRhLogin(), getPassword());
 			if(user.isValid()) {
 				status = Status.OK_STATUS;
 			}
 		} catch (OpenshiftException e) {
-			// do nothing
+			this.user = null;
 		}
 		setCredentialsStatus(status);
+	}
+
+	public IUser getUser() {
+		return user;
 	}
 }
