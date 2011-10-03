@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	UserConfigurationTest.class,
 	ApplicationTest.class,
 	ApplicationLogReaderTest.class,
 	ListCartridgesTest.class,

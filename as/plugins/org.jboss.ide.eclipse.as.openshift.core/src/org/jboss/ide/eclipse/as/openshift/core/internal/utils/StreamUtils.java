@@ -2,12 +2,14 @@ package org.jboss.ide.eclipse.as.openshift.core.internal.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +78,18 @@ public class StreamUtils {
 	public static void close(OutputStream outputStream) throws IOException {
 		if (outputStream != null) {
 			outputStream.close();
+		}
+	}
+
+	public static void close(Reader reader) throws IOException {
+		if (reader != null) {
+			reader.close();
+		}
+	}
+
+	public static void close(Writer writer) throws IOException {
+		if (writer != null) {
+			writer.close();
 		}
 	}
 

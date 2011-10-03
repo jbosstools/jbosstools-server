@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
+import org.jboss.ide.eclipse.as.openshift.core.UserConfiguration;
 
 /**
  * @author André Dietisheim
@@ -39,6 +41,14 @@ public class InternalUser implements IUser {
 	private List<IApplication> applications = new ArrayList<IApplication>();
 
 	private IOpenshiftService service;
+
+	public InternalUser(String password) throws OpenshiftException, IOException {
+		this(new UserConfiguration(), password);
+	}
+
+	public InternalUser(UserConfiguration configuration, String password) {
+		this(configuration.getRhlogin(), password, (ISSHPublicKey) null, new OpenshiftService());
+	}
 
 	public InternalUser(String rhlogin, String password) {
 		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService());
