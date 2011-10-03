@@ -86,7 +86,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 
 		Button createButton = new Button(container, SWT.NONE);
 		createButton.setText("&Create New Domain");
-		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).span(2, 1).indent(0, 10).hint(140, 34).applyTo(createButton);
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).span(2, 1).indent(0, 10).hint(160, 34).applyTo(createButton);
 		createButton.addSelectionListener(onCreate(dbc));
 		DataBindingUtils.bindButtonEnablementToValidationStatus(createButton, dbc);
 	}
