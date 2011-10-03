@@ -16,6 +16,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
+import org.jboss.ide.eclipse.as.openshift.core.NotFoundOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.User;
 import org.jboss.ide.eclipse.as.openshift.core.UserConfiguration;
@@ -113,7 +114,10 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 			if (user.isValid()) {
 				status = Status.OK_STATUS;
 			}
-		} catch (OpenshiftException e) {
+		} catch (NotFoundOpenshiftException e) {
+			// valid user without domain
+			status = Status.OK_STATUS;
+		} catch(OpenshiftException e) {
 			this.user = null;
 		}
 		setCredentialsStatus(status);
