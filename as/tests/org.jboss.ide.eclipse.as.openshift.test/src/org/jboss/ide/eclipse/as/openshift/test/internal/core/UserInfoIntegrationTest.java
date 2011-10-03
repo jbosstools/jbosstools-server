@@ -23,11 +23,11 @@ import org.jboss.ide.eclipse.as.openshift.core.NotFoundOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.internal.ApplicationInfo;
+import org.jboss.ide.eclipse.as.openshift.core.internal.InternalUser;
 import org.jboss.ide.eclipse.as.openshift.core.internal.UserInfo;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.ApplicationInfoAsserts;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,14 +41,12 @@ public class UserInfoIntegrationTest {
 	private OpenshiftService openshiftService;
 	private TestUser user;
 
-	@Ignore
 	@Before
 	public void setUp() {
 		this.openshiftService = new OpenshiftService();
 		this.user = new TestUser();
 	}
 
-	@Ignore
 	@Test
 	public void canGetUserInfo() throws Exception {
 		UserInfo userInfo = openshiftService.getUserInfo(user);
@@ -94,7 +92,6 @@ public class UserInfoIntegrationTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void canUseReturnedSSHKeyToChangeDomain() throws Exception {
 		UserInfo userInfo = openshiftService.getUserInfo(user);
