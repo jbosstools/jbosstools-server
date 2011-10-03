@@ -32,6 +32,10 @@ public class TestUser extends User {
 		super(RHLOGIN, password);
 	}
 
+	public TestUser(String rhlogin, String password) {
+		super(rhlogin, password);
+	}
+
 	public TestUser(String rhlogin, String password, String url) {
 		super(rhlogin, password, url);
 	}
