@@ -10,14 +10,10 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
-import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.ValidationStatusProvider;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.observable.IObservableCollection;
-import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -25,12 +21,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -42,8 +35,7 @@ import org.eclipse.swt.widgets.Text;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftUIActivator;
 import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
-import org.jboss.tools.common.ui.databinding.MandatoryStringValidator;
-import org.jboss.tools.common.ui.databinding.Status2BooleanConverter;
+import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 
 /**
  * @author André Dietisheim
@@ -55,7 +47,8 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 	private Button validateButton;
 
 	public ServerWizardPage(IWizard wizard, ServerAdapterWizardModel model) {
-		super("Server connetion", "Please provide the credentails of your user account on Openshift Express", "Server Connection", wizard, model);
+		super("Server connetion", "Please provide the credentails of your user account on Openshift Express",
+				"Server Connection", wizard, model);
 		this.model = model;
 	}
 
@@ -91,7 +84,7 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(rhLoginLabel);
 		Text rhLoginText = new Text(container, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(rhLoginText);
-		Binding rhLoginBining = bindMandatoryTextField(
+		Binding rhLoginBining = DataBindingUtils.bindMandatoryTextField(
 				rhLoginText, "Username", ServerAdapterWizardModel.PROPERTY_RHLOGIN, model, dbc);
 
 		Label passwordLabel = new Label(container, SWT.NONE);
@@ -99,7 +92,7 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(passwordLabel);
 		Text passwordText = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(passwordText);
-		Binding passwordBinding = bindMandatoryTextField(
+		Binding passwordBinding = DataBindingUtils.bindMandatoryTextField(
 				passwordText, "Password", ServerAdapterWizardModel.PROPERTY_PASSWORD, model, dbc);
 
 		Label spacerLabel = new Label(container, SWT.None);
@@ -112,11 +105,14 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		this.validateButton = new Button(container, SWT.NONE);
 		validateButton.setText("&Validate");
 		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).indent(0, 10).hint(100, 34).applyTo(validateButton);
-		bindValidateButtonEnablement(validateButton, dbc, toObservableCollection(rhLoginBining, passwordBinding));
+		DataBindingUtils.bindButtonEnablementToValidationStatus(
+				validateButton,
+				dbc,
+				rhLoginBining, passwordBinding);
 		validateButton.addSelectionListener(onValidate(dbc));
 		dbc.bindValue(
 				new WritableValue(null, IStatus.class),
-				BeanProperties.value(ServerAdapterWizardModel.PROPERTY_CREDENTIALSVALIDITY).observe(model),
+				BeanProperties.value(ServerAdapterWizardModel.PROPERTY_CREDENTIALS_VALIDITY).observe(model),
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
 				new UpdateValueStrategy().setAfterGetValidator(
 						new CredentialsStatusValidator()));
@@ -154,36 +150,6 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 				getWizard().getContainer().getShell().close();
 			}
 		};
-	}
-
-	private Binding bindMandatoryTextField(Text text, String fieldName, String modelProperty,
-			ServerAdapterWizardModel model,
-			DataBindingContext dbc) {
-		Binding binding = dbc.bindValue(
-				WidgetProperties.text(SWT.Modify).observe(text),
-				BeanProperties.value(modelProperty).observe(model),
-				new UpdateValueStrategy().setAfterGetValidator(
-						new MandatoryStringValidator(NLS.bind("You have to provide a value for the {0}.", fieldName))),
-				null);
-		ControlDecorationSupport.create(binding, SWT.LEFT | SWT.TOP);
-		return binding;
-	}
-
-	private void bindValidateButtonEnablement(final Button testButton, DataBindingContext dbc,
-			IObservableCollection validationStatusProviders) {
-		dbc.bindValue(
-				WidgetProperties.enabled().observe(testButton),
-				new AggregateValidationStatus(validationStatusProviders, AggregateValidationStatus.MAX_SEVERITY),
-				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-				new UpdateValueStrategy().setConverter(new Status2BooleanConverter(IStatus.ERROR)));
-	}
-
-	protected IObservableCollection toObservableCollection(ValidationStatusProvider... validationStatusProviders) {
-		WritableList validationProviders = new WritableList();
-		for (ValidationStatusProvider provider : validationStatusProviders) {
-			validationProviders.add(provider);
-		}
-		return validationProviders;
 	}
 
 	private static class CredentialsStatusValidator implements IValidator {

@@ -38,6 +38,7 @@ public class ServerAdapterWizard extends Wizard implements INewWizard {
 	public void addPages() {
 		ServerAdapterWizardModel model = new ServerAdapterWizardModel();
 		addPage(new ServerWizardPage(this, model));
+		addPage(new NewDomainWizardPage(this, model));
 		addPage(new ApplicationWizardPage(this, model));
 	}
 }
