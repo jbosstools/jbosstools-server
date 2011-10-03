@@ -48,10 +48,11 @@ import org.jboss.tools.common.ui.databinding.DataBindingUtils;
  */
 public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 
+	private static final String OPENSHIFT_EXPRESS_SIGNUP_URL = "https://openshift.redhat.com/app/user/new/express"; //$NON-NLS-1$
+
 	private static final String DIRECTORY_SSH_KEYS = ".ssh";
 	private static final String FILTEREXPRESSION_PUBLIC_SSH_KEY = "*.pub";
 	private static final String FILTERNAME_PUBLIC_SSH_KEY = "Public ssh key file (*.pub)";
-	protected static final String OPENSHIFT_EXPRESS_SIGNUP_URL = "https://openshift.redhat.com/app/user/new/express"; //$NON-NLS-1$
 
 	public NewDomainWizardPage(IWizard wizard, ServerAdapterWizardModel model) {
 		super("New Domain", "Please create a new domain",
