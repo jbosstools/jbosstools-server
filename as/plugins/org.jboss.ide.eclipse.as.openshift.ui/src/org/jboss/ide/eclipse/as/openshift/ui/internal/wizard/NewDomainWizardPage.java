@@ -75,10 +75,10 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(sshKeyLabel);
 		Text sshKeyText = new Text(container, SWT.READ_ONLY | SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(sshKeyText);
-		DataBindingUtils.bindMandatoryTextField(sshKeyText, "SSH Key", ServerAdapterWizardModel.PROPERTY_SSHKEY, sshKeyText, dbc);
+		DataBindingUtils.bindMandatoryTextField(sshKeyText, "SSH Key", ServerAdapterWizardModel.PROPERTY_SSHKEY, model, dbc);
 		Button browseSShKeyButton = new Button(container, SWT.PUSH);
 		browseSShKeyButton.setText("Browse");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(100, 34).applyTo(browseSShKeyButton);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(browseSShKeyButton);
 		browseSShKeyButton.addSelectionListener(onBrowseSshKey());
 
 		Label spacerLabel = new Label(container, SWT.None);
@@ -103,7 +103,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 				dialog.setFilterExtensions(new String[]{FILTEREXPRESSION_PUBLIC_SSH_KEY});
 				String sshKeyPath = dialog.open();
 				if (sshKeyPath != null){
-					model.setSshKey(dialog.getFileName());
+					model.setSshKey(sshKeyPath);
 				};
 			}
 		};
