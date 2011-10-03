@@ -80,7 +80,9 @@ public class InternalUser implements IUser {
 		if (domain == null) {
 			this.domain = new Domain(
 					getUserInfo().getNamespace()
-					, getUserInfo().getRhcDomain(), this);
+					, getUserInfo().getRhcDomain()
+					, this
+					, service);
 		}
 		return domain;
 	}

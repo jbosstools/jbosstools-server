@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.openshift.core.internal;
 
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
+import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 
@@ -20,23 +21,36 @@ import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 public class Domain extends UserInfoAware implements IDomain {
 
 	private String namespace;
+	private IOpenshiftService service;
 
-	public Domain(String namespace, InternalUser user) {
-		this(namespace, null, user);
+	public Domain(String namespace, InternalUser user, IOpenshiftService service) {
+		this(namespace, null, user, service);
 	}
 
-	public Domain(String namespace, String rhcDomain, InternalUser user) {
+	public Domain(String namespace, String rhcDomain, InternalUser user, IOpenshiftService service) {
 		super(user);
 		this.namespace = namespace;
+		this.service = service;
 	}
 
 	@Override
-	public String getNamespace() throws OpenshiftException {
+	public String getNamespace() {
 		return namespace;
 	}
 
 	@Override
 	public String getRhcDomain() throws OpenshiftException {
 		return getUserInfo().getRhcDomain();
+	}
+
+	@Override
+	public void setNamespace(String namespace) throws OpenshiftException {
+		InternalUser user = getUser();
+		IDomain domain = service.changeDomain(namespace, user.getSshKey(), user);
+		update(domain);
+	}
+
+	private void update(IDomain domain) {
+		this.namespace = domain.getNamespace();
 	}
 }

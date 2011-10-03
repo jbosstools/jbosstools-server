@@ -144,7 +144,7 @@ public class OpenshiftService implements IOpenshiftService {
 			String responseString = createHttpClient(url).post(requestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<IDomain> response =
-					new DomainResponseUnmarshaller(request.getName(), user).unmarshall(responseString);
+					new DomainResponseUnmarshaller(request.getName(), user, this).unmarshall(responseString);
 			return response.getOpenshiftObject();
 		} catch (MalformedURLException e) {
 			throw new OpenshiftEndpointException(url, e, "Could reach openshift platform at \"{0}\"", url);

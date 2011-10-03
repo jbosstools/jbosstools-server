@@ -15,7 +15,9 @@ package org.jboss.ide.eclipse.as.openshift.core;
  */
 public interface IDomain {
 
-	public abstract String getNamespace() throws OpenshiftException;
+	public abstract void setNamespace(String namespace) throws OpenshiftException;
+
+	public abstract String getNamespace();
 
 	public abstract String getRhcDomain() throws OpenshiftException;
 

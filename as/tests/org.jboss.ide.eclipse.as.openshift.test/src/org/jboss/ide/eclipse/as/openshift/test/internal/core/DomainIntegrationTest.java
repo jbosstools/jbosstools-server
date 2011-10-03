@@ -19,6 +19,7 @@ import org.jboss.ide.eclipse.as.openshift.core.SSHKeyPair;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestSSHKey;
 import org.jboss.ide.eclipse.as.openshift.test.internal.core.fakes.TestUser;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DomainIntegrationTest {
@@ -32,6 +33,7 @@ public class DomainIntegrationTest {
 		this.user = new TestUser();
 	}
 
+	@Ignore
 	@Test
 	public void canCreateDomain() throws Exception {
 
@@ -43,6 +45,7 @@ public class DomainIntegrationTest {
 		assertEquals(domainName, domain.getNamespace());
 	}
 
+	@Ignore
 	@Test
 	public void canChangeDomain() throws Exception {
 
@@ -52,6 +55,15 @@ public class DomainIntegrationTest {
 
 		assertNotNull(domain);
 		assertEquals(domainName, domain.getNamespace());
+	}
+
+	@Test
+	public void canSetNamespaceOnDomain() throws Exception {
+		IDomain domain = user.getDomain();
+		assertNotNull(domain);
+		String newDomainName = createRandomString();
+		domain.setNamespace(newDomainName);
+		assertEquals(newDomainName, domain.getNamespace());
 	}
 
 	private String createRandomString() {
