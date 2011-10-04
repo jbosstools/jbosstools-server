@@ -23,6 +23,7 @@ import org.jboss.ide.eclipse.as.openshift.core.IOpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.InvalidCredentialsOpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.NotFoundOpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftService;
 import org.jboss.ide.eclipse.as.openshift.core.UserConfiguration;
@@ -68,12 +69,12 @@ public class InternalUser implements IUser {
 		this.sshKey = sshKey;
 		this.service = service;
 	}
-	
+
 	@Override
 	public boolean isValid() throws OpenshiftException {
 		try {
 			return service.isValid(this);
-		} catch(InvalidCredentialsOpenshiftException e) {
+		} catch (InvalidCredentialsOpenshiftException e) {
 			return false;
 		}
 	}
@@ -84,23 +85,31 @@ public class InternalUser implements IUser {
 		this.domain = getService().createDomain(name, key, this);
 		return domain;
 	}
-	
+
 	@Override
 	public IDomain getDomain() throws OpenshiftException {
 		if (domain == null) {
-			this.domain = new Domain(
-					getUserInfo().getNamespace()
-					, getUserInfo().getRhcDomain()
-					, this
-					, service);
+			try {
+				this.domain = new Domain(
+						getUserInfo().getNamespace()
+						, getUserInfo().getRhcDomain()
+						, this
+						, service);
+			} catch (NotFoundOpenshiftException e) {
+				return null;
+			}
 		}
 		return domain;
 	}
 
+	public boolean hasDomain() throws OpenshiftException {
+		return getDomain() != null;
+	}
+	
 	private void setSshKey(ISSHPublicKey key) {
 		this.sshKey = key;
 	}
-	
+
 	@Override
 	public ISSHPublicKey getSshKey() throws OpenshiftException {
 		if (sshKey == null) {
@@ -187,7 +196,7 @@ public class InternalUser implements IUser {
 		this.sshKey = null;
 		getUserInfo();
 	}
-	
+
 	private void update(List<ApplicationInfo> applicationInfos) {
 		for (ApplicationInfo applicationInfo : applicationInfos) {
 			IApplication application = getApplicationByName(applicationInfo.getName(), applications);

@@ -12,7 +12,6 @@ package org.jboss.ide.eclipse.as.openshift.core;
 
 import java.util.Collection;
 
-
 /**
  * @author André Dietisheim
  */
@@ -23,23 +22,34 @@ public interface IUser {
 	public String getPassword();
 
 	public boolean isValid() throws OpenshiftException;
-	
+
 	public String getUUID() throws OpenshiftException;
-	
+
 	public IDomain createDomain(String name, ISSHPublicKey key) throws OpenshiftException;
 
+	/**
+	 * Returns the domain that this user created previously. Returns
+	 * <code>null</code> if no domain was created.
+	 * 
+	 * @return the domain that this user created
+	 * @throws OpenshiftException
+	 * 
+	 * @see #createDomain
+	 */
 	public IDomain getDomain() throws OpenshiftException;
+
+	public boolean hasDomain() throws OpenshiftException;
 
 	public ISSHPublicKey getSshKey() throws OpenshiftException;
 
 	public Collection<ICartridge> getCartridges() throws OpenshiftException;
 
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException;
-	
+
 	public Collection<IApplication> getApplications() throws OpenshiftException;
 
 	public IApplication getApplicationByName(String name) throws OpenshiftException;
-	
+
 	public void refresh() throws OpenshiftException;
 
 }
