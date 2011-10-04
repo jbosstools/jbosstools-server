@@ -16,10 +16,12 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.osgi.service.debug.DebugOptions;
 import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
@@ -67,8 +69,16 @@ public class JBossServerCorePlugin extends Plugin  {
 		UnitedServerListenerManager.getDefault();
 		UnitedServerListenerManager.getDefault().addListener(XPathModel.getDefault());
 		UnitedServerListenerManager.getDefault().addListener(ServerListener.getDefault());
-		FacetedProjectFramework.addListener( JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
-		
+		// It's unsafe to use FacetedProjectFramework in start method in the same thread. If may cause a deadlock. See https://issues.jboss.org/browse/JBIDE-9802
+		Job job = new Job("Adding JBoss4xEarFacetInstallListener") { //$NON-NLS-1$
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				FacetedProjectFramework.addListener(JBoss4xEarFacetInstallListener.getDefault(), IFacetedProjectEvent.Type.POST_INSTALL);
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+
 		// register the debug options listener
 		final Hashtable<String, String> props = new Hashtable<String, String>(4);
 		props.put(DebugOptions.LISTENER_SYMBOLICNAME, PLUGIN_ID);
