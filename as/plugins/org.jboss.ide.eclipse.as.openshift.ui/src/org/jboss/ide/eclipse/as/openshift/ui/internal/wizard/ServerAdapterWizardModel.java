@@ -161,17 +161,19 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		return null;
 	}
 
-	public void renameDomain() throws OpenshiftException {
-		IDomain domain = getUser().getDomain();
-		domain.setNamespace(namespace);
-	}
-
 	public void setNamespace(String namespace) throws OpenshiftException {
 		firePropertyChange(PROPERTY_NAMESPACE, this.namespace, this.namespace = namespace);
 	}
 
+	public boolean hasDomain() throws OpenshiftException {
+		return getUser().hasDomain();
+	}
+	
 	public void loadDomain() throws OpenshiftException {
-		this.domain = getUser().getDomain();
-		setNamespace(domain.getNamespace());
+		IDomain domain = getUser().getDomain();
+		if (domain != null) {
+			this.domain = domain;
+			setNamespace(domain.getNamespace());
+		}
 	}
 }

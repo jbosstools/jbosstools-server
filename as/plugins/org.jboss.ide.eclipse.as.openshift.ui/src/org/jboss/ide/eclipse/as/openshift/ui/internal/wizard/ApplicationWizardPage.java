@@ -69,7 +69,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	}
 
 	@Override
-	protected void onPageVisible(DataBindingContext dbc) {
+	protected void onPageActivated(DataBindingContext dbc) {
 		try {
 			WizardUtils.runInWizard(new LoadApplicationsJob(), getWizard().getContainer(), dbc);
 		} catch (Exception ex) {

@@ -11,14 +11,12 @@
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 /**
  * @author André Dietisheim
  */
-public class ServerAdapterWizard extends Wizard implements INewWizard {
+public class ServerAdapterWizard extends AbstractSkippingWizard {
 
 	public ServerAdapterWizard() {
 	}
