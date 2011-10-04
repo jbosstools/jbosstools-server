@@ -142,7 +142,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			tree2[i] = moduleTree[i];
 		}
 		if( tree2.length == 0 ) 
-			return new Path("/"); //$NON-NLS-1$
+			return new Path(publishMethod.getPublishDefaultRootFolder(server.getServer()));
 		return PublishUtil.getDeployPath(publishMethod, tree2, server);
 	}
 
@@ -237,7 +237,7 @@ public abstract class AbstractServerToolsPublisher implements IJBossServerPublis
 			list.addAll(Arrays.asList(PublishUtil.packModuleIntoJar(moduleTree[moduleTree.length-1], tempFile)));
 			
 			// TODO !!!!! Transfer it
-			IPath deployPathInner = getParentDeployPath(moduleTree, server).removeLastSegments(1);
+			IPath deployPathInner = getParentDeployPath(moduleTree, server);
 			IPublishCopyCallbackHandler handler = getCallbackHandler(getRootPath(deployPathInner).append(deployPathInner));
 			IPath filePath = deployPath.removeFirstSegments(deployPathInner.segments().length);
 			IPath parentFolderPath = filePath.removeLastSegments(1);
