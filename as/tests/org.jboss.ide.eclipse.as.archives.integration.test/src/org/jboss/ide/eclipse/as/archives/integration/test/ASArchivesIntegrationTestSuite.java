@@ -30,6 +30,7 @@ public class ASArchivesIntegrationTestSuite extends TestSuite {
         TestSuite suite = new TestSuite("AS Archives Integration Test Suite");
         suite.addTestSuite(BuildDeployTest.class);
         suite.addTestSuite(SingleFileZippedDeploymentIntegrationTest.class);
+        suite.addTestSuite(JSTEarWithNestedWebProjectIncrementalPublish.class);
         return suite; 
    }
 

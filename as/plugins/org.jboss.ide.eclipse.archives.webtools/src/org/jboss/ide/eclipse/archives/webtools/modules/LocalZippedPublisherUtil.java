@@ -131,7 +131,32 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 	protected List<IModule[]> getRemovedModules(IServer s) {
 		return getBehaviour(s).getRemovedModules();
 	}
-	
+
+	public boolean anyChangesRecurse(IServer server, IModule[] module) {
+		// Since for zipped, incremental and full are identical, just return a result other than 'no publish'
+		if( !getBehaviour(server).hasBeenPublished(module)) 
+			return true;
+		
+		if( isRemoved(server, module))
+			return true;
+		
+		int modulePublishState = server.getModulePublishState(module);
+		if( modulePublishState != IServer.PUBLISH_STATE_NONE)
+			return true;
+		
+		IModuleResourceDelta[] deltas = ((Server)server).getPublishedResourceDelta(module);
+		if( deltas.length > 0)
+			return true;
+		
+		IModule[] children = server.getChildModules(module, new NullProgressMonitor());
+		for( int i = 0; i < children.length; i++ ) {
+			IModule[] tmp = combine(module, children[i]);
+			if(anyChangesRecurse(server, tmp))
+				return true; 
+		}
+		return false;
+	}
+
 	protected IStatus[] handleChildrenDeltas(IServer server, String deployRoot, IModule[] module, IModule[] children) {
 		// For each child:
 		ArrayList<IStatus> results = new ArrayList<IStatus>(); 
@@ -327,7 +352,7 @@ public class LocalZippedPublisherUtil extends PublishUtil {
 		return root;
 	}
 
-	private IModule[] combine(IModule[] module, IModule newMod) {
+	public static IModule[] combine(IModule[] module, IModule newMod) {
 		IModule[] retval = new IModule[module.length + 1];
 		for( int i = 0; i < module.length; i++ )
 			retval[i]=module[i];

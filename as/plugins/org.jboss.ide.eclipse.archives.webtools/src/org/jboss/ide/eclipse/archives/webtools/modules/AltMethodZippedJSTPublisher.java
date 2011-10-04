@@ -76,6 +76,8 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			
 			monitor.setTaskName("Publishing to remote server " + server.getName()); //$NON-NLS-1$
 			
+			
+			
 			// set up needed vars
 			IDeployableServer server2 = ServerConverter.getDeployableServer(server);
 			String remoteTempDeployRoot = getDeployRoot(module, ServerConverter.getDeployableServer(server));
@@ -88,7 +90,9 @@ public class AltMethodZippedJSTPublisher extends WTPZippedPublisher {
 			
 			if(publishType == IJBossServerPublisher.REMOVE_PUBLISH) {
 				result = removeRemoteDeployment(sourcePath, destination.removeLastSegments(1), name, monitor);
-			} else if (publishType != IJBossServerPublisher.NO_PUBLISH) {
+			} else if( publishType != IJBossServerPublisher.NO_PUBLISH 
+					|| new LocalZippedPublisherUtil().anyChangesRecurse(server, module)){
+
 				/* 
 				 * remove prior exploded deployment (prior deployfailed marker, deployed folder etc.)
 				 * and redeploy
