@@ -35,7 +35,7 @@ public class ServerAdapterWizard extends AbstractSkippingWizard {
 	@Override
 	public void addPages() {
 		ServerAdapterWizardModel model = new ServerAdapterWizardModel();
-		addPage(new ServerWizardPage(this, model));
+		addPage(new CredentialsWizardPage(this, model));
 		addPage(new NewDomainWizardPage(this, model));
 		addPage(new ApplicationWizardPage(this, model));
 	}

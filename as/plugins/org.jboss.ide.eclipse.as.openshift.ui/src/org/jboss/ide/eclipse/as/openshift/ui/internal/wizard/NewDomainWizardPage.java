@@ -11,6 +11,8 @@
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
 import java.io.File;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.ValidationStatusProvider;
@@ -52,10 +54,12 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 	private static final String FILTEREXPRESSION_PUBLIC_SSH_KEY = "*.pub";
 	private static final String FILTERNAME_PUBLIC_SSH_KEY = "Public ssh key file (*.pub)";
 
-	public NewDomainWizardPage(IWizard wizard, ServerAdapterWizardModel model) {
+	private NewDomainWizardPageModel model;
+
+	public NewDomainWizardPage(IWizard wizard, ServerAdapterWizardModel wizardModel) {
 		super("New Domain", "Please create a new domain",
-				"new Domain", wizard, model);
-		this.model = model;
+				"new Domain", wizard);
+		this.model = new NewDomainWizardPageModel(wizardModel);
 	}
 
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
@@ -67,14 +71,14 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 		Text namespaceText = new Text(container, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(namespaceText);
 		DataBindingUtils.bindMandatoryTextField(namespaceText, "Domain name",
-				ServerAdapterWizardModel.PROPERTY_NAMESPACE, model, dbc);
+				NewDomainWizardPageModel.PROPERTY_NAMESPACE, model, dbc);
 
 		Label sshKeyLabel = new Label(container, SWT.NONE);
 		sshKeyLabel.setText("SSH Key");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(sshKeyLabel);
 		Text sshKeyText = new Text(container, SWT.READ_ONLY | SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(sshKeyText);
-		DataBindingUtils.bindMandatoryTextField(sshKeyText, "SSH Key", ServerAdapterWizardModel.PROPERTY_SSHKEY, model,
+		DataBindingUtils.bindMandatoryTextField(sshKeyText, "SSH Key", NewDomainWizardPageModel.PROPERTY_SSHKEY, model,
 				dbc);
 		Button browseSShKeyButton = new Button(container, SWT.PUSH);
 		browseSShKeyButton.setText("Browse");
@@ -167,7 +171,11 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 
 	@Override
 	public boolean isSkip() {
-		final boolean[] isSkip = new boolean[] { false };
+		if (!model.hasUser()) {
+			return false;
+		}
+		
+		final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 		try {
 			WizardUtils.runInWizard(
 					new Job("Checking presence of domain") {
@@ -175,17 +183,18 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
 							try {
-								isSkip[0] = model.hasDomain();
-							} catch (OpenshiftException e) {
+								queue.offer(model.hasDomain());
+							} catch (Exception e) {
+								queue.offer(false);
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"Could not get domain", e);
-							}
+							} 
 							return Status.OK_STATUS;
 						}
 					}, getWizard().getContainer(), getDatabindingContext());
 		} catch (Exception ex) {
 			// ignore
 		}
-		return isSkip[0];
+		return queue.poll();
 	}
 }

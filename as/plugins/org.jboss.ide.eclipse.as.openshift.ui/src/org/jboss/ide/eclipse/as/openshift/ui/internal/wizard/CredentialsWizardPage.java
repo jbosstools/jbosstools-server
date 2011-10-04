@@ -40,16 +40,18 @@ import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 /**
  * @author André Dietisheim
  */
-public class ServerWizardPage extends AbstractOpenshiftWizardPage {
+public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 
 	protected static final String OPENSHIFT_EXPRESS_SIGNUP_URL = "https://openshift.redhat.com/app/user/new/express"; //$NON-NLS-1$
 
 	private Button validateButton;
 
-	public ServerWizardPage(IWizard wizard, ServerAdapterWizardModel model) {
+	private CredentialsWizardPageModel model;
+
+	public CredentialsWizardPage(IWizard wizard, ServerAdapterWizardModel wizardModel) {
 		super("Server connetion", "Please provide the credentails of your user account on Openshift Express",
-				"Server Connection", wizard, model);
-		this.model = model;
+				"Server Connection", wizard);
+		this.model = new CredentialsWizardPageModel(wizardModel);
 	}
 
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
@@ -85,7 +87,7 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		Text rhLoginText = new Text(container, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(rhLoginText);
 		Binding rhLoginBining = DataBindingUtils.bindMandatoryTextField(
-				rhLoginText, "Username", ServerAdapterWizardModel.PROPERTY_RHLOGIN, model, dbc);
+				rhLoginText, "Username", CredentialsWizardPageModel.PROPERTY_RHLOGIN, model, dbc);
 
 		Label passwordLabel = new Label(container, SWT.NONE);
 		passwordLabel.setText("&Password");
@@ -93,7 +95,7 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		Text passwordText = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(passwordText);
 		Binding passwordBinding = DataBindingUtils.bindMandatoryTextField(
-				passwordText, "Password", ServerAdapterWizardModel.PROPERTY_PASSWORD, model, dbc);
+				passwordText, "Password", CredentialsWizardPageModel.PROPERTY_PASSWORD, model, dbc);
 
 		Label spacerLabel = new Label(container, SWT.None);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).applyTo(spacerLabel);
@@ -112,7 +114,7 @@ public class ServerWizardPage extends AbstractOpenshiftWizardPage {
 		validateButton.addSelectionListener(onValidate(dbc));
 		dbc.bindValue(
 				new WritableValue(null, IStatus.class),
-				BeanProperties.value(ServerAdapterWizardModel.PROPERTY_CREDENTIALS_VALIDITY).observe(model),
+				BeanProperties.value(CredentialsWizardPageModel.PROPERTY_CREDENTIALS_VALIDITY).observe(model),
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
 				new UpdateValueStrategy().setAfterGetValidator(
 						new CredentialsStatusValidator()));

@@ -10,21 +10,27 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
+import java.util.Collection;
+
+import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
-import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
+import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 
 /**
  * @author André Dietisheim
+ *
  */
-public class ServerAdapterWizardModel extends ObservableUIPojo {
+public class ApplicationWizardPageModel {
 
-	private IUser user;
+	private ServerAdapterWizardModel wizardModel;
 
-	public void setUser(IUser user) {
-		this.user = user;
+	public ApplicationWizardPageModel(ServerAdapterWizardModel wizardModel) {
+		this.wizardModel = wizardModel;
 	}
-	
-	public IUser getUser() {
-		return user;
+
+	public Collection<IApplication> getApplications() throws OpenshiftException {
+		IUser user = wizardModel.getUser();
+		return user.getApplications();
 	}
+
 }

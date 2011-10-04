@@ -28,13 +28,10 @@ import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
  */
 public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 
-	protected ServerAdapterWizardModel model;
 	private DataBindingContext dbc;
 
-	protected AbstractOpenshiftWizardPage(String title, String description, String pageName, IWizard wizard,
-			ServerAdapterWizardModel model) {
+	protected AbstractOpenshiftWizardPage(String title, String description, String pageName, IWizard wizard) {
 		super(pageName);
-		this.model = model;
 		setWizard(wizard);
 		setTitle(title);
 		setDescription(description);

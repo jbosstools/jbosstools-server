@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
-import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftUIActivator;
 import org.jboss.tools.common.ui.WizardUtils;
@@ -44,10 +43,12 @@ import org.jboss.tools.common.ui.WizardUtils;
 public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 	private TableViewer viewer;
+	private ApplicationWizardPageModel model;
 
-	protected ApplicationWizardPage(IWizard wizard, ServerAdapterWizardModel model) {
+	protected ApplicationWizardPage(IWizard wizard, ServerAdapterWizardModel wizardModel) {
 		super("Application selection", "Please select an Openshift Express application to use",
-				"Application selection", wizard, model);
+				"Application selection", wizard);
+		this.model = new ApplicationWizardPageModel(wizardModel);
 	}
 
 	@Override
@@ -97,11 +98,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
-				IUser user = model.getUser();
-				if (user == null) {
-					return Status.OK_STATUS;
-				}
-				bindApplications(user.getApplications(), viewer);
+				bindApplications(model.getApplications(), viewer);
 				return Status.OK_STATUS;
 			} catch (OpenshiftException e) {
 				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,

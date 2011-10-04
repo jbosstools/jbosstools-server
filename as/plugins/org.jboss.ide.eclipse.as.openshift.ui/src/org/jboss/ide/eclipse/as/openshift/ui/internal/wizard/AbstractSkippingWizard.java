@@ -31,7 +31,6 @@ public abstract class AbstractSkippingWizard extends Wizard implements INewWizar
 				break;
 			}
 		}
-
 		return nextPage;
 	}
 
@@ -47,7 +46,6 @@ public abstract class AbstractSkippingWizard extends Wizard implements INewWizar
 				break;
 			}
 		}
-
 		return previousPage;
 	}
 }
