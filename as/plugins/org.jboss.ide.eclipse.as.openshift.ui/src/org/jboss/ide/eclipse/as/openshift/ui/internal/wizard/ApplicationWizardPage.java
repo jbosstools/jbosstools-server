@@ -106,12 +106,12 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 		Button newButton = new Button(container, SWT.PUSH);
 		newButton.setText("Ne&w");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(newButton);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(80, 30).applyTo(newButton);
 		newButton.addSelectionListener(onNew(dbc));
 
 		Button deleteButton = new Button(container, SWT.PUSH);
 		deleteButton.setText("&Delete");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(deleteButton);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(80, 30).applyTo(deleteButton);
 		DataBindingUtils.bindButtonEnablementToValidationStatus(deleteButton, dbc, selectedApplicationBinding);
 		deleteButton.addSelectionListener(onDelete(dbc));
 	}

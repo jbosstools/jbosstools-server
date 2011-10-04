@@ -106,7 +106,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 
 		this.validateButton = new Button(container, SWT.NONE);
 		validateButton.setText("&Validate");
-		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).indent(0, 10).hint(100, 34).applyTo(validateButton);
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).indent(0, 10).hint(100, 30).applyTo(validateButton);
 		DataBindingUtils.bindButtonEnablementToValidationStatus(
 				validateButton,
 				dbc,
