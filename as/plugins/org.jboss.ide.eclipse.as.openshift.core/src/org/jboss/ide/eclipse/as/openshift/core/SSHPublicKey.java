@@ -10,26 +10,48 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.jboss.ide.eclipse.as.openshift.core.internal.utils.StreamUtils;
 
 /**
  * @author André Dietisheim
  */
 public class SSHPublicKey implements ISSHPublicKey {
 
+	private static final Pattern PUBLICKEY_PATTERN = Pattern.compile("[^ ]+ ([^ ]+)( .+)*");
+
 	private String publicKey;
+
+	public SSHPublicKey(File publicKeyFilePath) throws IOException, OpenshiftException {
+		this.publicKey = extractPublicKey(publicKeyFilePath);
+	}
 
 	public SSHPublicKey(String publicKey) {
 		this.publicKey = publicKey;
 	}
 
+	private String extractPublicKey(File file) throws OpenshiftException, FileNotFoundException, IOException {
+		String keyWithIdAndComment = StreamUtils.readToString(new FileReader(file));
+		Matcher matcher = PUBLICKEY_PATTERN.matcher(keyWithIdAndComment);
+		if (!matcher.find()
+				|| matcher.groupCount() < 1) {
+			throw new OpenshiftException("Could not load public key from file \"{0}\"", file.getAbsolutePath());
+		}
+
+		return matcher.group(1);
+	}
+
 	public String getPublicKey() {
 		return publicKey;
 	}
-	
-	void update(String publicKey) {
-	}
 
-	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException {
-		this.publicKey = sshPublicKey.getPublicKey();
+	void update(String publicKey) {
+		this.publicKey = publicKey;
 	}
 }

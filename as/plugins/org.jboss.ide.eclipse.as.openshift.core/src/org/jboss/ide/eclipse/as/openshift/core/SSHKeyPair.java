@@ -100,11 +100,4 @@ public class SSHKeyPair implements ISSHPublicKey {
 	protected String getPublicKeyPath() {
 		return publicKeyPath;
 	}
-
-	@Override
-	public void update(ISSHPublicKey sshPublicKey) {
-		// do nothing, there's no sense to update this key since the public key
-		// misses the private key
-	}
-
 }

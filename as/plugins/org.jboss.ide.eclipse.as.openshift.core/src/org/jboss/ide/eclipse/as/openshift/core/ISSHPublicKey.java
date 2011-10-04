@@ -25,5 +25,4 @@ public interface ISSHPublicKey {
 	 */
 	public String getPublicKey() throws OpenshiftException ;
 	
-	public void update(ISSHPublicKey sshPublicKey) throws OpenshiftException;
 }
