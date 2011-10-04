@@ -52,6 +52,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		this.serverUrl = IOpenshiftService.BASE_URL;
 		this.rhLoginPreferenceValue = new StringPreferenceValue(RHLOGIN_PREFS_KEY, OpenshiftUIActivator.PLUGIN_ID);
 		this.rhLogin = initRhLogin();
+		resetCredentialsStatus();
 	}
 
 	protected String initRhLogin() {
@@ -86,8 +87,12 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	}
 
 	public void setRhLogin(String rhLogin) {
-		rhLoginPreferenceValue.store(rhLogin);
-		firePropertyChange(PROPERTY_RHLOGIN, this.rhLogin, this.rhLogin = rhLogin);
+		if (rhLogin != null
+				&& !rhLogin.equals(this.rhLogin)) {
+			rhLoginPreferenceValue.store(rhLogin);
+			firePropertyChange(PROPERTY_RHLOGIN, this.rhLogin, this.rhLogin = rhLogin);
+			resetCredentialsStatus();
+		}
 	}
 
 	public String getPassword() {
@@ -95,7 +100,15 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	}
 
 	public void setPassword(String password) {
-		firePropertyChange(PROPERTY_PASSWORD, this.password, this.password = password);
+		if (password != null
+				&& !password.equals(this.password)) {
+			firePropertyChange(PROPERTY_PASSWORD, this.password, this.password = password);
+			resetCredentialsStatus();
+		}
+	}
+
+	private void resetCredentialsStatus() {
+		setCredentialsStatus(null);
 	}
 
 	private void setCredentialsStatus(IStatus status) {
@@ -117,7 +130,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		} catch (NotFoundOpenshiftException e) {
 			// valid user without domain
 			status = Status.OK_STATUS;
-		} catch(OpenshiftException e) {
+		} catch (OpenshiftException e) {
 			this.user = null;
 		}
 		setCredentialsStatus(status);
@@ -147,7 +160,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	public void renameDomain() throws OpenshiftException {
 		IDomain domain = getUser().getDomain();
 		domain.setNamespace(namespace);
@@ -161,5 +174,4 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		this.domain = getUser().getDomain();
 		setNamespace(domain.getNamespace());
 	}
-	
 }

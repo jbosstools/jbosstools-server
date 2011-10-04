@@ -24,6 +24,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -172,8 +174,10 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 						protected IStatus run(IProgressMonitor monitor) {
 							try {
 								model.loadDomain();
+								IWizardPage page = getNextPage();
+								((WizardDialog) getWizard().getContainer()).showPage(page);
 							} catch(NotFoundOpenshiftException e) {
-								e.printStackTrace();
+								// valid user without domain
 							} catch (OpenshiftException e) {
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"Could not get domain name", e);
