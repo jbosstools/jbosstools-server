@@ -35,7 +35,7 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 		setWizard(wizard);
 		setTitle(title);
 		setDescription(description);
-		setImageDescriptor(OpenshiftImages.OPENSHIFT_LOGO_WHITE);
+		setImageDescriptor(OpenshiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM);
 	}
 
 	@Override

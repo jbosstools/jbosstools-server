@@ -22,6 +22,7 @@ public class OpenshiftImages {
 
 	public static final ImageDescriptor OPENSHIFT_LOGO_DARK = repo.create("openshift-logo-dark.png"); //$NON-NLS-1$ 
 	public static final ImageDescriptor OPENSHIFT_LOGO_WHITE = repo.create("openshift-logo-white.png"); //$NON-NLS-1$ 
+	public static final ImageDescriptor OPENSHIFT_LOGO_WHITE_MEDIUM = repo.create("openshift-logo-white-medium.png"); //$NON-NLS-1$ 
 
 	public static final ImageDescriptor OK = repo.create("ok.png"); //$NON-NLS-1$ 
 	public static final ImageDescriptor ERROR = repo.create("error.png"); //$NON-NLS-1$ 
