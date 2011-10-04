@@ -44,6 +44,8 @@ public interface IUser {
 
 	public Collection<ICartridge> getCartridges() throws OpenshiftException;
 
+	public ICartridge getCartridgeByName(String name) throws OpenshiftException;
+
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException;
 
 	public Collection<IApplication> getApplications() throws OpenshiftException;

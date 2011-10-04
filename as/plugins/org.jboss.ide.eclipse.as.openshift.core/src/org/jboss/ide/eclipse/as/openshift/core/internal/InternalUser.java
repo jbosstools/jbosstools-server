@@ -142,6 +142,18 @@ public class InternalUser implements IUser {
 	}
 
 	@Override
+	public ICartridge getCartridgeByName(String name) throws OpenshiftException {
+		ICartridge matchingCartridge = null;
+		for(ICartridge cartridge : getCartridges()) {
+			if (name.equals(cartridge.getName())) {
+				matchingCartridge = cartridge;
+				break;
+			}
+		}
+		return matchingCartridge;
+	}
+	
+	@Override
 	public IApplication createApplication(String name, ICartridge cartridge) throws OpenshiftException {
 		IApplication application = service.createApplication(name, cartridge, this);
 		add(application);

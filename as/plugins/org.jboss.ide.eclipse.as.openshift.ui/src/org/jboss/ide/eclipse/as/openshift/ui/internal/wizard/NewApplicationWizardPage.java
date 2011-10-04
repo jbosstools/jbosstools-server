@@ -10,20 +10,30 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateListStrategy;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.conversion.Converter;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.jboss.ide.eclipse.as.openshift.core.ICartridge;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftUIActivator;
 import org.jboss.tools.common.ui.WizardUtils;
@@ -32,8 +42,6 @@ import org.jboss.tools.common.ui.WizardUtils;
  * @author André Dietisheim
  */
 public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
-
-	private static final int NAME_MAXLENGTH = 13;
 
 	private NewApplicationWizardPageModel model;
 
@@ -48,22 +56,45 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).applyTo(parent);
 
 		Label nameLabel = new Label(parent, SWT.NONE);
-		nameLabel.setText("Name");
+		nameLabel.setText("Na&me");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(nameLabel);
 		Text nameText = new Text(parent, SWT.BORDER);
+		nameText.setTextLimit(13);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nameText);
+		Binding nameBinding = dbc.bindValue(
+				WidgetProperties.text().observe(nameText)
+				, BeanProperties.value(NewApplicationWizardPageModel.PROPERTY_NAME).observe(model)
+				, new UpdateValueStrategy().setAfterGetValidator(new ApplicationNameValidator())
+				, null);
+		ControlDecorationSupport.create(nameBinding, SWT.LEFT | SWT.TOP);
 
 		Label cartridgeLabel = new Label(parent, SWT.WRAP);
-		cartridgeLabel.setText("Cartridge");
+		cartridgeLabel.setText("&Cartridge");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(cartridgeLabel);
-		Combo cartridgesCombo = new Combo(parent, SWT.BORDER);
+		Combo cartridgesCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
+		dbc.bindList(
+				WidgetProperties.items().observe(cartridgesCombo)
+				, BeanProperties.list(NewApplicationWizardPageModel.PROPERTY_CARTRIDGES).observe(model)
+				, new UpdateListStrategy(UpdateListStrategy.POLICY_NEVER)
+				, new UpdateListStrategy().setConverter(new Converter(Object.class, String.class) {
+
+					@Override
+					public Object convert(Object fromObject) {
+						if (!(fromObject instanceof ICartridge)) {
+							return null;
+						}
+						return ((ICartridge) fromObject).getName();
+					}
+				}));
+		dbc.bindValue(WidgetProperties.selection().observe(cartridgesCombo)
+				, BeanProperties.value(NewApplicationWizardPageModel.PROPERTY_SELECTED_CARTRIDGE).observe(model));
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cartridgesCombo);
 	}
 
 	@Override
 	protected void onPageActivated(DataBindingContext dbc) {
 		try {
-			WizardUtils.runInWizard(new Job("Load cartridges") {
+			WizardUtils.runInWizard(new Job("Loading cartridges") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -80,17 +111,18 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		}
 	}
 
-	private final class ApplicationNameValidator implements IInputValidator {
+	private class ApplicationNameValidator implements IValidator {
 
 		@Override
-		public String isValid(String newText) {
-			if (newText.length() > 0
-					&& newText.length() <= NAME_MAXLENGTH) {
-				return null;
-			} else {
-				return "you have to provide a valid application name with less than 13 characters";
+		public IStatus validate(Object value) {
+			String name = (String) value;
+			if (name.length() == 0) {
+				return ValidationStatus.error("You have to provide a name");
+			} else if (model.hasApplication(name)) {
+				return ValidationStatus.error(NLS.bind(
+						"Names must be unique. You already have an application named \"{0}\"", name));
 			}
+			return ValidationStatus.ok();
 		}
-	};
-
+	}
 }
