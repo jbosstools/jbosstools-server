@@ -14,6 +14,7 @@ import static org.jboss.ide.eclipse.as.openshift.test.internal.core.utils.Applic
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -42,25 +43,27 @@ public class UserIntegrationTest {
 	private User user;
 	private TestUser invalidUser;
 	private TestUser badUrlUser;
+	private TestUser userWithoutDomain;
 
 	@Before
 	public void setUp() throws OpenshiftException, DatatypeConfigurationException {
 		this.user = new TestUser();
 		this.invalidUser = new TestUser("bogusPassword");
 		this.badUrlUser = new TestUser(TestUser.RHLOGIN, TestUser.PASSWORD, "http://www.redhat.com");
+		this.userWithoutDomain = new TestUser(TestUser.RHLOGIN_USER_WITHOUT_DOMAIN, TestUser.PASSWORD_USER_WITHOUT_DOMAIN);
 	}
 
-	@Test 
+	@Test
 	public void canCheckIfUserIsValid() throws OpenshiftException {
 		assertTrue(user.isValid());
 	}
-	
+
 	@Test
 	public void throwsExceptionIfInvalidCredentials() throws OpenshiftException {
 		assertFalse(invalidUser.isValid());
 	}
 
-	@Test(expected=NotFoundOpenshiftException.class)
+	@Test(expected = NotFoundOpenshiftException.class)
 	public void throwsExceptionIfBadUrl() throws OpenshiftException {
 		badUrlUser.isValid();
 	}
@@ -90,13 +93,19 @@ public class UserIntegrationTest {
 		assertTrue(domain.getNamespace().length() > 0);
 	}
 
-	@Test(expected=OpenshiftEndpointException.class)
+	@Test(expected = OpenshiftEndpointException.class)
 	public void cannotCreateDomainIfAlreadyExists() throws OpenshiftException {
 		IDomain domain = user.getDomain();
 		assertNotNull(domain);
 		ISSHPublicKey key = user.getSshKey();
 		assertNotNull(key);
 		user.createDomain("newDomain", key);
+	}
+
+	@Test
+	public void getNullIfNoDomainPresent() throws OpenshiftException {
+		IDomain domain = userWithoutDomain.getDomain();
+		assertNull(domain);
 	}
 
 	@Test

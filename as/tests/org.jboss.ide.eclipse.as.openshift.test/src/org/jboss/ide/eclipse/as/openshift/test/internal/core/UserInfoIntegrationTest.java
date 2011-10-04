@@ -35,9 +35,6 @@ import org.junit.Test;
  */
 public class UserInfoIntegrationTest {
 
-	private static final String PASSWORD_USER_WITHOUT_DOMAIN = "1q2w3e";
-	private static final String RHLOGIN_USER_WITHOUT_DOMAIN = "toolsjboss.no.domain@gmail.com";
-	
 	private OpenshiftService openshiftService;
 	private TestUser user;
 
@@ -67,7 +64,7 @@ public class UserInfoIntegrationTest {
 	 */
 	@Test(expected = NotFoundOpenshiftException.class)
 	public void canGetUserInfoForUserWithoutDomain() throws Exception {
-		TestUser inexistantUser = new TestUser(RHLOGIN_USER_WITHOUT_DOMAIN, PASSWORD_USER_WITHOUT_DOMAIN);
+		TestUser inexistantUser = new TestUser(TestUser.RHLOGIN_USER_WITHOUT_DOMAIN, TestUser.PASSWORD_USER_WITHOUT_DOMAIN);
 		openshiftService.getUserInfo(inexistantUser);
 	}
 
