@@ -10,10 +10,14 @@
  ******************************************************************************/
 package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.core.ISSHPublicKey;
 import org.jboss.ide.eclipse.as.openshift.core.IUser;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.SSHPublicKey;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 
 /**
@@ -23,6 +27,7 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 
 	public static final String PROPERTY_NAMESPACE = "namespace";
 	public static final String PROPERTY_SSHKEY = "sshKey";
+	public static final String PROPERTY_DOMAIN = "domain";
 
 	private String namespace;
 	private IDomain domain;
@@ -37,9 +42,10 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		return this.namespace;
 	}
 
-	public void createDomain() throws OpenshiftException {
-		IUser user = wizardModel.getUser();
-		this.domain = user.createDomain(namespace, loadSshKey());
+	public void createDomain() throws OpenshiftException, IOException {
+		IUser user = getUser();
+		IDomain domain = user.createDomain(namespace, loadSshKey());
+		setDomain(domain);
 	}
 
 	public String getSshKey() {
@@ -50,9 +56,8 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		firePropertyChange(PROPERTY_SSHKEY, this.sshKey, this.sshKey = sshKey);
 	}
 
-	private ISSHPublicKey loadSshKey() {
-		// TODO Auto-generated method stub
-		return null;
+	private ISSHPublicKey loadSshKey() throws IOException, OpenshiftException {
+		return new SSHPublicKey(new File(sshKey));
 	}
 
 	public void setNamespace(String namespace) throws OpenshiftException {
@@ -66,21 +71,18 @@ public class NewDomainWizardPageModel extends ObservableUIPojo {
 		return getUser().hasDomain();
 	}
 
-	public void loadDomain() throws OpenshiftException {
-		if (!hasUser()) {
-			return;
-		}
-		IDomain domain = getUser().getDomain();
-		if (domain != null) {
-			this.domain = domain;
-			setNamespace(domain.getNamespace());
-		}
+	public IDomain getDomain() {
+		return domain;
+	}
+
+	public void setDomain(IDomain domain) {
+		firePropertyChange(PROPERTY_DOMAIN, this.domain, this.domain = domain);
 	}
 
 	public boolean hasUser() {
 		return wizardModel.getUser() != null;
 	}
-	
+
 	public IUser getUser() {
 		return wizardModel.getUser();
 	}

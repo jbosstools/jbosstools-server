@@ -12,12 +12,17 @@ package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
 import java.io.File;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.ValidationStatusProvider;
+import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.IObservableCollection;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.value.WritableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -37,7 +42,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
+import org.jboss.ide.eclipse.as.openshift.core.IDomain;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftUIActivator;
 import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
@@ -94,6 +99,12 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 				.applyTo(createButton);
 		createButton.addSelectionListener(onCreate(dbc));
 		DataBindingUtils.bindButtonEnablementToValidationStatus(createButton, dbc);
+
+		dbc.bindValue(
+				new WritableValue(null, IDomain.class)
+				, BeanProperties.value(NewDomainWizardPageModel.PROPERTY_DOMAIN).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setAfterGetValidator(new DomainCreatedValidator()));
 	}
 
 	private SelectionListener onBrowseSshKey() {
@@ -110,7 +121,6 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 				if (sshKeyPath != null) {
 					model.setSshKey(sshKeyPath);
 				}
-				;
 			}
 		};
 	}
@@ -134,7 +144,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 								protected IStatus run(IProgressMonitor monitor) {
 									try {
 										model.createDomain();
-									} catch (OpenshiftException e) {
+									} catch (Exception e) {
 										return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
 												"Could not create a new domain with the name \"{0}\"",
 												model.getNamespace()), e);
@@ -174,8 +184,8 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 		if (!model.hasUser()) {
 			return false;
 		}
-		
-		final BlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
+
+		final ArrayBlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 		try {
 			WizardUtils.runInWizard(
 					new Job("Checking presence of domain") {
@@ -188,13 +198,30 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 								queue.offer(false);
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 										"Could not get domain", e);
-							} 
+							}
 							return Status.OK_STATUS;
 						}
 					}, getWizard().getContainer(), getDatabindingContext());
 		} catch (Exception ex) {
 			// ignore
 		}
-		return queue.poll();
+		
+		try {
+			return queue.poll(6, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			return false;
+		}
 	}
+
+	private static class DomainCreatedValidator implements IValidator {
+		@Override
+		public IStatus validate(Object value) {
+			if (value != null) {
+				return ValidationStatus.ok();
+			} else {
+				return ValidationStatus.info("You have to create a domain...");
+			}
+		}
+	};
+
 }

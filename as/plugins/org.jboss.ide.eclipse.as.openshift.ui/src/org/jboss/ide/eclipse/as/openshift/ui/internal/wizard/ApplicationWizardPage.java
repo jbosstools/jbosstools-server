@@ -12,30 +12,51 @@ package org.jboss.ide.eclipse.as.openshift.ui.internal.wizard;
 
 import java.util.Collection;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.observable.list.IObservableList;
-import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.viewers.ViewerSupport;
+import org.eclipse.jface.databinding.viewers.ViewerProperties;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.ide.eclipse.as.openshift.core.IApplication;
 import org.jboss.ide.eclipse.as.openshift.core.OpenshiftException;
 import org.jboss.ide.eclipse.as.openshift.ui.internal.OpenshiftUIActivator;
+import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
+import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 
 /**
  * @author André Dietisheim
@@ -46,27 +67,147 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	private ApplicationWizardPageModel model;
 
 	protected ApplicationWizardPage(IWizard wizard, ServerAdapterWizardModel wizardModel) {
-		super("Application selection", "Please select an Openshift Express application to use",
+		super("Application selection", "Please select an Openshift Express application",
 				"Application selection", wizard);
 		this.model = new ApplicationWizardPageModel(wizardModel);
 	}
 
 	@Override
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
-		GridLayoutFactory.fillDefaults().numColumns(1).margins(10, 10).applyTo(container);
+		GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).spacing(4, 4).applyTo(container);
 
 		Group group = new Group(container, SWT.BORDER);
 		group.setText("Available applications");
-		GridDataFactory.fillDefaults().hint(600, 300).applyTo(group);
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).span(3, 1).applyTo(group);
 		FillLayout fillLayout = new FillLayout(SWT.VERTICAL);
-		fillLayout.marginHeight = 10;
-		fillLayout.marginWidth = 10;
+		fillLayout.marginHeight = 6;
+		fillLayout.marginWidth = 6;
 		group.setLayout(fillLayout);
-		
-		Table table = new Table(group, SWT.BORDER | SWT.V_SCROLL);
+
+		this.viewer = createApplicationTable(group);
+		viewer.addDoubleClickListener(onApplicationDoubleClick());
+
+		Binding selectedApplicationBinding = dbc.bindValue(
+				ViewerProperties.singleSelection().observe(viewer),
+				BeanProperties.value(ApplicationWizardPageModel.PROPERTY_SELECTED_APPLICATION).observe(model),
+				new UpdateValueStrategy().setAfterGetValidator(new IValidator() {
+
+					@Override
+					public IStatus validate(Object value) {
+						if (value != null) {
+							return ValidationStatus.ok();
+						}
+						else {
+							return ValidationStatus.info("You have to select an application...");
+						}
+					}
+				}),
+				null);
+
+		Button newButton = new Button(container, SWT.PUSH);
+		newButton.setText("New");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(newButton);
+		newButton.addSelectionListener(onNew(dbc));
+
+		Button deleteButton = new Button(container, SWT.PUSH);
+		deleteButton.setText("Delete");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(deleteButton);
+		DataBindingUtils.bindButtonEnablementToValidationStatus(deleteButton, dbc, selectedApplicationBinding);
+		deleteButton.addSelectionListener(onDelete(dbc));
+	}
+
+	protected IDoubleClickListener onApplicationDoubleClick() {
+		return new IDoubleClickListener() {
+
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				try {
+					ISelection selection = event.getSelection();
+					if (selection instanceof StructuredSelection) {
+						Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+						if (firstElement instanceof IApplication) {
+							String url = ((IApplication) firstElement).getApplicationUrl();
+							BrowserUtil.checkedCreateExternalBrowser(url, OpenshiftUIActivator.PLUGIN_ID,
+									OpenshiftUIActivator.getDefault().getLog());
+						}
+					}
+				} catch (OpenshiftException e) {
+					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+							"Could not open Openshift Express application in browser", e);
+					OpenshiftUIActivator.getDefault().getLog().log(status);
+				}
+			}
+		};
+	}
+
+	protected SelectionAdapter onNew(DataBindingContext dbc) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Shell shell = getContainer().getShell();
+				if (WizardUtils.openWizardDialog(new NewApplicationDialog(model.getUser()), shell)
+						== Dialog.OK) {
+					viewer.refresh();
+				}
+			}
+		};
+	}
+
+	protected TableViewer createApplicationTable(Group group) {
+		Composite tableContainer = new Composite(group, SWT.NONE);
+		Table table = new Table(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		this.viewer = new TableViewer(table);
+		TableColumnLayout tableLayout = new TableColumnLayout();
+		tableContainer.setLayout(tableLayout);
+		TableViewer viewer = new TableViewer(table);
+		viewer.setContentProvider(new ArrayContentProvider());
+
+		createTableColumn("Name", 1, new CellLabelProvider() {
+
+			@Override
+			public void update(ViewerCell cell) {
+				IApplication application = (IApplication) cell.getElement();
+				cell.setText(application.getName());
+			}
+		}, viewer, tableLayout);
+		createTableColumn("URL", 3, new CellLabelProvider() {
+
+			@Override
+			public void update(ViewerCell cell) {
+				try {
+					IApplication application = (IApplication) cell.getElement();
+					cell.setText(application.getApplicationUrl());
+				} catch (OpenshiftException e) {
+					// ignore
+				}
+			}
+		}, viewer, tableLayout);
+		return viewer;
+	}
+
+	private void createTableColumn(String name, int weight, CellLabelProvider cellLabelProvider, TableViewer viewer,
+			TableColumnLayout layout) {
+		TableViewerColumn column = new TableViewerColumn(viewer, SWT.LEFT);
+		column.getColumn().setText(name);
+		column.setLabelProvider(cellLabelProvider);
+
+		layout.setColumnData(column.getColumn(), new ColumnWeightData(weight, true));
+	}
+
+	private SelectionAdapter onDelete(final DataBindingContext dbc) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					WizardUtils.runInWizard(new DeleteApplicationJob(), getWizard().getContainer(), dbc);
+				} catch (Exception ex) {
+					// ignore
+				}
+			}
+		};
 	}
 
 	@Override
@@ -78,18 +219,6 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		}
 	}
 
-	protected void bindApplications(final Collection<IApplication> applications, final TableViewer viewer) {
-		Display display = PlatformUI.getWorkbench().getDisplay();
-		display.syncExec(new Runnable() {
-
-			@Override
-			public void run() {
-				IObservableList input = new WritableList(applications, IApplication.class);
-				ViewerSupport.bind(viewer, input, BeanProperties.values(new String[] { "name", "applicationUrl" }));
-			}
-		});
-	}
-
 	private class LoadApplicationsJob extends Job {
 		private LoadApplicationsJob() {
 			super("Loading applications");
@@ -98,12 +227,40 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
-				bindApplications(model.getApplications(), viewer);
+				final Collection<IApplication> applications = model.getApplications();
+				Display display = PlatformUI.getWorkbench().getDisplay();
+				display.syncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						viewer.setInput(applications);
+					}
+				});
 				return Status.OK_STATUS;
 			} catch (OpenshiftException e) {
 				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
 						"Could not load applications from Openshift Express");
 			}
 		}
+	}
+
+	private class DeleteApplicationJob extends Job {
+
+		public DeleteApplicationJob() {
+			super("Deleteing application");
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				model.destroyCurrentApplication();
+				return Status.OK_STATUS;
+			} catch (OpenshiftException e) {
+				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
+						"Could not delete application \"{0}\"",
+						model.getSelectedApplication().getName()));
+			}
+		}
+
 	}
 }
