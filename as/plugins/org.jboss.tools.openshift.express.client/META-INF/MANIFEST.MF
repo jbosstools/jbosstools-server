@@ -13,6 +13,7 @@ Bundle-ClassPath: jboss-dmr-1.0.0.Final.jar,
  .
 Export-Package: org.jboss.dmr;x-friends:="org.jboss.ide.eclipse.as.openshift.test",
  org.jboss.tools.openshift.express.client,
+ org.jboss.tools.openshift.express.client.utils,
  org.jboss.tools.openshift.express.internal.client;x-friends:="org.jboss.ide.eclipse.as.openshift.test",
  org.jboss.tools.openshift.express.internal.client.request;x-friends:="org.jboss.ide.eclipse.as.openshift.test",
  org.jboss.tools.openshift.express.internal.client.request.marshalling;x-friends:="org.jboss.ide.eclipse.as.openshift.test",

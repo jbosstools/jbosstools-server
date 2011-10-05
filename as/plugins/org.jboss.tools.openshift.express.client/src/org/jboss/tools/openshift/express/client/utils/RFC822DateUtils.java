@@ -8,7 +8,7 @@
  * Contributors: 
  * Red Hat, Inc. - initial API and implementation 
  ******************************************************************************/
-package org.jboss.tools.openshift.express.internal.client.utils;
+package org.jboss.tools.openshift.express.client.utils;
 
 import java.util.Date;
 import java.util.GregorianCalendar;

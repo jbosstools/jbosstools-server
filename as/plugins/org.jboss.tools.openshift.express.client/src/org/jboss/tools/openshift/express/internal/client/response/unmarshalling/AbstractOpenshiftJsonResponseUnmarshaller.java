@@ -17,9 +17,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.client.IOpenshiftJsonConstants;
 import org.jboss.tools.openshift.express.internal.client.response.OpenshiftResponse;
-import org.jboss.tools.openshift.express.internal.client.utils.RFC822DateUtils;
 
 /**
  * @author André Dietisheim
