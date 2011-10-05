@@ -1,24 +1,20 @@
 package org.jboss.ide.eclipse.as.egit.core;
 
-import java.util.concurrent.ExecutionException;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 
 public class EgitPublishMethod implements IJBossServerPublishMethod {
-	@Override
-	public IJBossServerPublishMethodType getPublishMethodType() {
-		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
-	}
+//	@Override
+//	public IJBossServerPublishMethodType getPublishMethodType() {
+//		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
+//	}
 
 	public String getPublishMethodId() {
 		return EgitBehaviourDelegate.ID;
