@@ -18,6 +18,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
 		<module>org.jboss.ide.eclipse.as.server.egit.integration.feature</module>
+		<module>org.jboss.tools.openshift.express.feature</module>
 	</modules>
 </project>
 	
