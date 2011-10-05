@@ -11,6 +11,7 @@
 package org.jboss.tools.openshift.express.client;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author André Dietisheim
@@ -42,7 +43,7 @@ public interface IUser {
 
 	public ISSHPublicKey getSshKey() throws OpenshiftException;
 
-	public Collection<ICartridge> getCartridges() throws OpenshiftException;
+	public List<ICartridge> getCartridges() throws OpenshiftException;
 
 	public ICartridge getCartridgeByName(String name) throws OpenshiftException;
 
