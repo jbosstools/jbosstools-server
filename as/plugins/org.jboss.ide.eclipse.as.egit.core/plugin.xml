@@ -36,7 +36,7 @@
       <behaviour
             behaviourDelegate="org.jboss.ide.eclipse.as.egit.core.EgitBehaviourDelegate"
             name="%EGitMethodName"
-            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
+            publishMethod="org.jboss.ide.eclipse.as.egit.core.EgitPublishMethod"
             serverTypes="%ServerTypesJBoss7"
             typeId="egit">
       </behaviour>
