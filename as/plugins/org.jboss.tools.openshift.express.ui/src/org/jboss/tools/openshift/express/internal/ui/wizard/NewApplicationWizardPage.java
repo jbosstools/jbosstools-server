@@ -62,16 +62,17 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		nameText.setTextLimit(13);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(nameText);
 		Binding nameBinding = dbc.bindValue(
-				WidgetProperties.text().observe(nameText)
+				WidgetProperties.text(SWT.Modify).observe(nameText) 
 				, BeanProperties.value(NewApplicationWizardPageModel.PROPERTY_NAME).observe(model)
 				, new UpdateValueStrategy().setAfterGetValidator(new ApplicationNameValidator())
 				, null);
 		ControlDecorationSupport.create(nameBinding, SWT.LEFT | SWT.TOP);
-
+		
 		Label cartridgeLabel = new Label(parent, SWT.WRAP);
 		cartridgeLabel.setText("&Cartridge");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(cartridgeLabel);
 		Combo cartridgesCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cartridgesCombo);
 		dbc.bindList(
 				WidgetProperties.items().observe(cartridgesCombo)
 				, BeanProperties.list(NewApplicationWizardPageModel.PROPERTY_CARTRIDGES).observe(model)
@@ -86,9 +87,9 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 						return ((ICartridge) fromObject).getName();
 					}
 				}));
-		dbc.bindValue(WidgetProperties.selection().observe(cartridgesCombo)
+		dbc.bindValue(
+				WidgetProperties.selection().observe(cartridgesCombo)
 				, BeanProperties.value(NewApplicationWizardPageModel.PROPERTY_SELECTED_CARTRIDGE).observe(model));
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cartridgesCombo);
 	}
 
 	@Override
@@ -99,6 +100,7 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
+						
 						model.loadCartridges();
 					} catch (OpenshiftException e) {
 						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Could not load cartridges", e);

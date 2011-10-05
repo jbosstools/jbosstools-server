@@ -122,7 +122,6 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).hint(80, 30).applyTo(detailsButton);
 		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, IStatus.INFO, dbc , selectedApplicationBinding);
 		detailsButton.addSelectionListener(onDetails(dbc));
-
 	}
 
 	private IDoubleClickListener onApplicationDoubleClick() {
@@ -282,6 +281,13 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		protected IStatus run(IProgressMonitor monitor) {
 			try {
 				model.destroyCurrentApplication();
+				getContainer().getShell().getDisplay().syncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						viewer.refresh();
+					}
+				});
 				return Status.OK_STATUS;
 			} catch (OpenshiftException e) {
 				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
