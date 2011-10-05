@@ -12,9 +12,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.rse.core;
 
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.DelegatingJBoss7ServerBehavior;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -33,12 +30,6 @@ public class RSECorePlugin implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		RSECorePlugin.context = bundleContext;
-		DelegatingServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEBehaviourDelegate.class);
-		DelegatingJBoss7ServerBehavior.addDelegateMapping(RSEPublishMethod.RSE_ID, RSEJBoss7BehaviourDelegate.class);
-		ExtensionManager.JBossLaunchDelegates.put(RSEPublishMethod.RSE_ID, new RSEJBossStartLaunchDelegate());
-		ExtensionManager.JBossSetupParticipants.add(new RSEJBossStartLaunchDelegate());
-		ExtensionManager.JBoss7launchDelegates.put(RSEPublishMethod.RSE_ID, new RSEJBoss7StartLaunchDelegate());
-		ExtensionManager.JBoss7setupParticipants.add(new RSEJBoss7StartLaunchDelegate());
 	}
 
 	/*

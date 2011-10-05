@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core.server.internal.launch;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
@@ -21,33 +20,35 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
-	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
-		return ExtensionManager.getDefault().getSetupParticipants(server);
+	public ArrayList<IJBossLaunchDelegate> getSetupParticipants(IServer server) {
+		//return ExtensionManager.getDefault().getSetupParticipants(server);
+		return BehaviourModel.getModel().getSetupParticipants(server);
 	}
-	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
-		return ExtensionManager.getDefault().getLaunchDelegates(server);
-	}
+//	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
+//		return ExtensionManager.getDefault().getLaunchDelegates(server);
+//	}
 
 	// Allow all participants to set some defaults for their own details
 	// Participants should be careful not to change shared launch keys / values 
 	// unless their operation mode (local / rse / etc) is in use
 	public void setupLaunchConfiguration(ILaunchConfigurationWorkingCopy workingCopy, IServer server) throws CoreException {
-		for( Iterator<IStartLaunchSetupParticipant> i = getSetupParticipants(server).iterator(); i.hasNext(); ) {
+		for( Iterator<IJBossLaunchDelegate> i = getSetupParticipants(server).iterator(); i.hasNext(); ) {
 			i.next().setupLaunchConfiguration(workingCopy, server);
 		}
 	}	
 
-	protected IStartLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
+	protected IJBossLaunchDelegate getDelegate(ILaunchConfiguration configuration) throws CoreException {
 		IServer server = ServerUtil.getServer(configuration);
 		DeployableServerBehavior beh = ServerConverter.getDeployableServerBehavior(server);
-		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
-		return getLaunchDelegates(server).get(type.getId());
+		String currentMode = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(beh.getServer());
+		//return getLaunchDelegates(server).get(currentMode);
+		return BehaviourModel.getModel().getLaunchDelegate(server, currentMode);
 	}
 	
 	public void actualLaunch(ILaunchConfiguration configuration, 

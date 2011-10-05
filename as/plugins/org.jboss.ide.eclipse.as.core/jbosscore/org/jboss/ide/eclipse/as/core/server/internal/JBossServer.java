@@ -48,6 +48,7 @@ import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerRuntime;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
@@ -235,8 +236,8 @@ public class JBossServer extends DeployableServer
 				DeployableServerBehavior.class, new NullProgressMonitor());
 		if( beh == null )
 			return false;
-		IJBossServerPublishMethodType type = beh.createPublishMethod().getPublishMethodType();
-		if( type.getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+		String type = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(getServer(), LocalPublishMethod.LOCAL_PUBLISH_METHOD);
+		if( type.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
 			return true;
 		}
 		return false;

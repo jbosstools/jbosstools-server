@@ -23,6 +23,19 @@ public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 	private String typeId, name;
 	private String[] serverTypes;
 	private IConfigurationElement element;
+	private String publisherClassAttribute;
+	public ServerPublishMethodType(String id, String name, String serverTypes2, 
+			IConfigurationElement element, String publisherAttribute) {
+		this.typeId = id;
+		this.name = name;
+		String tmp = element.getAttribute("serverTypes"); //$NON-NLS-1$
+		serverTypes = serverTypes2.split(","); //$NON-NLS-1$
+		for( int i = 0; i < serverTypes.length; i++ ) 
+			serverTypes[i] = serverTypes[i].trim();
+		this.element = element;
+		this.publisherClassAttribute = publisherAttribute;
+	}
+
 	public ServerPublishMethodType(IConfigurationElement element) {
 		this.element = element;
 		IContributor c = element.getContributor();
@@ -33,6 +46,7 @@ public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 		// clean
 		for( int i = 0; i < serverTypes.length; i++ ) 
 			serverTypes[i] = serverTypes[i].trim();
+		publisherClassAttribute = "class"; //$NON-NLS-1$
 	}
 	
 	public String getId() {
@@ -49,7 +63,7 @@ public class ServerPublishMethodType implements IJBossServerPublishMethodType {
 
 	public IJBossServerPublishMethod createPublishMethod() {
 		try {
-			return (IJBossServerPublishMethod) element.createExecutableExtension("class"); //$NON-NLS-1$
+			return (IJBossServerPublishMethod) element.createExecutableExtension(publisherClassAttribute);
 		} catch( CoreException ce ) {
 		}
 		return null;

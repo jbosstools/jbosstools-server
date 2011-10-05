@@ -24,11 +24,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.internal.Server;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
-import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerAttributeHelper;
 import org.jboss.ide.eclipse.as.core.util.internal.IMemento;
 import org.jboss.ide.eclipse.as.core.util.internal.XMLMemento;
@@ -52,11 +51,15 @@ public class DeploymentPreferenceLoader {
 	}
 
 	public static IJBossServerPublishMethodType getCurrentDeploymentMethodType(IServer server, String defaultType) {
-		String type = server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
-		if( type != null ) {
-			return ExtensionManager.getDefault().getPublishMethod(type);
-		}
-		return null;
+		return BehaviourModel.getPublishMethodType(server);
+	}
+
+	public static String getCurrentDeploymentMethodTypeId(IServer server) {
+		return getCurrentDeploymentMethodTypeId(server, null);
+	}
+	
+	public static String getCurrentDeploymentMethodTypeId(IServer server, String defaultType) {
+		return 	server.getAttribute(IDeployableServer.SERVER_MODE, defaultType);
 	}
 
 	public static DeploymentPreferences loadPreferencesFromFile(IServer server) {

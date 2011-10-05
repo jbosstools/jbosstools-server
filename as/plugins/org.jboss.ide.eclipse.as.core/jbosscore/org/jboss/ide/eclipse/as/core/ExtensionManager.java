@@ -11,7 +11,6 @@
 package org.jboss.ide.eclipse.as.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,21 +29,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.IServerType;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublisher;
 import org.jboss.ide.eclipse.as.core.server.IPollerFailureHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerAlreadyStartedHandler;
 import org.jboss.ide.eclipse.as.core.server.IServerStatePoller;
-import org.jboss.ide.eclipse.as.core.server.internal.ServerPublishMethodType;
 import org.jboss.ide.eclipse.as.core.server.internal.ServerStatePollerType;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7Server;
-import org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
-import org.jboss.ide.eclipse.as.core.util.ServerUtil;
 
 /**
  * Manages the extensions for this plugin
@@ -68,8 +57,6 @@ public class ExtensionManager {
 	/** The map of pollerID -> PollerObject */
 	private HashMap<String, IPollerFailureHandler> pollerFailureHandlers;
 
-	private ArrayList<PublisherWrapper> publishers;
-	
 	/** The method used to load / instantiate the pollers */
 	public void loadPollers() {
 		pollers = new HashMap<String, ServerStatePollerType>();
@@ -169,7 +156,7 @@ public class ExtensionManager {
 		return null;
 	}
 	
-	
+	private ArrayList<PublisherWrapper> publishers;	
 	public IJBossServerPublisher getPublisher(IServer server, IModule[] module, String deployMethod) {
 		if( publishers == null ) 
 			loadPublishers();
@@ -183,21 +170,7 @@ public class ExtensionManager {
 		}
 		return null;
 	}
-	
-	public IJBossServerPublisher[] getZippedPublishers() {
-		if( publishers == null ) 
-			loadPublishers();
-		ArrayList<IJBossServerPublisher> list = new ArrayList<IJBossServerPublisher>();
-		Iterator<PublisherWrapper> i = publishers.iterator();
-		PublisherWrapper wrapper;
-		while(i.hasNext()) {
-			wrapper = i.next();
-			if( wrapper.isZipDelegate )
-				list.add( wrapper.getNewInstance() );
-		}
-		return list.toArray(new IJBossServerPublisher[list.size()]);
-	}
-	
+
 	private void loadPublishers() {
 		ArrayList<PublisherWrapper> publishers = new ArrayList<PublisherWrapper>();
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
@@ -254,44 +227,61 @@ public class ExtensionManager {
 		}
 	}
 	
-	private ServerPublishMethodType[] publishMethodTypes;
-	public ServerPublishMethodType[] getPublishMethodTypes() {
-		if(publishMethodTypes == null ) 
-			publishMethodTypes = loadPublishMethodTypes();
-		return publishMethodTypes;
-	}
 	
-	public ServerPublishMethodType[] loadPublishMethodTypes() {
-		ArrayList<ServerPublishMethodType> types = new ArrayList<ServerPublishMethodType>();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishMethod"); //$NON-NLS-1$
-		for( int i = 0; i < cf.length; i++ ) {
-			types.add(new ServerPublishMethodType(cf[i]));
-		}
-		return types.toArray(new ServerPublishMethodType[types.size()]);
-	}
-	
-	public IJBossServerPublishMethodType getPublishMethod(String id) {
-		ServerPublishMethodType[] publishMethods = getPublishMethodTypes();
-		for( int i = 0; i < publishMethods.length; i++ ) 
-			if( publishMethods[i].getId().equals(id))
-				return publishMethods[i];
-		return null;
-	}
-	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServerType type) {
-		ArrayList<IJBossServerPublishMethodType> list = new ArrayList<IJBossServerPublishMethodType>();
-		list.addAll(Arrays.asList(getPublishMethodTypes()));
-		Iterator<IJBossServerPublishMethodType> i = list.iterator();
+	public IJBossServerPublisher[] getZippedPublishers() {
+		if( publishers == null ) 
+			loadPublishers();
+		ArrayList<IJBossServerPublisher> list = new ArrayList<IJBossServerPublisher>();
+		Iterator<PublisherWrapper> i = publishers.iterator();
+		PublisherWrapper wrapper;
 		while(i.hasNext()) {
-			if( !i.next().accepts(type.getId()))
-				i.remove();
+			wrapper = i.next();
+			if( wrapper.isZipDelegate )
+				list.add( wrapper.getNewInstance() );
 		}
-		return list.toArray(new IJBossServerPublishMethodType[list.size()]);
+		return list.toArray(new IJBossServerPublisher[list.size()]);
 	}
 	
-	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
-		return findPossiblePublishMethods(server.getServerType());
-	}
+
+//	
+//	private ServerPublishMethodType[] publishMethodTypes;
+//	public ServerPublishMethodType[] getPublishMethodTypes() {
+//		if(publishMethodTypes == null ) 
+//			publishMethodTypes = loadPublishMethodTypes();
+//		return publishMethodTypes;
+//	}
+//	
+//	public ServerPublishMethodType[] loadPublishMethodTypes() {
+//		ArrayList<ServerPublishMethodType> types = new ArrayList<ServerPublishMethodType>();
+//		IExtensionRegistry registry = Platform.getExtensionRegistry();
+//		IConfigurationElement[] cf = registry.getConfigurationElementsFor(JBossServerCorePlugin.PLUGIN_ID, "publishMethod"); //$NON-NLS-1$
+//		for( int i = 0; i < cf.length; i++ ) {
+//			types.add(new ServerPublishMethodType(cf[i]));
+//		}
+//		return types.toArray(new ServerPublishMethodType[types.size()]);
+//	}
+//	
+//	public IJBossServerPublishMethodType getPublishMethod(String id) {
+//		ServerPublishMethodType[] publishMethods = getPublishMethodTypes();
+//		for( int i = 0; i < publishMethods.length; i++ ) 
+//			if( publishMethods[i].getId().equals(id))
+//				return publishMethods[i];
+//		return null;
+//	}
+//	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServerType type) {
+//		ArrayList<IJBossServerPublishMethodType> list = new ArrayList<IJBossServerPublishMethodType>();
+//		list.addAll(Arrays.asList(getPublishMethodTypes()));
+//		Iterator<IJBossServerPublishMethodType> i = list.iterator();
+//		while(i.hasNext()) {
+//			if( !i.next().accepts(type.getId()))
+//				i.remove();
+//		}
+//		return list.toArray(new IJBossServerPublishMethodType[list.size()]);
+//	}
+//	
+//	public IJBossServerPublishMethodType[] findPossiblePublishMethods(IServer server) {
+//		return findPossiblePublishMethods(server.getServerType());
+//	}
 	
 	// API extension
 	public static interface IServerJMXRunnable {
@@ -340,38 +330,38 @@ public class ExtensionManager {
 	}
 	
 	
-	/**
-	 * Temporary home for start launch setup participants and launch configs
-	 * Should eventually be replaced by an extension point of some type
-	 * 
-	 * TODO Convert this into a suitable fixed API
-	 */
-	public static HashMap<String, IStartLaunchDelegate> JBoss7launchDelegates;
-	public static ArrayList<IStartLaunchSetupParticipant> JBoss7setupParticipants;
-	public static HashMap<String, IStartLaunchDelegate> JBossLaunchDelegates;
-	public static ArrayList<IStartLaunchSetupParticipant> JBossSetupParticipants;
-	static {
-		JBoss7setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-		JBoss7launchDelegates = new HashMap<String, IStartLaunchDelegate>();
-		JBoss7setupParticipants.add(new LocalJBoss7StartLaunchDelegate());
-		JBoss7launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
-
-		JBossSetupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
-		JBossLaunchDelegates = new HashMap<String, IStartLaunchDelegate>();
-		JBossSetupParticipants.add(new LocalJBossStartLaunchDelegate());
-		JBossLaunchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
-	}
-	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
-		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
-			return JBoss7launchDelegates;
-		}
-		return JBossLaunchDelegates;
-	}
-	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
-		if( ServerUtil.isJBoss7(server)) {
-			return JBoss7setupParticipants;
-		}
-		return JBossSetupParticipants;
-	}
-	
+//	/**
+//	 * Temporary home for start launch setup participants and launch configs
+//	 * Should eventually be replaced by an extension point of some type
+//	 * 
+//	 * TODO Convert this into a suitable fixed API
+//	 */
+//	public static HashMap<String, IStartLaunchDelegate> JBoss7launchDelegates;
+//	public static ArrayList<IStartLaunchSetupParticipant> JBoss7setupParticipants;
+//	public static HashMap<String, IStartLaunchDelegate> JBossLaunchDelegates;
+//	public static ArrayList<IStartLaunchSetupParticipant> JBossSetupParticipants;
+//	static {
+//		JBoss7setupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
+//		JBoss7launchDelegates = new HashMap<String, IStartLaunchDelegate>();
+//		JBoss7setupParticipants.add(new LocalJBoss7StartLaunchDelegate());
+//		JBoss7launchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBoss7StartLaunchDelegate());
+//
+//		JBossSetupParticipants = new ArrayList<IStartLaunchSetupParticipant>();
+//		JBossLaunchDelegates = new HashMap<String, IStartLaunchDelegate>();
+//		JBossSetupParticipants.add(new LocalJBossStartLaunchDelegate());
+//		JBossLaunchDelegates.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, new LocalJBossStartLaunchDelegate());
+//	}
+//	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
+//		if( server.getServerType().getId().equals(IJBossToolingConstants.SERVER_AS_70)) {
+//			return JBoss7launchDelegates;
+//		}
+//		return JBossLaunchDelegates;
+//	}
+//	public ArrayList<IStartLaunchSetupParticipant> getSetupParticipants(IServer server) {
+//		if( ServerUtil.isJBoss7(server)) {
+//			return JBoss7setupParticipants;
+//		}
+//		return JBossSetupParticipants;
+//	}
+//	
 }

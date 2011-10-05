@@ -19,8 +19,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.wst.server.core.IServer;
 import org.jboss.ide.eclipse.as.core.server.internal.DelegatingServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchDelegate;
-import org.jboss.ide.eclipse.as.core.server.internal.launch.IStartLaunchSetupParticipant;
+import org.jboss.ide.eclipse.as.core.server.internal.launch.IJBossLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate;
 import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
 
@@ -28,7 +27,7 @@ import org.jboss.ide.eclipse.as.core.util.JBossServerBehaviorUtils;
  * @author Rob Stryker
  */
 public class LocalJBoss7StartLaunchDelegate extends LocalJBossStartLaunchDelegate 
-	implements IStartLaunchDelegate, IStartLaunchSetupParticipant {
+	implements IJBossLaunchDelegate {
 
 	public String[] getJavaLibraryPath(ILaunchConfiguration configuration) throws CoreException {
 		return new String[] {};

@@ -29,11 +29,13 @@ import org.eclipse.ui.forms.widgets.ScrolledPageBook;
 import org.eclipse.wst.server.core.IServerWorkingCopy;
 import org.eclipse.wst.server.core.util.SocketUtil;
 import org.eclipse.wst.server.ui.internal.command.ServerCommand;
-import org.jboss.ide.eclipse.as.core.ExtensionManager;
 import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
-import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.Behaviour;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
+import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.core.util.LaunchCommandPreferences;
 import org.jboss.ide.eclipse.as.core.util.ServerConverter;
@@ -86,26 +88,30 @@ public class ServerModeSectionComposite extends Composite {
 	    // fill widgets
 	    String[] nameList = new String[deployAdditions.size()];
 	    for( int i = 0; i < nameList.length; i++ ) {
-	    	nameList[i] = deployAdditions.get(i).getPublishType().getName();
+	    	nameList[i] = deployAdditions.get(i).behaviourName;
 	    }
 	    deployTypeCombo.setItems(nameList);
 		DeployableServerBehavior ds = ServerConverter.getDeployableServerBehavior(callback.getServer().getOriginal());
 		String current = null;
 		if( ds != null ) {
-			current = ds.createPublishMethod().getPublishMethodType().getName();
+			Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getOriginal().getServerType().getId());
+			String behaviourType = DeploymentPreferenceLoader.getCurrentDeploymentMethodTypeId(callback.getServer().getOriginal());
+			current = b.getImpl(behaviourType).getName();
 		} else {
 			String host = callback.getServer().getHost();
-			IJBossServerPublishMethodType behType = null;
+//			IJBossServerPublishMethodType behType = null;
+			BehaviourImpl impl = null;
+			String serverTypeId = callback.getServer().getServerType().getId();
 			if( SocketUtil.isLocalhost(host)) {
-				behType = ExtensionManager.getDefault().getPublishMethod(LocalPublishMethod.LOCAL_PUBLISH_METHOD); 
+				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
 			} else {
 				// socket is not localhost, hard code this for now
-				behType = ExtensionManager.getDefault().getPublishMethod("rse"); //$NON-NLS-1$
+				impl = BehaviourModel.getModel().getBehaviour(serverTypeId).getImpl("rse");
 			}
-			current = behType.getName();
+			current = impl.getName();
 			callback.execute(new ChangeServerPropertyCommand(
 					callback.getServer(), IDeployableServer.SERVER_MODE, 
-					behType.getId(), Messages.EditorChangeServerMode));
+					impl.getId(), Messages.EditorChangeServerMode));
 		}
 		if( current != null ) {
 			int index = deployTypeCombo.indexOf(current);
@@ -130,18 +136,20 @@ public class ServerModeSectionComposite extends Composite {
 	}
 	
 	private class DeployUIAdditions {
-		private IJBossServerPublishMethodType publishType;
+		private String behaviourName;
+		private String behaviourId;
+		
 		private IDeploymentTypeUI ui;
 		private boolean registered = false;
-		public DeployUIAdditions(IJBossServerPublishMethodType type,IDeploymentTypeUI ui) {
-			this.publishType = type;
+		
+		public DeployUIAdditions(String name, String id,IDeploymentTypeUI ui) {
+			this.behaviourName = name;
+			this.behaviourId = id;
 			this.ui = ui;
 		}
+		
 		public boolean isRegistered() {
 			return registered;
-		}
-		public IJBossServerPublishMethodType getPublishType() {
-			return publishType;
 		}
 		public void createComposite(Composite parent) {
 			// UI can be null
@@ -158,10 +166,12 @@ public class ServerModeSectionComposite extends Composite {
 
 	private void loadDeployTypeData() {
 		deployAdditions = new ArrayList<DeployUIAdditions>();
-		IJBossServerPublishMethodType[] publishMethodTypes = ExtensionManager.getDefault().findPossiblePublishMethods(callback.getServer().getServerType());
-		for( int i = 0; i < publishMethodTypes.length; i++) {
-			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(publishMethodTypes[i].getId());
-			deployAdditions.add(new DeployUIAdditions(publishMethodTypes[i], ui));
+		Behaviour b = BehaviourModel.getModel().getBehaviour(callback.getServer().getServerType().getId());
+		BehaviourImpl[] supportedBehaviours = b.getImplementations();
+		for( int i = 0; i < supportedBehaviours.length; i++) {
+			IDeploymentTypeUI ui = EditorExtensionManager.getDefault().getPublishPreferenceUI(supportedBehaviours[i].getId());
+			deployAdditions.add(new DeployUIAdditions(supportedBehaviours[i].getName(), 
+					supportedBehaviours[i].getId(), ui));
 		}
 	}
 
@@ -177,10 +187,10 @@ public class ServerModeSectionComposite extends Composite {
 			if( fireEvent ) {
 				callback.execute(new ChangeServerPropertyCommand(
 						callback.getServer(), IDeployableServer.SERVER_MODE, 
-						ui.getPublishType().getId(), "Change server mode"));
+						ui.behaviourId, "Change server mode"));
 				String deployType = null;
 				if( shouldChangeDefaultDeployType(callback.getServer())) {
-					if( ui.getPublishType().getId().equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
+					if( ui.behaviourId.equals(LocalPublishMethod.LOCAL_PUBLISH_METHOD)) {
 						deployType = IDeployableServer.DEPLOY_METADATA;
 					} else {
 						deployType = IDeployableServer.DEPLOY_SERVER;

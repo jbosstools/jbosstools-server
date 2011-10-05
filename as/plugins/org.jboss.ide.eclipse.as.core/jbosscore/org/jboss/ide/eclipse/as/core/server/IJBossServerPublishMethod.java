@@ -19,7 +19,7 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 
 public interface IJBossServerPublishMethod {
-	public IJBossServerPublishMethodType getPublishMethodType();
+//	public IJBossServerPublishMethodType getPublishMethodType();
 	public void publishStart(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
 	public int publishFinish(DeployableServerBehavior behaviour, IProgressMonitor monitor) throws CoreException;
 	public int publishModule(DeployableServerBehavior behaviour, int kind, int deltaKind, IModule[] module, IProgressMonitor monitor) throws CoreException;

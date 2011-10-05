@@ -26,9 +26,12 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 
 public abstract class AbstractPublishMethod implements IJBossServerPublishMethod {
 	public abstract String getPublishMethodId();
-	public IJBossServerPublishMethodType getPublishMethodType() {
-		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
-	}
+
+//	@Deprecated
+//	public IJBossServerPublishMethodType getPublishMethodType() {
+//		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
+//	}
+	
 	public void publishStart(DeployableServerBehavior behaviour,
 			IProgressMonitor monitor) throws CoreException {
 	}

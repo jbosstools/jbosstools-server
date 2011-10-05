@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
+import org.eclipse.wst.server.core.internal.ServerPreferences;
 import org.jboss.ide.eclipse.as.test.util.IOUtil;
 import org.jboss.ide.eclipse.as.test.util.ServerRuntimeUtils;
 
@@ -41,7 +42,7 @@ public class MockJSTPublisherTest extends AbstractJSTDeploymentTester {
 	}
 
 	protected void theTest(boolean isAs7) throws CoreException, IOException {
-
+		ServerPreferences.getInstance().setAutoPublishing(false);
 		IModule mod = ServerUtil.getModule(project);
 		server = ServerRuntimeUtils.addModule(server, mod);
 		ServerRuntimeUtils.publish(server);

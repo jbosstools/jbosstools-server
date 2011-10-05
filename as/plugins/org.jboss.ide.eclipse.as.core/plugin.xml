@@ -6,6 +6,7 @@
    <extension-point id="pollerFailureHandler" name="org.jboss.ide.eclipse.as.core.runtime.server.pollerFailureHandler" schema="schema/pollerFailureHandler.exsd"/>
    <extension-point id="publishers" name="org.jboss.ide.eclipse.as.core.publishers" schema="schema/publishers.exsd"/>
    <extension-point id="publishMethod" name="org.jboss.ide.eclipse.as.core.publishMethod" schema="schema/publishMethod.exsd"/>
+   <extension-point id="behaviourExtension" name="org.jboss.ide.eclipse.as.core.behaviourExtension" schema="schema/behaviourExtension.exsd"/>
    <extension-point id="jmxRunner" name="org.jboss.ide.eclipse.as.core.jmxRunner" schema="schema/jmxRunner.exsd"/>
 
    <extension
@@ -1282,14 +1283,6 @@
    </extension>
 
    <extension
-         point="org.jboss.ide.eclipse.as.core.publishers">
-      <publisher
-            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
-            priority="15"
-            zipDelegate="false">
-      </publisher>
-   </extension>
-   <extension
          point="org.eclipse.jdt.core.classpathContainerInitializer">
       <classpathContainerInitializer
             class="org.jboss.ide.eclipse.as.core.server.internal.launch.RunJarContainerWrapper$RunJarContainerInitializer"
@@ -1326,6 +1319,8 @@
             supportsArgument="true">
       </variable>
    </extension>
+   
+   <!--
    <extension
          point="org.jboss.ide.eclipse.as.core.publishMethod">
       <publishMethod
@@ -1335,4 +1330,39 @@
             serverTypes="%AllJBTServerTypes">
       </publishMethod>
    </extension>
+   -->
+   
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.LocalJBossBehaviorDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.launch.LocalJBossStartLaunchDelegate"
+            name="Local"
+            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
+            serverTypes="%ServerTypesJBoss6OrLower"
+            typeId="local">
+      </behaviour>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7BehaviorDelegate"
+            launchDelegate="org.jboss.ide.eclipse.as.core.server.internal.v7.LocalJBoss7StartLaunchDelegate"
+            name="Local"
+            publishMethod="org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod"
+            serverTypes="%ServerTypesJBoss7"
+            typeId="local">
+      </behaviour>
+   </extension>
+   
+   <!-- The default publisher declaration. -->
+   <extension
+         point="org.jboss.ide.eclipse.as.core.publishers">
+      <publisher
+            class="org.jboss.ide.eclipse.as.core.server.internal.v7.JBoss7JSTPublisher"
+            priority="15"
+            zipDelegate="false">
+      </publisher>
+   </extension>
+   
 </plugin>
