@@ -43,7 +43,7 @@ public class UserConfiguration {
 		if (userHome == null) {
 			throw new OpenshiftException("Could not read user configuration: user home directory not found");
 		}
-		return new File(CONFIGURATION_FILE, userHome + File.separatorChar + CONFIGURATION_FOLDER);
+		return new File(userHome + File.separatorChar + CONFIGURATION_FOLDER, CONFIGURATION_FILE);
 	}
 
 	protected Properties getUserProperties(File userConfigurationFile) throws FileNotFoundException, IOException {
