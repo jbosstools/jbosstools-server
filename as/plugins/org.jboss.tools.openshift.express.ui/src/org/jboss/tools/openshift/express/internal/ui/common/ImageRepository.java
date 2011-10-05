@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.graphics.Image;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
 public class ImageRepository {
@@ -74,5 +75,9 @@ public class ImageRepository {
 							"Could not create URL for image {0}", name), e));
 			return null;
 		}
+	}
+
+	public Image getImage(String name) {
+		return imageRegistry.get(name);
 	}
 }

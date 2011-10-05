@@ -97,17 +97,17 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 		Binding passwordBinding = DataBindingUtils.bindMandatoryTextField(
 				passwordText, "Password", CredentialsWizardPageModel.PROPERTY_PASSWORD, model, dbc);
 
-		Label spacerLabel = new Label(container, SWT.None);
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).applyTo(spacerLabel);
-
 		// Label credentialsValidatyLabel = new Label(container, SWT.None);
 		// GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).hint(64,
 		// 64).applyTo(credentialsValidatyLabel);
 
+		Label spacerLabel = new Label(container, SWT.None);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(spacerLabel);
+
 		this.validateButton = new Button(container, SWT.NONE);
 		validateButton.setText("&Validate");
-		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).indent(0, 10).hint(100, 30).applyTo(validateButton);
-		DataBindingUtils.bindButtonEnablementToValidationStatus(
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).indent(0, 10).hint(100, 30).applyTo(validateButton);
+		DataBindingUtils.bindEnablementToValidationStatus(
 				validateButton,
 				dbc,
 				rhLoginBining, passwordBinding);

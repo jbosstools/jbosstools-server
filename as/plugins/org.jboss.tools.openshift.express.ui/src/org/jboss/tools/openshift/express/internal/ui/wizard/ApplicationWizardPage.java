@@ -74,17 +74,19 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 	@Override
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
-		GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).spacing(4, 4).applyTo(container);
+		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
 
 		Group group = new Group(container, SWT.BORDER);
-		group.setText("Available applications");
-		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).span(3, 1).applyTo(group);
+		group.setText("Available Applications");
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).hint(400, 160).span(3, 1)
+				.applyTo(group);
 		FillLayout fillLayout = new FillLayout(SWT.VERTICAL);
 		fillLayout.marginHeight = 6;
 		fillLayout.marginWidth = 6;
 		group.setLayout(fillLayout);
 
-		this.viewer = createApplicationTable(group);
+		Composite tableContainer = new Composite(group, SWT.NONE);
+		this.viewer = createTable(tableContainer);
 		viewer.addDoubleClickListener(onApplicationDoubleClick());
 
 		Binding selectedApplicationBinding = dbc.bindValue(
@@ -112,11 +114,18 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		Button deleteButton = new Button(container, SWT.PUSH);
 		deleteButton.setText("&Delete");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(80, 30).applyTo(deleteButton);
-		DataBindingUtils.bindButtonEnablementToValidationStatus(deleteButton, dbc, selectedApplicationBinding);
+		DataBindingUtils.bindEnablementToValidationStatus(deleteButton, dbc, selectedApplicationBinding);
 		deleteButton.addSelectionListener(onDelete(dbc));
+
+		Button detailsButton = new Button(container, SWT.PUSH);
+		detailsButton.setText("De&tails");
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).hint(80, 30).applyTo(detailsButton);
+		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, dbc, IStatus.INFO, selectedApplicationBinding);
+		detailsButton.addSelectionListener(onDetails(dbc));
+
 	}
 
-	protected IDoubleClickListener onApplicationDoubleClick() {
+	private IDoubleClickListener onApplicationDoubleClick() {
 		return new IDoubleClickListener() {
 
 			@Override
@@ -140,23 +149,9 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		};
 	}
 
-	protected SelectionAdapter onNew(DataBindingContext dbc) {
-		return new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Shell shell = getContainer().getShell();
-				if (WizardUtils.openWizardDialog(new NewApplicationDialog(model.getUser()), shell)
-						== Dialog.OK) {
-					viewer.refresh();
-				}
-			}
-		};
-	}
-
-	protected TableViewer createApplicationTable(Group group) {
-		Composite tableContainer = new Composite(group, SWT.NONE);
+	protected TableViewer createTable(Composite tableContainer) {
 		Table table = new Table(tableContainer, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(table);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		TableColumnLayout tableLayout = new TableColumnLayout();
@@ -170,6 +165,14 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			public void update(ViewerCell cell) {
 				IApplication application = (IApplication) cell.getElement();
 				cell.setText(application.getName());
+			}
+		}, viewer, tableLayout);
+		createTableColumn("Type", 1, new CellLabelProvider() {
+
+			@Override
+			public void update(ViewerCell cell) {
+				IApplication application = (IApplication) cell.getElement();
+				cell.setText(application.getCartridge().getName());
 			}
 		}, viewer, tableLayout);
 		createTableColumn("URL", 3, new CellLabelProvider() {
@@ -206,6 +209,31 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				} catch (Exception ex) {
 					// ignore
 				}
+			}
+		};
+	}
+
+	private SelectionAdapter onNew(DataBindingContext dbc) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Shell shell = getContainer().getShell();
+				if (WizardUtils.openWizardDialog(new NewApplicationDialog(model.getUser()), shell)
+						== Dialog.OK) {
+					viewer.refresh();
+				}
+			}
+		};
+	}
+
+	private SelectionAdapter onDetails(DataBindingContext dbc) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Shell shell = getContainer().getShell();
+				new ApplicationDetailsDialog(model.getSelectedApplication(), shell).open();
 			}
 		};
 	}

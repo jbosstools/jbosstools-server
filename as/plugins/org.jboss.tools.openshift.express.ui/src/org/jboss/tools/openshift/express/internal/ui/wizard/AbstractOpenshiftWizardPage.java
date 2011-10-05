@@ -14,12 +14,15 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.jboss.tools.common.ui.databinding.ParametrizableWizardPageSupport;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftImages;
 
@@ -45,16 +48,12 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 				IStatus.ERROR | IStatus.INFO | IStatus.WARNING | IStatus.CANCEL, this,
 				dbc);
 		Composite container = new Composite(parent, SWT.NONE);
+		GridLayoutFactory.fillDefaults().margins(6,6).applyTo(container);
+		Composite child = new Composite(container, SWT.NONE);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(child);
 		setControl(container);
 		initPageChangedListener();
-
-		// container.addListener(SWT.Show, new Listener() {
-		// @Override
-		// public void handleEvent(Event event) {
-		// onPageVisible(dbc);
-		// }
-		// });
-		doCreateControls(container, dbc);
+		doCreateControls(child, dbc);
 	}
 
 	protected void initPageChangedListener() {

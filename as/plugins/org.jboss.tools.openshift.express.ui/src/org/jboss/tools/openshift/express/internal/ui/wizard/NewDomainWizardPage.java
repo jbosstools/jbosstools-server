@@ -68,7 +68,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 	}
 
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
-		GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).applyTo(container);
+		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
 
 		Label namespaceLabel = new Label(container, SWT.NONE);
 		namespaceLabel.setText("&Domain name");
@@ -98,7 +98,7 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage implements 
 		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).span(2, 1).indent(0, 10).hint(160, 34)
 				.applyTo(createButton);
 		createButton.addSelectionListener(onCreate(dbc));
-		DataBindingUtils.bindButtonEnablementToValidationStatus(createButton, dbc);
+		DataBindingUtils.bindEnablementToValidationStatus(createButton, dbc);
 
 		dbc.bindValue(
 				new WritableValue(null, IDomain.class)

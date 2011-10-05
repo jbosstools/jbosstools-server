@@ -54,7 +54,8 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 	protected String initRhLogin() {
 		String rhLogin = null;
 		rhLogin = rhLoginPreferenceValue.get();
-		if (rhLogin == null) {
+		if (rhLogin == null
+				|| rhLogin.length() == 0) {
 			rhLogin = getUserConfiguration();
 		}
 		return rhLogin;
