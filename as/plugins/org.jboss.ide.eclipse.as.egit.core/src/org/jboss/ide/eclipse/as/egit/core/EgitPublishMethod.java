@@ -11,10 +11,6 @@ import org.jboss.ide.eclipse.as.core.server.internal.DeployableServerBehavior;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 
 public class EgitPublishMethod implements IJBossServerPublishMethod {
-//	@Override
-//	public IJBossServerPublishMethodType getPublishMethodType() {
-//		return ExtensionManager.getDefault().getPublishMethod(getPublishMethodId());
-//	}
 
 	public String getPublishMethodId() {
 		return EgitBehaviourDelegate.ID;

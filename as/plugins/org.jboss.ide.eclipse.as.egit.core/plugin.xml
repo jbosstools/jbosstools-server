@@ -31,4 +31,14 @@
       </publishMethod>
    </extension>
    -->
+      <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.ide.eclipse.as.egit.core.EgitBehaviourDelegate"
+            name="%EGitMethodName"
+            publishMethod="org.jboss.ide.eclipse.as.rse.core.RSEPublishMethod"
+            serverTypes="%ServerTypesJBoss7"
+            typeId="egit">
+      </behaviour>
+   </extension>
 </plugin>

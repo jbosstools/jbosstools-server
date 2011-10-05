@@ -77,7 +77,7 @@ public class EGitUtils {
 				null,
 				getFormattedUser(userConfig.getAuthorName(), userConfig.getAuthorEmail()),
 				getFormattedUser(userConfig.getCommitterName(), userConfig.getCommitterEmail()),
-				"Initial commit");
+				"Push from JBoss Tools Server adapt	er " + System.currentTimeMillis());
 		op.setCommitAll(true);
 		op.setRepository(repository);
 		op.execute(monitor);
@@ -132,6 +132,8 @@ public class EGitUtils {
 						repository.toString(), remote));
 			}
 			createPushOperation(remoteConfig, repository).run(monitor);
+		} catch (CoreException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new CoreException(createStatus(e, "Could not push repo {0}", repository.toString()));
 		}
@@ -400,9 +402,9 @@ public class EGitUtils {
 	private static IStatus createStatus(Exception e, String message, String... arguments) throws CoreException {
 		IStatus status = null;
 		if (e == null) {
-			new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments));
+			status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments));
 		} else {
-			new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments), e);
+			status = new Status(IStatus.ERROR, EGitCoreActivator.PLUGIN_ID, NLS.bind(message, arguments), e);
 		}
 		return status;
 	}
