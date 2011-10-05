@@ -60,14 +60,6 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void loadCartridges() throws OpenshiftException {
-//		final Collection<ICartridge> cartridges = user.getCartridges();
-//		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				setCartridges(cartridges);
-//			}
-//		});
 		setCartridges(user.getCartridges());
 	}
 
