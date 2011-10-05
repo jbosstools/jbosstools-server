@@ -29,13 +29,13 @@ import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.ISSHPublicKey;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.client.OpenshiftService;
+import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
 import org.jboss.tools.openshift.express.internal.client.InternalUser;
 import org.jboss.tools.openshift.express.internal.client.UserInfo;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.CartridgeResponseFake;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.NoopOpenshiftServiceFake;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.UserInfoResponseFake;
-import org.jboss.tools.openshift.express.internal.client.utils.RFC822DateUtils;
 import org.junit.Before;
 import org.junit.Test;
 

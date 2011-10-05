@@ -24,8 +24,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.client.Application;
-import org.jboss.tools.openshift.express.internal.client.utils.RFC822DateUtils;
 
 /**
  * @author André Dietisheim
