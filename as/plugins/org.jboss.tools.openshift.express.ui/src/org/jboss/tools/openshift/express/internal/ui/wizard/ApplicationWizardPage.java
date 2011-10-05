@@ -274,7 +274,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	private class DeleteApplicationJob extends Job {
 
 		public DeleteApplicationJob() {
-			super("Deleteing application");
+			super("Deleting application");
 		}
 
 		@Override
