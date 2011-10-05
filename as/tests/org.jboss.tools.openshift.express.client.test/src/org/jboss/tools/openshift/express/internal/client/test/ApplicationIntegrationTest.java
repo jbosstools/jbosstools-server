@@ -230,14 +230,21 @@ public class ApplicationIntegrationTest {
 	 */
 	@Test
 	public void returnsCreationTimeOn2ndApplication() throws Exception {
-		String applicationName = ApplicationUtils.createRandomApplicationName();
+		String applicationName = null;
+		String applicationName2 = null;
 		try {
-			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			applicationName = ApplicationUtils.createRandomApplicationName();
+			IApplication application = user.createApplication(applicationName, ICartridge.JBOSSAS_7);
 			Date creationTime = application.getCreationTime();
 			assertNotNull(creationTime);
-			assertTrue(creationTime.compareTo(new Date()) == -1);
+			applicationName2 = ApplicationUtils.createRandomApplicationName();
+			IApplication application2 = user.createApplication(applicationName2, ICartridge.JBOSSAS_7);
+			Date creationTime2 = application2.getCreationTime();
+			assertNotNull(creationTime2);
+			assertTrue(creationTime.compareTo(creationTime2) == -1);
 		} finally {
 			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName2, user, service);
 		}
 	}
 }

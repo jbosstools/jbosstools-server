@@ -32,6 +32,9 @@ public class ApplicationUtils {
 	
 	public static void silentlyDestroyAS7Application(String name, User user, IOpenshiftService service) {
 		try {
+			if (name == null) {
+				return;
+			}
 			service.destroyApplication(name, ICartridge.JBOSSAS_7, user);
 		} catch (OpenshiftException e) {
 			e.printStackTrace();
