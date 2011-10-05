@@ -43,6 +43,7 @@ public class Application extends UserInfoAware implements IApplication {
 		super(user);
 		this.name = name;
 		this.cartridge = cartridge;
+		this.applicationInfo = applicationInfo;
 		this.service = service;
 	}
 
