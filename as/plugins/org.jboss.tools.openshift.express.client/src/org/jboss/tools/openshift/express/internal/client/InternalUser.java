@@ -195,6 +195,11 @@ public class InternalUser implements IUser {
 		this.sshKey = key;
 	}
 
+	protected UserInfo refreshUserInfo() throws OpenshiftException {
+		this.userInfo = null;
+		return getUserInfo();
+	}
+	
 	protected UserInfo getUserInfo() throws OpenshiftException {
 		if (userInfo == null) {
 			this.userInfo = service.getUserInfo(this);

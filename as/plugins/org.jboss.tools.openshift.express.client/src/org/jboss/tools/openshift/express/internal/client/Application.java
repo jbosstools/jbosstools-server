@@ -67,7 +67,11 @@ public class Application extends UserInfoAware implements IApplication {
 
 	@Override
 	public Date getCreationTime() throws OpenshiftException {
-		return getApplicationInfo().getCreationTime();
+		 ApplicationInfo applicationInfo = getApplicationInfo();
+		 if (applicationInfo == null) {
+			 throw new OpenshiftException("Could not find info for application {0}", getName());
+		 }
+		 return applicationInfo.getCreationTime();
 	}
 
 	@Override
@@ -120,7 +124,7 @@ public class Application extends UserInfoAware implements IApplication {
 	protected IOpenshiftService getService() {
 		return service;
 	}
-
+	
 	protected ApplicationInfo getApplicationInfo() throws OpenshiftException {
 		if (applicationInfo == null) {
 			this.applicationInfo = getUserInfo().getApplicationInfoByName(getName());

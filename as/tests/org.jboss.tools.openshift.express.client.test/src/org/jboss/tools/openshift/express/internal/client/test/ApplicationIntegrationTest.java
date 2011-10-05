@@ -14,6 +14,9 @@ import static org.jboss.tools.openshift.express.internal.client.test.utils.Appli
 import static org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationAsserts.assertGitUri;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Date;
 
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.ICartridge;
@@ -22,6 +25,8 @@ import org.jboss.tools.openshift.express.client.InvalidCredentialsOpenshiftExcep
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.client.OpenshiftService;
 import org.jboss.tools.openshift.express.client.User;
+import org.jboss.tools.openshift.express.internal.client.ApplicationInfo;
+import org.jboss.tools.openshift.express.internal.client.UserInfo;
 import org.jboss.tools.openshift.express.internal.client.test.fakes.TestUser;
 import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationUtils;
 import org.junit.Before;
@@ -192,6 +197,45 @@ public class ApplicationIntegrationTest {
 			String applicationUrl = application.getApplicationUrl();
 			assertNotNull(applicationUrl);
 			assertAppliactionUrl(applicationName, applicationUrl);
+		} finally {
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+		}
+	}
+
+	@Test
+	public void returnsCreationTime() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		try {
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			Date creationTime = application.getCreationTime();
+			assertNotNull(creationTime);
+			assertTrue(creationTime.compareTo(new Date()) == -1);
+		} finally {
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
+		}
+	}
+
+	/**
+	 * This tests checks if the creation time is returned in the 2nd
+	 * application. The creation time is only available in the
+	 * {@link ApplicationInfo} which is held by the {@link UserInfo}. The
+	 * UserInfo is fetched when the 1st application is created and then stored.
+	 * The 2nd application has therefore to force the user to refresh the user
+	 * info.
+	 * 
+	 * @throws Exception
+	 * 
+	 * @see UserInfo
+	 * @see ApplicationInfo
+	 */
+	@Test
+	public void returnsCreationTimeOn2ndApplication() throws Exception {
+		String applicationName = ApplicationUtils.createRandomApplicationName();
+		try {
+			IApplication application = service.createApplication(applicationName, ICartridge.JBOSSAS_7, user);
+			Date creationTime = application.getCreationTime();
+			assertNotNull(creationTime);
+			assertTrue(creationTime.compareTo(new Date()) == -1);
 		} finally {
 			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, service);
 		}

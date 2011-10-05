@@ -23,7 +23,7 @@ public class UserInfoAware {
 
 	protected UserInfo getUserInfo() throws OpenshiftException {
 		if (userInfo == null) {
-			this.userInfo = user.getUserInfo();
+			this.userInfo = user.refreshUserInfo();
 		}
 		return userInfo;
 	}
