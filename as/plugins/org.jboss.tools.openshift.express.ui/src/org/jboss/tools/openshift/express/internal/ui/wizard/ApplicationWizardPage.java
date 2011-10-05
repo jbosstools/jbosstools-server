@@ -32,9 +32,6 @@ import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -51,7 +48,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.PlatformUI;
-import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.IApplication;
@@ -129,21 +125,22 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				try {
-					ISelection selection = event.getSelection();
-					if (selection instanceof StructuredSelection) {
-						Object firstElement = ((IStructuredSelection) selection).getFirstElement();
-						if (firstElement instanceof IApplication) {
-							String url = ((IApplication) firstElement).getApplicationUrl();
-							BrowserUtil.checkedCreateExternalBrowser(url, OpenshiftUIActivator.PLUGIN_ID,
-									OpenshiftUIActivator.getDefault().getLog());
-						}
-					}
-				} catch (OpenshiftException e) {
-					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-							"Could not open Openshift Express application in browser", e);
-					OpenshiftUIActivator.getDefault().getLog().log(status);
-				}
+//				try {
+//					ISelection selection = event.getSelection();
+//					if (selection instanceof StructuredSelection) {
+//						Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+//						if (firstElement instanceof IApplication) {
+//							String url = ((IApplication) firstElement).getApplicationUrl();
+//							BrowserUtil.checkedCreateExternalBrowser(url, OpenshiftUIActivator.PLUGIN_ID,
+//									OpenshiftUIActivator.getDefault().getLog());
+//						}
+//					}
+//				} catch (OpenshiftException e) {
+//					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+//							"Could not open Openshift Express application in browser", e);
+//					OpenshiftUIActivator.getDefault().getLog().log(status);
+//				}
+				openDetailsDialog();
 			}
 		};
 	}
@@ -231,12 +228,16 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Shell shell = getContainer().getShell();
-				new ApplicationDetailsDialog(model.getSelectedApplication(), shell).open();
+				openDetailsDialog();
 			}
 		};
 	}
 
+	private void openDetailsDialog() {
+		Shell shell = getContainer().getShell();
+		new ApplicationDetailsDialog(model.getSelectedApplication(), shell).open();
+	}
+	
 	@Override
 	protected void onPageActivated(DataBindingContext dbc) {
 		try {

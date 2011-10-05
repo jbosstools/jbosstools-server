@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
@@ -30,25 +31,26 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 
 	private IUser user;
 	private String name;
-	
-	private Collection<ICartridge> cartridges;
-	private String selectedCartridge;
+
+	private Collection<ICartridge> cartridges = new ArrayList<ICartridge>();
+	private ICartridge selectedCartridge;
 	private StringPreferenceValue selectedCartridgePreference;
 
 	public NewApplicationWizardPageModel(IUser user) {
 		this.user = user;
 		this.selectedCartridgePreference = new StringPreferenceValue(
-				"org.jboss.tools.openshift.express.internal.ui.wizard.NewApplicationWizard.selectedCartridge", OpenshiftUIActivator.PLUGIN_ID);
+				"org.jboss.tools.openshift.express.internal.ui.wizard.NewApplicationWizard.selectedCartridge",
+				OpenshiftUIActivator.PLUGIN_ID);
 		initSelectedCartridge();
 	}
 
 	private void initSelectedCartridge() {
-		String selectedCartridge = selectedCartridgePreference.get();
-		if (selectedCartridge == null
-				|| selectedCartridge.length() == 0) {
-			selectedCartridge = ICartridge.JBOSSAS_7.getName();
+		String selectedCartridgeName = selectedCartridgePreference.get();
+		if (selectedCartridgeName == null
+				|| selectedCartridgeName.length() == 0) {
+			selectedCartridge = ICartridge.JBOSSAS_7;
 		}
-		this.selectedCartridge = selectedCartridge;
+		this.selectedCartridge = getCartridgeByName(selectedCartridgeName);
 	}
 
 	public String getName() {
@@ -71,17 +73,28 @@ public class NewApplicationWizardPageModel extends ObservableUIPojo {
 		return cartridges;
 	}
 
-	public String getSelectedCartridge() {
+	public ICartridge getSelectedCartridge() {
 		return selectedCartridge;
 	}
 
-	public void setSelectedCartridge(String name) {
-		selectedCartridgePreference.store(name);
-		firePropertyChange(PROPERTY_SELECTED_CARTRIDGE, selectedCartridge, this.selectedCartridge = name);
+	public void setSelectedCartridge(ICartridge cartridge) {
+		selectedCartridgePreference.store(cartridge.getName());
+		firePropertyChange(PROPERTY_SELECTED_CARTRIDGE, selectedCartridge, this.selectedCartridge = cartridge);
+	}
+
+	private ICartridge getCartridgeByName(String name) {
+		ICartridge matchingCartridge = null;
+		for (ICartridge cartridge : getCartridges()) {
+			if (name.equals(cartridge.getName())) {
+				matchingCartridge = cartridge;
+				break;
+			}
+		}
+		return matchingCartridge;
 	}
 
 	public void createApplication() throws OpenshiftException {
-		user.createApplication(name, user.getCartridgeByName(selectedCartridge));
+		user.createApplication(name, selectedCartridge);
 	}
 
 	public boolean hasApplication(String name) {

@@ -39,7 +39,7 @@ public class NewApplicationDialog extends Wizard {
 	public boolean performFinish() {
 		final ArrayBlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 		try {
-			WizardUtils.runInWizard(new Job("Creating application") {
+			WizardUtils.runInWizard(new Job("Creating application...") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {

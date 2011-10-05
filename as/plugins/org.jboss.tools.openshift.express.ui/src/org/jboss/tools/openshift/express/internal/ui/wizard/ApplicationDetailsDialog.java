@@ -12,19 +12,25 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.jboss.tools.common.ui.BrowserUtil;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftImages;
+import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
 /**
  * @author André Dietisheim
@@ -74,15 +80,34 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 				return application.getGitUri();
 			}
 		}.get(), container);
-		createDetails("Public URL", new ErrorMessageCallable<String>("Public URL") {
+
+		Label publicUrlLabel = new Label(container, SWT.NONE);
+		publicUrlLabel.setText("Public URL");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(publicUrlLabel);
+		Link publicUrlLink = new Link(container, SWT.WRAP);
+		String applicationUrl = new ErrorMessageCallable<String>("Public URL") {
 
 			@Override
 			public String call() throws Exception {
 				return application.getApplicationUrl();
 			}
-		}.get(), container);
+		}.get();
+		publicUrlLink.setText("<a>" + applicationUrl + "</a>");
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(publicUrlLink);
+		publicUrlLink.addSelectionListener(onPublicUrl(applicationUrl));
 
 		return container;
+	}
+
+	private SelectionAdapter onPublicUrl(final String applicationUrl) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ILog log = OpenshiftUIActivator.getDefault().getLog();
+				BrowserUtil.checkedCreateExternalBrowser(applicationUrl, OpenshiftUIActivator.PLUGIN_ID, log);
+			}
+		};
 	}
 
 	private void createDetails(String name, String value, Composite container) {
@@ -91,10 +116,10 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
 		Text text = new Text(container, SWT.BORDER);
 		text.setEditable(false);
+		text.setBackground(container.getBackground());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(text);
 		text.setText(value);
 	}
-
 
 	private abstract class ErrorMessageCallable<T> implements Callable<T> {
 
