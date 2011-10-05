@@ -25,7 +25,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.client.utils.RFC822DateUtils;
-import org.jboss.tools.openshift.express.internal.client.Application;
 
 /**
  * @author André Dietisheim
@@ -44,7 +43,7 @@ public class ApplicationAsserts {
 	public static final Pattern APPLICATION_URL_REGEXP = Pattern.compile("http://(.+)-([^\\.]+)\\.(.+)/");
 
 	public static void assertThatContainsApplication(String applicationName, String embedded, String applicationUUID,
-			String cartridgeName, String creationTime, List<Application> applications) throws OpenshiftException {
+			String cartridgeName, String creationTime, List<IApplication> applications) throws OpenshiftException {
 		IApplication application = getApplication(applicationName, applications);
 		if (application == null) {
 			fail(MessageFormat.format("Could not find application with name \"{0}\"", applicationName));
@@ -52,13 +51,13 @@ public class ApplicationAsserts {
 		assertApplication(applicationName, applicationUUID, cartridgeName, embedded, creationTime, application);
 	}
 
-	public static void assertThatContainsApplication(String applicationName, List<Application> applications) {
+	public static void assertThatContainsApplication(String applicationName, List<IApplication> applications) {
 		assertNotNull(getApplication(applicationName, applications));
 	}
 
-	private static IApplication getApplication(String name, List<Application> applications) {
+	private static IApplication getApplication(String name, List<IApplication> applications) {
 		IApplication matchingApplication = null;
-		for (Application application : applications) {
+		for (IApplication application : applications) {
 			if (name.equals(application.getName())) {
 				matchingApplication = application;
 				break;
