@@ -62,7 +62,6 @@ import org.jboss.ide.eclipse.as.ui.UIUtil;
 import org.jboss.ide.eclipse.as.ui.editor.DeploymentModuleOptionCompositeAssistant;
 import org.jboss.ide.eclipse.as.ui.editor.IDeploymentTypeUI;
 import org.jboss.ide.eclipse.as.ui.editor.ModuleDeploymentPage;
-import org.jboss.ide.eclipse.as.ui.editor.ServerModeSection;
 import org.jboss.ide.eclipse.as.ui.editor.ServerModeSectionComposite.ChangeServerPropertyCommand;
 import org.jboss.tools.as.wst.server.ui.xpl.ExploreActionProvider;
 
@@ -105,11 +104,6 @@ public class RSEDeploymentPreferenceUI implements IDeploymentTypeUI {
 	
 	public RSEDeploymentPreferenceUI() {
 		// Do nothing
-	}
-
-	@Override @Deprecated
-	public void fillComposite(Composite parent, ServerModeSection modeSection) {
-		return;
 	}
 
 	@Override 
