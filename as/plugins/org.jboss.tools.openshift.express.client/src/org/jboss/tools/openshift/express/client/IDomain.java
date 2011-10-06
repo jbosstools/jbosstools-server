@@ -15,10 +15,10 @@ package org.jboss.tools.openshift.express.client;
  */
 public interface IDomain {
 
-	public abstract void setNamespace(String namespace) throws OpenshiftException;
+	public void setNamespace(String namespace) throws OpenshiftException;
 
-	public abstract String getNamespace();
+	public String getNamespace();
 
-	public abstract String getRhcDomain() throws OpenshiftException;
+	public String getRhcDomain() throws OpenshiftException;
 
 }
