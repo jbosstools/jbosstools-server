@@ -13,6 +13,7 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -42,14 +43,17 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 	public ApplicationDetailsDialog(IApplication application, Shell parentShell) {
 		super(parentShell);
 		this.application = application;
-		setTitleImage(OpenshiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM_IMG);
+	}
+
+	@Override
+	protected Control createContents(Composite parent) {
+		Control control =  super.createContents(parent);
+		setupDialog(parent);
+		return control;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		parent.getShell().setText("Application Details");
-		setTitle(NLS.bind("Application {0}", application.getName()));
-
 		Composite container = new Composite(parent, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(container);
 		GridLayoutFactory.fillDefaults().numColumns(2).margins(6, 6).applyTo(container);
@@ -99,6 +103,19 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 		return container;
 	}
 
+	private void setupDialog(Composite parent) {
+		parent.getShell().setText("Application Details");
+		setTitle(NLS.bind("Application {0}", application.getName()));
+		setTitleImage(OpenshiftImages.OPENSHIFT_LOGO_WHITE_MEDIUM_IMG);
+		setDialogHelpAvailable(false);
+	}
+
+	@Override
+	protected void createButtonsForButtonBar(Composite parent) {
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
+				true);
+	}
+	
 	private SelectionAdapter onPublicUrl(final String applicationUrl) {
 		return new SelectionAdapter() {
 
