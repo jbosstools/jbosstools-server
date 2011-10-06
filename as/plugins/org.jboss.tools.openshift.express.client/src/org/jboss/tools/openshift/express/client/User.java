@@ -17,11 +17,11 @@ import org.jboss.tools.openshift.express.internal.client.InternalUser;
  */
 public class User extends InternalUser {
 
-	public User(String rhlogin, String password) {
-		super(rhlogin, password);
+	public User(String rhlogin, String password, String id) {
+		super(rhlogin, password, id);
 	}
 	
-	protected User(String rhlogin, String password, String url) {
-		super(rhlogin, password, url);
+	protected User(String rhlogin, String password, String id, String url) {
+		super(rhlogin, password, id, url);
 	}
 }

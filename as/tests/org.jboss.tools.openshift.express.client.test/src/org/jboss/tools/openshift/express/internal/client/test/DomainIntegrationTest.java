@@ -29,7 +29,7 @@ public class DomainIntegrationTest {
 
 	@Before
 	public void setUp() {
-		this.openshiftService = new OpenshiftService();
+		this.openshiftService = new OpenshiftService(TestUser.ID);
 		this.user = new TestUser();
 	}
 

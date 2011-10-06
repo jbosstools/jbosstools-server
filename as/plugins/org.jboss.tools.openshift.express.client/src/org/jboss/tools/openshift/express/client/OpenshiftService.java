@@ -47,12 +47,14 @@ import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.
 public class OpenshiftService implements IOpenshiftService {
 
 	private String baseUrl;
-
-	public OpenshiftService() {
-		this(BASE_URL);
+	private String id;
+	
+	public OpenshiftService(String id) {
+		this(id, BASE_URL);
 	}
 
-	public OpenshiftService(String baseUrl) {
+	public OpenshiftService(String id, String baseUrl) {
+		this.id = id;
 		this.baseUrl = baseUrl;
 	}
 
@@ -79,7 +81,7 @@ public class OpenshiftService implements IOpenshiftService {
 			String requestString = new UserInfoRequestJsonMarshaller().marshall(request);
 			String openShiftRequestString = new OpenshiftEnvelopeFactory(user.getPassword(), requestString)
 					.createString();
-			String responseString = createHttpClient(url).post(openShiftRequestString);
+			String responseString = createHttpClient(id, url).post(openShiftRequestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<UserInfo> response =
 					new UserInfoResponseUnmarshaller().unmarshall(responseString);
@@ -106,7 +108,7 @@ public class OpenshiftService implements IOpenshiftService {
 					new ListCartridgesRequestJsonMarshaller().marshall(listCartridgesRequest);
 			String request = new OpenshiftEnvelopeFactory(user.getPassword(), listCartridgesRequestString)
 					.createString();
-			String listCatridgesReponse = createHttpClient(url).post(request);
+			String listCatridgesReponse = createHttpClient(id, url).post(request);
 			listCatridgesReponse = JsonSanitizer.sanitize(listCatridgesReponse);
 			OpenshiftResponse<List<ICartridge>> response =
 					new ListCartridgesResponseUnmarshaller().unmarshall(listCatridgesReponse);
@@ -141,7 +143,7 @@ public class OpenshiftService implements IOpenshiftService {
 							user.getPassword(),
 							new DomainRequestJsonMarshaller().marshall(request))
 							.createString();
-			String responseString = createHttpClient(url).post(requestString);
+			String responseString = createHttpClient(id, url).post(requestString);
 			responseString = JsonSanitizer.sanitize(responseString);
 			OpenshiftResponse<IDomain> response =
 					new DomainResponseUnmarshaller(request.getName(), user, this).unmarshall(responseString);
@@ -203,7 +205,7 @@ public class OpenshiftService implements IOpenshiftService {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
 			String request = new OpenshiftEnvelopeFactory(user.getPassword(), applicationRequestString).createString();
-			String response = createHttpClient(url).post(request);
+			String response = createHttpClient(id, url).post(request);
 
 			response = JsonSanitizer.sanitize(response);
 			OpenshiftResponse<String> openshiftResponse =
@@ -231,7 +233,7 @@ public class OpenshiftService implements IOpenshiftService {
 			String applicationRequestString =
 					new ApplicationRequestJsonMarshaller().marshall(applicationRequest);
 			String request = new OpenshiftEnvelopeFactory(user.getPassword(), applicationRequestString).createString();
-			String response = createHttpClient(url).post(request);
+			String response = createHttpClient(id, url).post(request);
 
 			response = JsonSanitizer.sanitize(response);
 			OpenshiftResponse<Application> openshiftResponse =
@@ -253,7 +255,7 @@ public class OpenshiftService implements IOpenshiftService {
 		}
 	}
 
-	private IHttpClient createHttpClient(String url) throws MalformedURLException {
-		return new UrlConnectionHttpClient(new URL(url));
+	private IHttpClient createHttpClient(String id, String url) throws MalformedURLException {
+		return new UrlConnectionHttpClient(id, new URL(url));
 	}
 }

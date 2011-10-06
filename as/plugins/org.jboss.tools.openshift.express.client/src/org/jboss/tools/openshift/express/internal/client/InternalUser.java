@@ -43,20 +43,20 @@ public class InternalUser implements IUser {
 
 	private IOpenshiftService service;
 
-	public InternalUser(String password) throws OpenshiftException, IOException {
-		this(new UserConfiguration(), password);
+	public InternalUser(String password, String id) throws OpenshiftException, IOException {
+		this(new UserConfiguration(), password, id);
 	}
 
-	public InternalUser(UserConfiguration configuration, String password) {
-		this(configuration.getRhlogin(), password, (ISSHPublicKey) null, new OpenshiftService());
+	public InternalUser(UserConfiguration configuration, String password, String id) {
+		this(configuration.getRhlogin(), password, (ISSHPublicKey) null, new OpenshiftService(id));
 	}
 
-	public InternalUser(String rhlogin, String password) {
-		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService());
+	public InternalUser(String rhlogin, String password, String id) {
+		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(id));
 	}
 
-	public InternalUser(String rhlogin, String password, String url) {
-		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(url));
+	public InternalUser(String rhlogin, String password, String id, String url) {
+		this(rhlogin, password, (ISSHPublicKey) null, new OpenshiftService(id, url));
 	}
 
 	public InternalUser(String rhlogin, String password, IOpenshiftService service) {

@@ -44,7 +44,7 @@ public class ApplicationIntegrationTest {
 
 	@Before
 	public void setUp() {
-		this.service = new OpenshiftService();
+		this.service = new OpenshiftService(TestUser.ID);
 		this.user = new TestUser();
 		this.invalidUser = new TestUser("bogusPassword");
 	}

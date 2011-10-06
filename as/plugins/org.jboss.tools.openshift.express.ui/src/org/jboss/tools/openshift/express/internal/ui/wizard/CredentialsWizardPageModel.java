@@ -27,6 +27,8 @@ import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
  */
 public class CredentialsWizardPageModel extends ObservableUIPojo {
 
+	private static final String ID = OpenshiftUIActivator.PLUGIN_ID;
+	
 	private static final String RHLOGIN_PREFS_KEY = "org.jboss.tools.openshift.express.internal.ui.wizard.CredentialsWizardModel_RHLOGIN";
 
 	public static final String PROPERTY_SERVER_URL = "serverUrl";
@@ -120,7 +122,7 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 	public void validateCredentials() {
 		IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Your credentails are not valid.");
 		try {
-			this.user = new User(getRhLogin(), getPassword());
+			this.user = new User(getRhLogin(), getPassword(), ID);
 			if (user.isValid()) {
 				status = Status.OK_STATUS;
 			}

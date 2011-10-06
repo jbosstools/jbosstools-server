@@ -40,7 +40,7 @@ public class ApplicationLogReaderIntegrationTest {
 
 	@Before
 	public void setUp() {
-		this.service = new OpenshiftService();
+		this.service = new OpenshiftService(TestUser.ID);
 		this.user = new TestUser();
 	}
 

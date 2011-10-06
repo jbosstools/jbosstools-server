@@ -17,6 +17,8 @@ import org.jboss.tools.openshift.express.internal.client.httpclient.HttpClientEx
  */
 public interface IHttpClient {
 
+	public static final String USER_AGENT = "User-Agent"; //$NON-NLS-1$
+
 	public String post(String data) throws HttpClientException;
 
 	public String get() throws HttpClientException;

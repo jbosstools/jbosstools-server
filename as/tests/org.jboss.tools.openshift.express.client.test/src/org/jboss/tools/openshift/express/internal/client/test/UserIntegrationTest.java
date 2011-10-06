@@ -132,7 +132,7 @@ public class UserIntegrationTest {
 			assertEquals(numOfApplications + 1, applications.size());
 			assertApplication(applicationName, ICartridge.JBOSSAS_7.getName(), application);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, new OpenshiftService());
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, new OpenshiftService(TestUser.ID));
 		}
 	}
 
@@ -145,7 +145,7 @@ public class UserIntegrationTest {
 			assertNotNull(applicationFound);
 			assertEquals(application, applicationFound);
 		} finally {
-			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, new OpenshiftService());
+			ApplicationUtils.silentlyDestroyAS7Application(applicationName, user, new OpenshiftService(TestUser.ID));
 		}
 	}
 }

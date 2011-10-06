@@ -21,6 +21,8 @@ import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationU
  */
 public class TestUser extends User {
 
+	public static final String ID = "org.jboss.tools.openshift.express.client.test";
+	
 	public static final String RHLOGIN_USER_WITHOUT_DOMAIN = "toolsjboss.no.domain2@gmail.com";
 	public static final String PASSWORD_USER_WITHOUT_DOMAIN = "1q2w3e";
 
@@ -28,19 +30,19 @@ public class TestUser extends User {
 	public static final String PASSWORD = "1q2w3e";
 
 	public TestUser() {
-		super(RHLOGIN, PASSWORD);
+		super(RHLOGIN, PASSWORD,ID);
 	}
 
 	public TestUser(String password) {
-		super(RHLOGIN, password);
+		super(RHLOGIN, password, ID);
 	}
 
 	public TestUser(String rhlogin, String password) {
-		super(rhlogin, password);
+		super(rhlogin, password, ID);
 	}
 
 	public TestUser(String rhlogin, String password, String url) {
-		super(rhlogin, password, url);
+		super(rhlogin, password, ID, url);
 	}
 	
 	public IApplication createTestApplication() throws OpenshiftException {

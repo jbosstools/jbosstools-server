@@ -28,15 +28,17 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	private static final int TIMEOUT = 10 * 1024;
 
 	private URL url;
+	private String userAgent;
 
-	public UrlConnectionHttpClient(URL url) {
+	public UrlConnectionHttpClient(String userAgent, URL url) {
+		this.userAgent = userAgent;
 		this.url = url;
 	}
 
 	public String post(String data) throws HttpClientException {
 		HttpURLConnection connection = null;
 		try {
-			connection = createConnection(url);
+			connection = createConnection(userAgent, url);
 			connection.setDoOutput(true);
 			StreamUtils.writeTo(data.getBytes(), connection.getOutputStream());
 			return StreamUtils.readToString(connection.getInputStream());
@@ -55,7 +57,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 	public String get() throws HttpClientException {
 		HttpURLConnection connection = null;
 		try {
-			connection = createConnection(url);
+			connection = createConnection(userAgent, url);
 			return StreamUtils.readToString(connection.getInputStream());
 		} catch (FileNotFoundException e) {
 			throw new NotFoundException(
@@ -88,7 +90,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		}
 	}
 
-	private HttpURLConnection createConnection(URL url) throws IOException {
+	private HttpURLConnection createConnection(String userAgent, URL url) throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setUseCaches(false);
 		connection.setDoInput(true);
@@ -96,6 +98,10 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setConnectTimeout(TIMEOUT);
 		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, "application/x-www-form-urlencoded");
 		connection.setInstanceFollowRedirects(true);
+		if (userAgent != null 
+				&& userAgent.length() > 0) {
+			connection.setRequestProperty(USER_AGENT, userAgent);
+		}
 		return connection;
 	}
 }
