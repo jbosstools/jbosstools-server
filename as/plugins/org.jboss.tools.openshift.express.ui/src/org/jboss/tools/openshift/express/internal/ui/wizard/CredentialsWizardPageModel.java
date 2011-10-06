@@ -27,8 +27,9 @@ import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
  */
 public class CredentialsWizardPageModel extends ObservableUIPojo {
 
-	private static final String ID = OpenshiftUIActivator.PLUGIN_ID;
-	
+	private static final String ID = OpenshiftUIActivator.PLUGIN_ID
+			+ OpenshiftUIActivator.getDefault().getBundle().getVersion();
+
 	private static final String RHLOGIN_PREFS_KEY = "org.jboss.tools.openshift.express.internal.ui.wizard.CredentialsWizardModel_RHLOGIN";
 
 	public static final String PROPERTY_SERVER_URL = "serverUrl";

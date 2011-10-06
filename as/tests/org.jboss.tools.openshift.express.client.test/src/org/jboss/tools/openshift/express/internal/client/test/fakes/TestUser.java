@@ -13,6 +13,7 @@ package org.jboss.tools.openshift.express.internal.client.test.fakes;
 import org.jboss.tools.openshift.express.client.Cartridge;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.client.OpenshiftService;
 import org.jboss.tools.openshift.express.client.User;
 import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationUtils;
 
@@ -21,7 +22,7 @@ import org.jboss.tools.openshift.express.internal.client.test.utils.ApplicationU
  */
 public class TestUser extends User {
 
-	public static final String ID = "org.jboss.tools.openshift.express.client.test";
+	public static final String ID = "org.jboss.tools.openshift.express.client.test " + OpenshiftService.VERSION;
 	
 	public static final String RHLOGIN_USER_WITHOUT_DOMAIN = "toolsjboss.no.domain2@gmail.com";
 	public static final String PASSWORD_USER_WITHOUT_DOMAIN = "1q2w3e";

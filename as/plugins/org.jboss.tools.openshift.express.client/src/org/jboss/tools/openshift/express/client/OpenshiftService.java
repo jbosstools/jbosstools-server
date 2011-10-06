@@ -12,6 +12,7 @@ package org.jboss.tools.openshift.express.client;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.jboss.tools.openshift.express.internal.client.Application;
@@ -45,6 +46,10 @@ import org.jboss.tools.openshift.express.internal.client.response.unmarshalling.
  * @author André Dietisheim
  */
 public class OpenshiftService implements IOpenshiftService {
+
+	// TODO extract to properties file
+	public static final String VERSION = "0.1.0";
+	private static final String USERAGENT_FORMAT = "Java Openshift/{0} ({1})";
 
 	private String baseUrl;
 	private String id;
@@ -256,6 +261,7 @@ public class OpenshiftService implements IOpenshiftService {
 	}
 
 	private IHttpClient createHttpClient(String id, String url) throws MalformedURLException {
-		return new UrlConnectionHttpClient(id, new URL(url));
+		String userAgent = MessageFormat.format(USERAGENT_FORMAT, VERSION, id);
+		return new UrlConnectionHttpClient(userAgent, new URL(url));
 	}
 }

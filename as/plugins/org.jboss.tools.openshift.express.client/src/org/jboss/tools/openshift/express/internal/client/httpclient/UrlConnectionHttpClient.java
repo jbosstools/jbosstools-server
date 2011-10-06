@@ -34,7 +34,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		this.userAgent = userAgent;
 		this.url = url;
 	}
-
+	
 	public String post(String data) throws HttpClientException {
 		HttpURLConnection connection = null;
 		try {
@@ -98,10 +98,7 @@ public class UrlConnectionHttpClient implements IHttpClient {
 		connection.setConnectTimeout(TIMEOUT);
 		connection.setRequestProperty(PROPERTY_CONTENT_TYPE, "application/x-www-form-urlencoded");
 		connection.setInstanceFollowRedirects(true);
-		if (userAgent != null 
-				&& userAgent.length() > 0) {
-			connection.setRequestProperty(USER_AGENT, userAgent);
-		}
+		connection.setRequestProperty(USER_AGENT, userAgent);
 		return connection;
 	}
 }
