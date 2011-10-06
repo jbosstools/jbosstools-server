@@ -15,4 +15,22 @@
             name="New Server Adapter">
       </wizard>
    </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.core.behaviourExtension">
+      <behaviour
+            behaviourDelegate="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressBehaviourDelegate"
+            launchDelegate="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressLaunchDelegate"
+            name="Openshift"
+            publishMethod="org.jboss.tools.openshift.express.internal.core.behaviour.ExpressPublishMethod"
+            serverTypes="org.jboss.ide.eclipse.as.70,org.jboss.ide.eclipse.as.eap.60"
+            typeId="openshift">
+      </behaviour>
+   </extension>
+   <extension
+         point="org.jboss.ide.eclipse.as.ui.DeployMethodUI">
+      <ui
+            class="org.jboss.tools.openshift.express.internal.ui.behaviour.OpenshiftDeployUI"
+            deployMethodId="openshift">
+      </ui>
+   </extension>
 </plugin>
