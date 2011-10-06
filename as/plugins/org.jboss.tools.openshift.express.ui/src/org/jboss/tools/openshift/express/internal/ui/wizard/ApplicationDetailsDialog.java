@@ -114,7 +114,7 @@ public class ApplicationDetailsDialog extends TitleAreaDialog {
 		Label label = new Label(container, SWT.None);
 		label.setText(name);
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(label);
-		Text text = new Text(container, SWT.BORDER);
+		Text text = new Text(container, SWT.NONE);
 		text.setEditable(false);
 		text.setBackground(container.getBackground());
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(text);

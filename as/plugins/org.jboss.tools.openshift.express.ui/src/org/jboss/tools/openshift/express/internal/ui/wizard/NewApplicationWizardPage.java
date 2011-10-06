@@ -96,7 +96,8 @@ public class NewApplicationWizardPage extends AbstractOpenshiftWizardPage {
 					
 					@Override
 					public Object convert(Object fromObject) {
-						if (fromObject instanceof String) {
+						if (fromObject instanceof String
+								&& ((String) fromObject).length() > 0) {
 							return new Cartridge(((String) fromObject));
 						}
 						return null;
