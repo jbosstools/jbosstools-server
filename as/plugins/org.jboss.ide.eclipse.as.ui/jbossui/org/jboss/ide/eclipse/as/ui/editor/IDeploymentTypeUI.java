@@ -36,8 +36,5 @@ public interface IDeploymentTypeUI {
 	 * @param parent
 	 * @param modeSection
 	 */
-	@Deprecated
-	public void fillComposite(Composite parent, ServerModeSection modeSection);
-	
 	public void fillComposite(Composite parent, IServerModeUICallback callback);
 }
