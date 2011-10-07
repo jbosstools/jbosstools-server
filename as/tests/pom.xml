@@ -15,7 +15,15 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>org.jboss.ide.eclipse.as.test</module>
 		<module>org.jboss.ide.eclipse.as.ui.test</module>
 		<module>org.jboss.ide.eclipse.as.management.as7.tests</module>
-		<!-- <module>org.jboss.ide.eclipse.as.egit.test</module> -->
+
+		<!-- JBIDE-9871 :: TODO: enable 
+		<module>org.jboss.ide.eclipse.as.egit.test</module> 
+		-->
+		
+		<!-- JBIDE-9871 :: TODO: enable (or move to new component?)
+		<module>org.jboss.ide.eclipse.as.openshift.test</module>
+		<module>org.jboss.tools.openshift.express.client.test</module>
+		-->
 	</modules>
 </project>
 	

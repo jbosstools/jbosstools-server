@@ -1,53 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.jboss.ide.eclipse.as.test.feature"
-      label="%featureName"
-      version="2.3.0.qualifier"
-      provider-name="%providerName">
+<feature id="org.jboss.ide.eclipse.as.test.feature" label="%featureName" version="2.3.0.qualifier" provider-name="%providerName">
 
-   <description url="%descriptionURL">
+	<description url="%descriptionURL">
       %description
    </description>
 
-   <copyright>
+	<copyright>
       %copyright
    </copyright>
 
-   <license url="%licenseURL">
+	<license url="%licenseURL">
       %license
    </license>
 
-   <plugin
-         id="org.jboss.ide.eclipse.as.test"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jboss.tools.jmx.core.test"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.ui.test"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.archives.integration.test"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.management.as7.tests"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+	<plugin id="org.jboss.ide.eclipse.as.test" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.tools.jmx.core.test" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.ide.eclipse.as.ui.test" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.as.archives.integration.test" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.as.management.as7.tests" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 </feature>

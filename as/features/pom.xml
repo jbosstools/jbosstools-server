@@ -1,5 +1,6 @@
 <project
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.jboss.tools</groupId>
@@ -11,14 +12,20 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<name>as.features</name>
 	<packaging>pom</packaging>
 	<modules>
-                <module>org.jboss.ide.eclipse.as.serverAdapter.wtp.feature</module>
-                <module>org.jboss.ide.eclipse.as.archives.integration.feature</module>
-                <module>org.jboss.ide.eclipse.as.jmx.integration.feature</module>
-                <module>org.jboss.ide.eclipse.as.server.rse.integration.feature</module>                
+		<module>org.jboss.ide.eclipse.as.serverAdapter.wtp.feature</module>
+		<module>org.jboss.ide.eclipse.as.archives.integration.feature</module>
+		<module>org.jboss.ide.eclipse.as.jmx.integration.feature</module>
+		<module>org.jboss.ide.eclipse.as.server.rse.integration.feature</module>
+
 		<module>org.jboss.ide.eclipse.as.feature</module>
+		<module>org.jboss.ide.eclipse.as.source.feature</module>
 		<module>org.jboss.ide.eclipse.as.test.feature</module>
+		<module>org.jboss.ide.eclipse.as.test.source.feature</module>
+
 		<module>org.jboss.ide.eclipse.as.server.egit.integration.feature</module>
+		<module>org.jboss.ide.eclipse.as.server.egit.integration.source.feature</module>
 		<module>org.jboss.tools.openshift.express.feature</module>
+		<module>org.jboss.tools.openshift.express.source.feature</module>
 	</modules>
 </project>
 	

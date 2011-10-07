@@ -5,17 +5,31 @@
 	<category-def label="JBoss Tools as Nightly Build Update Site" name="JBoss Tools as Nightly Build Update Site">
 		<description>JBoss Tools as Nightly Build Update Site: contains all features in this build.</description>
 	</category-def>
-	<feature url="features/org.jboss.ide.eclipse.as.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.feature" version="0.0.0">
-		<category name="JBoss Tools as Nightly Build Update Site"/>
-	</feature>
 	<feature url="features/org.jboss.ide.eclipse.as.server.egit.integration.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.server.egit.integration.feature" version="0.0.0">
-		<category name="JBoss Tools as Nightly Build Update Site"/>
+		<category name="JBoss Tools as Nightly Build Update Site" />
 	</feature>
-	<feature url="features/org.jboss.ide.eclipse.as.test.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.test.feature" version="0.0.0">
-  	        <category name="JBoss Tools as Nightly Build Update Site"/>
+	<feature url="features/org.jboss.ide.eclipse.as.server.egit.integration.source.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.server.egit.integration.source.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
 	</feature>
-        <feature url="features/org.jboss.tools.openshift.express.feature_0.0.0.jar" id="org.jboss.tools.openshift.express.feature" version="0.0.0">
-                <category name="JBoss Tools as Nightly Build Update Site"/>
-        </feature>
 
+	<feature url="features/org.jboss.tools.openshift.express.feature_0.0.0.jar" id="org.jboss.tools.openshift.express.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
+	<feature url="features/org.jboss.tools.openshift.express.source.feature_0.0.0.jar" id="org.jboss.tools.openshift.express.source.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
+
+	<feature url="features/org.jboss.ide.eclipse.as.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
+	<feature url="features/org.jboss.ide.eclipse.as.source.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.source.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
+
+	<feature url="features/org.jboss.ide.eclipse.as.test.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.test.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
+	<feature url="features/org.jboss.ide.eclipse.as.test.source.feature_0.0.0.jar" id="org.jboss.ide.eclipse.as.test.source.feature" version="0.0.0">
+		<category name="JBoss Tools as Nightly Build Update Site" />
+	</feature>
 </site>

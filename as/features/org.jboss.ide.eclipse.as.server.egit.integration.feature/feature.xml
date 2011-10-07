@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.jboss.ide.eclipse.as.server.egit.integration.feature"
-      label="%featureName"
-      version="0.0.1.qualifier"
-      provider-name="%providerName">
+<feature id="org.jboss.ide.eclipse.as.server.egit.integration.feature" label="%featureName" version="0.0.1.qualifier" provider-name="%providerName">
 
-   <description url="http://www.jboss.org/tools">
+	<description url="http://www.jboss.org/tools">
       %description
    </description>
 
-   <copyright>
+	<copyright>
       %copyright
    </copyright>
 
-   <license url="license.html">
+	<license url="license.html">
      Red Hat, Inc. licenses these features and plugins to you under
 certain open source licenses (or aggregations of such licenses),
 which in a particular case may include the Eclipse Public License,
@@ -23,18 +19,6 @@ source code, or contact Red Hat Legal Affairs, 1801 Varsity Drive,
 Raleigh NC 27606 USA.
    </license>
 
-   <plugin
-         id="org.jboss.ide.eclipse.as.egit.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.as.egit.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+	<plugin id="org.jboss.ide.eclipse.as.egit.core" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.as.egit.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 </feature>
