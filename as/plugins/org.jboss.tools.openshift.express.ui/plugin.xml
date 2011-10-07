@@ -5,14 +5,14 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.category"
-            name="Openshift Express">
+            name="OpenShift">
       </category>
       <wizard
             category="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.category"
             class="org.jboss.tools.openshift.express.internal.ui.wizard.ServerAdapterWizard"
             icon="icons/openshift-logo-white-icon.png"
             id="org.jboss.ide.eclipse.as.openshift.express.ui.wizard.NewServerAdapter"
-            name="New Server Adapter">
+            name="OpenShift Express Application">
       </wizard>
    </extension>
    <extension
