@@ -1,57 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<feature
-      id="org.jboss.ide.eclipse.archives.feature"
-      label="%featureName"
-      version="3.2.1.qualifier"
-      provider-name="%providerName"
-      plugin="org.jboss.ide.eclipse.archives.ui">
+<feature id="org.jboss.ide.eclipse.archives.feature" label="%featureName" version="3.2.1.qualifier" provider-name="%providerName" plugin="org.jboss.ide.eclipse.archives.ui">
 
-   <description url="http://www.jboss.org/tools">
+	<description url="http://www.jboss.org/tools">
       %description
    </description>
 
-   <copyright>
+	<copyright>
       %copyright
    </copyright>
 
-   <license url="license.html">
+	<license url="license.html">
       %license
    </license>
 
-   <requires>
-      <import plugin="org.apache.ant"/>
-      <import plugin="org.eclipse.core.commands"/>
-      <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.variables"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.jdt.ui" version="3.4.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.debug.ui" version="3.4.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.variables" version="3.2.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.navigator" version="3.3.100" match="greaterOrEqual"/>
-   </requires>
+	<requires>
+		<import plugin="org.apache.ant" />
+		<import plugin="org.eclipse.core.commands" />
+		<import plugin="org.eclipse.core.filesystem" />
+		<import plugin="org.eclipse.core.resources" />
+		<import plugin="org.eclipse.core.runtime" />
+		<import plugin="org.eclipse.core.variables" />
+		<import plugin="org.eclipse.jdt.core" />
+		<import plugin="org.eclipse.ui" />
+		<import plugin="org.eclipse.ui.ide" />
+		<import plugin="org.eclipse.jdt.ui" version="3.4.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.debug.ui" version="3.4.0" match="greaterOrEqual" />
+		<import plugin="org.eclipse.core.variables" version="3.2.100" match="greaterOrEqual" />
+		<import plugin="org.eclipse.ui.navigator" version="3.3.100" match="greaterOrEqual" />
+	</requires>
 
-   <plugin
-         id="org.jboss.ide.eclipse.archives.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.archives.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.jboss.ide.eclipse.archives.jdt.integration"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
+	<plugin id="org.jboss.ide.eclipse.archives.core" download-size="0" install-size="0" version="0.0.0" />
+	<plugin id="org.jboss.ide.eclipse.archives.ui" download-size="0" install-size="0" version="0.0.0" unpack="false" />
+	<plugin id="org.jboss.ide.eclipse.archives.jdt.integration" download-size="0" install-size="0" version="0.0.0" unpack="false" />
 </feature>

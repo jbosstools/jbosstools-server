@@ -12,7 +12,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.jboss.ide.eclipse.archives.feature</module>
+		<module>org.jboss.ide.eclipse.archives.source.feature</module>
 		<module>org.jboss.ide.eclipse.archives.test.feature</module>
+		<module>org.jboss.ide.eclipse.archives.test.source.feature</module>
 	</modules>
 </project>
 	

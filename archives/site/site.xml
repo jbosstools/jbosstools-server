@@ -8,7 +8,13 @@
 	<feature url="features/org.jboss.ide.eclipse.archives.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.feature" version="0.0.0">
 		<category name="JBoss Tools archives Nightly Build Update Site"/>
 	</feature>
+	<feature url="features/org.jboss.ide.eclipse.archives.source.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.source.feature" version="0.0.0">
+		<category name="JBoss Tools archives Nightly Build Update Site"/>
+	</feature>
 	<feature url="features/org.jboss.ide.eclipse.archives.test.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.test.feature" version="0.0.0">
+		<category name="JBoss Tools archives Nightly Build Update Site"/>
+	</feature>
+	<feature url="features/org.jboss.ide.eclipse.archives.test.source.feature_0.0.0.jar" id="org.jboss.ide.eclipse.archives.test.source.feature" version="0.0.0">
 		<category name="JBoss Tools archives Nightly Build Update Site"/>
 	</feature>
 
