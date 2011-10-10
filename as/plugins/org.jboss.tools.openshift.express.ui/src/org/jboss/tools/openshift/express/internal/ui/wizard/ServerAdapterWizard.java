@@ -52,7 +52,7 @@ public class ServerAdapterWizard extends Wizard implements INewWizard {
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
 							try {
-								model.createGitClone();
+								model.setupProject();
 								return Status.OK_STATUS;
 							} catch (OpenshiftException e) {
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,

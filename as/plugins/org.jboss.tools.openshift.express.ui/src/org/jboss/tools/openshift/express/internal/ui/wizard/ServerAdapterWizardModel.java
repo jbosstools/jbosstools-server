@@ -11,14 +11,18 @@
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.egit.core.op.CloneOperation;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.InitCommand;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.transport.URIish;
+import org.jboss.ide.eclipse.as.egit.core.EGitUtils;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
@@ -48,12 +52,26 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		this.application = application;
 	}
 
-	public void createGitClone() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException {
+	public void setupProject() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException, IOException {
 		String applicationWorkingdir = "openshift-" + application.getName();
-		File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-		File workDir = new File(workspace, applicationWorkingdir);
-		URIish gitUri = new URIish(application.getGitUri());
-		new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024).run(null);
+//		File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+//		File workDir = new File(workspace, applicationWorkingdir);
+//		URIish gitUri = new URIish(application.getGitUri());
+//		new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024).run(null);
+		Repository repository = createRepository(applicationWorkingdir);
+		// TODO replace remote name by user setting
+		EGitUtils.addRemoteTo("openshift", new URIish(application.getGitUri()), repository);
+	}
+
+	private Repository createRepository(String name) throws IOException {
+		InitCommand init = Git.init();
+		IPath workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		IPath gitRepoProject = workspace.append(name);
+		File repositoryFile = new File(gitRepoProject.toFile(), Constants.DOT_GIT);
+		init.setDirectory(repositoryFile);
+		init.setBare(false);
+		Git git = init.call();
+		return git.getRepository();
 	}
 	
 }
