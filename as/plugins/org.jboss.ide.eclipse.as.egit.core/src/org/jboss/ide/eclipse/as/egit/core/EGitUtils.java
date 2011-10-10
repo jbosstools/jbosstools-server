@@ -11,6 +11,7 @@
 package org.jboss.ide.eclipse.as.egit.core;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.eclipse.jgit.lib.ConfigConstants;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.lib.UserConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
@@ -399,6 +401,33 @@ public class EGitUtils {
 		return remoteName;
 	}
 
+	/**
+	 * Adds the given uri of a remote repository to the given repository by the
+	 * given name.
+	 * 
+	 * @param remoteName
+	 *            the name to use for the remote repository
+	 * @param uri
+	 *            the uri of the remote repository
+	 * @param repository
+	 *            the repository to add the remote to
+	 * @throws URISyntaxException
+	 *             the uRI syntax exception
+	 * @throws MalformedURLException
+	 *             the malformed url exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public static void addRemoteTo(String remoteName, URIish uri, Repository repository)
+			throws URISyntaxException, MalformedURLException,
+			IOException {
+		StoredConfig config = repository.getConfig();
+		RemoteConfig remoteConfig = new RemoteConfig(config, remoteName);
+		remoteConfig.addURI(uri);
+		remoteConfig.update(config);
+		config.save();
+	}
+
 	private static IStatus createStatus(Exception e, String message, String... arguments) throws CoreException {
 		IStatus status = null;
 		if (e == null) {
@@ -408,5 +437,4 @@ public class EGitUtils {
 		}
 		return status;
 	}
-
 }
