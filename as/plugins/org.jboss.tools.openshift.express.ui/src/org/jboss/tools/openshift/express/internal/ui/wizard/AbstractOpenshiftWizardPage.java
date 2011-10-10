@@ -64,6 +64,8 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 				public void pageChanged(PageChangedEvent event) {
 					if (event.getSelectedPage() == AbstractOpenshiftWizardPage.this) {
 						onPageActivated(dbc);
+					} else {
+						onPageDeactivated(dbc);
 					}
 				}
 			});
@@ -76,6 +78,10 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 
 	protected void onPageActivated(DataBindingContext dbc) {
 	}
+	
+	protected void onPageDeactivated(DataBindingContext dbc) {
+	}
+
 
 	protected abstract void doCreateControls(Composite parent, DataBindingContext dbc);
 }

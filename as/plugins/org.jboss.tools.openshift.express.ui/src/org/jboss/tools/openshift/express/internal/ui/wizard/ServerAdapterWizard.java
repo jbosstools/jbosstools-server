@@ -10,33 +10,77 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
+import org.jboss.tools.common.ui.WizardUtils;
+import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
 /**
  * @author André Dietisheim
  */
-public class ServerAdapterWizard extends AbstractSkippingWizard {
+public class ServerAdapterWizard extends Wizard implements INewWizard {
+
+	private ServerAdapterWizardModel model;
 
 	public ServerAdapterWizard() {
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		setWindowTitle("Create new Openshift Express Server Adapter");
+		setWindowTitle("OpenShift application wizard");
 		setNeedsProgressMonitor(true);
 	}
 
 	@Override
 	public boolean performFinish() {
-		return true;
+		try {
+			WizardUtils.runInWizard(
+					new Job("Creating local git repo...") {
+
+						@Override
+						protected IStatus run(IProgressMonitor monitor) {
+							try {
+								model.createGitClone();
+								return Status.OK_STATUS;
+							} catch (OpenshiftException e) {
+								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+										"An exception occurred while creating local git repository.", e);
+							} catch (URISyntaxException e) {
+								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+										"The url of the remote git repository is not valid", e);
+							} catch (Exception e) {
+								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+										"An exception occurred while creating local git repository.", e);
+							}
+						}
+					}, getContainer());
+			return true;
+		} catch (Exception e) {
+			ErrorDialog.openError(getShell(), "Error", "Could not create local git repository.",
+					new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+							"An exception occurred while creating local git repository.", e));
+			return false;
+		}
 	}
 
 	@Override
 	public void addPages() {
-		ServerAdapterWizardModel model = new ServerAdapterWizardModel();
+		this.model = new ServerAdapterWizardModel();
 		addPage(new CredentialsWizardPage(this, model));
-		addPage(new NewDomainWizardPage(this, model));
+		addPage(new DomainWizardPage(this, model));
 		addPage(new ApplicationWizardPage(this, model));
+		addPage(new AdapterWizardPage(this, model));
 	}
 }

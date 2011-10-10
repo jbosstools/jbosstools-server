@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
-import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -58,7 +57,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 		GridLayoutFactory.fillDefaults().numColumns(3).margins(10, 10).applyTo(container);
 
 		Link signupLink = new Link(container, SWT.WRAP);
-		signupLink.setText("If you have no user account on Openshit Express yet, please sign up <a>here</a>.");
+		signupLink.setText("If you have no user account on OpenShit Express yet, please sign up <a>here</a>.");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(3, 1).hint(SWT.DEFAULT, 30).applyTo(signupLink);
 		signupLink.addSelectionListener(onSignupLinkClicked());
 
@@ -86,7 +85,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(rhLoginLabel);
 		Text rhLoginText = new Text(container, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(rhLoginText);
-		Binding rhLoginBining = DataBindingUtils.bindMandatoryTextField(
+		DataBindingUtils.bindMandatoryTextField(
 				rhLoginText, "Username", CredentialsWizardPageModel.PROPERTY_RHLOGIN, model, dbc);
 
 		Label passwordLabel = new Label(container, SWT.NONE);
@@ -94,7 +93,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(passwordLabel);
 		Text passwordText = new Text(container, SWT.BORDER | SWT.PASSWORD);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(passwordText);
-		Binding passwordBinding = DataBindingUtils.bindMandatoryTextField(
+		DataBindingUtils.bindMandatoryTextField(
 				passwordText, "Password", CredentialsWizardPageModel.PROPERTY_PASSWORD, model, dbc);
 
 		// Label credentialsValidatyLabel = new Label(container, SWT.None);
@@ -106,11 +105,11 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 
 		this.validateButton = new Button(container, SWT.NONE);
 		validateButton.setText("&Validate");
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).indent(0, 10).hint(100, 30).applyTo(validateButton);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).span(2, 1).indent(0, 10).hint(100, SWT.DEFAULT).applyTo(validateButton);
 		DataBindingUtils.bindEnablementToValidationStatus(
-				validateButton,
-				dbc,
-				rhLoginBining, passwordBinding);
+				validateButton
+				, IStatus.INFO 
+				, dbc);
 		validateButton.addSelectionListener(onValidate(dbc));
 		dbc.bindValue(
 				new WritableValue(null, IStatus.class),
@@ -118,6 +117,8 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 				new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
 				new UpdateValueStrategy().setAfterGetValidator(
 						new CredentialsStatusValidator()));
+
+		setErrorMessage(null);
 	}
 
 	protected SelectionAdapter onValidate(final DataBindingContext dbc) {

@@ -46,6 +46,7 @@ public class ApplicationWizardPageModel extends ObservableUIPojo {
 	}
 
 	public void setSelectedApplication(IApplication application) {
+		wizardModel.setApplication(application);
 		firePropertyChange(PROPERTY_SELECTED_APPLICATION, this.selectedApplication, this.selectedApplication = application);
 	}
 

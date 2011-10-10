@@ -10,8 +10,19 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.egit.core.op.CloneOperation;
+import org.eclipse.jgit.transport.URIish;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
+import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
+import org.jboss.tools.openshift.express.client.OpenshiftException;
 
 /**
  * @author André Dietisheim
@@ -19,7 +30,8 @@ import org.jboss.tools.openshift.express.client.IUser;
 public class ServerAdapterWizardModel extends ObservableUIPojo {
 
 	private IUser user;
-
+	private IApplication application;
+	
 	public void setUser(IUser user) {
 		this.user = user;
 	}
@@ -27,4 +39,21 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	public IUser getUser() {
 		return user;
 	}
+
+	public IApplication getApplication() {
+		return application;
+	}
+
+	public void setApplication(IApplication application) {
+		this.application = application;
+	}
+
+	public void createGitClone() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException {
+		String applicationWorkingdir = "openshift-" + application.getName();
+		File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+		File workDir = new File(workspace, applicationWorkingdir);
+		URIish gitUri = new URIish(application.getGitUri());
+		new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024).run(null);
+	}
+	
 }

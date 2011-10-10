@@ -10,11 +10,17 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
+
 /**
  * @author André Dietisheim
  */
-public interface ISkipableWizardPage {
+public class AdapterWizardPageModel extends ObservableUIPojo {
 
-	public boolean isSkip();
-	
+	private ServerAdapterWizardModel wizardModel;
+
+	public AdapterWizardPageModel(ServerAdapterWizardModel wizardModel) {
+		this.wizardModel = wizardModel;
+	}
+
 }
