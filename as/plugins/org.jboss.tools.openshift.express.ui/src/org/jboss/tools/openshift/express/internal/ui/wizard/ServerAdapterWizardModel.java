@@ -61,6 +61,12 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		Repository repository = createRepository(applicationWorkingdir);
 		// TODO replace remote name by user setting
 		EGitUtils.addRemoteTo("openshift", new URIish(application.getGitUri()), repository);
+		
+		createServerAdapterIfRequired();
+	}
+	
+	private void createServerAdapterIfRequired() {
+		// TODO
 	}
 
 	private Repository createRepository(String name) throws IOException {

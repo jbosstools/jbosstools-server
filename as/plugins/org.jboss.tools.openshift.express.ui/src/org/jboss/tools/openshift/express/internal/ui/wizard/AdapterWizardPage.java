@@ -63,6 +63,10 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		fillLayout.marginHeight = 6;
 		fillLayout.marginWidth = 6;
 		serverAdapterGroup.setLayout(fillLayout);
+		fillServerAdapterGroup(serverAdapterGroup);
+	}
+	
+	private void fillServerAdapterGroup(Group serverAdapterGroup) {
 		Button serverAdapterCheckbox = new Button(serverAdapterGroup, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
 	}
