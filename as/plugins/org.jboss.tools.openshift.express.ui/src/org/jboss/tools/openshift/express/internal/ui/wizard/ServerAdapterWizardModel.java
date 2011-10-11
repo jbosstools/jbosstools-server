@@ -16,13 +16,23 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
+import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.URIish;
-import org.jboss.ide.eclipse.as.egit.core.EGitUtils;
+import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
@@ -33,6 +43,7 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
  */
 public class ServerAdapterWizardModel extends ObservableUIPojo {
 
+	private static final String REMOTE_NAME = "openshift";
 	private IUser user;
 	private IApplication application;
 	
@@ -52,32 +63,53 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		this.application = application;
 	}
 
-	public void setupProject() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException, IOException {
+	public void setupProject() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException, IOException, NoHeadException, ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException, WrongRepositoryStateException, NoMessageException, CoreException {
 		String applicationWorkingdir = "openshift-" + application.getName();
 //		File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
+		String userHome = System.getProperty("user.home");
 //		File workDir = new File(workspace, applicationWorkingdir);
-//		URIish gitUri = new URIish(application.getGitUri());
-//		new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024).run(null);
-		Repository repository = createRepository(applicationWorkingdir);
+		File workDir = new File(userHome, applicationWorkingdir);
+		URIish gitUri = new URIish(application.getGitUri());
+		if (workDir.exists()) {
+			FileUtil.completeDelete(workDir);
+		} 
+		CloneOperation cloneOperation = new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024);
+//		cloneOperation.setCredentialsProvider(new UsernamePasswordCredentialsProvider(user.getRhlogin(), user.getPassword()));
+		cloneOperation.run(null);
+//		File repositoryFile = createRepositoryFile(applicationWorkingdir);
+//		Git git = createGit(repositoryFile);
 		// TODO replace remote name by user setting
-		EGitUtils.addRemoteTo("openshift", new URIish(application.getGitUri()), repository);
-		
+//		Repository repository = git.getRepository();
+//		EGitUtils.addRemoteTo(REMOTE_NAME, new URIish(application.getGitUri()), repository);
+//		mergeWithRemote(git, REMOTE_NAME);
+				
 		createServerAdapterIfRequired();
 	}
 	
+	private void mergeWithRemote(Git git, String remoteName) throws CoreException, NoHeadException,
+			ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException,
+			WrongRepositoryStateException, NoMessageException, IOException {
+		Repository repository = git.getRepository();
+		ObjectId objectId = repository.resolve("HEAD");
+		git.merge().include(objectId).setStrategy(MergeStrategy.OURS).call();
+	}
+
 	private void createServerAdapterIfRequired() {
 		// TODO
 	}
 
-	private Repository createRepository(String name) throws IOException {
+	private Git createGit(File repositoryFile) throws IOException {
 		InitCommand init = Git.init();
+		init.setDirectory(repositoryFile);
+		init.setBare(false);
+		return init.call();
+	}
+
+	private File createRepositoryFile(String name) {
 		IPath workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 		IPath gitRepoProject = workspace.append(name);
 		File repositoryFile = new File(gitRepoProject.toFile(), Constants.DOT_GIT);
-		init.setDirectory(repositoryFile);
-		init.setBare(false);
-		Git git = init.call();
-		return git.getRepository();
+		return repositoryFile;
 	}
 	
 }
