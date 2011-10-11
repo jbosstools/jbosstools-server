@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -116,7 +117,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		Button detailsButton = new Button(container, SWT.PUSH);
 		detailsButton.setText("De&tails");
 		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).hint(80, SWT.DEFAULT).applyTo(detailsButton);
-		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, IStatus.INFO, dbc , selectedApplicationBinding);
+		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, IStatus.INFO, dbc, selectedApplicationBinding);
 		detailsButton.addSelectionListener(onDetails(dbc));
 	}
 
@@ -125,21 +126,26 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-//				try {
-//					ISelection selection = event.getSelection();
-//					if (selection instanceof StructuredSelection) {
-//						Object firstElement = ((IStructuredSelection) selection).getFirstElement();
-//						if (firstElement instanceof IApplication) {
-//							String url = ((IApplication) firstElement).getApplicationUrl();
-//							BrowserUtil.checkedCreateExternalBrowser(url, OpenshiftUIActivator.PLUGIN_ID,
-//									OpenshiftUIActivator.getDefault().getLog());
-//						}
-//					}
-//				} catch (OpenshiftException e) {
-//					IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-//							"Could not open Openshift Express application in browser", e);
-//					OpenshiftUIActivator.getDefault().getLog().log(status);
-//				}
+				// try {
+				// ISelection selection = event.getSelection();
+				// if (selection instanceof StructuredSelection) {
+				// Object firstElement = ((IStructuredSelection)
+				// selection).getFirstElement();
+				// if (firstElement instanceof IApplication) {
+				// String url = ((IApplication)
+				// firstElement).getApplicationUrl();
+				// BrowserUtil.checkedCreateExternalBrowser(url,
+				// OpenshiftUIActivator.PLUGIN_ID,
+				// OpenshiftUIActivator.getDefault().getLog());
+				// }
+				// }
+				// } catch (OpenshiftException e) {
+				// IStatus status = new Status(IStatus.ERROR,
+				// OpenshiftUIActivator.PLUGIN_ID,
+				// "Could not open Openshift Express application in browser",
+				// e);
+				// OpenshiftUIActivator.getDefault().getLog().log(status);
+				// }
 				openDetailsDialog();
 			}
 		};
@@ -171,18 +177,18 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				cell.setText(application.getCartridge().getName());
 			}
 		}, viewer, tableLayout);
-//		createTableColumn("URL", 3, new CellLabelProvider() {
-//
-//			@Override
-//			public void update(ViewerCell cell) {
-//				try {
-//					IApplication application = (IApplication) cell.getElement();
-//					cell.setText(application.getApplicationUrl());
-//				} catch (OpenshiftException e) {
-//					// ignore
-//				}
-//			}
-//		}, viewer, tableLayout);
+		// createTableColumn("URL", 3, new CellLabelProvider() {
+		//
+		// @Override
+		// public void update(ViewerCell cell) {
+		// try {
+		// IApplication application = (IApplication) cell.getElement();
+		// cell.setText(application.getApplicationUrl());
+		// } catch (OpenshiftException e) {
+		// // ignore
+		// }
+		// }
+		// }, viewer, tableLayout);
 		return viewer;
 	}
 
@@ -201,7 +207,14 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					WizardUtils.runInWizard(new DeleteApplicationJob(), getWizard().getContainer(), dbc);
+					if (MessageDialog.openConfirm(getShell(),
+									"Delete Application",
+									NLS.bind(
+											"You're up to delete all data within an application. The data may not be recovered. "
+											+ "Are you sure that you want to delete application {0}?",
+											model.getSelectedApplication().getName()))) {
+						WizardUtils.runInWizard(new DeleteApplicationJob(), getWizard().getContainer(), dbc);
+					}
 				} catch (Exception ex) {
 					// ignore
 				}
@@ -237,7 +250,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 		Shell shell = getContainer().getShell();
 		new ApplicationDetailsDialog(model.getSelectedApplication(), shell).open();
 	}
-	
+
 	@Override
 	protected void onPageActivated(DataBindingContext dbc) {
 		try {
@@ -283,7 +296,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			try {
 				model.destroyCurrentApplication();
 				getContainer().getShell().getDisplay().syncExec(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						viewer.refresh();
