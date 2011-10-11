@@ -37,6 +37,9 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.URIish;
+import org.eclipse.m2e.core.internal.MavenPluginActivator;
+import org.eclipse.m2e.core.project.IProjectConfigurationManager;
+import org.eclipse.m2e.core.project.ResolverConfiguration;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -86,8 +89,17 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		overwriteExistingProject(project, monitor);
 
 		importToNewProject(projectDirectory, monitor, project);
-
+		if (isMavenProject(projectDirectory)) {
+			configureMavenNature(project, monitor);
+		}
+		
 		createServerAdapterIfRequired();
+	}
+
+	private void configureMavenNature(IProject project, IProgressMonitor monitor) throws CoreException {
+		IProjectConfigurationManager manager = MavenPluginActivator.getDefault().getProjectConfigurationManager();
+		ResolverConfiguration resolverConfiguration = manager.getResolverConfiguration(project);
+		manager.enableMavenNature(project, resolverConfiguration, monitor);
 	}
 
 	private void importToNewProject(File projectDirectory, IProgressMonitor monitor, IProject project)
@@ -178,8 +190,8 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 
 	private boolean isReadable(File destination) {
 		return destination == null
-				|| !destination.exists()
-				|| !destination.canRead();
+				|| destination.exists()
+				|| destination.canRead();
 	}
 
 	private File getDestinationDirectory(IApplication application) {
