@@ -172,7 +172,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	}
 
 	private boolean isEclipseProject(File destination) {
-		if (isReadable(destination)) {
+		if (!isReadable(destination)) {
 			return false;
 		}
 
@@ -181,7 +181,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	}
 
 	private boolean isMavenProject(File destination) {
-		if (isReadable(destination)) {
+		if (!isReadable(destination)) {
 			return false;
 		}
 
@@ -189,9 +189,9 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	}
 
 	private boolean isReadable(File destination) {
-		return destination == null
-				|| destination.exists()
-				|| destination.canRead();
+		return destination != null
+				&& destination.exists()
+				&& destination.canRead();
 	}
 
 	private File getDestinationDirectory(IApplication application) {
