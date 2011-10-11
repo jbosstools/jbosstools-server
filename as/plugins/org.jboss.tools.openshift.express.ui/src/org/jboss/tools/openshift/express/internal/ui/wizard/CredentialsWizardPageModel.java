@@ -120,7 +120,11 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 		return credentialsValidity;
 	}
 
-	public void validateCredentials() {
+	public boolean areCredentialsValidated() {
+		return credentialsValidity != null;
+	}
+
+	public IStatus validateCredentials() {
 		IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, "Your credentails are not valid.");
 		try {
 			this.user = new User(getRhLogin(), getPassword(), ID);
@@ -135,6 +139,7 @@ public class CredentialsWizardPageModel extends ObservableUIPojo {
 		}
 		wizardModel.setUser(user);
 		setCredentialsStatus(status);
+		return status;
 	}
 
 	public IUser getUser() {

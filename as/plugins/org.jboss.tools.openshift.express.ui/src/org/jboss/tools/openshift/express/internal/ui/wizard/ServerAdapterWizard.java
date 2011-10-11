@@ -10,8 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
+import java.io.File;
 import java.net.URISyntaxException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -52,7 +51,8 @@ public class ServerAdapterWizard extends Wizard implements INewWizard {
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
 							try {
-								model.setupProject();
+								File repositoryFile = model.cloneRepository(monitor);
+								model.importProject(repositoryFile, monitor);
 								return Status.OK_STATUS;
 							} catch (OpenshiftException e) {
 								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,

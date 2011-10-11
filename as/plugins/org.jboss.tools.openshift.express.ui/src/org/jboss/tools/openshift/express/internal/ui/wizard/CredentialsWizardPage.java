@@ -154,7 +154,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 			}
 		};
 	}
-
+	
 	private static class CredentialsStatusValidator implements IValidator {
 		public IStatus validate(Object value) {
 			if (value instanceof IStatus) {
@@ -168,4 +168,5 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 			return ValidationStatus.error("The given credentials are not valid");
 		}
 	}
+
 }

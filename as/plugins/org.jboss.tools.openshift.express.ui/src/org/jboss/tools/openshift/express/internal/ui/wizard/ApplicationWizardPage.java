@@ -207,7 +207,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (MessageDialog.openConfirm(getShell(),
+					if (MessageDialog.openQuestion(getShell(),
 									"Delete Application",
 									NLS.bind(
 											"You're up to delete all data within an application. The data may not be recovered. "

@@ -43,9 +43,7 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 	@Override
 	public void createControl(Composite parent) {
 		this.dbc = new DataBindingContext();
-		ParametrizableWizardPageSupport.create(
-				IStatus.ERROR | IStatus.INFO | IStatus.WARNING | IStatus.CANCEL, this,
-				dbc);
+		setupWizardPageSupport(dbc);
 		Composite container = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(6,6).applyTo(container);
 		Composite child = new Composite(container, SWT.NONE);
@@ -53,6 +51,12 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 		setControl(container);
 		initPageChangedListener();
 		doCreateControls(child, dbc);
+	}
+
+	protected void setupWizardPageSupport(DataBindingContext dbc) {
+		ParametrizableWizardPageSupport.create(
+				IStatus.ERROR | IStatus.INFO | IStatus.WARNING | IStatus.CANCEL, this,
+				dbc);
 	}
 
 	protected void initPageChangedListener() {
@@ -84,4 +88,9 @@ public abstract class AbstractOpenshiftWizardPage extends WizardPage {
 
 
 	protected abstract void doCreateControls(Composite parent, DataBindingContext dbc);
+
+	protected DataBindingContext getDataBindingContext() {
+		return dbc;
+	}
+
 }
