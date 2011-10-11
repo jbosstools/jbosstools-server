@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egit.core.op.CloneOperation;
+import org.eclipse.egit.core.op.ConnectProviderOperation;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.Git;
@@ -88,12 +89,18 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		IProject project = workspaceRoot.getProject(projectName);
 		overwriteExistingProject(project, monitor);
 
-		importToNewProject(projectDirectory, monitor, project);
+		importToNewProject(projectDirectory, project, monitor);
+		conntectToGitRepo(project, monitor);
+		
 		if (isMavenProject(projectDirectory)) {
 			configureMavenNature(project, monitor);
 		}
 		
 		createServerAdapterIfRequired();
+	}
+
+	private void conntectToGitRepo(IProject project, IProgressMonitor monitor) throws CoreException {
+		new ConnectProviderOperation(project).execute(monitor);
 	}
 
 	private void configureMavenNature(IProject project, IProgressMonitor monitor) throws CoreException {
@@ -102,7 +109,7 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		manager.enableMavenNature(project, resolverConfiguration, monitor);
 	}
 
-	private void importToNewProject(File projectDirectory, IProgressMonitor monitor, IProject project)
+	private void importToNewProject(File projectDirectory, IProject project, IProgressMonitor monitor)
 			throws CoreException, InvocationTargetException, InterruptedException {
 		project.create(monitor);
 		project.open(monitor);
