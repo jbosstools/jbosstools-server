@@ -171,18 +171,18 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				cell.setText(application.getCartridge().getName());
 			}
 		}, viewer, tableLayout);
-		createTableColumn("URL", 3, new CellLabelProvider() {
-
-			@Override
-			public void update(ViewerCell cell) {
-				try {
-					IApplication application = (IApplication) cell.getElement();
-					cell.setText(application.getApplicationUrl());
-				} catch (OpenshiftException e) {
-					// ignore
-				}
-			}
-		}, viewer, tableLayout);
+//		createTableColumn("URL", 3, new CellLabelProvider() {
+//
+//			@Override
+//			public void update(ViewerCell cell) {
+//				try {
+//					IApplication application = (IApplication) cell.getElement();
+//					cell.setText(application.getApplicationUrl());
+//				} catch (OpenshiftException e) {
+//					// ignore
+//				}
+//			}
+//		}, viewer, tableLayout);
 		return viewer;
 	}
 

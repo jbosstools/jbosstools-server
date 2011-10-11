@@ -19,6 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.egit.core.op.CloneOperation;
+import org.eclipse.egit.ui.Activator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -66,16 +67,18 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 	public void setupProject() throws OpenshiftException, URISyntaxException, InvocationTargetException, InterruptedException, IOException, NoHeadException, ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException, WrongRepositoryStateException, NoMessageException, CoreException {
 		String applicationWorkingdir = "openshift-" + application.getName();
 //		File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-		String userHome = System.getProperty("user.home");
+		String userHome = System.getProperty("java.io.tmpdir");
 //		File workDir = new File(workspace, applicationWorkingdir);
-		File workDir = new File(userHome, applicationWorkingdir);
+		File clonedDirectory = new File(userHome, applicationWorkingdir);
 		URIish gitUri = new URIish(application.getGitUri());
-		if (workDir.exists()) {
-			FileUtil.completeDelete(workDir);
+		if (clonedDirectory.exists()) {
+			FileUtil.completeDelete(clonedDirectory);
 		} 
-		CloneOperation cloneOperation = new CloneOperation(gitUri, true, null, workDir, "refs/heads/*", "master", 10 * 1024);
+		CloneOperation cloneOperation = new CloneOperation(gitUri, true, null, clonedDirectory, Constants.HEAD, "origin", 10 * 1024);
 //		cloneOperation.setCredentialsProvider(new UsernamePasswordCredentialsProvider(user.getRhlogin(), user.getPassword()));
 		cloneOperation.run(null);
+		File gitDirectory = new File(clonedDirectory, Constants.DOT_GIT);
+		Activator.getDefault().getRepositoryUtil().addConfiguredRepository(gitDirectory);
 //		File repositoryFile = createRepositoryFile(applicationWorkingdir);
 //		Git git = createGit(repositoryFile);
 		// TODO replace remote name by user setting
