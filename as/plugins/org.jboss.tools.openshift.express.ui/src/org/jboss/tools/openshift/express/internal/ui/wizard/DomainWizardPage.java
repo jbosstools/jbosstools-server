@@ -74,10 +74,8 @@ public class DomainWizardPage extends AbstractOpenshiftWizardPage {
 					@Override
 					public IStatus validate(Object value) {
 						if (!(value instanceof IDomain)) {
-							System.err.println("domain validator: domain is NOT present!!!!!!!!!!!!!");
 							return ValidationStatus.info("You have no domain yet, you need to create one.");
 						}
-						System.err.println("domain validator: domain is present");
 						return ValidationStatus.ok();
 					}
 				}));
@@ -121,7 +119,6 @@ public class DomainWizardPage extends AbstractOpenshiftWizardPage {
 
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
-							System.err.println("running job " + this);
 							try {
 								model.renameDomain();
 								return Status.OK_STATUS;
@@ -145,7 +142,6 @@ public class DomainWizardPage extends AbstractOpenshiftWizardPage {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
-					System.err.println("running job " + this);
 					try {
 						model.updateDomain();
 						return Status.OK_STATUS;
