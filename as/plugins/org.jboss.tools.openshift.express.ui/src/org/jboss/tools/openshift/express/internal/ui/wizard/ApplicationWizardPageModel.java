@@ -71,12 +71,12 @@ public class ApplicationWizardPageModel extends ObservableUIPojo {
 		getDomain().setNamespace(namespace);
 	}
 
-	public void updateDomain() throws OpenshiftException {
+	public void loadDomain() throws OpenshiftException {
 		setDomain(getUser().getDomain());
 	}
 
-	public Collection<IApplication> getApplications() throws OpenshiftException {
-		IUser user = wizardModel.getUser();
+	public Collection<IApplication> loadApplications() throws OpenshiftException {
+		IUser user = getUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}

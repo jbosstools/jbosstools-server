@@ -57,6 +57,7 @@ import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IDomain;
+import org.jboss.tools.openshift.express.client.NotFoundOpenshiftException;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
@@ -189,7 +190,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	private void createDomain() throws OpenshiftException {
 		if (WizardUtils.openWizardDialog(
 				new NewDomainDialog(model.getNamespace(), wizardModel), getContainer().getShell()) == Dialog.OK) {
-			model.updateDomain();
+			model.loadDomain();
 		}
 	}
 
@@ -347,9 +348,13 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
-						model.updateDomain();
-						final Collection<IApplication> applications = model.getApplications();
+						model.loadDomain();
+						final Collection<IApplication> applications = model.loadApplications();
 						setViewerInput(applications);
+						return Status.OK_STATUS;
+					} catch (NotFoundOpenshiftException e) {
+						// no domain and therefore no applications present
+						clearViewer();
 						return Status.OK_STATUS;
 					} catch (Exception e) {
 						clearViewer();
