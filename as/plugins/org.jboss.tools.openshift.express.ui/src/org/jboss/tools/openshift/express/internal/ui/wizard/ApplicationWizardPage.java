@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.jboss.tools.openshift.express.internal.ui.wizard;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.databinding.Binding;
@@ -22,9 +23,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.dialogs.Dialog;
@@ -49,13 +48,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.IApplication;
@@ -181,7 +178,8 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 					} catch (OpenshiftException ex) {
 						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ex.getMessage(), ex);
 						OpenshiftUIActivator.getDefault().getLog().log(status);
-						ErrorDialog.openError(getShell(), "Error creating domain", "An error occurred while creating the domain.", status);
+						ErrorDialog.openError(getShell(), "Error creating domain",
+								"An error occurred while creating the domain.", status);
 					}
 				}
 			}
@@ -191,7 +189,7 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	private void createDomain() throws OpenshiftException {
 		if (WizardUtils.openWizardDialog(
 				new NewDomainDialog(model.getNamespace(), wizardModel), getContainer().getShell()) == Dialog.OK) {
-				model.updateDomain();
+			model.updateDomain();
 		}
 	}
 
@@ -290,7 +288,21 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 											"You're up to delete all data within an application. The data may not be recovered. "
 													+ "Are you sure that you want to delete application {0}?",
 											model.getSelectedApplication().getName()))) {
-						WizardUtils.runInWizard(new DeleteApplicationJob(), getContainer(), dbc);
+						WizardUtils.runInWizard(new Job("Deleting application") {
+
+							@Override
+							protected IStatus run(IProgressMonitor monitor) {
+								try {
+									model.destroyCurrentApplication();
+									refreshViewer();
+									return Status.OK_STATUS;
+								} catch (OpenshiftException e) {
+									return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
+											"Could not delete application \"{0}\"",
+											model.getSelectedApplication().getName()));
+								}
+							}
+						}, getContainer(), dbc);
 					}
 				} catch (Exception ex) {
 					// ignore
@@ -330,99 +342,50 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	@Override
 	protected void onPageActivated(final DataBindingContext dbc) {
 		try {
-			Job loadDomainJob = new LoadDomainJob();
-			loadDomainJob.addJobChangeListener(onLoadDomainFinished(dbc));
-			WizardUtils.runInWizard(loadDomainJob, getContainer(), getDatabindingContext());
+			WizardUtils.runInWizard(new Job("Loading applications...") {
+
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					try {
+						model.updateDomain();
+						final Collection<IApplication> applications = model.getApplications();
+						setViewerInput(applications);
+						return Status.OK_STATUS;
+					} catch (Exception e) {
+						clearViewer();
+						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+								"Could not load applications", e);
+					}
+				}
+
+			}, getContainer(), getDatabindingContext());
 
 		} catch (Exception ex) {
 			// ignore
 		}
 	}
 
-	private JobChangeAdapter onLoadDomainFinished(final DataBindingContext dbc) {
-		return new JobChangeAdapter() {
+	private void refreshViewer() {
+		getShell().getDisplay().syncExec(new Runnable() {
 
 			@Override
-			public void done(IJobChangeEvent event) {
-				try {
-					if (!event.getResult().isOK()) {
-						return;
-					}
-					if (model.hasDomain()) {
-						WizardUtils.runInWizard(new LoadApplicationsJob(), getContainer(), dbc);
-					}
-				} catch (Exception e) {
-					// ignore
-				}
+			public void run() {
+				viewer.refresh();
 			}
-		};
+		});
 	}
 
-	private class LoadApplicationsJob extends Job {
-		private LoadApplicationsJob() {
-			super("Loading applications...");
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				final Collection<IApplication> applications = model.getApplications();
-				Display display = PlatformUI.getWorkbench().getDisplay();
-				display.syncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						viewer.setInput(applications);
-					}
-				});
-				return Status.OK_STATUS;
-			} catch (OpenshiftException e) {
-				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-						"Could not load applications from Openshift Express");
-			}
-		}
+	private void clearViewer() {
+		setViewerInput(new ArrayList<IApplication>());
 	}
 
-	private class DeleteApplicationJob extends Job {
+	private void setViewerInput(final Collection<IApplication> applications) {
+		getShell().getDisplay().syncExec(new Runnable() {
 
-		public DeleteApplicationJob() {
-			super("Deleting application");
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				model.destroyCurrentApplication();
-				getContainer().getShell().getDisplay().syncExec(new Runnable() {
-
-					@Override
-					public void run() {
-						viewer.refresh();
-					}
-				});
-				return Status.OK_STATUS;
-			} catch (OpenshiftException e) {
-				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, NLS.bind(
-						"Could not delete application \"{0}\"",
-						model.getSelectedApplication().getName()));
+			@Override
+			public void run() {
+				viewer.setInput(applications);
 			}
-		}
-	}
-
-	private class LoadDomainJob extends Job {
-		private LoadDomainJob() {
-			super("Checking presence of domain...");
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			try {
-				model.updateDomain();
-				return Status.OK_STATUS;
-			} catch (Exception e) {
-				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-						"Could not get domain", e);
-			}
-		}
+		});
 	}
 }
