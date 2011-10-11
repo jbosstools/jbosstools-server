@@ -16,14 +16,19 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewerProperties;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -41,17 +46,20 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.jboss.tools.common.ui.WizardUtils;
 import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.IApplication;
+import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
 
@@ -62,10 +70,12 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 	private TableViewer viewer;
 	private ApplicationWizardPageModel model;
+	private ServerAdapterWizardModel wizardModel;
 
 	protected ApplicationWizardPage(IWizard wizard, ServerAdapterWizardModel wizardModel) {
 		super("Application selection", "Please select an Openshift Express application",
 				"Application selection", wizard);
+		this.wizardModel = wizardModel;
 		this.model = new ApplicationWizardPageModel(wizardModel);
 	}
 
@@ -73,17 +83,53 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
 		GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
 
-		Group group = new Group(container, SWT.BORDER);
-		group.setText("Available Applications");
-		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).hint(400, 160).span(3, 1)
-				.applyTo(group);
-		FillLayout fillLayout = new FillLayout(SWT.VERTICAL);
-		fillLayout.marginHeight = 6;
-		fillLayout.marginWidth = 6;
-		group.setLayout(fillLayout);
+		createDomainGroup(container, dbc);
+		createApplicationsGroup(container, dbc);
+	}
 
-		Composite tableContainer = new Composite(group, SWT.NONE);
+	private void createDomainGroup(Composite container, DataBindingContext dbc) {
+		Group domainGroup = new Group(container, SWT.BORDER);
+		domainGroup.setText("Domain");
+		GridDataFactory.fillDefaults()
+				.grab(true, false).align(SWT.FILL, SWT.TOP).span(3, 1).applyTo(domainGroup);
+		GridLayoutFactory.fillDefaults().margins(6, 6).numColumns(3).applyTo(domainGroup);
+		Label namespaceLabel = new Label(domainGroup, SWT.NONE);
+		namespaceLabel.setText("&Domain name");
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(namespaceLabel);
+		Text namespaceText = new Text(domainGroup, SWT.BORDER);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(namespaceText);
+		Binding namespaceBinding = DataBindingUtils.bindMandatoryTextField(
+				namespaceText, "Domain", ApplicationWizardPageModel.PROPERTY_NAMESPACE, model, dbc);
+		Button createRenameButton = new Button(domainGroup, SWT.PUSH);
+		DataBindingUtils.bindEnablementToValidationStatus(createRenameButton, IStatus.OK, dbc, namespaceBinding);
+		dbc.bindValue(WidgetProperties.text().observe(createRenameButton)
+				, BeanProperties.value(ApplicationWizardPageModel.PROPERTY_DOMAIN).observe(model)
+				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
+				, new UpdateValueStrategy().setConverter(new Converter(IDomain.class, String.class) {
+
+					@Override
+					public Object convert(Object fromObject) {
+						if (fromObject instanceof IDomain) {
+							return "&Rename";
+						} else {
+							return "&Create";
+						}
+					}
+				}));
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).hint(80, SWT.DEFAULT).applyTo(createRenameButton);
+		createRenameButton.addSelectionListener(onCreateRenameDomain(dbc));
+	}
+
+	private void createApplicationsGroup(Composite container, DataBindingContext dbc) {
+		Group applicationGroup = new Group(container, SWT.BORDER);
+		applicationGroup.setText("Available Applications");
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).hint(400, 260).span(3, 1)
+				.applyTo(applicationGroup);
+		GridLayoutFactory.fillDefaults().numColumns(3).margins(6, 6).applyTo(applicationGroup);
+
+		Composite tableContainer = new Composite(applicationGroup, SWT.NONE);
 		this.viewer = createTable(tableContainer);
+		GridDataFactory.fillDefaults().span(3, 1).align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tableContainer);
 		viewer.addDoubleClickListener(onApplicationDoubleClick());
 
 		Binding selectedApplicationBinding = dbc.bindValue(
@@ -103,22 +149,71 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 				}),
 				null);
 
-		Button newButton = new Button(container, SWT.PUSH);
+		Button newButton = new Button(applicationGroup, SWT.PUSH);
 		newButton.setText("Ne&w");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(80, 30).applyTo(newButton);
 		newButton.addSelectionListener(onNew(dbc));
 
-		Button deleteButton = new Button(container, SWT.PUSH);
+		Button deleteButton = new Button(applicationGroup, SWT.PUSH);
 		deleteButton.setText("&Delete");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).hint(80, SWT.DEFAULT).applyTo(deleteButton);
-		DataBindingUtils.bindEnablementToValidationStatus(deleteButton, IStatus.INFO, dbc, selectedApplicationBinding);
+		DataBindingUtils.bindEnablementToValidationStatus(deleteButton, IStatus.OK, dbc, selectedApplicationBinding);
 		deleteButton.addSelectionListener(onDelete(dbc));
 
-		Button detailsButton = new Button(container, SWT.PUSH);
+		Button detailsButton = new Button(applicationGroup, SWT.PUSH);
 		detailsButton.setText("De&tails");
-		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).hint(80, SWT.DEFAULT).applyTo(detailsButton);
-		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, IStatus.INFO, dbc, selectedApplicationBinding);
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).grab(true, false).hint(80, SWT.DEFAULT)
+				.applyTo(detailsButton);
+		DataBindingUtils.bindEnablementToValidationStatus(detailsButton, IStatus.OK, dbc, selectedApplicationBinding);
 		detailsButton.addSelectionListener(onDetails(dbc));
+	}
+
+	private SelectionListener onCreateRenameDomain(DataBindingContext dbc) {
+		return new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (model.hasDomain()) {
+					renameDomain();
+				} else {
+					try {
+						createDomain();
+					} catch (OpenshiftException ex) {
+						IStatus status = new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID, ex.getMessage(), ex);
+						OpenshiftUIActivator.getDefault().getLog().log(status);
+						ErrorDialog.openError(getShell(), "Error creating domain", "An error occurred while creating the domain.", status);
+					}
+				}
+			}
+		};
+	}
+
+	private void createDomain() throws OpenshiftException {
+		if (WizardUtils.openWizardDialog(
+				new NewDomainDialog(model.getNamespace(), wizardModel), getContainer().getShell()) == Dialog.OK) {
+				model.updateDomain();
+		}
+	}
+
+	private void renameDomain() {
+		try {
+			WizardUtils.runInWizard(
+					new Job("Renaming domain...") {
+
+						@Override
+						protected IStatus run(IProgressMonitor monitor) {
+							try {
+								model.renameDomain();
+								return Status.OK_STATUS;
+							} catch (Exception e) {
+								return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+										"Could not rename domain", e);
+							}
+						}
+					}, getContainer(), getDatabindingContext());
+		} catch (Exception ex) {
+			// ignore
+		}
 	}
 
 	private IDoubleClickListener onApplicationDoubleClick() {
@@ -126,26 +221,6 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				// try {
-				// ISelection selection = event.getSelection();
-				// if (selection instanceof StructuredSelection) {
-				// Object firstElement = ((IStructuredSelection)
-				// selection).getFirstElement();
-				// if (firstElement instanceof IApplication) {
-				// String url = ((IApplication)
-				// firstElement).getApplicationUrl();
-				// BrowserUtil.checkedCreateExternalBrowser(url,
-				// OpenshiftUIActivator.PLUGIN_ID,
-				// OpenshiftUIActivator.getDefault().getLog());
-				// }
-				// }
-				// } catch (OpenshiftException e) {
-				// IStatus status = new Status(IStatus.ERROR,
-				// OpenshiftUIActivator.PLUGIN_ID,
-				// "Could not open Openshift Express application in browser",
-				// e);
-				// OpenshiftUIActivator.getDefault().getLog().log(status);
-				// }
 				openDetailsDialog();
 			}
 		};
@@ -207,13 +282,15 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					if (MessageDialog.openQuestion(getShell(),
+					if (MessageDialog
+							.openQuestion(
+									getShell(),
 									"Delete Application",
 									NLS.bind(
 											"You're up to delete all data within an application. The data may not be recovered. "
-											+ "Are you sure that you want to delete application {0}?",
+													+ "Are you sure that you want to delete application {0}?",
 											model.getSelectedApplication().getName()))) {
-						WizardUtils.runInWizard(new DeleteApplicationJob(), getWizard().getContainer(), dbc);
+						WizardUtils.runInWizard(new DeleteApplicationJob(), getContainer(), dbc);
 					}
 				} catch (Exception ex) {
 					// ignore
@@ -228,8 +305,8 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Shell shell = getContainer().getShell();
-				if (WizardUtils.openWizardDialog(new NewApplicationDialog(model.getUser()), shell)
-						== Dialog.OK) {
+				if (WizardUtils.openWizardDialog(
+						new NewApplicationDialog(model.getUser()), shell) == Dialog.OK) {
 					viewer.refresh();
 				}
 			}
@@ -247,22 +324,43 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 	}
 
 	private void openDetailsDialog() {
-		Shell shell = getContainer().getShell();
-		new ApplicationDetailsDialog(model.getSelectedApplication(), shell).open();
+		new ApplicationDetailsDialog(model.getSelectedApplication(), getShell()).open();
 	}
 
 	@Override
-	protected void onPageActivated(DataBindingContext dbc) {
+	protected void onPageActivated(final DataBindingContext dbc) {
 		try {
-			WizardUtils.runInWizard(new LoadApplicationsJob(), getWizard().getContainer(), dbc);
+			Job loadDomainJob = new LoadDomainJob();
+			loadDomainJob.addJobChangeListener(onLoadDomainFinished(dbc));
+			WizardUtils.runInWizard(loadDomainJob, getContainer(), getDatabindingContext());
+
 		} catch (Exception ex) {
 			// ignore
 		}
 	}
 
+	private JobChangeAdapter onLoadDomainFinished(final DataBindingContext dbc) {
+		return new JobChangeAdapter() {
+
+			@Override
+			public void done(IJobChangeEvent event) {
+				try {
+					if (!event.getResult().isOK()) {
+						return;
+					}
+					if (model.hasDomain()) {
+						WizardUtils.runInWizard(new LoadApplicationsJob(), getContainer(), dbc);
+					}
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		};
+	}
+
 	private class LoadApplicationsJob extends Job {
 		private LoadApplicationsJob() {
-			super("Loading applications");
+			super("Loading applications...");
 		}
 
 		@Override
@@ -309,6 +407,22 @@ public class ApplicationWizardPage extends AbstractOpenshiftWizardPage {
 						model.getSelectedApplication().getName()));
 			}
 		}
+	}
 
+	private class LoadDomainJob extends Job {
+		private LoadDomainJob() {
+			super("Checking presence of domain...");
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				model.updateDomain();
+				return Status.OK_STATUS;
+			} catch (Exception e) {
+				return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
+						"Could not get domain", e);
+			}
+		}
 	}
 }

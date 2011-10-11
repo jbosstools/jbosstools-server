@@ -26,13 +26,12 @@ import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
  */
 public class NewDomainDialog extends Wizard {
 
-	private NewDomainWizardPageModel newDomainWizardModel;
-	private ServerAdapterWizardModel wizardModel;
 	private String namespace;
+	private NewDomainWizardModel model;
 
 	public NewDomainDialog(String namespace, ServerAdapterWizardModel wizardModel) {
 		this.namespace = namespace;
-		this.wizardModel = wizardModel;
+		this.model = new NewDomainWizardModel(namespace, wizardModel.getUser());
 		setNeedsProgressMonitor(true);
 	}
 
@@ -40,17 +39,17 @@ public class NewDomainDialog extends Wizard {
 	public boolean performFinish() {
 		final ArrayBlockingQueue<Boolean> queue = new ArrayBlockingQueue<Boolean>(1);
 		try {
-			WizardUtils.runInWizard(new Job("Creating application...") {
+			WizardUtils.runInWizard(new Job("Creating domain...") {
 
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
 					try {
-						newDomainWizardModel.createDomain();
+						model.createDomain();
 						queue.offer(true);
 					} catch (Exception e) {
 						queue.offer(false);
 						return new Status(IStatus.ERROR, OpenshiftUIActivator.PLUGIN_ID,
-								NLS.bind("Could not create domain \"{0}\"", newDomainWizardModel.getNamespace()), e);
+								NLS.bind("Could not create domain \"{0}\"", model.getNamespace()), e);
 					}
 					return Status.OK_STATUS;
 				}
@@ -63,6 +62,6 @@ public class NewDomainDialog extends Wizard {
 
 	@Override
 	public void addPages() {
-		addPage(new NewDomainWizardPage(namespace, wizardModel, this));
+		addPage(new NewDomainWizardPage(namespace, model, this));
 	}
 }

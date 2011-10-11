@@ -135,7 +135,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 									model.validateCredentials();
 									return Status.OK_STATUS;
 								}
-							}, getWizard().getContainer(), dbc);
+							}, getContainer(), dbc);
 				} catch (Exception ex) {
 					// ignore
 				}
@@ -150,7 +150,7 @@ public class CredentialsWizardPage extends AbstractOpenshiftWizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				BrowserUtil.checkedCreateInternalBrowser(OPENSHIFT_EXPRESS_SIGNUP_URL, OPENSHIFT_EXPRESS_SIGNUP_URL,
 						OpenshiftUIActivator.PLUGIN_ID, OpenshiftUIActivator.getDefault().getLog());
-				getWizard().getContainer().getShell().close();
+				getContainer().getShell().close();
 			}
 		};
 	}

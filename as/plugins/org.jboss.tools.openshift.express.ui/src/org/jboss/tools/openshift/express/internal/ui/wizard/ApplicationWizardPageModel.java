@@ -15,6 +15,7 @@ import java.util.Collections;
 
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
+import org.jboss.tools.openshift.express.client.IDomain;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 
@@ -24,13 +25,54 @@ import org.jboss.tools.openshift.express.client.OpenshiftException;
  */
 public class ApplicationWizardPageModel extends ObservableUIPojo {
 
+	public static final String PROPERTY_NAMESPACE = "namespace";
+	public static final String PROPERTY_DOMAIN = "domain";
 	public static final String PROPERTY_SELECTED_APPLICATION = "selectedApplication";
 
+	private String namespace;
+	private IDomain domain;
 	private IApplication selectedApplication;
 	private ServerAdapterWizardModel wizardModel;
 
 	public ApplicationWizardPageModel(ServerAdapterWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
+	}
+
+	public String getNamespace() {
+		return this.namespace;
+	}
+
+	private void setNamespace(IDomain domain) {
+		if (domain != null) {
+			setNamespace(domain.getNamespace());
+		} else {
+			setNamespace((String) null);
+		}
+	}
+
+	public void setNamespace(String namespace) {
+		firePropertyChange(PROPERTY_NAMESPACE, this.namespace, this.namespace = namespace);
+	}
+
+	public boolean hasDomain() {
+		return domain != null;
+	}
+
+	public IDomain getDomain() {
+		return domain;
+	}
+
+	public void setDomain(IDomain domain) {
+		firePropertyChange(PROPERTY_DOMAIN, this.domain, this.domain = domain);
+		setNamespace(domain);
+	}
+
+	public void renameDomain() throws OpenshiftException {
+		getDomain().setNamespace(namespace);
+	}
+
+	public void updateDomain() throws OpenshiftException {
+		setDomain(getUser().getDomain());
 	}
 
 	public Collection<IApplication> getApplications() throws OpenshiftException {

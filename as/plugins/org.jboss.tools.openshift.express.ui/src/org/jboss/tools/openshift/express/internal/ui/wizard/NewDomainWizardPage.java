@@ -43,11 +43,11 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 	private static final String FILTEREXPRESSION_PUBLIC_SSH_KEY = "*.pub";
 	private static final String FILTERNAME_PUBLIC_SSH_KEY = "Public ssh key file (*.pub)";
 
-	private NewDomainWizardPageModel model;
+	private NewDomainWizardModel model;
 
-	public NewDomainWizardPage(String namespace, ServerAdapterWizardModel wizardModel, IWizard wizard) {
+	public NewDomainWizardPage(String namespace, NewDomainWizardModel model, IWizard wizard) {
 		super("Domain", "Create a new domain", "New Domain", wizard);
-		this.model = new NewDomainWizardPageModel(namespace, wizardModel);
+		this.model = model;
 	}
 
 	protected void doCreateControls(Composite container, DataBindingContext dbc) {
@@ -59,17 +59,17 @@ public class NewDomainWizardPage extends AbstractOpenshiftWizardPage {
 		Text namespaceText = new Text(container, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(2, 1).applyTo(namespaceText);
 		DataBindingUtils.bindMandatoryTextField(
-				namespaceText, "Domain name", NewDomainWizardPageModel.PROPERTY_NAMESPACE, model, dbc);
+				namespaceText, "Domain name", NewDomainWizardModel.PROPERTY_NAMESPACE, model, dbc);
 
 		Label sshKeyLabel = new Label(container, SWT.NONE);
-		sshKeyLabel.setText("SSH Key");
+		sshKeyLabel.setText("SSH Public Key");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(sshKeyLabel);
 		Text sshKeyText = new Text(container, SWT.READ_ONLY | SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(sshKeyText);
 
 		Binding sshKeyBinding = dbc.bindValue(
 				WidgetProperties.text(SWT.Modify).observe(sshKeyText)
-				, BeanProperties.value(NewDomainWizardPageModel.PROPERTY_SSHKEY).observe(model)
+				, BeanProperties.value(NewDomainWizardModel.PROPERTY_SSHKEY).observe(model)
 				, new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER)
 				, null
 				);
