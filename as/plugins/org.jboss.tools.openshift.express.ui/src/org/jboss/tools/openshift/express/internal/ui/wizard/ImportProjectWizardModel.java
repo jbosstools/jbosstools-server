@@ -45,6 +45,8 @@ import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenP
  */
 public class ImportProjectWizardModel extends ObservableUIPojo {
 
+	private static final int CLONE_TIMEOUT = 10 * 1024;
+
 	private HashMap<String, Object> dataModel = new HashMap<String, Object>();
 
 	private static final String USER = "user";
@@ -155,8 +157,7 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
 		
 		CloneOperation cloneOperation =
-//				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
-				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
+				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", CLONE_TIMEOUT);
 		cloneOperation.run(monitor);
 		repositoryUtil.addConfiguredRepository(new File(destination, Constants.DOT_GIT));
 	}
