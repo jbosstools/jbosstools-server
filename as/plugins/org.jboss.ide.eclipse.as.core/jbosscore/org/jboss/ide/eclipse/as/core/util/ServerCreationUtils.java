@@ -58,12 +58,17 @@ public class ServerCreationUtils {
 		return createServer2(currentRuntime, runtimeServerTypeMap.get(currentRuntime.getRuntimeType().getId()), name);
 	}
 	
-	public static IServer createServer2(IRuntime currentRuntime, String serverID) throws CoreException {
-		return createServer2(currentRuntime, serverID, serverID);
+	public static IServer createServer2(IRuntime currentRuntime, String serverTypeId) throws CoreException {
+		return createServer2(currentRuntime, serverTypeId, serverTypeId);
 	}
 
-	public static IServer createServer2(IRuntime currentRuntime, String serverID, String serverName) throws CoreException {
-		IServerType serverType = ServerCore.findServerType(serverID);
+	public static IServer createServer2(IRuntime currentRuntime, String serverTypeId, String serverName) throws CoreException {
+		IServerType serverType = ServerCore.findServerType(serverTypeId);
+		return createServer2(currentRuntime, serverType, serverName);
+	}
+	
+	
+	public static IServer createServer2(IRuntime currentRuntime, IServerType serverType, String serverName) throws CoreException {
 		IServerWorkingCopy serverWC = serverType.createServer(null, null,
 				new NullProgressMonitor());
 		serverWC.setRuntime(currentRuntime);

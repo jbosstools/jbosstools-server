@@ -27,13 +27,9 @@ import org.jboss.ide.eclipse.as.core.util.ServerConverter;
 
 public class DelegatingStartLaunchConfiguration extends AbstractJBossStartLaunchConfiguration {
 	public ArrayList<IJBossLaunchDelegate> getSetupParticipants(IServer server) {
-		//return ExtensionManager.getDefault().getSetupParticipants(server);
 		return BehaviourModel.getModel().getSetupParticipants(server);
 	}
-//	public HashMap<String, IStartLaunchDelegate> getLaunchDelegates(IServer server) {
-//		return ExtensionManager.getDefault().getLaunchDelegates(server);
-//	}
-
+	
 	// Allow all participants to set some defaults for their own details
 	// Participants should be careful not to change shared launch keys / values 
 	// unless their operation mode (local / rse / etc) is in use

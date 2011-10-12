@@ -10,8 +10,6 @@
  ******************************************************************************/ 
 package org.jboss.ide.eclipse.as.core.server.internal;
 
-import java.util.HashMap;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,6 +25,7 @@ import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethodType;
+import org.jboss.ide.eclipse.as.core.server.internal.BehaviourModel.BehaviourImpl;
 import org.jboss.ide.eclipse.as.core.server.internal.launch.DelegatingStartLaunchConfiguration;
 import org.jboss.ide.eclipse.as.core.server.xpl.PublishCopyUtil.IPublishCopyCallbackHandler;
 import org.jboss.ide.eclipse.as.core.util.DeploymentPreferenceLoader;
@@ -40,18 +39,7 @@ import org.jboss.ide.eclipse.as.wtp.core.util.ServerModelUtilities;
  *
  */
 public class DelegatingServerBehavior extends DeployableServerBehavior {
-	
-	private static HashMap<String, Class> delegateClassMap;
-
-	static {
-		delegateClassMap = new HashMap<String, Class>();
-		delegateClassMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, LocalJBossBehaviorDelegate.class);
-	}
-
-	public static void addDelegateMapping(String s, Class c) {
-		delegateClassMap.put(s, c);
-	}
-	
+		
 	private IJBossBehaviourDelegate delegate;
 	private String lastModeId;
 
@@ -65,23 +53,9 @@ public class DelegatingServerBehavior extends DeployableServerBehavior {
 		if( id.equals(lastModeId) && delegate != null && delegate.getBehaviourTypeId().equals(id))
 			return delegate;
 		
-		Class c = getDelegateMap().get(id);
-		if( c == null )
-			c = getDelegateMap().get(LocalPublishMethod.LOCAL_PUBLISH_METHOD);
-		
-		try {
-			IJBossBehaviourDelegate o = (IJBossBehaviourDelegate)c.newInstance();
-			o.setActualBehaviour(this);
-			lastModeId = id;
-			delegate = o;
-		} catch( InstantiationException ie) {
-		} catch( IllegalAccessException iae) {
-		}
+		BehaviourImpl impl = BehaviourModel.getModel().getBehaviour(getServer().getServerType().getId()).getImpl(id);
+		delegate = impl.getBehaviourDelegate();
 		return delegate;
-	}
-	
-	protected HashMap<String, Class> getDelegateMap() {
-		return delegateClassMap;
 	}
 	
 	public void stop(boolean force) {

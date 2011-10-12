@@ -50,7 +50,7 @@ public class BehaviourModel {
 		for( int i = 0; i < impls.length; i++ ) {
 			list.add(impls[i].getLaunchDelegate());
 		}
-		return null;
+		return list;
 	}
 	
 	/*
@@ -128,6 +128,8 @@ public class BehaviourModel {
 		private IConfigurationElement element;
 		private IJBossLaunchDelegate launchDelegate;
 		private String supportedServers;
+		private IJBossBehaviourDelegate behaviourDelegate = null;
+		
 		public BehaviourImpl(IConfigurationElement element) {
 			this.element = element;
 			name = element.getAttribute("name"); //$NON-NLS-1$
@@ -167,6 +169,18 @@ public class BehaviourModel {
 				launchDelegate = (IJBossLaunchDelegate) element.createExecutableExtension("launchDelegate"); //$NON-NLS-1$
 				return launchDelegate;
 			} catch( CoreException ce ) {
+				JBossServerCorePlugin.getInstance().getLog().log(ce.getStatus());
+			}
+			return null;
+		}
+		
+		public IJBossBehaviourDelegate getBehaviourDelegate() {
+			if( behaviourDelegate != null )
+				return behaviourDelegate;
+			try {
+				behaviourDelegate = (IJBossBehaviourDelegate)element.createExecutableExtension("behaviourDelegate"); //$NON-NLS-1$
+				return behaviourDelegate;
+			} catch(CoreException ce) {
 				JBossServerCorePlugin.getInstance().getLog().log(ce.getStatus());
 			}
 			return null;

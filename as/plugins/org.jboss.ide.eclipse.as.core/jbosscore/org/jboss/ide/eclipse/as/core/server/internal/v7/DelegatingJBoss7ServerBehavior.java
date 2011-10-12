@@ -13,7 +13,6 @@ package org.jboss.ide.eclipse.as.core.server.internal.v7;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -32,7 +31,6 @@ import org.jboss.ide.eclipse.as.core.JBossServerCorePlugin;
 import org.jboss.ide.eclipse.as.core.Messages;
 import org.jboss.ide.eclipse.as.core.extensions.events.IEventCodes;
 import org.jboss.ide.eclipse.as.core.extensions.events.ServerLogger;
-import org.jboss.ide.eclipse.as.core.publishers.LocalPublishMethod;
 import org.jboss.ide.eclipse.as.core.publishers.PublishUtil;
 import org.jboss.ide.eclipse.as.core.server.IDeployableServer;
 import org.jboss.ide.eclipse.as.core.server.IJBossServerPublishMethod;
@@ -50,20 +48,6 @@ public class DelegatingJBoss7ServerBehavior extends DelegatingServerBehavior {
 	private IDebugEventSetListener serverProcessListener;
 	private PollThread pollThread;
 
-	private static HashMap<String, Class> delegateClassMap;
-	static {
-		delegateClassMap = new HashMap<String, Class>();
-		delegateClassMap.put(LocalPublishMethod.LOCAL_PUBLISH_METHOD, LocalJBoss7BehaviorDelegate.class);
-	}
-
-	public static void addDelegateMapping(String s, Class c) {
-		delegateClassMap.put(s, c);
-	}
-
-	protected HashMap<String, Class> getDelegateMap() {
-		return delegateClassMap;
-	}
-	
 	@Override
 	public boolean shouldSuspendScanner() {
 		return false;
