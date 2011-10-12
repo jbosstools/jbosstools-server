@@ -14,9 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -24,7 +25,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.egit.core.op.CloneOperation;
 import org.eclipse.egit.core.op.ConnectProviderOperation;
 import org.eclipse.egit.ui.Activator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.InitCommand;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -38,27 +38,19 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.transport.URIish;
-import org.eclipse.m2e.core.internal.MavenPluginActivator;
-import org.eclipse.m2e.core.project.IProjectConfigurationManager;
-import org.eclipse.m2e.core.project.ResolverConfiguration;
-import org.eclipse.osgi.util.NLS;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.IOverwriteQuery;
-import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
-import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.jboss.ide.eclipse.as.core.util.FileUtil;
 import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
 import org.jboss.tools.openshift.express.client.IApplication;
 import org.jboss.tools.openshift.express.client.IUser;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
+import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.GeneralProjectImportOperation;
+import org.jboss.tools.openshift.express.internal.ui.wizard.projectimport.MavenProjectImportOperation;
 
 /**
- * @author André Dietisheim
+ * @author André Dietisheim <adietish@redhat.com>
  */
 public class ServerAdapterWizardModel extends ObservableUIPojo {
 
-	private static final String REMOTE_NAME = "openshift";
 	private IUser user;
 	private IApplication application;
 
@@ -78,81 +70,28 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		this.application = application;
 	}
 
-	public void importProject(File projectDirectory, IProgressMonitor monitor) throws OpenshiftException,
-			URISyntaxException,
-			InvocationTargetException, InterruptedException, IOException, NoHeadException,
-			ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException,
-			WrongRepositoryStateException, NoMessageException, CoreException {
-		final String projectName = projectDirectory.getName();
-
-		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IProject project = workspaceRoot.getProject(projectName);
-		overwriteExistingProject(project, monitor);
-
-		importToNewProject(projectDirectory, project, monitor);
-		conntectToGitRepo(project, monitor);
-		
-		if (isMavenProject(projectDirectory)) {
-			configureMavenNature(project, monitor);
+	public void importProject(File projectFolder, IProgressMonitor monitor) throws OpenshiftException, CoreException, InterruptedException {
+		MavenProjectImportOperation mavenImport = new MavenProjectImportOperation(projectFolder);
+		List<IProject> importedProjects = Collections.emptyList();
+		if (mavenImport.isMavenProject()) {
+			importedProjects = mavenImport.importToWorkspace(monitor);
+		} else {
+			importedProjects = new GeneralProjectImportOperation(projectFolder).importToWorkspace(monitor);
 		}
-		
+
+		connectToGitRepo(importedProjects, monitor);
+
 		createServerAdapterIfRequired();
 	}
 
-	private void conntectToGitRepo(IProject project, IProgressMonitor monitor) throws CoreException {
+	private void connectToGitRepo(List<IProject> projects, IProgressMonitor monitor) throws CoreException {
+		for (IProject project : projects) {
+			connectToGitRepo(project, monitor);
+		}
+	}
+
+	private void connectToGitRepo(IProject project, IProgressMonitor monitor) throws CoreException {
 		new ConnectProviderOperation(project).execute(monitor);
-	}
-
-	private void configureMavenNature(IProject project, IProgressMonitor monitor) throws CoreException {
-		IProjectConfigurationManager manager = MavenPluginActivator.getDefault().getProjectConfigurationManager();
-		ResolverConfiguration resolverConfiguration = manager.getResolverConfiguration(project);
-		manager.enableMavenNature(project, resolverConfiguration, monitor);
-	}
-
-	private void importToNewProject(File projectDirectory, IProject project, IProgressMonitor monitor)
-			throws CoreException, InvocationTargetException, InterruptedException {
-		project.create(monitor);
-		project.open(monitor);
-		ImportOperation operation =
-				new ImportOperation(
-						project.getFullPath()
-						, projectDirectory
-						, FileSystemStructureProvider.INSTANCE
-						, new IOverwriteQuery() {
-							public String queryOverwrite(String file) {
-								return IOverwriteQuery.ALL;
-							}
-						});
-		operation.setCreateContainerStructure(false);
-		operation.run(monitor);
-	}
-
-	private void overwriteExistingProject(final IProject project, IProgressMonitor monitor)
-			throws CoreException {
-		if (project == null
-				|| !project.exists()) {
-			return;
-		}
-
-		final boolean[] overwrite = new boolean[1];
-		Display.getDefault().syncExec(new Runnable() {
-
-			public void run() {
-				overwrite[0] = MessageDialog.openQuestion(
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-						"Overwrite project?",
-						NLS.bind(
-								"A project \"{0}\" already exists in the workspace.\n"
-										+ "If you want to import the OpenShift \"{0}\", the project in your workspace will "
-										+ "get overwritten and may not be recovered.\n\n"
-										+ "Are you sure that you want to overwrite the project \"{0}\" in your workspace?",
-								project.getName()));
-			}
-
-		});
-		if (overwrite[0]) {
-			project.delete(true, true, monitor);
-		}
 	}
 
 	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenshiftException,
@@ -176,29 +115,6 @@ public class ServerAdapterWizardModel extends ObservableUIPojo {
 		cloneOperation.run(null);
 		File gitDirectory = new File(destination, Constants.DOT_GIT);
 		Activator.getDefault().getRepositoryUtil().addConfiguredRepository(gitDirectory);
-	}
-
-	private boolean isEclipseProject(File destination) {
-		if (!isReadable(destination)) {
-			return false;
-		}
-
-		return isReadable(new File(destination, ".project"));
-
-	}
-
-	private boolean isMavenProject(File destination) {
-		if (!isReadable(destination)) {
-			return false;
-		}
-
-		return isReadable(new File(destination, "pom.xml"));
-	}
-
-	private boolean isReadable(File destination) {
-		return destination != null
-				&& destination.exists()
-				&& destination.canRead();
 	}
 
 	private File getDestinationDirectory(IApplication application) {
