@@ -16,11 +16,23 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
  * @author André Dietisheim
  */
 public class AdapterWizardPageModel extends ObservableUIPojo {
+	public static final String CREATE_SERVER = "createServer";
+	public static final String MODE = "serverMode";
+	public static final String MODE_SOURCE = "serverModeSource";
+	public static final String MODE_BINARY = "serverModeBinary";
+	public static final String RUNTIME_DELEGATE = "runtimeDelegate";
+	public static final String SERVER_TYPE = "serverType";
+
 
 	private ServerAdapterWizardModel wizardModel;
 
 	public AdapterWizardPageModel(ServerAdapterWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
+	}
+	
+	// TODO is this the best way? Or should we expose ONLY getters to the parent model?
+	public ServerAdapterWizardModel getParentModel() {
+		return wizardModel;
 	}
 
 }
