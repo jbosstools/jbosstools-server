@@ -12,12 +12,19 @@ package org.jboss.tools.openshift.express.internal.ui.wizard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
@@ -37,7 +44,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.IRuntimeWorkingCopy;
@@ -52,6 +58,7 @@ import org.eclipse.wst.server.ui.internal.wizard.WizardTaskUtil;
 import org.eclipse.wst.server.ui.wizard.WizardFragment;
 import org.jboss.ide.eclipse.as.core.util.IJBossToolingConstants;
 import org.jboss.ide.eclipse.as.ui.UIUtil;
+import org.jboss.tools.common.ui.databinding.DataBindingUtils;
 import org.jboss.tools.openshift.express.client.ICartridge;
 import org.jboss.tools.openshift.express.client.OpenshiftException;
 import org.jboss.tools.openshift.express.internal.ui.OpenshiftUIActivator;
@@ -102,9 +109,8 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		Text cloneDirText = new Text(projectGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(cloneDirText);
-		// DataBindingUtils.bindMandatoryTextField(
-		// cloneDirText, "Repository Destination",
-		// AdapterWizardPageModel.PROPERTY_CLONEDIR, model, dbc);
+		DataBindingUtils.bindMandatoryTextField(
+				cloneDirText, "Repository Destination", AdapterWizardPageModel.PROPERTY_CLONEDIR, model, dbc);
 		Button browseDestinationButton = new Button(projectGroup, SWT.PUSH);
 		browseDestinationButton.setText("Browse");
 		GridDataFactory.fillDefaults()
@@ -114,18 +120,22 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 		Label branchLabel = new Label(projectGroup, SWT.NONE);
 		branchLabel.setText("Branch to clone");
 		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.CENTER).applyTo(branchLabel);
-		Text branchText = new Text(projectGroup, SWT.NONE);
-		branchText.setEditable(false);
-		branchText.setBackground(projectGroup.getBackground());
+		Text branchText = new Text(projectGroup, SWT.BORDER);
 		GridDataFactory.fillDefaults()
 				.align(SWT.LEFT, SWT.CENTER).align(SWT.FILL, SWT.CENTER).grab(true, false)
 				.applyTo(branchText);
-
-		Button selectBranchButton = new Button(projectGroup, SWT.PUSH);
-		selectBranchButton.setText("Select Branch");
+		Binding branchNameBinding = dbc.bindValue(
+				WidgetProperties.text(SWT.Modify).observe(branchText)
+				, BeanProperties.value(AdapterWizardPageModel.PROPERTY_BRANCHNAME).observe(model)
+				, new UpdateValueStrategy().setAfterGetValidator(new BranchNameValidator())
+				, null);
+		ControlDecorationSupport.create(branchNameBinding, SWT.TOP | SWT.LEFT);
+		
+		Button defaultBranchnameButton = new Button(projectGroup, SWT.PUSH);
+		defaultBranchnameButton.setText("Default");
 		GridDataFactory.fillDefaults()
-				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(selectBranchButton);
-		selectBranchButton.addSelectionListener(onSelectBranch());
+				.align(SWT.LEFT, SWT.CENTER).hint(100, SWT.DEFAULT).applyTo(defaultBranchnameButton);
+		defaultBranchnameButton.addSelectionListener(onBranchnameDefault());
 
 		return projectGroup;
 	}
@@ -138,28 +148,18 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 				DirectoryDialog dialog = new DirectoryDialog(getShell());
 				String cloneDir = dialog.open();
 				if (cloneDir != null) {
-					model.setCloneDir(cloneDir);
+					model.setCloneDirectory(cloneDir);
 				}
 			}
 		};
 	}
 
-	private SelectionListener onSelectBranch() {
+	private SelectionListener onBranchnameDefault() {
 		return new SelectionAdapter() {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				ListDialog branchesDialog = new ListDialog(getShell());
-				branchesDialog.setContentProvider(new BranchNameContentProvider());
-				branchesDialog.setTitle("Branches");
-				if (Dialog.OK == branchesDialog.open()) {
-					Object[] selectedBranches = branchesDialog.getResult();
-					if (selectedBranches != null
-							&& selectedBranches.length >= 1
-							&& selectedBranches[1] instanceof String) {
-						model.setBranch((String) selectedBranches[1]);
-					}
-				}
+				model.resetBranchname();
 			}
 		};
 	}
@@ -181,7 +181,7 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 	}
 
 	private void fillServerAdapterGroup(Group serverAdapterGroup) {
-		Composite c = new Composite(serverAdapterGroup, SWT.BORDER);
+		Composite c = new Composite(serverAdapterGroup, SWT.NONE);
 		c.setLayout(new FormLayout());
 		Button serverAdapterCheckbox = new Button(c, SWT.CHECK);
 		serverAdapterCheckbox.setText("Create a JBoss server adapter");
@@ -335,6 +335,28 @@ public class AdapterWizardPage extends AbstractOpenshiftWizardPage implements IW
 			}
 		}
 		return returnValue;
+	}
+
+	private static class BranchNameValidator implements IValidator {
+
+		private static final Pattern BRANCH_PATTERN = Pattern.compile(".+\\/.+");
+
+		@Override
+		public IStatus validate(Object value) {
+			if (value == null
+					|| ((String) value).length() == 0) {
+				return ValidationStatus.error("you have to provide a branch to clone");
+			}
+
+			if (!isValidBranch((String) value)) {
+				return ValidationStatus.error("you have to provide a valid branch name (ex. origin/master)");
+			}
+			return ValidationStatus.ok();
+		}
+
+		private boolean isValidBranch(String branchname) {
+			return BRANCH_PATTERN.matcher(branchname).matches();
+		}
 	}
 
 }

@@ -49,6 +49,8 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 
 	private static final String USER = "user";
 	private static final String APPLICATION = "application";
+	private static final String BRANCHNAME = "branchname";
+	private static final String CLONE_DIR = "cloneDir";
 
 	public void setProperty(String key, Object value) {
 		dataModel.put(key, value);
@@ -70,10 +72,26 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		return (IApplication) dataModel.get(APPLICATION);
 	}
 
+	public void setBranchname(String branchname) {
+		dataModel.put(BRANCHNAME, branchname);
+	}
+
+	public String getBranchname() {
+		return (String) dataModel.get(BRANCHNAME);
+	}
+
+	public void setCloneDirectory(String cloneDir) {
+		dataModel.put(CLONE_DIR, cloneDir);
+	}
+
+	public String getCloneDirectory() {
+		return (String) dataModel.get(CLONE_DIR);
+	}
+
 	public void setApplication(IApplication application) {
 		dataModel.put(APPLICATION, application);
 	}
-
+	
 	public void importProject(final File projectFolder, IProgressMonitor monitor) throws OpenshiftException,
 			CoreException,
 			InterruptedException {
@@ -119,8 +137,9 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	public File cloneRepository(IProgressMonitor monitor) throws URISyntaxException, OpenshiftException,
 			InvocationTargetException,
 			InterruptedException {
-		File destination = getDestinationDirectory(getApplication());
-		cloneRepository(getApplication().getGitUri(), destination, monitor);
+		IApplication application = getApplication();
+		File destination = new File(getCloneDirectory(), application.getName());
+		cloneRepository(application.getGitUri(), destination, monitor);
 		return destination;
 	}
 
@@ -134,11 +153,12 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 		ensureEgitUIIsStarted();
 		URIish gitUri = new URIish(uri);
 		RepositoryUtil repositoryUtil = Activator.getDefault().getRepositoryUtil();
+		
 		CloneOperation cloneOperation =
+//				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
 				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
-		cloneOperation.run(null);
-		File gitDirectory = new File(destination, Constants.DOT_GIT);
-		repositoryUtil.addConfiguredRepository(gitDirectory);
+		cloneOperation.run(monitor);
+		repositoryUtil.addConfiguredRepository(new File(destination, Constants.DOT_GIT));
 	}
 
 	/**
@@ -160,15 +180,6 @@ public class ImportProjectWizardModel extends ObservableUIPojo {
 	 */
 	private void ensureEgitUIIsStarted() {
 		Activator.getDefault();
-	}
-
-	private File getDestinationDirectory(IApplication application) {
-		String applicationDirectory = application.getName();
-		// File workspace =
-		// ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-		String userHome = System.getProperty("java.io.tmpdir");
-		// File workDir = new File(workspace, applicationWorkingdir);
-		return new File(userHome, applicationDirectory);
 	}
 
 	private void createServerAdapterIfRequired() {

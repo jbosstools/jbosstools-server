@@ -17,8 +17,11 @@ import org.jboss.tools.common.ui.databinding.ObservableUIPojo;
  * @author Rob Stryker
  */
 public class AdapterWizardPageModel extends ObservableUIPojo {
-	public static final String PROPERTY_CLONEDIR = "cloneDir";
-	public static final String PROPERTY_BRANCH = "branch";
+
+	private static final String BRANCHNAME_DEFAULT = "origin/master";
+
+	public static final String PROPERTY_CLONEDIR = "cloneDirectory";
+	public static final String PROPERTY_BRANCHNAME = "branchname";
 	
 	public static final String CREATE_SERVER = "createServer";
 	public static final String MODE = "serverMode";
@@ -28,33 +31,39 @@ public class AdapterWizardPageModel extends ObservableUIPojo {
 	public static final String SERVER_TYPE = "serverType";
 
 	private String cloneDir;
-	private String branch;
+	private String branchname;
 	
 	private ImportProjectWizardModel wizardModel;
 
 	public AdapterWizardPageModel(ImportProjectWizardModel wizardModel) {
 		this.wizardModel = wizardModel;
+		this.branchname = BRANCHNAME_DEFAULT;
 	}
 	
-	public String getCloneDir() {
+	public String getCloneDirectory() {
 		return cloneDir;
 	}
 
-	public void setCloneDir(String cloneDir) {
-		firePropertyChange(PROPERTY_CLONEDIR, cloneDir, this.cloneDir = cloneDir);
+	public void setCloneDirectory(String cloneDir) {
+		firePropertyChange(PROPERTY_CLONEDIR, this.cloneDir, this.cloneDir = cloneDir);
+		wizardModel.setCloneDirectory(cloneDir);
 	}
 
-	public String getBranch() {
-		return branch;
+	public String getBranchname() {
+		return branchname;
 	}
 
-	public void setBranch(String branch) {
-		firePropertyChange(PROPERTY_BRANCH, branch, this.branch = branch);
+	public void setBranchname(String branchname) {
+		firePropertyChange(PROPERTY_BRANCHNAME, this.branchname, this.branchname = branchname);
+		wizardModel.setBranchname(branchname);
+	}
+
+	public void resetBranchname() {
+		setBranchname(BRANCHNAME_DEFAULT);
 	}
 
 	// TODO is this the best way? Or should we expose ONLY getters to the parent model?
 	public ImportProjectWizardModel getParentModel() {
 		return wizardModel;
 	}
-
 }
