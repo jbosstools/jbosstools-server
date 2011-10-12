@@ -56,15 +56,15 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 
 	private static final String USER = "user";
 	private static final String APPLICATION = "application";
-	
+
 	public void setProperty(String key, Object value) {
 		dataModel.put(key, value);
 	}
-	
+
 	public Object getProperty(String key) {
 		return dataModel.get(key);
 	}
-	
+
 	public void setUser(IUser user) {
 		dataModel.put(USER, user);
 	}
@@ -74,14 +74,15 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 	}
 
 	public IApplication getApplication() {
-		return (IApplication)dataModel.get(APPLICATION);
+		return (IApplication) dataModel.get(APPLICATION);
 	}
 
 	public void setApplication(IApplication application) {
 		dataModel.put(APPLICATION, application);
 	}
 
-	public void importProject(File projectFolder, IProgressMonitor monitor) throws OpenshiftException, CoreException, InterruptedException {
+	public void importProject(File projectFolder, IProgressMonitor monitor) throws OpenshiftException, CoreException,
+			InterruptedException {
 		MavenProjectImportOperation mavenImport = new MavenProjectImportOperation(projectFolder);
 		List<IProject> importedProjects = Collections.emptyList();
 		if (mavenImport.isMavenProject()) {
@@ -120,6 +121,7 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		if (destination.exists()) {
 			FileUtil.completeDelete(destination);
 		}
+		ensureEgitUIIsStarted();
 		URIish gitUri = new URIish(uri);
 		CloneOperation cloneOperation =
 				new CloneOperation(gitUri, true, null, destination, Constants.HEAD, "origin", 10 * 1024);
@@ -128,8 +130,25 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		Activator.getDefault().getRepositoryUtil().addConfiguredRepository(gitDirectory);
 	}
 
+	/**
+	 * The Egit UI {@link Activator#start} initializes the SshSessionFactory
+	 * with the EclipseSshSessionFactory. The EclipseSshSessionFactory overrides
+	 * JschConfigSessionFactory#configure to present a UserInfoPrompter if the
+	 * key passphrase was give entered before. Without this initialization, the
+	 * ssh connection would simply fail with a TransportException (Auth
+	 * failure). We therefore have to make sure that the EGit UI plugin is
+	 * started and initializes the JschConfigSessionFactory.
+	 * 
+	 * @see Activator#start(org.osgi.framework.BundleContext)
+	 * @see Activator#setupSSH
+	 * @see EclipseSshSessionFactory#configure
+	 */
+	private void ensureEgitUIIsStarted() {
+		Activator.getDefault();
+	}
+
 	private File getDestinationDirectory(IApplication application) {
-		String applicationDirectory = "openshift-" + application.getName();
+		String applicationDirectory = application.getName();
 		// File workspace =
 		// ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
 		String userHome = System.getProperty("java.io.tmpdir");
@@ -162,6 +181,5 @@ public class ApplicationWizardModel extends ObservableUIPojo {
 		File repositoryFile = new File(gitRepoProject.toFile(), Constants.DOT_GIT);
 		return repositoryFile;
 	}
-
 
 }
